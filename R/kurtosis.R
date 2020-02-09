@@ -39,23 +39,23 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
   ####################################################################################
   # Input check
 
-  #.......
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a numeric vector for the argument 'x'", call. = FALSE)
+    stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
 
   }
 
   #.......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
   }
 
-  #.........................................
+  #----------------------------------------
 
   if (isTRUE(check)) {
 
@@ -76,12 +76,12 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
     }
 
     #.......
-    # Check input 'x': Constant
+    # Check input 'x': Zero variance
     if (length(x) > 1) {
 
-      if (var(x, na.rm = TRUE) == 0) {
+      if (length(na.omit(unique(x))) == 1) {
 
-        stop("Vector specified in the argument 'x' is a constant.", call. = FALSE)
+        stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE)
 
       }
 
@@ -95,7 +95,7 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
   # Convert user-missing values into NA
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     # Variable with missing values only
     if (all(is.na(x))) {
@@ -104,10 +104,10 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
     }
 
-    # Constant variable
-    if (var(x, na.rm = TRUE) == 0) {
+    # Zero variance
+    if (length(na.omit(unique(x))) == 1) {
 
-      stop("After converting user-missing values into NA, variable 'x' is a constant.", call. = FALSE)
+      stop("After converting user-missing values into NA, variable 'x' has zero variance.", call. = FALSE)
 
     }
 
@@ -130,6 +130,8 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
     m <- n * sum((x - mean(x))^4) / (sum((x - mean(x))^2)^2)
 
     object <- ((n + 1) * (m - 3) + 6) * (n - 1) / ((n - 2) * (n - 3))
+
+    object <- ifelse(is.nan(object), NA, object )
 
   } else {
 

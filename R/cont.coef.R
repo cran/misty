@@ -7,7 +7,7 @@
 #' contingency coefficient can be adjusted by relating the coefficient to the possible maximum, \eqn{C / C_max}.
 #'
 #' @param x           a matrix or data frame with integer vectors, character vectors or factors..
-#' @param adjust      logical: if \code{TRUE} (default), the adjusted contingency coefficient (i.e., Sakoda's
+#' @param adjust      logical: if \code{TRUE}, the adjusted contingency coefficient (i.e., Sakoda's
 #'                    adjusted Pearson's C) is computed.
 #' @param tri         a character string indicating which triangular of the matrix to show on the console,
 #'                    i.e., \code{both} for upper and lower triangular, \code{lower} (default) for the lower
@@ -43,28 +43,28 @@
 #'                   y = c(3, 2, 3, 1, 2, 4, 1, 2, 3, 4),
 #'                   z = c(2, 2, 2, 1, 2, 2, 1, 2, 1, 2))
 #'
-#' # Adjusted Contingency coefficient between x and y
+#' # Contingency coefficient between x and y
 #' cont.coef(dat[, c("x", "y")])
 #'
-#' # Contingency coefficient between x and y
-#' cont.coef(dat[, c("x", "y")], adjust = FALSE)
-#'
-#' # Adjusted Contingency coefficient matrix between x, y, and z
-#' cont.coef(dat[, c("x", "y", "z")])
+#' # Adjusted contingency coefficient between x and y
+#' cont.coef(dat[, c("x", "y")], adjust = TRUE)
 #'
 #' # Contingency coefficient matrix between x, y, and z
-#' cont.coef(dat[, c("x", "y", "z")], adjust = FALSE)
-cont.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
-                      digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
+#' cont.coef(dat)
+#'
+#' # Adjusted contingency coefficient matrix between x, y, and z
+#' cont.coef(dat, adjust = TRUE)
+cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
+                      digits = 2, as.na = NULL, check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Data
 
-  #.........................................
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
+    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
@@ -79,16 +79,18 @@ cont.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
 
   #-----------------------------------------
   # As data frame
+
   x <- as.data.frame(x)
 
   #-----------------------------------------
   # Convert user-missing values into NA
+
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     # Variable with missing values only
-    x.miss <- sapply(x, function(y) all(is.na(y)))
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
     if (any(x.miss)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
@@ -96,12 +98,12 @@ cont.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
 
     }
 
-    # Constant variables
-    x.con <- sapply(x, function(y) var(as.numeric(y), na.rm = TRUE) == 0)
-    if (any(x.con)) {
+    # Zero variance
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    if (any(x.zero.var)) {
 
-      stop(paste0("After converting user-missing values into NA, following variables are constant: ",
-                  paste(names(which(x.con)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-missing values into NA, following variables have only one unique value: ",
+                  paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
 
     }
 
@@ -112,29 +114,38 @@ cont.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
   }
 
-  ###
+  #-----------------------------------------
 
-  #......
   if (isTRUE(check)) {
 
     #......
-    # Check input 'x'
-    if (any(sapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE)))) {
+    # Check input 'x' for zero variance
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    if (any(x.zero.var)) {
 
-      stop("Please specify a matrix or data frame with integer vectors, character vectors or factors for the argument 'x'",
+      stop(paste0("Following variables in the matrix or data frame specified in 'x' have only one unique value: ",
+                  paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'x' for non-integer numbers
+    if (any(vapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1)))) {
+
+      stop("Please specify a matrix or data frame with integer vectors, character vectors or factors for the argument 'x'.",
            call. = FALSE)
 
     }
 
     #......
     # Check input 'adjust'
-    if (isFALSE(isTRUE(adjust) | isFALSE(adjust))) {
+    if (isFALSE(isTRUE(adjust) || isFALSE(adjust))) {
 
       stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE)
 
@@ -151,15 +162,15 @@ cont.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1 != 0 || digits < 0) {
 
-      stop("Specify a positive integer number for the argument 'digits'", call. = FALSE)
+      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
     }
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (isFALSE(isTRUE(output) || isFALSE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -188,19 +199,27 @@ cont.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
 
     chisq <- suppressWarnings(chisq.test(tab, correct = FALSE)$statistic)
 
-    cc <- as.numeric(sqrt(chisq / (chisq + sum(tab))))
+    if (!is.nan(chisq)) {
 
-    # Sakoda's adjusted Pearson's C
-    if (isTRUE(adjust)) {
+      cc <- as.numeric(sqrt(chisq / (chisq + sum(tab))))
 
-      k <- min(nrow(tab), ncol(tab))
+      # Sakoda's adjusted Pearson's C
+      if (isTRUE(adjust)) {
 
-      cc <- cc / sqrt((k - 1) / k)
+        k <- min(c(nrow(tab), ncol(tab)))
 
+        cc <- cc / sqrt((k - 1) / k)
+
+      }
+
+    } else {
+
+      cc <- NA
     }
 
   #----------------------------------------
   # More than two variables
+
   } else {
 
     # Pairwise combination
@@ -208,7 +227,7 @@ cont.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
 
     # Compute all pairwise contingency coefficients
     comb.n.cc <- rep(NA, times = ncol(comb.n))
-    for (i in 1:ncol(comb.n)) {
+    for (i in seq_len(ncol(comb.n))) {
 
       comb.n.cc[i] <- misty::cont.coef(x[, comb.n[, i]], adjust = adjust, as.na = as.na, check = FALSE, output = FALSE)$result
 

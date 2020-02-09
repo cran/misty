@@ -4,8 +4,8 @@
 \alias{print.descript}
 \title{Print descript object}
 \usage{
-\method{print}{descript}(x, print = x$args$print, mat = x$args$mat,
-      sort.var = x$args$sort.var, digits = x$args$digits, check = TRUE, ...)
+\method{print}{descript}(x, print = x$args$print, sort.var = x$args$sort.var,
+      digits = x$args$digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{descript} object.}
@@ -17,8 +17,6 @@ i.e. \code{n} (number of observations), \code{nNA} (number of missing values),
 \code{p25} (25th percentile, first quartile), \code{p75} (75th percentile, third quartile),
 \code{max} (maximum),  \code{range} (range), \code{iqr} (interquartile range),
 \code{skew} (skewness), and \code{kurt} (excess kurtosis).}
-
-\item{mat}{logical: if \code{TRUE}, output by a grouping variable is shown in a matrix.}
 
 \item{sort.var}{logical: if \code{TRUE}, output is sorted by variables.}
 

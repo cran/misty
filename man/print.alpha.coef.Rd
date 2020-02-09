@@ -4,14 +4,13 @@
 \alias{print.alpha.coef}
 \title{Print alpha.coef object}
 \usage{
-\method{print}{alpha.coef}(x, print = x$args$print,
-      digits = x$args$digits, check = TRUE, ...)
+\method{print}{alpha.coef}(x, print = x$args$print, digits = x$args$digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{alpha.coef} object.}
 
 \item{print}{a character vector indicating which results to show, i.e. \code{"all"}, for all results
-\code{"alpha"} for the coefficienta alpha, and \code{"item"} for item statistics.}
+\code{"alpha"} for the coefficient alpha, and \code{"item"} for item statistics.}
 
 \item{digits}{an integer value indicating the number of decimal places to be used for displaying
 coefficient alpha and item-total correlations.}
@@ -42,7 +41,7 @@ print(dat.alpha, print = "alpha", digits = 3)
 print(dat.alpha, print = "item", digits = 3)
 }
 \references{
-Cronbach, L.J. (1951). Coefficient alpha and the internal strucuture of tests. \emph{Psychometrika, 16}, 297-334.
+Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests. \emph{Psychometrika, 16}, 297-334.
 
 Cronbach, L.J. (2004). My current thoughts on coefficient alpha and successor procedures. \emph{Educational
 and Psychological Measurement, 64}, 391-418.

@@ -1,4 +1,4 @@
-#' Sample size determination for testing proportions
+#' Sample Size Determination for Testing Proportions
 #'
 #' This function performs sample size computation for the one-sample and two-sample test for proportions
 #' based on precision requirements (i.e., type-I-risk, type-II-risk and an effect size).
@@ -96,13 +96,13 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
     # Check input 'delta'
     if (missing(delta)) {
 
-      stop("Please specify a numeric value for the argument 'delta'", call. = FALSE)
+      stop("Please specify a numeric value for the argument 'delta'.", call. = FALSE)
 
     }
 
     if (delta <= 0) {
 
-      stop("Argument theta out of bound, specify a value > 0", call. = FALSE)
+      stop("Argument theta out of bound, specify a value > 0.", call. = FALSE)
 
     }
 
@@ -110,7 +110,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     if (pi >= 1 || pi <= 0) {
 
-      stop("Argument pi out of bound, specify a value between 0 and 1", call. = FALSE)
+      stop("Argument pi out of bound, specify a value between 0 and 1.", call. = FALSE)
 
     }
 
@@ -118,7 +118,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     if (!all(sample %in% c("two.sample", "one.sample"))) {
 
-      stop("Argument sample should be \"two.siample\" or \"one.sample\"", call. = FALSE)
+      stop("Argument sample should be \"two.siample\" or \"one.sample\".", call. = FALSE)
 
     }
 
@@ -127,7 +127,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     if (!all(alternative %in% c("two.sided", "less", "greater"))) {
 
-      stop("Argument alternative should be \"two.sided\", \"less\", or \"greater\"", call. = FALSE)
+      stop("Argument alternative should be \"two.sided\", \"less\", or \"greater\".", call. = FALSE)
 
     }
 
@@ -135,7 +135,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     if (alpha <= 0 || alpha >= 1) {
 
-      stop("Argument alpha out of bound, specify a value between 0 and 1", call. = FALSE)
+      stop("Argument alpha out of bound, specify a value between 0 and 1.", call. = FALSE)
 
     }
 
@@ -143,7 +143,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     if (beta <= 0 || beta >= 1) {
 
-      stop("Argument beta out of bound, specify a value between 0 and 1", call. = FALSE)
+      stop("Argument beta out of bound, specify a value between 0 and 1.", call. = FALSE)
 
     }
 
@@ -221,7 +221,8 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
   side <- switch(alternative, two.sided = 2, less = 1, greater = 1)
 
   #-------------------------------------------------
-  # two-sample
+  # Two-sample
+
   if (sample == "two.sample") {
 
     pi.1 <- pi
@@ -241,7 +242,8 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
     }
 
   #-------------------------------------------------
-  # one-sample
+  # One-sample
+
   } else {
 
     pi.0 <- pi

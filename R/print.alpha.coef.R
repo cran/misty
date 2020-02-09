@@ -4,7 +4,7 @@
 #'
 #' @param x          \code{alpha.coef} object.
 #' @param print      a character vector indicating which results to show, i.e. \code{"all"}, for all results
-#'                   \code{"alpha"} for the coefficienta alpha, and \code{"item"} for item statistics.
+#'                   \code{"alpha"} for the coefficient alpha, and \code{"item"} for item statistics.
 #' @param digits     an integer value indicating the number of decimal places to be used for displaying
 #'                   coefficient alpha and item-total correlations.
 #' @param check      logical: if \code{TRUE}, argument specification is checked.
@@ -17,7 +17,7 @@
 #' \code{\link{alpha.coef}}
 #'
 #' @references
-#' Cronbach, L.J. (1951). Coefficient alpha and the internal strucuture of tests. \emph{Psychometrika, 16}, 297-334.
+#' Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests. \emph{Psychometrika, 16}, 297-334.
 #'
 #' Cronbach, L.J. (2004). My current thoughts on coefficient alpha and successor procedures. \emph{Educational
 #' and Psychological Measurement, 64}, 391-418.
@@ -127,7 +127,7 @@ print.alpha.coef <- function(x, print = x$args$print, digits = x$args$digits, ch
 
   #-----------------------------------------
   # Item statistics
-  if ("item" %in% print && "itemstat" %in% names(print.object) && nrow(x$result$itemstat) > 2) {
+  if ("item" %in% print && !is.null(print.object$result$itemstat) && nrow(x$result$itemstat) > 2) {
 
     print.object$item$pNA <- paste0(formatC(print.object$item$pNA, digits = 2, format = "f"), "%")
     print.object$item$m <- formatC(print.object$item$m, digits = 2, format = "f")

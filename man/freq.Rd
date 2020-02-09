@@ -4,9 +4,9 @@
 \alias{freq}
 \title{Frequency Tables}
 \usage{
-freq(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
-     split = FALSE, labels = TRUE, val.col = FALSE, exclude = 15,
-     digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+freq(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split = FALSE,
+     labels = TRUE, val.col = FALSE, exclude = 15, digits = 2, as.na = NULL,
+     check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a vector, factor, matrix or data frame.}

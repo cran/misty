@@ -12,9 +12,6 @@
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
-#' @seealso
-#' \code{\link{trim}}
-#'
 #' @return
 #' Returns a numeric vector, character vector or factor with values or strings
 #' specified in \code{omit} omitted from the vector specified in \code{x}.
@@ -59,8 +56,8 @@ stromit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
   ####################################################################################
   # Input check
 
-  #.............
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
     stop("Please specify a numeric vector, character vector or factor for the argument 'x'", call. = FALSE)
@@ -69,7 +66,7 @@ stromit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   #.............
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -83,13 +80,13 @@ stromit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
     # Check input 'x': Vector?
     if (!is.null(dim(x))) {
 
-      stop("Please specify a vector for the argument 'x'", call. = FALSE)
+      stop("Please specify a vector for the argument 'x'.", call. = FALSE)
 
     }
 
     #.............
     # Check input 'omit': Values in 'x'?
-    na.x <- sapply(omit, function(y) !y %in% x)
+    na.x <- vapply(omit, function(y) !y %in% x, FUN.VALUE = logical(1))
     if (any(na.x)) {
 
       warning(paste0("Values specified in the argument 'omit' were not found in 'x': ",
@@ -98,7 +95,7 @@ stromit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
     #.............
     # Check input 'na.omit'
-    if (isFALSE(isTRUE(na.omit) | isFALSE(na.omit))) {
+    if (isFALSE(isTRUE(na.omit) || isFALSE(na.omit))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -111,6 +108,7 @@ stromit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   #-----------------------------------
   # Omit NA
+
   if (isTRUE(na.omit)) {
 
     x <- na.omit(x)
@@ -119,6 +117,7 @@ stromit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   #-----------------------------------
   # Omit values or strings
+
   object <- x[which(!x %in% omit)]
 
   # Omit factor levels

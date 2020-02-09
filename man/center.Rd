@@ -4,8 +4,8 @@
 \alias{center}
 \title{Centering at the Grand Mean or Centering Within Cluster}
 \usage{
-center(x, type = c("CGM", "CWC"), group = NULL, value = NULL,
-       as.na = NULL, check = TRUE)
+center(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na = NULL,
+       check = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector.}

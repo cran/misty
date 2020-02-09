@@ -3,7 +3,7 @@
 #' This function computes (prorated) scale scores by averaging the (available) items that measure a single construct by default.
 #'
 #' Prorated mean scale scores are computed by averaging the available items, e.g., if a participant answers 4 out of 8 items,
-#' the prorated scale score is the average of the 4 respones. Averaging the available items is equivalent to substituting the mean
+#' the prorated scale score is the average of the 4 responses. Averaging the available items is equivalent to substituting the mean
 #' of a participant's own observed items for each of the participant's missing items, i.e., \emph{person mean imputation}
 #' (Mazza, Enders & Ruehlman, 2015) or \emph{ipsative mean imputation} (Schafer & Graham, 2002).
 #'
@@ -18,13 +18,13 @@
 #'                             if \code{FALSE}, scale scores of only complete cases are computed.
 #' @param p.avail     a numeric value indicating the minimum proportion of available item responses needed for computing
 #'                    a prorated scale score for each case, e.g. \code{p.avail = 0.8} indicates that scale scores are only
-#'                    computed for cases with at least 80\% of item responses availble. By default prorated scale scores are
-#'                    computed for all cases with at least one item respone. Note that either argument \code{p.avail} or
+#'                    computed for cases with at least 80\% of item responses available. By default prorated scale scores are
+#'                    computed for all cases with at least one item response. Note that either argument \code{p.avail} or
 #'                    \code{n.avail} is used to specify the proration criterion.
 #' @param n.avail     an integer indicating the minimum number of available item responses needed for computing a prorated
 #'                    scale score for each case, e.g. \code{n.avail = 2} indicates that scale scores are only computed for
 #'                    cases with item responses on at least 2 items. By default prorated scale scores are computed for all
-#'                    cases with at least one item respone. Note that either argument \code{p.avail} or \code{n.avail}
+#'                    cases with at least one item response. Note that either argument \code{p.avail} or \code{n.avail}
 #'                    is used to specify the proration criterion.
 #' @param as.na       a numeric vector indicating user-defined missing values,
 #'                    i.e. these values are converted to \code{NA} before conducting the analysis.
@@ -92,16 +92,16 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
   # Input check
 
   #......
-  # Check input 'x'
+  # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
+    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -115,7 +115,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
     # Check input 'x'
     if (!is.matrix(x) && !is.data.frame(x)) {
 
-      stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
+      stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
     }
 
@@ -123,7 +123,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
     # Check input 'x'
     if (any(apply(x, 2, function(y) !is.numeric(y)))) {
 
-      stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'",
+      stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.",
            call. = FALSE)
 
     }
@@ -141,7 +141,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
     # Check argument p.avail
     if (!is.null(p.avail)) {
 
-      if (!p.avail > 0 | !p.avail <= 1) {
+      if (!p.avail > 0 || !p.avail <= 1) {
 
         stop("Please specify a number greater than 0 and less than or equal 1 for the argument 'p.avail'.",
              call. = FALSE)
@@ -154,7 +154,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
     # Check argument n.avail
     if (!is.null(n.avail)) {
 
-      if (!n.avail >= 1 | !n.avail <= ncol(x)) {
+      if (!n.avail >= 1 || !n.avail <= ncol(x)) {
 
         stop("Please specify a number greater than or equal 1 and less than or equal the number of items for the argument 'n.avail'.",
              call. = FALSE)
@@ -187,18 +187,22 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
 
   #-----------------------------------------
   # As data frame
+
   x <- as.data.frame(x)
 
   #-----------------------------------------
   # Function used to compute scale scores
+
   fun <- ifelse(all(c("mean", "sum", "median", "var", "sd", "min", "max") %in% fun), "mean", fun)
 
   #-----------------------------------------
   # Number of item responses
+
   x.miss <- apply(x, 1, function(y) sum(!is.na(y)))
 
   #-----------------------------------------
   # Proration
+
   if (isTRUE(prorated)) {
 
     # avail = NULL, n.avail = NULL
@@ -237,10 +241,10 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
 
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = FALSE)
+    x <- misty::as.na(x, as.na = as.na, check = FALSE)
 
     # Variable with missing values only
-    x.na.miss <- sapply(x, function(y) all(is.na(y)))
+    x.na.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
     if (any(x.na.miss)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
@@ -257,7 +261,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
   # Mean
   if (fun == "mean") {
 
-    object <- misty::as.na(rowMeans(x, na.rm = TRUE), na = "NaN", check = FALSE)
+    object <- misty::as.na(rowMeans(x, na.rm = TRUE), as.na = "NaN", check = FALSE)
     object[which(x.miss < n.items)] <- NA
 
   }
@@ -266,7 +270,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
   # Sum
   if (fun == "sum") {
 
-    object <- misty::as.na(rowMeans(x, na.rm = TRUE)*ncol(x), na = "NaN", check = FALSE)
+    object <- misty::as.na(rowMeans(x, na.rm = TRUE)*ncol(x), as.na = "NaN", check = FALSE)
     object[which(x.miss < n.items)] <- NA
 
   }

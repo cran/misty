@@ -10,7 +10,6 @@
 #'                  \code{p25} (25th percentile, first quartile), \code{p75} (75th percentile, third quartile),
 #'                  \code{max} (maximum),  \code{range} (range), \code{iqr} (interquartile range),
 #'                  \code{skew} (skewness), and \code{kurt} (excess kurtosis).
-#' @param mat       logical: if \code{TRUE}, output by a grouping variable is shown in a matrix.
 #' @param sort.var  logical: if \code{TRUE}, output is sorted by variables.
 #' @param digits    an integer value indicating the number of decimal places to be used.
 #' @param check     logical: if \code{TRUE}, argument specification is checked.
@@ -37,7 +36,7 @@
 #'
 #' # Print descript object with 3 digits
 #' print(dat.descript, digits = 3)
-print.descript <- function(x, print = x$args$print, mat = x$args$mat, sort.var = x$args$sort.var,
+print.descript <- function(x, print = x$args$print, sort.var = x$args$sort.var,
                            digits = x$args$digits, check = TRUE, ...) {
 
   ####################################################################################
@@ -55,16 +54,8 @@ print.descript <- function(x, print = x$args$print, mat = x$args$mat, sort.var =
     }
 
     #......
-    # Check input 'mat'
-    if (isFALSE(isTRUE(mat) | isFALSE(mat))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'mat'.", call. = FALSE)
-
-    }
-
-    #......
     # Check input 'sort.var'
-    if (isFALSE(isTRUE(sort.var) | isFALSE(sort.var))) {
+    if (isFALSE(isTRUE(sort.var) || isFALSE(sort.var))) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -72,7 +63,7 @@ print.descript <- function(x, print = x$args$print, mat = x$args$mat, sort.var =
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1 != 0 || digits < 0) {
 
       stop("Specify a positive integer number for the argument 'digits'", call. = FALSE)
 
@@ -92,16 +83,18 @@ print.descript <- function(x, print = x$args$print, mat = x$args$mat, sort.var =
   ####################################################################################
   # Main Function
 
+  #......
   # Variables to round
   print.round <- c("pNA", "m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt")
 
+  #......
+  # Print object
+  print.object <- x$result
+
   #----------------------------------------
   # No grouping
-  if (is.null(x$args$group)) {
 
-    #......
-    # Print object
-    print.object <- x$result
+  if (is.null(x$data$group) && is.null(x$data$split)) {
 
     #......
     # Round
@@ -126,7 +119,7 @@ print.descript <- function(x, print = x$args$print, mat = x$args$mat, sort.var =
 
     print.object[, -1] <- apply(print.object[, -1, drop = FALSE], 2, function(y) format(y, justify = "right"))
 
-    if (is.null(dim(x$data))) {
+    if (ncol(x$data$x) == 1) {
 
       print.object <- print.object[, -1]
 
@@ -136,173 +129,133 @@ print.descript <- function(x, print = x$args$print, mat = x$args$mat, sort.var =
 
     write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
+  }
+
   #----------------------------------------
   # Grouping
-  } else {
 
-    #......
-    # Print object
-    object.group <- x$result
+  if (!is.null(x$data$group) && is.null(x$data$split)) {
 
-    #......
-    # Output as matrix
-    if (isTRUE(mat)) {
+    # Sort by variables
+    if (isTRUE(sort.var)) {
 
-      # Results as matrix
-      object.group.matrix <- eval(parse(text = paste0("rbind(", paste0("object.group[[", 1:length(object.group), "]]", collapse = ", "), ")")))
+      print.object <- print.object[order(print.object[, "variable"]), ]
 
-      # Print object
-      print.object <- data.frame(group = rep(names(object.group), each = unique(sapply(x$result, nrow))),
-                                 variable = object.group.matrix$variable, object.group.matrix[, -1],
-                                 stringsAsFactors = FALSE, check.names = FALSE)
+    }
 
-      # Sort by variables
-      if (isTRUE(sort.var)) {
+    # Round
+    print.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[, y]),
+                                                                          formatC(print.object[, y], digits = digits, format = "f"), NA))
 
-        print.object <- print.object[order(print.object[, "variable"]), ]
+    # Percentages
+    print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
 
-      }
+    # Col names
+    print.object <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "M", "Var", "SD", "Min", "p25", "Med", "p75", "Max", "Range", "IQR", "Skew", "Kurt"),
+                          print.object)
+
+    # Select statistical measures and add variable names
+    print.object <- data.frame(print.object[, c("group", "variable")], print.object[, -c(1, 2)][, print, drop = FALSE], stringsAsFactors = FALSE)
+
+    # Format
+    print.object[, 1] <- format(print.object[, 1], justify = "left")
+    print.object[, 2] <- format(print.object[, 2], justify = "left")
+
+    print.object[, -c(1:2)] <- apply(print.object[, -c(1:2)], 2, format, justify = "right")
+
+    if (ncol(x$data$x) == 1) {
+
+      print.object <- print.object[, -2]
+
+    }
+
+    print.object[1, 1] <- paste0(" ", print.object[1, 1], " ", collapse = "")
+    print.object[-1, 1] <- paste0("  ", print.object[-1, 1])
+
+    print.object[, -c(1:2)] <- apply(print.object[, -c(1:2)], 2, format, justify = "right")
+
+    # Print Output
+    write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+  }
+
+  #----------------------------------------
+  # Split
+
+  if (!is.null(x$data$split)) {
+
+    # Format
+    for (i in names(print.object)) {
 
       # Round
-      print.object[, print.round] <- sapply(print.round, function(y) formatC(print.object[, y], digits = digits, format = "f"))
+      print.object[[i]][, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f"), NA))
 
       # Percentages
-      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+      print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
 
-      # Col names
-      print.object <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "M", "Var", "SD", "Min", "p25", "Med", "p75", "Max", "Range", "IQR", "Skew", "Kurt"), print.object)
+      #......
+      # No grouping
+      if (is.null(x$data$group)) {
 
-      # Select statistical measures and add variable names
-      print.object <- data.frame(print.object[, c("group", "variable")], print.object[, -c(1, 2)][, print, drop = FALSE], stringsAsFactors = FALSE)
+        # Col names
+        print.object[[i]] <- rbind(c("Variable", "n", "nNA", "pNA", "M", "Var", "SD", "Min", "p25", "Med", "p75", "Max", "Range", "IQR", "Skew", "Kurt"), print.object[[i]])
 
-      # Format
-      print.object[, 1] <- format(print.object[, 1], justify = "left")
-      print.object[, 2] <- format(print.object[, 2], justify = "left")
+        # Select statistical measures and add variable names
+        print.object[[i]] <- data.frame(variable = print.object[[i]][, "variable"], print.object[[i]][, print, drop = FALSE], stringsAsFactors = FALSE)
 
-      print.object[, -c(1:2)] <- apply(print.object[, -c(1:2)], 2, format, justify = "right")
+        if (ncol(x$data$x) == 1) {
 
-      if (is.null(dim(x$data))) {
-
-        print.object <- print.object[, -2]
-
-      }
-
-      print.object[1, 1] <- paste0(" ", print.object[1, 1], " ", collapse = "")
-      print.object[-1, 1] <- paste0("  ", print.object[-1, 1])
-
-      print.object[, -c(1:2)] <- apply(print.object[, -c(1:2)], 2, format, justify = "right")
-
-      # Print Output
-      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
-
-    #......
-    # Split output
-    } else {
-
-      # Sort by variable
-      if (isTRUE(sort.var)) {
-
-        object.group.matrix1 <- eval(parse(text = paste0("rbind(", paste0("object.group[[", 1:length(object.group), "]]", collapse = ", "), ")")))
-
-        object.group.matrix2 <- data.frame(group = rep(names(object.group), each = length(unique(object.group.matrix1$variable))),
-                                           variable = object.group.matrix1$variable, object.group.matrix1[, -1],
-                                           stringsAsFactors = FALSE)
-
-        # Print object
-        print.object <- split(object.group.matrix2, f = object.group.matrix2$variable)
-
-        # Format
-        for (i in names(print.object)) {
-
-          # Round
-          print.object[[i]][, print.round] <- sapply(print.round, function(y) formatC(print.object[[i]][, y], digits = digits, format = "f"))
-
-          # Percentages
-          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
-
-          # Col names
-          print.object[[i]] <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "M", "Var", "SD", "Min", "p25", "Med", "p75", "Max", "Range", "IQR", "Skew", "Kurt"), print.object[[i]])
-
-          # Select statistical measures and add variable names
-          print.object[[i]] <- data.frame(print.object[[i]][, c("group", "variable")], print.object[[i]][, print, drop = FALSE], stringsAsFactors = FALSE)
-
-          # Format
-          print.object[[i]][, 1] <- format(print.object[[i]][, 1], justify = "left")
-          print.object[[i]][, 2] <- format(print.object[[i]][, 2], justify = "left")
-
-          print.object[[i]][1, 1] <- paste0(" ", print.object[[i]][1, 1], " ", collapse = "")
-          print.object[[i]][-1, 1] <- paste0("  ", print.object[[i]][-1, 1])
-
-          print.object[[i]][, -c(1:2)] <- apply(print.object[[i]][, -c(1:2), drop = FALSE], 2, function(y) format(y, justify = "right"))
-
-          if (is.null(dim(x$data))) {
-
-            print.object[[i]] <- print.object[[i]][, -2]
-
-          }
-
-          print.object[[i]][, 1] <- paste0("  ", print.object[[i]][, 1])
+          print.object[[i]] <- print.object[[i]][, -1]
 
         }
 
-        # Print object
-        for (i in names(print.object)) {
-
-          if (is.null(dim(x$dat))) { cat(" Variable:", i, "\n") }
-
-          write.table(print.object[[i]], quote = FALSE, row.names = FALSE, col.names = FALSE)
-
-          if (i != names(print.object)[length(print.object)]) { cat("\n") }
-
-        }
-
+      #......
+      # Grouping
       } else {
 
-        # Print object
-        print.object <- object.group
+        # Sort by variables
+        if (isTRUE(sort.var)) {
 
-        # Format
-        for (i in names(print.object)) {
-
-          # Round
-          print.object[[i]][, print.round] <- sapply(print.round, function(y) formatC(print.object[[i]][, y], digits = digits, format = "f"))
-
-          # Percentages
-          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
-
-          # Col names
-          print.object[[i]] <- rbind(c("Variable", "n", "nNA", "pNA", "M", "Var", "SD", "Min", "p25", "Med", "p75", "Max", "Range", "IQR", "Skew", "Kurt"), print.object[[i]])
-
-          # Select statistical measures and add variable names
-          print.object[[i]] <- data.frame(variable = print.object[[i]][, "variable"], print.object[[i]][, print, drop = FALSE], stringsAsFactors = FALSE)
-
-          # Format
-          print.object[[i]][, 1] <- format(print.object[[i]][, 1, drop = FALSE], justify = "left")
-
-          print.object[[i]][, -1] <- apply(print.object[[i]][, -1, drop = FALSE], 2, function(y) format(y, justify = "right"))
-
-          if (is.null(dim(x$data))) {
-
-            print.object[[i]] <- print.object[[i]][, -1]
-
-          }
-
-          print.object[[i]][, 1] <- paste0("  ", print.object[[i]][, 1])
+          print.object[[i]] <- print.object[[i]][order(print.object[[i]][, "variable"]), ]
 
         }
 
-        # Print object
-        for (i in names(print.object)) {
+        # Col names
+        print.object[[i]] <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "M", "Var", "SD", "Min", "p25", "Med", "p75", "Max", "Range", "IQR", "Skew", "Kurt"), print.object[[i]])
 
-          cat(" Group:", i, "\n")
+        # Select statistical measures and add variable names
+        print.object[[i]] <- data.frame(variable = print.object[[i]][, c("group", "variable")], print.object[[i]][, print, drop = FALSE], stringsAsFactors = FALSE)
 
-          write.table(print.object[[i]], quote = FALSE, row.names = FALSE, col.names = FALSE)
+        if (ncol(x$data$x) == 1) {
 
-          if (i != names(print.object)[length(print.object)]) { cat("\n") }
+          print.object[[i]] <- print.object[[i]][, -2]
 
         }
 
       }
+
+      # Format
+      print.object[[i]][, 1] <- format(print.object[[i]][, 1], justify = "left")
+      print.object[[i]][, 2] <- format(print.object[[i]][, 2], justify = "left")
+
+      print.object[[i]][1, 1] <- paste0(" ", print.object[[i]][1, 1], " ", collapse = "")
+      print.object[[i]][-1, 1] <- paste0("  ", print.object[[i]][-1, 1])
+
+      print.object[[i]][, -c(1:2)] <- apply(print.object[[i]][, -c(1:2), drop = FALSE], 2, function(y) format(y, justify = "right"))
+
+
+      print.object[[i]][, 1] <- paste0("  ", print.object[[i]][, 1])
+
+    }
+
+    # Print object
+    for (i in names(print.object)) {
+
+      cat(" Split Group:", i, "\n")
+
+      write.table(print.object[[i]], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      if (i != names(print.object)[length(print.object)]) { cat("\n") }
 
     }
 

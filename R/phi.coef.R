@@ -7,7 +7,7 @@
 #' coefficient can be adjusted by relating the coefficient to the possible maximum, \eqn{\phi / \phi_max}.
 #'
 #' @param x           a matrix or data frame.
-#' @param adjust      logical: if \code{TRUE} (default), phi coefficient is adjusted by relating
+#' @param adjust      logical: if \code{TRUE}, phi coefficient is adjusted by relating
 #'                    the coefficient to the possible maximum.
 #' @param tri         a character string or character vector indicating which triangular of the matrix
 #'                    to show on the console, i.e., \code{both} for upper and lower triangular,
@@ -44,25 +44,25 @@
 #'                   x2 = c(0, 1, 0, 0, 1, 1, 1, 1, 1, 1),
 #'                   x3 = c(0, 1, 0, 1, 1, 1, 1, 1, 0, 0))
 #'
-#' # Ajusted phi coefficient between x1 and x2
+#' # Phi coefficient between x1 and x2
 #' phi.coef(dat[, c("x1", "x2")])
 #'
-#' # Phi coefficient between x1 and x2
-#' phi.coef(dat[, c("x1", "x2")], adjust = FALSE)
-#'
-#' # Ajusted phi coefficient matrix between x1, x2, and x3
-#' phi.coef(dat)
+#' # Adjusted phi coefficient between x1 and x2
+#' phi.coef(dat[, c("x1", "x2")], adjust = TRUE)
 #'
 #' # Phi coefficient matrix between x1, x2, and x3
-#' phi.coef(dat, adjust = FALSE)
-phi.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
-                     digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
+#' phi.coef(dat)
+#'
+#' # Adjusted phi coefficient matrix between x1, x2, and x3
+#' phi.coef(dat, adjust = TRUE)
+phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
+                     digits = 2, as.na = NULL, check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Data
 
-  #-----------------------------------------
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
@@ -70,7 +70,7 @@ phi.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
   }
 
   #......
-  # Check input 'x'
+  # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
@@ -79,16 +79,18 @@ phi.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
 
   #-----------------------------------------
   # As data frame
+
   x <- as.data.frame(x)
 
   #-----------------------------------------
   # Convert user-missing values into NA
+
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     # Variable with missing values only
-    x.miss <- sapply(x, function(y) all(is.na(y)))
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
     if (any(x.miss)) {
 
       stop(paste0("After converting user-mising values into NA, following variables are completely missing: ",
@@ -97,11 +99,11 @@ phi.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
     }
 
     # Constant variables
-    x.con <- sapply(x, function(y) var(as.numeric(y), na.rm = TRUE) == 0)
-    if (any(x.con)) {
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    if (any(x.zero.var)) {
 
-      stop(paste0("After converting user-mising values into NA, following variables are constant: ",
-                  paste(names(which(x.con)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-mising values into NA, following variables have only one unique value: ",
+                  paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
 
     }
 
@@ -111,27 +113,45 @@ phi.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
   # Input Check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
   }
 
-  #.........................................
+  #------------------------------------------
 
   if (isTRUE(check)) {
 
     #......
     # Check input 'x'
-    if (any(sapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE)))) {
+    if (any(vapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1)))) {
 
       stop("Please specify a matrix or data frame with integer vectors for the argument 'x'.", call. = FALSE)
 
     }
 
     #......
+    # Check input 'x': Zero variance
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    if (any(x.zero.var)) {
+
+      if (length(x.zero.var) == 2) {
+
+        stop(paste0("Following variables in the matrix or data frame specified in 'x' have only one unique value: ",
+                   paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
+
+      } else {
+
+        warning(paste0("Following variables in the matrix or data frame specified in 'x' have only one unique value: ",
+                      paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
+      }
+
+    }
+
+    #......
     # Check input 'x'
-    if (any(sapply(x, function(y) length(na.omit(unique(y))) != 2))) {
+    if (any(vapply(x, function(y) length(na.omit(unique(y))) > 2, FUN.VALUE = logical(1)))) {
 
       stop("Please specify a matrix or data frame with dichotomous variables for the argument 'x'.",
            call. = FALSE)
@@ -140,7 +160,7 @@ phi.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'adjust'
-    if (isFALSE(isTRUE(adjust) | isFALSE(adjust))) {
+    if (isFALSE(isTRUE(adjust) || isFALSE(adjust))) {
 
       stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE)
 
@@ -157,7 +177,7 @@ phi.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1 != 0 || digits < 0) {
 
       warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -165,7 +185,7 @@ phi.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (isFALSE(isTRUE(output) || isFALSE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -178,6 +198,7 @@ phi.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
 
   #----------------------------------------
   # Print triangular
+
   tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
 
   ####################################################################################
@@ -190,17 +211,45 @@ phi.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
 
     tab <- table(x)
 
-    chisq <- suppressWarnings(chisq.test(tab, correct = FALSE)$statistic)
+    #.................
+    # If two dichotomous variables
+    if (nrow(tab) == 2 && ncol(tab) == 2) {
 
-    phi <- as.numeric(sqrt(chisq / (sum(tab))))
+      # As numeric to avoid integer overflow
+      a <- as.numeric(tab[1, 1])
+      b <- as.numeric(tab[1, 2])
+      c <- as.numeric(tab[2, 1])
+      d <- as.numeric(tab[2, 2])
 
-    # Adjusted phi coefficient
-    if (isTRUE(adjust)) {
+      # Phi coefficient
+      phi <- (a*d - b*c) / (sqrt( (a + c) * (b + d) * (a + b) * (c + d) ))
 
-      phi.max <- min(c(sqrt((sum(tab[1, ])*sum(tab[, 2])) / (sum(tab[, 1])*sum(tab[2, ]))),
-                       sqrt((sum(tab[, 1])*sum(tab[2, ])) / (sum(tab[1, ])*sum(tab[, 2])))))
+      # Adjusted phi coefficient
+      if (isTRUE(adjust)) {
 
-      phi <- phi / phi.max
+        if (phi > 0) {
+
+          phi.max <- min(c(sqrt((sum(tab[1, ])*sum(tab[, 2])) / (sum(tab[, 1])*sum(tab[2, ]))),
+                           sqrt((sum(tab[, 1])*sum(tab[2, ])) / (sum(tab[1, ])*sum(tab[, 2])))))
+
+          phi <- phi / phi.max
+
+        } else {
+
+          phi.max <- max(c(-sqrt((sum(tab[1, ])*sum(tab[, 1])) / (sum(tab[2, ])*sum(tab[, 2]))),
+                           -sqrt((sum(tab[2, ])*sum(tab[, 2])) / (sum(tab[1, ])*sum(tab[, 1])))))
+
+          phi <- -(phi / phi.max)
+
+        }
+
+      }
+
+    #.................
+    # If not two dichotomous variables
+    } else {
+
+      phi <- NA
 
     }
 
@@ -215,7 +264,7 @@ phi.coef <- function(x, adjust = TRUE, tri = c("both", "lower", "upper"),
     #......
     # Compute all pairwise contingency coefficients
     comb.n.phi <- rep(NA, times = ncol(comb.n))
-    for (i in 1:ncol(comb.n)) {
+    for (i in seq_len(ncol(comb.n))) {
 
       comb.n.phi[i] <- misty::phi.coef(x[, comb.n[, i]], adjust = adjust, as.na = as.na, check = FALSE, output = FALSE)$result
 

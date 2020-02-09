@@ -36,24 +36,23 @@ df.rename <- function(x, from, to, check = TRUE) {
   ####################################################################################
   # Input Check
 
-  #.........................
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
-  #.........................
+  #......
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
-    stop("Please specifiy a matrix or data frame for the argument 'x'.",
-         call. = FALSE)
+    stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
-  #.........................
+  #......
   # Check input 'from'
   if (missing(from)) {
 
@@ -62,7 +61,7 @@ df.rename <- function(x, from, to, check = TRUE) {
 
   }
 
-  #.........................
+  #......
   # Check input 'to'
   if (missing(to)) {
 
@@ -71,9 +70,9 @@ df.rename <- function(x, from, to, check = TRUE) {
 
   }
 
-  #.........................
+  #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -130,6 +129,7 @@ df.rename <- function(x, from, to, check = TRUE) {
 
   #-----------------------------------------
   # Matrix
+
   if (is.matrix(x)) {
 
     colnames(x)[match(from, colnames(x))] <- to
@@ -144,6 +144,7 @@ df.rename <- function(x, from, to, check = TRUE) {
 
   #-----------------------------------------
   # Data frame
+
   } else {
 
     names(x)[match(from, names(x))] <- to

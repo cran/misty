@@ -314,7 +314,7 @@ df.rbind <- function(...) {
 
   }
 
-  is_df <- vapply(dfs, is.data.frame, logical(1))
+  is_df <- vapply(dfs, is.data.frame, FUN.VALUE = logical(1))
 
   if (any(!is_df)) {
 
@@ -322,7 +322,7 @@ df.rbind <- function(...) {
 
   }
 
-  rows <- sapply(dfs, .row_names_info, type = 2L)
+  rows <- vapply(dfs, .row_names_info, type = 2L, FUN.VALUE = 1)
 
   nrows <- sum(rows)
 

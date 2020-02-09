@@ -47,14 +47,14 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
   # Input Check
 
   #......
-  # Check input 'x'
+  # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a data frame for the argument 'x'", call. = FALSE)
+    stop("Please specify a data frame for the argument 'x'.", call. = FALSE)
 
   }
 
-  #.........................
+  #......
   # Data frame for the argument 'x'?
   if (!is.data.frame(x)) {
 
@@ -65,19 +65,19 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
   }
 
-  #.........................................
+  #-----------------------------------------
 
   if (isTRUE(check)) {
 
-    #.........................
+    #......
     # Check input 'decreasing'
-    if (isFALSE(isTRUE(decreasing) | isFALSE(decreasing))) {
+    if (isFALSE(isTRUE(decreasing) || isFALSE(decreasing))) {
 
       stop("Please specify TRUE or FALSE for the argument 'decreasing'.", call. = FALSE)
 
@@ -92,7 +92,7 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
   if (length(x.order) != nrow(x)) {
 
-    stop("Length of ordering vectors do not match the number of rows in 'x'", call. = FALSE)
+    stop("Length of ordering vectors does not match with the number of rows in 'x'.", call. = FALSE)
 
   }
 

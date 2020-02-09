@@ -4,8 +4,8 @@
 \alias{multilevel.icc}
 \title{Intraclass Correlation Coefficient, ICC(1) and ICC(2)}
 \usage{
-multilevel.icc(x, group, type = 1, method = c("aov", "lme4", "nlme"),
-               REML = TRUE, as.na = NULL, check = TRUE)
+multilevel.icc(x, group, type = 1, method = c("aov", "lme4", "nlme"), REML = TRUE,
+               as.na = NULL, check = TRUE)
 }
 \arguments{
 \item{x}{a vector, matrix or data frame.}
@@ -45,16 +45,16 @@ dat <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
 
-# ICC(1) for x
+# ICC(1) for x1
 multilevel.icc(dat$x1, group = dat$group)
 
-# ICC(1) for x, convert value 1 to NA
+# ICC(1) for x1, convert value 1 to NA
 multilevel.icc(dat$x1, group = dat$group, as.na = 1)
 
-# ICC(2) for x
+# ICC(2) for x1
 multilevel.icc(dat$x1, group = dat$group, type = 2)
 
-# ICC(1) for x,
+# ICC(1) for x1,
 # use lmer() function in the lme4 package to estimate ICC
 multilevel.icc(dat$x1, group = dat$group, method = "lme4")
 

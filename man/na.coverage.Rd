@@ -4,8 +4,8 @@
 \alias{na.coverage}
 \title{Variance-Covariance Coverage}
 \usage{
-na.coverage(x, tri = c("both", "lower", "upper"), digits = 2,
-            as.na = NULL, check = TRUE, output = TRUE)
+na.coverage(x, tri = c("both", "lower", "upper"), digits = 2, as.na = NULL,
+            check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame.}
@@ -32,7 +32,6 @@ list with results (\code{result}).
 This function computes the proportion of cases that contributes for the calculation of each variance and covariance.
 }
 \examples{
-#--------------------------------------
 dat <- data.frame(x = c(1, NA, NA, 6, 3),
                   y = c(7, NA, 8, 9, NA),
                   z = c(2, NA, 3, NA, 5))

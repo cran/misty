@@ -4,9 +4,8 @@
 \alias{na.auxiliary}
 \title{Auxiliary variables}
 \usage{
-na.auxiliary(x, tri = c("both", "lower", "upper"), weighted = TRUE,
-             correct = FALSE, digits = 2, as.na = NULL, check = TRUE,
-             output = TRUE)
+na.auxiliary(x, tri = c("both", "lower", "upper"), weighted = TRUE, correct = FALSE,
+             digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with numeric vectors.}

@@ -4,12 +4,12 @@
 \alias{read.mplus}
 \title{Read Mplus Data File and Variable Names}
 \usage{
-read.mplus(file, sep = "", input = NULL, print = FALSE,
-           return.var = FALSE, fileEncoding = "UTF-8-BOM", check = TRUE)
+read.mplus(file, sep = "", input = NULL, print = FALSE, return.var = FALSE,
+           fileEncoding = "UTF-8-BOM", check = TRUE)
 }
 \arguments{
 \item{file}{a character string indicating the name of the Mplus data file with or without
-the file extention \code{.dat}, e.g., \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.
+the file extension \code{.dat}, e.g., \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.
 Note that it is not necessary to specify this argument when \code{return.var = TRUE}.}
 
 \item{sep}{a character string indicating the field separator (i.e., delimiter) used in the data file

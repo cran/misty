@@ -1,4 +1,4 @@
-#' Sample size determination for testing Pearson's correlation coefficient
+#' Sample Size Determination for Testing Pearson's Correlation Coefficient
 #'
 #' This function performs sample size computation for testing Pearson's product-moment correlation coefficient
 #' based on precision requirements (i.e., type-I-risk, type-II-risk and an effect size).
@@ -50,7 +50,7 @@
 #' # alpha = 0.05, beta = 0.2, delta = 0.2
 #'
 #' size.cor(rho = 0.3, delta = 0.2, alternative = "greater", alpha = 0.05, beta = 0.2)
-size.cor <- function(rho = NULL, delta,
+size.cor <- function(rho, delta,
                      alternative = c("two.sided", "less", "greater"),
                      alpha = 0.05, beta = 0.1, check = TRUE, output = TRUE) {
 
@@ -64,26 +64,26 @@ size.cor <- function(rho = NULL, delta,
   # Input check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
   }
 
-  #.........................................
+  #-----------------------------------------
 
   if (isTRUE(check)) {
 
     # Check input 'delta'
     if (missing(delta)) {
 
-      stop("Please specify a numeric value for the argument 'delta'", call. = FALSE)
+      stop("Please specify a numeric value for the argument 'delta'.", call. = FALSE)
 
     }
 
     if (delta <= 0) {
 
-      stop("Argument delta out of bound, specify a value > 0", call. = FALSE)
+      stop("Argument delta out of bound, specify a value > 0.", call. = FALSE)
 
     }
 
@@ -99,7 +99,7 @@ size.cor <- function(rho = NULL, delta,
 
     if (rho <= -1 || rho >= 1) {
 
-      stop("Argument rho out of bound, specify a value between -1 and 1", call. = FALSE)
+      stop("Argument rho out of bound, specify a value between -1 and 1.", call. = FALSE)
 
     }
 
@@ -107,7 +107,7 @@ size.cor <- function(rho = NULL, delta,
 
     if (!all(alternative %in% c("two.sided", "less", "greater"))) {
 
-      stop("Argument alternative should be \"two.sided\", \"less\" or \"greater\"", call. = FALSE)
+      stop("Argument alternative should be \"two.sided\", \"less\" or \"greater\".", call. = FALSE)
 
     }
 
@@ -115,7 +115,7 @@ size.cor <- function(rho = NULL, delta,
 
     if (alpha <= 0 || alpha >= 1) {
 
-      stop("Argument alpha out of bound, specify a value between 0 and 1", call. = FALSE)
+      stop("Argument alpha out of bound, specify a value between 0 and 1.", call. = FALSE)
 
     }
 
@@ -123,7 +123,7 @@ size.cor <- function(rho = NULL, delta,
 
     if (beta <= 0 || beta >= 1) {
 
-      stop("Argument beta out of bound, specify a value between 0 and 1", call. = FALSE)
+      stop("Argument beta out of bound, specify a value between 0 and 1.", call. = FALSE)
 
     }
 
@@ -133,7 +133,7 @@ size.cor <- function(rho = NULL, delta,
 
       if ((rho + delta) >= 1 || (rho - delta) <= -1) {
 
-        stop("Value (rho + delta) or (rho - delta) out of bound", call. = FALSE)
+        stop("Value (rho + delta) or (rho - delta) out of bound.", call. = FALSE)
 
       }
 
@@ -143,7 +143,7 @@ size.cor <- function(rho = NULL, delta,
 
         if ((rho - delta) <= -1) {
 
-          stop("Value (rho - delta) out of bound", call. = FALSE)
+          stop("Value (rho - delta) out of bound.", call. = FALSE)
 
         }
 
@@ -151,7 +151,7 @@ size.cor <- function(rho = NULL, delta,
 
         if ((rho + delta) >= 1) {
 
-          stop("Value (rho + delta) out of bound", call. = FALSE)
+          stop("Value (rho + delta) out of bound.", call. = FALSE)
 
         }
 

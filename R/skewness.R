@@ -39,7 +39,8 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
   ####################################################################################
   # Input check
 
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
     stop("Please specify a numeric vector for the argument 'x'", call. = FALSE)
@@ -47,7 +48,7 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
   }
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -57,16 +58,16 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
 
   if (isTRUE(check)) {
 
-    #.......
-    # Check input 'x': Missing
+    #......
+    # Check if input 'x' is missing
     if (all(is.na(x))) {
 
-      stop("Vector specified in the argument 'x' is  is completely missing.", call. = FALSE)
+      stop("Vector specified in the argument 'x' is is completely missing.", call. = FALSE)
 
     }
 
-    #.......
-    # Check input 'x': Numeric vector
+    #......
+    # Numeric vector for the argument 'x'?
     if (!is.numeric(x)) {
 
       stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
@@ -74,14 +75,10 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
     }
 
     #.......
-    # Check input 'x': Constant
-    if (length(x) > 1) {
+    # Check input 'x': Yero variance
+    if (length(na.omit(unique(x))) == 1) {
 
-      if (var(x, na.rm = TRUE) == 0) {
-
-        stop("Vector specified in the argument 'x' is a constant.", call. = FALSE)
-
-      }
+        stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE)
 
     }
 
@@ -93,7 +90,7 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
   # Convert user-missing values into NA
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na)
+    x <- misty::as.na(x, as.na = as.na)
 
     # Variable with missing values only
     if (all(is.na(x))) {
@@ -102,10 +99,10 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
 
     }
 
-    # Constant variables
-    if (var(x, na.rm = TRUE) == 0) {
+    # Zero variance
+    if (length(na.omit(unique(x))) == 1) {
 
-      stop("After converting user-missing values into NA, variable 'x' is a constant.", call. = FALSE)
+      stop("After converting user-missing values into NA, variable 'x' has zero variance.", call. = FALSE)
 
     }
 
@@ -126,6 +123,8 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
   if (n >= 3) {
 
     object <- (mean((x - mean(x))^3) / mean((x - mean(x))^2)^(3/2)) * sqrt(n * (n - 1)) / (n - 2)
+
+    object <- ifelse(is.nan(object), NA, object )
 
   } else {
 

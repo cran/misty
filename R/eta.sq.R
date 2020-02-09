@@ -43,16 +43,16 @@
 #'
 #' # Eta squared for y1 and y2 explained by x1 and x2
 #' eta.sq(dat[, c("y1", "y2")], group = dat[, c("x1", "x2")])
-eta.sq <- function(x, group, digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
+eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TRUE) {
 
   ####################################################################################
-  # Input Check
+  # Data
 
   #......
-  # Check input 'x'
+  # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a vector, matrix or data frame for the argument 'x'", call. = FALSE)
+    stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
@@ -68,17 +68,26 @@ eta.sq <- function(x, group, digits = 3, as.na = NULL, check = TRUE, output = TR
   # Check input 'group'
   if (missing(group)) {
 
-    stop("Please specify a vector, matrix or data frame for the argument 'group'", call. = FALSE)
+    stop("Please specify a vector, matrix or data frame for the argument 'group'.", call. = FALSE)
 
   }
 
+  #----------------------------------------
+  # Data frame
+
+  x <- as.data.frame(x)
+
+  ####################################################################################
+  # Input Check
+
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
   }
+
 
   #.........................................
 
@@ -86,16 +95,35 @@ eta.sq <- function(x, group, digits = 3, as.na = NULL, check = TRUE, output = TR
 
     #......
     # Check input 'x': Is numeric?
-    if (any(sapply(as.data.frame(x), function(y) !is.numeric(y)))) {
+    if (any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1)))) {
 
-      stop("Please specify a numeric vector, matrix or data frame with numeric vectors for the argument 'x'",
+      stop("Please specify a numeric vector, matrix or data frame with numeric vectors for the argument 'x'.",
            call. = FALSE)
 
     }
 
     #......
+    # Check input 'x': Zero variance?
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+
+    if (any(x.zero.var)) {
+
+      if (length(x.zero.var) > 1) {
+
+        warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
+                       paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
+
+      } else {
+
+        stop("Vector specified in 'x' has zero variance.", call. = FALSE)
+
+      }
+
+    }
+
+    #......
     # Check input 'group': Is integer, character or factors?
-    if (any(sapply(as.data.frame(group), function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE)))) {
+    if (any(vapply(as.data.frame(group), function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1)))) {
 
       stop("Please specify a integer vector, matrix or data frame with integer vectors, character vectors or factors for the argument 'x'",
            call. = FALSE)
@@ -103,8 +131,27 @@ eta.sq <- function(x, group, digits = 3, as.na = NULL, check = TRUE, output = TR
     }
 
     #......
+    # Check input 'group': At least two groups?
+    group.check <- vapply(as.data.frame(group), function(y) length(na.omit(unique(y))) < 2, FUN.VALUE = logical(1))
+
+    if (any(group.check)) {
+
+      if (length(group.check) > 1) {
+
+        stop(paste0("Follwing grouping variables specified in 'group' do not have at least two groups: ",
+                    paste(names(which(group.check)), collapse = ", ")), call. = FALSE)
+
+      } else {
+
+        stop("Grouping variable specified in 'group' does not have at least two groups.", call. = FALSE)
+
+      }
+
+    }
+
+    #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1 != 0 || digits < 0) {
 
       warning("Specify a positive integer number for the argument 'digits'", call. = FALSE)
 
@@ -112,7 +159,7 @@ eta.sq <- function(x, group, digits = 3, as.na = NULL, check = TRUE, output = TR
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (isFALSE(isTRUE(output) || isFALSE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -125,12 +172,13 @@ eta.sq <- function(x, group, digits = 3, as.na = NULL, check = TRUE, output = TR
 
   #-----------------------------------------
   # Convert user-missing values into NA
+
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     # Variable with missing values only
-    x.miss <- sapply(x, function(y) all(is.na(y)))
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
     if (any(x.miss)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
@@ -139,15 +187,22 @@ eta.sq <- function(x, group, digits = 3, as.na = NULL, check = TRUE, output = TR
     }
 
     # Constant variables
-    x.con <- sapply(x, function(y) var(as.numeric(y), na.rm = TRUE) == 0)
-    if (any(x.con)) {
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    if (any(x.zero.var)) {
 
-      stop(paste0("After converting user-missing values into NA, following variables are constant: ",
-                  paste(names(which(x.con)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-missing values into NA, following variables have only one unique value: ",
+                  paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
 
     }
 
   }
+
+  #-----------------------------------------
+  # Number of dependent variables, number of independent variables
+
+  x.ncol <- ncol(x) == 1
+
+  group.dim.null <- is.null(dim(group))
 
   ####################################################################################
   # Main Function
@@ -155,7 +210,7 @@ eta.sq <- function(x, group, digits = 3, as.na = NULL, check = TRUE, output = TR
   #----------------------------------------
   # One dependent variable, one independent variable
 
-  if (is.null(dim(x)) && is.null(dim(group))) {
+  if (x.ncol && group.dim.null) {
 
       # Estimate model
       mod <- aov(x ~ factor(group), data = data.frame(x, group))
@@ -172,15 +227,18 @@ eta.sq <- function(x, group, digits = 3, as.na = NULL, check = TRUE, output = TR
       # Eta squared
       eta <- unname(SQ.B / SQ.T)
 
+      # NaN to NA
+      eta <- ifelse(is.nan(eta), NA, eta)
+
   }
 
   #----------------------------------------
   # More than one dependent variable, one independent variable
 
-  if (!is.null(dim(x)) && is.null(dim(group))) {
+  if (!x.ncol && group.dim.null) {
 
     eta <- matrix(NA, ncol = ncol(x), dimnames = list(NULL, colnames(x)))
-    for (i in 1:ncol(x)) {
+    for (i in seq_len(ncol(x))) {
 
       eta[, i] <- misty::eta.sq(x[, i], group = group, check = FALSE, output = FALSE)$result
 
@@ -191,10 +249,10 @@ eta.sq <- function(x, group, digits = 3, as.na = NULL, check = TRUE, output = TR
   #----------------------------------------
   # One dependent variable, more than one independent variable
 
-  if (is.null(dim(x)) && !is.null(dim(group))) {
+  if (x.ncol && !group.dim.null) {
 
     eta <-  matrix(NA, nrow = ncol(group), dimnames = list(colnames(group), NULL))
-    for (i in 1:ncol(group)) {
+    for (i in seq_len(ncol(group))) {
 
       eta[i, ] <- misty::eta.sq(x, group[, i], check = FALSE, output = FALSE)$result
 
@@ -205,15 +263,15 @@ eta.sq <- function(x, group, digits = 3, as.na = NULL, check = TRUE, output = TR
   #----------------------------------------
   # More than one dependent variable, more than one independent variable
 
-  if (!is.null(dim(x)) && !is.null(dim(group))) {
+  if (!x.ncol && !group.dim.null) {
 
     eta <- matrix(NA, ncol = ncol(x), nrow = ncol(group), dimnames = list(colnames(group), colnames(x)))
 
     # Each group
-    for (i in 1:ncol(x)) {
+    for (i in seq_len(ncol(x))) {
 
       # For each dependent variable
-      for (j in 1:ncol(group)) {
+      for (j in seq_len(ncol(group))) {
 
         eta[j, i] <- misty::eta.sq(x[, i], group[, j], check = FALSE, output = FALSE)$result
 

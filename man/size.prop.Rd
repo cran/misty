@@ -2,7 +2,7 @@
 % Please edit documentation in R/size.prop.R
 \name{size.prop}
 \alias{size.prop}
-\title{Sample size determination for testing proportions}
+\title{Sample Size Determination for Testing Proportions}
 \usage{
 size.prop(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
           alternative = c("two.sided", "less", "greater"), alpha = 0.05,

@@ -4,8 +4,8 @@
 \alias{print.na.coverage}
 \title{Print na.coverage}
 \usage{
-\method{print}{na.coverage}(x, tri = x$args$tri,
-      digits = x$args$digits, check = TRUE, ...)
+\method{print}{na.coverage}(x, tri = x$args$tri, digits = x$args$digits,
+      check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{na.coverage} object.}

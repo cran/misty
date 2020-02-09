@@ -47,16 +47,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
 
     #..................
     # Check input 'print'
-    if (length(print) != 1) {
-
-      stop("Please specify one of the character strings \"no\", \"all\", \"perc\", or \"v.perc\" for the argument 'print'.",
-           call. = FALSE)
-
-    }
-
-    #..................
-    # Check input 'print'
-    if (!print %in% c("no", "all", "perc", "v.perc")) {
+    if (any(!print %in% c("no", "all", "perc", "v.perc"))) {
 
       stop("Character string in the argument 'print' does not match with \"no\", \"all\", \"perc\", or \"v.perc\".",
            call. = FALSE)
@@ -104,13 +95,6 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
 
   # Print object
   print.object <- x$result
-
-  # Data with user-specified missing data
-  if (!is.null(x$args$as.na)) {
-
-    x$data <- misty::as.na(x$data, na = x$args$as.na, check = check)
-
-  }
 
   #-----------------------------------------
   # One variable
@@ -328,7 +312,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
           if (all(!is.na(x$data))) {
 
             print.object$freq <- print.object$freq[-grep("Total",  print.object$freq$x), ]
-            print.object$freq$val <- format(misty::trim(print.object$freq$val), justify = "left")
+            print.object$freq$val <- format(trimws(print.object$freq$val), justify = "left")
 
           }
 
@@ -361,7 +345,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
           if (all(!is.na(x$data))) {
 
             print.object$perc <- print.object$perc[-grep("Total",  print.object$perc$x), ]
-            print.object$perc$val <- format(misty::trim(print.object$perc$val), justify = "left")
+            print.object$perc$val <- format(trimws(print.object$perc$val), justify = "left")
 
           }
 

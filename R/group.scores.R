@@ -51,7 +51,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
   # Input Check
 
   #......
-  # Check input 'x'
+  # Check if input 'x' is missing
   if (missing(x)) {
 
     stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
@@ -70,13 +70,13 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
   # Check input 'group'
   if (missing(group)) {
 
-    stop("Please specify a a vector representing the grouping structure for the argument 'group'.", call. = FALSE)
+    stop("Please specify a vector representing the grouping structure for the argument 'group'.", call. = FALSE)
 
   }
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -88,7 +88,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
     #......
     # Vector for 'group'?
-    if (!is.vector(group)) {
+    if (!is.vector(group) && !is.factor(group)) {
 
       stop("Please specify an integer vector, character vector, or factor for the argument 'group'.",
            call. = FALSE)
@@ -115,7 +115,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
     #......
     # Check input 'expand'
-    if (isFALSE(isTRUE(expand) | isFALSE(expand))) {
+    if (isFALSE(isTRUE(expand) || isFALSE(expand))) {
 
       stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE)
 
@@ -135,13 +135,13 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
   # Convert user-missing values into NA
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     #......
     # Missing values only
     if (all(is.na(x))) {
 
-      stop("After converting user-missing values into NA, vector specified in 'x' is completely missing",
+      stop("After converting user-missing values into NA, vector specified in 'x' is completely missing.",
            call. = FALSE)
 
     }

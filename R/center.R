@@ -85,8 +85,16 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
   # Input Check
 
   #......
+  # Check if input 'x' is missing
+  if (missing(x)) {
+
+    stop("Please specify a numeric vector frame for the argument 'x'.", call. = FALSE)
+
+  }
+
+  #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -95,14 +103,6 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
   #-----------------------------------------
 
   if (isTRUE(check)) {
-
-    #......
-    # Check if input 'x' is missing
-    if (missing(x)) {
-
-      stop("Please specify a numeric vector frame for the argument 'x'", call. = FALSE)
-
-    }
 
     #......
     # Check input 'x'
@@ -116,7 +116,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
     # Check input 'type'
     if (all(!type %in% c("CGM", "CWC"))) {
 
-      stop("Character string in the argument 'type' does not  match with \"CGM\" or \"CWC\"", call. = FALSE)
+      stop("Character string in the argument 'type' does not  match with \"CGM\" or \"CWC\".", call. = FALSE)
 
     }
 
@@ -137,7 +137,8 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
     # Centering Within Cluster
     if (all(type == "CWC") && is.null(group)) {
 
-      stop("Please specify the argument 'group' to apply centering within cluster (CWC).", call. = FALSE)
+      stop("Please specify the argument 'group' to apply centering within cluster (CWC).",
+           call. = FALSE)
 
     }
 
@@ -147,7 +148,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
       if (all(tapply(x, group, var, na.rm = TRUE) == 0)) {
 
-        stop("Vector in 'x' is specified as level-1 predictor, but does not have any variance within groups.",
+        stop("Vector in 'x' is specified as level-1 predictor does not have any within-group variance.",
              call. = FALSE)
 
       }
@@ -160,7 +161,8 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
       if (!all(tapply(x, group, var, na.rm = TRUE) == 0)) {
 
-        stop("Vector in 'x' is specified as level-2 predictor, but has variance within groups.", call. = FALSE)
+        stop("Vector in 'x' specified as level-2 predictor has within-group variance.",
+             call. = FALSE)
 
       }
 
@@ -176,12 +178,13 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     # Variable with missing values only
     if (all(is.na(x))) {
 
-      stop("After converting user-missing values into NA, variable 'x' is completely missing.", call. = FALSE)
+      stop("After converting user-missing values into NA, variable 'x' is completely missing.",
+           call. = FALSE)
 
     }
 
@@ -200,7 +203,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
   if (type == "CGM") {
 
-    #.............................
+    #.........................
     # Single-level or L1 predictor
     if (is.null(group)) {
 
@@ -216,7 +219,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
       }
 
-    #.............................
+    #.........................
     # L2 predictor
     } else {
 
@@ -237,7 +240,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
   #----------------------------------------
   # Centering within cluster (CWC)
 
-  #.............................
+  #.........................
   # L1 predictor
   } else {
 

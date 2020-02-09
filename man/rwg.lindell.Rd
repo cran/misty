@@ -4,8 +4,8 @@
 \alias{rwg.lindell}
 \title{Lindell, Brandt and Whitney (1999) r*wg(j) Within-Group Agreement Index for Multi-Item Scales}
 \usage{
-rwg.lindell(x, group, A = NULL, ranvar = NULL, z = TRUE,
-            expand = TRUE, na.omit = FALSE, as.na = NULL, check = TRUE)
+rwg.lindell(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TRUE,
+            na.omit = FALSE, as.na = NULL, check = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with numeric vectors.}
@@ -23,7 +23,7 @@ specified.}
 \item{z}{logical: if \code{TRUE}, Fisher z-transformation based on the formula
 \eqn{z = 0.5*log((1 + r) / (1 - r))} is applied to the vector of r*wg(j) estimates.}
 
-\item{expand}{logical: if \code{TRUE}, vector of r*wg(j) estiamtes is expanded to match the input
+\item{expand}{logical: if \code{TRUE}, vector of r*wg(j) estimates is expanded to match the input
 vector \code{x}.}
 
 \item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
@@ -57,11 +57,11 @@ variance (i.e., null distribution). The default null distribution in most resear
 or uniform distribution calculated with \eqn{\sigma^2_eu = (A^2 - 1) / 12}, where \eqn{A} is the number
 of discrete response options of the items. However, what constitutes a reasonable standard for random
 variance is highly debated. Note that the r*wg(j) allows that the mean of the item variances to be
-larger than the expected random variance, i.e., r*wg(j) values can be negative..
+larger than the expected random variances, i.e., r*wg(j) values can be negative.
 
 Note that the \code{rwg.j.lindell()} function in the \pkg{multilevel} package uses listwise deletion
 by default, while the \code{rwg.lindell()} function uses all available information to compute the
-r*wg(j) agreement index by default. In order to obtain equivalenz results in the presence of missing
+r*wg(j) agreement index by default. In order to obtain equivalent results in the presence of missing
 values, listwise deletion (\code{na.omit = TRUE}) needs to be applied.
 }
 \examples{
@@ -89,7 +89,7 @@ Lindell, M. K., Brandt, C. J., & Whitney, D. J. (1999). A revised index of inter
 agreement for multi-item ratings of a single target. \emph{Applied Psychological Measurement}, \emph{23},
 127-135. https://doi.org/10.1177/01466219922031257
 
-O'Neill, T. A. (2017). An overgiew of interrater agreement on Likert scales for researchers and practitioners.
+O'Neill, T. A. (2017). An overview of interrater agreement on Likert scales for researchers and practitioners.
 \emph{Frontiers in Psychology}, \emph{8}, Article 777. https://doi.org/10.3389/fpsyg.2017.00777
 }
 \seealso{

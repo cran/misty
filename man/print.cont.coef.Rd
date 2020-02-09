@@ -4,8 +4,7 @@
 \alias{print.cont.coef}
 \title{Print cont.coef object}
 \usage{
-\method{print}{cont.coef}(x, tri = x$args$tri, digits = x$args$digits,
-      check = TRUE, ...)
+\method{print}{cont.coef}(x, tri = x$args$tri, digits = x$args$digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{cont.coef} object.}

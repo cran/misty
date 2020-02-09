@@ -61,16 +61,6 @@ print.size <- function(x, ...) {
 
     cat("\nSample size determination for the", ifelse(x$spec$sample == "one.sample", "one-sample", "two-sample"), "t-test\n\n")
 
-    if (x$spec$sample == "one.sample") {
-
-        cat(" optimal sample size: n =", ceiling(x$res$n), "\n\n")
-
-      } else {
-
-        cat(" optimal sample size: n =", ceiling(x$res$n), "(in each group) \n\n")
-
-    }
-
     ###
 
     # one-sample
@@ -78,40 +68,40 @@ print.size <- function(x, ...) {
 
       if (x$spec$alternative == "two.sided") {
 
-        cat("  H0: mu = mu.0  versus  H1: mu != mu.0\n")
+        cat(" H0: mu = mu.0  versus  H1: mu != mu.0\n")
 
       }
 
       if (x$spec$alternative == "less") {
 
-        cat("  H0: mu >= mu.0  versus  H1: mu < mu.0\n")
+        cat(" H0: mu >= mu.0  versus  H1: mu < mu.0\n")
 
       }
 
       if (x$spec$alternative == "greater") {
 
-        cat("  H0: mu <= mu.0  versus  H1: mu > mu.0\n")
+        cat(" H0: mu <= mu.0  versus  H1: mu > mu.0\n")
 
       }
 
-    # two-sample
+      # two-sample
     } else {
 
       if (x$spec$alternative == "two.sided") {
 
-        cat("  H0: mu.1 = mu.2  versus  H1: mu.1 != mu.2\n")
+        cat(" H0: mu.1 = mu.2  versus  H1: mu.1 != mu.2\n")
 
       }
 
       if (x$spec$alternative == "less") {
 
-        cat("  H0: mu.1 >= mu.2  versus  H1: mu.1 < mu.2\n")
+        cat(" H0: mu.1 >= mu.2  versus  H1: mu.1 < mu.2\n")
 
       }
 
       if (x$spec$alternative == "greater") {
 
-        cat("  H0: mu.1 <= mu.2  versus  H1: mu.1 > mu.2\n")
+        cat(" H0: mu.1 <= mu.2  versus  H1: mu.1 > mu.2\n")
 
       }
 
@@ -119,7 +109,17 @@ print.size <- function(x, ...) {
 
     ###
 
-    cat("  alpha:", x$spec$alpha, " beta:", x$spec$beta, " theta:", x$spec$theta, "\n\n")
+    cat(" alpha:", x$spec$alpha, " beta:", x$spec$beta, " theta:", x$spec$theta, "\n\n")
+
+    if (x$spec$sample == "one.sample") {
+
+        cat("  optimal sample size: n =", ceiling(x$res$n), "\n\n")
+
+      } else {
+
+        cat("  optimal sample size: n =", ceiling(x$res$n), "(in each group) \n\n")
+
+    }
 
   }
 
@@ -139,36 +139,24 @@ print.size <- function(x, ...) {
 
     ###
 
-    if (x$spec$sample == "one.sample") {
-
-      cat(" optimal sample size: n =", ceiling(x$res$n), "\n\n")
-
-    } else {
-
-      cat(" optimal sample size: n =", ceiling(x$res$n), "(in each group) \n\n")
-
-    }
-
-    ###
-
     # one-sample
     if (x$spec$sample == "one.sample") {
 
       if (x$spec$alternative == "two.sided") {
 
-        cat("  H0: pi =", x$spec$pi, " versus  H1: pi !=",  x$spec$pi, "\n")
+        cat(" H0: pi =", x$spec$pi, " versus  H1: pi !=",  x$spec$pi, "\n")
 
       }
 
       if (x$spec$alternative == "less") {
 
-        cat("  H0: pi >=", x$spec$pi, " versus  H1: pi <",  x$spec$pi, "\n")
+        cat(" H0: pi >=", x$spec$pi, " versus  H1: pi <",  x$spec$pi, "\n")
 
       }
 
       if (x$spec$alternative == "greater") {
 
-        cat("  H0: pi <=", x$spec$pi, " versus  H1: pi >",  x$spec$pi, "\n")
+        cat(" H0: pi <=", x$spec$pi, " versus  H1: pi >",  x$spec$pi, "\n")
 
       }
 
@@ -177,19 +165,19 @@ print.size <- function(x, ...) {
 
       if (x$spec$alternative == "two.sided") {
 
-        cat("  H0: pi.1 = pi.2  versus  H1: pi.1 != pi.2\n")
+        cat(" H0: pi.1 = pi.2  versus  H1: pi.1 != pi.2\n")
 
       }
 
       if (x$spec$alternative == "less") {
 
-        cat("  H0: pi.1 >= pi.2  versus  H1: pi.1 < pi.2\n")
+        cat(" H0: pi.1 >= pi.2  versus  H1: pi.1 < pi.2\n")
 
       }
 
       if (x$spec$alternative == "greater") {
 
-        cat("  H0: pi.1 <= pi.2  versus  H1: pi.1 > pi.2\n")
+        cat(" H0: pi.1 <= pi.2  versus  H1: pi.1 > pi.2\n")
 
       }
 
@@ -197,7 +185,19 @@ print.size <- function(x, ...) {
 
     ###
 
-    cat("  alpha:", x$spec$alpha, " beta:", x$spec$beta, " delta:", x$spec$delta, "\n\n")
+    cat(" alpha:", x$spec$alpha, " beta:", x$spec$beta, " delta:", x$spec$delta, "\n\n")
+
+    ###
+
+    if (x$spec$sample == "one.sample") {
+
+      cat("  optimal sample size: n =", ceiling(x$res$n), "\n\n")
+
+    } else {
+
+      cat("  optimal sample size: n =", ceiling(x$res$n), "(in each group) \n\n")
+
+    }
 
   }
 
@@ -205,33 +205,36 @@ print.size <- function(x, ...) {
   # Correlation coefficient
   if (x$type == "cor") {
 
-    cat("\nSample size determination for Pearson's product-moment correlation coefficient\n\n",
-
-        " optimal sample size: n =", ceiling(x$res$n), "\n\n")
+    cat("\nSample size determination for Pearson's product-moment correlation coefficient\n\n")
 
     ###
 
     if (x$spec$alternative == "two.sided") {
 
-      cat("  H0: rho =", x$spec$rho, " versus  H1: rho !=",  x$spec$rho, "\n")
+      cat(" H0: rho =", x$spec$rho, " versus  H1: rho !=",  x$spec$rho, "\n")
 
     }
 
     if (x$spec$alternative == "less") {
 
-      cat("  H0: rho >=", x$spec$rho, " versus  H1: rho <",  x$spec$rho, "\n")
+      cat(" H0: rho >=", x$spec$rho, " versus  H1: rho <",  x$spec$rho, "\n")
 
     }
 
     if (x$spec$alternative == "greater") {
 
-      cat("  H0: rho <=", x$spec$rho, " versus  H1: rho >",  x$spec$rho, "\n")
+      cat(" H0: rho <=", x$spec$rho, " versus  H1: rho >",  x$spec$rho, "\n")
 
     }
 
     ###
 
-    cat("  alpha:", x$spec$alpha, " beta:", x$spec$beta, " delta:", x$spec$delta, "\n\n")
+    cat(" alpha:", x$spec$alpha, " beta:", x$spec$beta, " delta:", x$spec$delta, "\n\n")
+
+
+    ###
+
+    cat("  optimal sample size: n =", ceiling(x$res$n), "\n\n")
 
   }
 

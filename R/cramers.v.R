@@ -4,7 +4,7 @@
 #'
 #' Cramer's V can have large bias tending to overestimate the strength of association which depends
 #' on the size of the table and the sample size. As proposed by Bergsma (2013) a bias correction can be
-#' applied to obatin the bias-corrected Cramer's V.
+#' applied to obtain the bias-corrected Cramer's V.
 #'
 #' @param x           a matrix or data frame with integer vectors, character vectors or factors.
 #' @param correct     logical: if \code{TRUE} (default), the bias-corrected Cramer's V is computed.
@@ -56,16 +56,16 @@
 #' # Cramer's V matrix between x, y, and z
 #' cramers.v(dat[, c("x", "y", "z")], correct = FALSE)
 cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
-                      digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
+                      digits = 2, as.na = NULL, check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Data
 
-  #.........................................
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
+    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
@@ -73,8 +73,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
-    stop("Please specifiy a matrix or data frame for the argument 'x'.",
-         call. = FALSE)
+    stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
@@ -85,13 +84,14 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
   #----------------------------------------
   # Convert user-missing values into NA
+
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     #......
     # Variable with missing values only
-    x.miss <- sapply(x, function(y) all(is.na(y)))
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
     if (any(x.miss)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
@@ -100,12 +100,12 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
     }
 
     #......
-    # Constant variables
-    x.con <- sapply(x, function(y) var(as.numeric(y), na.rm = TRUE) == 0)
-    if (any(x.con)) {
+    # Zero variance
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    if (any(x.zero.var)) {
 
-      stop(paste0("After converting user-missing values into NA, following variables are constant: ",
-                  paste(names(which(x.con)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-missing values into NA, following variables have only one unique value: ",
+                  paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
 
     }
 
@@ -116,7 +116,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -128,9 +128,9 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'x'
-    if (any(sapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE)))) {
+    if (any(vapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1)))) {
 
-      stop("Please specify a matrix or data frame with integer vectors, character vectors or factors the argument 'x'",
+      stop("Please specify a matrix or data frame with integer vectors, character vectors or factors the argument 'x'.",
            call. = FALSE)
 
     }
@@ -139,7 +139,17 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
     # Check input 'x'
     if (ncol(x) == 1) {
 
-      stop("Please specify a matrix or data frame with at least two variables for the argument 'x'", call. = FALSE)
+      stop("Please specify a matrix or data frame with at least two variables for the argument 'x'.", call. = FALSE)
+
+    }
+
+    #......
+    # Input 'x': Zero variance
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    if (any(x.zero.var)) {
+
+      stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
+                  paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
 
     }
 
@@ -198,7 +208,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
     tab <- table(x)
 
     # Chi square
-    chisq <- suppressWarnings(chisq.test(tab, correct = TRUE)$statistic)
+    chisq <- suppressWarnings(chisq.test(tab, correct = FALSE)$statistic)
 
     # Number of columns
     k <- ncol(tab)
@@ -212,11 +222,11 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
     # Bias correction
     if (isTRUE(correct)) {
 
-      v <- sqrt(max(0, (chisq /  n) - ((k - 1)*(r - 1)) / (n - 1) ) / min( (k - ((k - 1)^2 / (n - 1))) - 1 , (r - ((r - 1)^2 / (n - 1))) - 1))
+      v <- sqrt(max(c(0, (chisq /  n) - ((k - 1)*(r - 1)) / (n - 1))) / min(c((k - ((k - 1)^2 / (n - 1))) - 1, (r - ((r - 1)^2 / (n - 1))) - 1)))
 
     } else {
 
-      v <- as.numeric(sqrt(chisq /  n / min(r - 1, k - 1)))
+      v <- as.numeric(sqrt(chisq /  n / min(c(r - 1, k - 1))))
 
     }
 
@@ -229,7 +239,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     # Compute all pairwise contingency coefficients
     comb.n.v <- rep(NA, times = ncol(comb.n))
-    for (i in 1:ncol(comb.n)) {
+    for (i in seq_len(ncol(comb.n))) {
 
       comb.n.v[i] <- misty::cramers.v(x[, comb.n[, i]], correct = correct, as.na = as.na, check = FALSE, output = FALSE)$result
 

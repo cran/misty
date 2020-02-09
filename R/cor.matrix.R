@@ -11,12 +11,12 @@
 #' @param use          a character vector giving a method for computing a correlation matrix in the presence
 #'                     of missing values, i.e., \code{"listwise"} for listwise deletion and \code{"pairwise"} for
 #'                     pairwise deletion
-#' @param group        a numeric vector, factor or character vector as grouping variable to show results for
+#' @param group        a numeric vector, character vector of factor as grouping variable to show results for
 #'                     each group separately, i.e., upper triangular for one group and lower triangular for
 #'                     another group. Note that the grouping variable is limited to two groups.
 #' @param print        a character string or character vector indicating which additional results to show,
-#'                     i.e. \code{"all"},for all additional results: \code{"n"} for the sample sizes,
-#'                     \code{"p"}, and for \emph{p}-values.
+#'                     i.e. \code{"all"}, for all additional results: \code{"n"} for the sample sizes, and
+#'                     \code{"p"} for \emph{p}-values.
 #' @param tri          a character string indicating which triangular of the matrix to show on the console,
 #'                     i.e., \code{both} for upper and lower triangular, \code{lower} (default) for the
 #'                     lower triangular, and \code{upper} for the upper triangular.
@@ -88,11 +88,11 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
   ####################################################################################
   # Data
 
-  #-----------------------------------------
+  #......
   # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
+    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
@@ -100,33 +100,33 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
-    stop("Please specifiy a matrix or data frame for the argument 'x'.",
-         call. = FALSE)
+    stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
   #-----------------------------------------
   # As data frame
-  x.df <- as.data.frame(x)
+
+  x <- as.data.frame(x)
 
   ####################################################################################
   # Input Check
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
   }
 
-  #.........................................
+  #----------------------------------------
 
   if (isTRUE(check)) {
 
     #......
     # Check input 'x'
-    if (any(sapply(x, function(y) !is.numeric(y)))) {
+    if (any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1)))) {
 
       stop("Please specify a matrix or data frame with numeric vectors.", call. = FALSE)
 
@@ -136,8 +136,8 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     # Check input 'method'
     if (any(!method %in% c("pearson", "spearman", "kendall-b"))) {
 
-      warning("Character string in the argument 'method' does not match with \"pearson\", \"spearman\", or \"kendall-b\".",
-              call. = FALSE)
+      stop("Character string in the argument 'method' does not match with \"pearson\", \"spearman\", or \"kendall-b\".",
+           call. = FALSE)
 
     }
 
@@ -145,14 +145,22 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     # Check input 'use'
     if (any(!use %in% c("listwise", "pairwise"))) {
 
-      warning("Character string in the argument 'use' does not match with \"listwise\" or \"pairwise\".",
-              call. = FALSE)
+      stop("Character string in the argument 'use' does not match with \"listwise\" or \"pairwise\".",
+           call. = FALSE)
 
     }
 
     #......
     # Check input 'group'
     if (!is.null(group)) {
+
+      # Length of 'group' match with 'x'?
+      if (length(group) != nrow(x)) {
+
+        stop("Length of the vector or factor specified in 'group' does not match the number of rows of the matrix or data frame specified in 'x'.",
+             call. = FALSE)
+
+      }
 
       # Specied two groups only?
       if (length(na.omit(unique(group))) != 2) {
@@ -161,10 +169,13 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
 
       }
 
-      # Variance = 0 in one of the groups
-      if (any(sapply(split(x, f = group), function(y) apply(y, 2, var, na.rm = TRUE)) == 0)) {
+      # Zero variance in one of the groups
+      x.zero.var <- vapply(split(x, f = group), function(y) apply(y, 2, function(z) length(na.omit(unique(z))) == 1), FUN.VALUE = logical(ncol(x)))
 
-        stop("There is at least one variable with 0 variance in one of the groups specified in the argument 'group'.", call. = FALSE)
+      if (any(x.zero.var)) {
+
+        stop(paste("Following variables specified in 'x' have zero variance in at least one of the groups specified in 'group': ",
+                   paste(names(which(apply(x.zero.var, 1, any))), collapse = ", ")), call. = FALSE)
 
       }
 
@@ -174,8 +185,8 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     # Check input 'print'
     if (any(!print %in% c("all", "cor", "n", "p"))) {
 
-      warning("Character string(s) in the argument 'print' does not match with \"all\", \"cor\", \"n\", or \"p\".",
-              call. = FALSE)
+      stop("Character string(s) in the argument 'print' does not match with \"all\", \"cor\", \"n\", or \"p\".",
+           call. = FALSE)
 
     }
 
@@ -183,8 +194,8 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     # Check input 'tri'
     if (any(!tri %in% c("both", "lower", "upper"))) {
 
-      warning("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".",
-              call. = FALSE)
+      stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".",
+           call. = FALSE)
 
     }
 
@@ -192,8 +203,8 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     # Check input 'p.adj'
     if (any(!p.adj %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr"))) {
 
-      warning("Character string in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".",
-              call. = FALSE)
+      stop("Character string in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".",
+           call. = FALSE)
 
     }
 
@@ -201,7 +212,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     # Check input 'digits'
     if (digits %% 1 != 0 | digits < 0) {
 
-      warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
+      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
     }
 
@@ -209,7 +220,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     # Check input 'pval.digits'
     if (pval.digits %% 1 != 0 | digits < 0) {
 
-      warning("Specify a positive integer number for the argument 'pval.digits'.", call. = FALSE)
+      stop("Specify a positive integer number for the argument 'pval.digits'.", call. = FALSE)
 
     }
 
@@ -221,6 +232,16 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
 
     }
 
+    #......
+    # Check input 'x' for zero variance
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    if (any(x.zero.var)) {
+
+      warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
+                     paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
+
+    }
+
   }
 
   ####################################################################################
@@ -228,62 +249,71 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
 
   #-----------------------------------------
   # Convert user-missing values into NA
+
   if (!is.null(as.na)) {
 
-    x.df <- misty::as.na(x.df, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     # Variable with missing values only
-    x.df.miss <- sapply(x.df, function(y) all(is.na(y)))
-    if (any(x.df.miss)) {
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    if (any(x.miss)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
-                  paste(names(which(x.df.miss)), collapse = ", ")), call. = FALSE)
+                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
 
     }
 
     # Constant variables
-    x.df.con <- sapply(x.df, function(y) var(as.numeric(y), na.rm = TRUE) == 0)
-    if (any(x.df.con)) {
+    x.con <- vapply(x, function(y) var(as.numeric(y), na.rm = TRUE) == 0, FUN.VALUE = logical(1))
+    if (any(x.con)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are constant: ",
-                  paste(names(which(x.df.con)), collapse = ", ")), call. = FALSE)
+                  paste(names(which(x.con)), collapse = ", ")), call. = FALSE)
 
     }
 
   }
 
   #----------------------------------------
+
   # Correlation coefficient
   method <- ifelse(all(c("pearson", "kendall-b", "spearman") %in% method), "pearson", method)
 
   #----------------------------------------
   # Method for handling missing data
+
   use <- ifelse(all(c("listwise", "pairwise") %in% use) | all(use == "pairwise"), "pairwise.complete.obs", "complete.obs")
 
   #-----------------------------------------
   # Print correlation, sample size or significance values
+
   if (all(c("all", "cor", "n", "p") %in% print)) { print <- "cor" }
 
   if (length(print) == 1 && "all" %in% print) { print <- c("cor", "n", "p") }
 
   #-----------------------------------------
   # Print triangular
+
   tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
 
   #-----------------------------------------
   # Adjustment method for multiple testing
+
   p.adj <- ifelse(all(c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr") %in% p.adj), "none", p.adj)
 
   #-----------------------------------------
   # Pairwise combination of columns
-  comb <- combn(1:ncol(x), m = 2)
+
+  comb <- combn(seq_len(ncol(x)), m = 2)
 
   #-----------------------------------------
   # Sample size matrix
+
   n.mat <- matrix(NA, ncol = ncol(x), nrow = ncol(x), dimnames = list(colnames(x), colnames(x)))
 
   #-----------------------------------------
   # p-values matrix
+
   p.mat <- n.mat
 
   ####################################################################################
@@ -291,6 +321,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
 
   #-----------------------------------------
   # No grouping
+
   if (is.null(group)) {
 
     #........................................
@@ -298,11 +329,11 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
 
     if (method == "kendall-b") {
 
-      cor.mat <- cor(x.df, use = use, method = "kendall")
+      cor.mat <- suppressWarnings(cor(x, use = use, method = "kendall"))
 
     } else {
 
-      cor.mat <- cor(x.df, use = use, method = method)
+      cor.mat <- suppressWarnings(cor(x, use = use, method = method))
 
     }
 
@@ -311,11 +342,11 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
 
     if (use == "pairwise.complete.obs") {
 
-      n <- apply(comb, 2, function(y) nrow(na.omit(cbind(x.df[, y[1]], x.df[, y[2]]))))
+      n <- apply(comb, 2, function(y) nrow(na.omit(cbind(x[, y[1]], x[, y[2]]))))
 
     } else {
 
-      n <- nrow(na.omit(x.df))
+      n <- nrow(na.omit(x))
 
     }
 
@@ -328,17 +359,17 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     # Listwise deletion
     if (use == "complete.obs") {
 
-        x.df <- na.omit(x.df)
+        x <- na.omit(x)
 
     }
 
     if (method == "kendall-b") {
 
-      pval <- apply(comb, 2, function(y) suppressWarnings(cor.test(x.df[, y[1]], x.df[, y[2]], method = "kendall"))$p.value)
+      pval <- apply(comb, 2, function(y) suppressWarnings(cor.test(x[, y[1]], x[, y[2]], method = "kendall"))$p.value)
 
     } else {
 
-      pval <- apply(comb, 2, function(y) suppressWarnings(cor.test(x.df[, y[1]], x.df[, y[2]], method = method))$p.value)
+      pval <- apply(comb, 2, function(y) suppressWarnings(cor.test(x[, y[1]], x[, y[2]], method = method))$p.value)
 
     }
 
@@ -354,6 +385,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
 
   #-----------------------------------------
   # Grouping
+
   } else {
 
     # Grouping

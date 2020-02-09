@@ -51,26 +51,18 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
   ####################################################################################
   # Input Check
 
-  #............................
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a matrix or data frame for the argument 'x'",
+    stop("Please specify a matrix or data frame for the argument 'x'.",
          call. = FALSE)
 
   }
 
   #......
-  # Check input 'x'
-  if (!is.matrix(x) && !is.data.frame(x)) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
-
-  }
-
-  #............................
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -81,8 +73,16 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
   if (isTRUE(check)) {
 
     #......
+    # Matrix or data frame for the argument 'x'?
+    if (!is.matrix(x) && !is.data.frame(x)) {
+
+      stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
+
+    }
+
+    #......
     # Check input 'order'
-    if (isFALSE(isTRUE(order) | isFALSE(order))) {
+    if (isFALSE(isTRUE(order) || isFALSE(order))) {
 
       stop("Please specify TRUE or FALSE for the argument 'order'.", call. = FALSE)
 
@@ -90,15 +90,15 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1 != 0 || digits < 0) {
 
-      stop("Please specify a positive integer value for the argument 'digits'", call. = FALSE)
+      stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE)
 
     }
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (isFALSE(isTRUE(output) || isFALSE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -109,70 +109,70 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
   ####################################################################################
   # Data and Arguments
 
-  #-----------------------------------------------------------------------------------
+  #----------------------------------------
   # Convert user-missing values into NA
 
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
   }
 
-  #-----------------------------------------------------------------------------------
+  #----------------------------------------
   # As data.frame
 
-  df <- as.data.frame(x)
+  x <- as.data.frame(x)
 
   ####################################################################################
   # Main Function
 
   # Missing data TRUE/FALSE matrix
-  df.na <- is.na(df)
+  x.na <- is.na(x)
 
   # Number of missing values for each variable
-  df.na.var <- colSums(df.na)
+  x.na.var <- colSums(x.na)
 
   if (isTRUE(order)) {
 
-    df.na <- df.na[, order(df.na.var)]
+    x.na <- x.na[, order(x.na.var)]
 
   }
 
   # Missing data pattern
-  patt <- apply(df.na, 1, function(y) paste(as.numeric(y), collapse = ""))
+  patt <- apply(x.na, 1, function(y) paste(as.numeric(y), collapse = ""))
 
   # Order NA matrix
-  df.na.order <- df.na[order(patt), ]
+  x.na.order <- x.na[order(patt), ]
 
   # Remove duplicated rows
-  df.na.order.dupl <- df.na.order[!duplicated(df.na.order), ]
+  x.na.order.dupl <- x.na.order[!duplicated(x.na.order), ]
 
-  if (!is.null(dim(df.na.order.dupl))) {
+  if (!is.null(dim(x.na.order.dupl))) {
 
-    restab <- rbind(data.frame(pattern = 1:nrow(df.na.order.dupl),
+    restab <- rbind(data.frame(pattern = seq_len(nrow(x.na.order.dupl)),
                                n = as.vector(table(patt)),
-                               Perc = as.vector(table(patt) / nrow(df.na) * 100),
-                               abs(df.na.order.dupl - 1),
-                               nNA = rowSums(df.na.order.dupl),
-                               pNA = rowSums(df.na.order.dupl) / ncol(df.na) * 100,
+                               Perc = as.vector(table(patt) / nrow(x.na) * 100),
+                               abs(x.na.order.dupl - 1),
+                               nNA = rowSums(x.na.order.dupl),
+                               pNA = rowSums(x.na.order.dupl) / ncol(x.na) * 100,
                                row.names = NULL),
-                    c("", sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(df.na) * 100)), colSums(df.na), "", ""))
+                    c("", sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(x.na) * 100)), colSums(x.na), "", ""))
 
     # Number of missing data pattern
-    pattern <- unname(sapply(apply(df.na[, colnames(df.na.order.dupl)], 1,  paste, collapse = " "), function(y) match(y, apply(df.na.order.dupl, 1, paste, collapse = " "))))
+    pattern <- unname(vapply(apply(x.na[, colnames(x.na.order.dupl)], 1,  paste, collapse = " "), function(y) match(y, apply(x.na.order.dupl, 1, paste, collapse = " ")), FUN.VALUE = 1))
 
   } else {
 
     restab <- rbind(data.frame(pattern = 1,
                                n = as.vector(table(patt)),
-                               Perc = as.vector(table(patt) / nrow(df.na) * 100),
-                               matrix(abs(df.na.order.dupl - 1), ncol = length(df.na.order.dupl), dimnames = list(NULL, colnames(df.na.order.dupl))),
-                               nNA = sum(df.na.order.dupl),
-                               pNA = sum(df.na.order.dupl) / ncol(df.na) * 100,
+                               Perc = as.vector(table(patt) / nrow(x.na) * 100),
+                               matrix(abs(x.na.order.dupl - 1), ncol = length(x.na.order.dupl), dimnames = list(NULL, colnames(x.na.order.dupl))),
+                               nNA = sum(x.na.order.dupl),
+                               pNA = sum(x.na.order.dupl) / ncol(x.na) * 100,
                                row.names = NULL),
-                    c("", sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(df.na) * 100)), colSums(df.na), "", ""))
+                    c("", sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(x.na) * 100)), colSums(x.na), "", ""))
 
-    pattern <- rep(1, times = nrow(df))
+    pattern <- rep(1, times = nrow(x))
 
   }
 

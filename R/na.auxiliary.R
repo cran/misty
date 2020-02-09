@@ -146,13 +146,16 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
   ####################################################################################
   # Data
 
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
+    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
+  #......
+  # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
@@ -162,21 +165,21 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
   #----------------------------------------
   # Data frame
 
-  df <- as.data.frame(x)
+  x <- as.data.frame(x)
 
   #-----------------------------------------
   # Exclude factors, character vectors and logical vectors
 
-  df.num <- sapply(df, function(y) is.numeric(y))
+  x.num <- vapply(x, function(y) is.numeric(y), FUN.VALUE = logical(1))
 
-  if (any(!df.num)) {
+  if (any(!x.num)) {
 
 
     # Select numeric variables
-    df <- df[, which(df.num)]
+    x <- x[, which(x.num)]
 
     warning(paste0("Non-numeric variables excluded from the analysis: ",
-                   paste(names(df.num)[!df.num], collapse = ", ")), call. = FALSE)
+                   paste(names(x.num)[!x.num], collapse = ", ")), call. = FALSE)
 
 
   }
@@ -185,7 +188,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
   # Convert user-missing values into NA
   if (!is.null(as.na)) {
 
-    df <- misty::as.na(df, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
   }
 
@@ -206,9 +209,9 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     #......
     # No missing values
-    if (all(!is.na(df))) {
+    if (all(!is.na(x))) {
 
-      stop("There are no missing values (NA) in the matrix or data frame specified in 'x'", call. = FALSE)
+      stop("There are no missing values (NA) in the matrix or data frame specified in 'x'.", call. = FALSE)
 
     }
 
@@ -241,7 +244,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
     # Check input 'digits'
     if (digits %% 1 != 0 | digits < 0) {
 
-      stop("Specify a positive integer number for the argument 'digits'", call. = FALSE)
+      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
     }
 
@@ -268,38 +271,38 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
   #-----------------------------------------
   # Variables related to the incomplete variable
 
-  cor.mat <- cor(df, use = "pairwise.complete.obs")
+  cor.mat <- cor(x, use = "pairwise.complete.obs")
 
   #-----------------------------------------
   # Variables related to the probability of missingness
 
   #......
   # Indicator matrix
-  ind <- misty::na.indicator(df, check = check)
+  ind <- misty::na.indicator(x)
   colnames(ind) <- paste0(colnames(ind), "_ind")
 
   #......
   # Pairwise combinations
-  df.combn <- combn(ncol(df), m = 2)
+  x.combn <- combn(ncol(x), m = 2)
 
   #......
   # Data
-  df.ind <- data.frame(df, ind)
+  x.ind <- data.frame(x, ind)
 
   #......
   # Cohen's d
 
-  result.d.upp <- numeric(ncol(df.combn))
-  result.d.low <- numeric(ncol(df.combn))
-  for (i in 1:ncol(df.combn)) {
+  result.d.upp <- numeric(ncol(x.combn))
+  result.d.low <- numeric(ncol(x.combn))
+  for (i in seq_len(ncol(x.combn))) {
 
-    temp <- df.combn[, i]
+    temp <- x.combn[, i]
 
-    if (length(unique(df.ind[, colnames(ind)[temp[1]]])) == 2 &&
-        all(tapply(df.ind[,  names(df)[temp[2]]], df.ind[colnames(ind)[temp[1]]], function(y) length(unique(na.omit(y)))) > 0)) {
+    if (length(unique(x.ind[, colnames(ind)[temp[1]]])) == 2 &&
+        all(tapply(x.ind[,  names(x)[temp[2]]], x.ind[colnames(ind)[temp[1]]], function(y) length(unique(na.omit(y)))) > 0)) {
 
-      result.d.upp[i] <- eval(parse(text = paste0("cohens.d.na.auxiliary(", names(df)[temp[2]], " ~ ", colnames(ind)[temp[1]],
-                                                  ", data = df.ind, weighted = weighted, correct = correct)")))
+      result.d.upp[i] <- eval(parse(text = paste0("cohens.d.na.auxiliary(", names(x)[temp[2]], " ~ ", colnames(ind)[temp[1]],
+                                                  ", data = x.ind, weighted = weighted, correct = correct)")))
 
     } else {
 
@@ -307,11 +310,11 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     }
 
-    if (length(unique(df.ind[, colnames(ind)[temp[2]]])) == 2 &&
-        all(tapply(df.ind[,  names(df)[temp[1]]], df.ind[colnames(ind)[temp[2]]], function(y) length(unique(na.omit(y)))) > 0)) {
+    if (length(unique(x.ind[, colnames(ind)[temp[2]]])) == 2 &&
+        all(tapply(x.ind[,  names(x)[temp[1]]], x.ind[colnames(ind)[temp[2]]], function(y) length(unique(na.omit(y)))) > 0)) {
 
-      result.d.low[i] <- eval(parse(text = paste0("cohens.d.na.auxiliary(", names(df)[temp[1]], " ~ ", colnames(ind)[temp[2]],
-                                                  ", data = df.ind, weighted = weighted, correct = correct)")))
+      result.d.low[i] <- eval(parse(text = paste0("cohens.d.na.auxiliary(", names(x)[temp[1]], " ~ ", colnames(ind)[temp[2]],
+                                                  ", data = x.ind, weighted = weighted, correct = correct)")))
 
     } else {
 
@@ -323,7 +326,8 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
   #-----------------------------------------
   # Cohen's d matrix
-  d.mat <-  matrix(NA, ncol = ncol(df), nrow = ncol(df), dimnames = list(names(df), names(df)))
+
+  d.mat <-  matrix(NA, ncol = ncol(x), nrow = ncol(x), dimnames = list(names(x), names(x)))
 
   d.mat[rev(upper.tri(d.mat))] <- result.d.upp
   d.mat <- t(d.mat)
@@ -334,7 +338,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
   # Return object
 
   object <- list(call = match.call(),
-                 data = list(x = x, df = df),
+                 data = list(x = x, x = x),
                  args = list(tri = tri, weighted = weighted, correct = correct, digits = digits,
                              as.na = as.na, check = check, output = output),
                  result = list(cor = cor.mat, d = d.mat))

@@ -27,12 +27,14 @@
 #'
 #' @param x           a numeric vector, character vector or factor.
 #' @param spec        a character string of recode specifications (see 'Details').
-#' @param as.factor   logical: if \code{TRUE}, charcter vector will be coerced to a factor.
+#' @param as.factor   logical: if \code{TRUE}, chara1cter vector will be coerced to a factor.
 #' @param levels      a character vector for specifying the levels in the returned factor.
 #' @param as.na       a numeric vector indicating user-defined missing values,
 #'                    i.e. these values are converted to \code{NA} before conducting the analysis.
 #' @param table       logical: if \code{TRUE}, a cross table variable x recoded variable is printed
 #'                    on the console.
+#' @param check       logical: if \code{TRUE}, argument specification is checked.
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
@@ -87,16 +89,64 @@
 #'
 #' # Recode a to x, user-defined factor levels
 #' rec(x.factor, "'a' = 'x'", levels = c("x", "b", "c", "d"))
-rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table = FALSE) {
+rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table = FALSE,
+                check = TRUE) {
 
   ####################################################################################
-  # Data
+  # Input Check
+
+  #......
+  # Check if input 'x' is missing
+  if (missing(x)) {
+
+    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
+
+  }
+
+  #......
+  # Check if input 'spec' is missing
+  if (missing(spec)) {
+
+    stop("Please specify a matrix or data frame for the argument 'spec'.", call. = FALSE)
+
+  }
+
+
+  #......
+  # Check input 'check'
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+
+    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
+
+  }
+
+  #------------------------------------------
+
+  if (isTRUE(check)) {
+
+    #......
+    # Check input 'as.factor'
+    if (isFALSE(isTRUE(as.factor) || isFALSE(as.factor))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'as.factor'.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'table'
+    if (isFALSE(isTRUE(table) || isFALSE(table))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
+
+    }
+
+  }
 
   #----------------------------------------
   # Convert user-missing values into NA
   if (!is.null(as.na)) {
 
-    df <- misty::as.na(df, na = as.na)
+    df <- misty::as.na(df, as.na = as.na)
 
   }
 
@@ -119,6 +169,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
   #----------------------------------------
   # Recode specification terms
+
   spec.list <- rev(unlist(strsplit(spec, ";")))
 
   ####################################################################################
@@ -128,6 +179,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
     #----------------------------------------
     # Specification with range of values :
+
     if (length(grep(":", i)) == 1) {
 
       range <- unlist(strsplit(unlist(strsplit(i, "="))[1], ":"))
@@ -162,6 +214,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
     #----------------------------------------
     # Specification with range of values else
+
     if (length(grep("else", i)) == 1) {
 
       target <- try(eval(parse(text = unlist(strsplit(i, "="))[2])), silent = TRUE)
@@ -172,12 +225,13 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
       }
 
-      object[1:length(x)] <- target
+      object[seq_len(length(x))] <- target
 
     }
 
     #----------------------------------------
     # Specification with single or vector of values
+
     if (length(grep(":", i))  == 0 && length(grep("else", i)) == 0) {
 
       set <- try(eval(parse(text = unlist(strsplit(i, "="))[1])), silent = TRUE)

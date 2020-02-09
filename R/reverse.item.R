@@ -33,10 +33,9 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
 #'                   item2 = c(1, 5, 3, 1, 4, 4, 1, 5),
-#'                   item3 = c(4, 2, 4, 5, 1, 3, 5, -99),
+#'                   item3 = c(4, 2, 4, 5, 1, 3, 5, -99))
 #'
 #' # Reverse code item2
 #' reverse.item(dat$item2, min = 1, max = 5)
@@ -46,7 +45,6 @@
 #'
 #' # Reverse code item3 while keeping the value -99 and check recoding
 #' dat$item3r <- reverse.item(dat$item3, min = 1, max = 5, keep = -99, table = TRUE)
-#' }
 reverse.item <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
                          table = FALSE, check = TRUE) {
 
@@ -54,7 +52,7 @@ reverse.item <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
   # Input check
 
   #......
-  # Check input 'x'
+  # Check if input 'x' is missing
   if (missing(x)) {
 
     stop("Please specify a numeric vector with integer values for the argument 'x'.",
@@ -80,7 +78,7 @@ reverse.item <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -134,9 +132,9 @@ reverse.item <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
 
     #......
     # Check input 'table'
-    if (isFALSE(isTRUE(table) | isFALSE(table))) {
+    if (isFALSE(isTRUE(table) || isFALSE(table))) {
 
-      stop("Please specify TRUE or FALSE for the argument 'table'", call. = FALSE)
+      stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
 
     }
 
@@ -151,8 +149,7 @@ reverse.item <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
   # Convert user-missing values into NA
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na)
-    object <- misty::as.na(object, na = as.na)
+    object <- misty::as.na(object, as.na = as.na, check = check)
 
   }
 

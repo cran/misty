@@ -4,15 +4,15 @@
 \alias{rec}
 \title{Recode Variable}
 \usage{
-rec(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL,
-    table = FALSE)
+rec(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table = FALSE,
+    check = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector, character vector or factor.}
 
 \item{spec}{a character string of recode specifications (see 'Details').}
 
-\item{as.factor}{logical: if \code{TRUE}, charcter vector will be coerced to a factor.}
+\item{as.factor}{logical: if \code{TRUE}, character vector will be coerced to a factor.}
 
 \item{levels}{a character vector for specifying the levels in the returned factor.}
 
@@ -21,6 +21,8 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 
 \item{table}{logical: if \code{TRUE}, a cross table variable x recoded variable is printed
 on the console.}
+
+\item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \value{
 Returns a numeric vector with the same length as \code{x} containing the recoded variable.

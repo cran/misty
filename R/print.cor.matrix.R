@@ -148,9 +148,9 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
 
     }
 
-    print.object$cor[, -1] <- apply(print.object$cor[, -1], 2, function(y) format(y, justify = "right"))
-    print.object$n[, -1] <- apply(print.object$n[, -1], 2, function(y) format(y, justify = "right"))
-    print.object$p[, -1] <- apply(print.object$p[, -1], 2, function(y) format(y, justify = "right"))
+    print.object$cor <- apply(print.object$cor, 2, function(y) format(y, justify = "right"))
+    print.object$n <- apply(print.object$n, 2, function(y) format(y, justify = "right"))
+    print.object$p <- apply(print.object$p, 2, function(y) format(y, justify = "right"))
 
   #------------------------------------
   # Grouping
@@ -162,6 +162,8 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
     print.object.g1 <- print.object$group1
     print.object.g2 <- print.object$group2
 
+    x.ncol <- ncol(print.object.g1$cor)
+
     #....
     # Group 1
     print.object.g1$cor <- formatC(print.object.g1$cor, digits = digits, format = "f")
@@ -172,13 +174,13 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
     diag(print.object.g1$p) <- ""
     diag(print.object.g1$n) <- ""
 
-    print.object.g1$cor[, 1] <- format(print.object.g1$cor[, 1], justify = "left")
-    print.object.g1$n[, 1] <- format(print.object.g1$n[, 1], justify = "left")
-    print.object.g1$p[, 1] <- format(print.object.g1$p[, 1], justify = "left")
+    print.object.g1$cor <- format(print.object.g1$cor, justify = "left")
+    print.object.g1$n <- format(print.object.g1$n, justify = "left")
+    print.object.g1$p <- format(print.object.g1$p, justify = "left")
 
-    print.object.g1$cor[, -1] <- sapply(print.object.g1$cor[, -1], function(y) format(y, justify = "right"))
-    print.object.g1$n[, -1] <- sapply(print.object.g1$n[, -1], function(y) format(y, justify = "right"))
-    print.object.g1$p[, -1] <- sapply(print.object.g1$p[, -1], function(y) format(y, justify = "right"))
+    print.object.g1$cor <- vapply(as.data.frame(print.object.g1$cor), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
+    print.object.g1$n <- vapply(as.data.frame(print.object.g1$n), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
+    print.object.g1$p <- vapply(as.data.frame(print.object.g1$p), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
 
     #....
     ### Group 2
@@ -190,13 +192,13 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
     diag(print.object.g2$p) <- ""
     diag(print.object.g2$n) <- ""
 
-    print.object.g2$cor[, 1] <- format(print.object.g2$cor[, 1], justify = "left")
-    print.object.g2$n[, 1] <- format(print.object.g2$n[, 1], justify = "left")
-    print.object.g2$p[, 1] <- format(print.object.g2$p[, 1], justify = "left")
+    print.object.g2$cor <- format(print.object.g2$cor, justify = "left")
+    print.object.g2$n <- format(print.object.g2$n, justify = "left")
+    print.object.g2$p <- format(print.object.g2$p, justify = "left")
 
-    print.object.g2$cor[, -1] <- sapply(print.object.g2$cor[, -1], function(y) format(y, justify = "right"))
-    print.object.g2$n[, -1] <- sapply(print.object.g2$n[, -1], function(y) format(y, justify = "right"))
-    print.object.g2$p[, -1] <- sapply(print.object.g2$p[, -1], function(y) format(y, justify = "right"))
+    print.object.g2$cor <- vapply(as.data.frame(print.object.g2$cor), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
+    print.object.g2$n <- vapply(as.data.frame(print.object.g2$n), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
+    print.object.g2$p <- vapply(as.data.frame(print.object.g2$p), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
 
     # Print object
     print.object <- print.object.g1

@@ -4,10 +4,9 @@
 \alias{poly.cor}
 \title{Polychoric Correlation Matrix}
 \usage{
-poly.cor(x, smooth = TRUE, global = TRUE, weight = NULL,
-         correct = 0, progress = TRUE, na.rm = TRUE, delete = TRUE,
-         tri = c("both", "lower", "upper"), digits = 2, as.na = NULL,
-         check = TRUE, output = TRUE)
+poly.cor(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0, progress = TRUE,
+         na.rm = TRUE, delete = TRUE, tri = c("both", "lower", "upper"),
+         digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame of discrete values.}

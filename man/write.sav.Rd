@@ -4,26 +4,26 @@
 \alias{write.sav}
 \title{Write SPSS File}
 \usage{
-write.sav(x, file = "SPSS_Data.sav", var.attr = NULL,
-          pspp.path = NULL, digits = 2, write.csv = FALSE, sep = c(";", ","),
-          na = "", write.sps = FALSE, check = TRUE)
+write.sav(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NULL, digits = 2,
+          write.csv = FALSE, sep = c(";", ","), na = "", write.sps = FALSE,
+          check = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame to be written in SPSS, vectors are coerced to a data frame.}
 
-\item{file}{a character string naming a file with or without file extention '.sav',
+\item{file}{a character string naming a file with or without file extension '.sav',
 e.g., \code{"My_SPSS_Data.sav"} or \code{"My_SPSS_Data"}.}
 
 \item{var.attr}{a matrix or data frame with variable attributes used in the SPSS file,
 only 'variable labels' (column name \code{label}), 'value labels' column name \code{values},
 and 'user-missing values' column name \code{missing} are supported (see 'Details').}
 
-\item{pspp.path}{a characeter string indicating the path where the PSPP folder is located on the computer,
+\item{pspp.path}{a character string indicating the path where the PSPP folder is located on the computer,
 e.g.\code{C:/Program Files/PSPP/}.}
 
 \item{digits}{an integer value indicating the number of decimal places shown in the SPSS file for non-integer variables.}
 
-\item{write.csv}{logical: if \code{TRUE}, CSV file is writting along with the SPSS file.}
+\item{write.csv}{logical: if \code{TRUE}, CSV file is written along with the SPSS file.}
 
 \item{sep}{a character string for specifying the CSV file, either \code{";"} for the separator and \code{"."}
 for the decimal point (default, i.e. equivalent to \code{write.csv2}) or \code{"."} for the decimal
@@ -32,12 +32,12 @@ point and \code{","} for the separator (i.e. equivalent to \code{write.csv}), mu
 
 \item{na}{a character string for specifying missing values in the CSV file.}
 
-\item{write.sps}{logical: if \code{TRUE}, SPSS syntax is writting along with the SPSS file when using PSPP.}
+\item{write.sps}{logical: if \code{TRUE}, SPSS syntax is written along with the SPSS file when using PSPP.}
 
 \item{check}{logical: if \code{TRUE}, variable attributes specified in the argument \code{var.attr} is checked.}
 }
 \description{
-This function writes a data frame or matrix into a SPSS file by either using the  \code{write_sav()} function
+This function writes a data frame or matrix into a SPSS file by either using the \code{write_sav()} function
 in the \pkg{haven} package by Hadley Wickham and Evan Miller (2019) or the free software \emph{PSPP}
 (see: \url{https://www.gnu.org/software/pspp/pspp.html}).
 }
@@ -108,7 +108,7 @@ GNU Project (2018). \emph{GNU PSPP for GNU/Linux} (Version 1.2.0).
 Boston, MA: Free Software Foundation. url{https://www.gnu.org/software/pspp/}
 
 Wickham H., & Miller, E. (2019). \emph{haven: Import and Export 'SPSS', 'Stata' and 'SAS' Files}.
-R package version 2.2.0.\url{https://CRAN.R-project.org/package=haven}
+R package version 2.2.0. \url{https://CRAN.R-project.org/package=haven}
 
 Robitzsch, A., Grund, S., & Henke, T. (2019). \emph{miceadds: Some additional multiple imputation functions, especially for mice}.
 R package version 3.4-17. \url{https://CRAN.R-project.org/package=miceadds}

@@ -20,7 +20,7 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 Returns \code{x} with \code{NA} replaced with the numeric value or character string specified in \code{value}.
 }
 \description{
-This function replaces \code{NA} in a vector, factor, matrix or data frame with user-spefied values in
+This function replaces \code{NA} in a vector, factor, matrix or data frame with user-specified values in
 the argument \code{value}.
 }
 \examples{

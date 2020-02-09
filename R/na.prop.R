@@ -42,8 +42,8 @@ na.prop <- function(x, digits = 2, as.na = NULL, check = TRUE) {
   ####################################################################################
   # Input Check
 
-  #.........................
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
     stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
@@ -51,16 +51,8 @@ na.prop <- function(x, digits = 2, as.na = NULL, check = TRUE) {
   }
 
   #......
-  # Check input 'x'
-  if (!is.matrix(x) && !is.data.frame(x)) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
-
-  }
-
-  #.........................
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -69,6 +61,14 @@ na.prop <- function(x, digits = 2, as.na = NULL, check = TRUE) {
   #------------------------------------------
 
   if (isTRUE(check)) {
+
+    #......
+    # Matrix or data frame for the argument 'x'?
+    if (!is.matrix(x) && !is.data.frame(x)) {
+
+      stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
+
+    }
 
     #......
     # Check input 'digits'
@@ -87,7 +87,7 @@ na.prop <- function(x, digits = 2, as.na = NULL, check = TRUE) {
   # Convert user-missing values into NA
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na)
+    x <- misty::as.na(x, as.na = as.na)
 
   }
 

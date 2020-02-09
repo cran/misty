@@ -1,6 +1,6 @@
 #' Replace Missing Values With User-Specified Values
 #'
-#' This function replaces \code{NA} in a vector, factor, matrix or data frame with user-spefied values in
+#' This function replaces \code{NA} in a vector, factor, matrix or data frame with user-specified values in
 #' the argument \code{value}.
 #'
 #' @param x           a vector, factor, matrix or data frame.
@@ -96,7 +96,7 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
   # Convert user-missing values into NA
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
   }
 
@@ -105,13 +105,13 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
   #...............
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
   }
 
-  #.........................................
+  #-----------------------------------------
 
   if (isTRUE(check)) {
 

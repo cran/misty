@@ -42,11 +42,11 @@ na.indicator <- function(x, as.na = NULL, check = TRUE) {
   ####################################################################################
   # Input Check
 
-  #----------------------------------------
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
+    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
@@ -59,23 +59,19 @@ na.indicator <- function(x, as.na = NULL, check = TRUE) {
 
   }
 
-  if (isTRUE(check)) {
-
-  }
-
   ####################################################################################
   # Data
 
-  #-----------------------------------------------------------------------------------
+  #----------------------------------------
   # Convert user-missing values into NA
 
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
   }
 
-  #-----------------------------------------------------------------------------------
+  ####################################################################################
   # Main Function
 
   object <- apply(x, 2, function(y) as.numeric(!is.na(y)))
@@ -87,7 +83,7 @@ na.indicator <- function(x, as.na = NULL, check = TRUE) {
 
   }
 
-  #-----------------------------------------------------------------------------------
+  ####################################################################################
   # Return object
 
   return(object)

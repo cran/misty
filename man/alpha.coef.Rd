@@ -5,8 +5,8 @@
 \title{Coefficient Alpha and Item Statistics}
 \usage{
 alpha.coef(x, exclude = NULL, std = FALSE, use = c("listwise", "pairwise"),
-           print = c("all", "alpha", "item"), digits = 2,
-           conf.level = 0.95, as.na = NULL, check = TRUE, output = TRUE)
+           print = c("all", "alpha", "item"), digits = 2, conf.level = 0.95,
+           as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix, data frame, variance-covariance or correlation matrix.}
@@ -20,7 +20,7 @@ matrix in the presence of missing values, i.e., \code{"listwise"} for listwise d
 and \code{"pairwise"} (default) for pairwise deletion.}
 
 \item{print}{a character vector indicating which results to show, i.e. \code{"all"} (default), for all
-results \code{"alpha"} for the coefficienta alpha, and \code{"item"} for item statistics.}
+results \code{"alpha"} for the coefficient alpha, and \code{"item"} for item statistics.}
 
 \item{digits}{an integer value indicating the number of decimal places to be used for displaying
 coefficient alpha and item-total correlations.}
@@ -44,7 +44,7 @@ This function computes point estimate and confidence interval for the coefficien
 along with the corrected item-total correlation and coefficient alpha if item deleted.
 }
 \details{
-Confidence intervals are computed using the procedure by Feld, Woodruff and Salih (1987). When computing
+Confidence intervals are computed using the procedure by Feldt, Woodruff and Salih (1987). When computing
 confidence intervals using pairwise deletion, the average sample size from all pairwise samples is used.
 Note that there are at least 10 other procedures for computing the confidence interval (see Kelley and
 Pornprasertmanit, 2016), which are implemented in the \code{ci.reliability()} function in the
@@ -82,7 +82,7 @@ dat.cor <- cor(dat)
 alpha.coef(dat.cor)
 }
 \references{
-Cronbach, L.J. (1951). Coefficient alpha and the internal strucuture of tests. \emph{Psychometrika, 16}, 297-334.
+Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests. \emph{Psychometrika, 16}, 297-334.
 
 Cronbach, L.J. (2004). My current thoughts on coefficient alpha and successor procedures. \emph{Educational
 and Psychological Measurement, 64}, 391-418.

@@ -345,7 +345,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
     # Absolute frequencies
     freq.a.print <- NULL
-    for (i in 1:nrow(print.object$freq.a[[1]]) ) {
+    for (i in seq_len(nrow(print.object$freq.a[[1]]))) {
 
       freq.a.print <- cbind(freq.a.print,
                             unlist(lapply(print.object$freq.a, function(y) y[i, ])))
@@ -354,7 +354,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
     # Row %
     perc.r.print <- NULL
-    for (i in 1:nrow(print.object$perc.c[[1]]) ) {
+    for (i in seq_len(nrow(print.object$perc.c[[1]]))) {
 
       perc.r.print <- cbind(perc.r.print,
                             unlist(lapply(print.object$perc.c, function(y) y[i, ])))
@@ -363,7 +363,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
     # Column %
     perc.c.print <- NULL
-    for (i in 1:nrow(print.object$perc.r[[1]]) ) {
+    for (i in seq_len(nrow(print.object$perc.r[[1]]))) {
 
       perc.c.print <- cbind(perc.c.print,
                             unlist(lapply(print.object$perc.r, function(y) y[i, ])))
@@ -372,7 +372,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
     # Total %
     perc.t.print <- NULL
-    for (i in 1:nrow(print.object$perc.t[[1]]) ) {
+    for (i in seq_len(nrow(print.object$perc.t[[1]]))) {
 
       perc.t.print <- cbind(perc.t.print,
                             unlist(lapply(print.object$perc.t, function(y) y[i, ])))

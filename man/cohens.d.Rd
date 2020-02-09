@@ -4,9 +4,9 @@
 \alias{cohens.d}
 \title{Cohen's d for Between- and Within-Subject Design}
 \usage{
-cohens.d(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
-         correct = FALSE, digits = 2, conf.level = 0.95, as.na = NULL,
-         check = TRUE, output = TRUE)
+cohens.d(formula, data, paired = FALSE, weighted = TRUE, ref = NULL, correct = FALSE,
+         digits = 2, conf.level = 0.95, as.na = NULL, check = TRUE,
+         output = TRUE)
 }
 \arguments{
 \item{formula}{in case of a between-subject design (i.e., \code{paired = FALSE}),
@@ -73,17 +73,17 @@ more closely reflect the population standard deviation.
 
 Hedges (1981, p. 110) recommended to weight each group's standard deviation by its sample
 size resulting in a weighted and pooled standard deviation (i.e., \code{weighted = TRUE}).
-According to Hedges and Olkin (1985, P. 81), the standardized mean difference based
+According to Hedges and Olkin (1985, p. 81), the standardized mean difference based
 on the weighted and pooled standard deviation has a positive small sample bias, i.e.,
 standardized mean difference is overestimates in small samples (i.e., sample size less
 than 20 or less than 10 in each group). However, a correction factor can be applied to
 remove the small sample bias (i.e., \code{correct = TRUE}). Note that a gamma function
-is used for computing the correction fator when \eqn{n} < 200, while a approximation method
+is used for computing the correction factor when \eqn{n} < 200, while a approximation method
 is used when \eqn{n} >= 200.
 
-Note that the terminology is inconsistant because the standardized mean difference based
+Note that the terminology is inconsistent because the standardized mean difference based
 on the weighted and pooled standard deviation is usually called Cohen's d, but sometimes
-called Hedges'~g. Oftentimes, Cohen's d is called Hedges' d as soon as the correction factor
+called Hedges' g. Oftentimes, Cohen's d is called Hedges' d as soon as the correction factor
 is applied. It is recommended to avoid the term Hedges' g (Cumming & Calin-Jageman, 2017, p. 171),
 but to report which standard deviation was used to standardized the mean difference
 (e.g., unweighted/weighted pooled standard deviation, or the standard deviation of the control group)
@@ -93,7 +93,7 @@ As for the terminology according to Lakens (2013), in between subject design (\c
 Cohen's \eqn{d_s} is computed when using \code{weighted = TRUE} and Hedges's \eqn{g_s} is computed when
 using \code{correct = TRUE} in addition. In within-subject designs (\code{paired = TRUE}),
 Cohen's \eqn{d_rm} is computed when using \code{weighted = TRUE}, while Cohen's \eqn{d_av} is computed
-when using \code{weighted = FALSE}, and corresponging Hedges' \eqn{g_rm} and Hedges' \eqn{g_av} are computed
+when using \code{weighted = FALSE}, and corresponding Hedges' \eqn{g_rm} and Hedges' \eqn{g_av} are computed
 when using \code{correct = TRUE}.
 }
 \examples{

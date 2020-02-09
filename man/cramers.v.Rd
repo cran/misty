@@ -4,8 +4,8 @@
 \alias{cramers.v}
 \title{Cramer's V}
 \usage{
-cramers.v(x, correct = TRUE, tri = c("both", "lower", "upper"),
-          digits = 3, as.na = NULL, check = TRUE, output = TRUE)
+cramers.v(x, correct = TRUE, tri = c("both", "lower", "upper"), digits = 2,
+          as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with integer vectors, character vectors or factors.}
@@ -38,7 +38,7 @@ This function computes the (bias-corrected) Cramer's V between two or more than 
 \details{
 Cramer's V can have large bias tending to overestimate the strength of association which depends
 on the size of the table and the sample size. As proposed by Bergsma (2013) a bias correction can be
-applied to obatin the bias-corrected Cramer's V.
+applied to obtain the bias-corrected Cramer's V.
 }
 \examples{
 dat <- data.frame(x = c(1, 1, 2, 1, 3, 3, 2, 2, 1, 2),

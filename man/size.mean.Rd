@@ -2,7 +2,7 @@
 % Please edit documentation in R/size.mean.R
 \name{size.mean}
 \alias{size.mean}
-\title{Sample size determination for testing arithmetic means}
+\title{Sample Size Determination for Testing Arithmetic Means}
 \usage{
 size.mean(theta, sample = c("two.sample", "one.sample"),
           alternative = c("two.sided", "less", "greater"), alpha = 0.05,

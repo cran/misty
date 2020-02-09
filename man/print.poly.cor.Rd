@@ -4,8 +4,7 @@
 \alias{print.poly.cor}
 \title{Print poly.cor object}
 \usage{
-\method{print}{poly.cor}(x, tri = x$args$tri, digits = x$args$digits,
-      check = TRUE, ...)
+\method{print}{poly.cor}(x, tri = x$args$tri, digits = x$args$digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{poly.cor} object.}

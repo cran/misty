@@ -4,8 +4,7 @@
 \alias{na.descript}
 \title{Descriptive Statistics for Missing Data}
 \usage{
-na.descript(x, table = FALSE, digits = 2, as.na = NULL,
-            check = TRUE, output = TRUE)
+na.descript(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame.}

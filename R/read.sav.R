@@ -4,7 +4,7 @@
 #' to read an SPSS file.
 #'
 #' @param file             a character string indicating the name of the SPSS data file
-#'                         with or without file extention '.sav', e.g., \code{"My_SPSS_Data.sav"}
+#'                         with or without file extension '.sav', e.g., \code{"My_SPSS_Data.sav"}
 #'                         or \code{"My_SPSS_Data"}.
 #' @param use.value.labels logical: if \code{TRUE}, variables with value labels are converted into factors.
 #' @param use.missings     logical: if \code{TRUE} (default), user-defined missing values are converted into NAs.
@@ -106,7 +106,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
   ####################################################################################
   # Data and Arguments
 
-  # File extention .sav
+  # File extension .sav
   file <- ifelse(length(grep(".sav", file)) == 0, file <- paste0(file, ".sav"), file)
 
   # User-defined missing values
@@ -128,7 +128,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
     if (any(unlist(df.attributes) == "labels") && isTRUE(use.value.labels)) {
 
       var.labels.na <- NULL
-      for (i in which(sapply(df.attributes, function(y) any(y == "labels")))) {
+      for (i in which(vapply(df.attributes, function(y) any(y == "labels"), FUN.VALUE = logical(1)))) {
 
         # Labels
         labels <- attributes(df[, i])$labels

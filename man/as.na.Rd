@@ -4,12 +4,12 @@
 \alias{as.na}
 \title{Replace User-Specified Values With Missing Values}
 \usage{
-as.na(x, na, check = TRUE)
+as.na(x, as.na, check = TRUE)
 }
 \arguments{
 \item{x}{a vector, factor, matrix or data frame.}
 
-\item{na}{a vector indicating values or characters to replace with \code{NA}.}
+\item{as.na}{a vector indicating values or characters to replace with \code{NA}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
@@ -17,7 +17,7 @@ as.na(x, na, check = TRUE)
 Returns \code{x} with values specified in \code{na} replaced with \code{NA}.
 }
 \description{
-This function replaces user-spefied values in the argument \code{na} in a vector, factor, matrix or
+This function replaces user-specified values in the argument \code{as.na} in a vector, factor, matrix or
 data frame with \code{NA}.
 }
 \examples{
@@ -26,40 +26,40 @@ data frame with \code{NA}.
 x.num <- c(1, 3, 2, 4, 5)
 
 # Replace 2 with NA
-as.na(x.num, na = 2)
+as.na(x.num, as.na = 2)
 
 # Replace 2, 3, and 4 with NA
-as.na(x.num, na = c(2, 3, 4))
+as.na(x.num, as.na = c(2, 3, 4))
 
 #--------------------------------------
 # Character vector
 x.chr <- c("a", "b", "c", "d", "e")
 
 # Replace "b" with NA
-as.na(x.chr, na = "b")
+as.na(x.chr, as.na = "b")
 
 # Replace "b", "c", and "d" with NA
-as.na(x.chr, na = c("b", "c", "d"))
+as.na(x.chr, as.na = c("b", "c", "d"))
 
 #--------------------------------------
 # Factor
 x.factor <- factor(c("a", "a", "b", "b", "c", "c"))
 
 # Replace "b" with NA
-as.na(x.factor, na = "b")
+as.na(x.factor, as.na = "b")
 
 # Replace "b" and "c" with NA
-as.na(x.factor, na = c("b", "c"))
+as.na(x.factor, as.na = c("b", "c"))
 
 #--------------------------------------
 # Matrix
 x.mat <- matrix(1:20, ncol = 4)
 
 # Replace 8 with NA
-as.na(x.mat, na = 8)
+as.na(x.mat, as.na = 8)
 
 # Replace 8, 14, and 20 with NA
-as.na(x.mat, na = c(8, 14, 20))
+as.na(x.mat, as.na = c(8, 14, 20))
 
 #--------------------------------------
 # Data frame
@@ -68,10 +68,10 @@ x.df <- data.frame(x1 = c(1, 2, 3),
                    x3 = c(3, 1, 2))
 
 # Replace 1 with NA
-as.na(x.df, na = 1)
+as.na(x.df, as.na = 1)
 
 # Replace 1 and 3 with NA
-as.na(x.df, na = c(1, 3))
+as.na(x.df, as.na = c(1, 3))
 }
 \references{
 Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}. Wadsworth & Brooks/Cole.

@@ -4,8 +4,7 @@
 \alias{eta.sq}
 \title{Eta Squared}
 \usage{
-eta.sq(x, group, digits = 3, as.na = NULL, check = TRUE,
-       output = TRUE)
+eta.sq(x, group, digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector, matrix or data frame with numeric vectors for the outcome variables.}

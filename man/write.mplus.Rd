@@ -4,17 +4,17 @@
 \alias{write.mplus}
 \title{Write Mplus Data File}
 \usage{
-write.mplus(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE,
-            na = -99, check = TRUE)
+write.mplus(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, na = -99,
+            check = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame to be written to a tab-delimited file.}
 
-\item{file}{a character string naming a file with or without the file extention '.dat',
+\item{file}{a character string naming a file with or without the file extension '.dat',
 e.g., \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.}
 
 \item{var}{logical: if \code{TRUE}, variable names are written in a text file named
-according to the argument\code{file} with the extention \code{_VARNAMES.txt}.}
+according to the argument\code{file} with the extension \code{_VARNAMES.txt}.}
 
 \item{print}{logical: if \code{TRUE}, variable names are printed on the console.}
 
@@ -38,7 +38,7 @@ dat <- data.frame(id = 1:5,
                   y = c(5, 3, 6, 8, 2),
                   z = c(2, 1, 1, NA, 4))
 
-# Write Mplus Data File and a text file with variable name
+# Write Mplus Data File and a text file with variable names
 write.mplus(dat)
 
 # Write Mplus Data File "Data.dat" and a text file with variable name,

@@ -18,14 +18,14 @@ if \code{FALSE}, scale scores of only complete cases are computed.}
 
 \item{p.avail}{a numeric value indicating the minimum proportion of available item responses needed for computing
 a prorated scale score for each case, e.g. \code{p.avail = 0.8} indicates that scale scores are only
-computed for cases with at least 80\% of item responses availble. By default prorated scale scores are
-computed for all cases with at least one item respone. Note that either argument \code{p.avail} or
+computed for cases with at least 80\% of item responses available. By default prorated scale scores are
+computed for all cases with at least one item response. Note that either argument \code{p.avail} or
 \code{n.avail} is used to specify the proration criterion.}
 
 \item{n.avail}{an integer indicating the minimum number of available item responses needed for computing a prorated
 scale score for each case, e.g. \code{n.avail = 2} indicates that scale scores are only computed for
 cases with item responses on at least 2 items. By default prorated scale scores are computed for all
-cases with at least one item respone. Note that either argument \code{p.avail} or \code{n.avail}
+cases with at least one item response. Note that either argument \code{p.avail} or \code{n.avail}
 is used to specify the proration criterion.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
@@ -41,7 +41,7 @@ This function computes (prorated) scale scores by averaging the (available) item
 }
 \details{
 Prorated mean scale scores are computed by averaging the available items, e.g., if a participant answers 4 out of 8 items,
-the prorated scale score is the average of the 4 respones. Averaging the available items is equivalent to substituting the mean
+the prorated scale score is the average of the 4 responses. Averaging the available items is equivalent to substituting the mean
 of a participant's own observed items for each of the participant's missing items, i.e., \emph{person mean imputation}
 (Mazza, Enders & Ruehlman, 2015) or \emph{ipsative mean imputation} (Schafer & Graham, 2002).
 
@@ -87,8 +87,7 @@ person-mean imputation scoring of the self-rating of the effects of alcohol scal
 231-236. https://doi.org/10.1037/adb0000015
 
 Mazza, G. L., Enders, C. G., & Ruehlman, L. S. (2015). Addressing item-level missing data: A comparison of proration and
-full infor
-mation maximum likelihood estimation. \emph{Multivariate Behavioral Research, 50}, 504-519.
+full information maximum likelihood estimation. \emph{Multivariate Behavioral Research, 50}, 504-519.
 https://doi.org/10.1080/00273171.2015.1068157
 
 Schafer, J. L., & Graham, J. W. (2002). Missing data: Our view of the state of the art. \emph{Psychological Methods, 7}, 147-177.

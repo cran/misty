@@ -4,8 +4,8 @@
 \alias{print.na.pattern}
 \title{Print na.pattern}
 \usage{
-\method{print}{na.pattern}(x, order = x$args$order,
-      digits = x$args$digits, check = TRUE, ...)
+\method{print}{na.pattern}(x, order = x$args$order, digits = x$args$digits,
+      check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{na.pattern} object.}
@@ -23,7 +23,6 @@ of missing values.}
 This function prints the \code{na.pattern} object
 }
 \examples{
-#--------------------------------------
 dat <- data.frame(x = c(1, NA, NA, 6, 3),
                   y = c(7, NA, 8, 9, NA),
                   z = c(2, NA, 3, NA, 5))

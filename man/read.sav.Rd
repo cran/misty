@@ -4,12 +4,12 @@
 \alias{read.sav}
 \title{Read SPSS File}
 \usage{
-read.sav(file, use.value.labels = FALSE, use.missings = TRUE,
-         as.data.frame = TRUE, check = TRUE)
+read.sav(file, use.value.labels = FALSE, use.missings = TRUE, as.data.frame = TRUE,
+         check = TRUE)
 }
 \arguments{
 \item{file}{a character string indicating the name of the SPSS data file
-with or without file extention '.sav', e.g., \code{"My_SPSS_Data.sav"}
+with or without file extension '.sav', e.g., \code{"My_SPSS_Data.sav"}
 or \code{"My_SPSS_Data"}.}
 
 \item{use.value.labels}{logical: if \code{TRUE}, variables with value labels are converted into factors.}

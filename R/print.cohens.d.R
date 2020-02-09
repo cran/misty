@@ -75,8 +75,8 @@ print.cohens.d <- function(x, digits = x$args$digits, check = TRUE, ...) {
   # Between-subject design
   if (isFALSE(x$args$paired)) {
 
-    print.object[, !names(print.object) %in% c("variable", "n1", "n2", "nNA1", "nNA2")] <- sapply(print.object[,  !names(print.object) %in% c("variable", "n1", "n2", "nNA1", "nNA2")], function(y) formatC(y, format = "f", digits = digits))
-    print.object[, names(print.object) %in% c("n1", "n2", "nNA1", "nNA2")] <- sapply(print.object[,  names(print.object) %in% c("n1", "n2", "nNA1", "nNA2")], function(y) formatC(y, format = "f", digits = 0))
+    print.object[, !names(print.object) %in% c("variable", "n1", "n2", "nNA1", "nNA2")] <- vapply(print.object[,  !names(print.object) %in% c("variable", "n1", "n2", "nNA1", "nNA2")], function(y) ifelse(!is.na(y), formatC(y, format = "f", digits = digits), NA), FUN.VALUE = character(nrow(x$result)))
+    print.object[, names(print.object) %in% c("n1", "n2", "nNA1", "nNA2")] <- vapply(print.object[,  names(print.object) %in% c("n1", "n2", "nNA1", "nNA2")], function(y) formatC(y, format = "f", digits = 0), FUN.VALUE = character(nrow(x$result)))
 
     print.object <- rbind(c("Variable", "n1", "nNA1", "M1", "SD1",  "n2", "nNA2", "M2", "SD2", "M.Diff", "SD", "Estimate", "SE", "Low", "Upp"),
                             print.object)
@@ -84,9 +84,9 @@ print.cohens.d <- function(x, digits = x$args$digits, check = TRUE, ...) {
     print.object[, 1] <- format(print.object[, 1], justify = "left")
 
     # Format
-    print.object[, -1] <- sapply(print.object[, -1], function(y) format(y, justify = "right"))
+    print.object[, -1] <- vapply(print.object[, -1], function(y) format(y, justify = "right"), FUN.VALUE = character(nrow(x$result) + 1))
 
-    print.object <- sapply(print.object, formatC, format = "f")
+    print.object <- vapply(print.object, formatC, format = "f", FUN.VALUE = character(nrow(x$result) + 1))
 
     print.object[, 1] <- paste(" ", print.object[, 1])
 
@@ -94,8 +94,8 @@ print.cohens.d <- function(x, digits = x$args$digits, check = TRUE, ...) {
   # Within-subject design
   } else {
 
-    print.object[, !names(print.object) %in% c("var", "n", "nNA")] <- sapply(print.object[,  !names(print.object) %in% c("var", "n", "nNA")], function(y) formatC(y, format = "f", digits = digits))
-    print.object[, names(print.object) %in% c("n", "nNA")] <- sapply(print.object[,  names(print.object) %in% c("n", "nNA")], function(y) formatC(y, format = "f", digits = 0))
+    print.object[, !names(print.object) %in% c("var", "n", "nNA")] <- vapply(print.object[,  !names(print.object) %in% c("var", "n", "nNA")], function(y) formatC(y, format = "f", digits = digits), FUN.VALUE = character(1))
+    print.object[, names(print.object) %in% c("n", "nNA")] <- vapply(print.object[,  names(print.object) %in% c("n", "nNA")], function(y) formatC(y, format = "f", digits = 0), FUN.VALUE = character(1))
 
     print.object <- rbind(c("n", "nNA", "Variable1", "M1", "SD1", "Variable2", "M2", "SD2", "M.Diff", "SD", "Estimate", "SE", "Low", "Upp"),
                           print.object)
@@ -103,9 +103,9 @@ print.cohens.d <- function(x, digits = x$args$digits, check = TRUE, ...) {
     print.object[, 1] <- format(print.object[, 1], justify = "left")
 
     # Format
-    print.object[, -1] <- sapply(print.object[, -1], function(y) format(y, justify = "right"))
+    print.object[, -1] <- vapply(print.object[, -1], function(y) format(y, justify = "right"), FUN.VALUE = character(2))
 
-    print.object <- sapply(print.object, formatC, format = "f")
+    print.object <- vapply(print.object, formatC, format = "f", FUN.VALUE = character(2))
 
     print.object[, 1] <- paste(" ", print.object[, 1])
 

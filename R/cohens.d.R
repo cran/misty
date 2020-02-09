@@ -14,15 +14,15 @@
 #'
 #' Hedges (1981, p. 110) recommended to weight each group's standard deviation by its sample
 #' size resulting in a weighted and pooled standard deviation (i.e., \code{weighted = TRUE}).
-#' According to Hedges and Olkin (1985, P. 81), the standardized mean difference based
+#' According to Hedges and Olkin (1985, p. 81), the standardized mean difference based
 #' on the weighted and pooled standard deviation has a positive small sample bias, i.e.,
 #' standardized mean difference is overestimates in small samples (i.e., sample size less
 #' than 20 or less than 10 in each group). However, a correction factor can be applied to
 #' remove the small sample bias (i.e., \code{correct = TRUE}). Note that a gamma function
-#' is used for computing the correction fator when \eqn{n} < 200, while a approximation method
+#' is used for computing the correction factor when \eqn{n} < 200, while a approximation method
 #' is used when \eqn{n} >= 200.
 #'
-#' Note that the terminology is inconsistant because the standardized mean difference based
+#' Note that the terminology is inconsistent because the standardized mean difference based
 #' on the weighted and pooled standard deviation is usually called Cohen's d, but sometimes
 #' called Hedges' g. Oftentimes, Cohen's d is called Hedges' d as soon as the correction factor
 #' is applied. It is recommended to avoid the term Hedges' g (Cumming & Calin-Jageman, 2017, p. 171),
@@ -34,7 +34,7 @@
 #' Cohen's \eqn{d_s} is computed when using \code{weighted = TRUE} and Hedges's \eqn{g_s} is computed when
 #' using \code{correct = TRUE} in addition. In within-subject designs (\code{paired = TRUE}),
 #' Cohen's \eqn{d_rm} is computed when using \code{weighted = TRUE}, while Cohen's \eqn{d_av} is computed
-#' when using \code{weighted = FALSE}, and corresponging Hedges' \eqn{g_rm} and Hedges' \eqn{g_av} are computed
+#' when using \code{weighted = FALSE}, and corresponding Hedges' \eqn{g_rm} and Hedges' \eqn{g_av} are computed
 #' when using \code{correct = TRUE}.
 #'
 #' @param formula     in case of a between-subject design (i.e., \code{paired = FALSE}),
@@ -157,36 +157,35 @@
 #' # of the pretest without small sample correction factor
 #' cohens.d(post ~ pre, data = dat.ws, paired = TRUE, ref = "pre")
 cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL, correct = FALSE,
-                     digits = 2, conf.level = 0.95, as.na = NULL,
-                     check = TRUE, output = TRUE) {
+                     digits = 2, conf.level = 0.95, as.na = NULL, check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Data
 
   #......
-  # Check input 'formula'
+  # Check if input 'formula' is missing
   if (missing(formula)) {
 
-    stop("Please specify a formula for the argument 'formula'", call. = FALSE)
+    stop("Please specify a formula for the argument 'formula'.", call. = FALSE)
 
   }
 
   #......
-  # Check input 'data'
+  # Check if input 'data' is missing
   if (missing(data)) {
 
-    stop("Please specify a matrix or data frame for the argument 'data'", call. = FALSE)
+    stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE)
 
   }
 
   #-----------------------------------------------------------------------------------
   # Formula
 
-  #-----------------------------------------
+  #.........................................
   # Variables
   var.formula <- all.vars(as.formula(formula))
 
-  #-----------------------------------------
+  #.........................................
   # Between-subject design
   if (isFALSE(paired)) {
 
@@ -196,7 +195,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
     # Grouping variable
     group.var <- var.formula[length(var.formula)]
 
-  #-----------------------------------------
+  #.........................................
   # Within-subject design
   } else {
 
@@ -205,7 +204,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
   }
 
-  #-----------------------------------------
+  #.........................................
   # Data
   data <- as.data.frame(data[, var.formula])
 
@@ -217,17 +216,17 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
     # Between-subject design
     if (isFALSE(paired)) {
 
-      data[, -grep(group.var, names(data))] <- misty::as.na(data[, -grep(group.var, names(data))], na = as.na, check = FALSE)
+      data[, -grep(group.var, names(data))] <- misty::as.na(data[, -grep(group.var, names(data))], as.na = as.na, check = FALSE)
 
     # Within-subject design
     } else {
 
-      data <- misty::as.na(data, na = as.na, check = FALSE)
+      data <- misty::as.na(data, as.na = as.na, check = FALSE)
 
     }
 
     # Variable with missing values only
-    x.miss <- sapply(data, function(y) all(is.na(y)))
+    x.miss <- vapply(data, function(y) all(is.na(y)), FUN.VALUE = logical(1))
     if (any(x.miss)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
@@ -235,12 +234,12 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     }
 
-    # Constant variables
-    x.con <- sapply(data, function(y) var(as.numeric(y), na.rm = TRUE) == 0)
-    if (any(x.con)) {
+    # Zero variance
+    x.zero.var <- vapply(data, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    if (any(x.zero.var)) {
 
-      stop(paste0("After converting user-missing values into NA, following variables are constant: ",
-                  paste(names(which(x.con)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-missing values into NA, following variables have zero variance: ",
+                  paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
 
     }
 
@@ -250,7 +249,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
   # Input Check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -264,15 +263,15 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
     # Formula variables in 'data'?
     if (!all(var.formula %in% colnames(data))) {
 
-      stop("Variables specified in the argument 'formula' were not found in 'data'", call. = FALSE)
+      stop("Variables specified in the argument 'formula' were not found in 'data'.", call. = FALSE)
 
     }
 
     #......
     # Check input 'paired'
-    if (isFALSE(isTRUE(paired) | isFALSE(paired))) {
+    if (isFALSE(isTRUE(paired) || isFALSE(paired))) {
 
-      stop("Please specify TRUE or FALSE for the argument 'paired'", call. = FALSE)
+      stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
 
     }
 
@@ -299,17 +298,17 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'weighted'
-    if (isFALSE(isTRUE(weighted) | isFALSE(weighted))) {
+    if (isFALSE(isTRUE(weighted) || isFALSE(weighted))) {
 
-      stop("Please specify TRUE or FALSE for the argument 'weighted'", call. = FALSE)
+      stop("Please specify TRUE or FALSE for the argument 'weighted'.", call. = FALSE)
 
     }
 
     #......
     # Check input 'correct'
-    if (isFALSE(isTRUE(correct) | isFALSE(correct))) {
+    if (isFALSE(isTRUE(correct) || isFALSE(correct))) {
 
-      stop("Please specify TRUE or FALSE for the argument 'correct'", call. = FALSE)
+      stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE)
 
     }
 
@@ -323,9 +322,9 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1 != 0 || digits < 0) {
 
-      stop("Specify a positive integer number for the argument 'digits'", call. = FALSE)
+      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
     }
 
@@ -359,7 +358,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'conf.level'
-    if (conf.level >= 1 | conf.level <= 0) {
+    if (conf.level >= 1 || conf.level <= 0) {
 
       stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
            call. = FALSE)
@@ -368,9 +367,9 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (isFALSE(isTRUE(output) || isFALSE(output))) {
 
-      stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE)
+      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
     }
 
@@ -381,6 +380,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
   #----------------------------------------
   # One outcome variable
+
   if ((isFALSE(paired) && length(y.var) == 1) || (isTRUE(paired) && length(y.var) == 2))  {
 
     #............................................................
@@ -400,7 +400,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
       # Descriptives
 
       res.descript <- Reduce(function(xx, yy) rbind(xx, yy),
-                             suppressWarnings(misty::descript(x.dat, group = group.dat, check = FALSE, output = FALSE))$result)
+                             suppressWarnings(misty::descript(x.dat, split = group.dat, check = FALSE, output = FALSE))$result)
 
       # Mean difference
       x.diff <- diff(res.descript[, "m"])
@@ -486,6 +486,9 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
         # Confidence interval
         conf.int <- conf.int.ncp / (ncp / estimate)
+
+        # Not a number
+        conf.int <- ifelse(is.nan(conf.int), NA, conf.int)
 
       } else {
 
@@ -626,6 +629,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
   #----------------------------------------
   # More than one outcome variable
+
   } else {
 
     result <- lapply(y.var, function(y) cohens.d(paste(eval(parse(text = "y")), "~", eval(parse(text = "group.var"))),
@@ -641,6 +645,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
   #----------------------------------------
   # One outcome variable
+
   if ((isFALSE(paired) && length(y.var) == 1) || (isTRUE(paired) && length(y.var) == 2)) {
 
     #.......................................
@@ -677,6 +682,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
   #----------------------------------------
   # More than one outcome variable
+
   } else {
 
     object <- list(call = match.call(),

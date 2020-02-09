@@ -1,7 +1,7 @@
-#' Multilevel Descriptve Statistics
+#' Multilevel Descriptive Statistics
 #'
 #' This function computes descriptive statistics for multilevel data, e.g. average group size, intraclass correlation
-#' coefficient, design effect and effectice sample size.
+#' coefficient, design effect and effective sample size.
 #'
 #' Note that this function is restricted to two-level models.
 #'
@@ -51,20 +51,20 @@
 #'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
 #'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
 #'
-#' # Multilevel descriptve statistics for x1
+#' # Multilevel descriptive statistics for x1
 #' multilevel.descript(dat$x1, group = dat$group)
 #'
-#' # Multilevel descriptve statistics for x1, print ICC with 5 digits
+#' # Multilevel descriptive statistics for x1, print ICC with 5 digits
 #' multilevel.descript(dat$x1, group = dat$group, icc.digits = 5)
 #'
-#' # Multilevel descriptve statistics for x1, convert value 1 to NA
+#' # Multilevel descriptive statistics for x1, convert value 1 to NA
 #' multilevel.descript(dat$x1, group = dat$group, as.na = 1)
 #'
-#' # Multilevel descriptve statistics for x1,
+#' # Multilevel descriptive statistics for x1,
 #' # use lmer() function in the lme4 package to estimate ICC
 #' multilevel.descript(dat$x1, group = dat$group, method = "lme4")
 #'
-#' # Multilevel descriptve statistics for x1, x2, and x3
+#' # Multilevel descriptive statistics for x1, x2, and x3
 #' multilevel.descript(dat[, c("x1", "x2", "x3")], group = dat$group)
 multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REML = TRUE,
                                 digits = 2, icc.digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
@@ -72,49 +72,49 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   ####################################################################################
   # Data
 
-  #-----------------------------------------
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a vector, matrix or data frame for the argument 'x'", call. = FALSE)
+    stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
-  #----------------------------------------
+  #......
   # Vector, matrix or data frame for the argument 'x'?
   if (!is.vector(x) && !is.matrix(x) && !is.data.frame(x)) {
 
-    stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'",
+    stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
          call. = FALSE)
 
   }
 
-  #-----------------------------------------
-  # Check input 'group'
+  #......
+  # Check if input 'group' is missing
   if (missing(group)) {
 
-    stop("Please specify a vector representing the grouping structure for the argument 'group'", call. = FALSE)
+    stop("Please specify a vector representing the grouping structure for the argument 'group'.", call. = FALSE)
 
   }
 
   #----------------------------------------
   # Data frame
 
-  df <- as.data.frame(x)
+  x <- as.data.frame(x)
 
   #----------------------------------------
   # Convert user-missing values into NA
 
   if (!is.null(as.na)) {
 
-    df <- misty::as.na(df, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     # Variable with missing values only
-    df.miss <- sapply(df, function(y) all(is.na(y)))
-    if (any(df.miss)) {
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    if (any(x.miss)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
-                  paste(names(which(df.miss)), collapse = ", ")), call. = FALSE)
+                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
 
     }
 
@@ -124,7 +124,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   # Input Check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -136,10 +136,10 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check input 'group'
-    if (is.null(dim(df))) {
+    if (is.null(dim(x))) {
 
       # Numeric vector and group?
-      if (length(df) != length(group)) {
+      if (length(x) != length(group)) {
 
         stop("Length of the vector 'x' does not match with the length of the grouping variable 'group'.",
              call. = FALSE)
@@ -149,7 +149,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
     } else {
 
       # Numeric vector and group?
-      if (nrow(df) != length(group)) {
+      if (nrow(x) != length(group)) {
 
         stop("Number of rows in 'x' does not match with the length of the grouping variable 'group'.",
              call. = FALSE)
@@ -162,7 +162,26 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
     # Check input 'group'
     if (length(unique(na.omit(group))) == 1) {
 
-      stop("There is only one group represented in the grouping variable in 'group'.", call. = FALSE)
+      stop("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'x': Zero variance?
+    x.check <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+
+    if (any(x.check)) {
+
+      if (length(x.check) > 1) {
+
+        warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
+                       paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
+
+      } else {
+
+        stop("Variable specified in 'x' has zero variance.", call. = FALSE)
+
+      }
 
     }
 
@@ -185,7 +204,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check digits argument
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1 != 0 || digits < 0) {
 
       stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE)
 
@@ -193,7 +212,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check icc.digits argument
-    if (icc.digits %% 1 != 0 | icc.digits < 0) {
+    if (icc.digits %% 1 != 0 || icc.digits < 0) {
 
       stop("Specify a positive integer value for the argument 'icc.digits'.", call. = FALSE)
 
@@ -201,9 +220,9 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Variance within groups
-    if (is.null(dim(x))) {
+    if (ncol(x) == 1) {
 
-      if (all(tapply(unlist(df), group, function(y) length(na.omit(y))) <= 1)) {
+      if (all(tapply(unlist(x), group, function(y) length(na.omit(y))) <= 1)) {
 
         stop("Variable specified in 'x' does not have any within-group variance.", call. = FALSE)
 
@@ -211,9 +230,12 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     } else {
 
-      if (any(sapply(df, function(y) all(tapply(y, group, function(z) length(na.omit(z))) <= 1)))) {
+      x.check <- vapply(x, function(y) all(tapply(y, group, function(z) length(na.omit(z))) <= 1), FUN.VALUE = logical(1))
 
-        stop("There are variables in 'x' without any within-group variance.", call. = FALSE)
+      if (any(x.check)) {
+
+        stop(paste0("Following variables specified in 'x' do not have any within-group variance: ",
+                    paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
 
       }
 
@@ -221,7 +243,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (isFALSE(isTRUE(output) || isFALSE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE)
 
@@ -240,38 +262,38 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   # Main Function
 
   # No. of observations
-  no.obs <- sapply(df, function(y) length(na.omit(y)))
+  no.obs <- vapply(x, function(y) length(na.omit(y)), FUN.VALUE = 1)
 
   # No. of missing values
-  no.miss <- sapply(df, function(y) sum(is.na(y)))
+  no.miss <- vapply(x, function(y) sum(is.na(y)), FUN.VALUE = 1)
 
   # No. of groups
-  no.group <- sapply(df, function(y) length(unique(na.omit(cbind(y, group))[, "group"])))
+  no.group <- vapply(x, function(y) length(unique(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = 1)
 
   # Average group size
-  m.group.size <- sapply(df, function(y) mean(table(na.omit(cbind(y, group))[, "group"])))
+  m.group.size <- vapply(x, function(y) mean(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = double(1))
 
   # Standard deviation group size
-  sd.group.size <- sapply(df, function(y) sd(table(na.omit(cbind(y, group))[, "group"])))
+  sd.group.size <- vapply(x, function(y) sd(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = double(1))
 
   # Minimum group size
-  min.group.size <- sapply(df, function(y) min(table(na.omit(cbind(y, group))[, "group"])))
+  min.group.size <- vapply(x, function(y) min(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = 1)
 
   # Maximum group size
-  max.group.size <- sapply(df, function(y) max(table(na.omit(cbind(y, group))[, "group"])))
+  max.group.size <- vapply(x, function(y) max(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = 1)
 
   # ICC(1)
-  icc1 <- misty::multilevel.icc(df, group = group, type = 1, method = method, REML = REML, check = FALSE)
+  icc1 <- misty::multilevel.icc(x, group = group, type = 1, method = method, REML = REML, check = FALSE)
 
   # ICC(2)
-  icc2 <- misty::multilevel.icc(df, group = group, type = 2, method = method, REML = REML, check = FALSE)
+  icc2 <- misty::multilevel.icc(x, group = group, type = 2, method = method, REML = REML, check = FALSE)
 
   # Design effect
   deff <- 1 + icc1*(m.group.size - 1)
 
   deff.sqrt <- sqrt(deff)
 
-  # Effectice sampel size
+  # Effective sampel size
   n.effect <- no.obs / deff
 
   ####################################################################################

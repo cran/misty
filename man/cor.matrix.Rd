@@ -7,9 +7,10 @@
 cor.matrix(x, method = c("pearson", "spearman", "kendall-b"),
            use = c("listwise", "pairwise"), group = NULL,
            print = c("all", "cor", "n", "p"), tri = c("both", "lower", "upper"),
-           p.adj = c("none", "bonferroni", "holm",
-                     "hochberg", "hommel", "BH", "BY", "fdr"),
-           digits = 2, pval.digits = 3, as.na = NULL, check = TRUE, output = TRUE)
+           p.adj = c("none", "bonferroni", "holm", "hochberg",
+                     "hommel", "BH", "BY", "fdr"),
+           digits = 2, pval.digits = 3, as.na = NULL, check = TRUE,
+           output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame.}
@@ -28,8 +29,8 @@ each group separately, i.e., upper triangular for one group and lower triangular
 another group. Note that the grouping variable is limited to two groups.}
 
 \item{print}{a character string or character vector indicating which additional results to show,
-i.e., \code{"all"} for all additional results, \code{"n"} for the sample sizes,
-\code{"p"} for \emph{p}-values.}
+i.e. \code{"all"}, for all additional results: \code{"n"} for the sample sizes, and \code{"p"}
+for \emph{p}-values.}
 
 \item{tri}{a character string indicating which triangular of the matrix to show on the console,
 i.e., \code{both} for upper and lower triangular, \code{lower} (default) for the

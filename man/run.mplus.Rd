@@ -4,9 +4,9 @@
 \alias{run.mplus}
 \title{Run Mplus Models}
 \usage{
-run.mplus(target = getwd(), recursive = FALSE, filefilter = NULL,
-          showOutput = FALSE, replaceOutfile = c("always", "never", "modifiedDate"),
-          logFile = NULL, Mplus = "Mplus", killOnFail = TRUE, local_tmpdir = FALSE)
+run.mplus(target = getwd(), recursive = FALSE, filefilter = NULL, showOutput = FALSE,
+          replaceOutfile = c("always", "never", "modifiedDate"), logFile = NULL,
+          Mplus = "Mplus", killOnFail = TRUE, local_tmpdir = FALSE)
 }
 \arguments{
 \item{target}{a character string indicating the directory containing Mplus input files (\code{.inp})

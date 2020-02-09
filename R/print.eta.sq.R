@@ -30,7 +30,7 @@
 #' print(dat.eta.sq, digits = 5)
 print.eta.sq <- function(x, digits = x$args$digits, check = TRUE, ...) {
 
-  #-----------------------------------------------------------------------------------
+  ####################################################################################
   # Input Check
 
   if (isTRUE(check)) {
@@ -45,29 +45,36 @@ print.eta.sq <- function(x, digits = x$args$digits, check = TRUE, ...) {
 
   }
 
-  #-----------------------------------------------------------------------------------
+  ####################################################################################
   # Data and Arguments
 
+  #-----------------------------------------
   # Print object
   print.object <- x$result
 
-  #-----------------------------------------------------------------------------------
+  #-----------------------------------------
+  # Number of dependent variables, number of independent variables
+
+  print.object.nrow <- ncol(x$dat$x) == 1
+  print.object.ncol <- is.null(dim(x$dat$group))
+
+  ####################################################################################
   # Main Function
 
-  #........................................
+  #-----------------------------------------
   # One dependent variable, one independent variable
 
-  if (is.null(dim(print.object))) {
+  if (print.object.nrow && print.object.ncol) {
 
     # Print object
     print.object <- cbind("  Estimate  ", formatC(print.object, digits = digits, format = "f"))
 
   } else {
 
-    #........................................
+    #-----------------------------------------
     # More than one dependent variable, more than one independent variable
 
-    if (nrow(print.object) > 1 && ncol(print.object) > 1) {
+    if (!print.object.nrow && !print.object.ncol) {
 
       # Variable names and format digis
       print.object <- rbind(c("", "Outcome", rep("", times = ncol(print.object) - 1)),
@@ -88,10 +95,10 @@ print.eta.sq <- function(x, digits = x$args$digits, check = TRUE, ...) {
 
     }
 
-    #........................................
+    #-----------------------------------------
     # More than one dependent variable, one independent variable
 
-    if (nrow(print.object) == 1 && ncol(print.object) != 1) {
+    if (print.object.nrow && !print.object.ncol) {
 
       # Variable names and format digis
       print.object <- rbind(colnames(print.object),
@@ -102,10 +109,10 @@ print.eta.sq <- function(x, digits = x$args$digits, check = TRUE, ...) {
 
     }
 
-    #........................................
+    #-----------------------------------------
     # One dependent variable, more than one independent variable
 
-    if (nrow(print.object) != 1 & ncol(print.object) == 1) {
+    if (!print.object.nrow && print.object.ncol) {
 
       # Variable names and format digis
       print.object <- cbind(rownames(print.object),
@@ -118,10 +125,10 @@ print.eta.sq <- function(x, digits = x$args$digits, check = TRUE, ...) {
 
   }
 
-  #-----------------------------------------------------------------------------------
+  ####################################################################################
   # Output
 
-  if (is.null(dim(print.object))) {
+  if (print.object.nrow && print.object.ncol) {
 
       cat("Eta Squared\n\n")
 

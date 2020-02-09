@@ -4,8 +4,8 @@
 \alias{reverse.item}
 \title{Reverse Code Scale Item}
 \usage{
-reverse.item(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
-             table = FALSE, check = TRUE)
+reverse.item(x, min = NULL, max = NULL, keep = NULL, as.na = NULL, table = FALSE,
+             check = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector with integer values.}
@@ -37,10 +37,9 @@ is not represented in the vector. That is, it is always preferable to specify th
 \code{max}.
 }
 \examples{
-\dontrun{
 dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
                   item2 = c(1, 5, 3, 1, 4, 4, 1, 5),
-                  item3 = c(4, 2, 4, 5, 1, 3, 5, -99),
+                  item3 = c(4, 2, 4, 5, 1, 3, 5, -99))
 
 # Reverse code item2
 reverse.item(dat$item2, min = 1, max = 5)
@@ -50,7 +49,6 @@ reverse.item(dat$item3, min = 1, max = 5, keep = -99)
 
 # Reverse code item3 while keeping the value -99 and check recoding
 dat$item3r <- reverse.item(dat$item3, min = 1, max = 5, keep = -99, table = TRUE)
-}
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.

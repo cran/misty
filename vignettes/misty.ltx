@@ -1,0 +1,1900 @@
+%\VignetteIndexEntry{misty vignette}
+%\VignetteEngine{R.rsp::tex}
+
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdfauthor={Takuya Yanagida},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\Output}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[RGB]{76,136,107}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+
+\title{\textbf{Package 'misty'}}
+\author{Takuya Yanagida}
+\date{\today}
+
+\begin{document}
+\begin{center}
+
+{\LARGE \textbf{Package ‘misty’}}
+
+\vspace{-0.2cm}
+
+\includegraphics[width=0.22\textwidth]{misty_hexagon-sticker.pdf}
+
+\vspace{-0.15cm}
+
+{\large Takuya Yanagida}
+
+\vspace{0.375cm}
+
+{\large \today}
+
+\end{center}
+
+\setcounter{tocdepth}{3}
+\tableofcontents
+\hypertarget{misty-miscellaneous-functions-t.-yanagida}{%
+\section{misty: Miscellaneous Functions T.
+Yanagida}\label{misty-miscellaneous-functions-t.-yanagida}}
+
+The \texttt{misty} package provides miscellaneous functions for
+descriptive statistics, missing data, data management, and statistical
+analysis, e.g., reading and writing a SPSS file, frequency table, cross
+tabulation, multilevel and missing data descriptive statistics, various
+effect size measures, scale and group scores, centering at the grand
+mean or within cluster, intraclass correlation coefficient, or
+coefficient alpha and item statistics.
+
+\hypertarget{installation}{%
+\subsection{Installation}\label{installation}}
+
+The \texttt{misty} package is published on the Comprehensive R Archive
+Network (CRAN) and can be installed by using the
+\texttt{install.packages()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\KeywordTok{install.packages}\NormalTok{(}\StringTok{"misty"}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"https://cloud.r-project.org"}\NormalTok{)}
+\Output{ Installing package into 'C:/.../R/win-library/3.6'}{ (as 'lib' is unspecified)}
+\Output{ package 'misty' successfully unpacked and MD5 sums checked}
+\end{Highlighting}
+\end{Shaded}
+
+After installation, the \texttt{misty} package can be loaded by using
+the \texttt{library()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\KeywordTok{library}\NormalTok{(misty)}
+\Output{ |-------------------------------------|}
+\Output{ | misty 0.2.1 (2020-02-02)            |}
+\Output{ | Miscellaneous Functions T. Yanagida |}
+\Output{ |-------------------------------------|}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
+
+R is a powerful software environment and programming language designed
+for data manipulation, statistical computing, and graphics and is based
+on a package system which allows users to contribute functions,
+documentations and data sets to extend R. The R base system comprises
+seven pre-installed packages which are automatically loaded each R
+session and provides a variety of standard statistical methods. There
+are over 15,000 additional packages on CRAN offering a broad range of
+statistical methods like latent variable modeling (e.g., R package
+\texttt{lavaan}), missing data imputation (e.g., R package
+\texttt{mice}), or item response modeling (e.g., R package
+\texttt{TAM}). In order to use an package not included in the R base
+system, the package needs to be installed once, but loaded each time R
+is started by using the \texttt{library()} function. For example, in
+data management and descriptive statistics, following functions from various R packages might
+be needed:
+
+\begin{itemize}
+\item
+  The \texttt{read.spss()} function from the \texttt{foreign} for
+  reading a SPSS file.
+\item
+  The \texttt{recode()} function from the \texttt{car} package for
+  recoding a variable.
+\item
+  The \texttt{gmc()} function from the \texttt{rockchalk} package for
+  centering a predictor within cluster.
+\item
+  The \texttt{skewness()} function from the \texttt{moments} package for
+  computing skewness of a variable.
+\item
+  The \texttt{alpha()} function from the \texttt{psych} package for
+  computing coefficient alpha.
+\item
+  The \texttt{cohen.d()} function from the \texttt{effsize} package for
+  computing Cohen's \emph{d}.
+\end{itemize}
+
+The R package system is the main advantage of R resulting in a
+widespread availability of statistical methods from various fields of
+research (see the \href{https://cran.r-project.org/web/views/}{CRAN Task
+Views}). One disadvantage of R frequently mentioned is the steep
+learning curve in particular for people who are used to a
+point-and-click software environment (e.g., SPSS). One of the main
+challenges in learning R stem from the fact that the R base system does
+not fully cover all functions commonly needed for descriptive statistics
+and data management. Thus, additional functions spread across different
+packages need to be found to install these packages which are loaded
+every R session. Depending on the author(s), functions in an R package
+can be more or less user-friendly in terms of the required input for the
+function and the output provided by the function.
+
+The \textbf{main goal} for programming the \texttt{misty} package was to
+provide user-friendly functions for descriptive statistics, data
+management, missing data, and statistical analysis. More specifically,
+the \texttt{misty} package provides functions which (1) simplify
+descriptive statistics, (2) have sensible default options for arguments,
+(3) results in clearly arranged outputs, and (4) allow to analyze more
+than one dependent variable by using a function call. The long-term goal
+of the \texttt{misty} package is to offer a set of functions which
+covers the process of data management and descriptive statistics in most
+of the applications in the social sciences.
+
+\hypertarget{descriptive-statistics-in-the-r-base-system}{%
+\subsubsection{Descriptive statistics in the R base
+system}\label{descriptive-statistics-in-the-r-base-system}}
+
+The R base system provides numerous functions for descriptive
+statistics. Some of these functions, however, only provide limited
+information so that additional programming is required to obtain all
+information needed. For example, following syntax is required to obtain
+a table with absolute frequencies and percentage frequencies with two
+digits:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Table with absolute and percentage frequencies}
+\ErrorTok{>}\StringTok{ }\KeywordTok{cbind}\NormalTok{(}\DataTypeTok{Freq =} \KeywordTok{table}\NormalTok{(mtcars}\OperatorTok{$}\NormalTok{gear),}
+\OperatorTok{+}\StringTok{       }\DataTypeTok{Perc =} \KeywordTok{round}\NormalTok{(}\KeywordTok{prop.table}\NormalTok{(}\KeywordTok{table}\NormalTok{(mtcars}\OperatorTok{$}\NormalTok{gear)) }\OperatorTok{*}\StringTok{ }\DecValTok{100}\NormalTok{ , }\DataTypeTok{digits =} \DecValTok{2}\NormalTok{))}
+\Output{   Freq  Perc}
+\Output{ 3   15 46.88}
+\Output{ 4   12 37.50}
+\Output{ 5    5 15.62}
+\end{Highlighting}
+\end{Shaded}
+
+In the \texttt{misty} package, a table with absolute frequencies and
+percentage frequencies with two digits can be obtained by using the
+\texttt{freq()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Table with absolute and percentage frequencies}
+\ErrorTok{>}\StringTok{ }\KeywordTok{freq}\NormalTok{(mtcars}\OperatorTok{$}\NormalTok{gear)}
+\Output{                Freq    Perc}
+\Output{  Value   3       15  46.88%}
+\Output{          4       12  37.50%}
+\Output{          5        5  15.62%}
+\Output{          Total   32 100.00%}
+\Output{  Missing NA       0   0.00%}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{default-setting-of-function-arguments}{%
+\subsubsection{Default setting of function
+arguments}\label{default-setting-of-function-arguments}}
+
+There are additional packages with useful functions for data management
+and descriptive statistics. Some of these functions, however, have an
+odd default setting for argument so that these arguments need to be
+specified whenever the function is used. For example, the
+\texttt{read.sav()} function in the \texttt{foreign} package can be used
+to read a SPSS file. This function has the default setting
+\texttt{to.data.frame = FALSE} which needs to be specified as
+\texttt{to.data.frame = TRUE} to obtain a data frame:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Location and name of the SPSS data set}
+\ErrorTok{>}\StringTok{ }\NormalTok{sav <-}\StringTok{ }\KeywordTok{system.file}\NormalTok{(}\StringTok{"files"}\NormalTok{, }\StringTok{"electric.sav"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"foreign"}\NormalTok{)}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Read SPSS data and print first six cases}
+\ErrorTok{>}\StringTok{ }\KeywordTok{head}\NormalTok{(foreign}\OperatorTok{::}\KeywordTok{read.spss}\NormalTok{(sav, }\DataTypeTok{to.data.frame =} \OtherTok{TRUE}\NormalTok{))}
+\Output{   CASEID      FIRSTCHD AGE DBP58 EDUYR CHOL58 CGT58 HT58 WT58  DAYOFWK VITAL10}
+\Output{ 1     13    NONFATALMI  40    70    16    321     0 68.8  190     <NA>   ALIVE}
+\Output{ 2     30    NONFATALMI  49    87    11    246    60 72.2  204 THURSDAY   ALIVE}
+\Output{ 3     53 SUDDEN  DEATH  43    89    12    262     0 69.0  162 SATURDAY    DEAD}
+\Output{ 4     84    NONFATALMI  50   105     8    275    15 62.5  152 WEDNSDAY   ALIVE}
+\Output{ 5     89 SUDDEN  DEATH  43   110    NA    301    25 68.0  148   MONDAY    DEAD}
+\Output{ 6    102    NONFATALMI  50    88     8    261    30 68.0  142   SUNDAY    DEAD}
+\end{Highlighting}
+\end{Shaded}
+
+In the \texttt{misty} package, a SPSS file can be read by using the
+\texttt{read.sav()} function. By default, this function returns a data
+frame without using value labels:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Read SPSS data and print first six cases}
+\ErrorTok{>}\StringTok{ }\KeywordTok{head}\NormalTok{(}\KeywordTok{read.sav}\NormalTok{(sav))}
+\Output{   CASEID FIRSTCHD AGE DBP58 EDUYR CHOL58 CGT58 HT58 WT58 DAYOFWK VITAL10}
+\Output{ 1     13        3  40    70    16    321     0 68.8  190      NA       0}
+\Output{ 2     30        3  49    87    11    246    60 72.2  204       5       0}
+\Output{ 3     53        2  43    89    12    262     0 69.0  162       7       1}
+\Output{ 4     84        3  50   105     8    275    15 62.5  152       4       0}
+\Output{ 5     89        2  43   110    NA    301    25 68.0  148       2       1}
+\Output{ 6    102        3  50    88     8    261    30 68.0  142       1       1}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{output-provided-by-functions}{%
+\subsubsection{Output provided by
+functions}\label{output-provided-by-functions}}
+
+Some outputs provided by functions in additional packages are not very
+user-friendly, i.e., they are not clearly arranged and/or provide
+additional nonessential results. For example, the \texttt{alpha()}
+function in the \texttt{psych} package can be used to compute
+coefficient alpha and item-total correlations, but provides a lot of
+nonessential results:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{item1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{item2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{item3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{item4 =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Compute coefficient alpha and item-total correlations}
+\ErrorTok{>}\StringTok{ }\NormalTok{psych}\OperatorTok{::}\KeywordTok{alpha}\NormalTok{(dat)}
+\Output{ }
+\Output{ Reliability analysis   }
+\Output{ Call: psych::alpha(x = dat)}
+\Output{ }
+\Output{   raw_alpha std.alpha G6(smc) average_r S/N   ase mean  sd median_r}
+\Output{       0.96      0.96    0.96      0.85  23 0.025    3 1.5     0.86}
+\Output{ }
+\Output{  lower alpha upper     95% confidence boundaries}
+\Output{ 0.91 0.96 1 }
+\Output{ }
+\Output{  Reliability if an item is dropped:}
+\Output{       raw_alpha std.alpha G6(smc) average_r S/N alpha se  var.r med.r}
+\Output{ item1      0.94      0.94    0.94      0.85  16    0.035 0.0073  0.88}
+\Output{ item2      0.92      0.93    0.90      0.81  13    0.048 0.0028  0.84}
+\Output{ item3      0.95      0.96    0.94      0.88  22    0.027 0.0014  0.89}
+\Output{ item4      0.95      0.95    0.93      0.87  20    0.029 0.0007  0.88}
+\Output{ }
+\Output{  Item statistics }
+\Output{       n raw.r std.r r.cor r.drop mean  sd}
+\Output{ item1 8  0.94  0.95  0.92   0.90  2.9 1.4}
+\Output{ item2 8  0.98  0.98  0.98   0.96  3.0 1.8}
+\Output{ item3 8  0.92  0.92  0.89   0.86  3.1 1.6}
+\Output{ item4 8  0.92  0.93  0.90   0.87  3.0 1.5}
+\Output{ }
+\Output{ Non missing response frequency for each item}
+\Output{          1    2    3    4    5 miss}
+\Output{ item1 0.12 0.38 0.12 0.25 0.12    0}
+\Output{ item2 0.25 0.25 0.12 0.00 0.38    0}
+\Output{ item3 0.25 0.12 0.12 0.25 0.25    0}
+\Output{ item4 0.12 0.38 0.12 0.12 0.25    0}
+\end{Highlighting}
+\end{Shaded}
+
+In the \texttt{misty} package, coefficient alpha and item-total
+correlations can be computed by using the \texttt{alpha.coef()}
+function which provides a concise output:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Compute coefficient alpha and item-total correlations}
+\ErrorTok{>}\StringTok{ }\KeywordTok{alpha.coef}\NormalTok{(dat)}
+\Output{ Unstandardized Coefficient Alpha with 95% Confidence Interval}
+\Output{ }
+\Output{  Items Alpha  Low  Upp}
+\Output{      4  0.96 0.87 0.99}
+\Output{ }
+\Output{ Item-Total Correlation and Coefficient Alpha if Item Deleted}
+\Output{ }
+\Output{  Variable n nNA   pNA    M   SD  Min  Max It.Cor Alpha}
+\Output{  item1    8   0 0.00% 2.88 1.36 1.00 5.00   0.90  0.94}
+\Output{  item2    8   0 0.00% 3.00 1.77 1.00 5.00   0.96  0.92}
+\Output{  item3    8   0 0.00% 3.12 1.64 1.00 5.00   0.86  0.95}
+\Output{  item4    8   0 0.00% 3.00 1.51 1.00 5.00   0.87  0.95}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{number-of-dependent-variables}{%
+\subsubsection{Number of dependent
+variables}\label{number-of-dependent-variables}}
+
+Functions in additional packages are sometimes limited to one dependent
+variable, so that multiple function calls are needed to analyze all
+dependent variables. For example, the \texttt{cohen.d()} function in the
+\texttt{effsize} package for computing Cohen's \emph{d} is limited to
+one dependent variable. Note that a warning message is printed every
+function call because the function requires a factor as grouping
+variable:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Compute Cohen's d}
+\ErrorTok{>}\StringTok{ }\NormalTok{effsize}\OperatorTok{::}\KeywordTok{cohen.d}\NormalTok{(disp }\OperatorTok{~}\StringTok{ }\NormalTok{vs, }\DataTypeTok{data =}\NormalTok{ mtcars)}
+\Output{ Warning in cohen.d.formula(disp ~ vs, data = mtcars): Cohercing rhs of formula to factor}
+\Output{ }
+\Output{ Cohen's d}
+\Output{ }
+\Output{ d estimate: 1.970198 (large)}
+\Output{ 95 percent confidence interval:}
+\Output{    lower    upper }
+\Output{ 1.085549 2.854847}
+\OperatorTok{>}\StringTok{ }\NormalTok{effsize}\OperatorTok{::}\KeywordTok{cohen.d}\NormalTok{(hp }\OperatorTok{~}\StringTok{ }\NormalTok{vs, }\DataTypeTok{data =}\NormalTok{ mtcars)}
+\Output{ Warning in cohen.d.formula(hp ~ vs, data = mtcars): Cohercing rhs of formula to factor}
+\Output{ }
+\Output{ Cohen's d}
+\Output{ }
+\Output{ d estimate: 2.043209 (large)}
+\Output{ 95 percent confidence interval:}
+\Output{    lower    upper }
+\Output{ 1.147832 2.938587}
+\end{Highlighting}
+\end{Shaded}
+
+In the \texttt{misty} package, Cohen's \emph{d} can be computed by using
+the \texttt{cohens.d()} function which is not limited to one dependent
+variable:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Compute Cohen's d}
+\ErrorTok{>}\StringTok{ }\KeywordTok{cohens.d}\NormalTok{(}\KeywordTok{cbind}\NormalTok{(disp, hp) }\OperatorTok{~}\StringTok{ }\NormalTok{vs, }\DataTypeTok{data =}\NormalTok{ mtcars, }\DataTypeTok{digits =} \DecValTok{1}\NormalTok{)}
+\Output{  Cohen's d for bewteen-subject design with 95% confidence interval}
+\Output{ }
+\Output{   Variable n1 nNA1    M1   SD1 n2 nNA2    M2  SD2 M.Diff   SD Estimate  SE  Low  Upp}
+\Output{   disp     18    0 307.1 106.8 14    0 132.5 56.9 -174.7 88.7     -2.0 0.5 -3.0 -1.2}
+\Output{   hp       18    0 189.7  60.3 14    0  91.4 24.4  -98.4 48.1     -2.0 0.5 -3.1 -1.3}
+\Output{ }
+\Output{  Note. SD = weighted pooled standard deviation}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{bug-reports-feedback-and-feature-requests}{%
+\subsection{Bug reports, feedback, and feature
+requests}\label{bug-reports-feedback-and-feature-requests}}
+
+If you find bugs or any problems specific to the \texttt{misty} package,
+please send me a report including reproducible examples. Of course,
+feedback about how to improve the package and feature requests are also
+very welcome. You can contact me at:
+\textless takuya.yanagida@univie.ac.at\textgreater{}
+
+\hypertarget{acknowledgement}{%
+\subsection{Acknowledgement}\label{acknowledgement}}
+
+Special thanks to Martin Müller and \v Ziga Puklavec for designing the
+hexagon sticker for the \texttt{misty} package. I would also like to
+thank Jerome Olsen for providing valuable ideas regarding the
+\texttt{cohens.d()} function.
+
+\pagebreak
+
+\hypertarget{functions-in-misty}{%
+\section{Functions in misty}\label{functions-in-misty}}
+
+Functions provided in the \texttt{misty} package can be grouped in (1)
+functions for descriptive statistics, (2) functions for missing data,
+(3) functions for data management, and (4) functions for statistical
+analysis.
+
+\hypertarget{functions-for-descriptive-statistics}{%
+\subsection{Functions for descriptive
+statistics}\label{functions-for-descriptive-statistics}}
+
+\hypertarget{frequency-tables}{%
+\subsubsection{Frequency Tables}\label{frequency-tables}}
+
+The \texttt{freq()} function computes frequency tables with absolute and
+percentage frequencies for one or more than one variable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Data frame}
+\ErrorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{-99}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{z =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{10}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Frequency table for one variable}
+\ErrorTok{>}\StringTok{ }\KeywordTok{freq}\NormalTok{(dat}\OperatorTok{$}\NormalTok{x1)}
+\Output{                Freq    Perc}
+\Output{  Value   -99      1  10.00%}
+\Output{          1        1  10.00%}
+\Output{          2        3  30.00%}
+\Output{          3        5  50.00%}
+\Output{          Total   10 100.00%}
+\Output{  Missing NA       0   0.00%}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Frequency table for one variable, convert value -99 into NA}
+\ErrorTok{>}\StringTok{ }\KeywordTok{freq}\NormalTok{(dat}\OperatorTok{$}\NormalTok{x1, }\DataTypeTok{as.na =} \DecValTok{-99}\NormalTok{)}
+\Output{                Freq    Perc  V.Perc}
+\Output{  Value   1        1  10.00%  11.11%}
+\Output{          2        3  30.00%  33.33%}
+\Output{          3        5  50.00%  55.56%}
+\Output{          Total    9  90.00% 100.00%}
+\Output{  Missing NA       1  10.00%        }
+\Output{  Total           10 100.00%}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Frequency table for one variable, values shown in columns}
+\ErrorTok{>}\StringTok{ }\KeywordTok{freq}\NormalTok{(dat}\OperatorTok{$}\NormalTok{x1, }\DataTypeTok{val.col =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{as.na =} \DecValTok{-99}\NormalTok{)}
+\Output{  Value       1      2      3   Total Missing   Total}
+\Output{  Freq        1      3      5       9       1      10}
+\Output{  Perc   10.00% 30.00% 50.00%  90.00%  10.00% 100.00%}
+\Output{  V.Perc 11.11% 33.33% 55.56% 100.00%}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Frequency table for more than one variable}
+\ErrorTok{>}\StringTok{ }\KeywordTok{freq}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{, }\StringTok{"y1"}\NormalTok{, }\StringTok{"y2"}\NormalTok{)], }\DataTypeTok{as.na =} \DecValTok{-99}\NormalTok{)}
+\Output{ Frequencies}
+\Output{                x1 x2 y1 y2}
+\Output{  Value   1      1  3  2  0}
+\Output{          2      3  4  1  2}
+\Output{          3      5  3  1  3}
+\Output{          4      0  0  2  3}
+\Output{          5      0  0  2  1}
+\Output{          Total  9 10  8  9}
+\Output{  Missing NA     1  0  2  1}
+\Output{  Total         10 10 10 10}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Frequency table for more than one variable, values shown in columns}
+\ErrorTok{>}\StringTok{ }\KeywordTok{freq}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{, }\StringTok{"y1"}\NormalTok{, }\StringTok{"y2"}\NormalTok{)], }\DataTypeTok{val.col =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{as.na =} \DecValTok{-99}\NormalTok{)}
+\Output{ Frequencies}
+\Output{     1 2 3 4 5 Total Missing Total}
+\Output{  x1 1 3 5 0 0     9       1    10}
+\Output{  x2 3 4 3 0 0    10       0    10}
+\Output{  y1 2 1 1 2 2     8       2    10}
+\Output{  y2 0 2 3 3 1     9       1    10}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Frequency table for more than one variable, with percentage frequencies}
+\ErrorTok{>}\StringTok{ }\KeywordTok{freq}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{, }\StringTok{"y1"}\NormalTok{, }\StringTok{"y2"}\NormalTok{)], }\DataTypeTok{print =} \StringTok{"all"}\NormalTok{, }\DataTypeTok{as.na =} \DecValTok{-99}\NormalTok{)}
+\Output{ Frequencies}
+\Output{                x1 x2 y1 y2}
+\Output{  Value   1      1  3  2  0}
+\Output{          2      3  4  1  2}
+\Output{          3      5  3  1  3}
+\Output{          4      0  0  2  3}
+\Output{          5      0  0  2  1}
+\Output{          Total  9 10  8  9}
+\Output{  Missing NA     1  0  2  1}
+\Output{  Total         10 10 10 10}
+\Output{ }
+\Output{ Percentages}
+\Output{                     x1      x2      y1      y2}
+\Output{  Value   1      10.00%  30.00%  20.00%   0.00%}
+\Output{          2      30.00%  40.00%  10.00%  20.00%}
+\Output{          3      50.00%  30.00%  10.00%  30.00%}
+\Output{          4       0.00%   0.00%  20.00%  30.00%}
+\Output{          5       0.00%   0.00%  20.00%  10.00%}
+\Output{          Total  90.00% 100.00%  80.00%  90.00%}
+\Output{  Missing NA     10.00%   0.00%  20.00%  10.00%}
+\Output{  Total         100.00% 100.00% 100.00% 100.00%}
+\Output{ }
+\Output{ Valid Percentages}
+\Output{               x1      x2      y1      y2}
+\Output{  Value 1  11.11%  30.00%  25.00%   0.00%}
+\Output{        2  33.33%  40.00%  12.50%  22.22%}
+\Output{        3  55.56%  30.00%  12.50%  33.33%}
+\Output{        4   0.00%   0.00%  25.00%  33.33%}
+\Output{        5   0.00%   0.00%  25.00%  11.11%}
+\Output{  Total   100.00% 100.00% 100.00% 100.00%}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Frequency table for more than one variable, split output table}
+\ErrorTok{>}\StringTok{ }\KeywordTok{freq}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{)], }\DataTypeTok{split =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{as.na =} \DecValTok{-99}\NormalTok{)}
+\Output{ }
+\Output{ $x1}
+\Output{                Freq    Perc  V.Perc}
+\Output{  Value   1        1  10.00%  11.11%}
+\Output{          2        3  30.00%  33.33%}
+\Output{          3        5  50.00%  55.56%}
+\Output{          Total    9  90.00% 100.00%}
+\Output{  Missing NA       1  10.00%        }
+\Output{  Total           10 100.00%        }
+\Output{ }
+\Output{ $x2}
+\Output{                Freq    Perc}
+\Output{  Value   1        3  30.00%}
+\Output{          2        4  40.00%}
+\Output{          3        3  30.00%}
+\Output{          Total   10 100.00%}
+\Output{  Missing NA       0   0.00%}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{cross-tabulation}{%
+\subsubsection{Cross Tabulation}\label{cross-tabulation}}
+
+The \texttt{crosstab()} function creates a two-way and three-way cross
+tabulation with absolute frequencies and row-wise, column-wise and total
+percentages.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x3 =} \KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{99}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Cross Tabulation for x1 and x2}
+\ErrorTok{>}\StringTok{ }\KeywordTok{crosstab}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{)])}
+\Output{         x2  }
+\Output{  x1      1 2 Total}
+\Output{       1  3 2     5}
+\Output{       2  3 2     5}
+\Output{   Total  6 4    10}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Cross Tabulation for x1 and x2, print all percentages}
+\ErrorTok{>}\StringTok{ }\KeywordTok{crosstab}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{)], }\DataTypeTok{print =} \StringTok{"all"}\NormalTok{)}
+\Output{               x2  }
+\Output{  x1                 1      2 Total}
+\Output{       1 Freq        3      2     5}
+\Output{         Row %  60.00% 40.00%      }
+\Output{         Col %  50.00% 50.00%      }
+\Output{         Tot %  30.00% 20.00%      }
+\Output{       2 Freq        3      2     5}
+\Output{         Row %  60.00% 40.00%      }
+\Output{         Col %  50.00% 50.00%      }
+\Output{         Tot %  30.00% 20.00%      }
+\Output{   Total             6      4    10}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Cross Tabulation for x1, x2, and x3}
+\ErrorTok{>}\StringTok{ }\KeywordTok{crosstab}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{, }\StringTok{"x3"}\NormalTok{)])}
+\Output{              x3   }
+\Output{  x1     x2    -99 1 2 Total}
+\Output{       1   1     1 1 1     3}
+\Output{           2     0 1 1     2}
+\Output{       2   1     0 1 2     3}
+\Output{           2     0 1 1     2}
+\Output{   Total         1 4 5    10}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Cross Tabulation for x1, x2, and x3, print all percentages}
+\ErrorTok{>}\StringTok{ }\KeywordTok{crosstab}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{, }\StringTok{"x3"}\NormalTok{)], }\DataTypeTok{print =} \StringTok{"all"}\NormalTok{)}
+\Output{                   x3   }
+\Output{  x1     x2             -99      1      2 Total}
+\Output{       1   1 Freq         1      1      1     3}
+\Output{             Row %   33.33% 33.33% 33.33%      }
+\Output{             Col %  100.00% 50.00% 50.00%      }
+\Output{             Tot %   10.00% 10.00% 10.00%      }
+\Output{           2 Freq         0      1      1     2}
+\Output{             Row %    0.00% 50.00% 50.00%      }
+\Output{             Col %    0.00% 50.00% 50.00%      }
+\Output{             Tot %    0.00% 10.00% 10.00%      }
+\Output{       2   1 Freq         0      1      2     3}
+\Output{             Row %    0.00% 33.33% 66.67%      }
+\Output{             Col %      NA% 50.00% 66.67%      }
+\Output{             Tot %    0.00% 10.00% 20.00%      }
+\Output{           2 Freq         0      1      1     2}
+\Output{             Row %    0.00% 50.00% 50.00%      }
+\Output{             Col %      NA% 50.00% 33.33%      }
+\Output{             Tot %    0.00% 10.00% 10.00%      }
+\Output{   Total                  1      4      5    10}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Cross Tabulation for x1, x2, and x3, print all percentages, split output table}
+\ErrorTok{>}\StringTok{ }\KeywordTok{crosstab}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{, }\StringTok{"x3"}\NormalTok{)], }\DataTypeTok{print =} \StringTok{"all"}\NormalTok{, }\DataTypeTok{split =} \OtherTok{TRUE}\NormalTok{)}
+\Output{  Frequencies}
+\Output{              x3    }
+\Output{   x1     x2   -99 1 2 Total}
+\Output{        1   1    1 1 1     3}
+\Output{        1   2    0 1 1     2}
+\Output{        2   1    0 1 2     3}
+\Output{        2   2    0 1 1     2}
+\Output{    Total        1 4 5    10}
+\Output{ }
+\Output{  Row-Wise Percentages}
+\Output{              x3        }
+\Output{   x1     x2      -99      1      2   Total}
+\Output{        1   1  33.33% 33.33% 33.33% 100.00%}
+\Output{        1   2   0.00% 50.00% 50.00% 100.00%}
+\Output{        2   1   0.00% 33.33% 66.67% 100.00%}
+\Output{        2   2   0.00% 50.00% 50.00% 100.00%}
+\Output{ }
+\Output{  Column-Wise Percentages}
+\Output{              x3   }
+\Output{   x1     x2       -99       1       2}
+\Output{        1   1  100.00%  50.00%  50.00%}
+\Output{        1   2    0.00%  50.00%  50.00%}
+\Output{    Total      100.00% 100.00% 100.00%}
+\Output{        2   1      NA%  50.00%  66.67%}
+\Output{        2   2      NA%  50.00%  33.33%}
+\Output{    Total          NA% 100.00% 100.00%}
+\Output{ }
+\Output{  Total Percentages}
+\Output{              x3    }
+\Output{   x1     x2      -99      1      2   Total}
+\Output{        1   1  10.00% 10.00% 10.00%        }
+\Output{        1   2   0.00% 10.00% 10.00%        }
+\Output{        2   1   0.00% 10.00% 20.00%        }
+\Output{        2   2   0.00% 10.00% 10.00%        }
+\Output{                                    100.00%}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{descriptive-statistics}{%
+\subsubsection{Descriptive Statistics}\label{descriptive-statistics}}
+
+The \texttt{descript()} function computes summary statistics for one or
+more variables optionally by a grouping variable.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{group1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{group2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{6}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{8}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{6}\NormalTok{))}
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Descriptive statistics for x1}
+\ErrorTok{>}\StringTok{ }\KeywordTok{descript}\NormalTok{(dat}\OperatorTok{$}\NormalTok{x1)}
+   n nNA   pNA    M   SD  Min  Max  Skew  Kurt
+  11   1 8.33% 3.27 1.27 1.00 5.00 -0.26 -0.62
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Descriptive statistics for x1, print all available statistical measures}
+\ErrorTok{>}\StringTok{ }\KeywordTok{descript}\NormalTok{(dat}\OperatorTok{$}\NormalTok{x1, }\DataTypeTok{print =} \StringTok{"all"}\NormalTok{)}
+   n nNA   pNA    M  Var   SD  Min  p25  Med  p75  Max Range  IQR  Skew  Kurt
+  11   1 8.33% 3.27 1.62 1.27 1.00 2.50 3.00 4.00 5.00  4.00 1.50 -0.26 -0.62
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Descriptive statistics for x1, x2, and x3, analysis by group1 separately}
+\ErrorTok{>}\StringTok{ }\KeywordTok{descript}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{, }\StringTok{"x3"}\NormalTok{)], }\DataTypeTok{group =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{group1)}
+  Group  Variable n nNA    pNA    M   SD  Min  Max  Skew  Kurt
+   1     x1       6   0  0.00% 3.00 1.41 1.00 5.00  0.00 -0.30
+   1     x2       5   1 16.67% 4.60 1.82 3.00 7.00  0.57 -2.23
+   1     x3       5   1 16.67% 6.00 1.58 4.00 8.00  0.00 -1.20
+   2     x1       5   1 16.67% 3.60 1.14 2.00 5.00 -0.40 -0.18
+   2     x2       6   0  0.00% 4.00 2.37 1.00 7.00  0.00 -1.88
+   2     x3       5   1 16.67% 6.60 1.34 5.00 8.00  0.17 -2.41
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Descriptive statistics for x1, x2, and x3, split analysis by group1}
+\ErrorTok{>}\StringTok{ }\KeywordTok{descript}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{, }\StringTok{"x3"}\NormalTok{)], }\DataTypeTok{split =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{group2)}
+  Split Group: 1 
+    Variable  n nNA    pNA    M   SD  Min  Max  Skew  Kurt
+     x1       5   1 16.67% 2.80 1.30 1.00 4.00 -0.54 -1.49
+     x2       5   1 16.67% 4.20 1.92 2.00 7.00  0.59 -0.02
+     x3       5   1 16.67% 6.80 1.30 5.00 8.00 -0.54 -1.49
+
+  Split Group: 2 
+    Variable  n nNA    pNA    M   SD  Min  Max  Skew  Kurt
+     x1       6   0  0.00% 3.67 1.21 2.00 5.00 -0.08 -1.55
+     x2       6   0  0.00% 4.33 2.34 1.00 7.00 -0.32 -1.66
+     x3       5   1 16.67% 5.80 1.48 4.00 8.00  0.55  0.87
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Descriptive statistics for x1, x2, and x3, analysis by group1 separately,}
+\ErrorTok{>}\StringTok{ }\CommentTok{# split analysis by group2}
+\ErrorTok{>}\StringTok{ }\KeywordTok{descript}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{, }\StringTok{"x3"}\NormalTok{)], }\DataTypeTok{group =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{group1, }\DataTypeTok{split =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{group2)}
+  Split Group: 1 
+    Group  Variable n nNA    pNA    M   SD  Min  Max  Skew Kurt
+     1     x1       3   0  0.00% 2.67 1.53 1.00 4.00 -0.94   NA
+     1     x2       2   1 33.33% 3.50 0.71 3.00 4.00    NA   NA
+     1     x3       3   0  0.00% 6.67 1.53 5.00 8.00 -0.94   NA
+     2     x1       2   1 33.33% 3.00 1.41 2.00 4.00    NA   NA
+     2     x2       3   0  0.00% 4.67 2.52 2.00 7.00 -0.59   NA
+     2     x3       2   1 33.33% 7.00 1.41 6.00 8.00    NA   NA
+
+  Split Group: 2 
+    Group  Variable n nNA    pNA    M   SD  Min  Max  Skew Kurt
+     1     x1       3   0  0.00% 3.33 1.53 2.00 5.00  0.94   NA
+     1     x2       3   0  0.00% 5.33 2.08 3.00 7.00 -1.29   NA
+     1     x3       2   1 33.33% 5.00 1.41 4.00 6.00    NA   NA
+     2     x1       3   0  0.00% 4.00 1.00 3.00 5.00  0.00   NA
+     2     x2       3   0  0.00% 3.33 2.52 1.00 6.00  0.59   NA
+     2     x3       3   0  0.00% 6.33 1.53 5.00 8.00  0.94   NA
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{multilevel-descriptive-statistics}{%
+\subsubsection{Multilevel Descriptve
+Statistics}\label{multilevel-descriptive-statistics}}
+
+The \texttt{multilevel.descript()} function computes descriptive
+statistics for multilevel data, e.g.~average group size, intraclass
+correlation coefficient, design effect and effectice sample size.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{id =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{group =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Multilevel descriptive statistics for x1}
+\ErrorTok{>}\StringTok{ }\KeywordTok{multilevel.descript}\NormalTok{(dat}\OperatorTok{$}\NormalTok{x1, }\DataTypeTok{group =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{group)}
+\Output{ Multilevel Descriptive Statistics}
+\Output{ }
+\Output{  No. of cases              9}
+\Output{  No. of missing values     0}
+\Output{                             }
+\Output{  No. of groups             3}
+\Output{  Average group size     3.00}
+\Output{  SD group size          1.00}
+\Output{  Min group size            2}
+\Output{  Max group size            4}
+\Output{                             }
+\Output{  ICC(1)                0.339}
+\Output{  ICC(2)                0.606}
+\Output{                             }
+\Output{  Design effect          1.68}
+\Output{  Design effect sqrt     1.30}
+\Output{  Effective sample size  5.36}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{intraclass-correlation-coefficient-icc1-and-icc2}{%
+\subsubsection{Intraclass Correlation Coefficient, ICC(1) and
+ICC(2)}\label{intraclass-correlation-coefficient-icc1-and-icc2}}
+
+The \texttt{multileve.icc()} function computes the intraclass
+correlation coefficient ICC(1), i.e., proportion of the total variance
+explained by the grouping structure, and ICC(2), i.e., reliability of
+aggregated variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{id =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{group =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# ICC(1) for x1}
+\ErrorTok{>}\StringTok{ }\KeywordTok{multilevel.icc}\NormalTok{(dat}\OperatorTok{$}\NormalTok{x1, }\DataTypeTok{group =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{group)}
+\Output{ [1] 0.3389831}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{correlation-matrix-with-statistical-significance-testing}{%
+\subsubsection{Correlation Matrix with Statistical Significance
+Testing}\label{correlation-matrix-with-statistical-significance-testing}}
+
+The \texttt{cor.matrix()} function computes a correlation matrix and
+computes significance values (\emph{p}-values) for testing the
+hypothesis H0: \(\rho\) = 0 for all possible pairs of variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{group =} \KeywordTok{c}\NormalTok{(}\StringTok{"a"}\NormalTok{, }\StringTok{"a"}\NormalTok{, }\StringTok{"a"}\NormalTok{, }\StringTok{"a"}\NormalTok{, }\StringTok{"a"}\NormalTok{, }\StringTok{"b"}\NormalTok{, }\StringTok{"b"}\NormalTok{, }\StringTok{"b"}\NormalTok{, }\StringTok{"b"}\NormalTok{, }\StringTok{"b"}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{7}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{7}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{8}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{z =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{6}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Pearson product-moment correlation coefficient matrix using pairwise deletion}
+\ErrorTok{>}\StringTok{ }\KeywordTok{cor.matrix}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x"}\NormalTok{, }\StringTok{"y"}\NormalTok{, }\StringTok{"z"}\NormalTok{)])}
+\Output{  Pearson Product-Moment Correlation Coefficient}
+\Output{ }
+\Output{        x    y z}
+\Output{   x            }
+\Output{   y 0.38       }
+\Output{   z 0.68 0.58}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Pearson product-moment correlation coefficient matrix using pairwise deletion,}
+\ErrorTok{>}\StringTok{ }\CommentTok{# print sample size and significance values}
+\ErrorTok{>}\StringTok{ }\KeywordTok{cor.matrix}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x"}\NormalTok{, }\StringTok{"y"}\NormalTok{, }\StringTok{"z"}\NormalTok{)], }\DataTypeTok{print =} \StringTok{"all"}\NormalTok{)}
+\Output{  Pearson Product-Moment Correlation Coefficient}
+\Output{ }
+\Output{        x    y z}
+\Output{   x            }
+\Output{   y 0.38       }
+\Output{   z 0.68 0.58  }
+\Output{ }
+\Output{  Sample Size Using Pairwise Deletion}
+\Output{ }
+\Output{     x y z}
+\Output{   x      }
+\Output{   y 7    }
+\Output{   z 8 7  }
+\Output{ }
+\Output{  Significance Value (p-value)}
+\Output{ }
+\Output{         x     y z}
+\Output{   x              }
+\Output{   y 0.401        }
+\Output{   z 0.066 0.168  }
+\Output{ }
+\Output{   Adjustment for multiple testing: none}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{polychoric-correlation-matrix}{%
+\subsubsection{Polychoric Correlation
+Matrix}\label{polychoric-correlation-matrix}}
+
+The \texttt{poly.cor()} function computes a polychoric correlation
+matrix, which is the estimated Pearson product-moment correlation matrix
+between underlying normally distributed latent variables which generate
+the ordinal scores.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Polychoric correlation matrix}
+\ErrorTok{>}\StringTok{ }\KeywordTok{poly.cor}\NormalTok{(dat)}
+\Output{ Polychoric Correlation Matrix}
+\Output{ }
+\Output{        x1    x2   x3}
+\Output{  x1  1.00           }
+\Output{  x2  0.36  1.00     }
+\Output{  x3 -0.17 -0.10 1.00}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{coefficient-alpha-and-item-statistics}{%
+\subsubsection{Coefficient Alpha and Item
+Statistics}\label{coefficient-alpha-and-item-statistics}}
+
+The \texttt{alpha.coef()} function computes point estimate and
+confidence interval for the coefficient alpha (aka Cronbach's alpha)
+along with the corrected item-total correlation and coefficient alpha if
+item deleted.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{item1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{item2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{item3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{item4 =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Compute unstandardized coefficient alpha and item statistics}
+\ErrorTok{>}\StringTok{ }\KeywordTok{alpha.coef}\NormalTok{(dat)}
+\Output{ Unstandardized Coefficient Alpha with 95% Confidence Interval}
+\Output{ }
+\Output{  Items Alpha  Low  Upp}
+\Output{      4  0.96 0.87 0.99}
+\Output{ }
+\Output{ Item-Total Correlation and Coefficient Alpha if Item Deleted}
+\Output{ }
+\Output{  Variable n nNA   pNA    M   SD  Min  Max It.Cor Alpha}
+\Output{  item1    8   0 0.00% 2.88 1.36 1.00 5.00   0.90  0.94}
+\Output{  item2    8   0 0.00% 3.00 1.77 1.00 5.00   0.96  0.92}
+\Output{  item3    8   0 0.00% 3.12 1.64 1.00 5.00   0.86  0.95}
+\Output{  item4    8   0 0.00% 3.00 1.51 1.00 5.00   0.87  0.95}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{cohens-d-for-between--and-within-subject-design}{%
+\subsubsection{Cohen's d for Between- and Within-Subject
+Design}\label{cohens-d-for-between--and-within-subject-design}}
+
+The \texttt{cohens.d()} function computes Cohen's d for between- and
+within-subject designs with confidence intervals. By default, the
+function computes the standardized mean difference divided by the
+weighted pooled standard deviation without applying the correction
+factor for removing the small sample bias.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{#--------------------------------------}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Between-subject design}
+\ErrorTok{>}\StringTok{ }\NormalTok{dat.bs <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{group =} \KeywordTok{c}\NormalTok{(}\StringTok{"cont"}\NormalTok{, }\StringTok{"cont"}\NormalTok{, }\StringTok{"cont"}\NormalTok{, }\StringTok{"treat"}\NormalTok{,  }\StringTok{"treat"}\NormalTok{),}
+\OperatorTok{+}\StringTok{                      }\DataTypeTok{y1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{7}\NormalTok{),}
+\OperatorTok{+}\StringTok{                      }\DataTypeTok{y2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+\OperatorTok{+}\StringTok{                      }\DataTypeTok{y3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Standardized mean difference divided by the weighted pooled standard deviation }
+\ErrorTok{>}\StringTok{ }\CommentTok{# without small sample correction factor}
+\ErrorTok{>}\StringTok{ }\KeywordTok{cohens.d}\NormalTok{(y1 }\OperatorTok{~}\StringTok{ }\NormalTok{group, }\DataTypeTok{data =}\NormalTok{ dat.bs)}
+\Output{  Cohen's d for bewteen-subject design with 95% confidence interval}
+\Output{ }
+\Output{   Variable n1 nNA1   M1  SD1 n2 nNA2   M2  SD2 M.Diff   SD Estimate   SE  Low   Upp}
+\Output{   y1        3    0 2.00 1.00  2    0 6.00 1.41   4.00 1.15     3.46 3.95 1.44 13.67}
+\Output{ }
+\Output{  Note. SD = weighted pooled standard deviation}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Cohens's d for for more than one outcome variable}
+\ErrorTok{>}\StringTok{ }\KeywordTok{cohens.d}\NormalTok{(}\KeywordTok{cbind}\NormalTok{(y1, y2, y3) }\OperatorTok{~}\StringTok{ }\NormalTok{group, }\DataTypeTok{data =}\NormalTok{ dat.bs)}
+\Output{  Cohen's d for bewteen-subject design with 95% confidence interval}
+\Output{ }
+\Output{   Variable n1 nNA1   M1  SD1 n2 nNA2   M2  SD2 M.Diff   SD Estimate   SE    Low   Upp}
+\Output{   y1        3    0 2.00 1.00  2    0 6.00 1.41   4.00 1.15     3.46 3.95   1.44 13.67}
+\Output{   y2        3    0 3.33 0.58  2    0 5.00 1.41   1.67 0.94     1.77 2.43  -0.02  7.88}
+\Output{   y3        3    0 6.33 1.15  2    0 2.50 0.71  -3.83 1.03    -3.73 4.20 -14.62 -1.63}
+\Output{ }
+\Output{  Note. SD = weighted pooled standard deviation}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{#--------------------------------------}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Within-subject design}
+\ErrorTok{>}\StringTok{ }\NormalTok{dat.ws <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{pre =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{7}\NormalTok{),}
+\OperatorTok{+}\StringTok{                      }\DataTypeTok{post =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{8}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Standardized mean difference divided by the pooled standard deviation }
+\ErrorTok{>}\StringTok{ }\CommentTok{# while controlling for the correlation, without small sample correction factor}
+\ErrorTok{>}\StringTok{ }\KeywordTok{cohens.d}\NormalTok{(post }\OperatorTok{~}\StringTok{ }\NormalTok{pre, }\DataTypeTok{data =}\NormalTok{ dat.ws, }\DataTypeTok{paired =} \OtherTok{TRUE}\NormalTok{)}
+\Output{  Cohen's d for within-subject design with 95% confidence interval}
+\Output{ }
+\Output{   n nNA Variable1   M1  SD1 Variable2   M2  SD2 M.Diff   SD Estimate   SE   Low  Upp}
+\Output{   5   0      post 3.80 3.03       pre 3.60 2.41  -0.20 1.10    -0.06 0.17 -0.43 0.26}
+\Output{ }
+\Output{  Note. SD = controlling for the correlation between measures}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{phi-coefficient}{%
+\subsubsection{Phi Coefficient}\label{phi-coefficient}}
+
+The \texttt{phi.coef()} function computes the (adjusted) Phi coefficient
+between two or more than two dichotomous variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Phi coefficient matrix between x1, x2, and x3}
+\ErrorTok{>}\StringTok{ }\KeywordTok{phi.coef}\NormalTok{(dat)}
+\Output{ Phi Coefficient Matrix}
+\Output{ }
+\Output{        x1    x2 x3}
+\Output{  x1               }
+\Output{  x2 0.218         }
+\Output{  x3 0.408 0.356}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{pearsons-contingency-coefficient}{%
+\subsubsection{Pearson's Contingency
+Coefficient}\label{pearsons-contingency-coefficient}}
+
+The \texttt{cont.coef()} function computes the (adjusted) Pearson's
+contingency coefficient between two or more than two variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{z =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Contingency coefficient matrix between x, y, and z}
+\ErrorTok{>}\StringTok{ }\KeywordTok{cont.coef}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x"}\NormalTok{, }\StringTok{"y"}\NormalTok{, }\StringTok{"z"}\NormalTok{)])}
+\Output{ Contingency Coefficient Matrix}
+\Output{ }
+\Output{        x     y z}
+\Output{  x              }
+\Output{  y 0.522        }
+\Output{  z 0.378 0.637}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{cramers-v}{%
+\subsubsection{Cramer's V}\label{cramers-v}}
+
+The \texttt{cramers.v()} function computes the (bias-corrected) Cramer's
+V between two or more than two variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{z =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Bias-corrected Cramer's V matrix between x, y, and z}
+\ErrorTok{>}\StringTok{ }\KeywordTok{cramers.v}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x"}\NormalTok{, }\StringTok{"y"}\NormalTok{, }\StringTok{"z"}\NormalTok{)])}
+\Output{ Bias-Corrected Cramer's V Matrix}
+\Output{ }
+\Output{        x     y z}
+\Output{  x              }
+\Output{  y 0.283        }
+\Output{  z 0.395 0.401}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{eta-squared}{%
+\subsubsection{Eta Squared}\label{eta-squared}}
+
+The \texttt{eta.sq()} function computes eta squared for one or more
+outcome variables in combination with one or more grouping variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{7}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{7}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Eta squared for y1 explained by x1}
+\ErrorTok{>}\StringTok{ }\KeywordTok{eta.sq}\NormalTok{(dat}\OperatorTok{$}\NormalTok{y1, }\DataTypeTok{group =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{x1)}
+\Output{ Eta Squared Matrix}
+\Output{ }
+\Output{   Estimate   0.499}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{skewness}{%
+\subsubsection{Skewness}\label{skewness}}
+
+The \texttt{skewness()} function computes the skewness.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Compute skewness}
+\ErrorTok{>}\StringTok{ }\KeywordTok{skewness}\NormalTok{(}\KeywordTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{))}
+\Output{ [1] 0.3869627}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{excess-kurtosis}{%
+\subsubsection{Excess Kurtosis}\label{excess-kurtosis}}
+
+The \texttt{kurtosis()} function computes the excess kurtosis.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Compute excess kurtosis}
+\ErrorTok{>}\StringTok{ }\KeywordTok{kurtosis}\NormalTok{(}\KeywordTok{rnorm}\NormalTok{(}\DecValTok{100}\NormalTok{))}
+\Output{ [1] 0.1674761}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{functions-for-missing-data}{%
+\subsection{Functions for missing
+data}\label{functions-for-missing-data}}
+
+\hypertarget{descriptive-statistics-for-missing-data}{%
+\subsubsection{Descriptive Statistics for Missing
+Data}\label{descriptive-statistics-for-missing-data}}
+
+The \texttt{na.descript()} function computes descriptive statistics for
+missing data, e.g.~number (\%) of incomplete cases, number (\%) of
+missing values, and summary statistics for the number (\%) of missing
+values across all variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x3 =} \KeywordTok{c}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x4 =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{6}\NormalTok{, }\OtherTok{NA}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Descriptive statistics for missing data}
+\ErrorTok{>}\StringTok{ }\KeywordTok{na.descript}\NormalTok{(dat)}
+\Output{  Descriptive Statistics for Missing Data}
+\Output{ }
+\Output{   No. of cases                8         }
+\Output{   No. of complete cases       1 (12.50%)}
+\Output{   No. of incomplete cases     7 (87.50%)}
+\Output{ }
+\Output{   No. of values              32         }
+\Output{   No. of observed values     25 (78.12%)}
+\Output{   No. of missing values       7 (21.88%)}
+\Output{ }
+\Output{   No. of variables            4         }
+\Output{   No. of missing values across all variables}
+\Output{     Mean                   1.75 (21.88%)}
+\Output{     SD                     1.26 (15.73%)}
+\Output{     Minimum                0.00  (0.00%)}
+\Output{     P25                    1.50 (18.75%)}
+\Output{     P75                    2.25 (28.12%)}
+\Output{     Maximum                3.00 (37.50%)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{missing-data-pattern}{%
+\subsubsection{Missing Data Pattern}\label{missing-data-pattern}}
+
+The \texttt{na.pattern()} function computes a summary of missing data
+patterns, i.e., number (\%) of cases with a specific missing data
+pattern.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{, }\OtherTok{NA}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{z =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{5}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Compute a summary of missing data patterns}
+\ErrorTok{>}\StringTok{ }\NormalTok{dat.pattern <-}\StringTok{ }\KeywordTok{na.pattern}\NormalTok{(dat)}
+\Output{  Missing Data Pattern}
+\Output{ }
+\Output{   Pattern n    Perc x y z nNA     pNA}
+\Output{         1 1  20.00% 1 1 1   0   0.00%}
+\Output{         2 1  20.00% 1 1 0   1  33.33%}
+\Output{         3 1  20.00% 1 0 1   1  33.33%}
+\Output{         4 1  20.00% 0 1 1   1  33.33%}
+\Output{         5 1  20.00% 0 0 0   3 100.00%}
+\Output{           5 100.00% 2 2 2}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{variance-covariance-coverage}{%
+\subsubsection{Variance-Covariance
+Coverage}\label{variance-covariance-coverage}}
+
+The \texttt{na.coverage()} function computes the proportion of cases
+that contributes for the calculation of each variance and covariance.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{, }\OtherTok{NA}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{z =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{5}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Create missing data indicator matrix R}
+\ErrorTok{>}\StringTok{ }\KeywordTok{na.coverage}\NormalTok{(dat)}
+\Output{  Variance-Covariance Coverage}
+\Output{ }
+\Output{        x    y    z}
+\Output{   x 0.60          }
+\Output{   y 0.40 0.60     }
+\Output{   z 0.40 0.40 0.60}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{missing-data-indicator-matrix}{%
+\subsubsection{Missing Data Indicator
+Matrix}\label{missing-data-indicator-matrix}}
+
+The \texttt{na.indicator()} function creates a missing data indicator
+matrix \(R\) that denotes whether values are observed or missing, i.e.,
+\(r = 1\) if a value is observed, and \(r = 0\) if a value is missing.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{, }\OtherTok{NA}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{z =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{5}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Create missing data indicator matrix R}
+\ErrorTok{>}\StringTok{ }\KeywordTok{na.indicator}\NormalTok{(dat)}
+\Output{   x y z}
+\Output{ 1 1 1 1}
+\Output{ 2 0 0 0}
+\Output{ 3 0 1 1}
+\Output{ 4 1 1 0}
+\Output{ 5 1 0 1}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{auxiliary-variables}{%
+\subsubsection{Auxiliary Variables}\label{auxiliary-variables}}
+
+The \texttt{na.auxiliary()} function computes (1) Pearson product-moment
+correlation matrix to identify variables related to the incomplete
+variable and (2) Cohen's d comparing cases with and without missing
+values to identify variables related to the probability of missigness.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x3 =} \KeywordTok{c}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x4 =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{6}\NormalTok{, }\OtherTok{NA}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Auxiliary variables}
+\ErrorTok{>}\StringTok{ }\KeywordTok{na.auxiliary}\NormalTok{(dat)}
+\Output{  Auxiliary Variables}
+\Output{ }
+\Output{   Variables related to the incomplete variable}
+\Output{ }
+\Output{    Pearson product-moment correlation matrix}
+\Output{          x1    x2    x3    x4}
+\Output{    x1                        }
+\Output{    x2 -0.62                  }
+\Output{    x3  0.63 -0.28            }
+\Output{    x4  0.58 -0.57  0.05      }
+\Output{ }
+\Output{   Variables related to the probability of missigness}
+\Output{ }
+\Output{    Cohen's d}
+\Output{          x1    x2    x3    x4}
+\Output{    x1        1.04 -0.75 -0.22}
+\Output{    x2    NA          NA    NA}
+\Output{    x3  0.00 -0.31       -0.89}
+\Output{    x4 -0.37 -0.04  0.00      }
+\Output{ }
+\Output{   Note. Indicator variables are in the rows (0 = miss, 1 = obs)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{proportion-of-missing-data-for-each-case}{%
+\subsubsection{Proportion of Missing Data for Each
+Case}\label{proportion-of-missing-data-for-each-case}}
+
+The \texttt{na.prop()} function computes the proportion of missing data
+for each case in a matrix or data frame.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{, }\OtherTok{NA}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{z =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{5}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Compute proportion of missing data (NA) for each case in the data frame}
+\ErrorTok{>}\StringTok{ }\KeywordTok{na.prop}\NormalTok{(dat)}
+\Output{ [1] 0.00 1.00 0.33 0.33 0.33}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{replace-user-specified-values-with-missing-values}{%
+\subsubsection{Replace User-Specified Values with Missing
+Values}\label{replace-user-specified-values-with-missing-values}}
+
+The \texttt{as.na()} function replaces user-spefied values in the
+argument \texttt{na} in a vector, factor, matrix or data frame with
+\texttt{NA}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{x.num <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{)}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Replace 2 with NA}
+\ErrorTok{>}\StringTok{ }\KeywordTok{as.na}\NormalTok{(x.num, }\DataTypeTok{as.na =} \DecValTok{2}\NormalTok{)}
+\Output{ [1]  1  3 NA  4  5}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Replace 2, 3, and 4 with NA}
+\ErrorTok{>}\StringTok{ }\KeywordTok{as.na}\NormalTok{(x.num, }\DataTypeTok{as.na =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+\Output{ [1]  1 NA NA NA  5}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{replace-missing-values-with-user-specified-values}{%
+\subsubsection{Replace Missing Values with User-Specified
+Values}\label{replace-missing-values-with-user-specified-values}}
+
+The \texttt{na.as()} function replaces \texttt{NA} in a vector, factor,
+matrix or data frame with user-spefied values in the argument
+\texttt{value}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{x.num <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{)}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Replace NA with 2}
+\ErrorTok{>}\StringTok{ }\KeywordTok{na.as}\NormalTok{(x.num, }\DataTypeTok{value =} \DecValTok{2}\NormalTok{)}
+\Output{ [1] 1 3 2 4 5}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{functions-for-data-mangement}{%
+\subsection{Functions for data
+mangement}\label{functions-for-data-mangement}}
+
+\hypertarget{merge-multiple-data-frames}{%
+\subsubsection{Merge Multiple Data
+Frames}\label{merge-multiple-data-frames}}
+
+The \texttt{df.merge()} function merges data frames by a common column
+(i.e., matching variable).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{adat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{id =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{8}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\NormalTok{bdat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{id =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\NormalTok{cdat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{id =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{y3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\DecValTok{9}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\NormalTok{ddat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{id =} \DecValTok{4}\NormalTok{,}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{y4 =} \DecValTok{6}\NormalTok{)}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Merge adat, bdat, cdat, and data by the variable id}
+\ErrorTok{>}\StringTok{ }\KeywordTok{df.merge}\NormalTok{(adat, bdat, cdat, ddat, }\DataTypeTok{by =} \StringTok{"id"}\NormalTok{, }\DataTypeTok{output =} \OtherTok{FALSE}\NormalTok{)}
+\Output{   id x1 x2 y3 y4}
+\Output{ 1  1  7  5 NA NA}
+\Output{ 2  2  3  1  7 NA}
+\Output{ 3  3  8 NA  9 NA}
+\Output{ 4  4 NA NA NA  6}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{combine-data-frames-by-rows-filling-in-missing-columns}{%
+\subsubsection{Combine Data Frames by Rows, Filling in Missing
+Columns}\label{combine-data-frames-by-rows-filling-in-missing-columns}}
+
+The \texttt{df.rbind()} function takes a sequence of data frames and
+combines them by rows, while filling in missing columns with
+\texttt{NA}s.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{adat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{id =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{a =} \KeywordTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{8}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{b =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{7}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\NormalTok{bdat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{id =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{a =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{6}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{c =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{7}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\NormalTok{cdat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{id =} \KeywordTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{a =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{6}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{d =} \KeywordTok{c}\NormalTok{(}\DecValTok{9}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\KeywordTok{df.rbind}\NormalTok{(adat, bdat, cdat)}
+\Output{   id a  b  c  d}
+\Output{ 1  1 7  4 NA NA}
+\Output{ 2  2 3  2 NA NA}
+\Output{ 3  3 8  7 NA NA}
+\Output{ 4  4 2 NA  4 NA}
+\Output{ 5  5 4 NA  2 NA}
+\Output{ 6  6 6 NA  7 NA}
+\Output{ 7  7 1 NA NA  9}
+\Output{ 8  8 4 NA NA  5}
+\Output{ 9  9 6 NA NA  4}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{rename-columns-in-a-matrix-or-variables-in-a-data-frame}{%
+\subsubsection{Rename Columns in a Matrix or Variables in a Data
+Frame}\label{rename-columns-in-a-matrix-or-variables-in-a-data-frame}}
+
+The \texttt{df.rename()} function renames columns in a matrix or
+variables in a data frame by specifying a character string or character
+vector indicating the columns or variables to be renamed and a character
+string or character vector indicating the corresponding replacement
+values.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{a =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{6}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{b =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{c =} \KeywordTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Rename variable b in the data frame 'dat' to y}
+\ErrorTok{>}\StringTok{ }\KeywordTok{df.rename}\NormalTok{(dat, }\DataTypeTok{from =} \StringTok{"b"}\NormalTok{, }\DataTypeTok{to =} \StringTok{"y"}\NormalTok{)}
+\Output{   a y c}
+\Output{ 1 3 4 7}
+\Output{ 2 1 2 3}
+\Output{ 3 6 5 1}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{data-frame-sorting}{%
+\subsubsection{Data Frame Sorting}\label{data-frame-sorting}}
+
+The \texttt{df.sort()} function arranges a data frame in increasing or
+decreasing order according to one or more variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{z =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Sort data frame 'dat' by "x" in increasing order}
+\ErrorTok{>}\StringTok{ }\KeywordTok{df.sort}\NormalTok{(dat, x)}
+\Output{   x y z}
+\Output{ 1 2 6 1}
+\Output{ 2 2 3 4}
+\Output{ 3 5 1 2}
+\Output{ 4 5 2 6}
+\Output{ 5 5 3 3}
+\Output{ 6 7 2 7}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{recode-variable}{%
+\subsubsection{Recode Variable}\label{recode-variable}}
+
+The \texttt{rec()} function recodes a numeric vector, character vector,
+or factor according to recode specifications.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{x.num <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{12}\NormalTok{, }\DecValTok{15}\NormalTok{, }\DecValTok{19}\NormalTok{, }\DecValTok{20}\NormalTok{)}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Recode 5 = 50 and 19 = 190}
+\ErrorTok{>}\StringTok{ }\KeywordTok{rec}\NormalTok{(x.num, }\StringTok{"5 = 50; 19 = 190"}\NormalTok{)}
+\Output{  [1]   1   2   4  50   6   8  12  15 190  20}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Recode 1, 2, and 5 = 100 and 4, 6, and 7 = 200 and else = 300}
+\ErrorTok{>}\StringTok{ }\KeywordTok{rec}\NormalTok{(x.num, }\StringTok{"c(1, 2, 5) = 100; c(4, 6, 7) = 200; else = 300"}\NormalTok{)}
+\Output{  [1] 100 100 200 100 200 300 300 300 300 300}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{reverse-code-scale-item}{%
+\subsubsection{Reverse Code Scale Item}\label{reverse-code-scale-item}}
+
+The \texttt{reverse.item()} function reverse codes an inverted item,
+i.e., item that is negatively worded.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{item1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{item2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{item3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{-99}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Reverse code item2}
+\ErrorTok{>}\StringTok{ }\KeywordTok{reverse.item}\NormalTok{(dat}\OperatorTok{$}\NormalTok{item1, }\DataTypeTok{min =} \DecValTok{1}\NormalTok{, }\DataTypeTok{max =} \DecValTok{5}\NormalTok{)}
+\Output{ [1] 1 4 3 2 5 4 2 4}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{compute-scale-scores}{%
+\subsubsection{Compute Scale Scores}\label{compute-scale-scores}}
+
+The \texttt{scores()} function computes (prorated) scale scores by
+averaging the (available) items that measure a single construct by
+default.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{item1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{,  }\DecValTok{2}\NormalTok{,  }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{,  }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{,  }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{item2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,  }\DecValTok{2}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{2}\NormalTok{,  }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\OtherTok{NA}\NormalTok{,  }\DecValTok{1}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{item3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,  }\DecValTok{1}\NormalTok{,  }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{,  }\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\OtherTok{NA}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{item4 =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{,  }\DecValTok{2}\NormalTok{,  }\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{2}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\OtherTok{NA}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{item5 =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\DecValTok{2}\NormalTok{,  }\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{,  }\DecValTok{3}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Prorated mean scale scores}
+\ErrorTok{>}\StringTok{ }\KeywordTok{scores}\NormalTok{(dat)}
+\Output{ [1] 2.600000 1.750000 3.333333 2.200000 4.250000 2.200000 3.000000 2.000000}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Prorated standard deviation scale scores}
+\ErrorTok{>}\StringTok{ }\KeywordTok{scores}\NormalTok{(dat, }\DataTypeTok{fun =} \StringTok{"sd"}\NormalTok{)}
+\Output{ [1] 1.140175 0.500000 1.154701 1.095445 0.500000 0.836660       NA 1.414214}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Prorated mean scale scores, minimum proportion of available item responses = 0.8}
+\ErrorTok{>}\StringTok{ }\KeywordTok{scores}\NormalTok{(dat, }\DataTypeTok{p.avail =} \FloatTok{0.8}\NormalTok{)}
+\Output{ [1] 2.60 1.75   NA 2.20 4.25 2.20   NA   NA}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{group-scores}{%
+\subsubsection{Group Scores}\label{group-scores}}
+
+The \texttt{group.scores()} function computes group means by default.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat.ml <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{id =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{),}
+\OperatorTok{+}\StringTok{                      }\DataTypeTok{group =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                      }\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Compute group means and expand to match the input x}
+\ErrorTok{>}\StringTok{ }\KeywordTok{group.scores}\NormalTok{(dat.ml}\OperatorTok{$}\NormalTok{x, }\DataTypeTok{group =}\NormalTok{ dat.ml}\OperatorTok{$}\NormalTok{group)}
+\Output{ [1] 3.666667 3.666667 3.666667 4.333333 4.333333 4.333333 2.666667 2.666667}
+\Output{ [9] 2.666667}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Compute standard deviation for each group and expand to match the input x}
+\ErrorTok{>}\StringTok{ }\KeywordTok{group.scores}\NormalTok{(dat.ml}\OperatorTok{$}\NormalTok{x, }\DataTypeTok{group =}\NormalTok{ dat.ml}\OperatorTok{$}\NormalTok{group, }\DataTypeTok{fun =} \StringTok{"sd"}\NormalTok{)}
+\Output{ [1] 1.527525 1.527525 1.527525 1.527525 1.527525 1.527525 1.527525 1.527525}
+\Output{ [9] 1.527525}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{r_wgj-within-group-agreement-index-for-multi-item-scales}{%
+\subsubsection{\texorpdfstring{\(r*_{wg(j)}\) Within-Group Agreement
+Index for Multi-Item
+Scales}{r*\_\{wg(j)\} Within-Group Agreement Index for Multi-Item Scales}}\label{r_wgj-within-group-agreement-index-for-multi-item-scales}}
+
+The \texttt{rwg.lindell()} function computes r*wg(j) within-group
+agreement index for multi-item scales as described in Lindell, Brandt
+and Whitney (1999).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{id =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{group =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Compute Fisher z-transformed r*wg(j) for a multi-item scale with A = 5 response options}
+\ErrorTok{>}\StringTok{ }\KeywordTok{rwg.lindell}\NormalTok{(dat[, }\KeywordTok{c}\NormalTok{(}\StringTok{"x1"}\NormalTok{, }\StringTok{"x2"}\NormalTok{, }\StringTok{"x3"}\NormalTok{)], }\DataTypeTok{group =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{group, }\DataTypeTok{A =} \DecValTok{5}\NormalTok{)}
+\Output{         1         1         1         2         2         2         3         3 }
+\Output{ 0.8047190 0.8047190 0.8047190 1.1989476 1.1989476 1.1989476 0.4104903 0.4104903 }
+\Output{         3 }
+\Output{ 0.4104903}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{centering-at-the-grand-mean-or-centering-within-cluster}{%
+\subsubsection{Centering at the Grand Mean or Centering within
+Cluster}\label{centering-at-the-grand-mean-or-centering-within-cluster}}
+
+The \texttt{center()} function is used to center predictors at the grand
+mean (CGM, i.e., grand mean centering) or within cluster (CWC, i.e.,
+group-mean centering).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{#--------------------------------------}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Predictors in a single-level regression}
+\ErrorTok{>}\StringTok{ }\NormalTok{dat.sl <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+\OperatorTok{+}\StringTok{                      }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{5}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Center predictor at the sample mean}
+\ErrorTok{>}\StringTok{ }\KeywordTok{center}\NormalTok{(dat.sl}\OperatorTok{$}\NormalTok{x)}
+\Output{ [1]  0.4444444 -1.5555556  1.4444444  2.4444444 -0.5555556  0.4444444 -2.5555556}
+\Output{ [8] -0.5555556  0.4444444}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{#--------------------------------------}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Predictors in a multilevel regression}
+\ErrorTok{>}\StringTok{ }\NormalTok{dat.ml <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{id =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{),}
+\OperatorTok{+}\StringTok{                      }\DataTypeTok{group =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                      }\DataTypeTok{x.l1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+\OperatorTok{+}\StringTok{                      }\DataTypeTok{x.l2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                      }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{5}\NormalTok{))}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Center level-1 predictor at the grand mean (CGM)}
+\ErrorTok{>}\StringTok{ }\KeywordTok{center}\NormalTok{(dat.ml}\OperatorTok{$}\NormalTok{x.l1)}
+\Output{ [1]  0.4444444 -1.5555556  1.4444444  2.4444444 -0.5555556  0.4444444 -2.5555556}
+\Output{ [8] -0.5555556  0.4444444}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Center level-1 predictor within cluster (CWC)}
+\ErrorTok{>}\StringTok{ }\KeywordTok{center}\NormalTok{(dat.ml}\OperatorTok{$}\NormalTok{x.l1, }\DataTypeTok{type =} \StringTok{"CWC"}\NormalTok{, }\DataTypeTok{group =}\NormalTok{ dat.ml}\OperatorTok{$}\NormalTok{group)}
+\Output{ [1]  0.3333333 -1.6666667  1.3333333  1.6666667 -1.3333333 -0.3333333 -1.6666667}
+\Output{ [8]  0.3333333  1.3333333}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Center level-2 predictor at the grand mean (CGM)}
+\ErrorTok{>}\StringTok{ }\KeywordTok{center}\NormalTok{(dat.ml}\OperatorTok{$}\NormalTok{x.l2, }\DataTypeTok{type =} \StringTok{"CGM"}\NormalTok{, }\DataTypeTok{group =}\NormalTok{ dat.ml}\OperatorTok{$}\NormalTok{group)}
+\Output{ [1]  1.3333333  1.3333333  1.3333333 -1.6666667 -1.6666667 -1.6666667  0.3333333}
+\Output{ [8]  0.3333333  0.3333333}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{dummy-coding}{%
+\subsubsection{Dummy Coding}\label{dummy-coding}}
+
+The \texttt{dummy.c()} function creates \(k - 1\) dummy coded 0/1
+variables for a vector with k distinct values.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\StringTok{"a"}\NormalTok{, }\StringTok{"a"}\NormalTok{, }\StringTok{"a"}\NormalTok{, }\StringTok{"b"}\NormalTok{, }\StringTok{"b"}\NormalTok{, }\StringTok{"b"}\NormalTok{, }\StringTok{"c"}\NormalTok{, }\StringTok{"c"}\NormalTok{, }\StringTok{"c"}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{z =} \KeywordTok{factor}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"B"}\NormalTok{, }\StringTok{"B"}\NormalTok{, }\StringTok{"B"}\NormalTok{, }\StringTok{"A"}\NormalTok{, }\StringTok{"A"}\NormalTok{, }\StringTok{"A"}\NormalTok{, }\StringTok{"C"}\NormalTok{, }\StringTok{"C"}\NormalTok{, }\StringTok{"C"}\NormalTok{)),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{stringsAsFactors =} \OtherTok{FALSE}\NormalTok{)}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Dummy coding of a numeric variable, reference = 3}
+\ErrorTok{>}\StringTok{ }\KeywordTok{dummy.c}\NormalTok{(dat}\OperatorTok{$}\NormalTok{x)}
+\Output{       d1 d2}
+\Output{  [1,]  1  0}
+\Output{  [2,]  1  0}
+\Output{  [3,]  1  0}
+\Output{  [4,]  0  1}
+\Output{  [5,]  0  1}
+\Output{  [6,]  0  1}
+\Output{  [7,]  0  0}
+\Output{  [8,]  0  0}
+\Output{  [9,]  0  0}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Dummy coding of a numeric variable, reference = 1}
+\ErrorTok{>}\StringTok{ }\KeywordTok{dummy.c}\NormalTok{(dat}\OperatorTok{$}\NormalTok{x, }\DataTypeTok{ref =} \DecValTok{1}\NormalTok{)}
+\Output{       d2 d3}
+\Output{  [1,]  0  0}
+\Output{  [2,]  0  0}
+\Output{  [3,]  0  0}
+\Output{  [4,]  1  0}
+\Output{  [5,]  1  0}
+\Output{  [6,]  1  0}
+\Output{  [7,]  0  1}
+\Output{  [8,]  0  1}
+\Output{  [9,]  0  1}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{omit-strings}{%
+\subsubsection{Omit Strings}\label{omit-strings}}
+
+The \texttt{stromit()} function omits user-specified values or strings
+from a numeric vector, character vector or factor.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{x.chr <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"a"}\NormalTok{, }\StringTok{""}\NormalTok{, }\StringTok{"c"}\NormalTok{, }\OtherTok{NA}\NormalTok{, }\StringTok{""}\NormalTok{, }\StringTok{"d"}\NormalTok{, }\StringTok{"e"}\NormalTok{, }\OtherTok{NA}\NormalTok{)}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Omit character string ""}
+\ErrorTok{>}\StringTok{ }\KeywordTok{stromit}\NormalTok{(x.chr)}
+\Output{ [1] "a" "c" NA  "d" "e" NA}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Omit character string "" and missing values (NA)}
+\ErrorTok{>}\StringTok{ }\KeywordTok{stromit}\NormalTok{(x.chr, }\DataTypeTok{na.omit =} \OtherTok{TRUE}\NormalTok{)}
+\Output{ [1] "a" "c" "d" "e"}
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Omit character string "c" and "e"}
+\ErrorTok{>}\StringTok{ }\KeywordTok{stromit}\NormalTok{(x.chr, }\DataTypeTok{omit =} \KeywordTok{c}\NormalTok{(}\StringTok{"c"}\NormalTok{, }\StringTok{"e"}\NormalTok{))}
+\Output{ [1] "a" ""  NA  ""  "d" NA}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{read-spss-file}{%
+\subsubsection{Read SPSS File}\label{read-spss-file}}
+
+The \texttt{read.sav()} function calls the \texttt{read\_sav()} function
+in the \emph{haven} package by Hadley Wickham and Evan Miller (2019) to
+read an SPSS file.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Read SPSS data}
+\ErrorTok{>}\StringTok{ }\CommentTok{# read.sav("SPSS_Data.sav")}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{write-spss-file}{%
+\subsubsection{Write SPSS File}\label{write-spss-file}}
+
+The \texttt{write.sav()} function writes a data frame or matrix into a
+SPSS file by either by using the \texttt{write\_sav()} function in the
+\emph{haven} package by Hadley Wickham and Evan Miller (2019) or the
+free software \texttt{PSPP} (see:
+\url{https://www.gnu.org/software/pspp/pspp.html}).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# dat <- data.frame(id = 1:5,}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                   gender = c(NA, 0, 1, 1, 0),}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                   age = c(16, 19, 17, NA, 16),}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                   status = c(1, 2, 3, 1, 4),}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                   score = c(511, 506, 497, 502, 491))}
+\ErrorTok{>}\StringTok{ }\CommentTok{#}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Write SPSS file using the haven package}
+\ErrorTok{>}\StringTok{ }\CommentTok{# write.sav(dat, file = "Dataframe_haven.sav")}
+\ErrorTok{>}\StringTok{ }\CommentTok{#}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Write SPSS file using PSPP,}
+\ErrorTok{>}\StringTok{ }\CommentTok{# write CSV file and SPSS syntax along with the SPSS file}
+\ErrorTok{>}\StringTok{ }\CommentTok{# write.sav(dat, file = "Dataframe_PSPP.sav", pspp.path = "C:/Program Files/PSPP",}
+\ErrorTok{>}\StringTok{ }\CommentTok{#           write.csv = TRUE, write.sps = TRUE)}
+\ErrorTok{>}\StringTok{ }\CommentTok{#}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Specify variable attributes}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Note that it is recommended to manually specify the variables attritbues in a CSV or}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Excel file which is subsequently read into R}
+\ErrorTok{>}\StringTok{ }\CommentTok{# attr <- data.frame(# Variable names}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                    var = c("id", "gender", "age", "status", "score"),}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                    # Variable labels}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                    label = c("Identification number", "Gender", "Age in years",}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                              "Migration background", "Achievement test score"),}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                    # Value labels}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                    values = c("", "0 = female; 1 = male", "",}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                               "1 = Austria; 2 = former Yugoslavia; 3 = Turkey; 4 = other", ""),}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                    # User-missing values}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                    missing = c("", "-99", "-99", "-99", "-99"))}
+\ErrorTok{>}\StringTok{ }\CommentTok{#}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Write SPSS file with variable attributes using the haven package}
+\ErrorTok{>}\StringTok{ }\CommentTok{# write.sav(dat, file = "Dataframe_haven_Attr.sav", var.attr = attr)}
+\ErrorTok{>}\StringTok{ }\CommentTok{#}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Write SPSS with variable attributes using PSPP}
+\ErrorTok{>}\StringTok{ }\CommentTok{# write.sav(dat, file = "Dataframe_PSPP_Attr.sav", var.attr = attr,}
+\ErrorTok{>}\StringTok{ }\CommentTok{#           pspp.path = "C:/Program Files/PSPP")}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{read-mplus-data-file-and-variable-names}{%
+\subsubsection{Read Mplus Data File and Variable
+Names}\label{read-mplus-data-file-and-variable-names}}
+
+The \texttt{read.mplus()} function reads a Mplus data file and/or Mplus
+input/output file to return a data frame with variable names extracted
+from the Mplus input/output file.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Read Mplus data file and variable names extracted from the Mplus input file}
+\ErrorTok{>}\StringTok{ }\CommentTok{# dat <- read.mplus("Mplus_Data.dat", input = "Mplus_Input.inp")}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{write-mplus-data-file}{%
+\subsubsection{Write Mplus Data File}\label{write-mplus-data-file}}
+
+The \texttt{write.mplus()} function writes a matrix or data frame to a
+tab-delimited file without variable names and a text file with variable
+names. Only numeric values are allowed, missing data will be coded as a
+single numeric value.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# dat <- data.frame(id = 1:5,}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                   x = c(NA, 2, 1, 5, 6),}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                   y = c(5, 3, 6, 8, 2),}
+\ErrorTok{>}\StringTok{ }\CommentTok{#                   z = c(2, 1, 1, NA, 4))}
+\ErrorTok{>}\StringTok{ }\CommentTok{#}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Write Mplus Data File and a text file with variable names}
+\ErrorTok{>}\StringTok{ }\CommentTok{# write.mplus(dat)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{functions-for-statistical-analysis}{%
+\subsection{Functions for statistical
+analysis}\label{functions-for-statistical-analysis}}
+
+\hypertarget{run-mplus-models}{%
+\subsubsection{Run Mplus Models}\label{run-mplus-models}}
+
+The \texttt{run.mplus()} function runs a group of Mplus models
+(\texttt{.inp} files) located within a single directory or nested within
+subdirectories.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Run Mplus models located within a single directory}
+\ErrorTok{>}\StringTok{ }\CommentTok{# run.mplus(Mplus = "C:/Program Files/Mplus/Mplus.exe")}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{sample-size-determination-for-testing-arithmetic-means}{%
+\subsubsection{Sample Size Determination for Testing Arithmetic
+Means}\label{sample-size-determination-for-testing-arithmetic-means}}
+
+The \texttt{size.mean()} function performs sample size computation for
+the one-sample and two-sample t-test based on precision requirements
+(i.e., type-I-risk, type-II-risk and an effect size).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Two-sided one-sample test}
+\ErrorTok{>}\StringTok{ }\KeywordTok{size.mean}\NormalTok{(}\DataTypeTok{theta =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{sample =} \StringTok{"one.sample"}\NormalTok{,}
+\OperatorTok{+}\StringTok{           }\DataTypeTok{alternative =} \StringTok{"two.sided"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\DataTypeTok{beta =} \FloatTok{0.2}\NormalTok{)}
+\Output{ }
+\Output{ Sample size determination for the one-sample t-test}
+\Output{ }
+\Output{   H0: mu = mu.0  versus  H1: mu != mu.0}
+\Output{   alpha: 0.05  beta: 0.2  theta: 0.5}
+\Output{ }
+\Output{  optimal sample size: n = 34 }
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# One-sided two-sample test}
+\ErrorTok{>}\StringTok{ }\KeywordTok{size.mean}\NormalTok{(}\DataTypeTok{theta =} \DecValTok{1}\NormalTok{, }\DataTypeTok{sample =} \StringTok{"two.sample"}\NormalTok{,}
+\OperatorTok{+}\StringTok{           }\DataTypeTok{alternative =} \StringTok{"greater"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.01}\NormalTok{, }\DataTypeTok{beta =} \FloatTok{0.1}\NormalTok{)}
+\Output{ }
+\Output{ Sample size determination for the two-sample t-test}
+\Output{ }
+\Output{   H0: mu.1 <= mu.2  versus  H1: mu.1 > mu.2}
+\Output{   alpha: 0.01  beta: 0.1  theta: 1}
+\Output{ }
+\Output{  optimal sample size: n = 28 (in each group) }
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{sample-size-determination-for-testing-proportions}{%
+\subsubsection{Sample Size Determination for Testing
+Proportions}\label{sample-size-determination-for-testing-proportions}}
+
+The \texttt{size.prop()} function performs sample size computation for
+the one-sample and two-sample test for proportion based on precision
+requirements (i.e., type-I-risk, type-II-risk and an effect size).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Two-sided one-sample test}
+\ErrorTok{>}\StringTok{ }\KeywordTok{size.prop}\NormalTok{(}\DataTypeTok{pi =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{delta =} \FloatTok{0.2}\NormalTok{, }\DataTypeTok{sample =} \StringTok{"one.sample"}\NormalTok{,}
+\OperatorTok{+}\StringTok{           }\DataTypeTok{alternative =} \StringTok{"two.sided"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\DataTypeTok{beta =} \FloatTok{0.2}\NormalTok{)}
+\Output{ }
+\Output{ Sample size determination for the one-sample proportion test without continuity correction}
+\Output{ }
+\Output{  H0: pi = 0.5  versus  H1: pi != 0.5 }
+\Output{  alpha: 0.05  beta: 0.2  delta: 0.2}
+\Output{ }
+\Output{   optimal sample size: n = 47 }
+\ErrorTok{>}\StringTok{ }\CommentTok{# One-sided two-sample test}
+\ErrorTok{>}\StringTok{ }\KeywordTok{size.prop}\NormalTok{(}\DataTypeTok{pi =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{delta =} \FloatTok{0.2}\NormalTok{, }\DataTypeTok{sample =} \StringTok{"two.sample"}\NormalTok{,}
+\OperatorTok{+}\StringTok{           }\DataTypeTok{alternative =} \StringTok{"greater"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.01}\NormalTok{, }\DataTypeTok{beta =} \FloatTok{0.1}\NormalTok{)}
+\Output{ }
+\Output{ Sample size determination for the two-sample proportion test without continuity correction}
+\Output{ }
+\Output{  H0: pi.1 <= pi.2  versus  H1: pi.1 > pi.2}
+\Output{  alpha: 0.01  beta: 0.1  delta: 0.2}
+\Output{ }
+\Output{   optimal sample size: n = 154 (in each group) }
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{sample-size-determination-for-testing-pearsons-correlation-coefficient}{%
+\subsubsection{Sample Size Determination for Testing Pearson's
+Correlation
+Coefficient}\label{sample-size-determination-for-testing-pearsons-correlation-coefficient}}
+
+The \texttt{size.cor()} function performs sample size computation for
+testing Pearson's product-moment correlation coefficient based on
+precision requirements (i.e., type-I-risk, type-II-risk and an effect
+size).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\CommentTok{# Two-sided test}
+\ErrorTok{>}\StringTok{ }\KeywordTok{size.cor}\NormalTok{(}\DataTypeTok{rho =} \FloatTok{0.3}\NormalTok{, }\DataTypeTok{delta =} \FloatTok{0.2}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\DataTypeTok{beta =} \FloatTok{0.2}\NormalTok{)}
+\Output{ }
+\Output{ Sample size determination for Pearson's product-moment correlation coefficient}
+\Output{ }
+\Output{  H0: rho = 0.3  versus  H1: rho != 0.3 }
+\Output{  alpha: 0.05  beta: 0.2  delta: 0.2}
+\Output{ }
+\Output{    optimal sample size: n = 140 }
+\end{Highlighting}
+\end{Shaded}
+
+\end{document}

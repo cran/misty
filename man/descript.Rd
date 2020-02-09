@@ -4,15 +4,15 @@
 \alias{descript}
 \title{Descriptive Statistics}
 \usage{
-descript(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd",
-                      "min", "p25", "med", "p75", "max", "range", "iqr",
-                      "skew", "kurt"),
-         group = NULL, mat = FALSE, sort.var = FALSE, na.omit = FALSE,
+descript(x,
+         print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "min", "p25",
+                   "med", "p75", "max", "range", "iqr", "skew", "kurt"),
+         group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
          digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector, matrix or data frame with numeric variables, i.e., factors and character
-variables are excluded from \code{x} before conducting the analysis.}
+\item{x}{a numeric vector, matrix or data frame with numeric variables, i.e.,
+factors and character variables are excluded from \code{x} before conducting the analysis.}
 
 \item{print}{a character vector indicating which statistical measures to be printed on the console,
 i.e. \code{n} (number of observations), \code{nNA} (number of missing values),
@@ -25,9 +25,9 @@ The default setting is \code{print = ("n", "nNA", "pNA", "m", "sd", "min", "max"
 
 \item{group}{a numeric vector, character vector or factor as grouping variable.}
 
-\item{mat}{logical: if \code{TRUE}, output by a grouping variable is shown in matrix format.}
+\item{split}{a numeric vector, character vector or factor as split variable.}
 
-\item{sort.var}{logical: if \code{TRUE}, output is sorted by variables.}
+\item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.}
 
 \item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
 (i.e., listwise deletion).}
@@ -36,7 +36,8 @@ The default setting is \code{print = ("n", "nNA", "pNA", "m", "sd", "min", "max"
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.
-Note that \code{as.na()} function is only applied to \code{x}, but not to \code{group}.}
+Note that \code{as.na()} function is only applied to \code{x}, but
+not to \code{group} or \code{split}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -51,10 +52,11 @@ list with results (\code{result}).
 This function computes summary statistics for one or more variables optionally by a grouping variable.
 }
 \examples{
-dat <- data.frame(group = c(1, 1, 1, 1, 1, 2, 2, 2, 2, 2),
-                  x1 = c(3, 1, 4, 2, 5, 3, 2, 4, NA, 4),
-                  x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 5, 1),
-                  x3 = c(7, 8, 5, 6, 4, NA, 8, NA, 6, 5))
+dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
+                  group2 = c(1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2),
+                  x1 = c(3, 1, 4, 2, 5, 3, 2, 4, NA, 4, 5, 3),
+                  x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 5, 1, 3, 6),
+                  x3 = c(7, 8, 5, 6, 4, NA, 8, NA, 6, 5, 8, 6))
 
 # Descriptive statistics for x1
 descript(dat$x1)
@@ -76,16 +78,20 @@ descript(dat[, c("x1", "x2", "x3")])
 descript(dat[, c("x1", "x2", "x3")], na.omit = TRUE)
 
 # Descriptive statistics for x1, x2, and x3,
-# analysis by group separately
-descript(dat[, c("x1", "x2", "x3")], group = dat$group)
+# analysis by group1 separately
+descript(dat[, c("x1", "x2", "x3")], group = dat$group1)
 
 # Descriptive statistics for x1, x2, and x3,
-# analysis by group separately, show results in matrix format
-descript(dat[, c("x1", "x2", "x3")], group = dat$group, mat = TRUE)
+# analysis by group1 separately, sort by variables
+descript(dat[, c("x1", "x2", "x3")], group = dat$group1, sort.var = TRUE)
 
 # Descriptive statistics for x1, x2, and x3,
-# analysis by group separately, show results in matrix format, sort by variables
-descript(dat[, c("x1", "x2", "x3")], group = dat$group, mat = TRUE, sort.var = TRUE)
+# split analysis by group1
+descript(dat[, c("x1", "x2", "x3")], split = dat$group1)
+
+# Descriptive statistics for x1, x2, and x3,
+# analysis by group1 separately, split analysis by group2
+descript(dat[, c("x1", "x2", "x3")], group = dat$group1, split = dat$group2)
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.

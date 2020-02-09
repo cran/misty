@@ -66,6 +66,7 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
   #----------------------------------------
   # Split File and Path into Separate Parts
+
   splitFilePath <- function(abspath) {
 
     if (!is.character(abspath)) stop("Path not a character string", call. = FALSE)
@@ -308,7 +309,7 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
   })
 
-  for (i in 1:length(inpfiles)) {
+  for (i in seq_len(length(inpfiles))) {
 
     if (!replaceOutfile == "always") {
 
@@ -418,11 +419,11 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
       if (showOutput) {
 
-        stdout.value = ""
+        stdout.value <- ""
 
       }  else {
 
-        stdout.value = NULL
+        stdout.value <- NULL
 
       }
 

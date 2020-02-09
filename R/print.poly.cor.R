@@ -79,6 +79,10 @@ print.poly.cor <- function(x, tri = x$args$tri, digits = x$args$digits, check = 
   print.object <- formatC(print.object, digits = digits, format = "f")
   row.names(print.object) <- paste("", row.names(print.object))
 
+
+  # Empty matrix diagonal
+  diag(print.object) <- ""
+
   #----------------------------------------
   # Lower and/or upper triangular
 

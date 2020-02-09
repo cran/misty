@@ -80,8 +80,8 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
   ####################################################################################
   # Data
 
-  #----------------------------------------
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
     stop("Please specify a numeric vector with integer values, character vector or factor for the argument 'x'.",
@@ -89,7 +89,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   }
 
-  #----------------------------------------
+  #......
   # Vector or factor for the argument 'x'?
   if (!is.vector(x) && !is.factor(x)) {
 
@@ -100,28 +100,22 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   #-----------------------------------------
   # Convert user-missing values into NA
+
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     # Variable is missing values only?
     if (all(is.na(x))) {
 
-      stop("After converting user-mising values into NA, 'x' is completely missing.", call. = FALSE)
+      stop("After converting user-missing values into NA, 'x' is completely missing.", call. = FALSE)
 
     }
 
-    # Variable is constant?
+    # One unique value
     if (length(na.omit(unique(x))) == 1) {
 
-      stop("After converting user-mising values into NA, 'x' is a constant.", call. = FALSE)
-
-    }
-
-    # Input check: 'names'
-    if (!is.character(names)) {
-
-      stop("Please specify a character string for the argument 'names'.", call. = FALSE)
+      stop("After converting user-missing values into NA, 'x' has only one unique value.", call. = FALSE)
 
     }
 
@@ -166,6 +160,15 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
     }
 
     #......
+    # Input check 'x': Zero variance
+    if (length(na.omit(unique(x))) == 1) {
+
+      stop("Variable specified in 'x' havs only one unique value.", call. = FALSE)
+
+    }
+
+
+    #......
     # Input check 'ref'
     if (!is.null(ref)) {
 
@@ -191,7 +194,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
       if (length(names) != (length(x.unique) - 1)) {
 
-        stop("The length of the vector specified in 'names' does not match with the number of unique categories minus one.",
+        stop("The length of the vector specified in 'names' does not match with the number of unique values minus one.",
              call. = FALSE)
 
       }

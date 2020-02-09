@@ -4,8 +4,8 @@
 \alias{print.na.auxiliary}
 \title{Print na.auxiliary object}
 \usage{
-\method{print}{na.auxiliary}(x, tri = x$args$tri,
-      digits = x$args$digits, check = TRUE, ...)
+\method{print}{na.auxiliary}(x, tri = x$args$tri, digits = x$args$digits,
+      check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{na.auxiliary} object.}

@@ -4,8 +4,7 @@
 \alias{print.phi.coef}
 \title{Print phi.coef object}
 \usage{
-\method{print}{phi.coef}(x, tri = x$args$tri, digits = x$args$digits,
-      check = TRUE, ...)
+\method{print}{phi.coef}(x, tri = x$args$tri, digits = x$args$digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{phi.coef} object.}

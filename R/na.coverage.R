@@ -35,7 +35,6 @@
 #' @export
 #'
 #' @examples
-#' #--------------------------------------
 #' dat <- data.frame(x = c(1, NA, NA, 6, 3),
 #'                   y = c(7, NA, 8, 9, NA),
 #'                   z = c(2, NA, 3, NA, 5))
@@ -48,8 +47,8 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
   ####################################################################################
   # Input Check
 
-  #.........................
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.",
@@ -58,7 +57,7 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
   }
 
   #......
-  # Check input 'x'
+  # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
@@ -67,7 +66,7 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
 
   #.........................
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -88,14 +87,15 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1 != 0 || digits < 0) {
 
-      stop("Specify a positive integer value for the argument 'digits'", call. = FALSE)
+      stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE)
 
     }
 
+    #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (isFALSE(isTRUE(output) || isFALSE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -111,16 +111,17 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
 
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
   }
 
-  #......
+  #----------------------------------------
   # Print triangular
   tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
 
-  #......
+  #----------------------------------------
   # As data frame
+
   df <- as.data.frame(x)
 
   ####################################################################################
@@ -130,7 +131,7 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
   comb.pair <- data.frame(combn(ncol(df), m = 2))
 
   # Compute pairwise coverage
-  cov.coverage <- sapply(comb.pair, function(y) nrow(na.omit(df[, c(y[1], y[2])])) / nrow(df))
+  cov.coverage <- vapply(comb.pair, function(y) nrow(na.omit(df[, c(y[1], y[2])])) / nrow(df), FUN.VALUE = double(1))
 
   # Coverage matrix
   restab <- matrix(NA, ncol = ncol(x), nrow = (ncol(x)), dimnames = list(colnames(df), colnames(df)))
@@ -142,7 +143,7 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
   restab[upper.tri(restab)] <- t(restab)[upper.tri(restab)]
 
   # Variance coverage
-  diag(restab) <- sapply(df, function(y) mean(!is.na(y)))
+  diag(restab) <- vapply(df, function(y) mean(!is.na(y)), FUN.VALUE = double(1))
 
   ####################################################################################
   # Return object

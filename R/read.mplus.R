@@ -4,7 +4,7 @@
 #' extracted from the Mplus input/output file.
 #'
 #' @param file          a character string indicating the name of the Mplus data file with or without
-#'                      the file extention \code{.dat}, e.g., \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.
+#'                      the file extension \code{.dat}, e.g., \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.
 #'                      Note that it is not necessary to specify this argument when \code{return.var = TRUE}.
 #' @param sep           a character string indicating the field separator (i.e., delimiter) used in the data file
 #'                      specified in \code{file}. By default, the separator is 'white space', i.e., one or more
@@ -54,9 +54,10 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
 
   #----------------------------------------
   # Check input 'file'
+
   if (missing(input)) {
 
-    stop("Please specify a character string indicating the name of the Mplus input/output file for the argument 'input'",
+    stop("Please specify a character string indicating the name of the Mplus input/output file for the argument 'input'.",
          call. = FALSE)
 
   }
@@ -67,7 +68,7 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
   if (!is.null(input)) {
 
     #......
-    # File extention .inp or .out
+    # File extension .inp or .out
     input <- ifelse(length(grep(".inp", input)) == 0 && length(grep(".out", input)) == 0,
                     input <- paste0(input, ".inp"), input)
 
@@ -94,8 +95,8 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
 
     #......
     # Extract variable names
-    varnames <- misty::stromit(unlist(strsplit(misty::trim(gsub("VARIABLE:|variable:|Variable:|NAMES ARE|names ARE|Names ARE|NAMES are|names are|Names are|NAMES Are|names Are|Names Are|NAMES =|names =|Names =|;|\n|\t|\r|\r\n", "",
-                                                                inp.variable)), " ")), check = FALSE)
+    varnames <- misty::stromit(unlist(strsplit(trimws(gsub("VARIABLE:|variable:|Variable:|NAMES ARE|names ARE|Names ARE|NAMES are|names are|Names are|NAMES Are|names Are|Names Are|NAMES =|names =|Names =|;|\n|\t|\r|\r\n", "",
+                                                           inp.variable)), " ")), check = FALSE)
 
   }
 
@@ -118,13 +119,13 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
     # Check input 'file'
     if (missing(file)) {
 
-      stop("Please specify a character string indicating the name of the Mplus data file for the argument 'file'",
+      stop("Please specify a character string indicating the name of the Mplus data file for the argument 'file'.",
            call. = FALSE)
 
     }
 
     #......
-    # File extention .dat, .txt. or .csv
+    # File extension .dat, .txt. or .csv
     file <- ifelse(length(grep(".dat", file)) == 0 && length(grep(".txt", file)) == 0 && length(grep(".csv", file)) == 0,
                    file <- paste0(file, ".dat"), file)
 
@@ -155,7 +156,7 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
 
       #......
       # Number of rows
-      df.lines.nrows <- unname(sapply(sapply(df.lines, function(y) strsplit(y, " ")), length))
+      df.lines.nrows <- unname(vapply(vapply(df.lines, function(y) strsplit(y, " "), FUN.VALUE = list(1)), length, FUN.VALUE = 1))
 
       if (length(unique(df.lines.nrows)) != 1) {
 
@@ -200,6 +201,7 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
 
     #----------------------------------------
     # Assign variable names
+
     if (!is.null(input)) {
 
       colnames(object) <- varnames

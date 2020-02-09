@@ -1,4 +1,4 @@
-#' Sample size determination for testing arithmetic means
+#' Sample Size Determination for Testing Arithmetic Means
 #'
 #' This function performs sample size computation for the one-sample and two-sample t-test
 #' based on precision requirements (i.e., type-I-risk, type-II-risk and an effect size).
@@ -78,26 +78,26 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
   # Input check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
   }
 
-  #.........................................
+  #-----------------------------------------
 
   if (isTRUE(check)) {
 
     # Check input 'theta'
     if (missing(theta)) {
 
-      stop("Please specify a numeric value for the argument 'theta'", call. = FALSE)
+      stop("Please specify a numeric value for the argument 'theta'.", call. = FALSE)
 
     }
 
     if (theta <= 0) {
 
-      stop("Argument theta out of bound, specify a value > 0", call. = FALSE)
+      stop("Argument theta out of bound, specify a value > 0.", call. = FALSE)
 
     }
 
@@ -105,7 +105,7 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
 
     if (!all(sample %in% c("two.sample", "one.sample"))) {
 
-      stop("Argument sample should be \"two.siample\" or \"one.sample\"", call. = FALSE)
+      stop("Argument sample should be \"two.siample\" or \"one.sample\".", call. = FALSE)
 
     }
 
@@ -149,6 +149,7 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
 
   #-------------------------------------------------
   # two.sided
+
   if (alternative == "two.sided") {
 
     p.body <- quote({
@@ -159,6 +160,7 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
 
   #-------------------------------------------------
   # one-sided
+
   } else {
 
     p.body <- quote({

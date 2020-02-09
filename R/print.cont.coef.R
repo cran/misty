@@ -74,7 +74,7 @@ print.cont.coef <- function(x, tri = x$args$tri, digits = x$args$digits, check =
   # Two variables
   if (is.null(dim(print.object))) {
 
-    print.object <- cbind("  Estimate: ", formatC(print.object, digits = digits, format = "f"))
+    print.object <- cbind("  Estimate: ", ifelse(!is.na(print.object), formatC(print.object, digits = digits, format = "f"), print.object))
 
   #----------------------------------------
   # More than two variables

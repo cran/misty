@@ -4,8 +4,8 @@
 \alias{print.freq}
 \title{Print freq object}
 \usage{
-\method{print}{freq}(x, print = x$args$print, freq = x$args$freq,
-      digits = x$args$digits, check = TRUE, ...)
+\method{print}{freq}(x, print = x$args$print, freq = x$args$freq, digits = x$args$digits,
+      check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{freq} object.}

@@ -4,13 +4,13 @@
 \alias{phi.coef}
 \title{Phi Coefficient}
 \usage{
-phi.coef(x, adjust = TRUE, tri = c("both", "lower", "upper"),
-         digits = 3, as.na = NULL, check = TRUE, output = TRUE)
+phi.coef(x, adjust = FALSE, tri = c("both", "lower", "upper"), digits = 2,
+         as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame.}
 
-\item{adjust}{logical: if \code{TRUE} (default), phi coefficient is adjusted by relating
+\item{adjust}{logical: if \code{TRUE}, phi coefficient is adjusted by relating
 the coefficient to the possible maximum.}
 
 \item{tri}{a character string or character vector indicating which triangular of the matrix
@@ -39,24 +39,24 @@ This function computes the (adjusted) Phi coefficient between two or more than t
 \details{
 The maximum Phi coefficient is determined by the distribution of the two variables, i.e., the Phi
 coefficient cannot achieve the value of 1 in many cases. According to Cureton (1959), the' phi
-coefficient can be adjusted by relating the coefficient to the possible maximum, \eqn{\phi / \phi_m}.
+coefficient can be adjusted by relating the coefficient to the possible maximum, \eqn{\phi / \phi_max}.
 }
 \examples{
 dat <- data.frame(x1 = c(0, 1, 0, 1, 0, 1, 0, 1, 1, 0),
                   x2 = c(0, 1, 0, 0, 1, 1, 1, 1, 1, 1),
                   x3 = c(0, 1, 0, 1, 1, 1, 1, 1, 0, 0))
 
-# Ajusted phi coefficient between x1 and x2
+# Phi coefficient between x1 and x2
 phi.coef(dat[, c("x1", "x2")])
 
-# Phi coefficient between x1 and x2
-phi.coef(dat[, c("x1", "x2")], adjust = FALSE)
-
-# Ajusted phi coefficient matrix between x1, x2, and x3
-phi.coef(dat)
+# Adjusted phi coefficient between x1 and x2
+phi.coef(dat[, c("x1", "x2")], adjust = TRUE)
 
 # Phi coefficient matrix between x1, x2, and x3
-phi.coef(dat, adjust = FALSE)
+phi.coef(dat)
+
+# Adjusted phi coefficient matrix between x1, x2, and x3
+phi.coef(dat, adjust = TRUE)
 }
 \references{
 Cureton, E. E. (1959). Note on Phi/Phi max. \emph{Psychometrika, 24}, 89-91.

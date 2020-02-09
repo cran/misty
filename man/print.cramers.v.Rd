@@ -4,8 +4,7 @@
 \alias{print.cramers.v}
 \title{Print cramers.v object}
 \usage{
-\method{print}{cramers.v}(x, tri = x$args$tri, digits = x$args$digits,
-      check = TRUE, ...)
+\method{print}{cramers.v}(x, tri = x$args$tri, digits = x$args$digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{cramers.v} object.}

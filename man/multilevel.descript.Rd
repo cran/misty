@@ -2,11 +2,11 @@
 % Please edit documentation in R/multilevel.descript.R
 \name{multilevel.descript}
 \alias{multilevel.descript}
-\title{Multilevel Descriptve Statistics}
+\title{Multilevel Descriptive Statistics}
 \usage{
-multilevel.descript(x, group, method = c("aov", "lme4", "nlme"),
-                    REML = TRUE, digits = 2, icc.digits = 3, as.na = NULL,
-                    check = TRUE, output = TRUE)
+multilevel.descript(x, group, method = c("aov", "lme4", "nlme"), REML = TRUE,
+                    digits = 2, icc.digits = 3, as.na = NULL, check = TRUE,
+                    output = TRUE)
 }
 \arguments{
 \item{x}{a vector, matrix or data frame.}
@@ -43,7 +43,7 @@ list with results (\code{result}).
 }
 \description{
 This function computes descriptive statistics for multilevel data, e.g. average group size, intraclass correlation
-coefficient, design effect and effectice sample size.
+coefficient, design effect and effective sample size.
 }
 \details{
 Note that this function is restricted to two-level models.
@@ -55,20 +55,20 @@ dat <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
 
-# Multilevel descriptve statistics for x1
+# Multilevel descriptive statistics for x1
 multilevel.descript(dat$x1, group = dat$group)
 
-# Multilevel descriptve statistics for x1, print ICC with 5 digits
+# Multilevel descriptive statistics for x1, print ICC with 5 digits
 multilevel.descript(dat$x1, group = dat$group, icc.digits = 5)
 
-# Multilevel descriptve statistics for x1, convert value 1 to NA
+# Multilevel descriptive statistics for x1, convert value 1 to NA
 multilevel.descript(dat$x1, group = dat$group, as.na = 1)
 
-# Multilevel descriptve statistics for x1,
+# Multilevel descriptive statistics for x1,
 # use lmer() function in the lme4 package to estimate ICC
 multilevel.descript(dat$x1, group = dat$group, method = "lme4")
 
-# Multilevel descriptve statistics for x1, x2, and x3
+# Multilevel descriptive statistics for x1, x2, and x3
 multilevel.descript(dat[, c("x1", "x2", "x3")], group = dat$group)
 }
 \references{

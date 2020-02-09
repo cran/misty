@@ -4,8 +4,7 @@
 \alias{na.pattern}
 \title{Missing Data Pattern}
 \usage{
-na.pattern(x, order = FALSE, digits = 2, as.na = NULL,
-           check = TRUE, output = TRUE)
+na.pattern(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with incomplete data, where missing values are coded as \code{NA}.}

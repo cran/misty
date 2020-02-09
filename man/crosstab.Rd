@@ -4,15 +4,14 @@
 \alias{crosstab}
 \title{Cross Tabulation}
 \usage{
-crosstab(x, print = c("no", "all", "row", "col", "total"), freq = TRUE,
-         split = FALSE, na.omit = TRUE, digits = 2, as.na = NULL,
-         check = TRUE, output = TRUE)
+crosstab(x, print = c("no", "all", "row", "col", "total"), freq = TRUE, split = FALSE,
+         na.omit = TRUE, digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with two or three columns.}
 
 \item{print}{a character string or character vector indicating which percentage(s) to be printed on the
-consolue, i.e., no percentages (\code{"no"}) (default), all percentages (\code{"all"}),
+console, i.e., no percentages (\code{"no"}) (default), all percentages (\code{"all"}),
 row-wise percentages (\code{"row"}), column-wise percentages (\code{"col"}), and
 total percentages (\code{"total"}).}
 
@@ -85,7 +84,7 @@ crosstab(dat[, c("x1", "x2", "x3")])
 crosstab(dat[, c("x1", "x2", "x3")], print = "all")
 
 # Cross Tabulation for x1, x2, and x3
-# print all percentages,  split output table
+# print all percentages, split output table
 crosstab(dat[, c("x1", "x2", "x3")], print = "all", split = TRUE)
 }
 \references{

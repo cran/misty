@@ -8,11 +8,11 @@
 #' or uniform distribution calculated with \eqn{\sigma^2_eu = (A^2 - 1) / 12}, where \eqn{A} is the number
 #' of discrete response options of the items. However, what constitutes a reasonable standard for random
 #' variance is highly debated. Note that the r*wg(j) allows that the mean of the item variances to be
-#' larger thanthe expectedrandom variances, i.e., r*wg(j) values can be negative.
+#' larger than the expected random variances, i.e., r*wg(j) values can be negative.
 #'
 #' Note that the \code{rwg.j.lindell()} function in the \pkg{multilevel} package uses listwise deletion
 #' by default, while the \code{rwg.lindell()} function uses all available information to compute the
-#' r*wg(j) agreement index by default. In order to obtain equivalenz results in the presence of missing
+#' r*wg(j) agreement index by default. In order to obtain equivalent results in the presence of missing
 #' values, listwise deletion (\code{na.omit = TRUE}) needs to be applied.
 #'
 #' @param x           a matrix or data frame with numeric vectors.
@@ -25,7 +25,7 @@
 #'                    specified.
 #' @param z           logical: if \code{TRUE}, Fisher z-transformation based on the formula
 #'                    \eqn{z = 0.5*log((1 + r) / (1 - r))} is applied to the vector of r*wg(j) estimates.
-#' @param expand      logical: if \code{TRUE}, vector of r*wg(j) estiamtes is expanded to match the input
+#' @param expand      logical: if \code{TRUE}, vector of r*wg(j) estimates is expanded to match the input
 #'                    vector \code{x}.
 #' @param na.omit     logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
 #'                    (i.e., listwise deletion).
@@ -45,7 +45,7 @@
 #' agreement for multi-item ratings of a single target. \emph{Applied Psychological Measurement}, \emph{23},
 #' 127-135. https://doi.org/10.1177/01466219922031257
 #'
-#' O'Neill, T. A. (2017). An overgiew of interrater agreement on Likert scales for researchers and practitioners.
+#' O'Neill, T. A. (2017). An overview of interrater agreement on Likert scales for researchers and practitioners.
 #' \emph{Frontiers in Psychology}, \emph{8}, Article 777. https://doi.org/10.3389/fpsyg.2017.00777
 #'
 #' @return
@@ -91,13 +91,13 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
   # Convert user-missing values into NA
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     #......
     # Missing values only
     if (all(is.na(x))) {
 
-      stop("After converting user-missing values into NA, matrix or data frame specified in 'x' is completely missing",
+      stop("After converting user-missing values into NA, matrix or data frame specified in 'x' is completely missing.",
            call. = FALSE)
 
     }
@@ -108,7 +108,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
   # Input Check
 
   #......
-  # Check input 'x'
+  # Check if input 'x' is missing
   if (missing(x)) {
 
     stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE)
@@ -117,7 +117,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -165,7 +165,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
       }
 
       # Check input 'x': Integer number
-      if (A %% 1 != 0 | A < 0) {
+      if (A %% 1 != 0 || A < 0) {
 
         stop("Please specify a positive integer number for the argument 'A'.", call. = FALSE)
 
@@ -183,7 +183,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
     #......
     # Check input 'z'
-    if (isFALSE(isTRUE(z) | isFALSE(z))) {
+    if (isFALSE(isTRUE(z) || isFALSE(z))) {
 
       stop("Please specify TRUE or FALSE for the argument 'z'.", call. = FALSE)
 
@@ -191,7 +191,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
     #......
     # Check input 'expand'
-    if (isFALSE(isTRUE(expand) | isFALSE(expand))) {
+    if (isFALSE(isTRUE(expand) || isFALSE(expand))) {
 
       stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE)
 
@@ -228,8 +228,8 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
   df.split <- split(df[, -grep("group", names(df))], df$group)
 
-  rwg <- misty::as.na(sapply(df.split, function(y) 1 - (mean(sapply(y, var, na.rm = TRUE), na.rm = TRUE) / ranvar)),
-                      na = NaN, check = FALSE)
+  rwg <- misty::as.na(vapply(df.split, function(y) 1 - (mean(vapply(y, var, na.rm = TRUE, FUN.VALUE = double(1)), na.rm = TRUE) / ranvar), FUN.VALUE = double(1)),
+                      as.na = NaN, check = FALSE)
 
   #......
   # Expand
@@ -248,7 +248,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
   } else {
 
     object <- data.frame(group = names(rwg),
-                         n = sapply(df.split, function(y) sum(apply(y, 1, function(z) sum(is.na(z)) != length(z)))),
+                         n = vapply(df.split, function(y) sum(apply(y, 1, function(z) sum(is.na(z)) != length(z))), FUN.VALUE = 1),
                          rwg.lindell = rwg, z.rwg.lindell = ifelse(rwg == 1 | rwg == -1, NA, atanh(rwg)))
 
   }

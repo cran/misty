@@ -57,8 +57,8 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
   ####################################################################################
   # Data
 
-  #----------------------------------------
-  # Check input 'x'
+  #...............
+  # Check if input 'x' is missing
   if (missing(x)) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.",
@@ -66,7 +66,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
   }
 
-  #----------------------------------------
+  #......
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
@@ -85,7 +85,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
   if (!is.null(as.na)) {
 
-    df <- misty::as.na(df, na = as.na, check = check)
+    df <- misty::as.na(df, as.na = as.na, check = check)
 
   }
 
@@ -93,7 +93,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
   # Input Check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -105,23 +105,23 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
     #......
     # Check input 'table'
-    if (isFALSE(isTRUE(table) | isFALSE(table))) {
+    if (isFALSE(isTRUE(table) || isFALSE(table))) {
 
-      stop("Please specify TRUE or FALSE for the argument 'table'", call. = FALSE)
+      stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
 
     }
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1 != 0 || digits < 0) {
 
-      stop("Please specify a positive integer value for the argument 'digits'", call. = FALSE)
+      stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE)
 
     }
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (isFALSE(isTRUE(output) || isFALSE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -162,11 +162,11 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
   no.var <- ncol(df)
 
   # Number and percentage of observed values for each variable
-  no.observed.var <- sapply(df, function(y) sum(!is.na(y)))
+  no.observed.var <- vapply(df, function(y) sum(!is.na(y)), FUN.VALUE = 1)
   perc.observed.var <- no.observed.var / no.cases * 100
 
   # Number and percentage of missing values for each variable
-  no.missing.var <- sapply(df, function(y) sum(is.na(y)))
+  no.missing.var <- vapply(df, function(y) sum(is.na(y)), FUN.VALUE = 1)
   perc.missing.var <- no.missing.var / no.cases * 100
 
   no.missing.mean <- mean(no.missing.var)

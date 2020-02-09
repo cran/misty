@@ -3,7 +3,7 @@
 #' This function computes point estimate and confidence interval for the coefficient alpha (aka Cronbach's alpha)
 #' along with the corrected item-total correlation and coefficient alpha if item deleted.
 #'
-#' Confidence intervals are computed using the procedure by Feld, Woodruff and Salih (1987). When computing
+#' Confidence intervals are computed using the procedure by Feldt, Woodruff and Salih (1987). When computing
 #' confidence intervals using pairwise deletion, the average sample size from all pairwise samples is used.
 #' Note that there are at least 10 other procedures for computing the confidence interval (see Kelley and
 #' Pornprasertmanit, 2016), which are implemented in the \code{ci.reliability()} function in the
@@ -16,7 +16,7 @@
 #'                   matrix in the presence of missing values, i.e., \code{"listwise"} for listwise deletion
 #'                   and \code{"pairwise"} (default) for pairwise deletion.
 #' @param print      a character vector indicating which results to show, i.e. \code{"all"} (default), for all
-#'                   results \code{"alpha"} for the coefficienta alpha, and \code{"item"} for item statistics.
+#'                   results \code{"alpha"} for the coefficient alpha, and \code{"item"} for item statistics.
 #' @param digits     an integer value indicating the number of decimal places to be used for displaying
 #'                   coefficient alpha and item-total correlations.
 #' @param conf.level a numeric value between 0 and 1 indicating the confidence level of the interval.
@@ -32,7 +32,7 @@
 #' \code{\link{reverse.item}}, \code{\link{scores}}
 #'
 #' @references
-#' Cronbach, L.J. (1951). Coefficient alpha and the internal strucuture of tests. \emph{Psychometrika, 16}, 297-334.
+#' Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests. \emph{Psychometrika, 16}, 297-334.
 #'
 #' Cronbach, L.J. (2004). My current thoughts on coefficient alpha and successor procedures. \emph{Educational
 #' and Psychological Measurement, 64}, 391-418.
@@ -91,8 +91,17 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
   # Input Check
 
   #......
+  # Check if input 'x' is missing
+  if (missing(x)) {
+
+    stop("Please specify a matrix, data frame, variance-covariance or correlation matrix for the argument 'x'.",
+         call. = FALSE)
+
+  }
+
+  #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -103,29 +112,34 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
   if (isTRUE(check)) {
 
     #......
-    # Check if input 'x' is missing
-    if (missing(x)) {
-
-      stop("Please specify a matrix, data frame, variance-covariance or correlation matrix for the argument 'x'",
-           call. = FALSE)
-
-    }
-
-    #......
-    # Check input 'x'
+    # Matrix or data frame for the argument 'x'?
     if (!is.matrix(x) && !is.data.frame(x)) {
 
-      stop("Please specify a matrix, a data frame, a variance-covariance or correlation matrix for the argument 'x'",
+      stop("Please specify a matrix, a data frame, a variance-covariance or correlation matrix for the argument 'x'.",
            call. = FALSE)
 
     }
 
-
     #......
-    # One item
+    # Check input 'x': One item
     if (ncol(x) == 1) {
 
       stop("Please specify at least two items to compute coefficient alpha.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'x': Zero variance
+    if (nrow(x) != ncol(x)) {
+
+      x.check <- vapply(as.data.frame(x), function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+
+      if (any(x.check)) {
+
+        stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
+                     paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
+
+      }
 
     }
 
@@ -134,15 +148,15 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
     check.ex <- !exclude %in% colnames(x)
     if (any(check.ex)) {
 
-      warning(paste0("Items to be excluded from the analysis were not found in 'x': ", paste(exclude[check.ex], collapse = ", ")),
-                       call. = FALSE)
+      stop(paste0("Items to be excluded from the analysis were not found in 'x': ", paste(exclude[check.ex], collapse = ", ")),
+           call. = FALSE)
     }
 
     #......
     # Check input 'std'
-    if (isFALSE(isTRUE(std) | isFALSE(std))) {
+    if (isFALSE(isTRUE(std) || isFALSE(std))) {
 
-      stop("Please specify TRUE or FALSE for the argument 'std'", call. = FALSE)
+      stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE)
 
     }
 
@@ -150,8 +164,8 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
     # Check input 'use'
     if (!all(use %in% c("listwise", "pairwise"))) {
 
-      warning("Character strings in the argument 'use' do not all match with \"listwise\", or \"pairwise\".",
-              call. = FALSE)
+      stop("Character strings in the argument 'use' do not all match with \"listwise\", or \"pairwise\".",
+           call. = FALSE)
 
     }
 
@@ -159,14 +173,14 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
     # Check input 'print'
     if (!all(print %in% c("all", "alpha", "item"))) {
 
-      warning("Character strings in the argument 'print' do not all match with \"all\", \"alpha\", or \"item\".",
-                call. = FALSE)
+      stop("Character strings in the argument 'print' do not all match with \"all\", \"alpha\", or \"item\".",
+           call. = FALSE)
 
     }
 
     #......
     # Check input 'conf.level'
-    if (conf.level >= 1 | conf.level <= 0) {
+    if (conf.level >= 1 || conf.level <= 0) {
 
       stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
            call. = FALSE)
@@ -175,17 +189,17 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1 != 0 || digits < 0) {
 
-      warning("Specify a positive integer number for the argument 'digits'", call. = FALSE)
+      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
     }
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (isFALSE(isTRUE(output) || isFALSE(output))) {
 
-        stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE)
+        stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
     }
 
@@ -226,39 +240,42 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
   #----------------------------------------
   # Data frame
-  df <- as.data.frame(x)
+
+  x <- as.data.frame(x)
 
   #----------------------------------------
   # Exclude items (exclude) and specify user-defined NA (as.na)
+
   if (isTRUE(x.raw)) {
 
     if (!is.null(exclude)) {
 
-      df <- df[, which(!colnames(df) %in% exclude)]
+      x <- x[, which(!colnames(x) %in% exclude)]
 
     }
 
     #----------------------------------------
     # Convert user-missing values into NA
+
     if (!is.null(as.na)) {
 
-      df <- misty::as.na(df, na = as.na, check = check)
+      x <- misty::as.na(x, as.na = as.na, check = check)
 
       # Variable with missing values only
-      x.miss <- sapply(df, function(y) all(is.na(y)))
+      x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
       if (any(x.miss)) {
 
-        stop(paste0("After converting user-mising values into NA, following variables are completely missing: ",
+        stop(paste0("After converting user-missing values into NA, following items are completely missing: ",
                     paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
 
       }
 
-      # Constant variables
-      x.con <- sapply(df, function(y) var(as.numeric(y), na.rm = TRUE) == 0)
-      if (any(x.con)) {
+      # Zero variance
+      x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+      if (any(x.zero.var)) {
 
-        stop(paste0("After converting user-mising values into NA, following variables are constant: ",
-                    paste(names(which(x.con)), collapse = ", ")), call. = FALSE)
+        stop(paste0("After converting user-missing values into NA, following items have zero variance: ",
+                    paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
 
       }
 
@@ -268,8 +285,8 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
     if (!is.null(exclude)) {
 
-      df <- df[, which(!colnames(df) %in% exclude)]
-      df <- df[which(!rownames(df) %in% exclude), ]
+      x <- x[, which(!colnames(x) %in% exclude)]
+      x <- x[which(!rownames(x) %in% exclude), ]
 
     }
 
@@ -277,7 +294,8 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
   #----------------------------------------
   # One item left
-  if (is.null(dim(df))) {
+
+  if (is.null(dim(x))) {
 
     stop("At least two items after excluding items are needed to compute coefficient alpha.", call. = FALSE)
 
@@ -305,11 +323,11 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
     if (isTRUE(std)) {
 
-      mat.sigma <- cor(df, use = use, method = "pearson")
+      mat.sigma <- cor(x, use = use, method = "pearson")
 
     } else {
 
-      mat.sigma <- cov(df, use = use, method = "pearson")
+      mat.sigma <- cov(x, use = use, method = "pearson")
 
     }
 
@@ -325,7 +343,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
   # Define Coefficient alpha function
   alpha.function <- function(mat.sigma, p) {
 
-    return((p / (p - 1)) * (1 - sum(diag(mat.sigma)) / sum(mat.sigma)))
+    return((p / (p - 1)) * (1 - sum(diag(as.matrix(mat.sigma))) / sum(as.matrix(mat.sigma))))
 
   }
 
@@ -333,7 +351,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
   alpha.mat.sigma <- alpha.function(mat.sigma, p)
 
-  alpha.df <- data.frame(items = ncol(mat.sigma), alpha = alpha.mat.sigma)
+  alpha.x <- data.frame(items = ncol(mat.sigma), alpha = alpha.mat.sigma)
 
   #----------------------------------------
   # Confidence interval
@@ -346,16 +364,16 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
     } else {
 
-      df1 <- nrow(na.omit(df)) - 1
+      df1 <- nrow(na.omit(x)) - 1
 
     }
 
-    df2 <- (ncol(df) -  1) * df1
+    df2 <- (ncol(x) -  1) * df1
 
     alpha.low <- 1 - (1 - alpha.mat.sigma) * qf(1 - (1 - conf.level) / 2, df1, df2)
     alpha.upp <- 1 - (1 - alpha.mat.sigma) * qf((1 - conf.level) / 2, df1, df2)
 
-    alpha.df <- data.frame(alpha.df, low = alpha.low, upp = alpha.upp)
+    alpha.x <- data.frame(alpha.x, low = alpha.low, upp = alpha.upp)
 
   }
 
@@ -364,23 +382,23 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
   if (isTRUE(x.raw)) {
 
-    itemstat <- matrix(rep(NA, times = ncol(df)*2), ncol = 2,
+    itemstat <- matrix(rep(NA, times = ncol(x)*2), ncol = 2,
                        dimnames = list(NULL, c("it cor", "alpha")))
 
-    for (i in 1:ncol(df)) {
+    for (i in seq_len(ncol(x))) {
 
-      var <- colnames(df)[i]
+      var <- colnames(x)[i]
 
-      itemstat[i, 1] <- ifelse(ncol(df) > 2, cor(df[, i], rowMeans(df[, -grep(var, colnames(df))], na.rm = TRUE), use = use), NA)
+      itemstat[i, 1] <- ifelse(ncol(x) > 2, cor(x[, i], rowMeans(x[, -grep(var, colnames(x))], na.rm = TRUE), use = use), NA)
 
       if (isTRUE(std)) {
 
-        itemstat[i, 2] <- ifelse(ncol(df) > 2, alpha.function(cor(df[, -grep(var, colnames(df))], use = use, method = "pearson"), p = (ncol(df) - 1)), NA)
+        itemstat[i, 2] <- ifelse(ncol(x) > 2, alpha.function(cor(x[, -grep(var, colnames(x))], use = use, method = "pearson"), p = (ncol(x) - 1)), NA)
 
 
       } else {
 
-        itemstat[i, 2] <- ifelse(ncol(df) > 2, alpha.function(cov(df[, -grep(var, colnames(df))], use = use, method = "pearson"), p = (ncol(df) - 1)), NA)
+        itemstat[i, 2] <- ifelse(ncol(x) > 2, alpha.function(cov(x[, -grep(var, colnames(x))], use = use, method = "pearson"), p = (ncol(x) - 1)), NA)
 
       }
 
@@ -390,32 +408,24 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
     # Descriptive statistics
     if (use == "complete.obs") {
 
-      df.comp <- na.omit(df)
-
-      var <- colnames(df.comp)
-      n <- sapply(df.comp, function(y) length(na.omit(y)))
-      nNA <- sapply(df.comp, function(y) sum(is.na(y)))
-      pNA <- sapply(df.comp, function(y) sum(is.na(y)) / length(y)) * 100
-      m <- colMeans(df.comp, na.rm = TRUE)
-      sd <- sapply(df.comp, sd, na.rm = TRUE)
-      min <- sapply(df.comp, function(y) min(y, na.rm = TRUE))
-      max <- sapply(df.comp, function(y) max(y, na.rm = TRUE))
-
-    } else {
-
-      var <- colnames(df)
-      n <- sapply(df, function(y) length(na.omit(y)))
-      nNA <- sapply(df, function(y) sum(is.na(y)))
-      pNA <- sapply(df, function(y) sum(is.na(y)) / length(y)) * 100
-      m <- colMeans(df, na.rm = TRUE)
-      sd <- sapply(df, sd, na.rm = TRUE)
-      min <- sapply(df, function(y) min(y, na.rm = TRUE))
-      max <- sapply(df, function(y) max(y, na.rm = TRUE))
+      x <- na.omit(x)
 
     }
 
-    itemstat <- data.frame(var = var, n = n, nNA = nNA, pNA = pNA, m = m, sd = sd, min = min, max = max,
-                           itemstat, stringsAsFactors = FALSE)
+    itemstat <- data.frame(var = colnames(x),
+                           n = vapply(x, function(y) length(na.omit(y)), FUN.VALUE = 1),
+                           nNA = vapply(x, function(y) sum(is.na(y)), FUN.VALUE = 1),
+                           pNA = vapply(x, function(y) sum(is.na(y)) / length(y), FUN.VALUE = 1) * 100,
+                           m = colMeans(x, na.rm = TRUE),
+                           sd = vapply(x, sd, na.rm = TRUE, FUN.VALUE = 1),
+                           min = vapply(x, function(y) min(y, na.rm = TRUE), FUN.VALUE = 1),
+                           max = vapply(x, function(y) max(y, na.rm = TRUE), FUN.VALUE = 1),
+                           itemstat,
+                           stringsAsFactors = FALSE)
+
+  } else {
+
+    itemstat <- NULL
 
   }
 
@@ -425,25 +435,12 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
   #----------------------------------------
   # Return object
 
-  if (isTRUE(x.raw)) {
-
   object <- list(call = match.call(),
                  data = x,
                  args = list(exclude = exclude, std = std, use = use, print = print,
                              digits = digits, conf.level = conf.level, as.na = as.na,
                              check = check, output = output),
-                 result = list(alpha = alpha.df, itemstat = itemstat))
-
-  } else {
-
-    object <- list(call = match.call(),
-                   data = x,
-                   args = list(exclude = exclude, std = std, use = use, print = print,
-                               digits = digits, conf.level = conf.level, as.na = as.na,
-                               check = check, output = output),
-                   result = list(alpha = alpha.df))
-
-  }
+                 result = list(alpha = alpha.x, itemstat = itemstat))
 
   class(object) <- "alpha.coef"
 

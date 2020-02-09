@@ -2,9 +2,9 @@
 % Please edit documentation in R/size.cor.R
 \name{size.cor}
 \alias{size.cor}
-\title{Sample size determination for testing Pearson's correlation coefficient}
+\title{Sample Size Determination for Testing Pearson's Correlation Coefficient}
 \usage{
-size.cor(rho = NULL, delta, alternative = c("two.sided", "less", "greater"),
+size.cor(rho, delta, alternative = c("two.sided", "less", "greater"),
          alpha = 0.05, beta = 0.1, check = TRUE, output = TRUE)
 }
 \arguments{

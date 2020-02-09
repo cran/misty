@@ -44,16 +44,16 @@
 #'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
 #'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
 #'
-#' # ICC(1) for x
+#' # ICC(1) for x1
 #' multilevel.icc(dat$x1, group = dat$group)
 #'
-#' # ICC(1) for x, convert value 1 to NA
+#' # ICC(1) for x1, convert value 1 to NA
 #' multilevel.icc(dat$x1, group = dat$group, as.na = 1)
 #'
-#' # ICC(2) for x
+#' # ICC(2) for x1
 #' multilevel.icc(dat$x1, group = dat$group, type = 2)
 #'
-#' # ICC(1) for x,
+#' # ICC(1) for x1,
 #' # use lmer() function in the lme4 package to estimate ICC
 #' multilevel.icc(dat$x1, group = dat$group, method = "lme4")
 #'
@@ -65,28 +65,28 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
   ####################################################################################
   # Data
 
-  #-----------------------------------------
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a vector, matrix or data frame for the argument 'x'", call. = FALSE)
+    stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
-  #----------------------------------------
+  #......
   # Vector, matrix or data frame for the argument 'x'?
   if (!is.vector(x) && !is.matrix(x) && !is.data.frame(x)) {
 
-    stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'",
+    stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
          call. = FALSE)
 
   }
 
-  #-----------------------------------------
+  #......
   # Check input 'group'
   if (missing(group)) {
 
-    stop("Please specify a vector representing the grouping structure for the argument 'group'", call. = FALSE)
+    stop("Please specify a vector representing the grouping structure for the argument 'group'.", call. = FALSE)
 
   }
 
@@ -95,10 +95,10 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     # Variable with missing values only
-    x.miss <- sapply(as.data.frame(x), function(y) all(is.na(y)))
+    x.miss <- vapply(as.data.frame(x), function(y) all(is.na(y)), FUN.VALUE = logical(1))
     if (any(x.miss)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
@@ -112,7 +112,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
   # Input Check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -121,6 +121,15 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
   #-----------------------------------------
 
   if (isTRUE(check)) {
+
+    #......
+    # Check input 'group'
+    if (length(unique(na.omit(group))) == 1) {
+
+      stop("There is only one group represented in the grouping variable specified in 'group'.",
+           call. = FALSE)
+
+    }
 
     #......
     # Check input 'group'
@@ -147,14 +156,6 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
     }
 
     #......
-    # Check input 'group'
-    if (length(unique(na.omit(group))) == 1) {
-
-      stop("There is only one group represented in the grouping variable 'group'.", call. = FALSE)
-
-    }
-
-    #......
     # Variance within group
     if (is.null(dim(x))) {
 
@@ -169,6 +170,25 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
       if (any(apply(x, 2, function(y) all(tapply(y, group, function(z) length(na.omit(z))) <= 1)))) {
 
         stop("There are variables in 'x' without any within-group variance.", call. = FALSE)
+
+      }
+
+    }
+
+    #......
+    # Check input 'x': Zero variance?
+    x.check <- vapply(as.data.frame(x), function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+
+    if (any(x.check)) {
+
+      if (length(x.check) > 1) {
+
+        warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
+                       paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
+
+      } else {
+
+        stop("Vector specified in 'x' has zero variance.", call. = FALSE)
 
       }
 
@@ -193,9 +213,9 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
     #......
     # Check input 'REML'
-    if (isFALSE(isTRUE(REML) | isFALSE(REML))) {
+    if (isFALSE(isTRUE(REML) || isFALSE(REML))) {
 
-      stop("Please specify TRUE or FALSE for the argument 'REML'", call. = FALSE)
+      stop("Please specify TRUE or FALSE for the argument 'REML'.", call. = FALSE)
 
     }
 
@@ -242,117 +262,129 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
   if (is.null(dim(x))) {
 
-    # ICC using aov() function
-    if (method == "aov") {
+    #............
+    # Variable with non-zero variance
+    if (var(x, na.rm = TRUE) != 0) {
 
-      # Estimate model
-      mod <- aov(x ~ 1 + Error(as.factor(group)))
+      # ICC using aov() function
+      if (method == "aov") {
 
-      # Model summary
-      mod.summary <- summary(mod)
+        # Estimate model
+        mod <- aov(x ~ 1 + Error(as.factor(group)))
 
-      # Mean Squared Error Between
-      MSQ.B <- unlist(mod.summary[[1]])["Mean Sq"]
+        # Model summary
+        mod.summary <- summary(mod)
 
-      # Mean Squared Error Within
-      MSQ.W <- unlist(mod.summary[[2]])["Mean Sq"]
+        # Mean Squared Error Between
+        MSQ.B <- unlist(mod.summary[[1]])["Mean Sq"]
 
-      # ICC(1)
-      if (type == 1) {
+        # Mean Squared Error Within
+        MSQ.W <- unlist(mod.summary[[2]])["Mean Sq"]
 
-        # Average group size
-        group.size <- mean(tapply(x, group, function(y) sum(!is.na(y))))
+        # ICC(1)
+        if (type == 1) {
 
-        # Intraclass correlation coefficient, ICC(1)
-        object <- unname((MSQ.B - MSQ.W) / (MSQ.B + ((group.size - 1) * MSQ.W)))
+          # Average group size
+          group.size <- mean(tapply(x, group, function(y) sum(!is.na(y))))
 
-        if (object < 0) { object <- 0 }
+          # Intraclass correlation coefficient, ICC(1)
+          object <- unname((MSQ.B - MSQ.W) / (MSQ.B + ((group.size - 1) * MSQ.W)))
 
-      # ICC(2)
-      } else {
-
-        # Intraclass correlation coefficient, ICC(2)
-        object <- unname((MSQ.B - MSQ.W) / MSQ.B)
-
-        if (object < 0) { object <- 0 }
-
-      }
-
-    }
-
-    # ICC using lmer() function
-    if (method == "lme4") {
-
-      # Estimate model
-      mod <- lme4::lmer(x ~ 1 + (1|group), REML = REML,
-                        control = lme4::lmerControl(optimizer = "bobyqa"))
-
-      # Variance components
-      vartab <- as.data.frame(lme4::VarCorr(mod))
-
-      # Between-group variance
-      var.u <- vartab[vartab$grp == "group", "vcov"]
-
-      # Within-group variance
-      var.r <- vartab[vartab$grp == "Residual", "vcov"]
-
-      # Total variance
-      var.total <- var.u + var.r
-
-      # ICC(1)
-      if (type == 1) {
-
-        # Intraclass correlation coefficient, ICC(1)
-        object <- var.u / var.total
-
-      # ICC(2)
-      } else {
-
-        # Average group size
-        group.size <- mean(tapply(x, group, function(y) sum(!is.na(y))))
-
-        # Intraclass correlation coefficient, ICC(2)
-        object <- var.u / (var.u + var.r / group.size)
-
-      }
-
-    }
-
-    # ICC using lme() function
-    if (method == "nlme") {
-
-      # REML or ML
-      ifelse(isTRUE(REML), REML <- "REML", REML <- "ML")
-
-      # Estimate model
-      mod <- nlme::lme(x ~ 1, random = ~1 | group, na.action = na.omit, method = REML)
-
-      # Variance components
-      vartab <- nlme::VarCorr(mod)
-
-      var.u  <- as.numeric(vartab["(Intercept)", "Variance"])
-
-      var.r <- as.numeric(vartab["Residual", "Variance"])
-
-      # Total variance
-      var.total <- var.u + var.r
-
-      # ICC(1)
-      if (type == 1) {
-
-        # Intraclass correlation coefficient, ICC(1)
-        object <- var.u / var.total
+          if (object < 0) { object <- 0 }
 
         # ICC(2)
-      } else {
+        } else {
 
-        # Average group size
-        group.size <- mean(tapply(x, group, function(y) sum(!is.na(y))))
+          # Intraclass correlation coefficient, ICC(2)
+          object <- unname((MSQ.B - MSQ.W) / MSQ.B)
 
-        # Intraclass correlation coefficient, ICC(2)
-        object <- var.u / (var.u + var.r / group.size)
+          if (object < 0) { object <- 0 }
+
+        }
 
       }
+
+      # ICC using lmer() function
+      if (method == "lme4") {
+
+        # Estimate model
+        mod <- lme4::lmer(x ~ 1 + (1|group), REML = REML,
+                          control = lme4::lmerControl(optimizer = "bobyqa"))
+
+        # Variance components
+        vartab <- as.data.frame(lme4::VarCorr(mod))
+
+        # Between-group variance
+        var.u <- vartab[vartab$grp == "group", "vcov"]
+
+        # Within-group variance
+        var.r <- vartab[vartab$grp == "Residual", "vcov"]
+
+        # Total variance
+        var.total <- var.u + var.r
+
+        # ICC(1)
+        if (type == 1) {
+
+          # Intraclass correlation coefficient, ICC(1)
+          object <- var.u / var.total
+
+        # ICC(2)
+        } else {
+
+          # Average group size
+          group.size <- mean(tapply(x, group, function(y) sum(!is.na(y))))
+
+          # Intraclass correlation coefficient, ICC(2)
+          object <- var.u / (var.u + var.r / group.size)
+
+        }
+
+      }
+
+      # ICC using lme() function
+      if (method == "nlme") {
+
+        # REML or ML
+        ifelse(isTRUE(REML), REML <- "REML", REML <- "ML")
+
+        # Estimate model
+        mod <- nlme::lme(x ~ 1, random = ~1 | group, na.action = na.omit, method = REML)
+
+        # Variance components
+        vartab <- nlme::VarCorr(mod)
+
+        var.u  <- as.numeric(vartab["(Intercept)", "Variance"])
+
+        var.r <- as.numeric(vartab["Residual", "Variance"])
+
+        # Total variance
+        var.total <- var.u + var.r
+
+        # ICC(1)
+        if (type == 1) {
+
+          # Intraclass correlation coefficient, ICC(1)
+          object <- var.u / var.total
+
+          # ICC(2)
+        } else {
+
+          # Average group size
+          group.size <- mean(tapply(x, group, function(y) sum(!is.na(y))))
+
+          # Intraclass correlation coefficient, ICC(2)
+          object <- var.u / (var.u + var.r / group.size)
+
+        }
+
+      }
+
+    #............
+    # Variable with non-zero variance
+    } else {
+
+      object <- NA
 
     }
 

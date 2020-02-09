@@ -64,11 +64,11 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  #.........................
-  # Check input 'x'
+  #......
+  # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a matrix or data frame of discrete values for the argument 'x'", call. = FALSE)
+    stop("Please specify a matrix or data frame of discrete values for the argument 'x'.", call. = FALSE)
 
   }
 
@@ -83,7 +83,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -97,7 +97,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     # Check input 'x': Discrete values
     if (any(apply(x, 2, function(y) any(na.omit(y) %% 1 != 0)))) {
 
-      stop("Please specify a matrix or data frame of discrete values for the argument 'x'", call. = FALSE)
+      stop("Please specify a matrix or data frame of discrete values for the argument 'x'.", call. = FALSE)
 
     }
 
@@ -151,7 +151,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1 != 0 || digits < 0) {
 
       warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -159,7 +159,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (isFALSE(isTRUE(output) || isFALSE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -172,9 +172,10 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   #----------------------------------------
   # Convert user-missing values into NA
+
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
   }
 
@@ -252,7 +253,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     miny <- min(y,na.rm = TRUE)
     maxy <- max(y,na.rm = TRUE)
     maxxy <- (maxx+(minx == 0))*(maxy + (miny == 0))
-    dims = c(maxx + 1 - min(1, minx), maxy + 1 - min(1, minx))
+    dims <- c(maxx + 1 - min(1, minx), maxy + 1 - min(1, minx))
     bin <- x - minx + (y - miny)*(dims[1]) + max(1, minx)
     ans <- matrix(tabulate(bin, maxxy), dims)
 
@@ -282,9 +283,9 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     P <- matrix(0, nr, nc)
     R <- matrix(c(1, rho, rho,1), 2, 2)
 
-    for (i in 1:(nr - 1)) {
+    for (i in seq_len((nr - 1))) {
 
-      for (j in 1:(nc - 1)) {
+      for (j in seq_len((nc - 1))) {
 
         P[i, j] <- mnormt::sadmvn(lower = c(row.cuts[i], col.cuts[j]),
                                   upper = c(row.cuts[i + 1], col.cuts[j + 1]), mean = rep(0, 2),
@@ -293,11 +294,11 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     }
 
-    P[1,nc] <- pnorm(rc[1]) - sum(P[1,1:(nc-1)] )
-    P[nr,1] <- pnorm(cc[1]) - sum(P[1:(nr-1),1] )
-    if(nr >2) {for (i in (2:(nr - 1))) {P[i, nc] <- pnorm(rc[i]) -pnorm(rc[i - 1])- sum(P[i, 1:(nc - 1)]) }}
-    if(nc >2) {for (j in (2:(nc - 1))) {P[nr, j] <- pnorm(cc[j]) - pnorm(cc[j - 1])-sum(P[1:(nr - 1), j]) }}
-    if(nc > 1)  P[nr, nc] <- 1 - pnorm(rc[nr - 1]) - sum(P[nr, 1:(nc - 1)])
+    P[1,nc] <- pnorm(rc[1]) - sum(P[1, seq_len((nc - 1))])
+    P[nr,1] <- pnorm(cc[1]) - sum(P[seq_len((nr - 1)), 1])
+    if(nr >2) {for (i in (2:(nr - 1))) {P[i, nc] <- pnorm(rc[i]) -pnorm(rc[i - 1])- sum(P[i, seq_len((nc - 1))]) }}
+    if(nc >2) {for (j in (2:(nc - 1))) {P[nr, j] <- pnorm(cc[j]) - pnorm(cc[j - 1])-sum(P[seq_len((nr - 1)), j]) }}
+    if(nc > 1)  P[nr, nc] <- 1 - pnorm(rc[nr - 1]) - sum(P[nr, seq_len((nc - 1))])
     P
 
   }
@@ -427,9 +428,9 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
       k <- 1
       il <- vector()
       jl <- vector()
-      for(i in 1:np) {
+      for(i in seq_len(np)) {
 
-        for (j in 1:nd) {
+        for (j in seq_len(nd)) {
 
           il[k] <- i
           jl [k] <- j
@@ -453,7 +454,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
       if(length(weight) != nrow(x)) {
 
-        stop("Length of the weight vector must match the number of cases", call. = FALSE)
+        stop("Length of the weight vector must match the number of cases.", call. = FALSE)
 
       }
     }
@@ -473,16 +474,16 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     dmax <- apply(d, 2,function(x) max(x, na.rm = TRUE))
     dvalues <- max(dmax - dmin)
 
-    if (dvalues != 1) stop("You did not supply a dichotomous variable", call. = FALSE)
+    if (dvalues != 1) stop("You did not supply a dichotomous variable.", call. = FALSE)
 
-    if (nvalues > 8) stop("You have more than 8 categories for your items, polychoric is probably not needed", call. = FALSE)
+    if (nvalues > 8) stop("You have more than 8 categories for your items, polychoric is probably not needed.", call. = FALSE)
 
     item.var <- apply(p, 2, sd, na.rm = na.rm)
     bad <- which((item.var <= 0) | is.na(item.var))
 
     if ((length(bad) > 0)  & isTRUE(delete)) {
 
-      for (baddy in 1:length(bad)) {
+      for (baddy in seq_len(length(bad))) {
 
         message( "Item = ",colnames(p)[bad][baddy], " had no variance and was deleted")
 
@@ -512,9 +513,9 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     n.obs <- colSums(pfreq)
     pfreq <- t(t(pfreq)/n.obs)
 
-    taup <- as.matrix(qnorm(apply(pfreq, 2, cumsum))[1:(nvalues - 1), ], ncol = ncol(pfreq))
+    taup <- as.matrix(qnorm(apply(pfreq, 2, cumsum))[seq_len(nvalues - 1), ], ncol = ncol(pfreq))
 
-    rownames(taup) <- paste(1:(nvalues - 1))
+    rownames(taup) <- paste(seq_len(nvalues - 1))
     colnames(taup) <- colnames(p)
 
     dfreq <- apply(d, 2, tabulate, nbins = 2)
@@ -587,7 +588,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     jl <- vector()
     for(i in 2:nvar) {
 
-      for (j in 1:(i - 1)) {
+      for (j in seq_len(i - 1)) {
 
       il[k] <- i
       jl [k] <- j
@@ -661,7 +662,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
       if (maxx > nvalues) {
 
         xtvalues <- as.numeric(names(xt))
-        for(i in 1:nvalues) {
+        for(i in seq_len(nvalues)) {
 
           x[x == xtvalues[i]] <- i
 
@@ -676,7 +677,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     if((length(bad) > 0) & isTRUE(delete)) {
 
-      for (baddy in 1:length(bad)) {
+      for (baddy in seq_len(length(bad))) {
 
         message("Item = ", colnames(x)[bad][baddy], " had no variance and was deleted.")
 
@@ -707,11 +708,11 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     xfreq <- apply(x, 2, tabulate, nbins = nvalues)
     n.obs <- colSums(xfreq)
     xfreq <- t(t(xfreq) / n.obs)
-    tau <- qnorm(apply(xfreq, 2, cumsum))[1:(nvalues - 1), ]
+    tau <- qnorm(apply(xfreq, 2, cumsum))[seq_len(nvalues - 1), ]
 
     if(!is.matrix(tau)) tau <- matrix(tau, ncol = nvar)
 
-    rownames(tau) <- 1:(nvalues - 1)
+    rownames(tau) <- seq_len(nvalues - 1)
     colnames(tau) <- colnames(x)
 
     mat <- matrix(0, nvar, nvar)
