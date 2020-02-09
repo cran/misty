@@ -1,0 +1,463 @@
+#' Run Mplus Models
+#'
+#' This function runs a group of Mplus models (\code{.inp} files) located within a single directory
+#' or nested within subdirectories.
+#'
+#' Note that this function is a copy of the \code{runModels()} function in the \pkg{MplusAutomation} package
+#' by Michael Hallquist.
+#'
+#' @param target            	a character string indicating the directory containing Mplus input files (\code{.inp})
+#'                            to run or the single \code{.inp} file to be run. May be a full path, relative path, or
+#'                            a filename within the working directory.
+#' @param recursive           logical: if \code{TRUE}, run all models nested in subdirectories within directory.
+#'                            Not relevant if target is a single file.
+#' @param filefilter          a Perl regular expression (PCRE-compatible) specifying particular input files to be
+#'                            run within directory. See regex or http://www.pcre.org/pcre.txt for details about
+#'                            regular expression syntax. Not relevant if target is a single file.
+#' @param showOutput          logical: if \code{TRUE}, estimation output (\code{TECH8}) is show on the R console.
+#'                            Note that if run within Rgui, output will display within R, but if run via Rterm,
+#'                            a separate window will appear during estimation.
+#' @param replaceOutfile      a character string for specifying three settings: \code{"always"} (default), which runs all models, regardless
+#'                            of whether an output file for the model exists, \code{"never"}, which does not run any model that
+#'                            has an existing output file, and \code{"modifiedDate"}, which only runs a model if the modified
+#'                            date for the input file is more recent than the output file modified date.
+#' @param logFile             a character string specifying a file that records the settings passed into the function and
+#'                            the models run (or skipped) during the run.
+#' @param Mplus               a character string for specifying the name or path of the Mplus executable to be used for
+#'                            running models. This covers situations where Mplus is not in the system's path, or where
+#'                            one wants to test different versions of the Mplus program.Note that there is no need to specify
+#'                            this argument for most users since it has intelligent defaults.
+#' @param killOnFail          logical: if \code{TRUE}, all processes named mplus.exe when \code{mplus.run()} does not terminate
+#'                            normally are killed. Windows only.
+#' @param local_tmpdir        logical: if \code{TRUE}, the TMPDIR environment variable is set to the location of the \code{.inp file}
+#'                            prior to execution. This is useful in Monte Carlo studies where many instances of Mplus may run
+#'                            in parallel and we wish to avoid collisions in temporary files among processes. Linux/Mac only.
+#'
+#' @author
+#' Michael Hallquist
+#'
+#' @references
+#' Hallquist, M. N. & Wiley, J. F. (2018). MplusAutomation: An R package for facilitating large-scale latent variable
+#' analyses in Mplus. \emph{Structural Equation Modeling: A Multidisciplinary Journal, 25}, 621-638.
+#' https://doi.org/10.1080/10705511.2017.1402334.
+#'
+#' Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.). Muthen & Muthen.
+#'
+#' @return
+#' None.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Run Mplus models located within a single directory
+#' run.mplus(Mplus = "C:/Program Files/Mplus/Mplus.exe")
+#'
+#' # Run Mplus models located nested within subdirectories
+#' run.mplus(recursive = TRUE,
+#'           Mplus = "C:/Program Files/Mplus/Mplus.exe")
+#' }
+run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, showOutput = FALSE,
+                      replaceOutfile = c("always", "never", "modifiedDate"), logFile = NULL,
+                      Mplus = "Mplus", killOnFail = TRUE, local_tmpdir = FALSE) {
+
+  ####################################################################################
+  # Additional functions
+
+  #----------------------------------------
+  # Split File and Path into Separate Parts
+  splitFilePath <- function(abspath) {
+
+    if (!is.character(abspath)) stop("Path not a character string", call. = FALSE)
+
+    if (nchar(abspath) < 1 || is.na(abspath)) stop("Path is missing or of zero length", call. = FALSE)
+
+    # trailing slash screws up file.exists call on Windows: https://bugs.r-project.org/bugzilla/show_bug.cgi?id=14721
+    abspath <- sub("(\\\\|/)?$", "", abspath, perl = TRUE)
+
+    components <- strsplit(abspath, split = "[\\/]")[[1]]
+    lcom <- length(components)
+
+    stopifnot(lcom > 0)
+
+    # the file is the last element in the list. In the case of length == 1, this will extract the only element.
+    relFilename <- components[lcom]
+    absolute <- FALSE
+
+    if (lcom == 1) {
+
+      dirpart <- NA_character_
+
+    } else if (lcom > 1) {
+
+      components <- components[-lcom]
+      dirpart <- do.call("file.path", as.list(components))
+
+      #if path begins with C:, /, ~/, //, or \\, then treat as absolute
+      if (grepl("^([A-Z]{1}:|~/|/|//|\\\\)+.*$", dirpart, perl=TRUE)) absolute <- TRUE
+
+    }
+
+    return(list(directory = dirpart, filename = relFilename, absolute = absolute))
+
+  }
+
+  ####################################################################################
+  # Input Check
+
+  stopifnot(replaceOutfile %in% c("always", "never", "modifiedDate"))
+
+  if (length(target) > 1L) {
+
+    stop("Target for run.mplus() must be a single file or single directory.", call. = FALSE)
+
+  }
+
+  curdir <- getwd()
+
+  if (grepl(".*\\.inp?$", target, perl = TRUE)) {
+
+    directory <- dirname(target)
+    filelist <- basename(target)
+    if (!is.null(filefilter)) {
+
+      warning("Using run.mplus() with a single .inp target ignores filefilter.", call. = FALSE)
+
+    }
+
+    if (!file.exists(target)) {
+
+      stop("run.mplus() cannot locate target file: ", target, call. = FALSE)
+
+    }
+
+    setwd(directory)
+
+    if (file.exists(outtest <- sub("\\.inp?$", ".out", filelist, perl = TRUE))) {
+
+      filelist <- c(filelist, outtest)
+
+    }
+
+  } else {
+
+    directory <- sub("(\\\\|/)?$", "", target, perl = TRUE)
+
+    if (.Platform$OS.type == "windows" && grepl("^[a-zA-Z]:$", directory)) {
+
+      directory <- paste0(directory, "/")
+
+    }
+
+    if (!file.exists(directory)) {
+
+      stop("run.mplus() cannot change to directory: ", directory, call. = FALSE)
+
+    }
+
+    setwd(directory)
+    filelist <- list.files(recursive = recursive, pattern = filefilter)
+
+  }
+
+  #-----------------------------------------------------------------------------------
+  # Arguments
+
+  #......
+  # Argument replaceOutfile
+  if (all(c("always", "never", "modifiedDate") %in% replaceOutfile)) { replaceOutfile <- "always" }
+
+  ####################################################################################
+  # Main Function
+
+  normalComplete <- FALSE
+
+  if (!is.null(logFile)) {
+
+    logTarget <- file(description = logFile, open = "wt", blocking = TRUE)
+
+    writeLines(c(paste0("------Begin Mplus Model Run: ",
+                       format(Sys.time(), "%d%b%Y %H:%M:%S"), "------"),
+                 paste0("Target directory: ", directory), "Run options:",
+                 paste("\tRecursive (run models in subdirectories):",
+                       as.character(recursive)), paste("\tShow output on console:", as.character(showOutput)),
+                 paste("\tReplace existing outfile:", replaceOutfile), "------"), con = logTarget)
+
+    flush(logTarget)
+
+  }
+
+  isLogOpen <- function() {
+
+    if (is.null(logFile)) {
+
+      return(FALSE)
+    }
+
+    connections <- data.frame(showConnections(all = FALSE))
+
+    if (length(grep(splitFilePath(logFile)$filename, connections$description, ignore.case = TRUE)) > 0) {
+
+      return(TRUE)
+
+    } else {
+
+      return(FALSE)
+
+    }
+
+  }
+
+  exitRun <- function() {
+
+    deleteOnKill <- TRUE
+
+    if (normalComplete == FALSE && isLogOpen()) {
+
+      writeLines("Run terminated abnormally", logTarget)
+      flush(logTarget)
+
+    }
+
+    if (.Platform$OS.type == "windows" && normalComplete == FALSE && killOnFail == TRUE) {
+
+      processList <-  plyr::ldply(strsplit(shell("wmic process get caption, processid", intern = TRUE), split = "\\s+", perl = TRUE),
+
+                           function(element) {
+
+                             return(data.frame(procname = element[1], pid = element[2], stringsAsFactors = FALSE))
+
+                           })
+
+      if (length(grep("mplus.exe", processList$procname, ignore.case = TRUE)) > 0) {
+
+        if (isLogOpen()) {
+
+          writeLines("Killing wayward Mplus processes", logTarget)
+          flush(logTarget)
+
+        }
+
+        shell("taskkill /f /im mplus.exe")
+
+        if (deleteOnKill == TRUE) {
+
+          noExtension <- substr(absFilename, length(absFilename) - 4, length(absFilename))
+          outDelete <- paste(noExtension, ".out", sep = "")
+          gphDelete <- paste(noExtension, ".gph", sep = "")
+
+          if (file.exists(outDelete)) {
+
+            unlink(outDelete)
+
+            if (isLogOpen()) {
+
+              writeLines(paste("Deleting unfinished output file:", outDelete), logTarget)
+
+              flush(logTarget)
+
+            }
+
+          }
+
+          if (file.exists(gphDelete)) {
+
+            unlink(gphDelete)
+
+            if (isLogOpen()) {
+
+              writeLines(paste("Deleting unfinished graph file:", gphDelete), logTarget)
+
+              flush(logTarget)
+
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+    if (isLogOpen()) {
+
+      close(logTarget)
+
+    }
+
+    setwd(curdir)
+
+  }
+
+  on.exit(exitRun())
+  inpfiles <- filelist[grep(".*\\.inp?$", filelist, ignore.case = TRUE)]
+  outfiles <- filelist[grep(".*\\.out$", filelist, ignore.case = TRUE)]
+
+  if (length(inpfiles) < 1) {
+
+    stop("No Mplus input files detected in the target directory: ", directory)
+
+  }
+
+  dropOutExtensions <- sapply(outfiles, function(x) {
+
+    if (nchar(x) >= 4)
+
+      return(tolower(substr(x, 1, (nchar(x) - 4))))
+
+  })
+
+  for (i in 1:length(inpfiles)) {
+
+    if (!replaceOutfile == "always") {
+
+      if (tolower(sub("\\.inp?$", "", inpfiles[i], perl = TRUE)) %in% dropOutExtensions) {
+
+        if (replaceOutfile == "modifiedDate") {
+
+          inpmtime <- file.info(inpfiles[i])$mtime
+
+          matchPos <- grep(tolower(substr(inpfiles[i], 1, (nchar(inpfiles[i]) - 4))), dropOutExtensions)
+
+          if (length(matchPos) < 1) {
+
+            warning("Could not locate matching outfile", call. = FALSE)
+
+          }
+
+          outmtime <- file.info(outfiles[matchPos[1]])$mtime
+
+          if (inpmtime <= outmtime) {
+
+            if (isLogOpen()) {
+
+              writeLines(paste("Skipping model because output file is newer than input file:", inpfiles[i]), logTarget)
+
+              flush(logTarget)
+
+            }
+
+            next
+
+          }
+
+        } else if (replaceOutfile == "never") {
+
+          if (isLogOpen()) {
+
+            writeLines(paste("Skipping model because output file already exists for:", inpfiles[i]), logTarget)
+
+            flush(logTarget)
+
+          }
+
+          next
+
+        }
+
+      }
+
+    }
+
+    inputSplit <- splitFilePath(inpfiles[i])
+    if (is.na(inputSplit$directory)) {
+
+       dirtocd <- directory
+
+    } else {
+
+      dirtocd <- file.path(directory, inputSplit$directory)
+
+    }
+
+    absFilename <- file.path(directory, inpfiles[i])
+    if (.Platform$OS.type == "unix" && Mplus == "Mplus") {
+
+      if (Sys.info()["sysname"] == "Darwin") {
+
+        Mplus <- "/Applications/Mplus/mplus"
+
+      } else {
+
+        Mplus <- "mplus"
+
+      }
+
+    }
+
+    command <- paste("cd \"", dirtocd, "\" && \"", Mplus, "\" \"", inputSplit$filename, "\"", sep = "")
+
+    if (.Platform$OS.type == "windows") {
+
+      command <- chartr("/", "\\", command)
+      shellcommand <- Sys.getenv("COMSPEC")
+      flag <- "/c"
+      command <- paste(shellcommand, flag, command)
+
+    } else if (.Platform$OS.type == "unix") {
+    }
+
+    if (isLogOpen()) {
+
+      writeLines(paste("Currently running model:", inputSplit$filename), logTarget)
+
+      flush(logTarget)
+
+    }
+
+    cat("\nRunning model:", inputSplit$filename, "\n")
+    cat("System command:", command, "\n")
+
+    if (.Platform$OS.type == "windows") {
+
+      system(command, show.output.on.console = showOutput,
+             invisible = (!showOutput), wait = TRUE)
+
+    } else {
+
+      if (showOutput) {
+
+        stdout.value = ""
+
+      }  else {
+
+        stdout.value = NULL
+
+      }
+
+      oldwd <- getwd()
+      setwd(dirtocd)
+      if (local_tmpdir) {
+
+        Sys.setenv(TMPDIR = dirtocd)
+
+      }
+
+      exitCode <- system2(Mplus, args = c(shQuote(inputSplit$filename)),
+                          stdout = stdout.value, wait = TRUE)
+
+      if (exitCode > 0L) {
+
+        warning("Mplus returned error code: ", exitCode, ", for model: ", inputSplit$filename, "\n", call. = FALSE)
+
+      }
+
+      setwd(oldwd)
+
+    }
+
+  }
+
+  if (isLogOpen()) {
+
+    writeLines(c("", paste("------End Mplus Model Run: ",
+                           format(Sys.time(), "%d%b%Y %H:%M:%S"), "------",
+                           sep = "")), logTarget)
+    flush(logTarget)
+
+  }
+
+  normalComplete <- TRUE
+
+}
