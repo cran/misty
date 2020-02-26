@@ -131,8 +131,8 @@ as.na <- function(x, as.na, check = TRUE) {
     # Matrix or data frame
     if (is.matrix(x) || is.data.frame(x)) {
 
-      as.na.x <- vapply(as.character(as.na), function(y) !y %in% trimws(apply(as.matrix(x), 2, as.character)),
-                        FUN.VALUE = 1)
+      as.na.x <- vapply(as.character(as.na), function(y) !y %in% misty::trim(apply(as.matrix(x), 2, as.character)),
+                        FUN.VALUE = logical(1))
 
     }
 

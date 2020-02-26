@@ -61,7 +61,7 @@ User-missing values are defined in the column \code{missing} of the matrix or da
 specifying one user-missing value (e.g., \code{-99}) or more than one but up to three user-missing values separated
 by a semicolon (e.g., \code{-77; -99}.
 
-Note that the part of the function using \emph{PSPP} was adapted from the \code{write.pspp} function in the \pkg{miceadds}
+Note that the part of the function using \emph{PSPP} was adapted from the \code{write.pspp()} function in the \pkg{miceadds}
 package by Alexander Robitzsch, Simon Grund and Thorsten Henke (2019).
 }
 \examples{

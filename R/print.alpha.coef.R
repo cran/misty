@@ -82,8 +82,6 @@ print.alpha.coef <- function(x, print = x$args$print, digits = x$args$digits, ch
   print.object <- x$result
 
   # Print coefficient alpha and/or item statistic
-  if (all(c(c("all", "alpha", "item")) %in% print)) { print <- c("alpha", "item") }
-
   if (length(print) == 1 && "all" %in% print) { print <- c("alpha", "item") }
 
   ####################################################################################
@@ -127,7 +125,7 @@ print.alpha.coef <- function(x, print = x$args$print, digits = x$args$digits, ch
 
   #-----------------------------------------
   # Item statistics
-  if ("item" %in% print && !is.null(print.object$result$itemstat) && nrow(x$result$itemstat) > 2) {
+  if ("item" %in% print && !is.null(print.object$itemstat) && nrow(print.object$itemstat) > 2) {
 
     print.object$item$pNA <- paste0(formatC(print.object$item$pNA, digits = 2, format = "f"), "%")
     print.object$item$m <- formatC(print.object$item$m, digits = 2, format = "f")

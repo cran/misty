@@ -162,7 +162,7 @@ the \texttt{library()} function:
 \begin{Highlighting}[]
 \OperatorTok{>}\StringTok{ }\KeywordTok{library}\NormalTok{(misty)}
 \Output{ |-------------------------------------|}
-\Output{ | misty 0.2.1 (2020-02-02)            |}
+\Output{ | misty 0.2.1 (2020-02-09)            |}
 \Output{ | Miscellaneous Functions T. Yanagida |}
 \Output{ |-------------------------------------|}
 \end{Highlighting}
@@ -1094,7 +1094,7 @@ outcome variables in combination with one or more grouping variables.
 
 \ErrorTok{>}\StringTok{ }\CommentTok{# Eta squared for y1 explained by x1}
 \ErrorTok{>}\StringTok{ }\KeywordTok{eta.sq}\NormalTok{(dat}\OperatorTok{$}\NormalTok{y1, }\DataTypeTok{group =}\NormalTok{ dat}\OperatorTok{$}\NormalTok{x1)}
-\Output{ Eta Squared Matrix}
+\Output{ Eta Squared}
 \Output{ }
 \Output{   Estimate   0.499}
 \end{Highlighting}
@@ -1688,6 +1688,23 @@ from a numeric vector, character vector or factor.
 \ErrorTok{>}\StringTok{ }\CommentTok{# Omit character string "c" and "e"}
 \ErrorTok{>}\StringTok{ }\KeywordTok{stromit}\NormalTok{(x.chr, }\DataTypeTok{omit =} \KeywordTok{c}\NormalTok{(}\StringTok{"c"}\NormalTok{, }\StringTok{"e"}\NormalTok{))}
 \Output{ [1] "a" ""  NA  ""  "d" NA}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{trim-whispace-from-string}{%
+\subsubsection{Trim Whispace from
+String}\label{trim-whispace-from-string}}
+
+The \texttt{trim()} function removes whitespace from start and/or end of
+a string.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{x <-}\StringTok{ "  string  "}
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Remove whitespace at both sides}
+\ErrorTok{>}\StringTok{ }\KeywordTok{trim}\NormalTok{(x)}
+\CommentTok{# [1] "string"}
 \end{Highlighting}
 \end{Shaded}
 

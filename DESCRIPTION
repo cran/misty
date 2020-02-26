@@ -1,8 +1,8 @@
 Package: misty
 Type: Package
 Title: Miscellaneous Functions 'T. Yanagida'
-Version: 0.2.1
-Date: 2020-02-09
+Version: 0.2.2
+Date: 2020-02-25
 Authors@R: person(given = "Takuya", family = "Yanagida", email="takuya.yanagida@univie.ac.at", role = c("aut","cre"))
 Author: Takuya Yanagida [aut, cre]
 Maintainer: Takuya Yanagida <takuya.yanagida@univie.ac.at>
@@ -15,6 +15,6 @@ VignetteBuilder: R.rsp
 Encoding: UTF-8
 RoxygenNote: 7.0.2
 NeedsCompilation: no
-Packaged: 2020-02-09 21:03:05 UTC; Takuya
+Packaged: 2020-02-26 00:08:54 UTC; Takuya
 Repository: CRAN
-Date/Publication: 2020-02-09 21:30:02 UTC
+Date/Publication: 2020-02-26 17:10:02 UTC

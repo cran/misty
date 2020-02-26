@@ -235,16 +235,24 @@ print.descript <- function(x, print = x$args$print, sort.var = x$args$sort.var,
       }
 
       # Format
-      print.object[[i]][, 1] <- format(print.object[[i]][, 1], justify = "left")
-      print.object[[i]][, 2] <- format(print.object[[i]][, 2], justify = "left")
+      if (ncol(x$data$x) == 1 && is.null(x$data$group)) {
 
-      print.object[[i]][1, 1] <- paste0(" ", print.object[[i]][1, 1], " ", collapse = "")
-      print.object[[i]][-1, 1] <- paste0("  ", print.object[[i]][-1, 1])
+        print.object[[i]][-1, 1] <- paste0("  ", print.object[[i]][-1, 1])
+        print.object[[i]] <- format(print.object[[i]], justify = "right")
 
-      print.object[[i]][, -c(1:2)] <- apply(print.object[[i]][, -c(1:2), drop = FALSE], 2, function(y) format(y, justify = "right"))
+      } else {
 
+        print.object[[i]][, 1] <- format(print.object[[i]][, 1], justify = "left")
+        print.object[[i]][, 2] <- format(print.object[[i]][, 2], justify = "right")
 
-      print.object[[i]][, 1] <- paste0("  ", print.object[[i]][, 1])
+        print.object[[i]][1, 1] <- paste0(" ", print.object[[i]][1, 1], " ", collapse = "")
+        print.object[[i]][-1, 1] <- paste0("  ", print.object[[i]][-1, 1])
+
+        print.object[[i]][, -c(1:2)] <- apply(print.object[[i]][, -c(1:2), drop = FALSE], 2, function(y) format(y, justify = "right"))
+
+        print.object[[i]][, 1] <- paste0("  ", print.object[[i]][, 1])
+
+      }
 
     }
 

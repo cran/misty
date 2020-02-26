@@ -3,7 +3,7 @@
 #' This function computes a polychoric correlation matrix, which is the estimated Pearson product-moment correlation matrix
 #' between underlying normally distributed latent variables which generate the ordinal scores.
 #'
-#' Note that this function is based on the \code{polychoric()} function in the \pkg{psych} by William Revelle.
+#' Note that this function is based on the \code{polychoric()} function in the \pkg{psych} package by William Revelle.
 #'
 #' @param x           a matrix or data frame of discrete values.
 #' @param smooth      logical: if \code{TRUE} and if the polychoric matrix is not positive definite,

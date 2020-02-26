@@ -22,7 +22,7 @@
 #' For example, \code{else = NA}. Everything that does not fit a previous specification. Note that
 #' \code{else} matches all otherwise unspecified values on input, including \code{NA}.
 #'
-#' Note that the function was adapted from the \code{recode} function in the \pkg{car} package by
+#' Note that the function was adapted from the \code{recode()} function in the \pkg{car} package by
 #' John Fox and Sanford Weisberg (2019).
 #'
 #' @param x           a numeric vector, character vector or factor.

@@ -30,7 +30,7 @@ be converted to character. POSIXct data will be converted to be in the same time
 Array and matrix columns must have identical dimensions after the row count. Aside from these there
 are no general checks that each column is of consistent data type.
 
-Note that this function is a copy of the \code{rbind.fill} function in the \pkg{plyr} package
+Note that this function is a copy of the \code{rbind.fill()} function in the \pkg{plyr} package
 by Hadley Wickham.
 }
 \examples{

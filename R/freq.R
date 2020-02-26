@@ -397,18 +397,49 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
     # split = FALSE
     if (isFALSE(split)) {
 
-      #....
-      # Factors
-      if (any(vapply(x, is.numeric, FUN.VALUE = logical(1))) && any(vapply(x, is.factor, FUN.VALUE = logical(1)))) {
+      #...
+      # Unique levels
+      x.levels <- NULL
 
-        x.levels <- sort(unique(c(as.character(unlist(x[, vapply(x, is.factor, FUN.VALUE = logical(1))])),
-                                     unlist(x[, -which(vapply(x, is.factor, FUN.VALUE = logical(1)))]))))
+      #...
+      # Numeric variables
+      if (any(vapply(x, is.numeric, FUN.VALUE = logical(1)))) {
 
-      } else {
-
-        x.levels <- sort(unique(unlist(x)))
+        x.levels <- c(x.levels,
+                      na.omit(sort(unique(unlist(x[, vapply(x, is.numeric, FUN.VALUE = logical(1))])))))
 
       }
+
+      #...
+      # Factors
+      if (any(vapply(x, is.factor, FUN.VALUE = logical(1)))) {
+
+        x.levels <- c(x.levels,
+                      unname(unlist(sapply(x[, vapply(x, is.factor, FUN.VALUE = logical(1))], function(y) sort(unique(as.character(y)))))))
+
+      }
+
+      #...
+      # Character
+      if (any(vapply(x, is.character, FUN.VALUE = logical(1)))) {
+
+        x.levels <- c(x.levels,
+                      na.omit(sort(unique(unlist(x[, vapply(x, is.character, FUN.VALUE = logical(1))])))))
+
+      }
+
+      #...
+      # Logical
+      if (any(vapply(x, is.logical, FUN.VALUE = logical(1)))) {
+
+        x.levels <- c(x.levels,
+                      c(TRUE, FALSE))
+
+      }
+
+      x.levels <- unique(x.levels)
+
+      #--------------------------------------------------------
 
       x.abs <- vapply(x, function(y) table(factor(y, levels = x.levels), useNA = "always"), FUN.VALUE = integer(length(x.levels) + 1))
       x.perc <- apply(x.abs, 2, function(y) ifelse(y != 0, prop.table(y) * 100, 0))

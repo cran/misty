@@ -513,7 +513,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
       y1 <- data[, y.var[1]]
       y2 <- data[, y.var[2]]
 
-      y.r <- cor(y1, y2)
+      y.r <- cor(y1, y2, use = "complete.obs")
 
       y.dat <- na.omit(data.frame(y1, y2))
 
@@ -523,7 +523,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
       res.descript <- suppressWarnings(misty::descript(y.dat, check = FALSE, output = FALSE))$result
 
       # Mean difference
-      x.diff <- mean(y2 - y1)
+      x.diff <- mean(y2 - y1, na.rm = TRUE)
 
       # Sample size
       n <- nrow(y.dat)
@@ -615,7 +615,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
       } else {
 
         # Standard error (Algina & Keselman, 2003, p. 539)
-        estimate.SE <- sqrt((2*(sum(res.descript$var) - 2 * cov(y1, y2))) / (n*sum(res.descript$var)))
+        estimate.SE <- sqrt((2*(sum(res.descript$var) - 2 * cov(y1, y2, use = "complete.obs"))) / (n*sum(res.descript$var)))
 
         # t quantile
         t.quantile <- -qt((1 - conf.level) / 2, n - 1)

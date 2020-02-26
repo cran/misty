@@ -23,7 +23,7 @@
 #' specifying one user-missing value (e.g., \code{-99}) or more than one but up to three user-missing values separated
 #' by a semicolon (e.g., \code{-77; -99}.
 #'
-#' Note that the part of the function using \emph{PSPP} was adapted from the \code{write.pspp} function in the \pkg{miceadds}
+#' Note that the part of the function using \emph{PSPP} was adapted from the \code{write.pspp()} function in the \pkg{miceadds}
 #' package by Alexander Robitzsch, Simon Grund and Thorsten Henke (2019).
 #'
 #' @param x           a matrix or data frame to be written in SPSS, vectors are coerced to a data frame.
@@ -206,7 +206,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
             value.labels.split <- unlist(strsplit(value.labels, ";"))
 
-            value.labels.split.matrix <- matrix(trimws(unlist(sapply(value.labels.split, function(y) strsplit(y, "=")))), ncol = length(value.labels.split))
+            value.labels.split.matrix <- matrix(misty::trim(unlist(sapply(value.labels.split, function(y) strsplit(y, "=")))), ncol = length(value.labels.split))
 
             if(!all(as.numeric(value.labels.split.matrix[1, ]) %in% x[, varnames[i]])) {
 
@@ -279,16 +279,16 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
         #...
         # Value labels
-        if (trimws(labels[i]) == "") {
+        if (misty::trim(labels[i]) == "") {
 
           # No User-missing values
-          if (trimws(na[i]) == "") {
+          if (misty::trim(na[i]) == "") {
 
             labels.i <- NULL
 
           } else {
 
-            x.na <- trimws(unlist(strsplit(na[i], ";")))
+            x.na <- misty::trim(unlist(strsplit(na[i], ";")))
 
             labels.i <- paste0("c(", paste(sapply(x.na, function(y) paste("\"NA\" = ", y)), collapse = ", "), ")")
 
@@ -298,15 +298,15 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
           x.labels <- unlist(strsplit(labels[i], ";"))
 
-          x.labels <- matrix(trimws(unlist(sapply(x.labels, function(y) strsplit(y, "=")))), ncol = length(x.labels))
+          x.labels <- matrix(misty::trim(unlist(sapply(x.labels, function(y) strsplit(y, "=")))), ncol = length(x.labels))
 
-          if (trimws(na[i]) == "") {
+          if (misty::trim(na[i]) == "") {
 
             labels.i <- paste0("c(", paste(apply(x.labels, 2, function(y) paste(paste0("\"", y[2], "\""), y[1], sep = " = ")), collapse = ", "), ")")
 
           } else {
 
-            x.na <- trimws(unlist(strsplit(na[i], ";")))
+            x.na <- misty::trim(unlist(strsplit(na[i], ";")))
 
             labels.i <- paste0("c(", paste(c(apply(x.labels, 2, function(y) paste(paste0("\"", y[2], "\""), y[1], sep = " = ")),
                                              paste(sapply(x.na, function(y) paste("\"NA\" = ", y)), collapse = ", ")), collapse = ", "), ")")
@@ -317,13 +317,13 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
         #...
         # User-missing values
-        if (trimws(na[i]) == "") {
+        if (misty::trim(na[i]) == "") {
 
           na.i <- NULL
 
         } else {
 
-          na.i <- paste0("c(", paste(trimws(unlist(strsplit(na[i], ";"))), collapse = ", "), ")")
+          na.i <- paste0("c(", paste(misty::trim(unlist(strsplit(na[i], ";"))), collapse = ", "), ")")
 
         }
 
@@ -484,7 +484,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
             x <- unlist(strsplit(value.labels, ";"))
 
-            x <- matrix(trimws(unlist(sapply(x, function(x) strsplit(x, "=")))), ncol = length(x))
+            x <- matrix(misty::trim(unlist(sapply(x, function(x) strsplit(x, "=")))), ncol = length(x))
 
             cat("\nVALUE LABELS\n",
                 paste0(" ", varnames[i], paste0(paste0(" ", x[1, ], " '", x[2, ], sep = "'"), collapse = "")), ".", file = code, append = TRUE)
@@ -516,7 +516,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
       ###
       # Define missing values
 
-      miss.unique <- unique(trimws(as.character(unique(var.attr[, match("missing", colnames(var.attr))]))))
+      miss.unique <- unique(misty::trim(as.character(unique(var.attr[, match("missing", colnames(var.attr))]))))
       miss.unique <- miss.unique[!miss.unique %in% c("", NA)]
 
       # One pattern of missing data values

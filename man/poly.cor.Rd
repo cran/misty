@@ -20,7 +20,7 @@ a simple smoothing algorithm using \code{cor.smooth()} function is applied.}
 The \code{NULL} case is equivalent of weights of 1 for all cases.}
 
 \item{correct}{a numeric value indicating the correction value to use to correct for continuity in the case
-of zero entry. Note that unlike in the \code{polychoric()} function in the \pkg{psych} the default
+of zero entry. Note that unlike in the \code{polychoric()} function in the \pkg{psych} package the default
 value is 0.}
 
 \item{progress}{logical: if \code{TRUE}, the progress bar is shown.}

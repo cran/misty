@@ -51,7 +51,7 @@ use \code{:} with the collect operator, e.g., \code{c(1, 3, 5:7)} will cause an 
 For example, \code{else = NA}. Everything that does not fit a previous specification. Note that
 \code{else} matches all otherwise unspecified values on input, including \code{NA}.
 
-Note that the function was adapted from the \code{recode} function in the \pkg{car} package by
+Note that the function was adapted from the \code{recode()} function in the \pkg{car} package by
 John Fox and Sanford Weisberg (2019).
 }
 \examples{

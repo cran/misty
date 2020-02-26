@@ -95,8 +95,8 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
 
     #......
     # Extract variable names
-    varnames <- misty::stromit(unlist(strsplit(trimws(gsub("VARIABLE:|variable:|Variable:|NAMES ARE|names ARE|Names ARE|NAMES are|names are|Names are|NAMES Are|names Are|Names Are|NAMES =|names =|Names =|;|\n|\t|\r|\r\n", "",
-                                                           inp.variable)), " ")), check = FALSE)
+    varnames <- misty::stromit(unlist(strsplit(misty::trim(gsub("VARIABLE:|variable:|Variable:|NAMES ARE|names ARE|Names ARE|NAMES are|names are|Names are|NAMES Are|names Are|Names Are|NAMES =|names =|Names =|;|\n|\t|\r|\r\n", "",
+                                                                inp.variable)), " ")), check = FALSE)
 
   }
 

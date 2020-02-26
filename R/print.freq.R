@@ -312,7 +312,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
           if (all(!is.na(x$data))) {
 
             print.object$freq <- print.object$freq[-grep("Total",  print.object$freq$x), ]
-            print.object$freq$val <- format(trimws(print.object$freq$val), justify = "left")
+            print.object$freq$val <- format(misty::trim(print.object$freq$val), justify = "left")
 
           }
 
@@ -345,7 +345,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
           if (all(!is.na(x$data))) {
 
             print.object$perc <- print.object$perc[-grep("Total",  print.object$perc$x), ]
-            print.object$perc$val <- format(trimws(print.object$perc$val), justify = "left")
+            print.object$perc$val <- format(misty::trim(print.object$perc$val), justify = "left")
 
           }
 
