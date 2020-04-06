@@ -37,7 +37,7 @@
 #' @examples
 #' dat <- data.frame(x = c(1, NA, NA, 6, 3),
 #'                   y = c(7, NA, 8, 9, NA),
-#'                   z = c(2, NA, 3, NA, 5))
+#'                   z = c(2, NA, 3, NA, 5), stringsAsFactors = FALSE)
 #'
 #' # Create missing data indicator matrix R
 #' na.coverage(dat)
@@ -87,7 +87,7 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE)
 
@@ -122,16 +122,16 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
   #----------------------------------------
   # As data frame
 
-  df <- as.data.frame(x)
+  df <- as.data.frame(x, stringsAsFactors = FALSE)
 
   ####################################################################################
   # Main Function
 
   # Pairwise combination
-  comb.pair <- data.frame(combn(ncol(df), m = 2))
+  comb.pair <- data.frame(combn(ncol(df), m = 2L), stringsAsFactors = FALSE)
 
   # Compute pairwise coverage
-  cov.coverage <- vapply(comb.pair, function(y) nrow(na.omit(df[, c(y[1], y[2])])) / nrow(df), FUN.VALUE = double(1))
+  cov.coverage <- vapply(comb.pair, function(y) nrow(na.omit(df[, c(y[1L], y[2L])])) / nrow(df), FUN.VALUE = double(1L))
 
   # Coverage matrix
   restab <- matrix(NA, ncol = ncol(x), nrow = (ncol(x)), dimnames = list(colnames(df), colnames(df)))
@@ -143,18 +143,19 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
   restab[upper.tri(restab)] <- t(restab)[upper.tri(restab)]
 
   # Variance coverage
-  diag(restab) <- vapply(df, function(y) mean(!is.na(y)), FUN.VALUE = double(1))
+  diag(restab) <- vapply(df, function(y) mean(!is.na(y)), FUN.VALUE = double(1L))
 
   ####################################################################################
   # Return object
 
   # Return object
   object <- list(call = match.call(),
+                 type = "na.coverage",
                  data = x,
                  args = list(tri = tri, digits = digits, as.na = as.na, check = TRUE, output = output),
                  result = restab)
 
-  class(object) <- "na.coverage"
+  class(object) <- "square.matrix"
 
   ####################################################################################
   # Output

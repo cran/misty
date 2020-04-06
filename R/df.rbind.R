@@ -42,15 +42,15 @@
 #' @examples
 #' adat <- data.frame(id = c(1, 2, 3),
 #'                    a = c(7, 3, 8),
-#'                    b = c(4, 2, 7))
+#'                    b = c(4, 2, 7), stringsAsFactors = FALSE)
 #'
 #' bdat <- data.frame(id = c(4, 5, 6),
 #'                    a = c(2, 4, 6),
-#'                    c = c(4, 2, 7))
+#'                    c = c(4, 2, 7), stringsAsFactors = FALSE)
 #'
 #' cdat <- data.frame(id = c(7, 8, 9),
 #'                    a = c(1, 4, 6),
-#'                    d = c(9, 5, 4))
+#'                    d = c(9, 5, 4), stringsAsFactors = FALSE)
 #'
 #' df.rbind(adat, bdat, cdat)
 df.rbind <- function(...) {
@@ -73,7 +73,7 @@ df.rbind <- function(...) {
 
     n <- sum(nm == "", na.rm = TRUE)
 
-    nm[nm == ""] <- paste(prefix, seq_len(n), sep = "")
+    nm[nm == ""] <- paste0(prefix, seq_len(n))
 
     return(nm)
   }
@@ -85,7 +85,7 @@ df.rbind <- function(...) {
 
     rows <- unique(unlist(lapply(list, NROW)))
 
-    stopifnot(length(rows) == 1)
+    stopifnot(length(rows) == 1L)
 
     names(list) <- make_names(list, "X")
 
@@ -104,9 +104,9 @@ df.rbind <- function(...) {
 
     assignment <- quote(column[rows] <<- what)
 
-    if (ndims >= 2) {
+    if (ndims >= 2L) {
 
-      assignment[[2]] <- as.call(c(as.list(assignment[[2]]), rep(list(quote(expr = )), ndims - 1)))
+      assignment[[2L]] <- as.call(c(as.list(assignment[[2]]), rep(list(quote(expr = )), ndims - 1L)))
 
     }
 
@@ -135,15 +135,15 @@ df.rbind <- function(...) {
 
     if (is.array(example)) {
 
-      if (length(dim(example)) > 1) {
+      if (length(dim(example)) > 1L) {
 
         if ("dimnames" %in% names(a)) {
 
-          a$dimnames[1] <- list(NULL)
+          a$dimnames[1L] <- list(NULL)
 
           if (!is.null(names(a$dimnames)))
 
-            names(a$dimnames)[1] <- ""
+            names(a$dimnames)[1L] <- ""
 
         }
 
@@ -152,11 +152,11 @@ df.rbind <- function(...) {
 
         dims <- unique(lapply(dfs[df_has], function(df) dim(df[[var]])[-1]))
 
-        if (length(dims) > 1)
+        if (length(dims) > 1L)
 
           stop("Array variable ", var, " has inconsistent dimensions.", call. = FALSE)
 
-        a$dim <- c(nrows, dim(example)[-1])
+        a$dim <- c(nrows, dim(example)[-1L])
 
         length <- prod(a$dim)
 
@@ -288,29 +288,29 @@ df.rbind <- function(...) {
 
   dfs <- list(...)
 
-  if (length(dfs) == 0) {
+  if (length(dfs) == 0L) {
 
     return()
 
   }
 
-  if (is.list(dfs[[1]]) && !is.data.frame(dfs[[1]])) {
+  if (is.list(dfs[[1L]]) && !is.data.frame(dfs[[1]])) {
 
-    dfs <- dfs[[1]]
+    dfs <- dfs[[1L]]
 
   }
 
   dfs <- Filter(Negate(is.null), dfs)
 
-  if (length(dfs) == 0) {
+  if (length(dfs) == 0L) {
 
     return()
 
   }
 
-  if (length(dfs) == 1) {
+  if (length(dfs) == 1L) {
 
-    return(dfs[[1]])
+    return(dfs[[1L]])
 
   }
 
@@ -322,7 +322,7 @@ df.rbind <- function(...) {
 
   }
 
-  rows <- vapply(dfs, .row_names_info, type = 2L, FUN.VALUE = 1)
+  rows <- vapply(dfs, .row_names_info, type = 2L, FUN.VALUE = 1L)
 
   nrows <- sum(rows)
 
@@ -331,17 +331,17 @@ df.rbind <- function(...) {
   setters <- ot$setters
   getters <- ot$getters
 
-  if (length(setters) == 0) {
+  if (length(setters) == 0L) {
 
-    return(as.data.frame(matrix(nrow = nrows, ncol = 0)))
+    return(as.data.frame(matrix(nrow = nrows, ncol = 0L), stringsAsFactors = FALSE))
 
   }
 
-  pos <- matrix(c(cumsum(rows) - rows + 1, rows), ncol = 2)
+  pos <- matrix(c(cumsum(rows) - rows + 1L, rows), ncol = 2L)
 
   for (i in seq_along(rows)) {
 
-    rng <- seq(pos[i, 1], length.out = pos[i, 2])
+    rng <- seq(pos[i, 1], length.out = pos[i, 2L])
 
     df <- dfs[[i]]
 

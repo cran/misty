@@ -42,7 +42,7 @@
 #'                    \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where
 #'                    \code{y} is a numeric variable giving the data values and \code{group}
 #'                    a numeric variable, character variable or factor with two values or factor
-#'                    levelsgiving the corresponding group; in case of a within-subject design
+#'                    levels giving the corresponding group; in case of a within-subject design
 #'                    (i.e., \code{paired = TRUE}), a formula of the form \code{post ~ pre} where
 #'                    \code{post} and \code{pre} are numeric variables. Note that analysis for more
 #'                    than one outcome variable is not permitted in within-subject design.
@@ -75,7 +75,7 @@
 #'
 #' @seealso
 #' \code{\link{eta.sq}}, \code{\link{cont.coef}}, \code{\link{cramers.v}},\code{\link{cor.matrix}},
-#' \code{\link{na.auxiliary}}.
+#' \code{\link{na.auxiliary}}
 #'
 #' @references
 #' Cohen, J. (1988). \emph{Statistical power analysis for the behavioral sciences} (2nd ed.).
@@ -108,11 +108,11 @@
 #'
 #' @examples
 #' #--------------------------------------
-#' # Between-subject design
+#' # Between-Subject Design
 #' dat.bs <- data.frame(group = c("cont", "cont", "cont", "treat",  "treat"),
 #'                      y1 = c(1, 3, 2, 5, 7),
 #'                      y2 = c(4, 3, 3, 6, 4),
-#'                      y3 = c(7, 5, 7, 3, 2))
+#'                      y3 = c(7, 5, 7, 3, 2), stringsAsFactors = FALSE)
 #'
 #' # Standardized mean difference divided by the weighted pooled
 #' # standard deviation without small sample correction factor
@@ -134,9 +134,9 @@
 #' cohens.d(cbind(y1, y2, y3) ~ group, data = dat.bs)
 #'
 #' #--------------------------------------
-#' # Within-subject design
+#' # Within-Subject Design
 #' dat.ws <- data.frame(pre = c(1, 3, 2, 5, 7),
-#'                      post = c(2, 2, 1, 6, 8))
+#'                      post = c(2, 2, 1, 6, 8), stringsAsFactors = FALSE)
 #'
 #' # Standardized mean difference divided by the pooled
 #' # standard deviation while controlling for the correlation
@@ -206,7 +206,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
   #.........................................
   # Data
-  data <- as.data.frame(data[, var.formula])
+  data <- as.data.frame(data[, var.formula], stringsAsFactors = FALSE)
 
   #-----------------------------------------------------------------------------------
   # Convert user-missing values into NA
@@ -226,7 +226,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
     }
 
     # Variable with missing values only
-    x.miss <- vapply(data, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    x.miss <- vapply(data, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (any(x.miss)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
@@ -235,7 +235,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
     }
 
     # Zero variance
-    x.zero.var <- vapply(data, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    x.zero.var <- vapply(data, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
     if (any(x.zero.var)) {
 
       stop(paste0("After converting user-missing values into NA, following variables have zero variance: ",
@@ -278,7 +278,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
     #......
     if (isFALSE(paired)) {
 
-      if (length(unique(data[, group.var])) != 2) {
+      if (length(unique(data[, group.var])) != 2L) {
 
         stop("Grouping variable specified in 'formula' does hot have two values or factor levels.",
              call. = FALSE)
@@ -287,7 +287,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     } else {
 
-      if (ncol(data) > 2) {
+      if (ncol(data) > 2L) {
 
         stop("Analysis for morethan one outcome variable is not permitted in within-subject design.",
              call. = FALSE)
@@ -322,7 +322,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -358,7 +358,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'conf.level'
-    if (conf.level >= 1 || conf.level <= 0) {
+    if (conf.level >= 1L || conf.level <= 0L) {
 
       stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
            call. = FALSE)
@@ -381,7 +381,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
   #----------------------------------------
   # One outcome variable
 
-  if ((isFALSE(paired) && length(y.var) == 1) || (isTRUE(paired) && length(y.var) == 2))  {
+  if ((isFALSE(paired) && length(y.var) == 1L) || (isTRUE(paired) && length(y.var) == 2L))  {
 
     #............................................................
     # Between-subject design
@@ -420,12 +420,12 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
         # Weighted pooled standard deviation
         if (isTRUE(weighted)) {
 
-          sd.group <- sqrt(((n.group[1] - 1)*var.group[1] + (n.group[2] - 1)*var.group[2]) / (sum(n.group) - 2))
+          sd.group <- sqrt(((n.group[1L] - 1L)*var.group[1] + (n.group[2L] - 1L)*var.group[2L]) / (sum(n.group) - 2L))
 
         # Unweigted pooled standard deviation
         } else {
 
-          sd.group <- sum(res.descript["var"]) / 2
+          sd.group <- sum(res.descript["var"]) / 2L
 
         }
 
@@ -445,17 +445,17 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
       #........................................
       # Correction factor
 
-      v <- sum(n.group) - 2
+      v <- sum(n.group) - 2L
 
       # Correction factor based on gamma function
-      if (sum(n.group) < 200) {
+      if (sum(n.group) < 200L) {
 
         corr.factor <- gamma(0.5*v) / ((sqrt(v / 2)) * gamma(0.5 * (v - 1)))
 
       # Correction factor based on approximation
       } else {
 
-        corr.factor <- (1 - (3 / (4 * v - 1)))
+        corr.factor <- (1L - (3L / (4L * v - 1L)))
 
       }
 
@@ -475,14 +475,14 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
         n.harm <- 1 / mean(1 / n.group)
 
         # True standard error (Hedges, 1981)
-        estimate.SE <- sqrt((v / (v - 2)) * 2 / n.harm * (1 + estimate^2 * n.harm / 2) - (estimate^2 / corr.factor^2))
+        estimate.SE <- sqrt((v / (v - 2L)) * 2L / n.harm * (1L + estimate^2L * n.harm / 2L) - (estimate^2L / corr.factor^2L))
 
         # Noncentrality parameter
-        ncp <- estimate * sqrt(n.harm / 2)
+        ncp <- estimate * sqrt(n.harm / 2L)
 
         # Confidence interval around ncp
-        conf.int.ncp  <- c(suppressWarnings(qt((1 - conf.level) / 2, v, ncp = ncp)),
-                           suppressWarnings(qt(1 - (1 - conf.level) / 2, v, ncp = ncp)))
+        conf.int.ncp  <- c(suppressWarnings(qt((1L - conf.level) / 2L, v, ncp = ncp)),
+                           suppressWarnings(qt(1L - (1L - conf.level) / 2L, v, ncp = ncp)))
 
         # Confidence interval
         conf.int <- conf.int.ncp / (ncp / estimate)
@@ -493,10 +493,10 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
       } else {
 
         # Standard error (Hunter & Schmidt, 2004)
-        estimate.SE <- sqrt((sum(n.group) - 1) / (sum(n.group) - 3)  * ((4 / sum(n.group)) * (1 + (estimate^2 / 8))))
+        estimate.SE <- sqrt((sum(n.group) - 1L) / (sum(n.group) - 3L)  * ((4L / sum(n.group)) * (1L + (estimate^2L / 8L))))
 
         # t quantile
-        t.quantile <- -qt((1 - conf.level) / 2, (sum(n.group) - 2))
+        t.quantile <- -qt((1L - conf.level) / 2L, (sum(n.group) - 2L))
 
         # Confidence interval
         conf.int <- c(estimate - t.quantile * estimate.SE, estimate + t.quantile * estimate.SE)
@@ -510,12 +510,12 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
       #...................
       # Data and Arguments
 
-      y1 <- data[, y.var[1]]
-      y2 <- data[, y.var[2]]
+      y1 <- data[, y.var[1L]]
+      y2 <- data[, y.var[2L]]
 
       y.r <- cor(y1, y2, use = "complete.obs")
 
-      y.dat <- na.omit(data.frame(y1, y2))
+      y.dat <- na.omit(data.frame(y1, y2, stringsAsFactors = FALSE))
 
       #...................
       # Descriptives
@@ -537,7 +537,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
         # Weighted pooled standard deviation
         if (isTRUE(weighted)) {
 
-          sd.group <- sqrt(sum(res.descript$var) - 2 * y.r * prod(res.descript$sd))
+          sd.group <- sqrt(sum(res.descript$var) - 2L * y.r * prod(res.descript$sd))
 
         # Unweigted pooled standard deviation
         } else {
@@ -559,7 +559,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
       # Cohen's d.rm
       if (isTRUE(weighted)) {
 
-        estimate <- x.diff / sd.group * sqrt(2*(1 -y.r))
+        estimate <- x.diff / sd.group * sqrt(2L*(1L -y.r))
 
       # Cohen's d.av
       } else {
@@ -571,17 +571,17 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
       #........................................
       # Correction factor
 
-      v <- n*2 - 2
+      v <- n*2L - 2L
 
       # Correction factor based on gamma function
-      if (n*2 < 200) {
+      if (n*2L < 200L) {
 
-        corr.factor <- gamma(0.5*v) / ((sqrt(v / 2)) * gamma(0.5 * (v - 1)))
+        corr.factor <- gamma(0.5*v) / ((sqrt(v / 2L)) * gamma(0.5 * (v - 1L)))
 
       # Correction factor based on approximation
       } else {
 
-        corr.factor <- (1 - (3 / (4 * v - 1)))
+        corr.factor <- (1L - (3L / (4L * v - 1L)))
 
       }
 
@@ -599,14 +599,14 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
       if (isTRUE(weighted)) {
 
         # True standard error (Hedges, 1981)
-        estimate.SE <- sqrt((v / (v - 2)) * (2*(1 - y.r) / n) * (1 + estimate^2 * (n / (2*(1 - y.r)))) - (estimate^2 / corr.factor^2))
+        estimate.SE <- sqrt((v / (v - 2L)) * (2L*(1L - y.r) / n) * (1L + estimate^2L * (n / (2L*(1L - y.r)))) - (estimate^2L / corr.factor^2L))
 
         # Noncentrality parameter
-        ncp <- estimate * sqrt(n / (2*(1 - y.r)))
+        ncp <- estimate * sqrt(n / (2L*(1L - y.r)))
 
         # Confidence interval around ncp
-        conf.int.ncp  <- c(suppressWarnings(qt((1 - conf.level) / 2, v, ncp = ncp)),
-                           suppressWarnings(qt(1 - (1 - conf.level) / 2, v, ncp = ncp)))
+        conf.int.ncp  <- c(suppressWarnings(qt((1L - conf.level) / 2L, v, ncp = ncp)),
+                           suppressWarnings(qt(1L - (1L - conf.level) / 2L, v, ncp = ncp)))
 
         # Confidence interval
         conf.int <- conf.int.ncp / (ncp / estimate)
@@ -615,10 +615,10 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
       } else {
 
         # Standard error (Algina & Keselman, 2003, p. 539)
-        estimate.SE <- sqrt((2*(sum(res.descript$var) - 2 * cov(y1, y2, use = "complete.obs"))) / (n*sum(res.descript$var)))
+        estimate.SE <- sqrt((2L*(sum(res.descript$var) - 2L * cov(y1, y2, use = "complete.obs"))) / (n*sum(res.descript$var)))
 
         # t quantile
-        t.quantile <- -qt((1 - conf.level) / 2, n - 1)
+        t.quantile <- -qt((1L - conf.level) / 2L, n - 1L)
 
         # Confidence interval
         conf.int <-  c(estimate - t.quantile * estimate.SE, estimate + t.quantile * estimate.SE)
@@ -646,7 +646,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
   #----------------------------------------
   # One outcome variable
 
-  if ((isFALSE(paired) && length(y.var) == 1) || (isTRUE(paired) && length(y.var) == 2)) {
+  if ((isFALSE(paired) && length(y.var) == 1L) || (isTRUE(paired) && length(y.var) == 2L)) {
 
     #.......................................
     # Between-subject design
@@ -657,8 +657,8 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
                      args = list(formula = formula, paired = paired, weighted = weighted, correct = correct, ref = ref,
                                  digits = digits, conf.level = conf.level, check = check, output = output),
                      result = data.frame(variable = y.var,
-                                         n1 = res.descript[1, "n"], nNA1 = res.descript[1, "nNA"], m1 = res.descript[1, "m"], sd1 = res.descript[1, "sd"],
-                                         n2 = res.descript[2, "n"], nNA2 = res.descript[2, "nNA"], m2 = res.descript[2, "m"], sd2 = res.descript[2, "sd"],
+                                         n1 = res.descript[1L, "n"], nNA1 = res.descript[1, "nNA"], m1 = res.descript[1, "m"], sd1 = res.descript[1L, "sd"],
+                                         n2 = res.descript[2L, "n"], nNA2 = res.descript[2, "nNA"], m2 = res.descript[2, "m"], sd2 = res.descript[2L, "sd"],
                                          m.diff =  x.diff, sd = sd.group, estimate = estimate,
                                          SE = estimate.SE, low = conf.int[1], upp = conf.int[2],
                                          stringsAsFactors = FALSE))

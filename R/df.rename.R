@@ -24,7 +24,7 @@
 #' @examples
 #' dat <- data.frame(a = c(3, 1, 6),
 #'                   b = c(4, 2, 5),
-#'                   c = c(7, 3, 1))
+#'                   c = c(7, 3, 1), stringsAsFactors = FALSE)
 #'
 #' # Rename variable b in the data frame 'dat' to y
 #' df.rename(dat, from = "b", to = "y")

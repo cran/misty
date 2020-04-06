@@ -1,6 +1,6 @@
 #' Descriptive Statistics
 #'
-#' This function computes summary statistics for one or more variables optionally by a grouping variable.
+#' This function computes summary statistics for one or more variables, optionally by a grouping and/or split variable.
 #'
 #' @param x           a numeric vector, matrix or data frame with numeric variables, i.e.,
 #'                    factors and character variables are excluded from \code{x} before conducting the analysis.
@@ -29,8 +29,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{crosstab}}, \code{\link{freq}}, \code{\link{multilevel.descript}},
-#' \code{\link{na.descript}}.
+#' \code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}}, \code{\link{ci.prop}},
+#' \code{\link{ci.prop.diff}}, \code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{freq}},
+#' \code{\link{crosstab}},  \code{\link{multilevel.descript}}, \code{\link{na.descript}}.
 #'
 #' @references
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
@@ -48,7 +49,7 @@
 #'                   group2 = c(1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2),
 #'                   x1 = c(3, 1, 4, 2, 5, 3, 2, 4, NA, 4, 5, 3),
 #'                   x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 5, 1, 3, 6),
-#'                   x3 = c(7, 8, 5, 6, 4, NA, 8, NA, 6, 5, 8, 6))
+#'                   x3 = c(7, 8, 5, 6, 4, NA, 8, NA, 6, 5, 8, 6), stringsAsFactors = FALSE)
 #'
 #' # Descriptive statistics for x1
 #' descript(dat$x1)
@@ -102,7 +103,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
 
   #......
   # Vector, matrix or data frame for the argument 'x'?
-  if (!is.vector(x) && !is.matrix(x) && !is.data.frame(x)) {
+  if (!is.atomic(x) && !is.matrix(x) && !is.data.frame(x)) {
 
     stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
          call. = FALSE)
@@ -112,20 +113,15 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
   #----------------------------------------
   # Data frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #----------------------------------------
   # Convert user-missing values into NA
 
   if (!is.null(as.na)) {
 
-    x <- misty::as.na(x, as.na = as.na, check = FALSE)
-
-    if (isFALSE(all(vapply(x, function(y) !as.na %in% y, FUN.VALUE = logical(1))))) {
-
-      warning("Value(s) specified in the argument 'as.na' were not found in 'x'.", call. = FALSE)
-
-    }
+    # Replace user-specified values with missing values
+    x <- misty::as.na(x, as.na = as.na, check = check)
 
     # Variable with missing values only
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
@@ -151,7 +147,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
     #......
     # Variables left
 
-    if (ncol(x) == 0) {
+    if (ncol(x) == 0L) {
 
       stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE)
 
@@ -171,7 +167,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
     # No group and split variable
     if (is.null(group) && is.null(split)) {
 
-      x <- na.omit(as.data.frame(x))
+      x <- na.omit(as.data.frame(x, stringsAsFactors = FALSE))
 
       warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
                      length(attributes(x)$na.action)), call. = FALSE)
@@ -182,7 +178,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
     # Group variable, no split variable
     if (!is.null(group) && is.null(split)) {
 
-      x.group <- na.omit(data.frame(x, group = group))
+      x.group <- na.omit(data.frame(x, group = group, stringsAsFactors = FALSE))
 
       x <- x.group[, -grep("group", names(x.group)), drop = FALSE]
       group <- x.group$group
@@ -196,7 +192,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
     # No group variable, split variable
     if (is.null(group) && !is.null(split)) {
 
-      x.split <- na.omit(data.frame(x, split = split))
+      x.split <- na.omit(data.frame(x, split = split, stringsAsFactors = FALSE))
 
       x <- x.split[, -grep("split", names(x.split)), drop = FALSE]
       split <- x.split$split
@@ -210,7 +206,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
     # Group variable, split variable
     if (!is.null(group) && !is.null(split)) {
 
-      x.group.split <- na.omit(data.frame(x, group = group, split = split))
+      x.group.split <- na.omit(data.frame(x, group = group, split = split, stringsAsFactors = FALSE))
 
       x <- x.group.split[,  !names(x.group.split) %in% c("group", "split"), drop = FALSE]
       group <- x.group.split$group
@@ -223,7 +219,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
 
     #......
     # Variable with missing values only
-    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (any(x.miss)) {
 
       stop(paste0("After listwise deletion, following variables are completely missing: ",
@@ -271,14 +267,14 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
       # Length of 'group' match with 'x'?
       if (length(group) != nrow(x)) {
 
-        if (ncol(x) == 1) {
+        if (ncol(x) == 1L) {
 
-          stop("Length of the vector or factor specified in 'group' does not match the length of the vector specified in 'x'.",
+          stop("Length of the vector or factor specified in 'group' does not match the length of the vector in 'x'.",
                call. = FALSE)
 
         } else {
 
-          stop("Length of the vector or factor specified in 'group' does not match the number of rows of the matrix or data frame specified in 'x'.",
+          stop("Length of the vector or factor specified in 'group' does not match the number of rows of the matrix or data frame in 'x'.",
                call. = FALSE)
 
         }
@@ -293,7 +289,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
       }
 
       # Only one group in 'group'
-      if (length(na.omit(unique(group))) == 1) {
+      if (length(na.omit(unique(group))) == 1L) {
 
         warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
 
@@ -315,14 +311,14 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
       # Length of 'split' doest not match with 'x'
       if (length(split) != nrow(x)) {
 
-        if (ncol(x) == 1) {
+        if (ncol(x) == 1L) {
 
-          stop("Length of the vector or factor specified in 'split' does not match the length of the vector specified in 'x'.",
+          stop("Length of the vector or factor specified in 'split' does not match the length of the vector in 'x'.",
                call. = FALSE)
 
         } else {
 
-          stop("Length of the vector or factor specified in 'split' does not match the number of rows of the matrix or data frame specified in 'x'.",
+          stop("Length of the vector or factor specified in 'split' does not match the number of rows of the matrix or data frame in 'x'.",
                call. = FALSE)
 
         }
@@ -332,14 +328,14 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
       # Input 'split' completely missing
       if (all(is.na(split))) {
 
-        stop("The grouping variable specified in 'split' is completely missing.", call. = FALSE)
+        stop("The split variable specified in 'split' is completely missing.", call. = FALSE)
 
       }
 
       # Only one group in 'split'
-      if (length(na.omit(unique(split))) == 1) {
+      if (length(na.omit(unique(split))) == 1L) {
 
-        warning("There is only one group represented in the grouping variable specified in 'split'.", call. = FALSE)
+        warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE)
 
       }
 
@@ -363,7 +359,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -385,13 +381,13 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
   #----------------------------------------
   # Statistical measures
 
-  if (all(c("all", "n", "nNA", "pNA", "m", "var", "sd", "min", "p25",  "med", "p75", "max", "range", "iqr", "skew", "kurt") %in% print)) {
+  if (all(c("all", "n", "nNA", "pNA", "m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt") %in% print)) {
 
     print <- c("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")
 
   }
 
-  if (length(print) == 1 && print == "all") {
+  if (length(print) == 1L && print == "all") {
 
     print <- c("n", "nNA", "pNA", "m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt")
 
@@ -401,34 +397,31 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
   # Main Function
 
   #----------------------------------------
-  # No grouping
+  # No Grouping, No Split
 
-  if (is.null(group)) {
+  if (is.null(group) && is.null(split)) {
 
-    result <-  data.frame(variable = colnames(x),
-                          n = vapply(x, function(y) length(na.omit(y)), FUN.VALUE = 1),
-                          nNA = vapply(x, function(y) sum(is.na(y)), FUN.VALUE = 1),
-                          pNA = vapply(x, function(y) sum(is.na(y)) / length(y) * 100, FUN.VALUE = double(1)),
-                          m = vapply(x, mean, na.rm = TRUE, FUN.VALUE = double(1)),
-                          var = vapply(x, var, na.rm = TRUE, FUN.VALUE = double(1)),
-                          sd = vapply(x, sd, na.rm = TRUE, FUN.VALUE = double(1)),
-                          min = vapply(x, min, na.rm = TRUE, FUN.VALUE = double(1)),
-                          p25 = vapply(x, quantile, probs = 0.25, na.rm = TRUE, FUN.VALUE = double(1)),
-                          med = vapply(x, median, na.rm = TRUE, FUN.VALUE = double(1)),
-                          p75 = vapply(x, quantile, probs = 0.75, na.rm = TRUE, FUN.VALUE = double(1)),
-                          max = vapply(x, max, na.rm = TRUE, FUN.VALUE = double(1)),
-                          range = vapply(x, function(y) diff(range(y, na.rm = TRUE)), FUN.VALUE = double(1)),
-                          iqr = vapply(x, IQR, na.rm = TRUE, FUN.VALUE = double(1)),
-                          skew = suppressWarnings(vapply(x, misty::skewness, check = FALSE, FUN.VALUE = double(1))),
-                          kurt = suppressWarnings(vapply(x, misty::kurtosis, check = FALSE, FUN.VALUE = double(1))),
-                          stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
-
-  }
+    result <- data.frame(variable = colnames(x),
+                         n = vapply(x, function(y) length(na.omit(y)), FUN.VALUE = 1L),
+                         nNA = vapply(x, function(y) sum(is.na(y)), FUN.VALUE = 1L),
+                         pNA = vapply(x, function(y) sum(is.na(y)) / length(y) * 100L, FUN.VALUE = double(1)),
+                         m = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, mean(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
+                         var = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, var(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
+                         sd = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, sd(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
+                         min = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, min(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
+                         p25 = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, quantile(y, probs = 0.25, na.rm = TRUE)), FUN.VALUE = double(1L)),
+                         med = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, median(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
+                         p75 = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, quantile(y, probs = 0.75, na.rm = TRUE)), FUN.VALUE = double(1L)),
+                         max = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, max(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
+                         range = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, diff(range(y, na.rm = TRUE))), FUN.VALUE = double(1L)),
+                         iqr = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, IQR(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
+                         skew = suppressWarnings(vapply(x, misty::skewness, check = FALSE, FUN.VALUE = double(1L))),
+                         kurt = suppressWarnings(vapply(x, misty::kurtosis, check = FALSE, FUN.VALUE = double(1L))),
+                         stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
 
   #----------------------------------------
-  # Grouping, no split
-
-  if (!is.null(group) && is.null(split)) {
+  # Grouping, No Split
+  } else if (!is.null(group) && is.null(split)) {
 
     object.group <- lapply(split(x, f = group), function(y) misty::descript(y, group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                                             as.na = as.na, check = FALSE, output = FALSE)$result)
@@ -437,28 +430,23 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))),
                          stringsAsFactors = FALSE)
 
-  }
+  #----------------------------------------
+  # No Grouping, Split
+  } else if (is.null(group) && !is.null(split)) {
+
+    result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
+                     function(y) misty::descript(y, group = NULL, split = NULL, sort.var = sort.var,
+                                                 na.omit = na.omit, as.na = as.na, check = FALSE,
+                                                 output = FALSE)$result)
 
   #----------------------------------------
-  # Split
+  # Grouping, Split
+  } else if (!is.null(group) && !is.null(split)) {
 
-  if (!is.null(split)) {
-
-    # No grouping
-    if (is.null(group)) {
-
-      result <- lapply(split(data.frame(x), f = split), function(y) misty::descript(y, group = NULL, split = NULL, sort.var = sort.var,
-                                                                                    na.omit = na.omit, as.na = as.na, check = FALSE,
-                                                                                    output = FALSE)$result)
-
-    # Grouping
-    } else {
-
-      result <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::descript(y[, -grep("group", names(y))], group = y$group, split = NULL,
-                                                                                                   sort.var = sort.var, na.omit = na.omit, as.na = as.na,
-                                                                                                   check = FALSE, output = FALSE)$result)
-
-    }
+    result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split),
+                     function(y) misty::descript(y[, -grep("group", names(y))], group = y$group, split = NULL,
+                                                 sort.var = sort.var, na.omit = na.omit, as.na = as.na,
+                                                 check = FALSE, output = FALSE)$result)
 
   }
 
@@ -467,8 +455,8 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
 
   object <- list(call = match.call(),
                  data = list(x = x, group = group, split = split),
-                 args = list(group = group, split = split, sort.var = sort.var,
-                             print = print, digits = digits, as.na = as.na, check = check, output = output),
+                 args = list(print = print, sort.var = sort.var, na.omit = na.omit,
+                             digits = digits, as.na = as.na, check = check, output = output),
                  result = result)
 
   class(object) <- "descript"

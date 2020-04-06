@@ -9,7 +9,8 @@
 \arguments{
 \item{x}{\code{cohens.d} object.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used for displaying results.}
+\item{digits}{an integer value indicating the number of decimal places to be used for
+displaying results.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -24,7 +25,7 @@ This function prints the \code{cohens.d} object
 dat.bs <- data.frame(group = c("cont", "cont", "cont", "treat",  "treat"),
                      y1 = c(1, 3, 2, 5, 7),
                      y2 = c(4, 3, 3, 6, 4),
-                     y3 = c(7, 5, 7, 3, 2))
+                     y3 = c(7, 5, 7, 3, 2), stringsAsFactors = FALSE)
 
 # Standardized mean difference divided by the weighted pooled
 # standard deviation without small sample correction factor
@@ -36,7 +37,7 @@ print(dat.bs.d, digits = 5)
 #--------------------------------------
 # Within-subject design
 dat.ws <- data.frame(pre = c(1, 3, 2, 5, 7),
-                     post = c(2, 2, 1, 6, 8))
+                     post = c(2, 2, 1, 6, 8), stringsAsFactors = FALSE)
 
 # Standardized mean difference divided by the pooled
 # standard deviation while controlling for the correlation

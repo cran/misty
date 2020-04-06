@@ -34,7 +34,7 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{group.scores}}, \code{\link{alpha.coef}}
+#' \code{\link{group.scores}}, \code{\link{alpha.coef}}, \code{\link{omega.coef}},
 #'
 #' @references
 #' Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY: Guilford Press.
@@ -49,8 +49,7 @@
 #' 231-236. https://doi.org/10.1037/adb0000015
 #'
 #' Mazza, G. L., Enders, C. G., & Ruehlman, L. S. (2015). Addressing item-level missing data: A comparison of proration and
-#' full infor
-#' mation maximum likelihood estimation. \emph{Multivariate Behavioral Research, 50}, 504-519.
+#' full information maximum likelihood estimation. \emph{Multivariate Behavioral Research, 50}, 504-519.
 #' https://doi.org/10.1080/00273171.2015.1068157
 #'
 #' Schafer, J. L., & Graham, J. W. (2002). Missing data: Our view of the state of the art. \emph{Psychological Methods, 7}, 147-177.
@@ -66,7 +65,7 @@
 #'                   item2 = c(2,  2, NA, 2,  4, 2, NA,  1),
 #'                   item3 = c(1,  1,  2, 2,  4, 3, NA, NA),
 #'                   item4 = c(4,  2,  4, 4, NA, 2, NA, NA),
-#'                   item5 = c(3, NA, NA, 2,  4, 3, NA,  3))
+#'                   item5 = c(3, NA, NA, 2,  4, 3, NA,  3), stringsAsFactors = FALSE)
 #'
 #' # Prorated mean scale scores
 #' scores(dat)
@@ -141,7 +140,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
     # Check argument p.avail
     if (!is.null(p.avail)) {
 
-      if (!p.avail > 0 || !p.avail <= 1) {
+      if (!p.avail > 0L || !p.avail <= 1L) {
 
         stop("Please specify a number greater than 0 and less than or equal 1 for the argument 'p.avail'.",
              call. = FALSE)
@@ -154,7 +153,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
     # Check argument n.avail
     if (!is.null(n.avail)) {
 
-      if (!n.avail >= 1 || !n.avail <= ncol(x)) {
+      if (!n.avail >= 1L || !n.avail <= ncol(x)) {
 
         stop("Please specify a number greater than or equal 1 and less than or equal the number of items for the argument 'n.avail'.",
              call. = FALSE)
@@ -188,7 +187,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
   #-----------------------------------------
   # As data frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #-----------------------------------------
   # Function used to compute scale scores
@@ -209,7 +208,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
     if (is.null(p.avail) && is.null(n.avail)) {
 
       # Thresdhold for proraton = p.avail
-      n.items <- 1
+      n.items <- 1L
 
     }
 
@@ -279,7 +278,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
   # Median
   if (fun == "median") {
 
-    object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0, median(y, na.rm = TRUE), NA))
+    object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0L, median(y, na.rm = TRUE), NA))
     object[which(x.miss < n.items)] <- NA
 
   }
@@ -288,7 +287,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
   # Median
   if (fun == "var") {
 
-    object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0, var(y, na.rm = TRUE), NA))
+    object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0L, var(y, na.rm = TRUE), NA))
     object[which(x.miss < n.items)] <- NA
 
   }
@@ -297,7 +296,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
   # Median
   if (fun == "sd") {
 
-    object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0, sd(y, na.rm = TRUE), NA))
+    object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0L, sd(y, na.rm = TRUE), NA))
     object[which(x.miss < n.items)] <- NA
 
   }
@@ -306,7 +305,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
   # Minimum
   if (fun == "min") {
 
-    object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0, min(y, na.rm = TRUE), NA))
+    object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0L, min(y, na.rm = TRUE), NA))
     object[which(x.miss < n.items)] <- NA
 
   }
@@ -315,7 +314,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
   # Maximum
   if (fun == "max") {
 
-    object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0, max(y, na.rm = TRUE), NA))
+    object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0L, max(y, na.rm = TRUE), NA))
     object[which(x.miss < n.items)] <- NA
 
   }

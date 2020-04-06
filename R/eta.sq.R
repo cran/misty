@@ -36,7 +36,7 @@
 #' dat <- data.frame(x1 = c(1, 1, 1, 1, 2, 2, 2, 2, 2),
 #'                   x2 = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
 #'                   y1 = c(3, 2, 4, 5, 6, 4, 7, 5, 7),
-#'                   y2 = c(2, 4, 1, 5, 3, 3, 4, 6, 7))
+#'                   y2 = c(2, 4, 1, 5, 3, 3, 4, 6, 7), stringsAsFactors = FALSE)
 #'
 #' # Eta squared for y1 explained by x1
 #' eta.sq(dat$y1, group = dat$x1)
@@ -58,7 +58,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
   #......
   # Vector, matrix or data frame for the argument 'x'?
-  if (!is.vector(x) && !is.matrix(x) && !is.data.frame(x)) {
+  if (!is.atomic(x) && !is.matrix(x) && !is.data.frame(x)) {
 
     stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -75,7 +75,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
   #----------------------------------------
   # Data frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   ####################################################################################
   # Input Check
@@ -108,7 +108,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
     if (any(x.zero.var)) {
 
-      if (length(x.zero.var) > 1) {
+      if (length(x.zero.var) > 1L) {
 
         warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
                        paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
@@ -123,7 +123,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
     #......
     # Check input 'group': Is integer, character or factors?
-    if (any(vapply(as.data.frame(group), function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1)))) {
+    if (any(vapply(as.data.frame(group, stringsAsFactors = FALSE), function(y) any(as.numeric(y) %% 1L != 0L, na.rm = TRUE), FUN.VALUE = logical(1L)))) {
 
       stop("Please specify a integer vector, matrix or data frame with integer vectors, character vectors or factors for the argument 'x'",
            call. = FALSE)
@@ -132,11 +132,11 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
     #......
     # Check input 'group': At least two groups?
-    group.check <- vapply(as.data.frame(group), function(y) length(na.omit(unique(y))) < 2, FUN.VALUE = logical(1))
+    group.check <- vapply(as.data.frame(group, stringsAsFactors = FALSE), function(y) length(na.omit(unique(y))) < 2L, FUN.VALUE = logical(1))
 
     if (any(group.check)) {
 
-      if (length(group.check) > 1) {
+      if (length(group.check) > 1L) {
 
         stop(paste0("Follwing grouping variables specified in 'group' do not have at least two groups: ",
                     paste(names(which(group.check)), collapse = ", ")), call. = FALSE)
@@ -151,7 +151,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       warning("Specify a positive integer number for the argument 'digits'", call. = FALSE)
 
@@ -178,7 +178,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
     x <- misty::as.na(x, as.na = as.na, check = check)
 
     # Variable with missing values only
-    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (any(x.miss)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
@@ -187,7 +187,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
     }
 
     # Constant variables
-    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
     if (any(x.zero.var)) {
 
       stop(paste0("After converting user-missing values into NA, following variables have only one unique value: ",
@@ -200,7 +200,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
   #-----------------------------------------
   # Number of dependent variables, number of independent variables
 
-  x.ncol <- ncol(x) == 1
+  x.ncol <- ncol(x) == 1L
 
   group.dim.null <- is.null(dim(group))
 
@@ -213,16 +213,16 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
   if (x.ncol && group.dim.null) {
 
       # Estimate model
-      mod <- aov(x ~ factor(group), data = data.frame(x, group))
+      mod <- aov(x ~ factor(group), data = data.frame(x, group, stringsAsFactors = FALSE))
 
       # Model summary
       mod.summary <- summary(mod)
 
       # Mean Squared Error Between
-      SQ.B <- unlist(mod.summary[[1]])["Sum Sq1"]
+      SQ.B <- unlist(mod.summary[[1L]])["Sum Sq1"]
 
       # Mean Squared Error Within
-      SQ.T <- SQ.B + unlist(mod.summary[[1]])["Sum Sq2"]
+      SQ.T <- SQ.B + unlist(mod.summary[[1L]])["Sum Sq2"]
 
       # Eta squared
       eta <- unname(SQ.B / SQ.T)

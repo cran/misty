@@ -44,7 +44,7 @@
 #' @examples
 #' dat <- data.frame(x1 = c(1, 1, 3, 2, 1, 2, 3, 2, 3, 1),
 #'                   x2 = c(1, 2, 1, 1, 2, 2, 2, 1, 3, 1),
-#'                   x3 = c(1, 3, 2, 3, 3, 1, 3, 2, 1, 2))
+#'                   x3 = c(1, 3, 2, 3, 3, 1, 3, 2, 1, 2), stringsAsFactors = FALSE)
 #'
 #' # Polychoric correlation matrix
 #' poly.cor(dat)
@@ -95,7 +95,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'x': Discrete values
-    if (any(apply(x, 2, function(y) any(na.omit(y) %% 1 != 0)))) {
+    if (any(apply(x, 2, function(y) any(na.omit(y) %% 1L != 0L)))) {
 
       stop("Please specify a matrix or data frame of discrete values for the argument 'x'.", call. = FALSE)
 
@@ -103,7 +103,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'smooth'
-    if (isFALSE(isTRUE(smooth) | isFALSE(smooth))) {
+    if (isFALSE(isTRUE(smooth) || isFALSE(smooth))) {
 
       stop("Please specify TRUE or FALSE for the argument 'smooth'.", call. = FALSE)
 
@@ -111,7 +111,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'global'
-    if (isFALSE(isTRUE(global) | isFALSE(global))) {
+    if (isFALSE(isTRUE(global) || isFALSE(global))) {
 
       stop("Please specify TRUE or FALSE for the argument 'global'.", call. = FALSE)
 
@@ -119,7 +119,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'na.rm'
-    if (isFALSE(isTRUE(na.rm) | isFALSE(na.rm))) {
+    if (isFALSE(isTRUE(na.rm) || isFALSE(na.rm))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.rm'.", call. = FALSE)
 
@@ -127,14 +127,14 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'progress'
-    if (isFALSE(isTRUE(progress) | isFALSE(progress))) {
+    if (isFALSE(isTRUE(progress) || isFALSE(progress))) {
 
       stop("Please specify TRUE or FALSE for the argument 'progress'.", call. = FALSE)
 
     }
 
     # Check input 'delete'
-    if (isFALSE(isTRUE(delete) | isFALSE(delete))) {
+    if (isFALSE(isTRUE(delete) || isFALSE(delete))) {
 
       stop("Please specify TRUE or FALSE for the argument 'delete'.", call. = FALSE)
 
@@ -151,7 +151,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -203,7 +203,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
         warning("Matrix was not positive definite, smoothing was done.", call. = FALSE)
 
-        eigens$values[eigens$values < eig.tol] <- 100 * eig.tol
+        eigens$values[eigens$values < eig.tol] <- 100L * eig.tol
         nvar <- dim(x)[1]
         tot <- sum(eigens$values)
         eigens$values <- eigens$values * nvar/tot
@@ -252,9 +252,9 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     maxx <- max(x,na.rm = TRUE)
     miny <- min(y,na.rm = TRUE)
     maxy <- max(y,na.rm = TRUE)
-    maxxy <- (maxx+(minx == 0))*(maxy + (miny == 0))
-    dims <- c(maxx + 1 - min(1, minx), maxy + 1 - min(1, minx))
-    bin <- x - minx + (y - miny)*(dims[1]) + max(1, minx)
+    maxxy <- (maxx+(minx == 0L))*(maxy + (miny == 0L))
+    dims <- c(maxx + 1L - min(1, minx), maxy + 1L - min(1L, minx))
+    bin <- x - minx + (y - miny)*(dims[1]) + max(1L, minx)
     ans <- matrix(tabulate(bin, maxxy), dims)
 
     return(ans)
@@ -263,9 +263,9 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
   #----------------------------------------
   tableFast <- function(x, y, minx, maxx, miny, maxy) {
 
-    maxxy <- (maxx + (minx == 0))*(maxy + (minx == 0))
+    maxxy <- (maxx + (minx == 0L))*(maxy + (minx == 0L))
     bin <- x-minx + (y - minx) *maxx + 1
-    dims <- c(maxx + 1 - min(1, minx), maxy + 1 - min(1, miny))
+    dims <- c(maxx + 1L - min(1L, minx), maxy + 1L - min(1L, miny))
     ans <- matrix(tabulate(bin, maxxy), dims)
 
     return(ans)
@@ -277,28 +277,28 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     row.cuts <- c(-Inf, rc,Inf)
     col.cuts <- c(-Inf, cc, Inf)
-    nr <- length(row.cuts) -1
-    nc <- length(col.cuts) -1
+    nr <- length(row.cuts) - 1L
+    nc <- length(col.cuts) - 1L
 
-    P <- matrix(0, nr, nc)
-    R <- matrix(c(1, rho, rho,1), 2, 2)
+    P <- matrix(0L, nr, nc)
+    R <- matrix(c(1L, rho, rho,1), 2L, 2L)
 
-    for (i in seq_len((nr - 1))) {
+    for (i in seq_len((nr - 1L))) {
 
-      for (j in seq_len((nc - 1))) {
+      for (j in seq_len((nc - 1L))) {
 
         P[i, j] <- mnormt::sadmvn(lower = c(row.cuts[i], col.cuts[j]),
-                                  upper = c(row.cuts[i + 1], col.cuts[j + 1]), mean = rep(0, 2),
+                                  upper = c(row.cuts[i + 1L], col.cuts[j + 1L]), mean = rep(0L, 2L),
                                   varcov = R)
       }
 
     }
 
-    P[1,nc] <- pnorm(rc[1]) - sum(P[1, seq_len((nc - 1))])
-    P[nr,1] <- pnorm(cc[1]) - sum(P[seq_len((nr - 1)), 1])
-    if(nr >2) {for (i in (2:(nr - 1))) {P[i, nc] <- pnorm(rc[i]) -pnorm(rc[i - 1])- sum(P[i, seq_len((nc - 1))]) }}
-    if(nc >2) {for (j in (2:(nc - 1))) {P[nr, j] <- pnorm(cc[j]) - pnorm(cc[j - 1])-sum(P[seq_len((nr - 1)), j]) }}
-    if(nc > 1)  P[nr, nc] <- 1 - pnorm(rc[nr - 1]) - sum(P[nr, seq_len((nc - 1))])
+    P[1L, nc] <- pnorm(rc[1L]) - sum(P[1L, seq_len((nc - 1L))])
+    P[nr, 1L] <- pnorm(cc[1L]) - sum(P[seq_len((nr - 1L)), 1L])
+    if(nr >2L) {for (i in (2L:(nr - 1L))) {P[i, nc] <- pnorm(rc[i]) -pnorm(rc[i - 1L])- sum(P[i, seq_len((nc - 1L))]) }}
+    if(nc >2L) {for (j in (2L:(nc - 1L))) {P[nr, j] <- pnorm(cc[j]) - pnorm(cc[j - 1L])-sum(P[seq_len((nr - 1L)), j]) }}
+    if(nc > 1L)  P[nr, nc] <- 1L - pnorm(rc[nr - 1L]) - sum(P[nr, seq_len((nc - 1L))])
     P
 
   }
@@ -307,7 +307,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
   polyF <- function(rho,rc,cc,tab) {
 
     P <- polyBinBvn(rho, rc, cc)
-    P[P <=0] <- NA
+    P[P <= 0L] <- NA
     lP <- log(P)
     lP[lP == -Inf] <- NA
     lP[lP == Inf] <- NA
@@ -317,7 +317,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
   wtd.table <- function(x, y, weight) {
 
     tab <- tapply(weight, list(x, y), sum, na.rm = TRUE, simplify = TRUE)
-    tab[is.na(tab)] <- 0
+    tab[is.na(tab)] <- 0L
 
     return(tab)
 
@@ -338,11 +338,11 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     }
 
-    fixed <- 0
+    fixed <- 0L
     tot <- sum(tab)
-    if(tot == 0) {
+    if(tot == 0L) {
 
-      result <- list(rho = NA, objective = NA, fixed = 1)
+      result <- list(rho = NA, objective = NA, fixed = 1L)
 
       return(result)
 
@@ -350,12 +350,12 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     tab <- tab/tot
 
-    if(correct > 0) {
+    if(correct > 0L) {
 
-      if(any(tab[] == 0)) {
+      if(any(tab[] == 0L)) {
 
-        fixed <- 1
-        tab[tab == 0] <- correct/tot
+        fixed <- 1L
+        tab[tab == 0L] <- correct/tot
 
       }
 
@@ -373,12 +373,12 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
         zerocols <- apply(tab, 2, function(x) all(x == 0))
         zr <- sum(zerorows)
         zc <- sum(zerocols)
-        tab <- tab[!zerorows, ,drop = FALSE]
+        tab <- tab[!zerorows, , drop = FALSE]
         tab <- tab[, !zerocols, drop = FALSE]
         csum <- colSums(tab)
         rsum <- rowSums(tab)
 
-        if(min(dim(tab)) < 2) {
+        if(min(dim(tab)) < 2L) {
 
           rho <- list(objective = NA)
 
@@ -386,7 +386,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
           cc <-  qnorm(cumsum(csum)[-length(csum)])
           rc <-  qnorm(cumsum(rsum)[-length(rsum)])
-          rho <- optimize(polyF, interval = c(-1, 1), rc = rc, cc = cc, tab)
+          rho <- optimize(polyF, interval = c(-1L, 1L), rc = rc, cc = cc, tab)
 
         }
 
@@ -460,28 +460,28 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     }
 
     cl <- match.call()
-    np <- dim(p)[2]
-    nd <- dim(d)[2]
+    np <- dim(p)[2L]
+    nd <- dim(d)[2L]
 
-    if(is.null(np)) np <- 1
-    if(is.null(nd)) nd <- 1
+    if(is.null(np)) np <- 1L
+    if(is.null(nd)) nd <- 1L
 
     nsub <- dim(p)[1]
     p <- as.matrix(p)
     d <- as.matrix(d)
-    nvalues <- max(p, na.rm = TRUE) - min(p, na.rm = TRUE) + 1
+    nvalues <- max(p, na.rm = TRUE) - min(p, na.rm = TRUE) + 1L
     dmin <- apply(d, 2,function(x) min(x, na.rm = TRUE))
     dmax <- apply(d, 2,function(x) max(x, na.rm = TRUE))
     dvalues <- max(dmax - dmin)
 
-    if (dvalues != 1) stop("You did not supply a dichotomous variable.", call. = FALSE)
+    if (dvalues != 1L) stop("You did not supply a dichotomous variable.", call. = FALSE)
 
-    if (nvalues > 8) stop("You have more than 8 categories for your items, polychoric is probably not needed.", call. = FALSE)
+    if (nvalues > 8L) stop("You have more than 8 categories for your items, polychoric is probably not needed.", call. = FALSE)
 
     item.var <- apply(p, 2, sd, na.rm = na.rm)
     bad <- which((item.var <= 0) | is.na(item.var))
 
-    if ((length(bad) > 0)  & isTRUE(delete)) {
+    if ((length(bad) > 0L)  & isTRUE(delete)) {
 
       for (baddy in seq_len(length(bad))) {
 
@@ -496,11 +496,11 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     pmin <- apply(p, 2, function(x) min(x, na.rm = TRUE))
     minx <- min(pmin)
-    p <- t(t(p) - pmin + 1)
+    p <- t(t(p) - pmin + 1L)
 
     miny <- min(dmin)
-    d <-  t(t(d) - dmin + 1)
-    gminx <- gminy <- 1
+    d <-  t(t(d) - dmin + 1L)
+    gminx <- gminy <- 1L
 
     pmax <- apply(p,2,function(x)  max(x,na.rm = TRUE))
     gmaxx <- max(pmax)
@@ -513,13 +513,13 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     n.obs <- colSums(pfreq)
     pfreq <- t(t(pfreq)/n.obs)
 
-    taup <- as.matrix(qnorm(apply(pfreq, 2, cumsum))[seq_len(nvalues - 1), ], ncol = ncol(pfreq))
+    taup <- as.matrix(qnorm(apply(pfreq, 2, cumsum))[seq_len(nvalues - 1L), ], ncol = ncol(pfreq))
 
-    rownames(taup) <- paste(seq_len(nvalues - 1))
+    rownames(taup) <- paste(seq_len(nvalues - 1L))
     colnames(taup) <- colnames(p)
 
-    dfreq <- apply(d, 2, tabulate, nbins = 2)
-    if (nd < 2) {
+    dfreq <- apply(d, 2, tabulate, nbins = 2L)
+    if (nd < 2L) {
 
       n.obsd <- sum(dfreq)
 
@@ -532,7 +532,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     dfreq <- t(t(dfreq)/n.obsd)
     taud <-  qnorm(apply(dfreq, 2, cumsum))
 
-    mat <- matrix(0, np, nd)
+    mat <- matrix(0L, np, nd)
     rownames(mat) <- colnames(p)
     colnames(mat) <- colnames(d)
 
@@ -558,13 +558,13 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     tot <- sum(tab)
     tab <- tab/tot
-    if(correct > 0) tab[tab == 0] <- correct/tot
+    if(correct > 0L) tab[tab == 0L] <- correct/tot
 
     csum <- colSums(tab)
     rsum <- rowSums(tab)
     cc <-  qnorm(cumsum(csum[-length(csum)]))
     rc <-  qnorm(cumsum(rsum[-length(rsum)]))
-    rho <- optimize(polyF, interval = c(-1, 1), rc = rc, cc = cc, tab)
+    rho <- optimize(polyF, interval = c(-1L, 1L), rc = rc, cc = cc, tab)
 
     result <- list(rho = rho$minimum, objective = rho$objective, tau.row = rc, tau.col = cc)
 
@@ -586,12 +586,12 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     k <- 1
     il <- vector()
     jl <- vector()
-    for(i in 2:nvar) {
+    for(i in 2L:nvar) {
 
-      for (j in seq_len(i - 1)) {
+      for (j in seq_len(i - 1L)) {
 
       il[k] <- i
-      jl [k] <- j
+      jl[k] <- j
       k <- k + 1
 
       }
@@ -601,15 +601,15 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     poly <- mcmapply(function(i, j) myfun(x, i, j, gminx = gminx, gmaxx = gmaxx, gminy = gminy, gmaxy = gmaxy), il, jl)
 
     mat <- diag(nvar)
-    if(length(dim(poly)) == 2) {
+    if(length(dim(poly)) == 2L) {
 
-      mat[upper.tri(mat)] <- as.numeric(poly[1, ])
+      mat[upper.tri(mat)] <- as.numeric(poly[1L, ])
       mat <- t(mat) + mat
-      fixed <- as.numeric(poly[3, ])
-      diag(mat) <- 1
+      fixed <- as.numeric(poly[3L, ])
+      diag(mat) <- 1L
       fixed <- sum(fixed)
 
-      if((fixed > 0) && ( correct > 0)) {
+      if((fixed > 0L) && ( correct > 0L)) {
 
         warning(fixed ," cell(s) adjusted for 0 values using the correction for continuity.", call. = FALSE)
 
@@ -639,9 +639,9 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  nvar <- dim(x)[2]
-  nsub <- dim(x)[1]
-  if((prod(dim(x)) == 4) | is.table(x)) {
+  nvar <- dim(x)[2L]
+  nsub <- dim(x)[1L]
+  if((prod(dim(x)) == 4L) | is.table(x)) {
 
     result <- polytab(x, correct = correct)
 
@@ -670,12 +670,12 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
       }
 
-    nvalues <- max(x, na.rm = TRUE) - min(x, na.rm = TRUE) + 1
+    nvalues <- max(x, na.rm = TRUE) - min(x, na.rm = TRUE) + 1L
 
     item.var <- apply(x, 2, sd, na.rm = na.rm)
     bad <- which((item.var <= 0)|is.na(item.var))
 
-    if((length(bad) > 0) & isTRUE(delete)) {
+    if((length(bad) > 0L) & isTRUE(delete)) {
 
       for (baddy in seq_len(length(bad))) {
 
@@ -691,9 +691,9 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     xmin <- apply(x, 2, function(x) min(x, na.rm = TRUE))
 
     xmin <- min(xmin)
-    x <- t(t(x) - xmin + 1)
+    x <- t(t(x) - xmin + 1L)
 
-    gminx <- gminy <- 1
+    gminx <- gminy <- 1L
     xmax <- apply(x, 2, function(x) max(x, na.rm = TRUE))
     xmax <- max(xmax)
     gmaxx <- gmaxy <- xmax
@@ -708,14 +708,14 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     xfreq <- apply(x, 2, tabulate, nbins = nvalues)
     n.obs <- colSums(xfreq)
     xfreq <- t(t(xfreq) / n.obs)
-    tau <- qnorm(apply(xfreq, 2, cumsum))[seq_len(nvalues - 1), ]
+    tau <- qnorm(apply(xfreq, 2, cumsum))[seq_len(nvalues - 1L), ]
 
     if(!is.matrix(tau)) tau <- matrix(tau, ncol = nvar)
 
-    rownames(tau) <- seq_len(nvalues - 1)
+    rownames(tau) <- seq_len(nvalues - 1L)
     colnames(tau) <- colnames(x)
 
-    mat <- matrix(0, nvar, nvar)
+    mat <- matrix(0L, nvar, nvar)
     colnames(mat) <- rownames(mat) <- colnames(x)
 
     mat <- matpLower(x, nvar, gminx, gmaxx, gminy, gmaxy)
@@ -737,6 +737,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
 
     object <- list(call = match.call(),
+                   type = "poly.cor",
                    data = x,
                    args = list(smooth = smooth, global = global, weight = weight, correct = correct,
                                progress = progress, na.rm = na.rm, delete = delete, digits = digits,
@@ -745,7 +746,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  class(object) <- "poly.cor"
+  class(object) <- "square.matrix"
 
   ####################################################################################
   # Output

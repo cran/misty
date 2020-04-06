@@ -27,7 +27,7 @@
 #' \dontrun{
 #' dat <- data.frame(x1 = c(1, 2, 2, 1, 1, 2, 2, 1, 1, 2),
 #'                   x2 = c(NA, 2, 2, 1, 2, 1, 1, 1, 2, 1),
-#'                   x3 = c(1, 2, 1, 1, 1, 2, 2, 2, 2, 1))
+#'                   x3 = c(1, 2, 1, 1, 1, 2, 2, 2, 2, 1), stringsAsFactors = FALSE)
 #'
 #' # Cross Tabulation for x1 and x2
 #' dat.crosstab <- crosstab(dat[, c("x1", "x2")], output = FALSE)
@@ -54,7 +54,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
     #......
     # Check input 'freq'
-    if (isFALSE(isTRUE(freq) | isFALSE(freq))) {
+    if (isFALSE(isTRUE(freq) || isFALSE(freq))) {
 
       stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE)
 
@@ -70,7 +70,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'", call. = FALSE)
 
@@ -100,9 +100,9 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
   #----------------------------------------
   # Two-Dimensional Matrix
 
-  if (ncol(x$data) == 2) {
+  if (ncol(x$data) == 2L) {
 
-    restab <- cbind(rep(names(print.object$freq.a[, 1]), times = 4),
+    restab <- cbind(rep(names(print.object$freq.a[, 1L]), times = 4L),
                     rep(c("Freq", "Row %", "Col %", "Tot %"), each = nrow(print.object$freq.a)),
                     rbind(print.object$freq.a, print.object$perc.r, print.object$perc.c, print.object$perc.t),
                     c(apply(print.object$freq.a, 1, sum), rep("", times = 3*nrow(print.object$freq.a))))
@@ -111,24 +111,24 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
     # Sort table
 
     # First variable is a factor
-    if (is.factor(x$data[, 1])) {
+    if (is.factor(x$data[, 1L])) {
 
       # Sort with NA
       if (any(is.na(x$data)) && isFALSE(x$args$na.omit)) {
 
-        restab <- restab[order(factor(restab[, 1], levels = c(levels(x$data[, 1]), "NA"), labels = c(levels(x$data[, 1]), "NA"))), ]
+        restab <- restab[order(factor(restab[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA"))), ]
 
       # Sort without NA
       } else {
 
-        restab <- restab[order(factor(restab[, 1], levels = levels(x$data[, 1]), labels = levels(x$data[, 1]))), ]
+        restab <- restab[order(factor(restab[, 1L], levels = levels(x$data[, 1L]), labels = levels(x$data[, 1L]))), ]
 
       }
 
     # First variable is not a factor
     } else {
 
-      restab <- restab[order(restab[, 1]), ]
+      restab <- restab[order(restab[, 1L]), ]
 
     }
 
@@ -138,14 +138,14 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
     # No absolute frequencies
     if (isFALSE(freq)) {
 
-      restab <- restab[-grep("Freq", restab[, 2]), ]
+      restab <- restab[-grep("Freq", restab[, 2L]), ]
 
     }
 
     # No percentages
     if (any(print == "no")) {
 
-      restab <- restab[-grep(" %", restab[, 2]), -2]
+      restab <- restab[-grep(" %", restab[, 2L]), -2L]
 
     } else {
 
@@ -159,14 +159,14 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
       # No row percentages
       if ("row" %in% no.perc) {
 
-        restab <- restab[-grep("Row %", restab[, 2]), ]
+        restab <- restab[-grep("Row %", restab[, 2L]), ]
 
       }
 
       # No col percentages
       if ("col" %in% no.perc) {
 
-        restab <- restab[-grep("Col %", restab[, 2]), ]
+        restab <- restab[-grep("Col %", restab[, 2L]), ]
 
       }
 
@@ -180,55 +180,55 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
       #......
       # Variable names and column sum
-      restab <- rbind(c("", colnames(x$data)[2], rep("", times = (ncol(restab) - 2))),
-                      c(colnames(x$data)[1], colnames(restab)[-c(1, ncol(restab))], "Total"),
+      restab <- rbind(c("", colnames(x$data)[2], rep("", times = (ncol(restab) - 2L))),
+                      c(colnames(x$data)[1], colnames(restab)[-c(1L, ncol(restab))], "Total"),
                       restab,
                       c("Total", apply(print.object$freq.a, 2, sum), sum(print.object$freq.a)))
 
       # Format
-      restab[2, 1] <- paste0(" ", restab[2, 1])
-      restab[-c(1, 2), 1] <- paste0("  ", restab[-c(1, 2), 1])
+      restab[2L, 1L] <- paste0(" ", restab[2L, 1L])
+      restab[-c(1L, 2L), 1L] <- paste0("  ", restab[-c(1L, 2L), 1L])
 
       # Justify right
-      restab[-2, 1] <- format(restab[-2, 1], justify = "right")
-      restab[, 1] <- format(restab[, 1])
+      restab[-2L, 1L] <- format(restab[-2L, 1L], justify = "right")
+      restab[, 1L] <- format(restab[, 1L])
 
-      restab[-1, -1] <- apply(restab[-1, -1], 2, function(y) format(y, justify = "right"))
+      restab[-1L, -1L] <- apply(restab[-1L, -1L], 2, function(y) format(y, justify = "right"))
 
-      restab[-1, 2] <- paste0(" ", restab[-1, 2])
+      restab[-1L, 2L] <- paste0(" ", restab[-1L, 2L])
 
     # Percentage(s)
     } else {
 
       #......
       # Variable names and column sum
-      restab <- rbind(c("", "", colnames(x$data)[2], rep("", times = (ncol(restab) - 3))),
-                      c(colnames(x$data)[1], colnames(restab)[-c(1, ncol(restab))], "Total"),
+      restab <- rbind(c("", "", colnames(x$data)[2L], rep("", times = (ncol(restab) - 3L))),
+                      c(colnames(x$data)[1], colnames(restab)[-c(1L, ncol(restab))], "Total"),
                       restab,
                       c("Total", "", apply(print.object$freq.a, 2, sum), sum(print.object$freq.a)))
 
       # Format percentages
-      restab[grep("%", restab[, 2]), -c(1:2, ncol(restab))] <- apply(restab[grep("%", restab[, 2]), -c(1:2, ncol(restab))], 2, function(y) paste0(format(formatC(as.numeric(y), digits = digits, format = "f"), justify = "right"), "%"))
+      restab[grep("%", restab[, 2L]), -c(1L:2L, ncol(restab))] <- apply(restab[grep("%", restab[, 2L]), -c(1L:2L, ncol(restab))], 2, function(y) paste0(format(formatC(as.numeric(y), digits = digits, format = "f"), justify = "right"), "%"))
 
       restab <- gsub("NaN", "NA", restab)
 
       # Justify right and left
-      restab[, 1] <- format(restab[, 1], justify = "right")
+      restab[, 1L] <- format(restab[, 1L], justify = "right")
 
-      restab[2, 1] <- paste0(" ", sub("^\\s+", "", restab[2, 1]), paste0(rep(" ", times = max(nchar(restab[, 1])) - nchar(colnames(x$data)[1])), collapse = ""), " ")
-      restab[-2, 1] <- paste0("  ", restab[-2, 1])
+      restab[2L, 1L] <- paste0(" ", sub("^\\s+", "", restab[2L, 1L]), paste0(rep(" ", times = max(nchar(restab[, 1L])) - nchar(colnames(x$data)[1L])), collapse = ""), " ")
+      restab[-2L, 1L] <- paste0("  ", restab[-2L, 1L])
 
-      restab[, 2] <- format(restab[, 2], justify = "left")
+      restab[, 2L] <- format(restab[, 2L], justify = "left")
 
-      restab[-1, -c(1:2)] <- apply(restab[-1, -c(1:2)], 2, format, justify = "right")
+      restab[-1L, -c(1L:2L)] <- apply(restab[-1L, -c(1L:2L)], 2, format, justify = "right")
 
-      restab[-1, 3] <- paste0(" ", restab[-1, 3])
+      restab[-1L, 3L] <- paste0(" ", restab[-1L, 3L])
 
     }
 
     #......
     # Output table not split
-    if (isFALSE(split) | all(print == "no")) {
+    if (isFALSE(split) || all(print == "no")) {
 
       # Remove Total row and column
       if (isFALSE(freq)) {
@@ -238,7 +238,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
       }
 
       # Remove duplicated row labels
-      restab[, 1] <- ifelse(duplicated(restab[, 1]), paste(rep(" ", times = unique(nchar(restab[, 1]))), collapse = ""), restab[, 1])
+      restab[, 1L] <- ifelse(duplicated(restab[, 1L]), paste(rep(" ", times = unique(nchar(restab[, 1L]))), collapse = ""), restab[, 1L])
 
       # Print results
       write.table(restab, col.names = FALSE, row.names = FALSE, quote = FALSE)
@@ -249,13 +249,13 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
       if (isTRUE(freq)) {
 
         # Frequencies
-        restab.abs <- restab[-grep("%", restab[, 2]), -2]
+        restab.abs <- restab[-grep("%", restab[, 2L]), -2L]
 
-        restab.abs[-1, -1] <- apply(restab.abs[-1, -1], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
+        restab.abs[-1L, -1L] <- apply(restab.abs[-1L, -1L], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
 
-        restab.abs[-1, 2] <- paste0(" ", restab.abs[-1, 2])
+        restab.abs[-1L, 2L] <- paste0(" ", restab.abs[-1L, 2L])
 
-        restab.abs[, 1] <- paste0(" ", restab.abs[, 1])
+        restab.abs[, 1L] <- paste0(" ", restab.abs[, 1L])
 
         cat(" Frequencies\n")
         write.table(restab.abs, col.names = FALSE, row.names = FALSE, quote = FALSE)
@@ -267,19 +267,19 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
         if (isTRUE(freq)) { cat("\n") }
 
-        restab.row <- cbind(rbind(restab[1:2, -c(2, ncol(restab))], restab[grep("Row", restab[, 2]), -c(2, ncol(restab))]),
+        restab.row <- cbind(rbind(restab[1L:2L, -c(2L, ncol(restab))], restab[grep("Row", restab[, 2L]), -c(2L, ncol(restab))]),
                             c("", "Total",
-                              rep(ifelse(digits == 0, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%")), times = nrow(restab[grep("Row", restab[, 2]), ]))))
+                              rep(ifelse(digits == 0L, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%")), times = nrow(restab[grep("Row", restab[, 2L]), ]))))
 
-        restab.row[which(apply(restab.row, 1, function(y) length(grep("NA%", y)) != 0)), ncol(restab.row)] <- "NA%"
+        restab.row[which(apply(restab.row, 1, function(y) length(grep("NA%", y)) != 0L)), ncol(restab.row)] <- "NA%"
 
         restab.row[, ncol(restab.row)] <- format(restab.row[, ncol(restab.row)], justify = "right")
 
-        restab.row[-1, -1] <- apply(restab.row[-1, -1], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
+        restab.row[-1L, -1L] <- apply(restab.row[-1L, -1L], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
 
-        restab.row[-1, 2] <- paste0(" ", restab.row[-1, 2])
+        restab.row[-1L, 2L] <- paste0(" ", restab.row[-1L, 2L])
 
-        restab.row[, 1] <- paste0(" ", restab.row[, 1])
+        restab.row[, 1L] <- paste0(" ", restab.row[, 1L])
 
         cat(" Row-Wise Percentages\n")
         write.table(restab.row, col.names = FALSE, row.names = FALSE, quote = FALSE)
@@ -289,20 +289,20 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
       # Column-wise percentages
       if ("col" %in% print) {
 
-        if (isTRUE(freq) | "row" %in% print) { cat("\n") }
+        if (isTRUE(freq) || "row" %in% print) { cat("\n") }
 
-        restab.col <- rbind(restab[1:2, -c(2, ncol(restab))], restab[grep("Col", restab[, 2]), -c(2, ncol(restab))],
-                            c("Total", rep(ifelse(digits == 0, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%")), times = ncol(restab) - 3)))
+        restab.col <- rbind(restab[1L:2L, -c(2L, ncol(restab))], restab[grep("Col", restab[, 2]), -c(2L, ncol(restab))],
+                            c("Total", rep(ifelse(digits == 0L, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%")), times = ncol(restab) - 3L)))
 
-        restab.col[nrow(restab.col), which(apply(restab.col, 2, function(y) length(grep("NA%", y)) != 0))] <- "NA%"
+        restab.col[nrow(restab.col), which(apply(restab.col, 2, function(y) length(grep("NA%", y)) != 0L))] <- "NA%"
 
-        restab.col[-1, ] <- apply(restab.col[-1, ], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
+        restab.col[-1L, ] <- apply(restab.col[-1L, ], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
 
-        restab.col[, 1] <- format(restab.col[, 1])
+        restab.col[, 1L] <- format(restab.col[, 1L])
 
-        restab.col[-1, 2] <- paste0(" ", restab.col[-1, 2])
+        restab.col[-1L, 2L] <- paste0(" ", restab.col[-1L, 2L])
 
-        restab.col[, 1] <- paste0("  ", restab.col[, 1])
+        restab.col[, 1L] <- paste0("  ", restab.col[, 1L])
 
         cat(" Column-Wise Percentages\n")
         write.table(restab.col, col.names = FALSE, row.names = FALSE, quote = FALSE)
@@ -312,22 +312,22 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
       # Total percentages
       if ("total" %in% print) {
 
-        if (isTRUE(freq) | "row" %in% print | "col" %in% print) { cat("\n") }
+        if (isTRUE(freq) || "row" %in% print || "col" %in% print) { cat("\n") }
 
-        restab.total <- rbind(restab[1:2, -c(2, ncol(restab))], restab[grep("Tot", restab[, 2]), -c(2, ncol(restab))])
+        restab.total <- rbind(restab[1L:2L, -c(2L, ncol(restab))], restab[grep("Tot", restab[, 2L]), -c(2L, ncol(restab))])
 
-        restab.total[-1, -1] <- apply(restab.total[-1, -1], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
+        restab.total[-1L, -1L] <- apply(restab.total[-1L, -1L], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
 
-        restab.total <- rbind(cbind(restab.total, c("", "Total", rep("", times = nrow(restab.total) - 2))), c(rep("", times = ncol(restab.total)),
-                                                                                                            ifelse(digits == 0, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%"))))
+        restab.total <- rbind(cbind(restab.total, c("", "Total", rep("", times = nrow(restab.total) - 2L))), c(rep("", times = ncol(restab.total)),
+                                                                                                             ifelse(digits == 0, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%"))))
 
         restab.total[, ncol(restab.total)] <- format(restab.total[, ncol(restab.total)], justify = "right")
 
-        restab.total[-1, ] <- apply(restab.total[-1, ], 2, format)
+        restab.total[-1L, ] <- apply(restab.total[-1L, ], 2, format)
 
-        restab.total[-1, 2] <- paste0(" ", restab.total[-1, 2])
+        restab.total[-1L, 2L] <- paste0(" ", restab.total[-1L, 2L])
 
-        restab.total[, 1] <- paste0(" ", restab.total[, 1])
+        restab.total[, 1L] <- paste0(" ", restab.total[, 1L])
 
         cat(" Total Percentages\n")
         write.table(restab.total, col.names = FALSE, row.names = FALSE, quote = FALSE)
@@ -341,7 +341,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
   #----------------------------------------
   # Three-Dimensional Matrix
 
-  if (ncol(x$data) == 3) {
+  if (ncol(x$data) == 3L) {
 
     # Absolute frequencies
     freq.a.print <- NULL
@@ -354,7 +354,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
     # Row %
     perc.r.print <- NULL
-    for (i in seq_len(nrow(print.object$perc.c[[1]]))) {
+    for (i in seq_len(nrow(print.object$perc.c[[1L]]))) {
 
       perc.r.print <- cbind(perc.r.print,
                             unlist(lapply(print.object$perc.c, function(y) y[i, ])))
@@ -380,11 +380,11 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
     }
 
     # Result table
-    restab <- cbind(rep(names(print.object$freq.a), each = ncol(print.object$freq.a[[1]]), time = 4),
-                    rep(colnames(print.object$freq.a[[1]]), times = 4*length(print.object$freq.a)),
-                    rep(c("Freq", "Row %", "Col %", "Tot %"), each =  ncol(print.object$freq.a[[1]])*length(print.object$freq.a)),
+    restab <- cbind(rep(names(print.object$freq.a), each = ncol(print.object$freq.a[[1]]), time = 4L),
+                    rep(colnames(print.object$freq.a[[1L]]), times = 4L*length(print.object$freq.a)),
+                    rep(c("Freq", "Row %", "Col %", "Tot %"), each =  ncol(print.object$freq.a[[1L]])*length(print.object$freq.a)),
                     rbind(freq.a.print, perc.r.print, perc.c.print, perc.t.print),
-                    c(apply(freq.a.print, 1, sum), rep("", times = 3*length(print.object$freq.a)*ncol(print.object$freq.a[[1]]))))
+                    c(apply(freq.a.print, 1, sum), rep("", times = 3L*length(print.object$freq.a)*ncol(print.object$freq.a[[1]]))))
 
     # Convert NaN in NA
     restab <- gsub("NaN", NA, restab)
@@ -393,75 +393,75 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
     # Sort table
 
     # First and scond variable are a factor
-    if (is.factor(x$data[, 1]) && is.factor(x$data[, 2])) {
+    if (is.factor(x$data[, 1L]) && is.factor(x$data[, 2L])) {
 
       # Sort with NA
       if (any(is.na(x$data)) && isFALSE(x$args$na.omit)) {
 
-        restab <-restab[order(factor(restab[, 1], levels = c(levels(x$data[, 1]), "NA"), labels = c(levels(x$data[, 1]), "NA")),
-                        factor(restab[, 2], levels = c(levels(x$data[, 2]), "NA"), labels = c(levels(x$data[, 2]), "NA"))), ]
+        restab <-restab[order(factor(restab[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA")),
+                        factor(restab[, 2L], levels = c(levels(x$data[, 2L]), "NA"), labels = c(levels(x$data[, 2L]), "NA"))), ]
 
       # Sort without NA
       } else {
 
-        restab <- restab[order(factor(restab[, 1], levels = levels(x$data[, 1]), labels = levels(x$data[, 1])),
-                               factor(restab[, 2], levels = levels(x$data[, 2]), labels = levels(x$data[, 2]))), ]
+        restab <- restab[order(factor(restab[, 1L], levels = levels(x$data[, 1L]), labels = levels(x$data[, 1L])),
+                               factor(restab[, 2L], levels = levels(x$data[, 2L]), labels = levels(x$data[, 2L]))), ]
 
       }
 
     }
 
     # First variable is a factor, second variable is not a factor
-    if (is.factor(x$data[, 1]) && !is.factor(x$data[, 2])) {
+    if (is.factor(x$data[, 1L]) && !is.factor(x$data[, 2L])) {
 
       # Sort with NA
       if (any(is.na(x$data)) && isFALSE(x$args$na.omit)) {
 
-        restab <- restab[order(factor(restab[, 1], levels = c(levels(x$data[, 1]), "NA"), labels = c(levels(x$data[, 1]), "NA")),
-                               restab[, 2]), ]
+        restab <- restab[order(factor(restab[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA")),
+                               restab[, 2L]), ]
 
       # Sort without NA
       } else {
 
-        restab <- restab[order(factor(restab[, 1], levels = levels(x$data[, 1]), labels = levels(x$data[, 1])),
-                               restab[, 2]), ]
+        restab <- restab[order(factor(restab[, 1L], levels = levels(x$data[, 1L]), labels = levels(x$data[, 1L])),
+                               restab[, 2L]), ]
 
       }
 
     }
 
     # First variable is not a factor, second variable is a factor
-    if (!is.factor(x$data[, 1]) && is.factor(x$data[, 2])) {
+    if (!is.factor(x$data[, 1L]) && is.factor(x$data[, 2L])) {
 
       # Sort with NA
       if (any(is.na(x$data)) && isFALSE(x$args$na.omit)) {
 
-        restab <- restab[order(restab[, 1],
-                               factor(restab[, 2], levels = c(levels(x$data[, 2]), "NA"), labels = c(levels(x$data[, 2]), "NA"))), ]
+        restab <- restab[order(restab[, 1L],
+                               factor(restab[, 2L], levels = c(levels(x$data[, 2L]), "NA"), labels = c(levels(x$data[, 2L]), "NA"))), ]
 
       # Sort without NA
       } else {
 
-        restab <- restab[order(restab[, 1],
-                               factor(restab[, 2], levels = levels(x$data[, 2]), labels = levels(x$data[, 2]))), ]
+        restab <- restab[order(restab[, 1L],
+                               factor(restab[, 2L], levels = levels(x$data[, 2L]), labels = levels(x$data[, 2L]))), ]
 
       }
 
     }
 
     # First and second variable are not a factor
-    if (!is.factor(x$data[, 1]) && !is.factor(x$data[, 2])) {
+    if (!is.factor(x$data[, 1L]) && !is.factor(x$data[, 2L])) {
 
       # Sort with NA
       if (any(is.na(x$data)) && isFALSE(x$args$na.omit)) {
 
-        restab <- restab[order(restab[, 1],
-                               factor(restab[, 2], levels = c(levels(x$data[, 2]), "NA"), labels = c(levels(x$data[, 2]), "NA"))), ]
+        restab <- restab[order(restab[, 1L],
+                               factor(restab[, 2L], levels = c(levels(x$data[, 2L]), "NA"), labels = c(levels(x$data[, 2L]), "NA"))), ]
 
         # Sort without NA
       } else {
 
-        restab <- restab[order(restab[, 1], restab[, 2]), ]
+        restab <- restab[order(restab[, 1L], restab[, 2L]), ]
 
       }
 
@@ -473,35 +473,35 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
     # No absolute frequencies
     if (isFALSE(freq)) {
 
-      restab <- restab[-grep("Freq", restab[, 3]), ]
+      restab <- restab[-grep("Freq", restab[, 3L]), ]
 
     }
 
     # No percentages
     if (isTRUE(print == "no")) {
 
-      restab <- restab[-grep(" %", restab[, 3]), -3]
+      restab <- restab[-grep(" %", restab[, 3L]), -3L]
 
      } else {
 
       # No total percentages
       if ("total" %in% no.perc) {
 
-        restab <- restab[-grep("Tot %", restab[, 3]), ]
+        restab <- restab[-grep("Tot %", restab[, 3L]), ]
 
       }
 
       # No row percentages
       if ("row" %in% no.perc) {
 
-        restab <- restab[-grep("Row %", restab[, 3]), ]
+        restab <- restab[-grep("Row %", restab[, 3L]), ]
 
       }
 
       # No col percentages
       if ("col" %in% no.perc) {
 
-        restab <- restab[-grep("Col %", restab[, 3]), ]
+        restab <- restab[-grep("Col %", restab[, 3L]), ]
 
       }
 
@@ -514,93 +514,93 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
       #......
       # Variable names
-      restab <- rbind(c(rep("", times = 2), colnames(x$data)[3], rep("", times = (ncol(restab) - 3))),
-                      c(colnames(x$dat)[1], colnames(x$data)[2], row.names(print.object$freq.a[[1]]), "Total"),
+      restab <- rbind(c(rep("", times = 2L), colnames(x$data)[3L], rep("", times = (ncol(restab) - 3L))),
+                      c(colnames(x$dat)[1L], colnames(x$data)[2L], row.names(print.object$freq.a[[1L]]), "Total"),
                       restab,
                       c("Total", "", apply(freq.a.print, 2, sum), sum(freq.a.print)))
 
       # Justify right
-      restab[-1, ] <- apply(restab[-1, ], 2, function(y) format(y, justify = "right"))
+      restab[-1L, ] <- apply(restab[-1L, ], 2, function(y) format(y, justify = "right"))
 
       # First variable
-      if (nchar(colnames(x$data)[1]) < max(nchar(restab[, 1]))) {
+      if (nchar(colnames(x$data)[1]) < max(nchar(restab[, 1L]))) {
 
-        restab[2, 1] <- paste(sub("^\\s+", "", restab[2, 1]), paste(rep(" ", times = max(nchar(restab[, 1])) - nchar(colnames(x$data)[1]) - 1) , collapse = ""))
+        restab[2L, 1L] <- paste(sub("^\\s+", "", restab[2L, 1L]), paste(rep(" ", times = max(nchar(restab[, 1L])) - nchar(colnames(x$data)[1L]) - 1L) , collapse = ""))
 
       }
 
-      if (nchar(colnames(x$data)[1]) == max(nchar(restab[, 1]))) {
+      if (nchar(colnames(x$data)[1L]) == max(nchar(restab[, 1L]))) {
 
-        restab[2, 1] <- paste(sub("^\\s+", "", restab[2, 1]), paste(rep(" ", times = max(nchar(restab[, 1])) - nchar(colnames(x$data)[1])) , collapse = ""))
+        restab[2L, 1L] <- paste(sub("^\\s+", "", restab[2L, 1L]), paste(rep(" ", times = max(nchar(restab[, 1L])) - nchar(colnames(x$data)[1L])) , collapse = ""))
 
       }
 
       # Second variable
-      if (nchar(colnames(x$data)[2]) < max(nchar(restab[, 2]))) {
+      if (nchar(colnames(x$data)[2L]) < max(nchar(restab[, 2L]))) {
 
-        restab[2, 2] <- paste(sub("^\\s+", "", restab[2, 2]), paste(rep(" ", times = max(nchar(restab[, 2])) - nchar(colnames(x$data)[2]) - 1), collapse = ""))
+        restab[2L, 2L] <- paste(sub("^\\s+", "", restab[2L, 2L]), paste(rep(" ", times = max(nchar(restab[, 2L])) - nchar(colnames(x$data)[2L]) - 1L), collapse = ""))
 
       }
 
-      if (nchar(colnames(x$data)[2]) == max(nchar(restab[, 2]))) {
+      if (nchar(colnames(x$data)[2L]) == max(nchar(restab[, 2L]))) {
 
-        restab[2, 2] <- paste(sub("^\\s+", "", restab[2, 2]), paste(rep(" ", times = max(nchar(restab[, 2])) - nchar(colnames(x$data)[2])), collapse = ""))
+        restab[2L, 2L] <- paste(sub("^\\s+", "", restab[2L, 2L]), paste(rep(" ", times = max(nchar(restab[, 2L])) - nchar(colnames(x$data)[2L])), collapse = ""))
 
       }
 
       # Format
-      restab[, 1:2] <- apply(restab[, 1:2], 2, format)
+      restab[, 1L:2L] <- apply(restab[, 1L:2L], 2, format)
 
-      restab[-2, 1] <- paste0(" ", restab[-2, 1])
-      restab[-2, 2] <- paste0(" ", restab[-2, 2])
-      restab[-1, 3] <- paste0(" ", restab[-1, 3])
+      restab[-2L, 1L] <- paste0(" ", restab[-2L, 1L])
+      restab[-2L, 2L] <- paste0(" ", restab[-2L, 2L])
+      restab[-1L, 3L] <- paste0(" ", restab[-1L, 3L])
 
-      restab[, 1:2] <- apply(restab[, 1:2], 2, format)
+      restab[, 1L:2L] <- apply(restab[, 1L:2L], 2, format)
 
-      restab[, 1] <- paste0(" ", restab[, 1])
+      restab[, 1L] <- paste0(" ", restab[, 1L])
 
     # Percentage(s)
     } else {
 
       #......
       # Variable names
-      restab <- rbind(c(rep("", times = 3), colnames(x$data)[3], rep("", times = (ncol(restab) - 4))),
-                      c(colnames(x$dat)[1], colnames(x$data)[2], "", row.names(print.object$freq.a[[1]]), "Total"),
+      restab <- rbind(c(rep("", times = 3L), colnames(x$data)[3L], rep("", times = (ncol(restab) - 4L))),
+                      c(colnames(x$dat)[1L], colnames(x$data)[2L], "", row.names(print.object$freq.a[[1L]]), "Total"),
                       restab,
                       c("Total", "", "", apply(freq.a.print, 2, sum), sum(freq.a.print)))
 
       # Format percentages
-      restab[grep("%", restab[, 3]), -c(1:3, ncol(restab))] <- apply(restab[grep("%", restab[, 3]), -c(1:3, ncol(restab))], 2, function(y) paste0(format(formatC(as.numeric(y), digits = digits, format = "f"), justify = "right"), "%"))
+      restab[grep("%", restab[, 3L]), -c(1:3, ncol(restab))] <- apply(restab[grep("%", restab[, 3L]), -c(1L:3L, ncol(restab))], 2, function(y) paste0(format(formatC(as.numeric(y), digits = digits, format = "f"), justify = "right"), "%"))
 
       # Format variable names
-      restab[2, 1] <- format(restab[2, 1], justify = "left", width = max(nchar(restab[, 1])))
-      restab[2, 2] <- format(restab[2, 2], justify = "left", width = max(nchar(restab[, 2])))
+      restab[2L, 1L] <- format(restab[2L, 1L], justify = "left", width = max(nchar(restab[, 1L])))
+      restab[2L, 2L] <- format(restab[2L, 2L], justify = "left", width = max(nchar(restab[, 2L])))
 
       # Format values
-      restab[-2, 1] <- format(restab[-2, 1], justify = "right", width = max(nchar(restab[, 1])))
-      restab[-2, 2] <- format(restab[-2, 2], justify = "right", width = max(nchar(restab[, 2])))
+      restab[-2L, 1L] <- format(restab[-2L, 1L], justify = "right", width = max(nchar(restab[, 1L])))
+      restab[-2L, 2L] <- format(restab[-2L, 2L], justify = "right", width = max(nchar(restab[, 2L])))
 
       # Justify right
-      restab[-1, -c(1:3)] <- apply(restab[-1, -c(1:3)], 2, function(y) format(y, justify = "right"))
+      restab[-1L, -c(1L:3L)] <- apply(restab[-1L, -c(1L:3L)], 2, function(y) format(y, justify = "right"))
 
-      restab[, 3] <- format(restab[, 3], justify = "left")
+      restab[, 3L] <- format(restab[, 3L], justify = "left")
 
       # First variable
-      restab[-2, 1] <- paste0("  ", restab[-2, 1])
-      restab[2, 1] <- paste0(" ", restab[2, 1], " ")
+      restab[-2L, 1L] <- paste0("  ", restab[-2L, 1L])
+      restab[2L, 1L] <- paste0(" ", restab[2L, 1L], " ")
 
       # Second variable
-      restab[-2, 2] <- paste0(" ", restab[-2, 2])
-      restab[2, 2] <- paste0(restab[2, 2], " ")
+      restab[-2L, 2L] <- paste0(" ", restab[-2L, 2L])
+      restab[2L, 2L] <- paste0(restab[2L, 2L], " ")
 
       # Third variable
-      restab[-1, 4] <- paste0(" ", restab[-1, 4])
+      restab[-1L, 4L] <- paste0(" ", restab[-1L, 4L])
 
     }
 
     #......
     # Output table not split
-    if (isFALSE(split) | all(print == "no")) {
+    if (isFALSE(split) || all(print == "no")) {
 
       # Remove Total row and column
       if (isFALSE(freq)) {
@@ -610,8 +610,8 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
       }
 
       # Remove duplicated row labels
-      restab[-c(1:2, nrow(restab)), 2] <- unlist(tapply(restab[-c(1:2, nrow(restab)), 2], restab[-c(1:2, nrow(restab)), 1], function(y) ifelse(duplicated(y), paste0(rep(" ", times = unique(nchar(restab[, 2]))), collapse = ""), restab[-c(1:2, nrow(restab)), 2])))
-      restab[, 1] <- ifelse(duplicated(restab[, 1]), paste(rep(" ", times = unique(nchar(restab[, 1]))), collapse = ""), restab[, 1])
+      restab[-c(1L:2L, nrow(restab)), 2L] <- unlist(tapply(restab[-c(1L:2L, nrow(restab)), 2L], restab[-c(1L:2L, nrow(restab)), 1], function(y) ifelse(duplicated(y), paste0(rep(" ", times = unique(nchar(restab[, 2]))), collapse = ""), restab[-c(1L:2L, nrow(restab)), 2L])))
+      restab[, 1L] <- ifelse(duplicated(restab[, 1L]), paste(rep(" ", times = unique(nchar(restab[, 1L]))), collapse = ""), restab[, 1])
 
       # Print results
       write.table(restab, col.names = FALSE, row.names = FALSE, quote = FALSE)
@@ -622,19 +622,19 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
       if (isTRUE(freq)) {
 
         # Frequencies
-        restab.abs <- restab[-grep("%", restab[, 3]), -3]
+        restab.abs <- restab[-grep("%", restab[, 3L]), -3L]
 
-        restab.abs[-1, -1] <- apply(restab.abs[-1, -1], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
+        restab.abs[-1L, -1L] <- apply(restab.abs[-1L, -1L], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
 
-        restab.abs <- rbind(c(paste(rep(" ", times = max(nchar(restab.abs[, 1]))), collapse = ""),
-                              paste(rep(" ", times = max(nchar(restab.abs[, 2]))), collapse = ""),
-                                 colnames(x$data)[3], rep("", times = ncol(restab.abs) - 3)),
-                            restab.abs[-1, ])
+        restab.abs <- rbind(c(paste(rep(" ", times = max(nchar(restab.abs[, 1L]))), collapse = ""),
+                              paste(rep(" ", times = max(nchar(restab.abs[, 2L]))), collapse = ""),
+                                 colnames(x$data)[3L], rep("", times = ncol(restab.abs) - 3L)),
+                            restab.abs[-1L, ])
 
-        restab.abs[-1, 3] <- paste0(" ",restab.abs[-1, 3])
-        restab.abs[1, 3] <- paste0(restab.abs[1, 3], " ")
+        restab.abs[-1L, 3L] <- paste0(" ",restab.abs[-1L, 3L])
+        restab.abs[1L, 3L] <- paste0(restab.abs[1L, 3L], " ")
 
-        restab.abs[, 1] <- paste0(" ", restab.abs[, 1])
+        restab.abs[, 1L] <- paste0(" ", restab.abs[, 1L])
 
         cat(" Frequencies\n")
         write.table(restab.abs, col.names = FALSE, row.names = FALSE, quote = FALSE)
@@ -646,26 +646,26 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
         if (isTRUE(freq)) { cat("\n") }
 
-        restab.row <- cbind(rbind(restab[1:2, -c(3, ncol(restab))], restab[grep("Row", restab[, 3]), -c(3, ncol(restab))]),
+        restab.row <- cbind(rbind(restab[1L:2L, -c(3L, ncol(restab))], restab[grep("Row", restab[, 3L]), -c(3L, ncol(restab))]),
                             c("", "Total",
-                              rep(ifelse(digits == 0, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%")), times = nrow(restab[grep("Row", restab[, 3]), ]))))
+                              rep(ifelse(digits == 0L, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%")), times = nrow(restab[grep("Row", restab[, 3L]), ]))))
 
-        restab.row[which(apply(restab.row, 1, function(y) length(grep("NA%", y)) != 0)), ncol(restab.row)] <- "NA%"
+        restab.row[which(apply(restab.row, 1, function(y) length(grep("NA%", y)) != 0L)), ncol(restab.row)] <- "NA%"
 
         restab.row[, ncol(restab.row)] <- format(restab.row[, ncol(restab.row)], justify = "right")
 
-        restab.row[-1, -1] <- apply(restab.row[-1, -1], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
+        restab.row[-1L, -1L] <- apply(restab.row[-1L, -1L], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
 
-        restab.row <- rbind(c(paste(rep(" ", times = max(nchar(restab.row[, 1]))), collapse = ""),
-                              paste(rep(" ", times = max(nchar(restab.row[, 2]))), collapse = ""), colnames(x$data)[3], rep("", times = ncol(restab.row) - 3)),
-                            restab.row[-1, ])
+        restab.row <- rbind(c(paste(rep(" ", times = max(nchar(restab.row[, 1L]))), collapse = ""),
+                              paste(rep(" ", times = max(nchar(restab.row[, 2L]))), collapse = ""), colnames(x$data)[3L], rep("", times = ncol(restab.row) - 3L)),
+                            restab.row[-1L, ])
 
-        restab.row[1, 3] <- format(restab.row[1, 3], justify = "left", width = max(nchar(restab.row[, 3])))
+        restab.row[1L, 3L] <- format(restab.row[1L, 3L], justify = "left", width = max(nchar(restab.row[, 3L])))
 
-        restab.row[-1, 3] <- paste0(" ",restab.row[-1, 3])
-        restab.row[1, 3] <- paste0(restab.row[1, 3], " ")
+        restab.row[-1L, 3L] <- paste0(" ",restab.row[-1L, 3L])
+        restab.row[1L, 3L] <- paste0(restab.row[1L, 3L], " ")
 
-        restab.row[, 1] <- paste0(" ", restab.row[, 1])
+        restab.row[, 1L] <- paste0(" ", restab.row[, 1L])
 
         cat("Row-Wise Percentages\n")
         write.table(restab.row, col.names = FALSE, row.names = FALSE, quote = FALSE)
@@ -675,35 +675,35 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
       # Column-wise percentages
       if ("col" %in% print) {
 
-        if (isTRUE(freq) | "row" %in% print) { cat("\n") }
+        if (isTRUE(freq) || "row" %in% print) { cat("\n") }
 
         restab.col <- restab[grep("Col", restab[, 3]), -c(3, ncol(restab))]
 
-        p <- c(paste(paste(rep(" ", times = max(nchar(restab.col[, 1])) - 6), collapse = ""), "Total", collapse = ""), "",
-                     rep(ifelse(digits == 0, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%")), times = ncol(restab.col) - 2))
+        p <- c(paste(paste(rep(" ", times = max(nchar(restab.col[, 1L])) - 6L), collapse = ""), "Total", collapse = ""), "",
+                     rep(ifelse(digits == 0, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%")), times = ncol(restab.col) - 2L))
 
         restab.col.p <- NULL
-        for (i in unique(restab.col[, 1])) {
+        for (i in unique(restab.col[, 1L])) {
 
-          temp <- rbind(restab.col[restab.col[, 1] == i, ], p)
-          temp[nrow(temp), which(apply(temp, 2, function(y) length(grep("NA%", y)) != 0))] <- "NA%"
+          temp <- rbind(restab.col[restab.col[, 1L] == i, ], p)
+          temp[nrow(temp), which(apply(temp, 2, function(y) length(grep("NA%", y)) != 0L))] <- "NA%"
 
           restab.col.p  <- rbind(restab.col.p, temp)
 
         }
 
-        restab.col <- rbind(restab[1:2, -c(3, ncol(restab))], restab.col.p)
+        restab.col <- rbind(restab[1L:2L, -c(3L, ncol(restab))], restab.col.p)
 
-        restab.col[-1, -1] <- apply(restab.col[-1, -1], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
+        restab.col[-1L, -1L] <- apply(restab.col[-1L, -1L], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
 
-        restab.col <- rbind(c(paste0(rep(" ", times = max(nchar(restab.col[, 1]))), collapse = ""),
-                              paste0(rep(" ", times = max(nchar(restab.col[, 2]))), collapse = ""), colnames(x$data)[3], rep("", times = ncol(restab.col) - 3)),
-                             restab.col[-1, ])
+        restab.col <- rbind(c(paste0(rep(" ", times = max(nchar(restab.col[, 1L]))), collapse = ""),
+                              paste0(rep(" ", times = max(nchar(restab.col[, 2L]))), collapse = ""), colnames(x$data)[3L], rep("", times = ncol(restab.col) - 3L)),
+                             restab.col[-1L, ])
 
-        restab.col[-1, 3] <- paste0(" ", restab.col[-1, 3])
-        restab.col[1, 3] <- paste0(restab.col[1, 3], " ")
+        restab.col[-1L, 3L] <- paste0(" ", restab.col[-1L, 3L])
+        restab.col[1L, 3L] <- paste0(restab.col[1L, 3L], " ")
 
-        restab.col[, 1] <- paste0(" ", restab.col[, 1])
+        restab.col[, 1L] <- paste0(" ", restab.col[, 1L])
 
         cat(" Column-Wise Percentages\n")
         write.table(restab.col, col.names = FALSE, row.names = FALSE, quote = FALSE)
@@ -713,24 +713,24 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
       # Total percentages
       if ("total" %in% print) {
 
-        if (isTRUE(freq) | "row" %in% print | "col" %in% print) { cat("\n") }
+        if (isTRUE(freq) || "row" %in% print || "col" %in% print) { cat("\n") }
 
-        restab.total <- rbind(restab[1:2, -c(3, ncol(restab))], restab[grep("Tot", restab[, 3]), -c(3, ncol(restab))])
-        restab.total <- rbind(cbind(restab.total, c("", "Total", rep("", times = nrow(restab.total) - 2))), c(rep("", times = ncol(restab.total)),
-                                                                                                              ifelse(digits == 0, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%"))))
+        restab.total <- rbind(restab[1L:2L, -c(3L, ncol(restab))], restab[grep("Tot", restab[, 3L]), -c(3L, ncol(restab))])
+        restab.total <- rbind(cbind(restab.total, c("", "Total", rep("", times = nrow(restab.total) - 2L))), c(rep("", times = ncol(restab.total)),
+                                                                                                              ifelse(digits == 0L, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%"))))
         restab.total[, ncol(restab.total)] <- format(restab.total[, ncol(restab.total)], justify = "right")
         restab.total <- apply(restab.total, 2, format)
 
-        restab.total[-1, -1] <- apply(restab.total[-1, -1], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
+        restab.total[-1L, -1L] <- apply(restab.total[-1L, -1L], 2, function(y) formatC(sub("^\\s+", "", y), format = "f"))
 
-        restab.total <- rbind(c(paste(rep(" ", times = max(nchar(restab.total[, 1]))), collapse = ""),
-                                paste(rep(" ", times = max(nchar(restab.total[, 2]))), collapse = ""), colnames(x$data)[3], rep("", times = ncol(restab.total) - 3)),
-                              restab.total[-1, ])
+        restab.total <- rbind(c(paste(rep(" ", times = max(nchar(restab.total[, 1L]))), collapse = ""),
+                                paste(rep(" ", times = max(nchar(restab.total[, 2L]))), collapse = ""), colnames(x$data)[3L], rep("", times = ncol(restab.total) - 3L)),
+                              restab.total[-1L, ])
 
-        restab.total[-1, 3] <- paste0(" ", restab.total[-1, 3])
-        restab.total[1, 3] <- paste0(restab.total[1, 3], " ")
+        restab.total[-1L, 3L] <- paste0(" ", restab.total[-1L, 3L])
+        restab.total[1L, 3L] <- paste0(restab.total[1L, 3L], " ")
 
-        restab.total[, 1] <- paste0(" ", restab.total[, 1])
+        restab.total[, 1L] <- paste0(" ", restab.total[, 1L])
 
         cat(" Total Percentages\n")
         write.table(restab.total, col.names = FALSE, row.names = FALSE, quote = FALSE)

@@ -29,7 +29,7 @@
 #' dat <- data.frame(group = c(1, 1, 1, 1, 1, 2, 2, 2, 2, 2),
 #'                   x1 = c(3, 1, 4, 2, 5, 3, 2, 4, NA, 4),
 #'                   x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 5, 1),
-#'                   x3 = c(7, 8, 5, 6, 4, NA, 8, NA, 6, 5))
+#'                   x3 = c(7, 8, 5, 6, 4, NA, 8, NA, 6, 5), stringsAsFactors = FALSE)
 #'
 #' # Descriptive statistics for x1
 #' dat.descript <- descript(dat$x1, output = FALSE)
@@ -63,7 +63,7 @@ print.descript <- function(x, print = x$args$print, sort.var = x$args$sort.var,
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'", call. = FALSE)
 
@@ -74,7 +74,7 @@ print.descript <- function(x, print = x$args$print, sort.var = x$args$sort.var,
   ####################################################################################
   # Arguments
 
-  if (length(print) == 1 && print == "all") {
+  if (length(print) == 1L && print == "all") {
 
     print <- c("n", "nNA", "pNA", "m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt")
 
@@ -115,17 +115,17 @@ print.descript <- function(x, print = x$args$print, sort.var = x$args$sort.var,
 
     #......
     # Format
-    print.object[, 1] <- format(print.object[, 1, drop = FALSE], justify = "left")
+    print.object[, 1L] <- format(print.object[, 1L, drop = FALSE], justify = "left")
 
-    print.object[, -1] <- apply(print.object[, -1, drop = FALSE], 2, function(y) format(y, justify = "right"))
+    print.object[, -1L] <- apply(print.object[, -1L, drop = FALSE], 2, function(y) format(y, justify = "right"))
 
-    if (ncol(x$data$x) == 1) {
+    if (ncol(x$data$x) == 1L) {
 
-      print.object <- print.object[, -1]
+      print.object <- print.object[, -1L]
 
     }
 
-    print.object[, 1] <- paste0(" ", print.object[, 1])
+    print.object[, 1L] <- paste0(" ", print.object[, 1L])
 
     write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
@@ -158,31 +158,28 @@ print.descript <- function(x, print = x$args$print, sort.var = x$args$sort.var,
     print.object <- data.frame(print.object[, c("group", "variable")], print.object[, -c(1, 2)][, print, drop = FALSE], stringsAsFactors = FALSE)
 
     # Format
-    print.object[, 1] <- format(print.object[, 1], justify = "left")
-    print.object[, 2] <- format(print.object[, 2], justify = "left")
+    print.object[, 1L] <- format(print.object[, 1L], justify = "left")
+    print.object[, 2L] <- format(print.object[, 2L], justify = "left")
 
-    print.object[, -c(1:2)] <- apply(print.object[, -c(1:2)], 2, format, justify = "right")
+    print.object[, -c(1L:2L)] <- apply(print.object[, -c(1L:2L)], 2, format, justify = "right")
 
-    if (ncol(x$data$x) == 1) {
+    if (ncol(x$data$x) == 1L) {
 
-      print.object <- print.object[, -2]
+      print.object <- print.object[, -2L]
 
     }
 
-    print.object[1, 1] <- paste0(" ", print.object[1, 1], " ", collapse = "")
-    print.object[-1, 1] <- paste0("  ", print.object[-1, 1])
+    print.object[1L, 1L] <- paste0(" ", print.object[1L, 1L], " ", collapse = "")
+    print.object[-1L, 1L] <- paste0("  ", print.object[-1L, 1L])
 
-    print.object[, -c(1:2)] <- apply(print.object[, -c(1:2)], 2, format, justify = "right")
+    print.object[, -c(1L:2L)] <- apply(print.object[, -c(1L:2L)], 2, format, justify = "right")
 
     # Print Output
     write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
-  }
-
   #----------------------------------------
   # Split
-
-  if (!is.null(x$data$split)) {
+  } else if (!is.null(x$data$split)) {
 
     # Format
     for (i in names(print.object)) {
@@ -203,9 +200,9 @@ print.descript <- function(x, print = x$args$print, sort.var = x$args$sort.var,
         # Select statistical measures and add variable names
         print.object[[i]] <- data.frame(variable = print.object[[i]][, "variable"], print.object[[i]][, print, drop = FALSE], stringsAsFactors = FALSE)
 
-        if (ncol(x$data$x) == 1) {
+        if (ncol(x$data$x) == 1L) {
 
-          print.object[[i]] <- print.object[[i]][, -1]
+          print.object[[i]] <- print.object[[i]][, -1L]
 
         }
 
@@ -226,31 +223,31 @@ print.descript <- function(x, print = x$args$print, sort.var = x$args$sort.var,
         # Select statistical measures and add variable names
         print.object[[i]] <- data.frame(variable = print.object[[i]][, c("group", "variable")], print.object[[i]][, print, drop = FALSE], stringsAsFactors = FALSE)
 
-        if (ncol(x$data$x) == 1) {
+        if (ncol(x$data$x) == 1L) {
 
-          print.object[[i]] <- print.object[[i]][, -2]
+          print.object[[i]] <- print.object[[i]][, -2L]
 
         }
 
       }
 
       # Format
-      if (ncol(x$data$x) == 1 && is.null(x$data$group)) {
+      if (ncol(x$data$x) == 1L && is.null(x$data$group)) {
 
-        print.object[[i]][-1, 1] <- paste0("  ", print.object[[i]][-1, 1])
+        print.object[[i]][-1L, 1L] <- paste0("  ", print.object[[i]][-1L, 1L])
         print.object[[i]] <- format(print.object[[i]], justify = "right")
 
       } else {
 
-        print.object[[i]][, 1] <- format(print.object[[i]][, 1], justify = "left")
-        print.object[[i]][, 2] <- format(print.object[[i]][, 2], justify = "right")
+        print.object[[i]][, 1L] <- format(print.object[[i]][, 1L], justify = "left")
+        print.object[[i]][, 2L] <- format(print.object[[i]][, 2L], justify = "right")
 
-        print.object[[i]][1, 1] <- paste0(" ", print.object[[i]][1, 1], " ", collapse = "")
-        print.object[[i]][-1, 1] <- paste0("  ", print.object[[i]][-1, 1])
+        print.object[[i]][1L, 1L] <- paste0(" ", print.object[[i]][1L, 1L], " ", collapse = "")
+        print.object[[i]][-1L, 1L] <- paste0("  ", print.object[[i]][-1L, 1L])
 
-        print.object[[i]][, -c(1:2)] <- apply(print.object[[i]][, -c(1:2), drop = FALSE], 2, function(y) format(y, justify = "right"))
+        print.object[[i]][, -c(1L:2L)] <- apply(print.object[[i]][, -c(1L:2L), drop = FALSE], 2, function(y) format(y, justify = "right"))
 
-        print.object[[i]][, 1] <- paste0("  ", print.object[[i]][, 1])
+        print.object[[i]][, 1L] <- paste0("  ", print.object[[i]][, 1L])
 
       }
 

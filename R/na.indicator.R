@@ -33,7 +33,7 @@
 #' @examples
 #' dat <- data.frame(x = c(1, NA, NA, 6, 3),
 #'                   y = c(7, NA, 8, 9, NA),
-#'                   z = c(2, NA, 3, NA, 5))
+#'                   z = c(2, NA, 3, NA, 5), stringsAsFactors = FALSE)
 #'
 #' # Create missing data indicator matrix \eqn{R}
 #' na.indicator(dat)
@@ -78,7 +78,7 @@ na.indicator <- function(x, as.na = NULL, check = TRUE) {
 
   if (is.data.frame(x)) {
 
-    object  <- as.data.frame(object)
+    object  <- as.data.frame(object, stringsAsFactors = FALSE)
     row.names(object) <- rownames(x)
 
   }

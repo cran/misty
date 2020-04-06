@@ -195,7 +195,7 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
       return(FALSE)
     }
 
-    connections <- data.frame(showConnections(all = FALSE))
+    connections <- data.frame(showConnections(all = FALSE), stringsAsFactors = FALSE)
 
     if (length(grep(splitFilePath(logFile)$filename, connections$description, ignore.case = TRUE)) > 0) {
 

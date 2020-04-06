@@ -24,7 +24,7 @@
 #' dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
 #'                   x2 = c(4, 2, 5, 1, 5, 3, 4, 5),
 #'                   x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
-#'                   x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
+#'                   x4 = c(5, 6, 3, NA, NA, 4, 6, NA), stringsAsFactors = FALSE)
 #'
 #' # Descriptive statistics for missing data
 #' dat.na.descript <- na.descript(dat, output = FALSE)
@@ -40,7 +40,7 @@ print.na.descript <- function(x, table = x$args$table, digits = x$args$digits, c
 
     #......
     # Check input 'table'
-    if (isFALSE(isTRUE(table) | isFALSE(table))) {
+    if (isFALSE(isTRUE(table) || isFALSE(table))) {
 
       stop("Please specify TRUE or FALSE for the argument 'table'", call. = FALSE)
 
@@ -48,7 +48,7 @@ print.na.descript <- function(x, table = x$args$table, digits = x$args$digits, c
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Please specify a positive integer value for the argument 'digits'", call. = FALSE)
 
@@ -83,11 +83,11 @@ print.na.descript <- function(x, table = x$args$table, digits = x$args$digits, c
   # Format
   restab$statistic <- paste0("  ", restab$statistic)
 
-  restab$statistic[8:13] <- paste0("  ", restab$statistic[8:13] )
-  restab$statistic <- format(restab$statistic, justify = "left", width = max(nchar(restab$statistic)) + 1)
+  restab$statistic[8L:13L] <- paste0("  ", restab$statistic[8L:13L] )
+  restab$statistic <- format(restab$statistic, justify = "left", width = max(nchar(restab$statistic)) + 1L)
 
-  restab$no[8:13] <- format(formatC(as.numeric(restab$no[8:13]), digits = digits, format = "f"), justify = "right")
-  restab$no[1:7] <- format(formatC(as.numeric(restab$no[1:7]), digits = 0, format = "f"), justify = "right")
+  restab$no[8L:13L] <- format(formatC(as.numeric(restab$no[8L:13L]), digits = digits, format = "f"), justify = "right")
+  restab$no[1L:7L] <- format(formatC(as.numeric(restab$no[1:7]), digits = 0L, format = "f"), justify = "right")
   restab$no <- format(restab$no, justify = "right")
 
   restab$perc[restab$perc != ""] <- paste0("(", formatC(as.numeric(restab$perc[restab$perc != ""]), digits = digits, format = "f"), "%)")
@@ -99,15 +99,15 @@ print.na.descript <- function(x, table = x$args$table, digits = x$args$digits, c
 
   cat(" Descriptive Statistics for Missing Data\n\n")
 
-  write.table(restab[1:3, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+  write.table(restab[1L:3L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
 
   cat("\n")
-  write.table(restab[4:6, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+  write.table(restab[4L:6L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
 
   cat("\n")
-  write.table(restab[7, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+  write.table(restab[7L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
   cat("  No. of missing values across all variables\n")
-  write.table(restab[8:13, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+  write.table(restab[8L:13L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
 
   #----------------------------------------
   # Frequency table
@@ -118,9 +118,9 @@ print.na.descript <- function(x, table = x$args$table, digits = x$args$digits, c
     freqtab[, c("pObs", "pNA")] <- apply(freqtab[, c("pObs", "pNA")], 2, function(y) paste0(formatC(y, digits = digits, format = "f"), "%"))
     freqtab <- rbind(colnames(freqtab), freqtab)
 
-    freqtab[, -1] <- apply(freqtab[ -1], 2, format, justify = "right")
+    freqtab[, -1L] <- apply(freqtab[ -1L], 2, format, justify = "right")
 
-    freqtab[, 1] <- paste0("    ", format(freqtab[, 1], justify = "left"))
+    freqtab[, 1L] <- paste0("    ", format(freqtab[, 1L], justify = "left"))
 
     cat("\n")
     write.table(freqtab, quote = FALSE, row.names = FALSE, col.names = FALSE)
@@ -128,7 +128,3 @@ print.na.descript <- function(x, table = x$args$table, digits = x$args$digits, c
   }
 
 }
-
-
-
-

@@ -33,7 +33,7 @@
 #' dat <- data.frame(id = 1:5,
 #'                   x = c(NA, 2, 1, 5, 6),
 #'                   y = c(5, 3, 6, 8, 2),
-#'                   z = c(2, 1, 1, NA, 4))
+#'                   z = c(2, 1, 1, NA, 4), stringsAsFactors = FALSE)
 #'
 #' # Write Mplus Data File and a text file with variable names
 #' write.mplus(dat)
@@ -66,7 +66,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
   #-----------------------------------------
   # As data frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   ####################################################################################
   # Input Check
@@ -94,7 +94,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
       warning(paste0("Non-numeric variables were excluded from the data set: ", paste(names(which(!x.numeric)), collapse = ", ")),
               call. = FALSE)
 
-      if (ncol(x) == 0) {
+      if (ncol(x) == 0L) {
 
         stop("No variables left for the data set after excluding non-numeric variables.", call. = FALSE)
 
@@ -106,7 +106,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
     # Variable names with .
     names. <- grep("\\.", names(x))
 
-    if (length(names.) > 0) {
+    if (length(names.) > 0L) {
 
       names(x) <- gsub("\\.", "_", names(x))
 
@@ -116,7 +116,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
 
     #......
     # Variable names begin with an alphabet character
-    names.a <- tolower(substr(names(x), 1, 1)) %in% letters
+    names.a <- tolower(substr(names(x), 1L, 1L)) %in% letters
 
     if (any(!names.a)) {
 
@@ -127,7 +127,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
 
     #......
     # Variable names have max. 8 characters
-    names.l <- nchar(names(x)) <= 8
+    names.l <- nchar(names(x)) <= 8L
 
     if (any(!names.l)) {
 
@@ -144,7 +144,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
   #-----------------------------------------
   # File extension .dat, .txt. or .csv
 
-  file <- ifelse(length(grep(".dat", file)) == 0 && length(grep(".txt", file)) == 0 && length(grep(".csv", file)) == 0,
+  file <- ifelse(length(grep(".dat", file)) == 0L && length(grep(".txt", file)) == 0L && length(grep(".csv", file)) == 0L,
                  file <- paste0(file, ".dat"), file)
 
   ####################################################################################
@@ -161,7 +161,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
 
   if (isTRUE(var)) {
 
-    file <- sub(names(which(vapply(sapply(c(".dat", ".txt", ".csv"), grep, file), length, FUN.VALUE = integer(1)) != 0)),
+    file <- sub(names(which(vapply(sapply(c(".dat", ".txt", ".csv"), grep, file), length, FUN.VALUE = integer(1)) != 0L)),
                 "_VARNAMES.txt", file)
 
     writeLines(paste(names(x), collapse = " "), con = file)

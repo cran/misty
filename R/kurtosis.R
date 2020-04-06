@@ -77,9 +77,9 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
     #.......
     # Check input 'x': Zero variance
-    if (length(x) > 1) {
+    if (length(x) > 1L) {
 
-      if (length(na.omit(unique(x))) == 1) {
+      if (length(na.omit(unique(x))) == 1L) {
 
         stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE)
 
@@ -105,7 +105,7 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
     }
 
     # Zero variance
-    if (length(na.omit(unique(x))) == 1) {
+    if (length(na.omit(unique(x))) == 1L) {
 
       stop("After converting user-missing values into NA, variable 'x' has zero variance.", call. = FALSE)
 
@@ -125,11 +125,11 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
   n <- length(x)
 
-  if (n >= 4) {
+  if (n >= 4L) {
 
     m <- n * sum((x - mean(x))^4) / (sum((x - mean(x))^2)^2)
 
-    object <- ((n + 1) * (m - 3) + 6) * (n - 1) / ((n - 2) * (n - 3))
+    object <- ((n + 1L) * (m - 3L) + 6L) * (n - 1L) / ((n - 2L) * (n - 3L))
 
     object <- ifelse(is.nan(object), NA, object )
 

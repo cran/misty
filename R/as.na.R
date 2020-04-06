@@ -1,9 +1,9 @@
 #' Replace User-Specified Values With Missing Values
 #'
-#' This function replaces user-specified values in the argument \code{as.na} in a vector, factor, matrix or
-#' data frame with \code{NA}.
+#' This function replaces user-specified values in the argument \code{as.na} in a vector, factor, matrix,
+#' data frame or list with \code{NA}.
 #'
-#' @param x         a vector, factor, matrix or data frame.
+#' @param x         a vector, factor, matrix, data frame, or list.
 #' @param as.na     a vector indicating values or characters to replace with \code{NA}.
 #' @param check     logical: if \code{TRUE}, argument specification is checked.
 #'
@@ -67,13 +67,22 @@
 #' # Data frame
 #' x.df <- data.frame(x1 = c(1, 2, 3),
 #'                    x2 = c(2, 1, 3),
-#'                    x3 = c(3, 1, 2))
+#'                    x3 = c(3, 1, 2), stringsAsFactors = FALSE)
 #'
 #' # Replace 1 with NA
 #' as.na(x.df, as.na = 1)
 #'
 #' # Replace 1 and 3 with NA
 #' as.na(x.df, as.na = c(1, 3))
+#'
+#' #--------------------------------------
+#' # List
+#' x.list <- list(x1 = c(1, 2, 3, 1, 2, 3),
+#'                x2 = c(2, 1, 3, 2, 1),
+#'                x3 = c(3, 1, 2, 3))
+#'
+#' # Replace 1 with NA
+#' as.na(x.list, as.na = 1)
 as.na <- function(x, as.na, check = TRUE) {
 
   ####################################################################################
@@ -83,7 +92,7 @@ as.na <- function(x, as.na, check = TRUE) {
   # Check if input 'x' is missing
   if (missing(x)) {
 
-    stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.",
+    stop("Please specify a vector, factor, matrix,  data frame or list for the argument 'x'.",
          call. = FALSE)
 
   }
@@ -110,8 +119,8 @@ as.na <- function(x, as.na, check = TRUE) {
   if (isTRUE(check)) {
 
     #......
-    # Vector, factor, matrix or data frame for the argument 'x'?
-    if (!is.vector(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x)) {
+    # Vector, factor, matrix, data frame, or list for the argument 'x'?
+    if (!is.atomic(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x) && !is.list(x)) {
 
       stop("Please specifiy a vector, factor, matrix or data frame for the argument 'x'.",
            call. = FALSE)
@@ -122,17 +131,20 @@ as.na <- function(x, as.na, check = TRUE) {
     # Check input 'as.na': Values in 'as.na'?
 
     # Factor or Vector
-    if (is.null(dim(x))) {
+    if (is.atomic(x) || is.factor(x)) {
 
       as.na.x <- !as.na %in% x
 
-    }
-
     # Matrix or data frame
-    if (is.matrix(x) || is.data.frame(x)) {
+    } else if (is.matrix(x) || is.data.frame(x)) {
 
       as.na.x <- vapply(as.character(as.na), function(y) !y %in% misty::trim(apply(as.matrix(x), 2, as.character)),
                         FUN.VALUE = logical(1))
+
+    # List
+    } else if (is.list(x)) {
+
+      as.na.x <- !as.na %in% unlist(x)
 
     }
 
@@ -147,12 +159,9 @@ as.na <- function(x, as.na, check = TRUE) {
   ####################################################################################
   # Main Function
 
-  #---------------------------------
-  # Factor or Vector
-
   if (is.null(dim(x))) {
 
-    #..........
+    #---------------------------------
     # Factor
     if (is.factor(x)) {
 
@@ -168,35 +177,34 @@ as.na <- function(x, as.na, check = TRUE) {
 
       object <- factor(ifelse(x %in% as.na, NA, x), levels = f.levels, labels = f.labels)
 
-    #..........
+    #---------------------------------
     # Vector
-    } else {
+    } else if (is.atomic(x)) {
 
       object <- ifelse(x %in% as.na, NA, x)
+      names(object) <- names(x)
+
+    #---------------------------------
+    # List
+    } else if (is.list(x)) {
+
+      object <- lapply(x, misty::as.na, as.na = as.na, check = FALSE)
       names(object) <- names(x)
 
     }
 
   #---------------------------------
-  # Matrix or data frame
+  # Matrix
+  } else if (is.matrix(x)) {
 
-  } else {
+    object <- apply(x, 2, misty::as.na, as.na = as.na, check = FALSE)
 
-    #..........
-    # Matrix
-    if (is.matrix(x)) {
+  #---------------------------------
+  # Data frame
+  } else if (is.data.frame(x)) {
 
-      object <- apply(x, 2, misty::as.na, as.na = as.na, check = FALSE)
-
-    }
-
-    #..........
-    # Data frame
-    if (is.data.frame(x)) {
-
-      object <- data.frame(lapply(x, misty::as.na, as.na = as.na, check = FALSE))
-
-    }
+    object <- data.frame(lapply(x, misty::as.na, as.na = as.na, check = FALSE),
+                         stringsAsFactors = FALSE)
 
   }
 

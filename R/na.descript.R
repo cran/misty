@@ -39,7 +39,7 @@
 #'dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
 #'                  x2 = c(4, 2, 5, 1, 5, 3, 4, 5),
 #'                  x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
-#'                  x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
+#'                  x4 = c(5, 6, 3, NA, NA, 4, 6, NA), stringsAsFactors = FALSE)
 #'
 #' # Descriptive statistics for missing data
 #' na.descript(dat)
@@ -78,7 +78,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
   #----------------------------------------
   # Data frame
 
-  df <- as.data.frame(x)
+  df <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #----------------------------------------
   # Convert user-missing values into NA
@@ -113,7 +113,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE)
 
@@ -137,11 +137,11 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
   # Number of complete cases
   no.complete <- sum(apply(df, 1, function(y) all(!is.na(y))))
-  perc.complete <- no.complete / no.cases * 100
+  perc.complete <- no.complete / no.cases * 100L
 
   # Number and percentage of imcomplete cases
   no.incomplete <- sum(apply(df, 1, function(y) any(is.na(y))))
-  perc.incomplete <- no.incomplete / no.cases * 100
+  perc.incomplete <- no.incomplete / no.cases * 100L
 
   ###
 
@@ -150,11 +150,11 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
   # Number of observed values
   no.observed.values <- sum(!is.na(unlist(df)))
-  perc.observed.values <- no.observed.values / no.values *100
+  perc.observed.values <- no.observed.values / no.values *100L
 
   # Number and percentage of missing values
   no.missing.values <- sum(is.na(unlist(df)))
-  perc.missing.values <- no.missing.values / no.values * 100
+  perc.missing.values <- no.missing.values / no.values * 100L
 
   ###
 
@@ -162,36 +162,36 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
   no.var <- ncol(df)
 
   # Number and percentage of observed values for each variable
-  no.observed.var <- vapply(df, function(y) sum(!is.na(y)), FUN.VALUE = 1)
-  perc.observed.var <- no.observed.var / no.cases * 100
+  no.observed.var <- vapply(df, function(y) sum(!is.na(y)), FUN.VALUE = 1L)
+  perc.observed.var <- no.observed.var / no.cases * 100L
 
   # Number and percentage of missing values for each variable
   no.missing.var <- vapply(df, function(y) sum(is.na(y)), FUN.VALUE = 1)
-  perc.missing.var <- no.missing.var / no.cases * 100
+  perc.missing.var <- no.missing.var / no.cases * 100L
 
   no.missing.mean <- mean(no.missing.var)
-  perc.missing.mean <- no.missing.mean / no.cases * 100
+  perc.missing.mean <- no.missing.mean / no.cases * 100L
 
   no.missing.sd <- sd(no.missing.var)
-  perc.missing.sd <- no.missing.sd / no.cases * 100
+  perc.missing.sd <- no.missing.sd / no.cases * 100L
 
   no.missing.min <- min(no.missing.var)
-  perc.missing.min <- no.missing.min / no.cases * 100
+  perc.missing.min <- no.missing.min / no.cases * 100L
 
   no.missing.p25 <- quantile(no.missing.var, probs = 0.25)
-  perc.missing.p25 <- no.missing.p25 / no.cases * 100
+  perc.missing.p25 <- no.missing.p25 / no.cases * 100L
 
   no.missing.p75 <- quantile(no.missing.var, probs = 0.75)
-  perc.missing.p75 <- no.missing.p75 / no.cases * 100
+  perc.missing.p75 <- no.missing.p75 / no.cases * 100L
 
   no.missing.max <- max(no.missing.var)
-  perc.missing.max <- no.missing.max / no.cases * 100
+  perc.missing.max <- no.missing.max / no.cases * 100L
 
   ###
 
   # Frequency table
   table.missing <- data.frame(Var = colnames(df),
-                              matrix(c(no.observed.var, perc.observed.var, no.missing.var, perc.missing.var), ncol = 4,
+                              matrix(c(no.observed.var, perc.observed.var, no.missing.var, perc.missing.var), ncol = 4L,
                                      dimnames = list(NULL, c("nObs", "pObs", "nNA", "pNA"))),
                               stringsAsFactors = FALSE)
 

@@ -95,7 +95,7 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
 
     }
 
-    if (theta <= 0) {
+    if (theta <= 0L) {
 
       stop("Argument theta out of bound, specify a value > 0.", call. = FALSE)
 
@@ -119,7 +119,7 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
 
     ###
 
-    if (alpha <= 0 || alpha >= 1) {
+    if (alpha <= 0L || alpha >= 1L) {
 
       stop("Argument alpha out of bound, specify a value between 0 and 1", call. = FALSE)
 
@@ -127,7 +127,7 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
 
     ###
 
-    if (beta <= 0 || beta >= 1) {
+    if (beta <= 0L || beta >= 1L) {
 
       stop("Argument beta out of bound, specify a value between 0 and 1", call. = FALSE)
 
@@ -140,7 +140,7 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
 
   # one or two sample
   sample <- ifelse(all(c("two.sample", "one.sample") %in% alternative), "two.sample", sample)
-  samp <- switch(sample, one.sample = 1, two.sample = 2)
+  samp <- switch(sample, one.sample = 1L, two.sample = 2L)
 
   # two- or one-sided test
   alternative <- ifelse(all(c("two.sided", "less", "greater") %in% alternative), "two.sided", alternative)
@@ -153,8 +153,8 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
   if (alternative == "two.sided") {
 
     p.body <- quote({
-      nu <- (n - 1) * samp
-      qu <- qt(alpha / 2, nu, lower = FALSE)
+      nu <- (n - 1L) * samp
+      qu <- qt(alpha / 2L, nu, lower = FALSE)
       pt(qu, nu, ncp = sqrt(n / samp) * theta, lower = FALSE) + pt(-qu, nu, ncp = sqrt(n / samp) * theta, lower = TRUE)
     })
 
@@ -164,7 +164,7 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
   } else {
 
     p.body <- quote({
-      nu <- (n - 1) * samp
+      nu <- (n - 1L) * samp
       pt(qt(alpha, nu, lower = FALSE), nu, ncp = sqrt(n / samp) * theta, lower = FALSE)
     })
 
@@ -172,7 +172,7 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
 
   #-----------------------------------------------------------------------------------
 
-  n <- uniroot(function(n) eval(p.body) - (1 - beta) , c(2 + 1e-10, 1e+07))$root
+  n <- uniroot(function(n) eval(p.body) - (1L - beta) , c(2L + 1e-10, 1e+07))$root
 
   ####################################################################################
   # Return object

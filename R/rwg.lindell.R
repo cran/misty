@@ -67,7 +67,7 @@
 #'                   group = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
 #'                   x1 = c(2, 3, 2, 1, 1, 2, 4, 3, 5),
 #'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
-#'                   x3 = c(3, 1, 1, 2, 3, 3, 5, 5, 4))
+#'                   x3 = c(3, 1, 1, 2, 3, 3, 5, 5, 4), stringsAsFactors = FALSE)
 #'
 #' # Compute Fisher z-transformed r*wg(j) for a multi-item scale with A = 5 response options
 #' rwg.lindell(dat[, c("x1", "x2", "x3")], group = dat$group, A = 5)
@@ -137,7 +137,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
     #......
     # Check input 'x'
-    if (ncol(x) == 1) {
+    if (ncol(x) == 1L) {
 
       stop("Please specify a matrix or data frame with more than one column or variable for the argument 'x'.",
            call. = FALSE)
@@ -165,7 +165,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
       }
 
       # Check input 'x': Integer number
-      if (A %% 1 != 0 || A < 0) {
+      if (A %% 1L != 0L || A < 0L) {
 
         stop("Please specify a positive integer number for the argument 'A'.", call. = FALSE)
 
@@ -202,13 +202,13 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
   ####################################################################################
   # Data and Arguments
 
-  df <- data.frame(x, group = group)
+  df <- data.frame(x, group = group, stringsAsFactors = FALSE)
 
   #----------------------------------------
   # Random variance based on A
   if (!is.null(A)) {
 
-    ranvar <- (A^2 - 1) / 12
+    ranvar <- (A^2L - 1L) / 12L
 
   }
 
@@ -228,7 +228,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
   df.split <- split(df[, -grep("group", names(df))], df$group)
 
-  rwg <- misty::as.na(vapply(df.split, function(y) 1 - (mean(vapply(y, var, na.rm = TRUE, FUN.VALUE = double(1)), na.rm = TRUE) / ranvar), FUN.VALUE = double(1)),
+  rwg <- misty::as.na(vapply(df.split, function(y) 1L - (mean(vapply(y, var, na.rm = TRUE, FUN.VALUE = double(1L)), na.rm = TRUE) / ranvar), FUN.VALUE = double(1L)),
                       as.na = NaN, check = FALSE)
 
   #......
@@ -241,15 +241,15 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
     # Fisher z-transformation
     if (isTRUE(z)) {
 
-      object <- ifelse(object == 1 | object == -1, NA, atanh(object))
+      object <- ifelse(object == 1L | object == -1L, NA, atanh(object))
 
     }
 
   } else {
 
     object <- data.frame(group = names(rwg),
-                         n = vapply(df.split, function(y) sum(apply(y, 1, function(z) sum(is.na(z)) != length(z))), FUN.VALUE = 1),
-                         rwg.lindell = rwg, z.rwg.lindell = ifelse(rwg == 1 | rwg == -1, NA, atanh(rwg)))
+                         n = vapply(df.split, function(y) sum(apply(y, 1, function(z) sum(is.na(z)) != length(z))), FUN.VALUE = 1L),
+                         rwg.lindell = rwg, z.rwg.lindell = ifelse(rwg == 1L | rwg == -1L, NA, atanh(rwg)), stringsAsFactors = FALSE)
 
   }
 

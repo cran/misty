@@ -1,8 +1,8 @@
-#' Auxiliary variables
+#' Auxiliary variables analysis
 #'
 #' This function computes (1) Pearson product-moment correlation matrix to identify variables related
 #' to the incomplete variable and (2) Cohen's d comparing cases with and without missing values to
-#' identify variables related to the probability of missigness.
+#' identify variables related to the probability of missingness.
 #'
 #' Note that non-numeric variables (i.e., factors, character vectors, and logical vectors) are excluded from to the analysis.
 #'
@@ -46,7 +46,7 @@
 #' dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
 #'                   x2 = c(4, 2, 5, 1, 5, 3, 4, 5),
 #'                   x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
-#'                   x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
+#'                   x4 = c(5, 6, 3, NA, NA, 4, 6, NA), stringsAsFactors = FALSE)
 #'
 #' # Auxiliary variables
 #' na.auxiliary(dat)
@@ -72,7 +72,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
     group.var <- var.formula[length(var.formula)]
 
     # Data
-    data <- as.data.frame(data[, var.formula])
+    data <- as.data.frame(data[, var.formula], stringsAsFactors = FALSE)
 
     #...................
     # Data and Arguments
@@ -101,12 +101,12 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
    # Weighted pooled standard deviation
    if (isTRUE(weighted)) {
 
-    sd.group <- sqrt(((n.group[1] - 1)*var.group[1] + (n.group[2] - 1)*var.group[2]) / (sum(n.group) - 2))
+    sd.group <- sqrt(((n.group[1L] - 1L)*var.group[1] + (n.group[2L] - 1L)*var.group[2L]) / (sum(n.group) - 2L))
 
     # Unweigted pooled standard deviation
     } else {
 
-      sd.group <- sum(var.group) / 2
+      sd.group <- sum(var.group) / 2L
 
     }
 
@@ -121,17 +121,17 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
     # Bias-corrected Cohen's d
     if (isTRUE(correct) && isTRUE(weighted)) {
 
-      v <- sum(n.group) - 2
+      v <- sum(n.group) - 2L
 
       # Correction factor based on gamma function
-      if (sum(n.group) < 200) {
+      if (sum(n.group) < 200L) {
 
-        corr.factor <- gamma(0.5*v) / ((sqrt(v / 2)) * gamma(0.5 * (v - 1)))
+        corr.factor <- gamma(0.5*v) / ((sqrt(v / 2)) * gamma(0.5 * (v - 1L)))
 
       # Correction factor based on approximation
       } else {
 
-        corr.factor <- (1 - (3 / (4 * v - 1)))
+        corr.factor <- (1L - (3L / (4L * v - 1L)))
 
       }
 
@@ -165,7 +165,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
   #----------------------------------------
   # Data frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #-----------------------------------------
   # Exclude factors, character vectors and logical vectors
@@ -242,7 +242,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1L != 0L | digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -283,11 +283,11 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
   #......
   # Pairwise combinations
-  x.combn <- combn(ncol(x), m = 2)
+  x.combn <- combn(ncol(x), m = 2L)
 
   #......
   # Data
-  x.ind <- data.frame(x, ind)
+  x.ind <- data.frame(x, ind, stringsAsFactors = FALSE)
 
   #......
   # Cohen's d
@@ -298,10 +298,10 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     temp <- x.combn[, i]
 
-    if (length(unique(x.ind[, colnames(ind)[temp[1]]])) == 2 &&
-        all(tapply(x.ind[,  names(x)[temp[2]]], x.ind[colnames(ind)[temp[1]]], function(y) length(unique(na.omit(y)))) > 0)) {
+    if (length(unique(x.ind[, colnames(ind)[temp[1L]]])) == 2L &&
+        all(tapply(x.ind[,  names(x)[temp[2L]]], x.ind[colnames(ind)[temp[1]]], function(y) length(unique(na.omit(y)))) > 0L)) {
 
-      result.d.upp[i] <- eval(parse(text = paste0("cohens.d.na.auxiliary(", names(x)[temp[2]], " ~ ", colnames(ind)[temp[1]],
+      result.d.upp[i] <- eval(parse(text = paste0("cohens.d.na.auxiliary(", names(x)[temp[2L]], " ~ ", colnames(ind)[temp[1L]],
                                                   ", data = x.ind, weighted = weighted, correct = correct)")))
 
     } else {
@@ -310,10 +310,10 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     }
 
-    if (length(unique(x.ind[, colnames(ind)[temp[2]]])) == 2 &&
-        all(tapply(x.ind[,  names(x)[temp[1]]], x.ind[colnames(ind)[temp[2]]], function(y) length(unique(na.omit(y)))) > 0)) {
+    if (length(unique(x.ind[, colnames(ind)[temp[2L]]])) == 2L &&
+        all(tapply(x.ind[,  names(x)[temp[1L]]], x.ind[colnames(ind)[temp[2]]], function(y) length(unique(na.omit(y)))) > 0L)) {
 
-      result.d.low[i] <- eval(parse(text = paste0("cohens.d.na.auxiliary(", names(x)[temp[1]], " ~ ", colnames(ind)[temp[2]],
+      result.d.low[i] <- eval(parse(text = paste0("cohens.d.na.auxiliary(", names(x)[temp[1L]], " ~ ", colnames(ind)[temp[2L]],
                                                   ", data = x.ind, weighted = weighted, correct = correct)")))
 
     } else {
@@ -338,12 +338,13 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
   # Return object
 
   object <- list(call = match.call(),
+                 type = "na.auxiliary",
                  data = list(x = x, x = x),
                  args = list(tri = tri, weighted = weighted, correct = correct, digits = digits,
                              as.na = as.na, check = check, output = output),
                  result = list(cor = cor.mat, d = d.mat))
 
-  class(object) <- "na.auxiliary"
+  class(object) <- "square.matrix"
 
   ####################################################################################
   # Output

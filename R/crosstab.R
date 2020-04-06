@@ -38,7 +38,7 @@
 #' @examples
 #' dat <- data.frame(x1 = c(1, 2, 2, 1, 1, 2, 2, 1, 1, 2),
 #'                   x2 = c(1, 2, 2, 1, 2, 1, 1, 1, 2, 1),
-#'                   x3 = c(-99, 2, 1, 1, 1, 2, 2, 2, 2, 1))
+#'                   x3 = c(-99, 2, 1, 1, 1, 2, 2, 2, 2, 1), stringsAsFactors = FALSE)
 #'
 #' # Cross Tabulation for x1 and x2
 #' crosstab(dat[, c("x1", "x2")])
@@ -107,7 +107,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
   #----------------------------------------
   # Data frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   # Number of variables
   x.ncol <- ncol(x)
@@ -158,7 +158,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'x'
-    if (ncol(x) > 3 || ncol(x) < 2 ) {
+    if (ncol(x) > 3L || ncol(x) < 2L) {
 
       stop("Please specify a matrix or data frame with two or three columns for the argument 'x'.", call. = FALSE)
 
@@ -166,7 +166,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'x'
-    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
     if (any(x.zero.var)) {
 
       stop(paste0("Following variables have only one unique value: ", paste(names(which(x.zero.var)), collapse = ", ")),
@@ -185,7 +185,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'freq'
-    if (isFALSE(isTRUE(freq) | isFALSE(freq))) {
+    if (isFALSE(isTRUE(freq) || isFALSE(freq))) {
 
       stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE)
 
@@ -202,7 +202,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'na.omit'
-    if (isFALSE(isTRUE(na.omit) | isFALSE(na.omit))) {
+    if (isFALSE(isTRUE(na.omit) || isFALSE(na.omit))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -210,7 +210,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1L != 0L | digits < 0L) {
 
       warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -240,12 +240,12 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
   #-----------------------------------------
   # Two variables
 
-  if (x.ncol == 2) {
+  if (x.ncol == 2L) {
 
     # If na.omit = FALSE, then include NA if any present
     if (isFALSE(na.omit)) {
 
-      x <- data.frame(lapply(x, function(x) misty::rec(x, "NA = 'NA'")))
+      x <- data.frame(lapply(x, function(x) misty::rec(x, "NA = 'NA'")), stringsAsFactors = FALSE)
 
     } else {
 
@@ -260,23 +260,23 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     freq.a <- table(x)
 
-    perc.r <- prop.table(freq.a, margin = 1) * 100
+    perc.r <- prop.table(freq.a, margin = 1L) * 100L
 
-    perc.c <- prop.table(freq.a, margin = 2) * 100
+    perc.c <- prop.table(freq.a, margin = 2L) * 100L
 
-    perc.t <- prop.table(freq.a) * 100
+    perc.t <- prop.table(freq.a) * 100L
 
   }
 
   #-----------------------------------------
   # Three variables
 
-  if (x.ncol == 3) {
+  if (x.ncol == 3L) {
 
     # If na.omit = FALSE, then include NA if any present
     if (isFALSE(na.omit)) {
 
-      x <- data.frame(lapply(x, function(x) misty::rec(x, "NA = 'NA'")))
+      x <- data.frame(lapply(x, function(x) misty::rec(x, "NA = 'NA'")), stringsAsFactors = FALSE)
 
     } else {
 
@@ -293,20 +293,20 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
     x.table <- table(x[, rev(names(x))])
 
     freq.list <- list()
-    for (i in seq_len(dim(x.table)[3])) {
+    for (i in seq_len(dim(x.table)[3L])) {
 
       freq.list[[i]] <- x.table[, , i]
 
     }
 
     freq.a <- freq.list
-    names(freq.a) <- dimnames(x.table)[[3]]
+    names(freq.a) <- dimnames(x.table)[[3L]]
 
     # Row
-    perc.r <- lapply(freq.a, function(y) prop.table(y, margin = 1) * 100)
+    perc.r <- lapply(freq.a, function(y) prop.table(y, margin = 1L) * 100L)
 
     # Column %
-    perc.c <- lapply(freq.a, function(y) prop.table(y, margin = 2) * 100)
+    perc.c <- lapply(freq.a, function(y) prop.table(y, margin = 2L) * 100L)
 
     # Total %
     x.prop.table <- prop.table(table(x[, rev(names(x))]))
@@ -314,12 +314,12 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
     prop.list <- list()
     for (i in seq_len(dim(x.prop.table)[3])) {
 
-      prop.list[[i]] <- x.prop.table[, , i]*100
+      prop.list[[i]] <- x.prop.table[, , i]*100L
 
     }
 
     perc.t <- prop.list
-    names(perc.t) <- dimnames(x.prop.table)[[3]]
+    names(perc.t) <- dimnames(x.prop.table)[[3L]]
 
   }
 

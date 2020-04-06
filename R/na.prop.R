@@ -33,7 +33,7 @@
 #' @examples
 #' dat <- data.frame(x = c(1, NA, NA, 6, 3),
 #'                   y = c(7, NA, 8, 9, NA),
-#'                   z = c(2, NA, 3, NA, 5))
+#'                   z = c(2, NA, 3, NA, 5), stringsAsFactors = FALSE)
 #'
 #' # Compute proportion of missing data (\code{NA}) for each case in the data frame
 #' na.prop(dat)
@@ -72,7 +72,7 @@ na.prop <- function(x, digits = 2, as.na = NULL, check = TRUE) {
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1L != 0L | digits < 0L) {
 
       stop("Specify a positive integer value for the argument 'digits'", call. = FALSE)
 

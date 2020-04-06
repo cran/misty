@@ -42,7 +42,7 @@
 #' @examples
 #' dat <- data.frame(x1 = c(0, 1, 0, 1, 0, 1, 0, 1, 1, 0),
 #'                   x2 = c(0, 1, 0, 0, 1, 1, 1, 1, 1, 1),
-#'                   x3 = c(0, 1, 0, 1, 1, 1, 1, 1, 0, 0))
+#'                   x3 = c(0, 1, 0, 1, 1, 1, 1, 1, 0, 0), stringsAsFactors = FALSE)
 #'
 #' # Phi coefficient between x1 and x2
 #' phi.coef(dat[, c("x1", "x2")])
@@ -80,7 +80,7 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
   #-----------------------------------------
   # As data frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #-----------------------------------------
   # Convert user-missing values into NA
@@ -99,7 +99,7 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
     }
 
     # Constant variables
-    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
     if (any(x.zero.var)) {
 
       stop(paste0("After converting user-mising values into NA, following variables have only one unique value: ",
@@ -125,7 +125,7 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'x'
-    if (any(vapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1)))) {
+    if (any(vapply(x, function(y) any(as.numeric(y) %% 1L != 0L, na.rm = TRUE), FUN.VALUE = logical(1L)))) {
 
       stop("Please specify a matrix or data frame with integer vectors for the argument 'x'.", call. = FALSE)
 
@@ -133,10 +133,10 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'x': Zero variance
-    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1L))
     if (any(x.zero.var)) {
 
-      if (length(x.zero.var) == 2) {
+      if (length(x.zero.var) == 2L) {
 
         stop(paste0("Following variables in the matrix or data frame specified in 'x' have only one unique value: ",
                    paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
@@ -151,7 +151,7 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'x'
-    if (any(vapply(x, function(y) length(na.omit(unique(y))) > 2, FUN.VALUE = logical(1)))) {
+    if (any(vapply(x, function(y) length(na.omit(unique(y))) > 2, FUN.VALUE = logical(1L)))) {
 
       stop("Please specify a matrix or data frame with dichotomous variables for the argument 'x'.",
            call. = FALSE)
@@ -177,7 +177,7 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -207,19 +207,19 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
   #----------------------------------------
   # Two variables
 
-  if (ncol(x) == 2) {
+  if (ncol(x) == 2L) {
 
     tab <- table(x)
 
     #.................
     # If two dichotomous variables
-    if (nrow(tab) == 2 && ncol(tab) == 2) {
+    if (nrow(tab) == 2L && ncol(tab) == 2L) {
 
       # As numeric to avoid integer overflow
-      a <- as.numeric(tab[1, 1])
-      b <- as.numeric(tab[1, 2])
-      c <- as.numeric(tab[2, 1])
-      d <- as.numeric(tab[2, 2])
+      a <- as.numeric(tab[1L, 1L])
+      b <- as.numeric(tab[1L, 2L])
+      c <- as.numeric(tab[2L, 1L])
+      d <- as.numeric(tab[2L, 2L])
 
       # Phi coefficient
       phi <- (a*d - b*c) / (sqrt( (a + c) * (b + d) * (a + b) * (c + d) ))
@@ -227,17 +227,17 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
       # Adjusted phi coefficient
       if (isTRUE(adjust)) {
 
-        if (phi > 0) {
+        if (phi > 0L) {
 
-          phi.max <- min(c(sqrt((sum(tab[1, ])*sum(tab[, 2])) / (sum(tab[, 1])*sum(tab[2, ]))),
-                           sqrt((sum(tab[, 1])*sum(tab[2, ])) / (sum(tab[1, ])*sum(tab[, 2])))))
+          phi.max <- min(c(sqrt((sum(tab[1L, ])*sum(tab[, 2L])) / (sum(tab[, 1L])*sum(tab[2L, ]))),
+                           sqrt((sum(tab[, 1L])*sum(tab[2L, ])) / (sum(tab[1L, ])*sum(tab[, 2L])))))
 
           phi <- phi / phi.max
 
         } else {
 
-          phi.max <- max(c(-sqrt((sum(tab[1, ])*sum(tab[, 1])) / (sum(tab[2, ])*sum(tab[, 2]))),
-                           -sqrt((sum(tab[2, ])*sum(tab[, 2])) / (sum(tab[1, ])*sum(tab[, 1])))))
+          phi.max <- max(c(-sqrt((sum(tab[1L, ])*sum(tab[, 1L])) / (sum(tab[2L, ])*sum(tab[, 2L]))),
+                           -sqrt((sum(tab[2L, ])*sum(tab[, 2L])) / (sum(tab[1L, ])*sum(tab[, 1L])))))
 
           phi <- -(phi / phi.max)
 
@@ -259,7 +259,7 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Pairwise combination
-    comb.n <- combn(ncol(x), m = 2)
+    comb.n <- combn(ncol(x), m = 2L)
 
     #......
     # Compute all pairwise contingency coefficients
@@ -284,7 +284,7 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Set diagonal to 1
-    diag(phi) <- 1
+    diag(phi) <- 1L
 
   }
 
@@ -292,12 +292,13 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
   # Return object
 
   object <- list(call = match.call(),
+                 type = "phi.coef",
                  data = x,
                  args = list(adjust = adjust, tri = tri, digits = digits, as.na = as.na,
                              check = check, output = output),
                  result = phi)
 
-  class(object) <- "phi.coef"
+  class(object) <- "square.matrix"
 
   ####################################################################################
   # Output

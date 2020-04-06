@@ -11,7 +11,7 @@
 #'                     and \code{upper} for the upper triangular.
 #' @param digits       an integer value indicating the number of decimal places to be used for displaying
 #'                     correlation coefficients.
-#' @param pval.digits  an integer indicating the number of decimal places to be used for displaying \emph{p}-values.
+#' @param p.digits     an integer indicating the number of decimal places to be used for displaying \emph{p}-values.
 #' @param check        logical: if \code{TRUE}, argument specification is checked.
 #' @param ...          further arguments passed to or from other methods.
 #'
@@ -30,16 +30,16 @@
 #'                             "b", "b", "b", "b", "b"),
 #'                   x = c(5, NA, 6, 4, 6, 7, 9, 5, 8, 7),
 #'                   y = c(3, 3, 5, 6, 7, 4, 7, NA, NA, 8),
-#'                   z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6))
+#'                   z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6), stringsAsFactors = FALSE)
 #'
 #' # Pearson product-moment correlation coefficient matrix using pairwise deletion
 #' dat.cor <- cor.matrix(dat[, c("x", "y", "z")], output = FALSE)
 #'
 #' # Print cor.matrix object with 3 digits for correlation coefficients
 #' # and 4 digits for significance values
-#' print(dat.cor, print = "all", digits = 3, pval.digits = 4)
+#' print(dat.cor, print = "all", digits = 3, p.digits = 4)
 print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits = x$args$digits,
-                             pval.digits = x$args$pval.digits, check = TRUE, ...) {
+                             p.digits = x$args$p.digits, check = TRUE, ...) {
 
   ####################################################################################
   # Input Check
@@ -66,17 +66,17 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
     }
 
     #......
-    # Check input 'pval.digits'
-    if (pval.digits %% 1 != 0 | digits < 0) {
+    # Check input 'p.digits'
+    if (p.digits %% 1L != 0L || p.digits < 0L) {
 
-      stop("Specify a positive integer number for the argument 'pval.digits'.", call. = FALSE)
+      stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE)
 
     }
 
@@ -89,7 +89,7 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
   # Print correlation, sample size or significance values
   if (all(c("all", "cor", "n", "p") %in% print)) { print <- "cor" }
 
-  if (length(print) == 1 && "all" %in% print) { print <- c("cor", "n", "p") }
+  if (length(print) == 1L && "all" %in% print) { print <- c("cor", "n", "p") }
 
   #......
   # Print triangular
@@ -110,7 +110,7 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
     # Round and format
 
     print.object$cor <- formatC(print.object$cor, digits = digits, format = "f")
-    print.object$p <- formatC(print.object$p, digits = pval.digits, format = "f")
+    print.object$p <- formatC(print.object$p, digits = p.digits, format = "f")
     print.object$n <- formatC(print.object$n)
 
     diag(print.object$cor) <- ""
@@ -167,7 +167,7 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
     #....
     # Group 1
     print.object.g1$cor <- formatC(print.object.g1$cor, digits = digits, format = "f")
-    print.object.g1$p <- formatC(print.object.g1$p, digits = pval.digits, format = "f")
+    print.object.g1$p <- formatC(print.object.g1$p, digits = p.digits, format = "f")
     print.object.g1$n <- formatC(print.object.g1$n)
 
     diag(print.object.g1$cor) <- ""
@@ -178,14 +178,14 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
     print.object.g1$n <- format(print.object.g1$n, justify = "left")
     print.object.g1$p <- format(print.object.g1$p, justify = "left")
 
-    print.object.g1$cor <- vapply(as.data.frame(print.object.g1$cor), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
-    print.object.g1$n <- vapply(as.data.frame(print.object.g1$n), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
-    print.object.g1$p <- vapply(as.data.frame(print.object.g1$p), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
+    print.object.g1$cor <- vapply(as.data.frame(print.object.g1$cor, stringsAsFactors = FALSE), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
+    print.object.g1$n <- vapply(as.data.frame(print.object.g1$n, stringsAsFactors = FALSE), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
+    print.object.g1$p <- vapply(as.data.frame(print.object.g1$p, stringsAsFactors = FALSE), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
 
     #....
     ### Group 2
     print.object.g2$cor <- formatC(print.object.g2$cor, digits = digits, format = "f")
-    print.object.g2$p <- formatC(print.object.g2$p, digits = pval.digits, format = "f")
+    print.object.g2$p <- formatC(print.object.g2$p, digits = p.digits, format = "f")
     print.object.g2$n <- formatC(print.object.g2$n)
 
     diag(print.object.g2$cor) <- ""
@@ -196,9 +196,9 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
     print.object.g2$n <- format(print.object.g2$n, justify = "left")
     print.object.g2$p <- format(print.object.g2$p, justify = "left")
 
-    print.object.g2$cor <- vapply(as.data.frame(print.object.g2$cor), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
-    print.object.g2$n <- vapply(as.data.frame(print.object.g2$n), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
-    print.object.g2$p <- vapply(as.data.frame(print.object.g2$p), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
+    print.object.g2$cor <- vapply(as.data.frame(print.object.g2$cor, stringsAsFactors = FALSE), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
+    print.object.g2$n <- vapply(as.data.frame(print.object.g2$n, stringsAsFactors = FALSE), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
+    print.object.g2$p <- vapply(as.data.frame(print.object.g2$p, stringsAsFactors = FALSE), function(y) format(y, justify = "right"), FUN.VALUE = character(x.ncol))
 
     # Print object
     print.object <- print.object.g1
@@ -211,9 +211,9 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
     print.object$p[upper.tri(print.object$p)] <- print.object.g2$p[upper.tri(print.object.g2$p)]
 
     # Row names
-    row.names(print.object$cor) <- paste0("  ", row.names(print.object$cor))
-    row.names(print.object$n) <- paste0("  ", row.names(print.object$n))
-    row.names(print.object$p) <- paste0("  ", row.names(print.object$p))
+    row.names(print.object$cor) <- paste0("  ", colnames(print.object$cor))
+    row.names(print.object$n) <- paste0("  ", colnames(print.object$n))
+    row.names(print.object$p) <- paste0("  ", colnames(print.object$p))
 
   }
 
@@ -242,6 +242,12 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
 
     }
 
+    if (x$args$method == "kendall-c") {
+
+      cat(" Kendall-Stuart's Tau-c Correlation Coefficient\n\n")
+
+    }
+
     print(print.object$cor, quote = FALSE, right = TRUE, max = 99999)
 
   }
@@ -254,7 +260,7 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
 
     if (!is.null(x$args$group)) {
 
-      x$args$use <- ifelse(all(c("listwise", "pairwise") %in% x$args$use) | x$args$use == "pairwise", "pairwise.complete.obs", "complete.obs")
+      x$args$use <- ifelse(all(c("listwise", "pairwise") %in% x$args$use) || x$args$use == "pairwise", "pairwise.complete.obs", "complete.obs")
 
     }
 
@@ -289,7 +295,7 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
     if (any(c("cor", "n") %in% print)) { cat("\n") }
 
       cat(" Significance Value (p-value)\n\n")
-      print(print.object$p, quote = FALSE, right = TRUE, max = 99999)
+      print(print.object$p, quote = FALSE, right = TRUE, max = 99999L)
       cat(paste0("\n  Adjustment for multiple testing: ", x$args$p.adj, "\n"))
 
   }
@@ -304,3 +310,4 @@ print.cor.matrix <- function(x, print = x$args$print, tri = x$args$tri, digits =
   }
 
 }
+

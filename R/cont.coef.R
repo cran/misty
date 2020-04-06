@@ -41,7 +41,7 @@
 #' @examples
 #' dat <- data.frame(x = c(1, 1, 2, 1, 3, 3, 2, 2, 1, 2),
 #'                   y = c(3, 2, 3, 1, 2, 4, 1, 2, 3, 4),
-#'                   z = c(2, 2, 2, 1, 2, 2, 1, 2, 1, 2))
+#'                   z = c(2, 2, 2, 1, 2, 2, 1, 2, 1, 2), stringsAsFactors = FALSE)
 #'
 #' # Contingency coefficient between x and y
 #' cont.coef(dat[, c("x", "y")])
@@ -80,7 +80,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
   #-----------------------------------------
   # As data frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #-----------------------------------------
   # Convert user-missing values into NA
@@ -99,7 +99,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
     }
 
     # Zero variance
-    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
     if (any(x.zero.var)) {
 
       stop(paste0("After converting user-missing values into NA, following variables have only one unique value: ",
@@ -126,7 +126,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'x' for zero variance
-    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1L))
     if (any(x.zero.var)) {
 
       stop(paste0("Following variables in the matrix or data frame specified in 'x' have only one unique value: ",
@@ -136,7 +136,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'x' for non-integer numbers
-    if (any(vapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1)))) {
+    if (any(vapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1L)))) {
 
       stop("Please specify a matrix or data frame with integer vectors, character vectors or factors for the argument 'x'.",
            call. = FALSE)
@@ -162,7 +162,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -193,7 +193,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
   #----------------------------------------
   # Two variables
 
-  if (ncol(x) == 2) {
+  if (ncol(x) == 2L) {
 
     tab <- table(x)
 
@@ -208,7 +208,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
         k <- min(c(nrow(tab), ncol(tab)))
 
-        cc <- cc / sqrt((k - 1) / k)
+        cc <- cc / sqrt((k - 1L) / k)
 
       }
 
@@ -223,7 +223,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
   } else {
 
     # Pairwise combination
-    comb.n <- combn(ncol(x), m = 2)
+    comb.n <- combn(ncol(x), m = 2L)
 
     # Compute all pairwise contingency coefficients
     comb.n.cc <- rep(NA, times = ncol(comb.n))
@@ -243,7 +243,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
     cc[upper.tri(cc)] <- t(cc)[upper.tri(cc)]
 
     # Set diagonal to 1
-    diag(cc) <- 1
+    diag(cc) <- 1L
 
   }
 
@@ -251,12 +251,13 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
   # Return object
 
   object <- list(call = match.call(),
+                 type = "cont.coef",
                  data = x,
                  args = list(adjust = adjust, tri = tri, digits = digits, as.na = as.na,
                              check = check, output = output),
                  result = cc)
 
-  class(object) <- "cont.coef"
+  class(object) <- "square.matrix"
 
   ####################################################################################
   # Output

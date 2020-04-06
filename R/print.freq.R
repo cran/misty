@@ -28,7 +28,7 @@
 #'                   x2 = c(2, 2, 1, 3, 1, 1, 3, 3, 2, 2),
 #'                   y1 = c(1, 4, NA, 5, 2, 4, 3, 5, NA, 1),
 #'                   y2 = c(2, 3, 4, 3, NA, 4, 2, 3, 4, 5),
-#'                   z = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+#'                   z = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), stringsAsFactors = FALSE)
 #'
 #' # Frequency table for one variable
 #' # convert value -99 into NA
@@ -82,7 +82,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
 
     #..................
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1L != 0 || digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'", call. = FALSE)
 
@@ -99,17 +99,17 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
   #-----------------------------------------
   # One variable
 
-  if (ncol(as.data.frame(x$data)) == 1 || (isTRUE(x$args$split) && ncol(x$data) == 1)) {
+  if (ncol(as.data.frame(x$data, stringsAsFactors = FALSE)) == 1L || (isTRUE(x$args$split) && ncol(x$data) == 1L)) {
 
     #..................
     # Values in rows
     if (isFALSE(x$args$val.col)) {
 
       print.object <- data.frame(x = c("Value", rep("", nrow(print.object) - 1), "Missing", "Total"),
-                                 val = c(print.object[1:(grep("NA", print.object$Value) - 1), 1], "Total", "NA", ""),
-                                 rbind(print.object[1:(grep("NA", print.object$Value) - 1), -1],
-                                       apply(print.object[1:(grep("NA", print.object$Value) - 1), -1], 2, function(y) sum(as.numeric(y), na.rm = TRUE)),
-                                       print.object[grep("NA", print.object$Value), -1],
+                                 val = c(print.object[1L:(grep("NA", print.object$Value) - 1L), 1L], "Total", "NA", ""),
+                                 rbind(print.object[1L:(grep("NA", print.object$Value) - 1L), -1L],
+                                       apply(print.object[1L:(grep("NA", print.object$Value) - 1L), -1L], 2, function(y) sum(as.numeric(y), na.rm = TRUE)),
+                                       print.object[grep("NA", print.object$Value), -1L],
                                        c(sum(as.numeric(print.object$Freq), na.rm = TRUE), "100", "")),
                                  stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
 
@@ -120,9 +120,9 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
       print.object[, "V.Perc"] <- gsub("NA%", "  ", print.object[, "V.Perc"])
 
       # Format
-      print.object[, 1:2] <- apply(print.object[, 1:2], 2, function(y) format(y, justify = "left"))
+      print.object[, 1L:2L] <- apply(print.object[, 1L:2L], 2, function(y) format(y, justify = "left"))
 
-      print.object[, -c(1:2)] <- apply(print.object[, -(1:2)], 2, function(y) format(y, justify = "right"))
+      print.object[, -c(1L:2L)] <- apply(print.object[, -(1L:2L)], 2, function(y) format(y, justify = "right"))
 
       #......
       # Omit Total row if there are no missing values
@@ -138,7 +138,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
 
       #......
       # Omit Missing and Total row if print = "v.valid" and freq = FALSE
-      if (length(print) == 1 && print == "v.perc" && isFALSE(freq)) {
+      if (length(print) == 1L && print == "v.perc" && isFALSE(freq)) {
 
         # Object without Total row
         print.object <- print.object[-grep("Total", print.object$x),  ]
@@ -182,7 +182,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
       }
 
       # Column names
-      colnames(print.object)[1:2] <- c("", "")
+      colnames(print.object)[1L:2L] <- c("", "")
 
     #..................
     # Values in columns
@@ -194,11 +194,11 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
                                  total = c(sum(print.object[1, ], na.rm = TRUE), "100", ""),
                                  stringsAsFactors = FALSE, check.names = FALSE)
 
-      print.object[1, ] <- as.character(print.object[1, ])
-      print.object[2, ] <- paste0(formatC(as.numeric(print.object[2, ]), digits = digits, format = "f"), "%")
-      print.object[3, ] <- paste0(formatC(as.numeric(print.object[3, ]), digits = digits, format = "f"), "%")
+      print.object[1L, ] <- as.character(print.object[1L, ])
+      print.object[2L, ] <- paste0(formatC(as.numeric(print.object[2L, ]), digits = digits, format = "f"), "%")
+      print.object[3L, ] <- paste0(formatC(as.numeric(print.object[3L, ]), digits = digits, format = "f"), "%")
 
-      print.object[3, ] <- gsub("NA%", "", print.object[3,  ])
+      print.object[3L, ] <- gsub("NA%", "", print.object[3L,  ])
 
       # Row names
       print.object <- cbind(x = c("Freq", "Perc", "V.Perc"), print.object)
@@ -207,10 +207,10 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
       colnames(print.object) <- c("Value", colnames(x$result)[-length(x$result)], "Total", "Missing", "Total")
 
       # Format
-      print.object[, 1] <- format(print.object[, 1], justify = "left")
-      colnames(print.object)[1] <- format(c(colnames(print.object)[1], print.object[, 1]), justify = "left")[1]
+      print.object[, 1L] <- format(print.object[, 1L], justify = "left")
+      colnames(print.object)[1] <- format(c(colnames(print.object)[1L], print.object[, 1L]), justify = "left")[1]
 
-      print.object[, -1] <- apply(print.object[, -1], 2, function(y) format(y, justify = "right"))
+      print.object[, -1L] <- apply(print.object[, -1L], 2, function(y) format(y, justify = "right"))
 
       #......
       # Omit Total and V.Perc column if there are no missing values
@@ -220,13 +220,13 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
         print.object <- print.object[, -ncol(print.object)]
 
         # Object without valid percentage
-        print.object <- print.object[-grep("V.Perc", print.object[, 1]), ]
+        print.object <- print.object[-grep("V.Perc", print.object[, 1L]), ]
 
       }
 
       #......
       # Omit Missing and Total row if perc = "v.valid" and freq = FALSE
-      if (length(print) == 1 && print == "v.perc" && isFALSE(freq)) {
+      if (length(print) == 1L && print == "v.perc" && isFALSE(freq)) {
 
         # Object without Total column
         print.object <- print.object[, -ncol(print.object)]
@@ -240,7 +240,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
       # Omit absolute frequencies if freq = FALSE
       if (!isTRUE(freq)) {
 
-        print.object <- print.object[-grep("Freq", print.object[, 1]), ]
+        print.object <- print.object[-grep("Freq", print.object[, 1L]), ]
 
       }
 
@@ -274,14 +274,14 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
     ####################################################################################
     # Output
 
-    print(print.object, row.names = FALSE, max = 99999)
+    print(print.object, row.names = FALSE, max = 99999L)
 
   }
 
   #-----------------------------------------
   # More than one variable
 
-  if (ncol(as.data.frame(x$data)) > 1) {
+  if (ncol(as.data.frame(x$data, stringsAsFactors = FALSE)) > 1L) {
 
     #........................................
     # split = FALSE
@@ -295,18 +295,18 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
         # Absolute frequencies
         if (isTRUE(freq)) {
 
-          print.object$freq <- data.frame(x = c("Value", rep("", nrow(print.object$freq) - 1), "Missing", "Total"),
-                                          val = c(print.object$freq[1:(nrow(print.object$freq) - 1), 1], "Total", "NA", ""),
-                                          rbind(print.object$freq[1:(nrow(print.object$freq) - 1), -1],
-                                                apply(print.object$freq[1:(nrow(print.object$freq) - 1), -1], 2, function(y) sum(as.numeric(y), na.rm = TRUE)),
-                                                print.object$freq[nrow(print.object$freq), -1],
-                                                apply(print.object$freq[, -1], 2, function(y) sum(as.numeric(y), na.rm = TRUE))),
+          print.object$freq <- data.frame(x = c("Value", rep("", nrow(print.object$freq) - 1L), "Missing", "Total"),
+                                          val = c(print.object$freq[1:(nrow(print.object$freq) - 1L), 1L], "Total", "NA", ""),
+                                          rbind(print.object$freq[1:(nrow(print.object$freq) - 1L), -1L],
+                                                apply(print.object$freq[1:(nrow(print.object$freq) - 1L), -1], 2, function(y) sum(as.numeric(y), na.rm = TRUE)),
+                                                print.object$freq[nrow(print.object$freq), -1L],
+                                                apply(print.object$freq[, -1L], 2, function(y) sum(as.numeric(y), na.rm = TRUE))),
                                           stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
 
           # Format
-          print.object$freq[, 1:2] <- apply(print.object$freq[, 1:2], 2, function(y) format(y, justify = "left"))
+          print.object$freq[, 1L:2L] <- apply(print.object$freq[, 1L:2L], 2, function(y) format(y, justify = "left"))
 
-          print.object$freq[, -c(1:2)] <- apply(print.object$freq[, -(1:2)], 2, function(y) format(y, justify = "right"))
+          print.object$freq[, -c(1L:2L)] <- apply(print.object$freq[, -(1L:2L)], 2, function(y) format(y, justify = "right"))
 
           # No missing data
           if (all(!is.na(x$data))) {
@@ -317,7 +317,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
           }
 
           # Column names
-          colnames(print.object$freq)[1:2] <- c("", "")
+          colnames(print.object$freq)[1L:2L] <- c("", "")
 
         }
 
@@ -325,21 +325,21 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
         # Percentages
         if (all(print != "no") && "perc" %in% print) {
 
-          print.object$perc <- data.frame(x = c("Value", rep("", nrow(print.object$perc) - 1), "Missing", "Total"),
-                                          val = c(print.object$perc[1:(nrow(print.object$perc) - 1), 1], "Total", "NA", ""),
-                                          rbind(print.object$perc[1:(nrow(print.object$perc) - 1), -1],
-                                                apply(print.object$perc[1:(nrow(print.object$perc) - 1), -1], 2, function(y) sum(as.numeric(y), na.rm = TRUE)),
-                                                print.object$perc[nrow(print.object$perc), -1],
-                                                apply(print.object$perc[, -1], 2, function(y) sum(as.numeric(y), na.rm = TRUE))),
+          print.object$perc <- data.frame(x = c("Value", rep("", nrow(print.object$perc) - 1L), "Missing", "Total"),
+                                          val = c(print.object$perc[1:(nrow(print.object$perc) - 1L), 1L], "Total", "NA", ""),
+                                          rbind(print.object$perc[1:(nrow(print.object$perc) - 1L), -1L],
+                                                apply(print.object$perc[1:(nrow(print.object$perc) - 1L), -1L], 2, function(y) sum(as.numeric(y), na.rm = TRUE)),
+                                                print.object$perc[nrow(print.object$perc), -1L],
+                                                apply(print.object$perc[, -1L], 2, function(y) sum(as.numeric(y), na.rm = TRUE))),
                                           stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
 
           # Round digits
-          print.object$perc[, -c(1:2)] <- apply(print.object$perc[, -c(1:2)], 2, function(y) paste0(formatC(as.numeric(y), digits = digits, format = "f"), "%"))
+          print.object$perc[, -c(1L:2L)] <- apply(print.object$perc[, -c(1L:2L)], 2, function(y) paste0(formatC(as.numeric(y), digits = digits, format = "f"), "%"))
 
           # Format
-          print.object$perc[, 1:2] <- apply(print.object$perc[, 1:2], 2, function(y) format(y, justify = "left"))
+          print.object$perc[, 1L:2L] <- apply(print.object$perc[, 1L:2L], 2, function(y) format(y, justify = "left"))
 
-          print.object$perc[, -c(1:2)] <- apply(print.object$perc[, -(1:2)], 2, function(y) format(y, justify = "right"))
+          print.object$perc[, -c(1L:2L)] <- apply(print.object$perc[, -(1L:2L)], 2, function(y) format(y, justify = "right"))
 
           # No missing data
           if (all(!is.na(x$data))) {
@@ -350,7 +350,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
           }
 
           # Column names
-          colnames(print.object$perc)[1:2] <- c("", "")
+          colnames(print.object$perc)[1L:2L] <- c("", "")
 
         }
 
@@ -358,23 +358,23 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
         # Valid percentages
         if (all(print != "no") && "v.perc" %in% print) {
 
-          print.object$v.perc <- data.frame(x = c("Value", rep("", nrow(print.object$v.perc) - 1), "Total"),
-                                            val = c(print.object$v.perc[, 1], ""),
-                                            rbind(print.object$v.perc[, -1],
-                                                  apply(print.object$v.perc[, -1], 2, function(y) sum(as.numeric(y), na.rm = TRUE))),
+          print.object$v.perc <- data.frame(x = c("Value", rep("", nrow(print.object$v.perc) - 1L), "Total"),
+                                            val = c(print.object$v.perc[, 1L], ""),
+                                            rbind(print.object$v.perc[, -1L],
+                                                  apply(print.object$v.perc[, -1L], 2, function(y) sum(as.numeric(y), na.rm = TRUE))),
                                             stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
 
           # Round digits
-          print.object$v.perc[, -c(1:2)] <- apply(print.object$v.perc[, -c(1:2)], 2, function(y) paste0(formatC(as.numeric(y), digits = digits, format = "f"), "%"))
+          print.object$v.perc[, -c(1L:2L)] <- apply(print.object$v.perc[, -c(1L:2L)], 2, function(y) paste0(formatC(as.numeric(y), digits = digits, format = "f"), "%"))
 
           # Format
-          print.object$v.perc[, 1:2] <- apply(print.object$v.perc[, 1:2], 2, function(y) format(y, justify = "left"))
+          print.object$v.perc[, 1L:2L] <- apply(print.object$v.perc[, 1L:2L], 2, function(y) format(y, justify = "left"))
 
           # Format
-          print.object$v.perc[, -c(1:2)] <- apply(print.object$v.perc[, -(1:2)], 2, function(y) format(y, justify = "right"))
+          print.object$v.perc[, -c(1L:2L)] <- apply(print.object$v.perc[, -(1L:2L)], 2, function(y) format(y, justify = "right"))
 
           # Column names
-          colnames(print.object$v.perc)[1:2] <- c("", "")
+          colnames(print.object$v.perc)[1L:2L] <- c("", "")
 
         }
 
@@ -386,19 +386,19 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
         # Absolute frequencies
         if (isTRUE(freq)) {
 
-          print.object$freq <- data.frame(print.object$freq[, 1:(ncol(print.object$freq) - 1)],
-                                          val = apply(print.object$freq[, 2:(ncol(print.object$freq) - 1)], 1, function(y) sum(as.numeric(y), na.rm = TRUE)),
+          print.object$freq <- data.frame(print.object$freq[, 1L:(ncol(print.object$freq) - 1L)],
+                                          val = apply(print.object$freq[, 2L:(ncol(print.object$freq) - 1L)], 1, function(y) sum(as.numeric(y), na.rm = TRUE)),
                                           miss = print.object$freq[, ncol(print.object$freq)],
-                                          total = apply(print.object$freq[, 2:(ncol(print.object$freq))], 1, function(y) sum(as.numeric(y), na.rm = TRUE)),
+                                          total = apply(print.object$freq[, 2L:(ncol(print.object$freq))], 1, function(y) sum(as.numeric(y), na.rm = TRUE)),
                                           check.names = FALSE, stringsAsFactors = FALSE)
 
           # Add variable names
-          colnames(print.object$freq) <- c("", colnames(print.object$freq)[2:(ncol(print.object$freq) - 3)], "Total", "Missing", "Total")
+          colnames(print.object$freq) <- c("", colnames(print.object$freq)[2L:(ncol(print.object$freq) - 3L)], "Total", "Missing", "Total")
 
           # Format
-          print.object$freq[, 1] <- format(print.object$freq[, 1], justify = "left")
+          print.object$freq[, 1L] <- format(print.object$freq[, 1L], justify = "left")
 
-          print.object$freq[, -1] <- apply(print.object$freq[, -1], 2, function(y) format(y, justify = "right"))
+          print.object$freq[, -1L] <- apply(print.object$freq[, -1L], 2, function(y) format(y, justify = "right"))
 
           # No missing data
           if (all(!is.na(x$data))) {
@@ -413,22 +413,22 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
         # Percentages
         if (all(print != "no") && "perc" %in% print) {
 
-          print.object$perc <- data.frame(print.object$perc[, 1:(ncol(print.object$perc) - 1)],
-                                          val = apply(print.object$perc[, 2:(ncol(print.object$perc) - 1)], 1, function(y) sum(as.numeric(y), na.rm = TRUE)),
+          print.object$perc <- data.frame(print.object$perc[, 1L:(ncol(print.object$perc) - 1L)],
+                                          val = apply(print.object$perc[, 2L:(ncol(print.object$perc) - 1)], 1, function(y) sum(as.numeric(y), na.rm = TRUE)),
                                           miss = print.object$perc[, ncol(print.object$perc)],
-                                          total = apply(print.object$perc[, 2:(ncol(print.object$perc))], 1, function(y) sum(as.numeric(y), na.rm = TRUE)),
+                                          total = apply(print.object$perc[, 2L:(ncol(print.object$perc))], 1, function(y) sum(as.numeric(y), na.rm = TRUE)),
                                           check.names = FALSE, stringsAsFactors = FALSE)
 
           # Add variable names
-          colnames(print.object$perc) <- c("", colnames(print.object$perc)[2:(ncol(print.object$perc) - 3)], "Total", "Missing", "Total")
+          colnames(print.object$perc) <- c("", colnames(print.object$perc)[2:(ncol(print.object$perc) - 3L)], "Total", "Missing", "Total")
 
           # Round digits
-          print.object$perc[, -1] <- apply(print.object$perc[, -1], 2, function(y) paste0(formatC(as.numeric(y), digits = digits, format = "f"), "%"))
+          print.object$perc[, -1L] <- apply(print.object$perc[, -1L], 2, function(y) paste0(formatC(as.numeric(y), digits = digits, format = "f"), "%"))
 
           # Format
-          print.object$perc[, 1] <- format(print.object$perc[, 1], justify = "left")
+          print.object$perc[, 1L] <- format(print.object$perc[, 1L], justify = "left")
 
-          print.object$perc[, -1] <- apply(print.object$perc[, -1], 2, function(y) format(y, justify = "right"))
+          print.object$perc[, -1L] <- apply(print.object$perc[, -1L], 2, function(y) format(y, justify = "right"))
 
           # No missing data
           if (all(!is.na(x$data))) {
@@ -444,19 +444,19 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
         if (all(print != "no") && "v.perc" %in% print) {
 
           print.object$v.perc <- data.frame(print.object$v.perc,
-                                            total = apply(print.object$v.perc[, 2:(ncol(print.object$v.perc))], 1, function(y) sum(as.numeric(y), na.rm = TRUE)),
+                                            total = apply(print.object$v.perc[, 2L:(ncol(print.object$v.perc))], 1, function(y) sum(as.numeric(y), na.rm = TRUE)),
                                             check.names = FALSE, stringsAsFactors = FALSE)
 
           # Add variable names
-          colnames(print.object$v.perc) <- c("", colnames(print.object$v.perc)[2:(ncol(print.object$v.perc) - 1)], "Total")
+          colnames(print.object$v.perc) <- c("", colnames(print.object$v.perc)[2L:(ncol(print.object$v.perc) - 1L)], "Total")
 
           # Round digits
-          print.object$v.perc[, -1] <- apply(print.object$v.perc[, -1], 2, function(y) paste0(formatC(as.numeric(y), digits = digits, format = "f"), "%"))
+          print.object$v.perc[, -1L] <- apply(print.object$v.perc[, -1L], 2, function(y) paste0(formatC(as.numeric(y), digits = digits, format = "f"), "%"))
 
           # Format
-          print.object$v.perc[, 1] <- format(print.object$v.perc[, 1], justify = "left")
+          print.object$v.perc[, 1L] <- format(print.object$v.perc[, 1L], justify = "left")
 
-          print.object$v.perc[, -1] <- apply(print.object$v.perc[, -1], 2, function(y) format(y, justify = "right"))
+          print.object$v.perc[, -1L] <- apply(print.object$v.perc[, -1L], 2, function(y) format(y, justify = "right"))
 
         }
 
@@ -470,7 +470,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
       if (isTRUE(freq)) {
 
         cat("Frequencies\n")
-        print(print.object$freq, row.names = FALSE, max = 99999)
+        print(print.object$freq, row.names = FALSE, max = 99999L)
 
       }
 
@@ -484,7 +484,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
         if ("perc" %in% print) {
 
           cat("Percentages\n")
-          print(print.object$perc, row.names = FALSE, max = 99999)
+          print(print.object$perc, row.names = FALSE, max = 99999L)
 
         }
 
@@ -496,7 +496,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
             if ("perc" %in% print) { cat("\n") }
 
             cat("Valid Percentages\n")
-            print(print.object$v.perc, quote = FALSE, row.names = FALSE, max = 99999)
+            print(print.object$v.perc, quote = FALSE, row.names = FALSE, max = 99999L)
 
           }
 

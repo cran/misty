@@ -53,7 +53,7 @@
 #'                   x2 = c(2, 2, 1, 3, 1, 1, 3, 3, 2, 2),
 #'                   y1 = c(1, 4, NA, 5, 2, 4, 3, 5, NA, 1),
 #'                   y2 = c(2, 3, 4, 3, NA, 4, 2, 3, 4, 5),
-#'                   z = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+#'                   z = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), stringsAsFactors = FALSE)
 #'
 #' # Frequency table for one variable
 #' freq(dat$x1)
@@ -116,7 +116,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
   #......
   # Vector, matrix or data frame for the argument 'x'?
-  if (!is.vector(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x)) {
+  if (!is.atomic(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x)) {
 
     stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -160,9 +160,9 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'x': Exclude variables with all missing
-    if (length(x) > 1) {
+    if (length(x) > 1L) {
 
-      x.na <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+      x.na <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
       if (any(x.na)) {
 
         warning(paste0("Variables with all values missing were excluded from the analysis: ",
@@ -188,7 +188,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
     # Check input 'print'
     if (!all(c("no", "all", "perc", "v.perc") %in% print)) {
 
-      if (length(print) != 1) {
+      if (length(print) != 1L) {
 
         stop("Please specify one of the character strings \"no\", \"all\", \"perc\", or \"v.perc\" for the argument 'print'.",
                 call. = FALSE)
@@ -240,7 +240,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'exclude'
-    if (exclude %% 1 != 0 || exclude < 0) {
+    if (exclude %% 1L != 0L || exclude < 0L) {
 
       stop("Specify a positive integer number for the argument 'exclude'.", call. = FALSE)
 
@@ -248,7 +248,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -272,7 +272,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
   #..................
   # One variable
-  if (length(x) == 1) {
+  if (length(x) == 1L) {
 
     if (all(c("no", "all", "perc", "v.perc") %in% print)) { print <- c("perc", "v.perc") }
 
@@ -312,12 +312,12 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   if (isTRUE(any(x.factor)) && isFALSE(labels)) {
 
     # More than one factor
-    if (sum(x.factor) > 1) {
+    if (sum(x.factor) > 1L) {
 
       # Unique factor levels for each variable
       factor.unique <- lapply(x[, x.factor, drop = FALSE], levels)
 
-      if (isTRUE(any(apply(combn(length(x[, x.factor]), 2), 2, function(y) !identical(factor.unique[[y[1]]], factor.unique[[y[2]]]))))) {
+      if (isTRUE(any(apply(combn(length(x[, x.factor]), 2L), 2, function(y) !identical(factor.unique[[y[1L]]], factor.unique[[y[2L]]]))))) {
 
         warning("Variable do not have the same factor levels, i.e., values may not be comparable across variables.",
                 call. = FALSE)
@@ -336,13 +336,13 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
   if (length(x) > 1) {
 
-    x.exclude <- which(vapply(x, function(y) length(unique(na.omit(y))), FUN.VALUE = 1) > exclude)
+    x.exclude <- which(vapply(x, function(y) length(unique(na.omit(y))), FUN.VALUE = 1L) > exclude)
 
-    if (length(x.exclude) > 0) {
+    if (length(x.exclude) > 0L) {
 
       x <- x[, -x.exclude]
 
-      if (length(x) == 0) {
+      if (length(x) == 0L) {
 
         stop(paste0("After excluding variables with more than ", exclude, " unique values, no variables are left for the analysis."),
              call. = FALSE)
@@ -364,24 +364,24 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   #-----------------------------------------
   # One variable
 
-  if (length(x) == 1) {
+  if (length(x) == 1L) {
 
     x.abs <- table(x, useNA = "always")
-    x.perc <- prop.table(x.abs) * 100
-    x.v.perc <- prop.table(table(x, useNA = "no")) * 100
+    x.perc <- prop.table(x.abs) * 100L
+    x.v.perc <- prop.table(table(x, useNA = "no")) * 100L
 
     #..................
     # Values in columns
     if (isFALSE(val.col)) {
 
-      freqtab <- data.frame(matrix(c(na.omit(names(x.abs)), "NA", as.vector(x.abs), as.vector(x.perc), as.vector(x.v.perc), NA), ncol = 4,
+      freqtab <- data.frame(matrix(c(na.omit(names(x.abs)), "NA", as.vector(x.abs), as.vector(x.perc), as.vector(x.v.perc), NA), ncol = 4L,
                                    dimnames = list(NULL, c("Value", "Freq", "Perc", "V.Perc"))), stringsAsFactors = FALSE)
 
     #..................
     # Values in rows
     } else {
 
-      freqtab <- data.frame(matrix(c(x.abs, x.perc, x.v.perc, NA), nrow = 3, dimnames = list(c("Freq", "Perc", "V.Perc"), names(x.abs)), byrow = TRUE),
+      freqtab <- data.frame(matrix(c(x.abs, x.perc, x.v.perc, NA), nrow = 3L, dimnames = list(c("Freq", "Perc", "V.Perc"), names(x.abs)), byrow = TRUE),
                             stringsAsFactors = FALSE, check.names = FALSE)
 
     }
@@ -391,7 +391,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   #-----------------------------------------
   # More than one variable
 
-  if (length(x) > 1) {
+  if (length(x) > 1L) {
 
     #........................................
     # split = FALSE
@@ -406,7 +406,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
       if (any(vapply(x, is.numeric, FUN.VALUE = logical(1)))) {
 
         x.levels <- c(x.levels,
-                      na.omit(sort(unique(unlist(x[, vapply(x, is.numeric, FUN.VALUE = logical(1))])))))
+                      na.omit(sort(unique(unlist(x[, vapply(x, is.numeric, FUN.VALUE = logical(1L))])))))
 
       }
 
@@ -415,16 +415,16 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
       if (any(vapply(x, is.factor, FUN.VALUE = logical(1)))) {
 
         x.levels <- c(x.levels,
-                      unname(unlist(sapply(x[, vapply(x, is.factor, FUN.VALUE = logical(1))], function(y) sort(unique(as.character(y)))))))
+                      unname(unlist(sapply(x[, vapply(x, is.factor, FUN.VALUE = logical(1L))], function(y) sort(unique(as.character(y)))))))
 
       }
 
       #...
       # Character
-      if (any(vapply(x, is.character, FUN.VALUE = logical(1)))) {
+      if (any(vapply(x, is.character, FUN.VALUE = logical(1L)))) {
 
         x.levels <- c(x.levels,
-                      na.omit(sort(unique(unlist(x[, vapply(x, is.character, FUN.VALUE = logical(1))])))))
+                      na.omit(sort(unique(unlist(x[, vapply(x, is.character, FUN.VALUE = logical(1L))])))))
 
       }
 
@@ -441,9 +441,9 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
       #--------------------------------------------------------
 
-      x.abs <- vapply(x, function(y) table(factor(y, levels = x.levels), useNA = "always"), FUN.VALUE = integer(length(x.levels) + 1))
-      x.perc <- apply(x.abs, 2, function(y) ifelse(y != 0, prop.table(y) * 100, 0))
-      x.v.perc <- apply(vapply(x, function(y) table(factor(y, levels = x.levels), useNA = "no"), FUN.VALUE = integer(length(x.levels))), 2, function(z) prop.table(z) * 100)
+      x.abs <- vapply(x, function(y) table(factor(y, levels = x.levels), useNA = "always"), FUN.VALUE = integer(length(x.levels) + 1L))
+      x.perc <- apply(x.abs, 2, function(y) ifelse(y != 0L, prop.table(y) * 100L, 0L))
+      x.v.perc <- apply(vapply(x, function(y) table(factor(y, levels = x.levels), useNA = "no"), FUN.VALUE = integer(length(x.levels))), 2, function(z) prop.table(z) * 100L)
 
       #...
       # Values in rows

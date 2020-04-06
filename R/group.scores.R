@@ -15,7 +15,7 @@
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
-#' #' @seealso
+#' @seealso
 #' \code{\link{scores}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.icc}}
 #'
 #' @references
@@ -34,7 +34,7 @@
 #' @examples
 #' dat.ml <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
 #'                      group = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
-#'                      x = c(4, 2, 5, 6, 3, 4, 1, 3, 4))
+#'                      x = c(4, 2, 5, 6, 3, 4, 1, 3, 4), stringsAsFactors = FALSE)
 #'
 #' # Compute group means and expand to match the input x
 #' group.scores(dat.ml$x, group = dat.ml$group)
@@ -60,7 +60,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
   #......
   # Numeric vector for 'x'?
-  if (!is.vector(x) || !is.numeric(x)) {
+  if (!is.atomic(x) || !is.numeric(x)) {
 
     stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
 

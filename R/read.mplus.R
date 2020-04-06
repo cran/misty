@@ -26,7 +26,7 @@
 #' Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.). Muthen & Muthen.
 #'
 #' @seealso
-#' \code{\link{run.mplus}}, \code{\link{write.mplus}}
+#' \code{\link{run.mplus}}, \code{\link{write.mplus}}, \code{\link{read.sav}}, \code{\link{read.xlsx}}
 #'
 #' @return
 #' A data frame containing a representation of the data in the file.
@@ -48,14 +48,13 @@
 read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var = FALSE,
                        fileEncoding = "UTF-8-BOM", check = TRUE) {
 
-  ######################################################################################################################
-  #---------------------------------------------------------------------------------------------------------------------
+  ####################################################################################
   # Mplus Variable names
 
   #----------------------------------------
-  # Check input 'file'
+  # Check input 'input'
 
-  if (missing(input)) {
+  if (isTRUE(return.var) && missing(input)) {
 
     stop("Please specify a character string indicating the name of the Mplus input/output file for the argument 'input'.",
          call. = FALSE)
@@ -69,7 +68,7 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
 
     #......
     # File extension .inp or .out
-    input <- ifelse(length(grep(".inp", input)) == 0 && length(grep(".out", input)) == 0,
+    input <- ifelse(length(grep(".inp", input)) == 0L && length(grep(".out", input)) == 0L,
                     input <- paste0(input, ".inp"), input)
 
     #......
@@ -85,11 +84,11 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
 
     #......
     # Remove comments
-    if (length(grep("!", inp.variable)) > 0) {
+    if (length(grep("!", inp.variable)) > 0L) {
 
       inp.comments <- inp.variable[grep("!", inp.variable)]
 
-      inp.variable[grep("!", inp.variable)] <- unlist(lapply(strsplit(inp.comments, split = " "), function(y) paste(y[1:(grep("!", y) - 1)], collapse = " ")))
+      inp.variable[grep("!", inp.variable)] <- unlist(lapply(strsplit(inp.comments, split = " "), function(y) paste(y[1:(grep("!", y) - 1L)], collapse = " ")))
 
     }
 
@@ -101,13 +100,12 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
   }
 
   #----------------------------------------
-  # Return Mplus variable names only?
+  # Return Mplus variable names only
   if (isTRUE(return.var)) {
 
     return(varnames)
 
   ######################################################################################################################
-  #---------------------------------------------------------------------------------------------------------------------
   # Mplus Data
   } else {
 
@@ -126,12 +124,22 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
 
     #......
     # File extension .dat, .txt. or .csv
-    file <- ifelse(length(grep(".dat", file)) == 0 && length(grep(".txt", file)) == 0 && length(grep(".csv", file)) == 0,
+    file <- ifelse(length(grep(".dat", file)) == 0L && length(grep(".txt", file)) == 0L && length(grep(".csv", file)) == 0L,
                    file <- paste0(file, ".dat"), file)
+
+
+    #......
+    # Check if file exists
+    if (!file.exists(file)) {
+
+      stop(paste0("Unable to open Mplus data file: ", sQuote(file), " does not exist."),
+           call. = FALSE)
+
+    }
 
     #......
     # Check input 'check'
-    if (isFALSE(isTRUE(check) | isFALSE(check))) {
+    if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
       stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -147,7 +155,7 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
       #......
       # Dot (.) as decimal separator
 
-      if (length(grep(",", df.lines)) > 0) {
+      if (length(grep(",", df.lines)) > 0L) {
 
         stop(paste0("Data file ", file, " uses the wrong decimal separator, i.e., \",\" instead of \".\""),
              call. = FALSE)
@@ -156,9 +164,9 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
 
       #......
       # Number of rows
-      df.lines.nrows <- unname(vapply(vapply(df.lines, function(y) strsplit(y, " "), FUN.VALUE = list(1)), length, FUN.VALUE = 1))
+      df.lines.nrows <- unname(vapply(vapply(df.lines, function(y) strsplit(y, " "), FUN.VALUE = list(1L)), length, FUN.VALUE = 1L))
 
-      if (length(unique(df.lines.nrows)) != 1) {
+      if (length(unique(df.lines.nrows)) != 1L) {
 
         stop(paste0("Data file ", file, " does not have the same number of entries in each line."), call. = FALSE)
 
@@ -169,7 +177,8 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
       # Number of columns match with number of variable names
       if (!is.null(input)) {
 
-        df.check <- read.table(file, fileEncoding = fileEncoding)
+        df.check <- read.table(file, fileEncoding = fileEncoding,
+                               stringsAsFactors = FALSE)
 
         if (ncol(df.check) != length(varnames)) {
 

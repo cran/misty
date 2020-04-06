@@ -76,7 +76,7 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
 
     #.......
     # Check input 'x': Yero variance
-    if (length(na.omit(unique(x))) == 1) {
+    if (length(na.omit(unique(x))) == 1L) {
 
         stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE)
 
@@ -100,7 +100,7 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
     }
 
     # Zero variance
-    if (length(na.omit(unique(x))) == 1) {
+    if (length(na.omit(unique(x))) == 1L) {
 
       stop("After converting user-missing values into NA, variable 'x' has zero variance.", call. = FALSE)
 
@@ -120,9 +120,9 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
 
   n <- length(x)
 
-  if (n >= 3) {
+  if (n >= 3L) {
 
-    object <- (mean((x - mean(x))^3) / mean((x - mean(x))^2)^(3/2)) * sqrt(n * (n - 1)) / (n - 2)
+    object <- (mean((x - mean(x))^3L) / mean((x - mean(x))^2)^(3/2)) * sqrt(n * (n - 1L)) / (n - 2L)
 
     object <- ifelse(is.nan(object), NA, object )
 

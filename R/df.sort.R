@@ -28,7 +28,7 @@
 #' @examples
 #' dat <- data.frame(x = c(5, 2, 5, 5, 7, 2),
 #'                   y = c(1, 6, 2, 3, 2, 3),
-#'                   z = c(2, 1, 6, 3, 7, 4))
+#'                   z = c(2, 1, 6, 3, 7, 4), stringsAsFactors = FALSE)
 #'
 #' # Sort data frame 'dat' by "x" in increasing order
 #' df.sort(dat, x)

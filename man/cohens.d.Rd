@@ -4,8 +4,9 @@
 \alias{cohens.d}
 \title{Cohen's d for Between- and Within-Subject Design}
 \usage{
-cohens.d(formula, data, paired = FALSE, weighted = TRUE, ref = NULL, correct = FALSE,
-         digits = 2, conf.level = 0.95, as.na = NULL, check = TRUE,
+cohens.d(formula, data, paired = FALSE, weighted = TRUE,
+         ref = NULL, correct = FALSE, digits = 2,
+         conf.level = 0.95, as.na = NULL, check = TRUE,
          output = TRUE)
 }
 \arguments{
@@ -14,7 +15,7 @@ a formula of the form \code{y ~ group} for one outcome variable or
 \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where
 \code{y} is a numeric variable giving the data values and \code{group}
 a numeric variable, character variable or factor with two values or factor
-levels giving the corresponding group; in case of a within-subject design
+levels giving the coressponding group; in case of a within-subject design
 (i.e., \code{paired = TRUE}), a formula of the form \code{post ~ pre} where
 \code{post} and \code{pre} are numeric variables. Note that analysis for more
 than one outcome variable is not permitted in within-subject design.}
@@ -98,11 +99,11 @@ when using \code{correct = TRUE}.
 }
 \examples{
 #--------------------------------------
-# Between-subject design
+# Between-Subject Design
 dat.bs <- data.frame(group = c("cont", "cont", "cont", "treat",  "treat"),
                      y1 = c(1, 3, 2, 5, 7),
                      y2 = c(4, 3, 3, 6, 4),
-                     y3 = c(7, 5, 7, 3, 2))
+                     y3 = c(7, 5, 7, 3, 2), stringsAsFactors = FALSE)
 
 # Standardized mean difference divided by the weighted pooled
 # standard deviation without small sample correction factor
@@ -124,9 +125,9 @@ cohens.d(y1 ~ group, data = dat.bs, ref = "cont")
 cohens.d(cbind(y1, y2, y3) ~ group, data = dat.bs)
 
 #--------------------------------------
-# Within-subject design
+# Within-Subject Design
 dat.ws <- data.frame(pre = c(1, 3, 2, 5, 7),
-                     post = c(2, 2, 1, 6, 8))
+                     post = c(2, 2, 1, 6, 8), stringsAsFactors = FALSE)
 
 # Standardized mean difference divided by the pooled
 # standard deviation while controlling for the correlation
@@ -171,7 +172,7 @@ https://doi.org/10.3389/fpsyg.2013.00863
 }
 \seealso{
 \code{\link{eta.sq}}, \code{\link{cont.coef}}, \code{\link{cramers.v}},\code{\link{cor.matrix}},
-\code{\link{na.auxiliary}}.
+\code{\link{na.auxiliary}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -55,7 +55,7 @@
 #' #--------------------------------------
 #' # Predictors in a single-level regression
 #' dat.sl <- data.frame(x = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
-#'                      y = c(5, 3, 6, 3, 4, 5, 2, 6, 5))
+#'                      y = c(5, 3, 6, 3, 4, 5, 2, 6, 5), stringsAsFactors = FALSE)
 #'
 #' # Center predictor at the sample mean
 #' center(dat.sl$x)
@@ -69,7 +69,7 @@
 #'                      group = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
 #'                      x.l1 = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
 #'                      x.l2 = c(4, 4, 4, 1, 1, 1, 3, 3, 3),
-#'                      y = c(5, 3, 6, 3, 4, 5, 2, 6, 5))
+#'                      y = c(5, 3, 6, 3, 4, 5, 2, 6, 5), stringsAsFactors = FALSE)
 #'
 #' # Center level-1 predictor at the grand mean (CGM)
 #' center(dat.ml$x.l1)
@@ -106,7 +106,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
     #......
     # Check input 'x'
-    if (!is.vector(x) || !is.numeric(x)) {
+    if (!is.atomic(x) || !is.numeric(x)) {
 
       stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
 

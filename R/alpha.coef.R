@@ -1,20 +1,31 @@
 #' Coefficient Alpha and Item Statistics
 #'
-#' This function computes point estimate and confidence interval for the coefficient alpha (aka Cronbach's alpha)
-#' along with the corrected item-total correlation and coefficient alpha if item deleted.
+#' This function computes point estimate and confidence interval for the (ordinal) coefficient alpha (aka Cronbach's
+#' alpha) along with the corrected item-total correlation and coefficient alpha if item deleted.
 #'
+#' Ordinal coefficient alpha was introduced by Zumbo, Gadermann and Zeisser (2007) which is obtained by applying
+#' the formula for computing coefficient alpha to the polychoric correlation matrix instead of the variance-covariance
+#' or product-moment correlation matrix. Note that Chalmers (2018) highlighted that the ordinal coefficient alpha
+#' should be interpreted only as a hypothetical estimate of an alternative reliability, whereby a test's ordinal
+#' categorical response options have be modified to include an infinite number of ordinal response options and
+#' concludes that coefficient alpha should not be reported as a measure of a test's reliability. However,
+#' Zumbo and Kroc (2019) argued that Chalmers' critique of ordinal coefficient alpha is unfounded and that
+#' ordinal coefficient alpha may be the most appropriate quantifier of reliability when using Likert-type
+#' measurement to study a latent continuous random variable.
 #' Confidence intervals are computed using the procedure by Feldt, Woodruff and Salih (1987). When computing
 #' confidence intervals using pairwise deletion, the average sample size from all pairwise samples is used.
 #' Note that there are at least 10 other procedures for computing the confidence interval (see Kelley and
 #' Pornprasertmanit, 2016), which are implemented in the \code{ci.reliability()} function in the
 #' \pkg{MBESSS} package by Ken Kelley (2019).
 #'
-#' @param x          a matrix, data frame, variance-covariance or correlation matrix.
+#' @param x          a matrix, data frame, variance-covariance or correlation matrix. Note that
+#'                   raw data is needed to compute ordinal coefficient alpha, i.e., \code{ordered = TRUE}.
 #' @param exclude    a character vector indicating items to be excluded from the analysis.
-#' @param std        logical: if \code{TRUE} the standardized coefficient alpha is computed.
-#' @param use        a character string indicating a method for computing a correlation or variance-covariance
-#'                   matrix in the presence of missing values, i.e., \code{"listwise"} for listwise deletion
-#'                   and \code{"pairwise"} (default) for pairwise deletion.
+#' @param std        logical: if \code{TRUE}, the standardized coefficient alpha is computed.
+#' @param ordered    logical: if \code{TRUE}, variables are treated as ordered (ordinal) variables to
+#'                   compute ordinal coefficient alpha.
+#' @param na.omit    logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
+#'                   (i.e., listwise deletion); if \code{FALSE}, pairwise deletion is used.
 #' @param print      a character vector indicating which results to show, i.e. \code{"all"} (default), for all
 #'                   results \code{"alpha"} for the coefficient alpha, and \code{"item"} for item statistics.
 #' @param digits     an integer value indicating the number of decimal places to be used for displaying
@@ -29,22 +40,35 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{reverse.item}}, \code{\link{scores}}
+#' \code{\link{omega.coef}}, \code{\link{reverse.item}}, \code{\link{scores}}
 #'
 #' @references
+#' Chalmers, R. P. (2018). On misconceptions and the limited usefulness of ordinal alpha. \emph{Educational
+#' and Psychological Measurement, 78}, 1056-1071. https://doi.org/10.1177/0013164417727036
+#'
 #' Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests. \emph{Psychometrika, 16}, 297-334.
+#' https://doi.org/10.1007/BF02310555
 #'
 #' Cronbach, L.J. (2004). My current thoughts on coefficient alpha and successor procedures. \emph{Educational
-#' and Psychological Measurement, 64}, 391-418.
+#' and Psychological Measurement, 64}, 391-418. https://doi.org/10.1177/0013164404266386
 #'
 #' Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for coefficient alpha.
-#' \emph{Applied Psychological Measurement}, 11 93-103.
+#' \emph{Applied Psychological Measurement}, 11 93-103. https://doi.org/10.1177/014662168701100107
 #'
 #' Kelley, K., & Pornprasertmanit, S. (2016). Confidence intervals for population reliability coefficients:
-#' Evaluation of methods, recommendations, and software for composite measures. \emph{Psychological Methods, 21}, 69-92.
+#' Evaluation of methods, recommendations, and software for composite measures.
+#' \emph{Psychological Methods, 21}, 69-92. https://doi.org/10.1037/a0040086.
 #'
 #' Ken Kelley (2019). \emph{MBESS: The MBESS R Package}. R package version 4.6.0.
 #' https://CRAN.R-project.org/package=MBESS
+#'
+#' Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens' scales of measurement do not help
+#' make it: A response to Chalmers. \emph{Journal of Modern Applied Statistical Methods, 79}, 1184-1197.
+#' https://doi.org/10.1177/0013164419844305
+#'
+#' Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of coefficients alpha and theta for
+#' Likert rating scales. \emph{Journal of Modern Applied Statistical Methods, 6}, 21-29.
+#' https://doi.org/10.22237/jmasm/1177992180
 #'
 #' @return
 #' Returns an object of class \code{alpha.coef}, which is a list with following entries: function call (\code{call}),
@@ -54,10 +78,10 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
-#'                   item2 = c(5, 1, 3, 5, 2, 2, 5, 1),
-#'                   item3 = c(4, 2, 4, 5, 1, 3, 5, 1),
-#'                   item4 = c(5, 1, 2, 5, 2, 3, 4, 2))
+#' dat <- data.frame(item1 = c(4, 2, 3, 4, 1, 2, 4, 2),
+#'                   item2 = c(4, 3, 3, 3, 2, 2, 4, 1),
+#'                   item3 = c(3, 2, 4, 2, 1, 3, 4, 1),
+#'                   item4 = c(4, 1, 2, 3, 2, 3, 4, 2), stringsAsFactors = FALSE)
 #'
 #' # Compute unstandardized coefficient alpha and item statistics
 #' alpha.coef(dat)
@@ -79,11 +103,14 @@
 #' # Compute unstandardized coefficient alpha based on the variance-covariance matrix
 #' alpha.coef(dat.cov)
 #'
-#' # Compute variance-covariance matrix
+#' # Compute correlation matrix
 #' dat.cor <- cor(dat)
 #' # Compute standardized coefficient alpha based on the correlation matrix
 #' alpha.coef(dat.cor)
-alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pairwise"),
+#'
+#' # Compute ordinal coefficient alpha
+#' alpha.coef(dat, ordered = TRUE)
+alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit = FALSE,
                        print = c("all", "alpha", "item"), digits = 2, conf.level = 0.95,
                        as.na = NULL, check = TRUE, output = TRUE) {
 
@@ -122,7 +149,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
     #......
     # Check input 'x': One item
-    if (ncol(x) == 1) {
+    if (ncol(x) == 1L) {
 
       stop("Please specify at least two items to compute coefficient alpha.", call. = FALSE)
 
@@ -132,7 +159,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
     # Check input 'x': Zero variance
     if (nrow(x) != ncol(x)) {
 
-      x.check <- vapply(as.data.frame(x), function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+      x.check <- vapply(as.data.frame(x, stringsAsFactors = FALSE), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
 
       if (any(x.check)) {
 
@@ -161,11 +188,18 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
     }
 
     #......
-    # Check input 'use'
-    if (!all(use %in% c("listwise", "pairwise"))) {
+    # Check input 'ordered'
+    if (isFALSE(isTRUE(ordered) || isFALSE(ordered))) {
 
-      stop("Character strings in the argument 'use' do not all match with \"listwise\", or \"pairwise\".",
-           call. = FALSE)
+      stop("Please specify TRUE or FALSE for the argument 'ordered'.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'na.omit'
+    if (isFALSE(isTRUE(na.omit) || isFALSE(na.omit))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
     }
 
@@ -180,7 +214,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
     #......
     # Check input 'conf.level'
-    if (conf.level >= 1 || conf.level <= 0) {
+    if (conf.level >= 1L || conf.level <= 0L) {
 
       stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
            call. = FALSE)
@@ -189,7 +223,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1 != 0L || digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -228,7 +262,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
     # Diagonal is all 1?
     if (isTRUE(sym)) {
 
-      std <- ifelse(all(diag(x) == 1), TRUE, FALSE)
+      std <- ifelse(all(diag(x) == 1L), TRUE, FALSE)
 
     }
 
@@ -239,18 +273,48 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
   }
 
   #----------------------------------------
+  # Raw data or cor/cov matrix?
+
+  if (isTRUE(ordered)) {
+
+    #......
+    # Check if raw data is availeble
+    if (isFALSE(x.raw)) {
+
+      stop("Please submit raw data to the argument 'x' to compute ordinal coefficient alpha.",
+           call. = FALSE)
+
+    }
+
+    # Compute polychoric correlation matrix
+    x <- misty::poly.cor(x, output = FALSE)$result$cor
+
+    x.raw <- FALSE
+    std <- TRUE
+
+  }
+
+  #----------------------------------------
   # Data frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #----------------------------------------
   # Exclude items (exclude) and specify user-defined NA (as.na)
 
+  # Raw data
   if (isTRUE(x.raw)) {
 
     if (!is.null(exclude)) {
 
       x <- x[, which(!colnames(x) %in% exclude)]
+
+      # One item left
+      if (is.null(dim(x))) {
+
+        stop("At least two items after excluding items are needed to compute coefficient alpha.", call. = FALSE)
+
+      }
 
     }
 
@@ -262,7 +326,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
       x <- misty::as.na(x, as.na = as.na, check = check)
 
       # Variable with missing values only
-      x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+      x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
       if (any(x.miss)) {
 
         stop(paste0("After converting user-missing values into NA, following items are completely missing: ",
@@ -271,7 +335,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
       }
 
       # Zero variance
-      x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+      x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
       if (any(x.zero.var)) {
 
         stop(paste0("After converting user-missing values into NA, following items have zero variance: ",
@@ -281,6 +345,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
     }
 
+  # Covariance or correlation matrix
   } else {
 
     if (!is.null(exclude)) {
@@ -288,30 +353,33 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
       x <- x[, which(!colnames(x) %in% exclude)]
       x <- x[which(!rownames(x) %in% exclude), ]
 
+      # One item left
+      if (is.null(dim(x))) {
+
+        stop("At least two items after excluding items are needed to compute coefficient alpha.", call. = FALSE)
+
+      }
+
     }
-
-  }
-
-  #----------------------------------------
-  # One item left
-
-  if (is.null(dim(x))) {
-
-    stop("At least two items after excluding items are needed to compute coefficient alpha.", call. = FALSE)
 
   }
 
   #----------------------------------------
   # Method for handling missing data
 
-  use <- ifelse(all(c("listwise", "pairwise") %in% use) | all(use == "pairwise"), "pairwise.complete.obs", "complete.obs")
+  # Listwise deletion
+  if (isTRUE(na.omit)) {
+
+    x <- na.omit(x)
+
+  }
 
   #----------------------------------------
   # Print coefficient alpha and/or item statistic
 
   if (all(c(c("all", "alpha", "item")) %in% print)) { print <- c("alpha", "item") }
 
-  if (length(print) == 1 && "all" %in% print) { print <- c("alpha", "item") }
+  if (length(print) == 1L && "all" %in% print) { print <- c("alpha", "item") }
 
   ####################################################################################
   # Main Function
@@ -323,11 +391,11 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
     if (isTRUE(std)) {
 
-      mat.sigma <- cor(x, use = use, method = "pearson")
+      mat.sigma <- cor(x, use = "pairwise.complete.obs", method = "pearson")
 
     } else {
 
-      mat.sigma <- cov(x, use = use, method = "pearson")
+      mat.sigma <- cov(x, use = "pairwise.complete.obs", method = "pearson")
 
     }
 
@@ -343,7 +411,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
   # Define Coefficient alpha function
   alpha.function <- function(mat.sigma, p) {
 
-    return((p / (p - 1)) * (1 - sum(diag(as.matrix(mat.sigma))) / sum(as.matrix(mat.sigma))))
+    return((p / (p - 1)) * (1L - sum(diag(as.matrix(mat.sigma))) / sum(as.matrix(mat.sigma))))
 
   }
 
@@ -351,54 +419,67 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
   alpha.mat.sigma <- alpha.function(mat.sigma, p)
 
-  alpha.x <- data.frame(items = ncol(mat.sigma), alpha = alpha.mat.sigma)
+  if (isTRUE(x.raw)) {
+
+    alpha.x <- data.frame(n = nrow(x), items = ncol(mat.sigma), alpha = alpha.mat.sigma,
+                          stringsAsFactors = FALSE)
+
+  } else {
+
+    alpha.x <- data.frame(items = ncol(mat.sigma), alpha = alpha.mat.sigma,
+                          stringsAsFactors = FALSE)
+
+  }
 
   #----------------------------------------
   # Confidence interval
 
   if (isTRUE(x.raw)) {
 
-    if (any(is.na(x)) && use == "pairwise.complete.obs") {
+    if (any(is.na(x)) && isFALSE(na.omit)) {
 
-      df1 <- mean(apply(combn(ncol(x), 2), 2, function(y) nrow(na.omit(cbind(x[, y[1]], x[, y[2]]))))) - 1
+      df1 <- mean(apply(combn(ncol(x), 2L), 2, function(y) nrow(na.omit(cbind(x[, y[1L]], x[, y[2L]]))))) - 1L
 
     } else {
 
-      df1 <- nrow(na.omit(x)) - 1
+      df1 <- nrow(na.omit(x)) - 1L
 
     }
 
-    df2 <- (ncol(x) -  1) * df1
+    df2 <- (ncol(x) -  1L) * df1
 
-    alpha.low <- 1 - (1 - alpha.mat.sigma) * qf(1 - (1 - conf.level) / 2, df1, df2)
-    alpha.upp <- 1 - (1 - alpha.mat.sigma) * qf((1 - conf.level) / 2, df1, df2)
+    alpha.low <- 1L - (1L - alpha.mat.sigma) * qf(1L - (1L - conf.level) / 2L, df1, df2)
+    alpha.upp <- 1L - (1L - alpha.mat.sigma) * qf((1L - conf.level) / 2L, df1, df2)
 
-    alpha.x <- data.frame(alpha.x, low = alpha.low, upp = alpha.upp)
+    alpha.x <- data.frame(alpha.x, low = alpha.low, upp = alpha.upp, stringsAsFactors = FALSE)
 
   }
 
   #----------------------------------------
-  # Corrected item-total correlation
+  # Corrected item-total correlation and alpha if item deleted
 
   if (isTRUE(x.raw)) {
 
-    itemstat <- matrix(rep(NA, times = ncol(x)*2), ncol = 2,
-                       dimnames = list(NULL, c("it cor", "alpha")))
+    itemstat <- matrix(rep(NA, times = ncol(x)*2L), ncol = 2L,
+                       dimnames = list(NULL, c("it.cor", "alpha")))
 
     for (i in seq_len(ncol(x))) {
 
       var <- colnames(x)[i]
 
-      itemstat[i, 1] <- ifelse(ncol(x) > 2, cor(x[, i], rowMeans(x[, -grep(var, colnames(x))], na.rm = TRUE), use = use), NA)
+      itemstat[i, 1L] <- ifelse(ncol(x) > 2L, cor(x[, i], rowMeans(x[, -grep(var, colnames(x))], na.rm = TRUE),
+                                                  use = "pairwise.complete.obs"), NA)
 
       if (isTRUE(std)) {
 
-        itemstat[i, 2] <- ifelse(ncol(x) > 2, alpha.function(cor(x[, -grep(var, colnames(x))], use = use, method = "pearson"), p = (ncol(x) - 1)), NA)
+        itemstat[i, 2L] <- ifelse(ncol(x) > 2L, alpha.function(cor(x[, -grep(var, colnames(x))],
+                                                               use = "pairwise.complete.obs", method = "pearson"), p = (ncol(x) - 1L)), NA)
 
 
       } else {
 
-        itemstat[i, 2] <- ifelse(ncol(x) > 2, alpha.function(cov(x[, -grep(var, colnames(x))], use = use, method = "pearson"), p = (ncol(x) - 1)), NA)
+        itemstat[i, 2L] <- ifelse(ncol(x) > 2L, alpha.function(cov(x[, -grep(var, colnames(x))],
+                                                               use = "pairwise.complete.obs", method = "pearson"), p = (ncol(x) - 1L)), NA)
 
       }
 
@@ -406,20 +487,9 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
 
     #........................................
     # Descriptive statistics
-    if (use == "complete.obs") {
-
-      x <- na.omit(x)
-
-    }
 
     itemstat <- data.frame(var = colnames(x),
-                           n = vapply(x, function(y) length(na.omit(y)), FUN.VALUE = 1),
-                           nNA = vapply(x, function(y) sum(is.na(y)), FUN.VALUE = 1),
-                           pNA = vapply(x, function(y) sum(is.na(y)) / length(y), FUN.VALUE = 1) * 100,
-                           m = colMeans(x, na.rm = TRUE),
-                           sd = vapply(x, sd, na.rm = TRUE, FUN.VALUE = 1),
-                           min = vapply(x, function(y) min(y, na.rm = TRUE), FUN.VALUE = 1),
-                           max = vapply(x, function(y) max(y, na.rm = TRUE), FUN.VALUE = 1),
+                           misty::descript(x, output = FALSE)$result[, c("n", "nNA", "pNA", "m", "sd", "min", "max")],
                            itemstat,
                            stringsAsFactors = FALSE)
 
@@ -436,13 +506,14 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, use = c("listwise", "pair
   # Return object
 
   object <- list(call = match.call(),
+                 type = "alpha",
                  data = x,
-                 args = list(exclude = exclude, std = std, use = use, print = print,
-                             digits = digits, conf.level = conf.level, as.na = as.na,
+                 args = list(exclude = exclude, std = std, ordered = ordered, na.omit = na.omit,
+                             print = print, digits = digits, conf.level = conf.level, as.na = as.na,
                              check = check, output = output),
                  result = list(alpha = alpha.x, itemstat = itemstat))
 
-  class(object) <- "alpha.coef"
+  class(object) <- "coef"
 
   ####################################################################################
   # Output

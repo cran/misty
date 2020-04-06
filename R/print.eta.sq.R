@@ -21,7 +21,7 @@
 #' dat <- data.frame(x1 = c(1, 1, 1, 1, 2, 2, 2, 2, 2),
 #'                   x2 = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
 #'                   y1 = c(3, 2, 4, 5, 6, 4, 7, 5, 7),
-#'                   y2 = c(2, 4, 1, 5, 3, 3, 4, 6, 7))
+#'                   y2 = c(2, 4, 1, 5, 3, 3, 4, 6, 7), stringsAsFactors = FALSE)
 #'
 #' # Eta squared for y1 explained by x1
 #' dat.eta.sq <- eta.sq(dat$y1, group = dat$x1, output = FALSE)
@@ -37,7 +37,7 @@ print.eta.sq <- function(x, digits = x$args$digits, check = TRUE, ...) {
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'", call. = FALSE)
 
@@ -55,7 +55,7 @@ print.eta.sq <- function(x, digits = x$args$digits, check = TRUE, ...) {
   #-----------------------------------------
   # Number of dependent variables, number of independent variables
 
-  print.object.nrow <- ncol(x$dat$x) == 1
+  print.object.nrow <- ncol(x$dat$x) == 1L
   print.object.ncol <- is.null(dim(x$dat$group))
 
   ####################################################################################
@@ -77,21 +77,21 @@ print.eta.sq <- function(x, digits = x$args$digits, check = TRUE, ...) {
     if (!print.object.nrow && !print.object.ncol) {
 
       # Variable names and format digis
-      print.object <- rbind(c("", "Outcome", rep("", times = ncol(print.object) - 1)),
+      print.object <- rbind(c("", "Outcome", rep("", times = ncol(print.object) - 1L)),
                             c("Group", colnames(print.object)),
                             cbind(rownames(print.object),
                                   formatC(print.object, digits = digits, format = "f")))
 
       # Format
-      print.object[-c(1, 2), 1] <- paste("", print.object[-c(1, 2), 1])
-      print.object[, 1] <- format(print.object[, 1], justify = "left")
+      print.object[-c(1L, 2L), 1L] <- paste("", print.object[-c(1L, 2L), 1L])
+      print.object[, 1L] <- format(print.object[, 1], justify = "left")
 
-      print.object[-1, 2] <- paste("", print.object[-1, 2])
+      print.object[-1L, 2L] <- paste("", print.object[-1L, 2L])
 
-      print.object[1, 2] <- format(print.object[1, 2], justify = "left", width = max(nchar(print.object[, 2])) )
-      print.object[-1, 2] <- format(print.object[-1, 2], justify = "right")
+      print.object[1L, 2L] <- format(print.object[1L, 2L], justify = "left", width = max(nchar(print.object[, 2L])) )
+      print.object[-1L, 2L] <- format(print.object[-1L, 2L], justify = "right")
 
-      print.object[-1, -1] <- apply(print.object[-1, -1], 2, function(y) format(y, justify = "right"))
+      print.object[-1L, -1L] <- apply(print.object[-1L, -1L], 2, function(y) format(y, justify = "right"))
 
     }
 

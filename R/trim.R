@@ -1,4 +1,4 @@
-#' Trim Whispace from String
+#' Trim Whitespace from String
 #'
 #' This function removes whitespace from start and/or end of a string
 #'
@@ -63,7 +63,7 @@ trim <- function(x, side = c("both", "left", "right"), check = TRUE) {
     }
 
     # Check input 'side'
-    if (length(side) != 1) {
+    if (length(side) != 1L) {
 
       stop("Please specify \"both\", \"left\", or \"right\ for the argument 'side'.", call. = FALSE)
 

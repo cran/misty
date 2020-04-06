@@ -81,7 +81,7 @@ size.cor <- function(rho, delta,
 
     }
 
-    if (delta <= 0) {
+    if (delta <= 0L) {
 
       stop("Argument delta out of bound, specify a value > 0.", call. = FALSE)
 
@@ -91,13 +91,13 @@ size.cor <- function(rho, delta,
 
     if (is.null(rho)) {
 
-      rho <- 0
+      rho <- 0L
 
     }
 
     ###
 
-    if (rho <= -1 || rho >= 1) {
+    if (rho <= -1L || rho >= 1L) {
 
       stop("Argument rho out of bound, specify a value between -1 and 1.", call. = FALSE)
 
@@ -113,7 +113,7 @@ size.cor <- function(rho, delta,
 
     ###
 
-    if (alpha <= 0 || alpha >= 1) {
+    if (alpha <= 0L || alpha >= 1L) {
 
       stop("Argument alpha out of bound, specify a value between 0 and 1.", call. = FALSE)
 
@@ -121,7 +121,7 @@ size.cor <- function(rho, delta,
 
     ###
 
-    if (beta <= 0 || beta >= 1) {
+    if (beta <= 0L || beta >= 1L) {
 
       stop("Argument beta out of bound, specify a value between 0 and 1.", call. = FALSE)
 
@@ -131,7 +131,7 @@ size.cor <- function(rho, delta,
 
     if (alternative == "two.sided") {
 
-      if ((rho + delta) >= 1 || (rho - delta) <= -1) {
+      if ((rho + delta) >= 1L || (rho - delta) <= -1L) {
 
         stop("Value (rho + delta) or (rho - delta) out of bound.", call. = FALSE)
 
@@ -141,7 +141,7 @@ size.cor <- function(rho, delta,
 
       if (alternative == "less") {
 
-        if ((rho - delta) <= -1) {
+        if ((rho - delta) <= -1L) {
 
           stop("Value (rho - delta) out of bound.", call. = FALSE)
 
@@ -149,7 +149,7 @@ size.cor <- function(rho, delta,
 
       } else {
 
-        if ((rho + delta) >= 1) {
+        if ((rho + delta) >= 1L) {
 
           stop("Value (rho + delta) out of bound.", call. = FALSE)
 
@@ -165,12 +165,12 @@ size.cor <- function(rho, delta,
   # Main function
 
   alternative <- ifelse(all(c("two.sided", "less", "greater") %in% alternative), "two.sided", alternative)
-  side <- switch(alternative, two.sided = 2, less = 1, greater = 1)
+  side <- switch(alternative, two.sided = 2L, less = 1L, greater = 1L)
 
   rho.0 <- rho
   rho.1 <- switch(alternative, two.sided = rho.0 + delta, less = rho.0 - delta, greater = rho.0 + delta)
 
-  n <- 3 + 4 * ((qnorm(1 - alpha / side) + qnorm(1 - beta)) / (log((1 + rho.1) / (1 - rho.1)) - log((1 + rho.0) / (1 - rho.0))))^2
+  n <- 3L + 4L * ((qnorm(1L - alpha / side) + qnorm(1L - beta)) / (log((1L + rho.1) / (1L - rho.1)) - log((1L + rho.0) / (1L - rho.0))))^2L
 
   ####################################################################################
   # Return object

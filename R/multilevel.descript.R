@@ -49,7 +49,7 @@
 #'                   group = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
 #'                   x1 = c(2, 3, 2, 2, 1, 2, 3, 4, 2),
 #'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
-#'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
+#'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4), stringsAsFactors = FALSE)
 #'
 #' # Multilevel descriptive statistics for x1
 #' multilevel.descript(dat$x1, group = dat$group)
@@ -82,7 +82,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
   #......
   # Vector, matrix or data frame for the argument 'x'?
-  if (!is.vector(x) && !is.matrix(x) && !is.data.frame(x)) {
+  if (!is.atomic(x) && !is.matrix(x) && !is.data.frame(x)) {
 
     stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
          call. = FALSE)
@@ -100,7 +100,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   #----------------------------------------
   # Data frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #----------------------------------------
   # Convert user-missing values into NA
@@ -160,7 +160,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check input 'group'
-    if (length(unique(na.omit(group))) == 1) {
+    if (length(unique(na.omit(group))) == 1L) {
 
       stop("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
 
@@ -168,11 +168,11 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check input 'x': Zero variance?
-    x.check <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    x.check <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
 
     if (any(x.check)) {
 
-      if (length(x.check) > 1) {
+      if (length(x.check) > 1L) {
 
         warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
                        paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
@@ -204,7 +204,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check digits argument
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE)
 
@@ -212,7 +212,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check icc.digits argument
-    if (icc.digits %% 1 != 0 || icc.digits < 0) {
+    if (icc.digits %% 1L != 0L || icc.digits < 0L) {
 
       stop("Specify a positive integer value for the argument 'icc.digits'.", call. = FALSE)
 
@@ -220,9 +220,9 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Variance within groups
-    if (ncol(x) == 1) {
+    if (ncol(x) == 1L) {
 
-      if (all(tapply(unlist(x), group, function(y) length(na.omit(y))) <= 1)) {
+      if (all(tapply(unlist(x), group, function(y) length(na.omit(y))) <= 1L)) {
 
         stop("Variable specified in 'x' does not have any within-group variance.", call. = FALSE)
 
@@ -230,7 +230,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     } else {
 
-      x.check <- vapply(x, function(y) all(tapply(y, group, function(z) length(na.omit(z))) <= 1), FUN.VALUE = logical(1))
+      x.check <- vapply(x, function(y) all(tapply(y, group, function(z) length(na.omit(z))) <= 1L), FUN.VALUE = logical(1))
 
       if (any(x.check)) {
 
@@ -262,25 +262,25 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   # Main Function
 
   # No. of observations
-  no.obs <- vapply(x, function(y) length(na.omit(y)), FUN.VALUE = 1)
+  no.obs <- vapply(x, function(y) length(na.omit(y)), FUN.VALUE = 1L)
 
   # No. of missing values
-  no.miss <- vapply(x, function(y) sum(is.na(y)), FUN.VALUE = 1)
+  no.miss <- vapply(x, function(y) sum(is.na(y)), FUN.VALUE = 1L)
 
   # No. of groups
-  no.group <- vapply(x, function(y) length(unique(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = 1)
+  no.group <- vapply(x, function(y) length(unique(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = 1L)
 
   # Average group size
-  m.group.size <- vapply(x, function(y) mean(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = double(1))
+  m.group.size <- vapply(x, function(y) mean(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = double(1L))
 
   # Standard deviation group size
-  sd.group.size <- vapply(x, function(y) sd(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = double(1))
+  sd.group.size <- vapply(x, function(y) sd(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = double(1L))
 
   # Minimum group size
-  min.group.size <- vapply(x, function(y) min(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = 1)
+  min.group.size <- vapply(x, function(y) min(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = 1L)
 
   # Maximum group size
-  max.group.size <- vapply(x, function(y) max(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = 1)
+  max.group.size <- vapply(x, function(y) max(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = 1L)
 
   # ICC(1)
   icc1 <- misty::multilevel.icc(x, group = group, type = 1, method = method, REML = REML, check = FALSE)
@@ -289,7 +289,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   icc2 <- misty::multilevel.icc(x, group = group, type = 2, method = method, REML = REML, check = FALSE)
 
   # Design effect
-  deff <- 1 + icc1*(m.group.size - 1)
+  deff <- 1 + icc1*(m.group.size - 1L)
 
   deff.sqrt <- sqrt(deff)
 
@@ -300,7 +300,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   # Return object
 
   object <- list(call = match.call(),
-                 data = data.frame(x = x, group = group),
+                 data = data.frame(x = x, group = group, stringsAsFactors = FALSE),
                  args = list(method = method, REML = REML,
                              digits = digits, icc.digits = icc.digits, as.na = as.na, check = check, output = output),
                  result = list(no.obs = no.obs, no.miss = no.miss, no.group = no.group,

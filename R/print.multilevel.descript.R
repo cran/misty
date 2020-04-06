@@ -23,7 +23,7 @@
 #'                   group = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
 #'                   x1 = c(2, 3, 2, 2, 1, 2, 3, 4, 2),
 #'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
-#'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
+#'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4), stringsAsFactors = FALSE)
 #'
 #' # Multilevel descriptve statistics for x1
 #' dat.ml.descript <- multilevel.descript(dat$x1, group = dat$group, output = FALSE)
@@ -40,7 +40,7 @@ print.multilevel.descript <- function(x, digits = x$args$digits, icc.digits = x$
 
     #......
     # Check digits argument
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE)
 
@@ -48,7 +48,7 @@ print.multilevel.descript <- function(x, digits = x$args$digits, icc.digits = x$
 
     #......
     # Check icc.digits argument
-    if (icc.digits %% 1 != 0 | icc.digits < 0) {
+    if (icc.digits %% 1L != 0L || icc.digits < 0L) {
 
       stop("Specify a positive integer value for the argument 'icc.digits'.", call. = FALSE)
 
@@ -71,25 +71,25 @@ print.multilevel.descript <- function(x, digits = x$args$digits, icc.digits = x$
 
   #-----------------------------------------
   # One variable
-  if (length(x$result$no.obs) == 1) {
+  if (length(x$result$no.obs) == 1L) {
 
     # Format
-    for (i in c(5, 6, 13, 14, 15)) {
+    for (i in c(5L, 6L, 13L, 14L, 15L)) {
 
-      print.object[i, 2] <- formatC(as.numeric(unlist(print.object[i, 2])), digits = digits, format = "f")
+      print.object[i, 2L] <- formatC(as.numeric(unlist(print.object[i, 2L])), digits = digits, format = "f")
 
     }
 
-    print.object[10, 2] <- formatC(as.numeric(unlist(print.object[10, 2])), digits = icc.digits, format = "f")
-    print.object[11, 2] <- formatC(as.numeric(unlist(print.object[11, 2])), digits = icc.digits, format = "f")
+    print.object[10L, 2L] <- formatC(as.numeric(unlist(print.object[10L, 2L])), digits = icc.digits, format = "f")
+    print.object[11L, 2L] <- formatC(as.numeric(unlist(print.object[11L, 2L])), digits = icc.digits, format = "f")
 
-    print.object[, 1] <- paste("", print.object[, 1])
+    print.object[, 1L] <- paste("", print.object[, 1L])
 
 
-    print.object[, 1] <- format(print.object[, 1, drop = FALSE])
+    print.object[, 1L] <- format(print.object[, 1L, drop = FALSE])
 
-    print.object[, 1] <- format(unlist(print.object[, 1]), justify = "left")
-    print.object[, 2] <- format(as.character(print.object[, 2]), justify = "right")
+    print.object[, 1L] <- format(unlist(print.object[, 1L]), justify = "left")
+    print.object[, 2L] <- format(as.character(print.object[, 2L]), justify = "right")
 
   #-----------------------------------------
   # More than one variable
@@ -98,22 +98,22 @@ print.multilevel.descript <- function(x, digits = x$args$digits, icc.digits = x$
     print.object <- rbind(c("", names(x$result$no.obs)), print.object)
 
     # Format
-    for (i in c(6, 7, 14, 15, 16)) {
+    for (i in c(6L, 7L, 14L, 15L, 16L)) {
 
-      print.object[i, 2:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[i, 2:ncol(print.object)])), digits = digits, format = "f")
+      print.object[i, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[i, 2L:ncol(print.object)])), digits = digits, format = "f")
 
     }
 
-    print.object[11, 2:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[11, 2:ncol(print.object)])), digits = icc.digits, format = "f")
-    print.object[12, 2:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[12, 2:ncol(print.object)])), digits = icc.digits, format = "f")
+    print.object[11L, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[11L, 2L:ncol(print.object)])), digits = icc.digits, format = "f")
+    print.object[12L, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[12L, 2L:ncol(print.object)])), digits = icc.digits, format = "f")
 
-    print.object[, 1] <- paste("", print.object[, 1])
+    print.object[, 1L] <- paste("", print.object[, 1L])
 
 
-    print.object[, 1] <- format(print.object[, 1, drop = FALSE])
+    print.object[, 1L] <- format(print.object[, 1L, drop = FALSE])
 
-    print.object[, 1] <- format(unlist(print.object[, 1]), justify = "left")
-    print.object[, 2:ncol(print.object)] <- apply(print.object[, 2:ncol(print.object)], 2, function(y) format(as.character(y), justify = "right"))
+    print.object[, 1L] <- format(unlist(print.object[, 1L]), justify = "left")
+    print.object[, 2L:ncol(print.object)] <- apply(print.object[, 2L:ncol(print.object)], 2, function(y) format(as.character(y), justify = "right"))
 
   }
 

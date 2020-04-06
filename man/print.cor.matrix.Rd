@@ -5,7 +5,7 @@
 \title{Print cor.matrix object}
 \usage{
 \method{print}{cor.matrix}(x, print = x$args$print, tri = x$args$tri,
-      digits = x$args$digits, pval.digits = x$args$pval.digits,
+      digits = x$args$digits, p.digits = x$args$p.digits,
       check = TRUE, ...)
 }
 \arguments{
@@ -22,7 +22,7 @@ and \code{upper} for the upper triangular.}
 \item{digits}{an integer value indicating the number of decimal places to be used for displaying
 correlation coefficients.}
 
-\item{pval.digits}{an integer indicating the number of decimal places to be used for displaying \emph{p}-values.}
+\item{p.digits}{an integer indicating the number of decimal places to be used for displaying \emph{p}-values.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -43,7 +43,7 @@ dat.cor <- cor.matrix(dat[, c("x", "y", "z")], output = FALSE)
 
 # Print cor.matrix object with 3 digits for correlation coefficients
 # and 4 digits for significance values
-print(dat.cor, print = "all", digits = 3, pval.digits = 4)
+print(dat.cor, print = "all", digits = 3, p.digits = 4)
 }
 \seealso{
 \code{\link{cor.matrix}}

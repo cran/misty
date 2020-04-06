@@ -46,7 +46,7 @@
 #'
 #' # Dummy coding of a numeric variable, reference = 3
 #' # assign user-specified variable names and attach to the data frame
-#' dat <- data.frame(dat, dummy.c(dat$x, names = c("x.3_1", "x.3_2")))
+#' dat <- data.frame(dat, dummy.c(dat$x, names = c("x.3_1", "x.3_2")), stringsAsFactors = FALSE)
 #'
 #' # Dummy coding of a character variable, reference = "c"
 #' dummy.c(dat$y)
@@ -60,7 +60,7 @@
 #'
 #' # Dummy coding of a character variable, reference = "c"
 #' # assign user-specified variable names and attach to the data frame
-#' dat <- data.frame(dat, dummy.c(dat$y, names = c("y.c_a", "y.c_b")))
+#' dat <- data.frame(dat, dummy.c(dat$y, names = c("y.c_a", "y.c_b")), stringsAsFactors = FALSE)
 #'
 #' # Dummy coding of a factor, reference = "C"
 #' dummy.c(dat$z)
@@ -74,7 +74,7 @@
 #'
 #' # Dummy coding of a factor, reference = "C"
 #' # assign user-specified variable names and attach to the data frame
-#' dat <- data.frame(dat, dummy.c(dat$z, names = c("z.C_A", "z.C_B")))
+#' dat <- data.frame(dat, dummy.c(dat$z, names = c("z.C_A", "z.C_B")), stringsAsFactors = FALSE)
 dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   ####################################################################################
@@ -91,7 +91,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   #......
   # Vector or factor for the argument 'x'?
-  if (!is.vector(x) && !is.factor(x)) {
+  if (!is.atomic(x) && !is.factor(x)) {
 
     stop("Please specify a numeric vector with integer values, character vector or factor for the argument 'x'.",
          call. = FALSE)
@@ -136,7 +136,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -150,7 +150,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
     # Input check 'x'
     if (is.numeric(x)) {
 
-      if (any(na.omit(x) %% 1 != 0)) {
+      if (any(na.omit(x) %% 1L != 0L)) {
 
         stop("Please specify a vector with integer values, a character vector or a factor for the argument 'x'.",
              call. = FALSE)
@@ -190,9 +190,9 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
     #......
     # Input check 'names'
-    if (length(names) > 1) {
+    if (length(names) > 1L) {
 
-      if (length(names) != (length(x.unique) - 1)) {
+      if (length(names) != (length(x.unique) - 1L)) {
 
         stop("The length of the vector specified in 'names' does not match with the number of unique values minus one.",
              call. = FALSE)
@@ -209,7 +209,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
   #-----------------------------------------
   # Create dummy matrix
 
-  object <- matrix(0, nrow = x.length, ncol = (length(x.unique) - 1))
+  object <- matrix(0L, nrow = x.length, ncol = (length(x.unique) - 1L))
 
   #-----------------------------------------
   # Reference category
@@ -250,7 +250,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   for (i in colnames(object)) {
 
-    object[which(x == i), i] <- 1
+    object[which(x == i), i] <- 1L
 
   }
 

@@ -4,20 +4,23 @@
 \alias{alpha.coef}
 \title{Coefficient Alpha and Item Statistics}
 \usage{
-alpha.coef(x, exclude = NULL, std = FALSE, use = c("listwise", "pairwise"),
+alpha.coef(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit = FALSE,
            print = c("all", "alpha", "item"), digits = 2, conf.level = 0.95,
            as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a matrix, data frame, variance-covariance or correlation matrix.}
+\item{x}{a matrix, data frame, variance-covariance or correlation matrix. Note that
+raw data is needed to compute ordinal coefficient alpha, i.e., \code{ordered = TRUE}.}
 
 \item{exclude}{a character vector indicating items to be excluded from the analysis.}
 
-\item{std}{logical: if \code{TRUE} the standardized coefficient alpha is computed.}
+\item{std}{logical: if \code{TRUE}, the standardized coefficient alpha is computed.}
 
-\item{use}{a character string indicating a method for computing a correlation or variance-covariance
-matrix in the presence of missing values, i.e., \code{"listwise"} for listwise deletion
-and \code{"pairwise"} (default) for pairwise deletion.}
+\item{ordered}{logical: if \code{TRUE}, variables are treated as ordered (ordinal) variables to
+compute ordinal coefficient alpha.}
+
+\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
+(i.e., listwise deletion); if \code{FALSE}, pairwise deletion is used.}
 
 \item{print}{a character vector indicating which results to show, i.e. \code{"all"} (default), for all
 results \code{"alpha"} for the coefficient alpha, and \code{"item"} for item statistics.}
@@ -40,10 +43,19 @@ matrix or data frame specified in \code{x} (\code{data}), specification of funct
 list with results (\code{result}).
 }
 \description{
-This function computes point estimate and confidence interval for the coefficient alpha (aka Cronbach's alpha)
-along with the corrected item-total correlation and coefficient alpha if item deleted.
+This function computes point estimate and confidence interval for the (ordinal) coefficient alpha (aka Cronbach's
+alpha) along with the corrected item-total correlation and coefficient alpha if item deleted.
 }
 \details{
+Ordinal coefficient alpha was introduced by Zumbo, Gadermann and Zeisser (2007) which is obtained by applying
+the formula for computing coefficient alpha to the polychoric correlation matrix instead of the variance-covariance
+or product-moment correlation matrix. Note that Chalmers (2018) highlighted that the ordinal coefficient alpha
+should be interpreted only as a hypothetical estimate of an alternative reliability, whereby a test's ordinal
+categorical response options have be modified to include an infinite number of ordinal response options and
+concludes that coefficient alpha should not be reported as a measure of a test's reliability. However,
+Zumbo and Kroc (2019) argued that Chalmers' critique of ordinal coefficient alpha is unfounded and that
+ordinal coefficient alpha may be the most appropriate quantifier of reliability when using Likert-type
+measurement to study a latent continuous random variable.
 Confidence intervals are computed using the procedure by Feldt, Woodruff and Salih (1987). When computing
 confidence intervals using pairwise deletion, the average sample size from all pairwise samples is used.
 Note that there are at least 10 other procedures for computing the confidence interval (see Kelley and
@@ -51,10 +63,10 @@ Pornprasertmanit, 2016), which are implemented in the \code{ci.reliability()} fu
 \pkg{MBESSS} package by Ken Kelley (2019).
 }
 \examples{
-dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
-                  item2 = c(5, 1, 3, 5, 2, 2, 5, 1),
-                  item3 = c(4, 2, 4, 5, 1, 3, 5, 1),
-                  item4 = c(5, 1, 2, 5, 2, 3, 4, 2))
+dat <- data.frame(item1 = c(4, 2, 3, 4, 1, 2, 4, 2),
+                  item2 = c(4, 3, 3, 3, 2, 2, 4, 1),
+                  item3 = c(3, 2, 4, 2, 1, 3, 4, 1),
+                  item4 = c(4, 1, 2, 3, 2, 3, 4, 2), stringsAsFactors = FALSE)
 
 # Compute unstandardized coefficient alpha and item statistics
 alpha.coef(dat)
@@ -76,28 +88,44 @@ dat.cov <- cov(dat)
 # Compute unstandardized coefficient alpha based on the variance-covariance matrix
 alpha.coef(dat.cov)
 
-# Compute variance-covariance matrix
+# Compute correlation matrix
 dat.cor <- cor(dat)
 # Compute standardized coefficient alpha based on the correlation matrix
 alpha.coef(dat.cor)
+
+# Compute ordinal coefficient alpha
+alpha.coef(dat, ordered = TRUE)
 }
 \references{
+Chalmers, R. P. (2018). On misconceptions and the limited usefulness of ordinal alpha. \emph{Educational
+and Psychological Measurement, 78}, 1056-1071. https://doi.org/10.1177/0013164417727036
+
 Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests. \emph{Psychometrika, 16}, 297-334.
+https://doi.org/10.1007/BF02310555
 
 Cronbach, L.J. (2004). My current thoughts on coefficient alpha and successor procedures. \emph{Educational
-and Psychological Measurement, 64}, 391-418.
+and Psychological Measurement, 64}, 391-418. https://doi.org/10.1177/0013164404266386
 
 Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for coefficient alpha.
-\emph{Applied Psychological Measurement}, 11 93-103.
+\emph{Applied Psychological Measurement}, 11 93-103. https://doi.org/10.1177/014662168701100107
 
 Kelley, K., & Pornprasertmanit, S. (2016). Confidence intervals for population reliability coefficients:
-Evaluation of methods, recommendations, and software for composite measures. \emph{Psychological Methods, 21}, 69-92.
+Evaluation of methods, recommendations, and software for composite measures.
+\emph{Psychological Methods, 21}, 69-92. https://doi.org/10.1037/a0040086.
 
 Ken Kelley (2019). \emph{MBESS: The MBESS R Package}. R package version 4.6.0.
 https://CRAN.R-project.org/package=MBESS
+
+Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens' scales of measurement do not help
+make it: A response to Chalmers. \emph{Journal of Modern Applied Statistical Methods, 79}, 1184-1197.
+https://doi.org/10.1177/0013164419844305
+
+Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of coefficients alpha and theta for
+Likert rating scales. \emph{Journal of Modern Applied Statistical Methods, 6}, 21-29.
+https://doi.org/10.22237/jmasm/1177992180
 }
 \seealso{
-\code{\link{reverse.item}}, \code{\link{scores}}
+\code{\link{omega.coef}}, \code{\link{reverse.item}}, \code{\link{scores}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

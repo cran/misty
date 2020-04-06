@@ -4,33 +4,34 @@
 \alias{cor.matrix}
 \title{Correlation Matrix with Statistical Significance Testing}
 \usage{
-cor.matrix(x, method = c("pearson", "spearman", "kendall-b"),
+cor.matrix(x, method = c("pearson", "spearman", "kendall-b", "kendall-c"),
            use = c("listwise", "pairwise"), group = NULL,
-           print = c("all", "cor", "n", "p"), tri = c("both", "lower", "upper"),
-           p.adj = c("none", "bonferroni", "holm", "hochberg",
-                     "hommel", "BH", "BY", "fdr"),
-           digits = 2, pval.digits = 3, as.na = NULL, check = TRUE,
-           output = TRUE)
+           print = c("all", "cor", "n", "p"),
+           tri = c("both", "lower", "upper"),
+           p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel",
+                     "BH", "BY", "fdr"),
+           digits = 2, p.digits = 3, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame.}
 
 \item{method}{a character vector indicating which correlation coefficient is to be computed, i.e.
 \code{"pearson"} for Pearson product-moment correlation coefficient (default),
-\code{"spearman"} for Spearman's rank-order correlation coefficient, or \code{kendall-b} for
-Kendall's Tau-b correlation coefficient.}
+\code{"spearman"} for Spearman's rank-order correlation coefficient, \code{kendall-b} for
+Kendall's Tau-b correlation coefficient or \code{kendall-c} for Kendall-Stuart's Tau-c
+correlation coefficient.}
 
 \item{use}{a character vector giving a method for computing a correlation matrix in the presence
 of missing values, i.e., \code{"listwise"} for listwise deletion and \code{"pairwise"} for
 pairwise deletion}
 
-\item{group}{a numeric vector, factor or character vector as grouping variable to show results for
+\item{group}{a numeric vector, character vector of factor as grouping variable to show results for
 each group separately, i.e., upper triangular for one group and lower triangular for
 another group. Note that the grouping variable is limited to two groups.}
 
 \item{print}{a character string or character vector indicating which additional results to show,
-i.e. \code{"all"}, for all additional results: \code{"n"} for the sample sizes, and \code{"p"}
-for \emph{p}-values.}
+i.e. \code{"all"}, for all additional results: \code{"n"} for the sample sizes, and
+\code{"p"} for \emph{p}-values.}
 
 \item{tri}{a character string indicating which triangular of the matrix to show on the console,
 i.e., \code{both} for upper and lower triangular, \code{lower} (default) for the
@@ -43,7 +44,7 @@ i.e.,  \code{none} (default), \code{bonferroni}, \code{holm}, \code{hochberg}, \
 \item{digits}{an integer value indicating the number of decimal places to be used for displaying
 correlation coefficients.}
 
-\item{pval.digits}{an integer indicating the number of decimal places to be used for displaying \emph{p}-values.}
+\item{p.digits}{an integer value indicating the number of decimal places to be used for displaying \emph{p}-values.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.}
@@ -66,7 +67,7 @@ dat <- data.frame(group = c("a", "a", "a", "a", "a",
                             "b", "b", "b", "b", "b"),
                   x = c(5, NA, 6, 4, 6, 7, 9, 5, 8, 7),
                   y = c(3, 3, 5, 6, 7, 4, 7, NA, NA, 8),
-                  z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6))
+                  z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6), stringsAsFactors = FALSE)
 
 # Pearson product-moment correlation coefficient matrix using pairwise deletion
 cor.matrix(dat[, c("x", "y", "z")])
@@ -76,6 +77,9 @@ cor.matrix(dat[, c("x", "y", "z")], method = "spearman")
 
 # Kendall's Tau-b correlation matrix using pairwise deletion
 cor.matrix(dat[, c("x", "y", "z")], method = "kendall-b")
+
+# Kendall's Tau-c correlation matrix using pairwise deletion
+cor.matrix(dat[, c("x", "y", "z")], method = "kendall-c")
 
 # Pearson product-moment correlation coefficient matrix using pairwise deletion,
 # print sample size and significance values

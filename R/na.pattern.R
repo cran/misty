@@ -36,7 +36,7 @@
 #' @examples
 #' dat <- data.frame(x = c(1, NA, NA, 6, 3),
 #'                   y = c(7, NA, 8, 9, NA),
-#'                   z = c(2, NA, 3, NA, 5))
+#'                   z = c(2, NA, 3, NA, 5), stringsAsFactors = FALSE)
 #'
 #' # Compute a summary of missing data patterns
 #' dat.pattern <- na.pattern(dat)
@@ -90,7 +90,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 || digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE)
 
@@ -121,7 +121,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
   #----------------------------------------
   # As data.frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   ####################################################################################
   # Main Function
@@ -151,26 +151,26 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     restab <- rbind(data.frame(pattern = seq_len(nrow(x.na.order.dupl)),
                                n = as.vector(table(patt)),
-                               Perc = as.vector(table(patt) / nrow(x.na) * 100),
+                               Perc = as.vector(table(patt) / nrow(x.na) * 100L),
                                abs(x.na.order.dupl - 1),
                                nNA = rowSums(x.na.order.dupl),
-                               pNA = rowSums(x.na.order.dupl) / ncol(x.na) * 100,
-                               row.names = NULL),
-                    c("", sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(x.na) * 100)), colSums(x.na), "", ""))
+                               pNA = rowSums(x.na.order.dupl) / ncol(x.na) * 100L,
+                               row.names = NULL, stringsAsFactors = FALSE),
+                    c("", sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(x.na) * 100L)), colSums(x.na), "", ""))
 
     # Number of missing data pattern
-    pattern <- unname(vapply(apply(x.na[, colnames(x.na.order.dupl)], 1,  paste, collapse = " "), function(y) match(y, apply(x.na.order.dupl, 1, paste, collapse = " ")), FUN.VALUE = 1))
+    pattern <- unname(vapply(apply(x.na[, colnames(x.na.order.dupl)], 1,  paste, collapse = " "), function(y) match(y, apply(x.na.order.dupl, 1, paste, collapse = " ")), FUN.VALUE = 1L))
 
   } else {
 
-    restab <- rbind(data.frame(pattern = 1,
+    restab <- rbind(data.frame(pattern = 1L,
                                n = as.vector(table(patt)),
-                               Perc = as.vector(table(patt) / nrow(x.na) * 100),
-                               matrix(abs(x.na.order.dupl - 1), ncol = length(x.na.order.dupl), dimnames = list(NULL, colnames(x.na.order.dupl))),
+                               Perc = as.vector(table(patt) / nrow(x.na) * 100L),
+                               matrix(abs(x.na.order.dupl - 1L), ncol = length(x.na.order.dupl), dimnames = list(NULL, colnames(x.na.order.dupl))),
                                nNA = sum(x.na.order.dupl),
-                               pNA = sum(x.na.order.dupl) / ncol(x.na) * 100,
-                               row.names = NULL),
-                    c("", sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(x.na) * 100)), colSums(x.na), "", ""))
+                               pNA = sum(x.na.order.dupl) / ncol(x.na) * 100L,
+                               row.names = NULL, stringsAsFactors = FALSE),
+                    c("", sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(x.na) * 100L)), colSums(x.na), "", ""))
 
     pattern <- rep(1, times = nrow(x))
 

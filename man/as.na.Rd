@@ -7,7 +7,7 @@
 as.na(x, as.na, check = TRUE)
 }
 \arguments{
-\item{x}{a vector, factor, matrix or data frame.}
+\item{x}{a vector, factor, matrix, data frame, or list.}
 
 \item{as.na}{a vector indicating values or characters to replace with \code{NA}.}
 
@@ -17,8 +17,8 @@ as.na(x, as.na, check = TRUE)
 Returns \code{x} with values specified in \code{na} replaced with \code{NA}.
 }
 \description{
-This function replaces user-specified values in the argument \code{as.na} in a vector, factor, matrix or
-data frame with \code{NA}.
+This function replaces user-specified values in the argument \code{as.na} in a vector, factor, matrix,
+data frame or list with \code{NA}.
 }
 \examples{
 #--------------------------------------
@@ -65,13 +65,22 @@ as.na(x.mat, as.na = c(8, 14, 20))
 # Data frame
 x.df <- data.frame(x1 = c(1, 2, 3),
                    x2 = c(2, 1, 3),
-                   x3 = c(3, 1, 2))
+                   x3 = c(3, 1, 2), stringsAsFactors = FALSE)
 
 # Replace 1 with NA
 as.na(x.df, as.na = 1)
 
 # Replace 1 and 3 with NA
 as.na(x.df, as.na = c(1, 3))
+
+#--------------------------------------
+# List
+x.list <- list(x1 = c(1, 2, 3, 1, 2, 3),
+               x2 = c(2, 1, 3, 2, 1),
+               x3 = c(3, 1, 2, 3))
+
+# Replace 1 with NA
+as.na(x.list, as.na = 1)
 }
 \references{
 Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}. Wadsworth & Brooks/Cole.

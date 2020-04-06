@@ -56,7 +56,7 @@
 #' # Data frame
 #' x.df1 <- data.frame(x1 = c(NA, 2, 3),
 #'                     x2 = c(2, NA, 3),
-#'                     x3 = c(3, NA, 2))
+#'                     x3 = c(3, NA, 2), stringsAsFactors = FALSE)
 #'
 #' # Replace NA with -99
 #' na.as(x.df1, value = -99)
@@ -117,7 +117,7 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
     #...............
     # Vector, factor, matrix or data frame for the argument 'x'?
-    if (!is.vector(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x)) {
+    if (!is.atomic(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x)) {
 
       stop("Please specifiy a vector, factor, matrix or data frame for the argument 'x'.",
            call. = FALSE)
@@ -150,7 +150,7 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
     #...............
     # Check input 'value'
-    if (length(value) != 1) {
+    if (length(value) != 1L) {
 
       stop("Please specifiy a single value or character string for the argument 'value'.",
            call. = FALSE)
@@ -171,7 +171,7 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
       # Factor levels
       f.levels <- sort(unique(as.numeric(x)))
 
-      f.value <- length(f.levels) + 1
+      f.value <- length(f.levels) + 1L
       f.levels <- c(f.levels, f.value)
 
       # Factor labels

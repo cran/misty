@@ -42,7 +42,7 @@
 #' @examples
 #' dat <- data.frame(x = c(1, 1, 2, 1, 3, 3, 2, 2, 1, 2),
 #'                   y = c(1, 2, 2, 1, 3, 4, 1, 2, 3, 1),
-#'                   z = c(1, 1, 2, 1, 2, 3, 1, 2, 3, 2))
+#'                   z = c(1, 1, 2, 1, 2, 3, 1, 2, 3, 2), stringsAsFactors = FALSE)
 #'
 #' # Bias-corrected Cramer's V between x and y
 #' cramers.v(dat[, c("x", "y")])
@@ -80,7 +80,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
   #-----------------------------------------
   # Data frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #----------------------------------------
   # Convert user-missing values into NA
@@ -91,7 +91,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Variable with missing values only
-    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (any(x.miss)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
@@ -101,7 +101,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Zero variance
-    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
     if (any(x.zero.var)) {
 
       stop(paste0("After converting user-missing values into NA, following variables have only one unique value: ",
@@ -128,7 +128,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'x'
-    if (any(vapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1)))) {
+    if (any(vapply(x, function(y) any(as.numeric(y) %% 1L != 0L, na.rm = TRUE), FUN.VALUE = logical(1L)))) {
 
       stop("Please specify a matrix or data frame with integer vectors, character vectors or factors the argument 'x'.",
            call. = FALSE)
@@ -137,7 +137,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'x'
-    if (ncol(x) == 1) {
+    if (ncol(x) == 1L) {
 
       stop("Please specify a matrix or data frame with at least two variables for the argument 'x'.", call. = FALSE)
 
@@ -145,7 +145,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Input 'x': Zero variance
-    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
     if (any(x.zero.var)) {
 
       stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
@@ -172,7 +172,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1L != 0L | digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'", call. = FALSE)
 
@@ -202,7 +202,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
   #----------------------------------------
   # Two variables
 
-  if (ncol(x) == 2) {
+  if (ncol(x) == 2L) {
 
     # Cross tabulation
     tab <- table(x)
@@ -222,11 +222,11 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
     # Bias correction
     if (isTRUE(correct)) {
 
-      v <- sqrt(max(c(0, (chisq /  n) - ((k - 1)*(r - 1)) / (n - 1))) / min(c((k - ((k - 1)^2 / (n - 1))) - 1, (r - ((r - 1)^2 / (n - 1))) - 1)))
+      v <- sqrt(max(c(0, (chisq /  n) - ((k - 1)*(r - 1L)) / (n - 1))) / min(c((k - ((k - 1L)^2L / (n - 1L))) - 1, (r - ((r - 1L)^2L / (n - 1L))) - 1L)))
 
     } else {
 
-      v <- as.numeric(sqrt(chisq /  n / min(c(r - 1, k - 1))))
+      v <- as.numeric(sqrt(chisq /  n / min(c(r - 1L, k - 1L))))
 
     }
 
@@ -235,7 +235,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
   } else {
 
     # Pairwise combination
-    comb.n <- combn(ncol(x), m = 2)
+    comb.n <- combn(ncol(x), m = 2L)
 
     # Compute all pairwise contingency coefficients
     comb.n.v <- rep(NA, times = ncol(comb.n))
@@ -255,7 +255,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
     v[upper.tri(v)] <- t(v)[upper.tri(v)]
 
     # Set diagonal to 1
-    diag(v) <- 1
+    diag(v) <- 1L
 
   }
 
@@ -264,12 +264,13 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
   # Return object
   object <- list(call = match.call(),
+                 type = "cramers.v",
                  data = x,
                  args = list(correct = correct, tri = tri, digits = digits, as.na = as.na,
                              check = check, output = output),
                  result = v)
 
-  class(object) <- "cramers.v"
+  class(object) <- "square.matrix"
 
   ####################################################################################
   # Output

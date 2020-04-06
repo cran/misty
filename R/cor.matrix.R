@@ -6,8 +6,9 @@
 #' @param x            a matrix or data frame.
 #' @param method       a character vector indicating which correlation coefficient is to be computed, i.e.
 #'                     \code{"pearson"} for Pearson product-moment correlation coefficient (default),
-#'                     \code{"spearman"} for Spearman's rank-order correlation coefficient, or \code{kendall-b} for
-#'                     Kendall's Tau-b correlation coefficient.
+#'                     \code{"spearman"} for Spearman's rank-order correlation coefficient, \code{kendall-b} for
+#'                     Kendall's Tau-b correlation coefficient or \code{kendall-c} for Kendall-Stuart's Tau-c
+#'                     correlation coefficient.
 #' @param use          a character vector giving a method for computing a correlation matrix in the presence
 #'                     of missing values, i.e., \code{"listwise"} for listwise deletion and \code{"pairwise"} for
 #'                     pairwise deletion
@@ -25,7 +26,7 @@
 #'                     \code{BH}, \code{BY}, or \code{fdr}.
 #' @param digits       an integer value indicating the number of decimal places to be used for displaying
 #'                     correlation coefficients.
-#' @param pval.digits  an integer indicating the number of decimal places to be used for displaying \emph{p}-values.
+#' @param p.digits     an integer value indicating the number of decimal places to be used for displaying \emph{p}-values.
 #' @param as.na        a numeric vector indicating user-defined missing values,
 #'                     i.e. these values are converted to \code{NA} before conducting the analysis.
 #' @param check        logical: if \code{TRUE}, argument specification is checked.
@@ -54,7 +55,7 @@
 #'                             "b", "b", "b", "b", "b"),
 #'                   x = c(5, NA, 6, 4, 6, 7, 9, 5, 8, 7),
 #'                   y = c(3, 3, 5, 6, 7, 4, 7, NA, NA, 8),
-#'                   z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6))
+#'                   z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6), stringsAsFactors = FALSE)
 #'
 #' # Pearson product-moment correlation coefficient matrix using pairwise deletion
 #' cor.matrix(dat[, c("x", "y", "z")])
@@ -64,6 +65,9 @@
 #'
 #' # Kendall's Tau-b correlation matrix using pairwise deletion
 #' cor.matrix(dat[, c("x", "y", "z")], method = "kendall-b")
+#'
+#' # Kendall's Tau-c correlation matrix using pairwise deletion
+#' cor.matrix(dat[, c("x", "y", "z")], method = "kendall-c")
 #'
 #' # Pearson product-moment correlation coefficient matrix using pairwise deletion,
 #' # print sample size and significance values
@@ -80,10 +84,101 @@
 #' # Pearson product-moment correlation coefficient matrix using pairwise deletion,
 #' # results for group "a" and "b" separately
 #' cor.matrix(dat[, c("x", "y", "z")], group = dat$group, print = "all")
-cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = c("listwise", "pairwise"),
+cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendall-c"), use = c("listwise", "pairwise"),
                        group = NULL, print = c("all", "cor", "n", "p"), tri = c("both", "lower", "upper"),
                        p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
-                       digits = 2, pval.digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
+                       digits = 2, p.digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
+
+  ##########################################################################################################
+  # Internal function: Kendall-Stuart Tau-c
+
+  .internal.tau.c <- function(x, y) {
+
+    ####################################################################################
+    # Main Function
+
+    # Contingency table
+    x.table <- table(x, y)
+
+    # Number of rows
+    x.nrow <- nrow(x.table)
+
+    # Number of columns
+    x.ncol <- ncol(x.table)
+
+    # Sample size
+    x.n <- sum(x.table)
+
+    # Minimum of number of rows/columns
+    x.m <- min(dim(x.table))
+
+    #-----------------------------------------
+    if (x.n > 1L && x.nrow > 1L && x.ncol > 1L) {
+
+      pi.c <- pi.d <- matrix(0L, nrow = x.nrow, ncol = x.ncol)
+
+      x.col <- col(x.table)
+      x.row <- row(x.table)
+
+      for (i in 1L:x.nrow) {
+
+        for (j in 1L:x.ncol) {
+
+          pi.c[i, j] <- sum(x.table[x.row < i & x.col < j]) + sum(x.table[x.row > i & x.col > j])
+          pi.d[i, j] <- sum(x.table[x.row < i & x.col > j]) + sum(x.table[x.row > i & x.col < j])
+
+        }
+
+      }
+
+      # Concordant
+      x.con <- sum(pi.c * x.table)/2L
+
+      # Discordant
+      x.dis <- sum(pi.d * x.table)/2L
+
+      # Kendall-Stuart Tau-c
+      tau.c <- (x.m*2L * (x.con - x.dis)) / ((x.n^2L) * (x.m - 1L))
+
+    } else {
+
+      tau.c <- NA
+
+    }
+
+    #-----------------------------------------
+    # If n > 2
+    if (x.n > 2L) {
+
+      # Asymptotic standard error
+      sigma <- sqrt(4L * x.m^2L / ((x.m - 1L)^2L * x.n^4L) * (sum(x.table * (pi.c - pi.d)^2L) - 4L * (x.con - x.dis)^2L/x.n))
+
+      # Test statistic
+      z <- tau.c / sigma
+
+      # Two-tailed p-value
+      pval <- pnorm(abs(z), lower.tail = FALSE)*2L
+
+    } else {
+
+      sigma <- NA
+      pval <- NA
+
+    }
+
+    ####################################################################################
+    # Return object
+
+    object <- list(data = data.frame(x, y, stringsAsFactors = FALSE),
+                   result = list(tau.c = tau.c,
+                                 n = x.n,
+                                 sigma = sigma,
+                                 z = z,
+                                 pval = pval))
+
+    return(object)
+
+  }
 
   ####################################################################################
   # Data
@@ -107,7 +202,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
   #-----------------------------------------
   # As data frame
 
-  x <- as.data.frame(x)
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   ####################################################################################
   # Input Check
@@ -126,7 +221,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
 
     #......
     # Check input 'x'
-    if (any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1)))) {
+    if (any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1L)))) {
 
       stop("Please specify a matrix or data frame with numeric vectors.", call. = FALSE)
 
@@ -134,9 +229,9 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
 
     #......
     # Check input 'method'
-    if (any(!method %in% c("pearson", "spearman", "kendall-b"))) {
+    if (any(!method %in% c("pearson", "spearman", "kendall-b", "kendall-c"))) {
 
-      stop("Character string in the argument 'method' does not match with \"pearson\", \"spearman\", or \"kendall-b\".",
+      stop("Character string in the argument 'method' does not match with \"pearson\", \"spearman\", \"kendall-b\", or \"kendall-c\".",
            call. = FALSE)
 
     }
@@ -170,7 +265,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
       }
 
       # Zero variance in one of the groups
-      x.zero.var <- vapply(split(x, f = group), function(y) apply(y, 2, function(z) length(na.omit(unique(z))) == 1), FUN.VALUE = logical(ncol(x)))
+      x.zero.var <- vapply(split(x, f = group), function(y) apply(y, 2, function(z) length(na.omit(unique(z))) == 1L), FUN.VALUE = logical(ncol(x)))
 
       if (any(x.zero.var)) {
 
@@ -210,23 +305,23 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0 | digits < 0) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
     }
 
     #......
-    # Check input 'pval.digits'
-    if (pval.digits %% 1 != 0 | digits < 0) {
+    # Check input 'p.digits'
+    if (p.digits %% 1L != 0L || p.digits < 0L) {
 
-      stop("Specify a positive integer number for the argument 'pval.digits'.", call. = FALSE)
+      stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE)
 
     }
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (isFALSE(isTRUE(output) || isFALSE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -234,7 +329,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
 
     #......
     # Check input 'x' for zero variance
-    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
     if (any(x.zero.var)) {
 
       warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
@@ -255,7 +350,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     x <- misty::as.na(x, as.na = as.na, check = check)
 
     # Variable with missing values only
-    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (any(x.miss)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
@@ -264,7 +359,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     }
 
     # Constant variables
-    x.con <- vapply(x, function(y) var(as.numeric(y), na.rm = TRUE) == 0, FUN.VALUE = logical(1))
+    x.con <- vapply(x, function(y) var(as.numeric(y), na.rm = TRUE) == 0L, FUN.VALUE = logical(1))
     if (any(x.con)) {
 
       stop(paste0("After converting user-missing values into NA, following variables are constant: ",
@@ -277,12 +372,21 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
   #----------------------------------------
 
   # Correlation coefficient
-  method <- ifelse(all(c("pearson", "kendall-b", "spearman") %in% method), "pearson", method)
+  method <- ifelse(all(c("pearson", "spearman", "kendall-b", "kendall-c") %in% method), "pearson", method)
 
   #----------------------------------------
   # Method for handling missing data
 
-  use <- ifelse(all(c("listwise", "pairwise") %in% use) | all(use == "pairwise"), "pairwise.complete.obs", "complete.obs")
+  use <- ifelse(all(c("listwise", "pairwise") %in% use) || all(use == "pairwise"), "pairwise.complete.obs", "complete.obs")
+
+  #-----------------------------------------
+  # Listwise deletion
+
+  if (use == "complete.obs") {
+
+    x <- na.omit(x)
+
+  }
 
   #-----------------------------------------
   # Print correlation, sample size or significance values
@@ -304,7 +408,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
   #-----------------------------------------
   # Pairwise combination of columns
 
-  comb <- combn(seq_len(ncol(x)), m = 2)
+  comb <- combn(seq_len(ncol(x)), m = 2L)
 
   #-----------------------------------------
   # Sample size matrix
@@ -327,13 +431,29 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     #........................................
     # Correlation matrix
 
+    # Product-moment or Spearman correlation coefficient
+    if (!method %in% c("kendall-b", "kendall-c")) {
+
+      cor.mat <- suppressWarnings(cor(x, use = use, method = method))
+
+    }
+
+    # Kendall Tau-b
     if (method == "kendall-b") {
 
       cor.mat <- suppressWarnings(cor(x, use = use, method = "kendall"))
 
-    } else {
+    }
 
-      cor.mat <- suppressWarnings(cor(x, use = use, method = method))
+    # Kendall-Stuart Tau-c
+    if (method == "kendall-c") {
+
+      cor.mat <- matrix(NA, ncol = ncol(x), nrow = ncol(x), dimnames = list(colnames(x), colnames(x)))
+
+      cor.mat[lower.tri(cor.mat)] <- apply(comb, 2, function(y) suppressWarnings(.internal.tau.c(x[, y[1]], x[, y[2L]])$result$tau.c))
+      cor.mat[upper.tri(cor.mat)] <- t(cor.mat)[upper.tri(cor.mat)]
+
+      diag(cor.mat) <- 1
 
     }
 
@@ -342,7 +462,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
 
     if (use == "pairwise.complete.obs") {
 
-      n <- apply(comb, 2, function(y) nrow(na.omit(cbind(x[, y[1]], x[, y[2]]))))
+      n <- apply(comb, 2, function(y) nrow(na.omit(cbind(x[, y[1]], x[, y[2L]]))))
 
     } else {
 
@@ -356,22 +476,28 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     #........................................
     # p-values
 
-    # Listwise deletion
-    if (use == "complete.obs") {
+    # Product-moment or Spearman correlation coefficient
+    if (!method %in% c("kendall-b", "kendall-c")) {
 
-        x <- na.omit(x)
+      pval <- apply(comb, 2, function(y) suppressWarnings(cor.test(x[, y[1L]], x[, y[2L]], method = method))$p.value)
 
     }
 
+    # Kendall Tau-b
     if (method == "kendall-b") {
 
-      pval <- apply(comb, 2, function(y) suppressWarnings(cor.test(x[, y[1]], x[, y[2]], method = "kendall"))$p.value)
-
-    } else {
-
-      pval <- apply(comb, 2, function(y) suppressWarnings(cor.test(x[, y[1]], x[, y[2]], method = method))$p.value)
+      pval <- apply(comb, 2, function(y) suppressWarnings(cor.test(x[, y[1L]], x[, y[2L]], method = "kendall"))$p.value)
 
     }
+
+    # Kendall-Stuart Tau-c
+    if (method == "kendall-c") {
+
+      pval <- apply(comb, 2, function(y) suppressWarnings(.internal.tau.c(x[, y[1L]], x[, y[2L]])$result$pval))
+
+    }
+
+    ###
 
     # Adjust p-values for multiple comparison
     if (p.adj != "none") {
@@ -395,11 +521,11 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     use <- ifelse(use == "pairwise.complete.obs", "pairwise", "listwise")
 
     object.g1 <- misty::cor.matrix(x.group[[1]], method = method, use = use, group = NULL,
-                                   digits = digits, print = print, tri = tri, p.adj = p.adj, pval.digits = pval.digits,
+                                   digits = digits, print = print, tri = tri, p.adj = p.adj, p.digits = p.digits,
                                    check = FALSE, output = FALSE)
 
     object.g2 <- misty::cor.matrix(x.group[[2]], method = method, use = use, group = NULL,
-                                   digits = digits, print = print, tri = tri, p.adj = p.adj, pval.digits = pval.digits,
+                                   digits = digits, print = print, tri = tri, p.adj = p.adj, p.digits = p.digits,
                                    check = FALSE, output = FALSE)
 
   }
@@ -412,16 +538,16 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
     object <- list(call = match.call(),
                    data = x,
                    args = list(method = method, use = use, group = group, print = print,
-                               tri = tri, p.adj = p.adj, digits = digits, pval.digits = pval.digits,
+                               tri = tri, p.adj = p.adj, digits = digits, p.digits = p.digits,
                                as.na = as.na, check = check, output = output),
                    result = list(cor = cor.mat, n = n.mat, p = p.mat))
 
   } else {
 
     object <- list(call = match.call(),
-                   data = list(group1 = x.group[[1]], group2 = x.group[[2]]),
+                   data = list(group1 = x.group[[1L]], group2 = x.group[[2L]]),
                    args = list(method = method, use = use, group = group, print = print,
-                               tri = tri, p.adj = p.adj, digits = digits, pval.digits = pval.digits,
+                               tri = tri, p.adj = p.adj, digits = digits, p.digits = p.digits,
                                as.na = as.na, check = check, output = output),
                    result = list(group1 = list(cor = object.g1$result$cor, n = object.g1$result$n,
                                                p = object.g1$result$p),
@@ -440,3 +566,5 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b"), use = 
   return(invisible(object))
 
 }
+
+

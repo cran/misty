@@ -8,15 +8,15 @@
 #'                         or \code{"My_SPSS_Data"}.
 #' @param use.value.labels logical: if \code{TRUE}, variables with value labels are converted into factors.
 #' @param use.missings     logical: if \code{TRUE} (default), user-defined missing values are converted into NAs.
-#' @param as.data.frame    logical: if \code{TRUE} (default), function returns a data frame (default); if \code{FALSE} function
-#'                         returns a tibble.
+#' @param as.data.frame    logical: if \code{TRUE} (default), function returns a regular data frame (default);
+#'                         if \code{FALSE} function returns a tibble.
 #' @param check            logical: if \code{TRUE}, argument specification is checked.
 #'
 #' @author
 #' Hadley Wickham and Evan Miller
 #'
 #' @seealso
-#' \code{\link{write.sav}}
+#' \code{\link{write.sav}}, \code{\link{read.xlsx}}, \code{\link{read.mplus}}
 #'
 #' @references
 #' Hadley Wickham and Evan Miller (2019). \emph{haven: Import and Export 'SPSS', 'Stata' and 'SAS' Files}.
@@ -66,8 +66,21 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
   }
 
   #......
+  # File extension .sav
+  file <- ifelse(length(grep(".sav", file)) == 0, file <- paste0(file, ".sav"), file)
+
+  #......
+  # Check if 'file' exists
+  if (!file.exists(file)) {
+
+    stop(paste0("Unable to open SPSS data file: ", sQuote(file), " does not exist."),
+         call. = FALSE)
+
+  }
+
+  #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (isFALSE(isTRUE(check) || isFALSE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -79,7 +92,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
     #......
     # Check input 'use.value.labels'
-    if (isFALSE(isTRUE(use.value.labels) | isFALSE(use.value.labels))) {
+    if (isFALSE(isTRUE(use.value.labels) || isFALSE(use.value.labels))) {
 
       stop("Please specify TRUE or FALSE for the argument 'use.value.labels'.", call. = FALSE)
 
@@ -87,7 +100,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
     #......
     # Check input 'use.missings'
-    if (isFALSE(isTRUE(use.missings) | isFALSE(use.missings))) {
+    if (isFALSE(isTRUE(use.missings) || isFALSE(use.missings))) {
 
       stop("Please specify TRUE or FALSE for the argument 'use.missings'.", call. = FALSE)
 
@@ -95,7 +108,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
     #......
     # Check input 'as.data.frame'
-    if (isFALSE(isTRUE(as.data.frame) | isFALSE(as.data.frame))) {
+    if (isFALSE(isTRUE(as.data.frame) || isFALSE(as.data.frame))) {
 
       stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE)
 
@@ -105,9 +118,6 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
   ####################################################################################
   # Data and Arguments
-
-  # File extension .sav
-  file <- ifelse(length(grep(".sav", file)) == 0, file <- paste0(file, ".sav"), file)
 
   # User-defined missing values
   use_na <- ifelse(isTRUE(use.missings), FALSE, TRUE)
@@ -119,33 +129,33 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
   # Data as data frame
   if (isTRUE(as.data.frame)) {
 
-    df <- as.data.frame(haven::read_spss(file, user_na = use_na))
+    object <- as.data.frame(haven::read_spss(file, user_na = use_na), stringsAsFactors = FALSE)
 
-    df.attributes <- lapply(df, function(y) names(attributes(y)))
+    object.attributes <- lapply(object, function(y) names(attributes(y)))
 
     #......
     # Factors
-    if (any(unlist(df.attributes) == "labels") && isTRUE(use.value.labels)) {
+    if (any(unlist(object.attributes) == "labels") && isTRUE(use.value.labels)) {
 
       var.labels.na <- NULL
-      for (i in which(vapply(df.attributes, function(y) any(y == "labels"), FUN.VALUE = logical(1)))) {
+      for (i in which(vapply(object.attributes, function(y) any(y == "labels"), FUN.VALUE = logical(1)))) {
 
         # Labels
-        labels <- attributes(df[, i])$labels
+        labels <- attributes(object[, i])$labels
 
         # Labels for all values?
-        if (any(!na.omit(unique(df[, i])) %in% labels)) {
+        if (any(!na.omit(unique(object[, i])) %in% labels)) {
 
           var.labels.na <- c(var.labels.na, i)
 
           # Attach values without labels to levels
-          labels.na <- unique(df[, i])[!unique(df[, i]) %in% labels]
+          labels.na <- unique(object[, i])[!unique(object[, i]) %in% labels]
 
-          df[, i] <- factor(df[, i], levels = c(labels, labels.na), labels = c(names(labels), labels.na))
+          object[, i] <- factor(object[, i], levels = c(labels, labels.na), labels = c(names(labels), labels.na))
 
         } else {
 
-          df[, i] <- factor(df[, i], levels = labels, labels = names(labels))
+          object[, i] <- factor(object[, i], levels = labels, labels = names(labels))
 
         }
 
@@ -154,7 +164,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
       if (!is.null(var.labels.na)) {
 
         warning(paste0("Value labels are not specified for all values of the variable: ",
-                       paste(colnames(df[, var.labels.na, drop = FALSE]), collapse = ", ")), call. = FALSE)
+                       paste(colnames(object[, var.labels.na, drop = FALSE]), collapse = ", ")), call. = FALSE)
 
       }
 
@@ -164,10 +174,10 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
   # Data as tibble
   } else {
 
-    df <- haven::read_spss(file, user_na = use_na)
+    object <- haven::read_spss(file, user_na = use_na)
 
   }
 
-  return(df)
+  return(object)
 
 }

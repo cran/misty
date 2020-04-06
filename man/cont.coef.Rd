@@ -4,8 +4,8 @@
 \alias{cont.coef}
 \title{Pearson's Contingency Coefficient}
 \usage{
-cont.coef(x, adjust = FALSE, tri = c("both", "lower", "upper"), digits = 2,
-          as.na = NULL, check = TRUE, output = TRUE)
+cont.coef(x, adjust = FALSE, tri = c("both", "lower", "upper"),
+          digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with integer vectors, character vectors or factors..}
@@ -43,7 +43,7 @@ contingency coefficient can be adjusted by relating the coefficient to the possi
 \examples{
 dat <- data.frame(x = c(1, 1, 2, 1, 3, 3, 2, 2, 1, 2),
                   y = c(3, 2, 3, 1, 2, 4, 1, 2, 3, 4),
-                  z = c(2, 2, 2, 1, 2, 2, 1, 2, 1, 2))
+                  z = c(2, 2, 2, 1, 2, 2, 1, 2, 1, 2), stringsAsFactors = FALSE)
 
 # Contingency coefficient between x and y
 cont.coef(dat[, c("x", "y")])
