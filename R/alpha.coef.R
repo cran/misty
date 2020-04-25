@@ -127,8 +127,16 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -181,7 +189,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     #......
     # Check input 'std'
-    if (isFALSE(isTRUE(std) || isFALSE(std))) {
+    if (!isTRUE(isTRUE(std) || !isTRUE(std))) {
 
       stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE)
 
@@ -189,7 +197,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     #......
     # Check input 'ordered'
-    if (isFALSE(isTRUE(ordered) || isFALSE(ordered))) {
+    if (!isTRUE(isTRUE(ordered) || !isTRUE(ordered))) {
 
       stop("Please specify TRUE or FALSE for the argument 'ordered'.", call. = FALSE)
 
@@ -197,7 +205,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     #......
     # Check input 'na.omit'
-    if (isFALSE(isTRUE(na.omit) || isFALSE(na.omit))) {
+    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -231,7 +239,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
         stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -279,7 +287,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     #......
     # Check if raw data is availeble
-    if (isFALSE(x.raw)) {
+    if (!isTRUE(x.raw)) {
 
       stop("Please submit raw data to the argument 'x' to compute ordinal coefficient alpha.",
            call. = FALSE)
@@ -436,7 +444,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
   if (isTRUE(x.raw)) {
 
-    if (any(is.na(x)) && isFALSE(na.omit)) {
+    if (any(is.na(x)) && !isTRUE(na.omit)) {
 
       df1 <- mean(apply(combn(ncol(x), 2L), 2, function(y) nrow(na.omit(cbind(x[, y[1L]], x[, y[2L]]))))) - 1L
 

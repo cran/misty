@@ -73,7 +73,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 

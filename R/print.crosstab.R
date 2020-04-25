@@ -54,7 +54,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
     #......
     # Check input 'freq'
-    if (isFALSE(isTRUE(freq) || isFALSE(freq))) {
+    if (!isTRUE(isTRUE(freq) || !isTRUE(freq))) {
 
       stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE)
 
@@ -62,7 +62,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
     #......
     # Check print = "no" and freq = FALSE
-    if (print == "no" && isFALSE(freq)) {
+    if (print == "no" && !isTRUE(freq)) {
 
       stop("Please include either percentages (i.e., print != 'no') or absolute frequencies (i.e., freq = TRUE) in the cross tabulation.", call. = FALSE)
 
@@ -114,7 +114,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
     if (is.factor(x$data[, 1L])) {
 
       # Sort with NA
-      if (any(is.na(x$data)) && isFALSE(x$args$na.omit)) {
+      if (any(is.na(x$data)) && !isTRUE(x$args$na.omit)) {
 
         restab <- restab[order(factor(restab[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA"))), ]
 
@@ -136,7 +136,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
     # Frequencies and percentages
 
     # No absolute frequencies
-    if (isFALSE(freq)) {
+    if (!isTRUE(freq)) {
 
       restab <- restab[-grep("Freq", restab[, 2L]), ]
 
@@ -228,10 +228,10 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
     #......
     # Output table not split
-    if (isFALSE(split) || all(print == "no")) {
+    if (!isTRUE(split) || all(print == "no")) {
 
       # Remove Total row and column
-      if (isFALSE(freq)) {
+      if (!isTRUE(freq)) {
 
         restab <- restab[-nrow(restab), -ncol(restab)]
 
@@ -396,7 +396,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
     if (is.factor(x$data[, 1L]) && is.factor(x$data[, 2L])) {
 
       # Sort with NA
-      if (any(is.na(x$data)) && isFALSE(x$args$na.omit)) {
+      if (any(is.na(x$data)) && !isTRUE(x$args$na.omit)) {
 
         restab <-restab[order(factor(restab[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA")),
                         factor(restab[, 2L], levels = c(levels(x$data[, 2L]), "NA"), labels = c(levels(x$data[, 2L]), "NA"))), ]
@@ -415,7 +415,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
     if (is.factor(x$data[, 1L]) && !is.factor(x$data[, 2L])) {
 
       # Sort with NA
-      if (any(is.na(x$data)) && isFALSE(x$args$na.omit)) {
+      if (any(is.na(x$data)) && !isTRUE(x$args$na.omit)) {
 
         restab <- restab[order(factor(restab[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA")),
                                restab[, 2L]), ]
@@ -434,7 +434,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
     if (!is.factor(x$data[, 1L]) && is.factor(x$data[, 2L])) {
 
       # Sort with NA
-      if (any(is.na(x$data)) && isFALSE(x$args$na.omit)) {
+      if (any(is.na(x$data)) && !isTRUE(x$args$na.omit)) {
 
         restab <- restab[order(restab[, 1L],
                                factor(restab[, 2L], levels = c(levels(x$data[, 2L]), "NA"), labels = c(levels(x$data[, 2L]), "NA"))), ]
@@ -453,7 +453,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
     if (!is.factor(x$data[, 1L]) && !is.factor(x$data[, 2L])) {
 
       # Sort with NA
-      if (any(is.na(x$data)) && isFALSE(x$args$na.omit)) {
+      if (any(is.na(x$data)) && !isTRUE(x$args$na.omit)) {
 
         restab <- restab[order(restab[, 1L],
                                factor(restab[, 2L], levels = c(levels(x$data[, 2L]), "NA"), labels = c(levels(x$data[, 2L]), "NA"))), ]
@@ -471,7 +471,7 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
     # Frequencies and percentages
 
     # No absolute frequencies
-    if (isFALSE(freq)) {
+    if (!isTRUE(freq)) {
 
       restab <- restab[-grep("Freq", restab[, 3L]), ]
 
@@ -600,10 +600,10 @@ print.crosstab <- function(x, print = x$args$print, freq = x$args$freq, split = 
 
     #......
     # Output table not split
-    if (isFALSE(split) || all(print == "no")) {
+    if (!isTRUE(split) || all(print == "no")) {
 
       # Remove Total row and column
-      if (isFALSE(freq)) {
+      if (!isTRUE(freq)) {
 
         restab <- restab[-nrow(restab), -ncol(restab)]
 

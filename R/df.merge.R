@@ -109,7 +109,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -161,7 +161,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     #......
     # Check input 'all'
-    if (isFALSE(isTRUE(all) | isFALSE(all))) {
+    if (!isTRUE(isTRUE(all) | !isTRUE(all))) {
 
       stop("Please specify TRUE or FALSE for the argument 'all'.", call. = FALSE)
 
@@ -169,7 +169,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

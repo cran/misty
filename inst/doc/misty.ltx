@@ -2279,9 +2279,53 @@ variance across two or more independent groups.
 \ErrorTok{>}\StringTok{ }\KeywordTok{levenes.test}\NormalTok{(y }\OperatorTok{~}\StringTok{ }\NormalTok{group, }\DataTypeTok{data =}\NormalTok{ dat)}
   Levene's Test based on the Median
 
-             Df Sum Sq Mean Sq    F p-value
-   Group      2   2.89    1.44 0.65  0.5552
-   Residuals  6  13.33    2.22
+   Null hypothesis        H0: \begin{math} \sigma21 = \sigma22 \end{math} for all i and j
+   Alternative hypothesis H1: \begin{math} \sigma21 \ne \sigma22 \end{math} for at least one i \(\ne\) j 
+
+   Group n nNA pNA    M  Var  Low   Upp
+    1    4   0   0 3.50 1.67 0.24 44.70
+    2    4   0   0 6.00 3.33 0.63 67.69
+    3    4   0   0 3.50 1.67 0.24 44.70
+
+             Df Sum Sq Mean Sq    F  pval
+   Group      2   0.67    0.33 1.00 0.405
+   Residuals  9   3.00    0.33
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{z-test}{%
+\subsubsection{z-test}\label{z-test}}
+
+The \texttt{z.test()} function computes one sample, two sample, and
+paired sample z-test.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{group =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{, }\OtherTok{NA}\NormalTok{),}
+\OperatorTok{+}\StringTok{                    }\DataTypeTok{stringsAsFactors =} \OtherTok{FALSE}\NormalTok{)}
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Two-sided one sample z-test with 95% confidence interval}
+\ErrorTok{>}\StringTok{ }\CommentTok{# population mean = 3, population standard deviation = 1.2}
+\ErrorTok{>}\StringTok{ }\KeywordTok{z.test}\NormalTok{(dat}\OperatorTok{$}\NormalTok{x, }\DataTypeTok{sigma =} \FloatTok{1.2}\NormalTok{, }\DataTypeTok{mu =} \DecValTok{3}\NormalTok{)}
+One sample z-test with s = 1.2
+
+Null hypothesis        H0: \(\mu = 3\)
+Alternative hypothesis H1: \(\mu \ne 3\)
+
+n nNA    M   SD  Low  Upp    z  pval
+11   1 3.27 1.42 2.56 3.98 0.75 0.451
+
+\ErrorTok{>}\StringTok{ }\CommentTok{# Two-sided two sample z-test with 95% confidence interval}
+\ErrorTok{>}\StringTok{ }\CommentTok{# population standard deviation = 1.2 and 1.5}
+\ErrorTok{>}\StringTok{ }\KeywordTok{z.test}\NormalTok{(x }\OperatorTok{~}\StringTok{ }\NormalTok{group, }\DataTypeTok{sigma =} \KeywordTok{c}\NormalTok{(}\FloatTok{1.2}\NormalTok{, }\FloatTok{1.5}\NormalTok{), }\DataTypeTok{data =}\NormalTok{ dat)}
+Two sample z-test with s1 = 1.2 and s2 = 1.5
+
+Null hypothesis        H0: \(\mu1 = \mu2\)
+Alternative hypothesis H1: \(\mu1 \ne \mu2\)
+
+n1 nNA1   M1  SD1 n2 nNA2   M2  SD2 M.Diff   Low  Upp    z  pval
+ 6    0 3.00 1.41  5    1 3.60 1.52   0.60 -1.03 2.23 0.72 0.470
 \end{Highlighting}
 \end{Shaded}
 
@@ -2310,26 +2354,30 @@ the one-sample and two-sample t-test based on precision requirements
 \begin{Shaded}
 \begin{Highlighting}[]
 \OperatorTok{>}\StringTok{ }\CommentTok{# Two-sided one-sample test}
-\ErrorTok{>}\StringTok{ }\KeywordTok{size.mean}\NormalTok{(}\DataTypeTok{theta =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{sample =} \StringTok{"one.sample"}\NormalTok{,}
+\ErrorTok{>}\StringTok{ }\KeywordTok{size.mean}\NormalTok{(}\DataTypeTok{delta =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{sample =} \StringTok{"one.sample"}\NormalTok{,}
 \OperatorTok{+}\StringTok{           }\DataTypeTok{alternative =} \StringTok{"two.sided"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\DataTypeTok{beta =} \FloatTok{0.2}\NormalTok{)}
-\Output{ }
-\Output{ Sample size determination for the one-sample t-test}
-\Output{ }
-\Output{   H0: mu = mu.0  versus  H1: mu != mu.0}
-\Output{   alpha: 0.05  beta: 0.2  theta: 0.5}
-\Output{ }
-\Output{  optimal sample size: n = 34 }
 
+\CommentTok{# Sample size determination for the one-sample t-test}
+
+   Null hypothesis        H0: \(\mu =0.5\)
+   Alternative hypothesis H1: \(\mu \ne 0.5\)  
+
+   \(\alpha\) = 0.05  \(\beta\) = 0.2  \(\delta\) = 0.5
+
+   optimal sample size: n = 34
+\OperatorTok{>}\StringTok{ }
 \ErrorTok{>}\StringTok{ }\CommentTok{# One-sided two-sample test}
-\ErrorTok{>}\StringTok{ }\KeywordTok{size.mean}\NormalTok{(}\DataTypeTok{theta =} \DecValTok{1}\NormalTok{, }\DataTypeTok{sample =} \StringTok{"two.sample"}\NormalTok{,}
+\ErrorTok{>}\StringTok{ }\KeywordTok{size.mean}\NormalTok{(}\DataTypeTok{delta =} \DecValTok{1}\NormalTok{, }\DataTypeTok{sample =} \StringTok{"two.sample"}\NormalTok{,}
 \OperatorTok{+}\StringTok{           }\DataTypeTok{alternative =} \StringTok{"greater"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.01}\NormalTok{, }\DataTypeTok{beta =} \FloatTok{0.1}\NormalTok{)}
-\Output{ }
-\Output{ Sample size determination for the two-sample t-test}
-\Output{ }
-\Output{   H0: mu.1 <= mu.2  versus  H1: mu.1 > mu.2}
-\Output{   alpha: 0.01  beta: 0.1  theta: 1}
-\Output{ }
-\Output{  optimal sample size: n = 28 (in each group) }
+
+ Sample size determination for the two-sample t-test
+
+   Null hypothesis        H0: \(\mu1 \leq \mu2\)
+   Alternative hypothesis H1: \(\mu1 > \mu2\)
+
+   \(\alpha\) = 0.01  \(\beta\) = 0.1  \(\delta\) = 1 
+
+   optimal sample size: n = 28 in each group
 \end{Highlighting}
 \end{Shaded}
 
@@ -2346,23 +2394,28 @@ requirements (i.e., type-I-risk, type-II-risk and an effect size).
 \OperatorTok{>}\StringTok{ }\CommentTok{# Two-sided one-sample test}
 \ErrorTok{>}\StringTok{ }\KeywordTok{size.prop}\NormalTok{(}\DataTypeTok{pi =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{delta =} \FloatTok{0.2}\NormalTok{, }\DataTypeTok{sample =} \StringTok{"one.sample"}\NormalTok{,}
 \OperatorTok{+}\StringTok{           }\DataTypeTok{alternative =} \StringTok{"two.sided"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\DataTypeTok{beta =} \FloatTok{0.2}\NormalTok{)}
-\Output{ }
-\Output{ Sample size determination for the one-sample proportion test without continuity correction}
-\Output{ }
-\Output{  H0: pi = 0.5  versus  H1: pi != 0.5 }
-\Output{  alpha: 0.05  beta: 0.2  delta: 0.2}
-\Output{ }
-\Output{   optimal sample size: n = 47 }
+
+ Sample size determination for the one-sample proportion test without continuity correction
+
+   Null hypothesis        H0: \(\pi =0.5\)
+   Alternative hypothesis H1: \(\pi \ne 0.5\)  
+
+   \(\alpha\) = 0.05  \(\beta\) = 0.2  \(\delta\) = 0.2
+
+   optimal sample size: n = 47
+\OperatorTok{>}\StringTok{ }
 \ErrorTok{>}\StringTok{ }\CommentTok{# One-sided two-sample test}
 \ErrorTok{>}\StringTok{ }\KeywordTok{size.prop}\NormalTok{(}\DataTypeTok{pi =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{delta =} \FloatTok{0.2}\NormalTok{, }\DataTypeTok{sample =} \StringTok{"two.sample"}\NormalTok{,}
 \OperatorTok{+}\StringTok{           }\DataTypeTok{alternative =} \StringTok{"greater"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.01}\NormalTok{, }\DataTypeTok{beta =} \FloatTok{0.1}\NormalTok{)}
-\Output{ }
-\Output{ Sample size determination for the two-sample proportion test without continuity correction}
-\Output{ }
-\Output{  H0: pi.1 <= pi.2  versus  H1: pi.1 > pi.2}
-\Output{  alpha: 0.01  beta: 0.1  delta: 0.2}
-\Output{ }
-\Output{   optimal sample size: n = 154 (in each group) }
+
+ Sample size determination for the two-sample proportion test without continuity correction
+
+   Null hypothesis        H0: \(\pi1 \leq \pi2\)
+   Alternative hypothesis H1: \(\pi1 > \pi2\)
+
+   \(\alpha\) = 0.01  \(\beta\) = 0.1  \(\delta\) = 0.2
+
+   optimal sample size: n = 154 (in each group)
 \end{Highlighting}
 \end{Shaded}
 
@@ -2380,13 +2433,15 @@ size).
 \begin{Highlighting}[]
 \OperatorTok{>}\StringTok{ }\CommentTok{# Two-sided test}
 \ErrorTok{>}\StringTok{ }\KeywordTok{size.cor}\NormalTok{(}\DataTypeTok{rho =} \FloatTok{0.3}\NormalTok{, }\DataTypeTok{delta =} \FloatTok{0.2}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.05}\NormalTok{, }\DataTypeTok{beta =} \FloatTok{0.2}\NormalTok{)}
-\Output{ }
-\Output{ Sample size determination for Pearson's product-moment correlation coefficient}
-\Output{ }
-\Output{  H0: rho = 0.3  versus  H1: rho != 0.3 }
-\Output{  alpha: 0.05  beta: 0.2  delta: 0.2}
-\Output{ }
-\Output{    optimal sample size: n = 140 }
+
+ Sample size determination for Pearson's product-moment correlation coefficient
+
+   Null hypothesis        H0: \(\rho = 0.5\)
+   Alternative hypothesis H1: \(\rho \ne 0.5\)
+
+   \(\alpha\) = 0.05  \(\beta\) = 0.2  \(\delta\) = 0.2
+
+   optimal sample size: n = 140
 \end{Highlighting}
 \end{Shaded}
 

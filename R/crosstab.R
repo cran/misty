@@ -97,6 +97,14 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
@@ -146,7 +154,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -185,7 +193,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'freq'
-    if (isFALSE(isTRUE(freq) || isFALSE(freq))) {
+    if (!isTRUE(isTRUE(freq) || !isTRUE(freq))) {
 
       stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE)
 
@@ -193,7 +201,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check print = "no" and freq = FALSE
-    if (all(print == "no") && isFALSE(freq)) {
+    if (all(print == "no") && !isTRUE(freq)) {
 
       stop("Please include either percentages (i.e., print != 'no') or absolute frequencies (i.e., freq = TRUE) in the cross tabulation.",
              call. = FALSE)
@@ -202,7 +210,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'na.omit'
-    if (isFALSE(isTRUE(na.omit) || isFALSE(na.omit))) {
+    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -218,7 +226,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) | !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -243,7 +251,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
   if (x.ncol == 2L) {
 
     # If na.omit = FALSE, then include NA if any present
-    if (isFALSE(na.omit)) {
+    if (!isTRUE(na.omit)) {
 
       x <- data.frame(lapply(x, function(x) misty::rec(x, "NA = 'NA'")), stringsAsFactors = FALSE)
 
@@ -274,7 +282,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
   if (x.ncol == 3L) {
 
     # If na.omit = FALSE, then include NA if any present
-    if (isFALSE(na.omit)) {
+    if (!isTRUE(na.omit)) {
 
       x <- data.frame(lapply(x, function(x) misty::rec(x, "NA = 'NA'")), stringsAsFactors = FALSE)
 

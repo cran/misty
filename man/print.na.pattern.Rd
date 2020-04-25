@@ -4,8 +4,7 @@
 \alias{print.na.pattern}
 \title{Print na.pattern}
 \usage{
-\method{print}{na.pattern}(x, order = x$args$order, digits = x$args$digits,
-      check = TRUE, ...)
+\method{print}{na.pattern}(x, order = x$args$order, digits = x$args$digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{na.pattern} object.}

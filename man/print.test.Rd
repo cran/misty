@@ -4,8 +4,7 @@
 \alias{print.test}
 \title{Print test object}
 \usage{
-\method{print}{test}(x, digits = x$args$digits, p.digits = x$args$p.digits,
-           check = TRUE, ...)
+\method{print}{test}(x, digits = x$args$digits, p.digits = x$args$p.digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{test} object.}

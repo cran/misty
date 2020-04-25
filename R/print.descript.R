@@ -55,7 +55,7 @@ print.descript <- function(x, print = x$args$print, sort.var = x$args$sort.var,
 
     #......
     # Check input 'sort.var'
-    if (isFALSE(isTRUE(sort.var) || isFALSE(sort.var))) {
+    if (!isTRUE(isTRUE(sort.var) || !isTRUE(sort.var))) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 

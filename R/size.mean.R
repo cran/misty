@@ -3,8 +3,8 @@
 #' This function performs sample size computation for the one-sample and two-sample t-test
 #' based on precision requirements (i.e., type-I-risk, type-II-risk and an effect size).
 #'
-#' @param theta          a numeric value indicating the relative minimum difference
-#'                       to be detected, \eqn{\theta}.
+#' @param delta          a numeric value indicating the relative minimum difference
+#'                       to be detected, \eqn{\delta}.
 #' @param sample         a character string specifying one- or two-sample t-test,
 #'                       must be one of \code{"two.sample"} (default) or \code{"one.sample"}.
 #' @param alternative    a character string specifying the alternative hypothesis,
@@ -32,8 +32,8 @@
 #' \tabular{ll}{
 #'   \code{call}      \tab function call \cr
 #'   \code{type}      \tab type of the test (i.e., arithmetic mean) \cr
-#'   \code{spec}      \tab specification of function arguments \cr
-#'   \code{res}       \tab list with the result, i.e., optimal sample size \cr
+#'   \code{args}      \tab specification of function arguments \cr
+#'   \code{result}       \tab list with the result, i.e., optimal sample size \cr
 #' }
 #'
 #' @export
@@ -42,35 +42,35 @@
 #' #--------------------------------------
 #' # Two-sided one-sample test
 #' # H0: mu = mu.0, H1: mu != mu.0
-#' # alpha = 0.05, beta = 0.2, theta = 0.5
+#' # alpha = 0.05, beta = 0.2, delta = 0.5
 #'
-#' size.mean(theta = 0.5, sample = "one.sample",
+#' size.mean(delta = 0.5, sample = "one.sample",
 #'           alternative = "two.sided", alpha = 0.05, beta = 0.2)
 #'
 #' #--------------------------------------
 #' # One-sided one-sample test
 #' # H0: mu <= mu.0, H1: mu > mu.0
-#' # alpha = 0.05, beta = 0.2, theta = 0.5
+#' # alpha = 0.05, beta = 0.2, delta = 0.5
 #'
-#' size.mean(theta = 0.5, sample = "one.sample",
+#' size.mean(delta = 0.5, sample = "one.sample",
 #'           alternative = "greater", alpha = 0.05, beta = 0.2)
 #'
 #' #--------------------------------------
 #' # Two-sided two-sample test
 #' # H0: mu.1 = mu.2, H1: mu.1 != mu.2
-#' # alpha = 0.01, beta = 0.1, theta = 1
+#' # alpha = 0.01, beta = 0.1, delta = 1
 #'
-#' size.mean(theta = 1, sample = "two.sample",
+#' size.mean(delta = 1, sample = "two.sample",
 #'           alternative = "two.sided", alpha = 0.01, beta = 0.1)
 #'
 #' #--------------------------------------
 #' # One-sided two-sample test
 #' # H0: mu.1 <= mu.2, H1: mu.1 > mu.2
-#' # alpha = 0.01, beta = 0.1, theta = 1
+#' # alpha = 0.01, beta = 0.1, delta = 1
 #'
-#' size.mean(theta = 1, sample = "two.sample",
+#' size.mean(delta = 1, sample = "two.sample",
 #'           alternative = "greater", alpha = 0.01, beta = 0.1)
-size.mean <- function(theta, sample = c("two.sample", "one.sample"),
+size.mean <- function(delta, sample = c("two.sample", "one.sample"),
                       alternative = c("two.sided", "less", "greater"),
                       alpha = 0.05, beta = 0.1, check = TRUE, output = TRUE) {
 
@@ -78,7 +78,7 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
   # Input check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -88,16 +88,16 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
 
   if (isTRUE(check)) {
 
-    # Check input 'theta'
-    if (missing(theta)) {
+    # Check input 'delta'
+    if (missing(delta)) {
 
-      stop("Please specify a numeric value for the argument 'theta'.", call. = FALSE)
+      stop("Please specify a numeric value for the argument 'delta'.", call. = FALSE)
 
     }
 
-    if (theta <= 0L) {
+    if (delta <= 0L) {
 
-      stop("Argument theta out of bound, specify a value > 0.", call. = FALSE)
+      stop("Argument delta out of bound, specify a value > 0.", call. = FALSE)
 
     }
 
@@ -155,7 +155,7 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
     p.body <- quote({
       nu <- (n - 1L) * samp
       qu <- qt(alpha / 2L, nu, lower = FALSE)
-      pt(qu, nu, ncp = sqrt(n / samp) * theta, lower = FALSE) + pt(-qu, nu, ncp = sqrt(n / samp) * theta, lower = TRUE)
+      pt(qu, nu, ncp = sqrt(n / samp) * delta, lower = FALSE) + pt(-qu, nu, ncp = sqrt(n / samp) * delta, lower = TRUE)
     })
 
   #-------------------------------------------------
@@ -165,7 +165,7 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
 
     p.body <- quote({
       nu <- (n - 1L) * samp
-      pt(qt(alpha, nu, lower = FALSE), nu, ncp = sqrt(n / samp) * theta, lower = FALSE)
+      pt(qt(alpha, nu, lower = FALSE), nu, ncp = sqrt(n / samp) * delta, lower = FALSE)
     })
 
   }
@@ -179,8 +179,9 @@ size.mean <- function(theta, sample = c("two.sample", "one.sample"),
 
   object <- list(call = match.call(),
                  type = "mean",
-                 spec = list(theta = theta, sample = sample, alternative = alternative, alpha = alpha, beta = beta),
-                 res = list(n = n))
+                 args = list(delta = delta, sample = sample, alternative = alternative,
+                             alpha = alpha, beta = beta),
+                 result = list(n = n))
 
   class(object) <- "size"
 

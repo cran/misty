@@ -4,11 +4,9 @@
 \alias{ci.sd}
 \title{Confidence Interval for the Standard Deviation}
 \usage{
-ci.sd(x, method = c("chisq", "bonett"),
-      alternative = c("two.sided", "less", "greater"),
-      conf.level = 0.95, group = NULL, split = NULL,
-      sort.var = FALSE, na.omit = FALSE, digits = 2,
-      as.na = NULL, check = TRUE, output = TRUE)
+ci.sd(x, method = c("chisq", "bonett"), alternative = c("two.sided", "less", "greater"),
+      conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
+      na.omit = FALSE, digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector, matrix or data frame with numeric variables, i.e.,

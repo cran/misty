@@ -73,7 +73,7 @@ print.cohens.d <- function(x, digits = x$args$digits, check = TRUE, ...) {
 
   #---------------------------------------
   # Between-subject design
-  if (isFALSE(x$args$paired)) {
+  if (!isTRUE(x$args$paired)) {
 
     print.object[, !names(print.object) %in% c("variable", "n1", "n2", "nNA1", "nNA2")] <- vapply(print.object[,  !names(print.object) %in% c("variable", "n1", "n2", "nNA1", "nNA2")], function(y) ifelse(!is.na(y), formatC(y, format = "f", digits = digits), NA), FUN.VALUE = character(nrow(x$result)))
     print.object[, names(print.object) %in% c("n1", "n2", "nNA1", "nNA2")] <- vapply(print.object[,  names(print.object) %in% c("n1", "n2", "nNA1", "nNA2")], function(y) formatC(y, format = "f", digits = 0L), FUN.VALUE = character(nrow(x$result)))
@@ -116,7 +116,7 @@ print.cohens.d <- function(x, digits = x$args$digits, check = TRUE, ...) {
 
   #---------------------------------------
   # Between-subject design
-  if(isFALSE(x$args$paired)) {
+  if(!isTRUE(x$args$paired)) {
 
     # Cohens d
     cat(paste0(" Cohen's d for bewteen-subject design with ", round(x$args$conf.level * 100L), "% confidence interval\n\n"))
@@ -133,7 +133,7 @@ print.cohens.d <- function(x, digits = x$args$digits, check = TRUE, ...) {
 
   #---------------------------------------
   # Within-subject design
-  if (isFALSE(x$args$paired)) {
+  if (!isTRUE(x$args$paired)) {
 
     if (is.null(x$args$ref)) {
 
@@ -187,7 +187,7 @@ print.cohens.d <- function(x, digits = x$args$digits, check = TRUE, ...) {
     } else {
 
       # Between-subject design
-      if (isFALSE(x$args$paired)) {
+      if (!isTRUE(x$args$paired)) {
 
         cat(paste0("\n Note. SD = standard deviation of the reference group: ", x$args$ref, "\n"))
 

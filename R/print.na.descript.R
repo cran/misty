@@ -40,7 +40,7 @@ print.na.descript <- function(x, table = x$args$table, digits = x$args$digits, c
 
     #......
     # Check input 'table'
-    if (isFALSE(isTRUE(table) || isFALSE(table))) {
+    if (!isTRUE(isTRUE(table) || !isTRUE(table))) {
 
       stop("Please specify TRUE or FALSE for the argument 'table'", call. = FALSE)
 

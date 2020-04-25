@@ -178,6 +178,14 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
   }
 
+  #......
+  # Check if input 'data' is NULL
+  if (is.null(data)) {
+
+    stop("Input specified for the argument 'data' is NULL.", call. = FALSE)
+
+  }
+
   #-----------------------------------------------------------------------------------
   # Formula
 
@@ -187,7 +195,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
   #.........................................
   # Between-subject design
-  if (isFALSE(paired)) {
+  if (!isTRUE(paired)) {
 
     # Outcome(s)
     y.var <- var.formula[-length(var.formula)]
@@ -214,7 +222,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
   if (!is.null(as.na)) {
 
     # Between-subject design
-    if (isFALSE(paired)) {
+    if (!isTRUE(paired)) {
 
       data[, -grep(group.var, names(data))] <- misty::as.na(data[, -grep(group.var, names(data))], as.na = as.na, check = FALSE)
 
@@ -249,7 +257,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
   # Input Check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -269,14 +277,14 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'paired'
-    if (isFALSE(isTRUE(paired) || isFALSE(paired))) {
+    if (!isTRUE(isTRUE(paired) || !isTRUE(paired))) {
 
       stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
 
     }
 
     #......
-    if (isFALSE(paired)) {
+    if (!isTRUE(paired)) {
 
       if (length(unique(data[, group.var])) != 2L) {
 
@@ -298,7 +306,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'weighted'
-    if (isFALSE(isTRUE(weighted) || isFALSE(weighted))) {
+    if (!isTRUE(isTRUE(weighted) || !isTRUE(weighted))) {
 
       stop("Please specify TRUE or FALSE for the argument 'weighted'.", call. = FALSE)
 
@@ -306,7 +314,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'correct'
-    if (isFALSE(isTRUE(correct) || isFALSE(correct))) {
+    if (!isTRUE(isTRUE(correct) || !isTRUE(correct))) {
 
       stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE)
 
@@ -314,7 +322,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'correct'
-    if ((isFALSE(weighted) && isTRUE(correct)) || (!is.null(ref) && isTRUE(correct))) {
+    if ((!isTRUE(weighted) && isTRUE(correct)) || (!is.null(ref) && isTRUE(correct))) {
 
       stop("Small sample correction factor is only applied when weighted = TRUE and ref = NULL.", call. = FALSE)
 
@@ -333,7 +341,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
     if (!is.null(ref)) {
 
       # Between-subject design
-      if (isFALSE(paired)) {
+      if (!isTRUE(paired)) {
 
         if (!ref %in% data[, group.var]) {
 
@@ -367,7 +375,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -381,11 +389,11 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
   #----------------------------------------
   # One outcome variable
 
-  if ((isFALSE(paired) && length(y.var) == 1L) || (isTRUE(paired) && length(y.var) == 2L))  {
+  if ((!isTRUE(paired) && length(y.var) == 1L) || (isTRUE(paired) && length(y.var) == 2L))  {
 
     #............................................................
     # Between-subject design
-    if (isFALSE(paired)) {
+    if (!isTRUE(paired)) {
 
       #...................
       # Data and Arguments
@@ -646,11 +654,11 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
   #----------------------------------------
   # One outcome variable
 
-  if ((isFALSE(paired) && length(y.var) == 1L) || (isTRUE(paired) && length(y.var) == 2L)) {
+  if ((!isTRUE(paired) && length(y.var) == 1L) || (isTRUE(paired) && length(y.var) == 2L)) {
 
     #.......................................
     # Between-subject design
-    if (isFALSE(paired)) {
+    if (!isTRUE(paired)) {
 
       object <- list(call = match.call(),
                      data = data,

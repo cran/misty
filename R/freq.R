@@ -115,6 +115,14 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Vector, matrix or data frame for the argument 'x'?
   if (!is.atomic(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x)) {
 
@@ -140,7 +148,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   # Input check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -199,7 +207,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'freq'
-    if (isFALSE(isTRUE(freq) || isFALSE(freq))) {
+    if (!isTRUE(isTRUE(freq) || !isTRUE(freq))) {
 
       stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE)
 
@@ -207,7 +215,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # No frequencies and percentages
-    if (all(print == "no") && isFALSE(freq)) {
+    if (all(print == "no") && !isTRUE(freq)) {
 
       stop("Please specify print = \"all\", print = \"perc\", or print = \"v.perc\" when specifying freq = FALSE.",
            call. = FALSE)
@@ -216,7 +224,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'split'
-    if (isFALSE(isTRUE(split) || isFALSE(split))) {
+    if (!isTRUE(isTRUE(split) || !isTRUE(split))) {
 
       stop("Please specify TRUE or FALSE for the argument 'split'.", call. = FALSE)
 
@@ -224,7 +232,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'labels'
-    if (isFALSE(isTRUE(labels) || isFALSE(labels))) {
+    if (!isTRUE(isTRUE(labels) || !isTRUE(labels))) {
 
       stop("Please specify TRUE or FALSE for the argument 'labels'.", call. = FALSE)
 
@@ -232,7 +240,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'val.col'
-    if (isFALSE(isTRUE(val.col) || isFALSE(val.col))) {
+    if (!isTRUE(isTRUE(val.col) || !isTRUE(val.col))) {
 
       stop("Please specify TRUE or FALSE for the argument 'val.col'.", call. = FALSE)
 
@@ -256,7 +264,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -282,7 +290,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     if (isTRUE(freq)) {
 
-      if (isFALSE(split)) {
+      if (!isTRUE(split)) {
 
         if (all(c("no", "all", "perc", "v.perc") %in% print)) { print <- "no" }
 
@@ -308,8 +316,8 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   # Factors
   x.factor <- vapply(x, function(y) is.factor(y), FUN.VALUE = logical(1))
 
-  # If at least one factor and isFALSE(labels)
-  if (isTRUE(any(x.factor)) && isFALSE(labels)) {
+  # If at least one factor and !isTRUE(labels)
+  if (isTRUE(any(x.factor)) && !isTRUE(labels)) {
 
     # More than one factor
     if (sum(x.factor) > 1L) {
@@ -334,7 +342,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   #-----------------------------------------
   # Exclude variables
 
-  if (length(x) > 1) {
+  if (length(x) > 1 && !isTRUE(split)) {
 
     x.exclude <- which(vapply(x, function(y) length(unique(na.omit(y))), FUN.VALUE = 1L) > exclude)
 
@@ -372,7 +380,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #..................
     # Values in columns
-    if (isFALSE(val.col)) {
+    if (!isTRUE(val.col)) {
 
       freqtab <- data.frame(matrix(c(na.omit(names(x.abs)), "NA", as.vector(x.abs), as.vector(x.perc), as.vector(x.v.perc), NA), ncol = 4L,
                                    dimnames = list(NULL, c("Value", "Freq", "Perc", "V.Perc"))), stringsAsFactors = FALSE)
@@ -395,7 +403,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #........................................
     # split = FALSE
-    if (isFALSE(split)) {
+    if (!isTRUE(split)) {
 
       #...
       # Unique levels
@@ -447,7 +455,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
       #...
       # Values in rows
-      if (isFALSE(val.col)) {
+      if (!isTRUE(val.col)) {
 
         abs.freqtab <- data.frame(cbind(Value = rownames(x.abs), x.abs), stringsAsFactors = FALSE)
         perc.freqtab <- data.frame(cbind(Value = rownames(x.perc), x.perc), stringsAsFactors = FALSE)

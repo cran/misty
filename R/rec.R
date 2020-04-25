@@ -104,6 +104,14 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Check if input 'spec' is missing
   if (missing(spec)) {
 
@@ -114,7 +122,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -126,7 +134,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
     #......
     # Check input 'as.factor'
-    if (isFALSE(isTRUE(as.factor) || isFALSE(as.factor))) {
+    if (!isTRUE(isTRUE(as.factor) || !isTRUE(as.factor))) {
 
       stop("Please specify TRUE or FALSE for the argument 'as.factor'.", call. = FALSE)
 
@@ -134,7 +142,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
     #......
     # Check input 'table'
-    if (isFALSE(isTRUE(table) || isFALSE(table))) {
+    if (!isTRUE(isTRUE(table) || !isTRUE(table))) {
 
       stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
 

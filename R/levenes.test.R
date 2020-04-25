@@ -5,24 +5,25 @@
 #' Levene's test is equivalent to a one-way analysis of variance (ANOVA) with the absolute deviations
 #' of observations from the mean of each group as dependent variable (\code{center = "mean"}). Brown
 #' and Forsythe (1974) modified the Levene's test by using the absolute deviations of observations
-#' from the median (\code{center = "median"}). By default, the Levene's test by using the absolute
-#' deviations of observations from the median is computed.
+#' from the median (\code{center = "median"}). By default, the Levene's test uses the absolute
+#' deviations of observations from the median.
 #'
-#' @param formula   a formula of the form \code{y ~ group} where \code{y} is a numeric variable giving the
-#'                  data values and \code{group} a numeric variable, character variable or factor with
-#'                  two or more than two values or factor levels giving the corresponding groups.
-#' @param data      a matrix or data frame containing the variables in the formula \code{formula}.
-#' @param method    a character string specifying the method to compute the center of each group, i.e.
-#'                  \code{method = "median"} (default) to compute the Levene's test basd on the median
-#'                  (aka Brown-Forsythe test) or \code{method = "mean"} to compute the Levene's test
-#'                  based on the arithmetic mean.
-#' @param as.na     a numeric vector indicating user-defined missing values,
-#'                  i.e. these values are converted to \code{NA} before conducting the analysis.
-#' @param digits    an integer value indicating the number of decimal places to be used for displaying results.
-#' @param p.digits  an integer value indicating the number of decimal places to be used for displaying the
-#'                  \emph{p}-value.
-#' @param check     logical: if \code{TRUE}, argument specification is checked.
-#' @param output    logical: if \code{TRUE}, output is shown.
+#' @param formula    a formula of the form \code{y ~ group} where \code{y} is a numeric variable giving the
+#'                   data values and \code{group} a numeric variable, character variable or factor with
+#'                   two or more than two values or factor levels giving the corresponding groups.
+#' @param data       a matrix or data frame containing the variables in the formula \code{formula}.
+#' @param method     a character string specifying the method to compute the center of each group, i.e.
+#'                   \code{method = "median"} (default) to compute the Levene's test basd on the median
+#'                   (aka Brown-Forsythe test) or \code{method = "mean"} to compute the Levene's test
+#'                   based on the arithmetic mean.
+#' @param as.na      a numeric vector indicating user-defined missing values,
+#'                   i.e. these values are converted to \code{NA} before conducting the analysis.
+#' @param conf.level a numeric value between 0 and 1 indicating the confidence level of the interval.
+#' @param digits     an integer value indicating the number of decimal places to be used for displaying results.
+#' @param p.digits   an integer value indicating the number of decimal places to be used for displaying the
+#'                   \emph{p}-value.
+#' @param check      logical: if \code{TRUE}, argument specification is checked.
+#' @param output     logical: if \code{TRUE}, output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -40,23 +41,27 @@
 #' @return
 #' Returns an object of class \code{test}, which is a list with following entries:
 #' function call (\code{call}), formula (\code{formula}), data frame with the outcome and grouping variable,
-#' \code{data}, specification of function arguments (\code{args}), and object of class \code{"anova"}
-#' (\code{result}).
+#' (\code{data}), specification of function arguments (\code{args}), and a list with descriptive statistics
+#' including confidence interval and an object of class \code{"anova"} (\code{result}).
 #'
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(y = c(2, 1, 4, 5, 3, 7, 8, 4, 1),
-#'                   group = c(1, 1, 1, 2, 2, 2, 3, 3, 3))
+#' dat <- data.frame(y = c(2, 3, 4, 5, 5, 7, 8, 4, 5, 2, 4, 3),
+#'                   group = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3))
 #'
-#' # Levene's test based on the median
+#' # Levene's test based on the median with 95% confidence interval
 #' levenes.test(y ~ group, data = dat)
 #'
-#' # Levene's test based on the arithmetic mean
+#' # Levene's test based on the arithmetic mean  with 95% confidence interval
 #' levenes.test(y ~ group, data = dat, method = "mean")
+#'
+#' # Levene's test based on the median with 99% confidence interval
+#' levenes.test(y ~ group, data = dat, conf.level = 0.99)
+
 levenes.test <- function(formula, data, method = c("median", "mean"),
-                         digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
-                         output = TRUE) {
+                         conf.level = 0.95, digits = 2, p.digits = 3, as.na = NULL,
+                         check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Input Check
@@ -74,6 +79,14 @@ levenes.test <- function(formula, data, method = c("median", "mean"),
   if (missing(data)) {
 
     stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE)
+
+  }
+
+  #......
+  # Check if input 'data' is NULL
+  if (is.null(data)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
   }
 
@@ -157,6 +170,15 @@ levenes.test <- function(formula, data, method = c("median", "mean"),
     }
 
     #......
+    # Check input 'conf.level'
+    if (conf.level >= 1L|| conf.level <= 0L) {
+
+      stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
+           call. = FALSE)
+
+    }
+
+    #......
     # Check input 'digits'
     if (digits %% 1 != 0L || digits < 0L) {
 
@@ -174,7 +196,7 @@ levenes.test <- function(formula, data, method = c("median", "mean"),
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
         stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -198,6 +220,11 @@ levenes.test <- function(formula, data, method = c("median", "mean"),
 
   # Grouping variable
   group <- data[, group.var]
+
+  #----------------------------------------
+  # Confidence interval
+
+  result.ci <- ci.var(y, group = group, conf.level = conf.level, output = FALSE)$result
 
   #----------------------------------------
   # Analysis of Variance
@@ -238,7 +265,7 @@ levenes.test <- function(formula, data, method = c("median", "mean"),
                  data = data.frame(y, group, stringsAsFactors = FALSE),
                  args = list(method = method, digits = digits, p.digits = p.digits,
                              as.na = as.na, check = check, output = output),
-                 result = result.aov)
+                 result = list(descript = result.ci, aov = result.aov))
 
   class(object) <- "test"
 

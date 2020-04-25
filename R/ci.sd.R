@@ -111,10 +111,18 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
   #......
   # Check if input 'x' is missing
-  if (missing(x) || is.null(x)) {
+  if (missing(x)) {
 
     stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
          call. = FALSE)
+
+  }
+
+  #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
   }
 
@@ -251,7 +259,7 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -378,7 +386,7 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
     #......
     # Check input 'sort.var'
-    if (isFALSE(isTRUE(sort.var) || isFALSE(sort.var))) {
+    if (!isTRUE(isTRUE(sort.var) || !isTRUE(sort.var))) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -386,7 +394,7 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
     #......
     # Check input 'na.omit'
-    if (isFALSE(isTRUE(na.omit) || isFALSE(na.omit))) {
+    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -402,7 +410,7 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
     #......
     # Check input output
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

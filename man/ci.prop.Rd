@@ -4,11 +4,9 @@
 \alias{ci.prop}
 \title{Confidence Interval for Proportions}
 \usage{
-ci.prop(x, method = c("wald", "wilson"),
-        alternative = c("two.sided", "less", "greater"),
-        conf.level = 0.95, group = NULL, split = NULL,
-        sort.var = FALSE, na.omit = FALSE, digits = 3,
-        as.na = NULL, check = TRUE, output = TRUE)
+ci.prop(x, method = c("wald", "wilson"), alternative = c("two.sided", "less", "greater"),
+        conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
+        na.omit = FALSE, digits = 3, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector, matrix or data frame with numeric variables with 0 and 1 values,

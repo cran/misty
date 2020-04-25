@@ -30,8 +30,8 @@
 #' \tabular{ll}{
 #'   \code{call}      \tab function call \cr
 #'   \code{type}      \tab type of the test (i.e., correlation coefficient) \cr
-#'   \code{spec}      \tab specification of function arguments \cr
-#'   \code{res}       \tab list with the result, i.e., optimal sample size \cr
+#'   \code{args}      \tab specification of function arguments \cr
+#'   \code{result}       \tab list with the result, i.e., optimal sample size \cr
 #' }
 #'
 #' @export
@@ -64,7 +64,7 @@ size.cor <- function(rho, delta,
   # Input check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -177,8 +177,8 @@ size.cor <- function(rho, delta,
 
   object <- list(call = match.call(),
                  type = "cor",
-                 spec = list(delta = delta, rho = rho, alternative = alternative, alpha = alpha, beta = beta),
-                 res = list(n = n))
+                 args = list(delta = delta, rho = rho, alternative = alternative, alpha = alpha, beta = beta),
+                 result = list(n = n))
 
   class(object) <- "size"
 

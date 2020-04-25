@@ -4,10 +4,8 @@
 \alias{cohens.d}
 \title{Cohen's d for Between- and Within-Subject Design}
 \usage{
-cohens.d(formula, data, paired = FALSE, weighted = TRUE,
-         ref = NULL, correct = FALSE, digits = 2,
-         conf.level = 0.95, as.na = NULL, check = TRUE,
-         output = TRUE)
+cohens.d(formula, data, paired = FALSE, weighted = TRUE, ref = NULL, correct = FALSE,
+         digits = 2, conf.level = 0.95, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{formula}{in case of a between-subject design (i.e., \code{paired = FALSE}),
@@ -15,7 +13,7 @@ a formula of the form \code{y ~ group} for one outcome variable or
 \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where
 \code{y} is a numeric variable giving the data values and \code{group}
 a numeric variable, character variable or factor with two values or factor
-levels giving the coressponding group; in case of a within-subject design
+levels giving the corresponding group; in case of a within-subject design
 (i.e., \code{paired = TRUE}), a formula of the form \code{post ~ pre} where
 \code{post} and \code{pre} are numeric variables. Note that analysis for more
 than one outcome variable is not permitted in within-subject design.}

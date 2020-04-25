@@ -51,6 +51,14 @@ na.indicator <- function(x, as.na = NULL, check = TRUE) {
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 

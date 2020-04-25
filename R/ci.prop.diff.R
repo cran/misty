@@ -36,7 +36,7 @@
 #' @param formula        a formula of the form \code{y ~ group} for one outcome variable or
 #'                       \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where
 #'                       \code{y} is a numeric variable with 0 and 1 values and \code{group} a numeric
-#'                       variable, character variable or factor with two values or factor levels given
+#'                       variable, character variable or factor with two values or factor levelsgiving
 #'                       the corresponding group.
 #' @param data           a matrix or data frame containing the variables in the formula \code{formula}.
 #' @param na.omit        logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
@@ -105,7 +105,7 @@
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(x1 ~ group1, data = dat.bs, alternative = "less")
 #'
-#' # Two-Sided 95% Confidence Interval for x1 by group1
+#' # Two-Sided 99% Confidence Interval for x1 by group1
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(x1 ~ group1, data = dat.bs, conf.level = 0.99)
 #'
@@ -169,7 +169,7 @@
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(dat.ws$pre, dat.ws$post, alternative = "less", paired = TRUE)
 #'
-#' # Two-Sided 95% Confidence Interval for the mean difference in x1 and x2
+#' # Two-Sided 99% Confidence Interval for the mean difference in x1 and x2
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(dat.ws$pre, dat.ws$post, conf.level = 0.99, paired = TRUE)
 #'
@@ -194,7 +194,7 @@ prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) 
 
   #-----------------------------------------
   # Independent samples
-  if (isFALSE(paired)) {
+  if (!isTRUE(paired)) {
 
     #.................
     # Data
@@ -387,23 +387,40 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check if input 'x' is missing
-  if (missing(x) || is.null(x)) {
+  if (missing(x)) {
 
     stop("Please specify a numeric vector for the argument 'x'", call. = FALSE)
 
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Check if input 'y' is missing
-  if (missing(y) || is.null(y)) {
+  if (missing(y)) {
 
     stop("Please specify a numeric vector for the argument 'y'", call. = FALSE)
 
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(y)) {
+
+    stop("Input specified for the argument 'y' is NULL.", call. = FALSE)
+
+  }
+
+
+  #......
   # Check input 'paired'
-  if (isFALSE(isTRUE(paired) || isFALSE(paired))) {
+  if (!isTRUE(isTRUE(paired) || !isTRUE(paired))) {
 
     stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
 
@@ -415,7 +432,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Independent samples
-  if (isFALSE(paired)) {
+  if (!isTRUE(paired)) {
 
     xy <- list(x = x, y = y)
 
@@ -473,7 +490,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -529,7 +546,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
     if (!is.null(group)) {
 
       # Independent samples
-      if (isFALSE(paired)) {
+      if (!isTRUE(paired)) {
 
         stop("Please use formula notation for using a grouping variable in independent samples.",
              call. = FALSE)
@@ -572,7 +589,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
     if (!is.null(split)) {
 
       # Independent samples
-      if (isFALSE(paired)) {
+      if (!isTRUE(paired)) {
 
         stop("Please use formula notation for using a split variable in independent samples.",
              call. = FALSE)
@@ -612,7 +629,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input 'sort.var'
-    if (isFALSE(isTRUE(sort.var) || isFALSE(sort.var))) {
+    if (!isTRUE(isTRUE(sort.var) || !isTRUE(sort.var))) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -628,7 +645,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input output
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -657,7 +674,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   if (is.null(group) && is.null(split)) {
 
     # Independent sample
-    if (isFALSE(paired)) {
+    if (!isTRUE(paired)) {
 
       result <- data.frame(variable = "y",
                            n1 = length(na.omit(xy$x)), nNA1 = sum(is.na(xy$x)), p1 = mean(xy$x, na.rm = TRUE),
@@ -730,7 +747,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   # Return object and output
 
   object <- list(call = match.call(),
-                 type = ifelse(isFALSE(paired), "prop.diff.i",  "prop.diff.p"),
+                 type = ifelse(!isTRUE(paired), "prop.diff.i",  "prop.diff.p"),
                  data = list(x = x, y = y, group = group, split = split),
                  args = list(method = method, alternative = alternative,
                              conf.level = conf.level, paired = paired,
@@ -768,11 +785,20 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
   #......
   # Check if input 'data' is missing
-  if (missing(data) || is.null(data)) {
+  if (missing(data)) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
+
+  #......
+  # Check if input 'data' is NULL
+  if (is.null(data)) {
+
+    stop("Input specified for the argument 'data' is NULL.", call. = FALSE)
+
+  }
+
 
   #-----------------------------------------------------------------------------------
   # Formula

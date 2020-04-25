@@ -119,7 +119,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -131,7 +131,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
     #......
     # Check input 'trim'
-    if (isFALSE(isTRUE(trim) | isFALSE(trim))) {
+    if (!isTRUE(isTRUE(trim) | !isTRUE(trim))) {
 
       stop("Please specify TRUE or FALSE for the argument 'trim'.", call. = FALSE)
 
@@ -139,7 +139,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
     #......
     # Check input 'as.data.frame'
-    if (isFALSE(isTRUE(as.data.frame) | isFALSE(as.data.frame))) {
+    if (!isTRUE(isTRUE(as.data.frame) | !isTRUE(as.data.frame))) {
 
       stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE)
 

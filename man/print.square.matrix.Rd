@@ -4,8 +4,7 @@
 \alias{print.square.matrix}
 \title{Print square.matrix object}
 \usage{
-\method{print}{square.matrix}(x, tri = x$args$tri, digits = x$args$digits,
-         check = TRUE, ...)
+\method{print}{square.matrix}(x, tri = x$args$tri, digits = x$args$digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{square.matrix} object.}

@@ -37,7 +37,7 @@ print.na.pattern <- function(x, order = x$args$order, digits = x$args$digits, ch
   if (isTRUE(check)) {
 
     # Check order argument
-    if (isFALSE(isTRUE(order) || isFALSE(order))) {
+    if (!isTRUE(isTRUE(order) || !isTRUE(order))) {
 
       stop("Please specify TRUE or FALSE for the argument 'order'.", call. = FALSE)
 

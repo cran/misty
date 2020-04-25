@@ -59,6 +59,14 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Numeric vector for 'x'?
   if (!is.atomic(x) || !is.numeric(x)) {
 
@@ -76,7 +84,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -88,7 +96,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
     #......
     # Vector for 'group'?
-    if (!is.vector(group) && !is.factor(group)) {
+    if (!is.atomic(group) && !is.factor(group) && !is.factor(character)) {
 
       stop("Please specify an integer vector, character vector, or factor for the argument 'group'.",
            call. = FALSE)
@@ -115,7 +123,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
     #......
     # Check input 'expand'
-    if (isFALSE(isTRUE(expand) || isFALSE(expand))) {
+    if (!isTRUE(isTRUE(expand) || !isTRUE(expand))) {
 
       stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE)
 

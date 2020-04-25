@@ -69,6 +69,14 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
@@ -114,7 +122,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -145,7 +153,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'adjust'
-    if (isFALSE(isTRUE(adjust) || isFALSE(adjust))) {
+    if (!isTRUE(isTRUE(adjust) || !isTRUE(adjust))) {
 
       stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE)
 
@@ -170,7 +178,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

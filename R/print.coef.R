@@ -64,7 +64,7 @@ print.coef <- function(x, print = x$args$print, digits = x$args$digits, check = 
 
   ####################################################################################
   # Coefficient Alpha
-  if (x$type == "alpha") {
+  switch(x$type, alpha = {
 
     #----------------------------------------
     # Input Check
@@ -131,7 +131,7 @@ print.coef <- function(x, print = x$args$print, digits = x$args$digits, check = 
 
         print.object$alpha <- apply(print.object$alpha, 2, function(y) format(y, justify = "right"))
 
-        if (isFALSE(x$args$ordered)) {
+        if (!isTRUE(x$args$ordered)) {
 
           cat(paste0(ifelse(isTRUE(x$args$std), "Standardized ", "Unstandardized "), "Coefficient Alpha\n\n"))
 
@@ -178,7 +178,7 @@ print.coef <- function(x, print = x$args$print, digits = x$args$digits, check = 
 
   ####################################################################################
   # Coefficient Omega
-  } else if (x$type == "omega") {
+  }, omega = {
 
     #----------------------------------------
     # Input Check
@@ -291,7 +291,7 @@ print.coef <- function(x, print = x$args$print, digits = x$args$digits, check = 
 
     }
 
-  }
+  })
 
 }
 

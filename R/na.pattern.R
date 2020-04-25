@@ -61,8 +61,16 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -82,7 +90,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     #......
     # Check input 'order'
-    if (isFALSE(isTRUE(order) || isFALSE(order))) {
+    if (!isTRUE(isTRUE(order) || !isTRUE(order))) {
 
       stop("Please specify TRUE or FALSE for the argument 'order'.", call. = FALSE)
 
@@ -98,7 +106,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

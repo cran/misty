@@ -57,6 +57,14 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
@@ -66,7 +74,7 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
 
   #.........................
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -95,7 +103,7 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

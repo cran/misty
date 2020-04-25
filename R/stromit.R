@@ -64,9 +64,17 @@ stromit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   }
 
+  #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
   #.............
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -95,7 +103,7 @@ stromit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
     #.............
     # Check input 'na.omit'
-    if (isFALSE(isTRUE(na.omit) || isFALSE(na.omit))) {
+    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 

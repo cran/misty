@@ -5,11 +5,11 @@
 #'
 #' @param x              a numeric vector, matrix or data frame with numeric variables, i.e.,
 #'                       factors and character variables are excluded from \code{x} before conducting the analysis.
-#' @param sigma          a numeric vector indiating the popualation standard deviation when computing confidence
+#' @param sigma          a numeric vector indicating the population standard deviation when computing confidence
 #'                       intervals for the arithmetic mean with known standard deviation Note that either argument
 #'                       \code{sigma} or argument \code{sigma2} is specified and it is only possible to specify one
 #'                       value for the argument \code{sigma} even though multiple variables are specified in \code{x}.
-#' @param sigma2         a numeric vector indiating the popualation variance when computing confidence intervals
+#' @param sigma2         a numeric vector indicating the population variance when computing confidence intervals
 #'                       for the arithmetic mean with known variance. Note that either argument \code{sigma}
 #'                       or argument \code{sigma2} is specified and it is only possible to specify one value for the
 #'                       argument \code{sigma2} even though multiple variables are specified in \code{x}.
@@ -37,8 +37,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{ci.mean.diff}}, \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
-#' \code{\link{ci.sd}}, \code{\link{descript}}
+#' \code{\link{z.test}}, \code{\link{t.test}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
+#' \code{\link{ci.prop}}, \code{\link{ci.var}},  \code{\link{ci.sd}}, \code{\link{descript}}
 #'
 #' @references
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
@@ -109,10 +109,18 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   #......
   # Check if input 'x' is missing
-  if (missing(x) || is.null(x)) {
+  if (missing(x)) {
 
     stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
          call. = FALSE)
+
+  }
+
+  #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
   }
 
@@ -249,7 +257,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -447,7 +455,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'sort.var'
-    if (isFALSE(isTRUE(sort.var) || isFALSE(sort.var))) {
+    if (!isTRUE(isTRUE(sort.var) || !isTRUE(sort.var))) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -455,7 +463,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'na.omit'
-    if (isFALSE(isTRUE(na.omit) || isFALSE(na.omit))) {
+    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -471,7 +479,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input output
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

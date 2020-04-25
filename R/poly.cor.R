@@ -73,6 +73,14 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
@@ -83,7 +91,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -103,7 +111,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'smooth'
-    if (isFALSE(isTRUE(smooth) || isFALSE(smooth))) {
+    if (!isTRUE(isTRUE(smooth) || !isTRUE(smooth))) {
 
       stop("Please specify TRUE or FALSE for the argument 'smooth'.", call. = FALSE)
 
@@ -111,7 +119,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'global'
-    if (isFALSE(isTRUE(global) || isFALSE(global))) {
+    if (!isTRUE(isTRUE(global) || !isTRUE(global))) {
 
       stop("Please specify TRUE or FALSE for the argument 'global'.", call. = FALSE)
 
@@ -119,7 +127,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'na.rm'
-    if (isFALSE(isTRUE(na.rm) || isFALSE(na.rm))) {
+    if (!isTRUE(isTRUE(na.rm) || !isTRUE(na.rm))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.rm'.", call. = FALSE)
 
@@ -127,14 +135,14 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'progress'
-    if (isFALSE(isTRUE(progress) || isFALSE(progress))) {
+    if (!isTRUE(isTRUE(progress) || !isTRUE(progress))) {
 
       stop("Please specify TRUE or FALSE for the argument 'progress'.", call. = FALSE)
 
     }
 
     # Check input 'delete'
-    if (isFALSE(isTRUE(delete) || isFALSE(delete))) {
+    if (!isTRUE(isTRUE(delete) || !isTRUE(delete))) {
 
       stop("Please specify TRUE or FALSE for the argument 'delete'.", call. = FALSE)
 
@@ -159,7 +167,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

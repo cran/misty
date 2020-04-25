@@ -4,8 +4,8 @@
 \alias{cont.coef}
 \title{Pearson's Contingency Coefficient}
 \usage{
-cont.coef(x, adjust = FALSE, tri = c("both", "lower", "upper"),
-          digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+cont.coef(x, adjust = FALSE, tri = c("both", "lower", "upper"), digits = 2,
+          as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with integer vectors, character vectors or factors..}

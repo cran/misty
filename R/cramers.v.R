@@ -70,6 +70,14 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
@@ -116,7 +124,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -155,7 +163,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'correct'
-    if (isFALSE(isTRUE(correct) | isFALSE(correct))) {
+    if (!isTRUE(isTRUE(correct) | !isTRUE(correct))) {
 
       stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE)
 
@@ -180,7 +188,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) | !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

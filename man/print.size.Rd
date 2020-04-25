@@ -18,10 +18,10 @@ This function prints the \code{size} object
 
 #--------------------------------------
 # Two-sided one-sample test
-# theta = 0.5
+# delta = 0.5
 # alpha = 0.05, beta = 0.2
 
-n <- size.mean(theta = 0.5, sample = "one.sample",
+n <- size.mean(delta = 0.5, sample = "one.sample",
                alternative = "two.sided", alpha = 0.05, beta = 0.2,
                output = FALSE)
 

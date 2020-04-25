@@ -67,6 +67,14 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
@@ -93,7 +101,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
   # Input Check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -105,7 +113,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
     #......
     # Check input 'table'
-    if (isFALSE(isTRUE(table) || isFALSE(table))) {
+    if (!isTRUE(isTRUE(table) || !isTRUE(table))) {
 
       stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
 
@@ -121,7 +129,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

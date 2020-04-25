@@ -99,8 +99,16 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -172,7 +180,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
 
     #......
     # Check argument p.avail and prorated
-    if (isFALSE(prorated) && (!is.null(p.avail) | !is.null(n.avail)) ) {
+    if (!isTRUE(prorated) && (!is.null(p.avail) | !is.null(n.avail)) ) {
 
       warning("Argument specification 'prorated = FALSE' is equivalent to 'p.avail = 1' or 'n.avail = ncol(x).",
               call. = FALSE)

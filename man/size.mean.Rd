@@ -4,13 +4,13 @@
 \alias{size.mean}
 \title{Sample Size Determination for Testing Arithmetic Means}
 \usage{
-size.mean(theta, sample = c("two.sample", "one.sample"),
+size.mean(delta, sample = c("two.sample", "one.sample"),
           alternative = c("two.sided", "less", "greater"), alpha = 0.05,
           beta = 0.1, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{theta}{a numeric value indicating the relative minimum difference
-to be detected, \eqn{\theta}.}
+\item{delta}{a numeric value indicating the relative minimum difference
+to be detected, \eqn{\delta}.}
 
 \item{sample}{a character string specifying one- or two-sample t-test,
 must be one of \code{"two.sample"} (default) or \code{"one.sample"}.}
@@ -44,33 +44,33 @@ based on precision requirements (i.e., type-I-risk, type-II-risk and an effect s
 #--------------------------------------
 # Two-sided one-sample test
 # H0: mu = mu.0, H1: mu != mu.0
-# alpha = 0.05, beta = 0.2, theta = 0.5
+# alpha = 0.05, beta = 0.2, delta = 0.5
 
-size.mean(theta = 0.5, sample = "one.sample",
+size.mean(delta = 0.5, sample = "one.sample",
           alternative = "two.sided", alpha = 0.05, beta = 0.2)
 
 #--------------------------------------
 # One-sided one-sample test
 # H0: mu <= mu.0, H1: mu > mu.0
-# alpha = 0.05, beta = 0.2, theta = 0.5
+# alpha = 0.05, beta = 0.2, delta = 0.5
 
-size.mean(theta = 0.5, sample = "one.sample",
+size.mean(delta = 0.5, sample = "one.sample",
           alternative = "greater", alpha = 0.05, beta = 0.2)
 
 #--------------------------------------
 # Two-sided two-sample test
 # H0: mu.1 = mu.2, H1: mu.1 != mu.2
-# alpha = 0.01, beta = 0.1, theta = 1
+# alpha = 0.01, beta = 0.1, delta = 1
 
-size.mean(theta = 1, sample = "two.sample",
+size.mean(delta = 1, sample = "two.sample",
           alternative = "two.sided", alpha = 0.01, beta = 0.1)
 
 #--------------------------------------
 # One-sided two-sample test
 # H0: mu.1 <= mu.2, H1: mu.1 > mu.2
-# alpha = 0.01, beta = 0.1, theta = 1
+# alpha = 0.01, beta = 0.1, delta = 1
 
-size.mean(theta = 1, sample = "two.sample",
+size.mean(delta = 1, sample = "two.sample",
           alternative = "greater", alpha = 0.01, beta = 0.1)
 }
 \references{

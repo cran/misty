@@ -4,8 +4,7 @@
 \alias{print.na.descript}
 \title{Print na.descript}
 \usage{
-\method{print}{na.descript}(x, table = x$args$table, digits = x$args$digits,
-      check = TRUE, ...)
+\method{print}{na.descript}(x, table = x$args$table, digits = x$args$digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{na.descript} object.}

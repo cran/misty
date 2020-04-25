@@ -53,6 +53,14 @@ trim <- function(x, side = c("both", "left", "right"), check = TRUE) {
 
   }
 
+  #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
   if (isTRUE(check)) {
 
     # Check input 'x'

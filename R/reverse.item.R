@@ -61,6 +61,14 @@ reverse.item <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Argument 'min'
   if (is.null(min)) {
 
@@ -78,7 +86,7 @@ reverse.item <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -132,7 +140,7 @@ reverse.item <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
 
     #......
     # Check input 'table'
-    if (isFALSE(isTRUE(table) || isFALSE(table))) {
+    if (!isTRUE(isTRUE(table) || !isTRUE(table))) {
 
       stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
 

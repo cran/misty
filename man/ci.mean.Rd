@@ -4,21 +4,20 @@
 \alias{ci.mean}
 \title{Confidence Interval for the Arithmetic Mean}
 \usage{
-ci.mean(x, sigma = NULL, sigma2 = NULL,
-        alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
-        group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-        digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+ci.mean(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided", "less", "greater"),
+        conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
+        na.omit = FALSE, digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector, matrix or data frame with numeric variables, i.e.,
 factors and character variables are excluded from \code{x} before conducting the analysis.}
 
-\item{sigma}{a numeric vector indiating the popualation standard deviation when computing confidence
+\item{sigma}{a numeric vector indicating the population standard deviation when computing confidence
 intervals for the arithmetic mean with known standard deviation Note that either argument
 \code{sigma} or argument \code{sigma2} is specified and it is only possible to specify one
 value for the argument \code{sigma} even though multiple variables are specified in \code{x}.}
 
-\item{sigma2}{a numeric vector indiating the popualation variance when computing confidence intervals
+\item{sigma2}{a numeric vector indicating the population variance when computing confidence intervals
 for the arithmetic mean with known variance. Note that either argument \code{sigma}
 or argument \code{sigma2} is specified and it is only possible to specify one value for the
 argument \code{sigma2} even though multiple variables are specified in \code{x}.}
@@ -116,8 +115,8 @@ Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psycholog
 John Wiley & Sons.
 }
 \seealso{
-\code{\link{ci.mean.diff}}, \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
-\code{\link{ci.sd}}, \code{\link{descript}}
+\code{\link{z.test}}, \code{\link{t.test}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
+\code{\link{ci.prop}}, \code{\link{ci.var}},  \code{\link{ci.sd}}, \code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

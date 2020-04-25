@@ -5,8 +5,7 @@
 \title{Print cor.matrix object}
 \usage{
 \method{print}{cor.matrix}(x, print = x$args$print, tri = x$args$tri,
-      digits = x$args$digits, p.digits = x$args$p.digits,
-      check = TRUE, ...)
+      digits = x$args$digits, p.digits = x$args$p.digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{cor.matrix} object.}

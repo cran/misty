@@ -24,21 +24,21 @@
 #'
 #' @references
 #' Fleiss, J. L., Levin, B., & Paik, M. C. (2003). \emph{Statistical methods for rates and proportions} (3rd ed.).
-#' New York: John Wiley & Sons.
+#' John Wiley & Sons.
 #'
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-#' New York: John Wiley & Sons.
+#' John Wiley & Sons.
 #'
 #' Rasch, D., Pilz, J., Verdooren, L. R., & Gebhardt, G. (2011).
-#' \emph{Optimal experimental design with R}. Boca Raton: Chapman & Hall/CRC.
+#' \emph{Optimal experimental design with R}. Chapman & Hall/CRC.
 #'
 #' @return Returns an object of class \code{size} with following entries:
 #'
 #' \tabular{ll}{
 #'   \code{call}      \tab function call \cr
 #'   \code{type}      \tab type of the test (i.e., proportion) \cr
-#'   \code{spec}      \tab specification of function arguments \cr
-#'   \code{res}       \tab list with the result, i.e., optimal sample size \cr
+#'   \code{args}      \tab specification of function arguments \cr
+#'   \code{result}       \tab list with the result, i.e., optimal sample size \cr
 #' }
 #'
 #' @export
@@ -83,7 +83,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
   # Input check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -265,9 +265,9 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
   object <- list(call = match.call(),
                  type = "prop",
-                 spec = list(delta = delta, pi = pi, sample = sample, alternative = alternative,
+                 args = list(delta = delta, pi = pi, sample = sample, alternative = alternative,
                              alpha = alpha, beta = beta, correct = correct),
-                 res = list(n = n))
+                 result = list(n = n))
 
   class(object) <- "size"
 

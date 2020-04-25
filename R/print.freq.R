@@ -56,7 +56,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
 
     #..................
     # Check input 'freq'
-    if (isFALSE(isTRUE(freq) || isFALSE(freq))) {
+    if (!isTRUE(isTRUE(freq) || !isTRUE(freq))) {
 
       stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE)
 
@@ -64,7 +64,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
 
     #..................
     # No frequencies and percentages
-    if (print == "no" && isFALSE(freq)) {
+    if (print == "no" && !isTRUE(freq)) {
 
       # More than one variable and freq = FALSE
       if (!is.null(dim(x))) {
@@ -103,7 +103,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
 
     #..................
     # Values in rows
-    if (isFALSE(x$args$val.col)) {
+    if (!isTRUE(x$args$val.col)) {
 
       print.object <- data.frame(x = c("Value", rep("", nrow(print.object) - 1), "Missing", "Total"),
                                  val = c(print.object[1L:(grep("NA", print.object$Value) - 1L), 1L], "Total", "NA", ""),
@@ -138,7 +138,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
 
       #......
       # Omit Missing and Total row if print = "v.valid" and freq = FALSE
-      if (length(print) == 1L && print == "v.perc" && isFALSE(freq)) {
+      if (length(print) == 1L && print == "v.perc" && !isTRUE(freq)) {
 
         # Object without Total row
         print.object <- print.object[-grep("Total", print.object$x),  ]
@@ -226,7 +226,7 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
 
       #......
       # Omit Missing and Total row if perc = "v.valid" and freq = FALSE
-      if (length(print) == 1L && print == "v.perc" && isFALSE(freq)) {
+      if (length(print) == 1L && print == "v.perc" && !isTRUE(freq)) {
 
         # Object without Total column
         print.object <- print.object[, -ncol(print.object)]
@@ -285,11 +285,11 @@ print.freq <- function(x, print = x$args$print, freq = x$args$freq, digits = x$a
 
     #........................................
     # split = FALSE
-    if (isFALSE(x$args$split)) {
+    if (!isTRUE(x$args$split)) {
 
       #..................
       # Values in rows
-      if (isFALSE(x$args$val.col)) {
+      if (!isTRUE(x$args$val.col)) {
 
         #....
         # Absolute frequencies

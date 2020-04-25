@@ -65,7 +65,7 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -77,7 +77,7 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
     #......
     # Check input 'decreasing'
-    if (isFALSE(isTRUE(decreasing) || isFALSE(decreasing))) {
+    if (!isTRUE(isTRUE(decreasing) || !isTRUE(decreasing))) {
 
       stop("Please specify TRUE or FALSE for the argument 'decreasing'.", call. = FALSE)
 

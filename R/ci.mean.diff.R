@@ -8,16 +8,16 @@
 #' @param y              a numeric vector of data values.
 #' @param sigma          a numeric vector indicating the population standard deviation(s) when computing confidence
 #'                       intervals for the difference in arithmetic means with known standard deviation(s). In case
-#'                       of independent samples, equal standard deviation is assumed when specifying one value for
+#'                       of independent samples, equal standard deviations are assumed when specifying one value for
 #'                       the argument \code{sigma}; when specifying two values for the argument \code{sigma}, unequal
-#'                       variance is assumed Note that either argument \code{sigma} or argument \code{sigma2} is
-#'                       specified and it is only possible to specify one value (i.e., equal variance assumption) or
-#'                       two values (i.e., unequal variance assumption) for the argument \code{sigma} even though
+#'                       standard deviations are assumed. Note that either argument \code{sigma} or argument \code{sigma2}
+#'                       is specified and it is only possible to specify one value (i.e., equal variance assumption)
+#'                       or two values (i.e., unequal variance assumption) for the argument \code{sigma} even though
 #'                       multiple variables are specified in \code{x}.
-#' @param sigma2         a numeric vector indiating the popualation variance(s) when computing confidence intervals
+#' @param sigma2         a numeric vector indicating the population variance(s) when computing confidence intervals
 #'                       for the difference in arithmetic means with known variance(s). In case of independent samples,
-#'                       equal variance is assumed when specifying one value for the argument \code{sigma2}; when
-#'                       specifying two values for the argument \code{sigma}, unequal variance is aussumed. Note that
+#'                       equal variances are assumed when specifying one value for the argument \code{sigma2}; when
+#'                       specifying two values for the argument \code{sigma}, unequal variances are aussumed. Note that
 #'                       either argument \code{sigma} or argument \code{sigma2} is specified and it is only possible
 #'                       to specify one value (i.e., equal variance assumption) or two values (i.e., unequal variance
 #'                       assumption) for the argument \code{sigma} even though multiple variables are specified in
@@ -43,14 +43,11 @@
 #'                       not to \code{group} or \code{split}.
 #' @param check          logical: if \code{TRUE}, argument specification is checked.
 #' @param output         logical: if \code{TRUE}, output is shown on the console.
-#' @param formula        in case of a between-subject design (i.e., \code{paired = FALSE}), a formula of the
-#'                       form \code{y ~ group} for one outcome variable or \code{cbind(y1, y2, y3) ~ group}
-#'                       for more than one outcome variable where \code{y} is a numeric variable giving the
-#'                       data values and \code{group} a numeric variable, character variable or factor with
-#'                       two values or factor levels giving the corresponding groups; in case of a within-subjetc
-#'                       design (i.e., \code{paired = TRUE}), a formula of the form \code{post ~ pre} where
-#'                       \code{post} and \code{pre} are numeric variables. Note that analysis for more than
-#'                       one outcome variable is not permitted in within-subject design.
+#' @param formula        a formula of the form \code{y ~ group} for one outcome variable or
+#'                       \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where \code{y}
+#'                       is a numeric variable giving the data values and \code{group} a numeric variable,
+#'                       character variable or factor with two values or factor levelsgiving the
+#'                       corresponding groups.
 #' @param data           a matrix or data frame containing the variables in the formula \code{formula}.
 #' @param na.omit        logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
 #'                       (i.e., listwise deletion) when specifying more than one outcome variable.
@@ -60,8 +57,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{ci.mean}}, \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}}, \code{\link{ci.sd}},
-#' \code{\link{descript}}
+#' \code{\link{z.test}}, \code{\link{t.test}}, \code{\link{ci.mean}}, \code{\link{ci.median}}, \code{\link{ci.prop}},
+#' \code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{descript}}
 #'
 #' @references
 #' Fagerland, M. W., Lydersen S., & Laake, P. (2011). Recommended confidence intervals for two independent binomial
@@ -130,7 +127,7 @@
 #' # unknown population variances, unequal variance assumption
 #' ci.mean.diff(x1 ~ group1, data = dat.bs, alternative = "less")
 #'
-#' # Two-Sided 95% Confidence Interval for y1 by group1
+#' # Two-Sided 99% Confidence Interval for y1 by group1
 #' # unknown population variances, unequal variance assumption
 #' ci.mean.diff(x1 ~ group1, data = dat.bs, conf.level = 0.99)
 #'
@@ -193,33 +190,33 @@
 #' dat.ws <- data.frame(pre = c(1, 3, 2, 5, 7),
 #'                      post = c(2, 2, 1, 6, 8), stringsAsFactors = FALSE)
 #'
-#' # Two-Sided 95% Confidence Interval for the mean difference in x1 and x2
+#' # Two-Sided 95% Confidence Interval for the mean difference in pre and post
 #' # unknown poulation variance of difference scores
 #' ci.mean.diff(dat.ws$pre, dat.ws$post, paired = TRUE)
 #'
-#' # Two-Sided 95% Confidence Interval for the mean difference in x1 and x2
+#' # Two-Sided 95% Confidence Interval for the mean difference in pre and post
 #' # known population standard deviation of difference scores
 #' ci.mean.diff(dat.ws$pre, dat.ws$post, sigma = 2, paired = TRUE)
 #'
-#' # Two-Sided 95% Confidence Interval for the mean difference in x1 and x2
+#' # Two-Sided 95% Confidence Interval for the mean difference in pre and post
 #' # known population variance of difference scores
 #' ci.mean.diff(dat.ws$pre, dat.ws$post, sigma2 = 4, paired = TRUE)
 #'
-#' # One-Sided 95% Confidence Interval for the mean difference in x1 and x2
-#' # unknown population variances, unequal variance assumption
+#' # One-Sided 95% Confidence Interval for the mean difference in pre and post
+#' # unknown poulation variance of difference scores
 #' ci.mean.diff(dat.ws$pre, dat.ws$post, alternative = "less", paired = TRUE)
 #'
-#' # Two-Sided 95% Confidence Interval for the mean difference in x1 and x2
-#' # unknown population variances, unequal variance assumption
+#' # Two-Sided 99% Confidence Interval for the mean difference in pre and post
+#' # unknown poulation variance of difference scores
 #' ci.mean.diff(dat.ws$pre, dat.ws$post, conf.level = 0.99, paired = TRUE)
 #'
-#' # Two-Sided 95% Confidence Interval for for the mean difference in x1 and x2
-#' # unknown population variances, unequal variance assumption
+#' # Two-Sided 95% Confidence Interval for for the mean difference in pre and post
+#' # unknown poulation variance of difference scores
 #' # print results with 3 digits
 #' ci.mean.diff(dat.ws$pre, dat.ws$post, paired = TRUE, digits = 3)
 #'
-#' # Two-Sided 95% Confidence Interval for y1 by group1
-#' # unknown population variances, unequal variance assumption
+#' # Two-Sided 95% Confidence Interval for for the mean difference in pre and post
+#' # unknown poulation variance of difference scores
 #' # convert value 1 to NA
 #' ci.mean.diff(dat.ws$pre, dat.ws$post, as.na = 1, paired = TRUE)
 ci.mean.diff <- function(x, ...) {
@@ -236,7 +233,7 @@ m.diff.conf <- function(x, y, sigma, var.equal, alternative,
 
   #-----------------------------------------
   # Independent samples
-  if (isFALSE(paired)) {
+  if (!isTRUE(paired)) {
 
     #.................
     # Data
@@ -396,23 +393,39 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
   #......
   # Check if input 'x' is missing
-  if (missing(x) || is.null(x)) {
+  if (missing(x)) {
 
     stop("Please specify a numeric vector for the argument 'x'", call. = FALSE)
 
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Check if input 'y' is missing
-  if (missing(y) || is.null(x)) {
+  if (missing(y)) {
 
     stop("Please specify a numeric vector for the argument 'y'", call. = FALSE)
 
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'y' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Check input 'paired'
-  if (isFALSE(isTRUE(paired) || isFALSE(paired))) {
+  if (!isTRUE(isTRUE(paired) || !isTRUE(paired))) {
 
     stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
 
@@ -424,7 +437,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
   #......
   # Independent samples
-  if (isFALSE(paired)) {
+  if (!isTRUE(paired)) {
 
     xy <- list(x = x, y = y)
 
@@ -470,8 +483,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
     if (nrow(na.omit(xy)) < 2) {
 
-      stop("After listwise deletion, there is only one or no pair of observations left for the analysis.",
-           call. = FALSE)
+      stop("After listwise deletion, the number of pairs of observations is less than two.",call. = FALSE)
 
     }
 
@@ -482,7 +494,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -513,7 +525,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
       }
 
-      if (isFALSE(paired)) {
+      if (!isTRUE(paired)) {
 
         # Length of 'sigma'
         if (length(sigma) > 2L) {
@@ -546,7 +558,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
       }
 
-      if (isFALSE(paired)) {
+      if (!isTRUE(paired)) {
 
         # Length of 'sigma2'
         if (length(sigma2) > 2L) {
@@ -570,7 +582,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
     #......
     # Check input 'paired'
-    if (isFALSE(isTRUE(var.equal) || isFALSE(var.equal))) {
+    if (!isTRUE(isTRUE(var.equal) || !isTRUE(var.equal))) {
 
       stop("Please specify TRUE or FALSE for the argument 'var.equal'.", call. = FALSE)
 
@@ -599,9 +611,9 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
     if (!is.null(group)) {
 
       # Independent samples
-      if (isFALSE(paired)) {
+      if (!isTRUE(paired)) {
 
-        stop("Please use formula notation for using a grouping variable in independent samples.",
+        stop("Please use formula notation for using a grouping variable in paired samples.",
              call. = FALSE)
 
       }
@@ -658,9 +670,9 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
     if (!is.null(split)) {
 
       # Independent samples
-      if (isFALSE(paired)) {
+      if (!isTRUE(paired)) {
 
-        stop("Please use formula notation for using a split variable in independent samples.",
+        stop("Please use formula notation for using a split variable in paired samples.",
              call. = FALSE)
 
       }
@@ -714,7 +726,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
     #......
     # Check input 'sort.var'
-    if (isFALSE(isTRUE(sort.var) || isFALSE(sort.var))) {
+    if (!isTRUE(isTRUE(sort.var) || !isTRUE(sort.var))) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -724,13 +736,13 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
     # Check input 'digits'
     if (digits %% 1L != 0L || digits < 0L) {
 
-      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
+      stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
     }
 
     #......
     # Check input output
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -748,7 +760,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
   if (!is.null(sigma) && is.null(sigma2)) { sigma2 <- sigma^2 }
 
-  if (isFALSE(paired)) {
+  if (!isTRUE(paired)) {
 
     if (!is.null(sigma) && length(sigma) == 1L) { sigma <- c(sigma, sigma) }
 
@@ -769,7 +781,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
   if (is.null(group) && is.null(split)) {
 
     # Independent sample
-    if (isFALSE(paired)) {
+    if (!isTRUE(paired)) {
 
     result <- data.frame(variable = "y",
                          n1 = length(na.omit(xy$x)), nNA1 = sum(is.na(xy$x)), m1 = mean(xy$x, na.rm = TRUE), sd1 = sd(xy$x, na.rm = TRUE),
@@ -785,8 +797,9 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
     } else {
 
       result <- data.frame(variable = "y",
-                           n = nrow(na.omit(xy)), nNA1 = sum(is.na(xy$x)), m1 = mean(xy$x, na.rm = TRUE), sd1 = sd(xy$x, na.rm = TRUE),
-                                                  nNA2 = sum(is.na(xy$y)), m2 = mean(xy$y, na.rm = TRUE), sd2 = sd(xy$y, na.rm = TRUE),
+                           n = nrow(na.omit(xy)), nNA1 = sum(is.na(xy$x)), nNA2 = sum(is.na(xy$y)),
+                           m1 = mean(xy$x, na.rm = TRUE), sd1 = sd(xy$x, na.rm = TRUE),
+                           m2 = mean(xy$y, na.rm = TRUE), sd2 = sd(xy$y, na.rm = TRUE),
                            m.diff = mean(xy$y - xy$x, na.rm = TRUE),
                            sd.diff = sd(xy$y - xy$x, na.rm = TRUE),
                            low = m.diff.conf(x = xy$x, y = xy$y, sigma = sigma, var.equal = var.equal, alternative = alternative,
@@ -843,7 +856,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
   # Return object and output
 
   object <- list(call = match.call(),
-                 type = ifelse(isFALSE(paired), "mean.diff.i",  "mean.diff.p"),
+                 type = ifelse(!isTRUE(paired), "mean.diff.i",  "mean.diff.p"),
                  data = list(x = x, y = y, group = group, split = split),
                  args = list(sigma = sigma, sigma2 = sigma2,
                              var.equal = var.equal, alternative = alternative,
@@ -888,6 +901,13 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
 
   }
 
+  #......
+  # Check if input 'data' is NULL
+  if (is.null(data)) {
+
+    stop("Input specified for the argument 'data' is NULL.", call. = FALSE)
+
+  }
 
   #-----------------------------------------------------------------------------------
   # Formula

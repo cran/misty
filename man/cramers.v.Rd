@@ -4,8 +4,8 @@
 \alias{cramers.v}
 \title{Cramer's V}
 \usage{
-cramers.v(x, correct = TRUE, tri = c("both", "lower", "upper"),
-          digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+cramers.v(x, correct = TRUE, tri = c("both", "lower", "upper"), digits = 2,
+          as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with integer vectors, character vectors or factors.}

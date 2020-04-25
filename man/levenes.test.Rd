@@ -4,12 +4,13 @@
 \alias{levenes.test}
 \title{Levene's Test for Homogeneity of Variance}
 \usage{
-levenes.test(formula, data, method = c("median", "mean"), digits = 2, p.digits = 4,
-             as.na = NULL, check = TRUE, output = TRUE)
+levenes.test(formula, data, method = c("median", "mean"), conf.level = 0.95,
+             digits = 2, p.digits = 3, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{formula}{a formula of the form \code{y ~ group} where \code{y} is a numeric variable giving the
-data values and \code{group} a numeric variable, character variable or factor with two ore more than two values or factor levels giving the corresponding groups.}
+data values and \code{group} a numeric variable, character variable or factor with
+two or more than two values or factor levels giving the corresponding groups.}
 
 \item{data}{a matrix or data frame containing the variables in the formula \code{formula}.}
 
@@ -17,6 +18,8 @@ data values and \code{group} a numeric variable, character variable or factor wi
 \code{method = "median"} (default) to compute the Levene's test basd on the median
 (aka Brown-Forsythe test) or \code{method = "mean"} to compute the Levene's test
 based on the arithmetic mean.}
+
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
 
 \item{digits}{an integer value indicating the number of decimal places to be used for displaying results.}
 
@@ -32,9 +35,7 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 }
 \value{
 Returns an object of class \code{test}, which is a list with following entries:
-function call (\code{call}), formula (\code{formula}), data frame with the outcome and grouping variable,
-\code{data}, specification of function arguments (\code{args}), and object of class \code{"anova"}
-(\code{result}).
+function call (\code{call}), formula (\code{formula}), data frame with the outcome and grouping variable (\code{data}), specification of function arguments (\code{args}), and a list with descriptive statistics including confidence intervals and an object of class \code{"anova"} (\code{result}).
 }
 \description{
 This function computes Levene's test for homogeneity of variance across two or more independent groups.
@@ -43,18 +44,21 @@ This function computes Levene's test for homogeneity of variance across two or m
 Levene's test is equivalent to a one-way analysis of variance (ANOVA) with the absolute deviations
 of observations from the mean of each group as dependent variable (\code{center = "mean"}). Brown
 and Forsythe (1974) modified the Levene's test by using the absolute deviations of observations
-from the median (\code{center = "median"}). By default, the Levene's test by using the absolute
-deviations of observations from the median is computed.
+from the median (\code{center = "median"}). By default, the Levene's test uses the absolute
+deviations of observations from the median.
 }
 \examples{
-dat <- data.frame(y = c(2, 1, 4, 5, 3, 7, 8, 4, 1),
-                  group = c(1, 1, 1, 2, 2, 2, 3, 3, 3))
+dat <- data.frame(y = c(2, 3, 4, 5, 5, 7, 8, 4, 5, 2, 4, 3),
+                  group = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3))
 
-# Levene's test based on the median
+# Levene's test based on the median with 95\% confidence interval
 levenes.test(y ~ group, data = dat)
 
-# Levene's test based on the arithmetic mean
+# Levene's test based on the arithmetic mean  with 95\% confidence interval
 levenes.test(y ~ group, data = dat, method = "mean")
+
+# Levene's test based on the median with 99\% confidence interval
+levenes.test(y ~ group, data = dat, conf.level = 0.99)
 }
 \references{
 Brown, M. B., & Forsythe, A. B. (1974). Robust tests for the equality of variances. \emph{Journal of the American

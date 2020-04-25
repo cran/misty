@@ -102,6 +102,14 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Vector, matrix or data frame for the argument 'x'?
   if (!is.atomic(x) && !is.matrix(x) && !is.data.frame(x)) {
 
@@ -234,7 +242,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -343,7 +351,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
 
     #......
     # Check input 'sort.var'
-    if (isFALSE(isTRUE(sort.var) || isFALSE(sort.var))) {
+    if (!isTRUE(isTRUE(sort.var) || !isTRUE(sort.var))) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -351,7 +359,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
 
     #......
     # Check input 'na.omit'
-    if (isFALSE(isTRUE(na.omit) || isFALSE(na.omit))) {
+    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -367,7 +375,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
 
     #......
     # Check input output
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

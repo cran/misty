@@ -158,7 +158,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
     # Model convergence
     if (isTRUE(check)) {
 
-      if (isFALSE(mod.fit@Fit@converged)) {
+      if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) {
 
         warning("CFA model did not converge, results are most likely unreliable.",
                 call. = FALSE)
@@ -173,11 +173,12 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
     truevar <- ly%*%ps%*%t(ly)
 
-    threshold <- .getThreshold(mod.fit)[[1]]
+    threshold <- .getThreshold(mod.fit)[[1L]]
 
     denom <- .polycorLavaan(mod.fit, dat)[varnames, varnames]
 
-    invstdvar <- 1L / sqrt(diag(mod.fit@Fit@Sigma.hat[[1L]]))
+    invstdvar <- 1L / sqrt(diag(lavaan::lavInspect(mod.fit, "implied")$cov))
+
     polyr <- diag(invstdvar) %*% truevar %*% diag(invstdvar)
 
     sumnum <- 0L
@@ -226,7 +227,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   .getThreshold <- function(object) {
 
-    ngroups <- object@Data@ngroups
+    ngroups <- lavaan::inspect(object, "ngroups")
 
     coef <- lavaan::inspect(object, "coef")
 
@@ -268,7 +269,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   .polycorLavaan <- function(object, data) {
 
-    ngroups <- object@Data@ngroups
+    ngroups <- lavaan::inspect(object, "ngroups")
 
     coef <- lavaan::inspect(object, "coef")
 
@@ -319,13 +320,12 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   .refit <- function(pt, data, vnames, object) {
 
-    previousCall <- object@call
-    args <- as.list(previousCall[-1L])
+    args <- lavaan::lavInspect(object, "call")
+
     args$model <- pt
     args$data <- data
     args$ordered <- vnames
-    funcall <- as.character(previousCall[[1L]])
-    tempfit <- do.call(eval(parse(text = paste0("lavaan::", funcall[length(funcall)]))), args)
+    tempfit <- do.call(eval(parse(text = paste0("lavaan::", "lavaan"))), args[-1])
 
   }
 
@@ -354,6 +354,14 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Package 'lavaan' installed?
   if (!requireNamespace("lavaan", quietly = TRUE)) {
 
@@ -377,7 +385,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -422,7 +430,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
     # Check input 'resid.cov'
     if (!is.null(resid.cov)) {
 
-      if (isFALSE(ordered)) {
+      if (!isTRUE(ordered)) {
 
         resid.cov.items <- unique(unlist(resid.cov))
         if (any(!resid.cov.items %in% colnames(x))) {
@@ -460,7 +468,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
     #......
     # Check input 'std'
-    if (isFALSE(isTRUE(std) || isFALSE(std))) {
+    if (!isTRUE(isTRUE(std) || !isTRUE(std))) {
 
       stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE)
 
@@ -477,7 +485,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
     #......
     # Check input 'na.omit'
-    if (isFALSE(isTRUE(na.omit) || isFALSE(na.omit))) {
+    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -502,7 +510,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
         stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -648,7 +656,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
       if (isTRUE(check)) {
 
         # Model convergence
-        if (isFALSE(mod.fit@Fit@converged)) {
+        if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) {
 
           warning("CFA model did not converge, results are most likely unreliable.",
                   call. = FALSE)
@@ -656,7 +664,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
         }
 
         # Degrees od freedom
-        if (isTRUE(mod.fit@Fit@test[[1]]$df < 0L)) {
+        if (isTRUE(lavaan::lavInspect(mod.fit, "fit")["df"] < 0L)) {
 
           warning("CFA model has negative degrees of freedom, results are most likely unreliable.",
                   call. = FALSE)
@@ -668,7 +676,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
       #----------------------------------------
       # Parameter estimates
 
-      if (isFALSE(y.std)) {
+      if (!isTRUE(y.std)) {
 
         #................
         # Unstandardized parameter estimates
@@ -732,7 +740,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
         mod.cov.fit <- suppressWarnings(lavaan::cfa(mod.cov, data = y, ordered = FALSE, se = "none",
                                                     std.lv = TRUE, estimator = "ML", missing = "fiml"))
 
-        if (isFALSE(std)) {
+        if (!isTRUE(std)) {
 
           var.total <- sum(lavaan::inspect(mod.cov.fit, "cov.ov")[varnames, varnames])
 
@@ -769,8 +777,8 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
   omega.mod <- omega.function(y = x, y.resid.cov = resid.cov, y.type = type,
                               y.std = std, check = TRUE)
 
-  omega.x <- data.frame(n = unlist(omega.mod$mod.fit@Data@nobs),
-                        items = length(omega.mod$mod.fit@Data@ov$name),
+  omega.x <- data.frame(n = lavaan::lavInspect(omega.mod$mod.fit, "nobs"),
+                        items = ncol(lavaan::lavInspect(omega.mod$mod.fit, "data")),
                         omega = omega.mod$omega, stringsAsFactors = FALSE)
 
   #----------------------------------------

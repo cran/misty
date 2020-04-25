@@ -1,3 +1,16 @@
+### misty 0.3.1
+
+##### New features
+* New functions `z.test()` for computing one sample, two sample, and paired sample z-test.
+
+##### Bug fix
+* Function `omega.coef()` does not access internal slots of a fitted lavaan object anymore (requested by Yves Rosseel).
+
+##### User-visible changes
+* Added descriptive statistics and confidence intervals to the function `levenes.test()`.
+* Changed the output of the functions `size.mean()`, `size.prop()`, and `size.cor()` to include greek letters.
+* Changed the argument `theta` in the `size.mean()` function into `delta`.
+
 ### misty 0.3.0
 
 ##### New features

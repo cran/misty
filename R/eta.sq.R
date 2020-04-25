@@ -57,6 +57,14 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Vector, matrix or data frame for the argument 'x'?
   if (!is.atomic(x) && !is.matrix(x) && !is.data.frame(x)) {
 
@@ -82,7 +90,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -159,7 +167,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

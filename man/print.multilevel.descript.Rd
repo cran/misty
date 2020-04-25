@@ -4,8 +4,7 @@
 \alias{print.multilevel.descript}
 \title{Print multilevel.descript object}
 \usage{
-\method{print}{multilevel.descript}(x, digits = x$args$digits,
-      icc.digits = x$args$icc.digits, check = TRUE, ...)
+\method{print}{multilevel.descript}(x, digits = x$args$digits, icc.digits = x$args$icc.digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{multilevel.descript} object.}

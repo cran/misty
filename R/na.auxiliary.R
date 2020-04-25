@@ -155,6 +155,14 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
@@ -197,7 +205,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) | isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -226,7 +234,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     #......
     # Check input 'weighted'
-    if (isFALSE(isTRUE(weighted) | isFALSE(weighted))) {
+    if (!isTRUE(isTRUE(weighted) | !isTRUE(weighted))) {
 
       stop("Please specify TRUE or FALSE for the argument 'weighted'.", call. = FALSE)
 
@@ -234,7 +242,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     #......
     # Check input 'correct'
-    if (isFALSE(isTRUE(correct) | isFALSE(correct))) {
+    if (!isTRUE(isTRUE(correct) | !isTRUE(correct))) {
 
       stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE)
 
@@ -250,7 +258,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) | isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) | !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

@@ -39,7 +39,7 @@ print.ci <- function(x, sort.var = x$args$sort.var, digits = x$args$digits,
 
     #......
     # Check input 'sort.var'
-    if (isFALSE(isTRUE(sort.var) || isFALSE(sort.var))) {
+    if (!isTRUE(isTRUE(sort.var) || !isTRUE(sort.var))) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -120,15 +120,15 @@ print.ci <- function(x, sort.var = x$args$sort.var, digits = x$args$digits,
     if (length(unique(x$result$variable)) == 1L) {
 
       print.object <- print.object[, -1L]
+      print.object[, 1L] <- paste0(" ", print.object[, 1L])
 
     } else {
 
       print.object[1L, 1L] <- paste0(" ", print.object[1L, 1L], " ", collapse = "")
       print.object[-1L, 1L] <- paste0("  ", print.object[-1L, 1L])
+      print.object[, 1L] <- format(misty::trim(print.object[, 1L], side = "right"), justify = "left")
 
     }
-
-    print.object[, 1L] <- paste0(" ", print.object[, 1L])
 
     #......
     # Print output
@@ -252,13 +252,17 @@ print.ci <- function(x, sort.var = x$args$sort.var, digits = x$args$digits,
 
     }
 
-    print.object[1L, 1L] <- paste0(" ", print.object[1L, 1L], " ", collapse = "")
+    print.object[1L, 1L] <- paste0(" ", print.object[1L, 1L], collapse = "")
     print.object[-1L, 1L] <- paste0("  ", print.object[-1L, 1L])
 
-    print.object[1L, 2L] <- paste0(" ", print.object[1L, 2L], " ", collapse = "")
-    print.object[-1L, 2L] <- paste0("  ", print.object[-1L, 2L])
+    print.object[, 1L] <- format(misty::trim(print.object[, 1L], side = "right"), justify = "left")
 
-    print.object[, -c(1L:2L)] <- apply(print.object[, -c(1L:2L)], 2, format, justify = "right")
+    if (length(unique(x$result$variable)) != 1L) {
+
+      print.object[-1L, 2L] <- paste0(" ", print.object[-1L, 2L])
+      print.object[, 2L] <- format(misty::trim(print.object[, 2L], side = "right"), justify = "left")
+
+    }
 
     #......
     # Print output
@@ -375,21 +379,53 @@ print.ci <- function(x, sort.var = x$args$sort.var, digits = x$args$digits,
 
       #......
       # Format
+
+      # One variable, no group
       if (length(unique(x$result[[i]]$variable)) == 1L && is.null(x$data$group)) {
 
         print.object[[i]][-1L, 1L] <- paste0("  ", print.object[[i]][-1L, 1L])
         print.object[[i]] <- format(print.object[[i]], justify = "right")
 
-      } else {
+      # One variable, group
+      } else if (length(unique(x$result[[i]]$variable)) == 1L && !is.null(x$data$group)) {
 
         print.object[[i]][, 1L] <- format(print.object[[i]][, 1L], justify = "left")
-        print.object[[i]][, 2L] <- format(print.object[[i]][, 2L], justify = "left")
 
         print.object[[i]][1L, 1L] <- paste0(" ", print.object[[i]][1L, 1L], " ", collapse = "")
         print.object[[i]][-1L, 1L] <- paste0("  ", print.object[[i]][-1L, 1L])
+        print.object[[i]][, 1L] <- format(misty::trim(print.object[[i]][, 1L], side = "right"), justify = "left")
 
-        print.object[[i]][1L, 2L] <- paste0(" ", print.object[[i]][1L, 2L], " ", collapse = "")
-        print.object[[i]][-1L, 2L] <- paste0("  ", print.object[[i]][-1L, 2L])
+        #print.object[[i]][-1L, 2L] <- paste0(" ", print.object[[i]][-1L, 2L])
+        #print.object[[i]][, 2L] <- format(misty::trim(print.object[[i]][, 2L], side = "right"), justify = "left")
+
+        print.object[[i]][, -1L] <- apply(print.object[[i]][, -1L, drop = FALSE], 2, function(y) format(y, justify = "right"))
+
+        print.object[[i]][, 1L] <- paste0("  ", print.object[[i]][, 1])
+
+      # More than one variable, no group
+      } else if (length(unique(x$result[[i]]$variable)) > 1L && is.null(x$data$group)) {
+
+        print.object[[i]][, 1L] <- format(print.object[[i]][, 1L], justify = "left")
+
+        print.object[[i]][1L, 1L] <- paste0(" ", print.object[[i]][1L, 1L], " ", collapse = "")
+        print.object[[i]][-1L, 1L] <- paste0("  ", print.object[[i]][-1L, 1L])
+        print.object[[i]][, 1L] <- format(misty::trim(print.object[[i]][, 1L], side = "right"), justify = "left")
+
+        print.object[[i]][, -1L] <- apply(print.object[[i]][, -1L, drop = FALSE], 2, function(y) format(y, justify = "right"))
+
+        print.object[[i]][, 1L] <- paste0("  ", print.object[[i]][, 1])
+
+      # More than one variable, group
+      } else if (length(unique(x$result[[i]]$variable)) > 1L && !is.null(x$data$group)) {
+
+        print.object[[i]][, 1L] <- format(print.object[[i]][, 1L], justify = "left")
+
+        print.object[[i]][1L, 1L] <- paste0(" ", print.object[[i]][1L, 1L], " ", collapse = "")
+        print.object[[i]][-1L, 1L] <- paste0("  ", print.object[[i]][-1L, 1L])
+        print.object[[i]][, 1L] <- format(misty::trim(print.object[[i]][, 1L], side = "right"), justify = "left")
+
+        print.object[[i]][-1L, 2L] <- paste0(" ", print.object[[i]][-1L, 2L])
+        print.object[[i]][, 2L] <- format(misty::trim(print.object[[i]][, 2L], side = "right"), justify = "left")
 
         print.object[[i]][, -c(1L:2L)] <- apply(print.object[[i]][, -c(1L:2L), drop = FALSE], 2, function(y) format(y, justify = "right"))
 

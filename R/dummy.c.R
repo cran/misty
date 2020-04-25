@@ -90,6 +90,14 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Vector or factor for the argument 'x'?
   if (!is.atomic(x) && !is.factor(x)) {
 
@@ -136,7 +144,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 

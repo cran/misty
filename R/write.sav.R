@@ -151,7 +151,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
   # Input check
 
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -583,9 +583,9 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
     #----------------------------------------
     # Remove sps and csv file
 
-    if (isFALSE(write.sps)) { unlink(paste0(file, ".sps")) }
+    if (!isTRUE(write.sps)) { unlink(paste0(file, ".sps")) }
 
-    if (isFALSE(write.csv) | sep == ",") { unlink(paste0(file, ".csv")) }
+    if (!isTRUE(write.csv) | sep == ",") { unlink(paste0(file, ".csv")) }
 
     if (isTRUE(write.csv) & sep == ",") { utils::write.csv(xf, paste0(file, ".csv"), row.names = FALSE, quote = FALSE, na = na) }
 

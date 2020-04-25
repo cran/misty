@@ -4,8 +4,8 @@
 \alias{print.crosstab}
 \title{Print crosstab}
 \usage{
-\method{print}{crosstab}(x, print = x$args$print, freq = x$args$freq,
-      split = x$args$split, digits = x$args$digits, check = TRUE, ...)
+\method{print}{crosstab}(x, print = x$args$print, freq = x$args$freq, split = x$args$split,
+      digits = x$args$digits, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{crosstab} object.}

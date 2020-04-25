@@ -7,8 +7,7 @@
 omega.coef(x, resid.cov = NULL, type = c("omega", "hierarch", "categ"),
            exclude = NULL, std = FALSE, na.omit = FALSE,
            print = c("all", "omega", "item"), digits = 2,
-           conf.level = 0.95, as.na = NULL, check = TRUE, output = TRUE
-)
+           conf.level = 0.95, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame. Note that at least three items are needed for computing omega.}

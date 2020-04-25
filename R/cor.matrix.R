@@ -55,7 +55,8 @@
 #'                             "b", "b", "b", "b", "b"),
 #'                   x = c(5, NA, 6, 4, 6, 7, 9, 5, 8, 7),
 #'                   y = c(3, 3, 5, 6, 7, 4, 7, NA, NA, 8),
-#'                   z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6), stringsAsFactors = FALSE)
+#'                   z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6),
+#'                   stringsAsFactors = TRUE)
 #'
 #' # Pearson product-moment correlation coefficient matrix using pairwise deletion
 #' cor.matrix(dat[, c("x", "y", "z")])
@@ -192,6 +193,14 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
   }
 
   #......
+  # Check if input 'x' is NULL
+  if (is.null(x)) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
   # Matrix or data frame for the argument 'x'?
   if (!is.matrix(x) && !is.data.frame(x)) {
 
@@ -209,7 +218,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
   #......
   # Check input 'check'
-  if (isFALSE(isTRUE(check) || isFALSE(check))) {
+  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -307,7 +316,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
     # Check input 'digits'
     if (digits %% 1L != 0L || digits < 0L) {
 
-      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
+      stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
     }
 
@@ -315,13 +324,13 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
     # Check input 'p.digits'
     if (p.digits %% 1L != 0L || p.digits < 0L) {
 
-      stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE)
+      stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE)
 
     }
 
     #......
     # Check input 'output'
-    if (isFALSE(isTRUE(output) || isFALSE(output))) {
+    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -450,7 +459,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
       cor.mat <- matrix(NA, ncol = ncol(x), nrow = ncol(x), dimnames = list(colnames(x), colnames(x)))
 
-      cor.mat[lower.tri(cor.mat)] <- apply(comb, 2, function(y) suppressWarnings(.internal.tau.c(x[, y[1]], x[, y[2L]])$result$tau.c))
+      cor.mat[lower.tri(cor.mat)] <- apply(comb, 2, function(y) suppressWarnings(.internal.tau.c(x[, y[1L]], x[, y[2L]])$result$tau.c))
       cor.mat[upper.tri(cor.mat)] <- t(cor.mat)[upper.tri(cor.mat)]
 
       diag(cor.mat) <- 1

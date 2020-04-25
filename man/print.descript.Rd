@@ -4,8 +4,8 @@
 \alias{print.descript}
 \title{Print descript object}
 \usage{
-\method{print}{descript}(x, print = x$args$print, sort.var = x$args$sort.var,
-      digits = x$args$digits, check = TRUE, ...)
+\method{print}{descript}(x, print = x$args$print, sort.var = x$args$sort.var, digits = x$args$digits,
+      check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{descript} object.}

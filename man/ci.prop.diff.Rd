@@ -8,25 +8,20 @@
 \usage{
 ci.prop.diff(x, ...)
 
-
-## Default S3 method:
 \method{ci.prop.diff}{default}(x, y, method = c("wald", "newcombe"), paired = FALSE,
-                               alternative = c("two.sided", "less", "greater"),
-                               conf.level = 0.95, group = NULL, split = NULL,
-                               sort.var = FALSE, digits = 2, as.na = NULL,
-                               check = TRUE, output = TRUE, \dots)
+             alternative = c("two.sided", "less", "greater"),
+             conf.level = 0.95, group = NULL, split = NULL,
+             sort.var = FALSE, digits = 2, as.na = NULL,
+             check = TRUE, output = TRUE, \dots)
 
-## S3 method for class 'formula'
 \method{ci.prop.diff}{formula}(formula, data, method = c("wald", "newcombe"),
-                               alternative = c("two.sided", "less", "greater"),
-                               conf.level = 0.95, group = NULL, split = NULL,
-                               sort.var = FALSE, na.omit = FALSE, digits = 2,
-                               as.na = NULL, check = TRUE, output = TRUE, \dots)
+             alternative = c("two.sided", "less", "greater"),
+             conf.level = 0.95, group = NULL, split = NULL,
+             sort.var = FALSE, na.omit = FALSE, digits = 2,
+             as.na = NULL, check = TRUE, output = TRUE, \dots)
 }
 \arguments{
 \item{x}{a numeric vector with 0 and 1 values.}
-
-\item{...}{further arguments to be passed to or from methods.}
 
 \item{y}{a numeric vector with 0 and 1 values.}
 
@@ -65,12 +60,15 @@ not to \code{group} or \code{split}.}
 \item{formula}{a formula of the form \code{y ~ group} for one outcome variable or
 \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where
 \code{y} is a numeric variable with 0 and 1 values and \code{group} a numeric
-variable, character variable or factor with two values of factor levels given the corresponding group.}
+variable, character variable or factor with two values or factor levels giving
+the corresponding group.}
 
 \item{data}{a matrix or data frame containing the variables in the formula \code{formula}.}
 
 \item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
 (i.e., listwise deletion) when specifying more than one outcome variable.}
+
+\item{...}{further arguments to be passed to or from methods.}
 }
 \value{
 Returns an object of class \code{ci}, which is a list with following entries:
@@ -119,7 +117,7 @@ ci.prop.diff(x1 ~ group1, data = dat.bs, method = "wald")
 # Newcombes Hybrid Score interval
 ci.prop.diff(x1 ~ group1, data = dat.bs, alternative = "less")
 
-# Two-Sided 95\% Confidence Interval for x1 by group1
+# Two-Sided 99\% Confidence Interval for x1 by group1
 # Newcombes Hybrid Score interval
 ci.prop.diff(x1 ~ group1, data = dat.bs, conf.level = 0.99)
 
@@ -183,7 +181,7 @@ ci.prop.diff(dat.ws$pre, dat.ws$post, method = "wald", paired = TRUE)
 # Newcombes Hybrid Score interval
 ci.prop.diff(dat.ws$pre, dat.ws$post, alternative = "less", paired = TRUE)
 
-# Two-Sided 95\% Confidence Interval for the mean difference in x1 and x2
+# Two-Sided 99\% Confidence Interval for the mean difference in x1 and x2
 # Newcombes Hybrid Score interval
 ci.prop.diff(dat.ws$pre, dat.ws$post, conf.level = 0.99, paired = TRUE)
 
