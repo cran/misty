@@ -27,16 +27,17 @@
 #' van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
 #'
 #' @return
-#' Returns an object of class \code{na.pattern}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}),
-#' list with results (\code{result}), and a vector with the number of missing data pattern for each case (\code{pattern}),
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}), list with results
+#' (\code{result}), and a vector with the number of missing data pattern for each case (\code{pattern}),
 #'
 #' @export
 #'
 #' @examples
 #' dat <- data.frame(x = c(1, NA, NA, 6, 3),
 #'                   y = c(7, NA, 8, 9, NA),
-#'                   z = c(2, NA, 3, NA, 5), stringsAsFactors = FALSE)
+#'                   z = c(2, NA, 3, NA, 5))
 #'
 #' # Compute a summary of missing data patterns
 #' dat.pattern <- na.pattern(dat)
@@ -70,7 +71,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -90,7 +91,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     #......
     # Check input 'order'
-    if (!isTRUE(isTRUE(order) || !isTRUE(order))) {
+    if (!is.logical(order)) {
 
       stop("Please specify TRUE or FALSE for the argument 'order'.", call. = FALSE)
 
@@ -106,7 +107,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -188,12 +189,13 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
   # Return object
 
   object <- list(call = match.call(),
+                 type = "na.pattern",
                  data = x,
                  args = list(order = order, digits = digits, as.na = as.na, check = check, output = output),
                  result = restab,
                  pattern = pattern)
 
-  class(object) <- "na.pattern"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

@@ -42,7 +42,7 @@
 #'                   group = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
 #'                   x1 = c(2, 3, 2, 2, 1, 2, 3, 4, 2),
 #'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
-#'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4), stringsAsFactors = FALSE)
+#'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
 #'
 #' # ICC(1) for x1
 #' multilevel.icc(dat$x1, group = dat$group)
@@ -120,7 +120,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
   # Input Check
 
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -221,7 +221,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
     #......
     # Check input 'REML'
-    if (!isTRUE(isTRUE(REML) || !isTRUE(REML))) {
+    if (!is.logical(REML)) {
 
       stop("Please specify TRUE or FALSE for the argument 'REML'.", call. = FALSE)
 

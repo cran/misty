@@ -67,7 +67,7 @@ dat.ml <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
                      group = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
                      x.l1 = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
                      x.l2 = c(4, 4, 4, 1, 1, 1, 3, 3, 3),
-                     y = c(5, 3, 6, 3, 4, 5, 2, 6, 5), stringsAsFactors = FALSE)
+                     y = c(5, 3, 6, 3, 4, 5, 2, 6, 5))
 
 # Center level-1 predictor at the grand mean (CGM)
 center(dat.ml$x.l1)

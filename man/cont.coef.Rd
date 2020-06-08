@@ -4,8 +4,8 @@
 \alias{cont.coef}
 \title{Pearson's Contingency Coefficient}
 \usage{
-cont.coef(x, adjust = FALSE, tri = c("both", "lower", "upper"), digits = 2,
-          as.na = NULL, check = TRUE, output = TRUE)
+cont.coef(x, adjust = FALSE, tri = c("both", "lower", "upper"),
+          digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with integer vectors, character vectors or factors..}
@@ -28,7 +28,8 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{cont.coef}, which is a list with following entries: function call (\code{call}),
+Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
+type of analysis \code{type},
 matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
 list with results (\code{result}).
 }
@@ -43,7 +44,7 @@ contingency coefficient can be adjusted by relating the coefficient to the possi
 \examples{
 dat <- data.frame(x = c(1, 1, 2, 1, 3, 3, 2, 2, 1, 2),
                   y = c(3, 2, 3, 1, 2, 4, 1, 2, 3, 4),
-                  z = c(2, 2, 2, 1, 2, 2, 1, 2, 1, 2), stringsAsFactors = FALSE)
+                  z = c(2, 2, 2, 1, 2, 2, 1, 2, 1, 2))
 
 # Contingency coefficient between x and y
 cont.coef(dat[, c("x", "y")])

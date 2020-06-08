@@ -29,8 +29,9 @@
 #' van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
 #'
 #' @return
-#' Returns an object of class \code{na.descript}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type},  matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
 #' list with results (\code{result}).
 #'
 #' @export
@@ -39,7 +40,7 @@
 #'dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
 #'                  x2 = c(4, 2, 5, 1, 5, 3, 4, 5),
 #'                  x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
-#'                  x4 = c(5, 6, 3, NA, NA, 4, 6, NA), stringsAsFactors = FALSE)
+#'                  x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
 #'
 #' # Descriptive statistics for missing data
 #' na.descript(dat)
@@ -101,7 +102,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
   # Input Check
 
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -113,7 +114,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
     #......
     # Check input 'table'
-    if (!isTRUE(isTRUE(table) || !isTRUE(table))) {
+    if (!is.logical(table)) {
 
       stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
 
@@ -129,7 +130,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -208,6 +209,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
   # Return object
   object <- list(call = match.call(),
+                 type = "na.descript",
                  data = x,
                  args = list(digits = digits, table = table, as.na = as.na, check = check, output = output),
                  result = list(no.cases = no.cases, no.complete = no.complete, perc.complete = perc.complete,
@@ -223,7 +225,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
                                no.missing.max = no.missing.max, perc.missing.max = perc.missing.max,
                                table.miss = table.missing))
 
-  class(object) <- "na.descript"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

@@ -68,8 +68,8 @@
 #' John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{ci}, which is a list with following entries:
-#' function call (\code{call}), type of confidence interval (\code{type}), list with the input specified in \code{x},
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}),type of analysis \code{type}, list with the input specified in \code{x},
 #' \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
 #' and result table (\code{result}).
 #'
@@ -87,14 +87,13 @@
 #'                      x2 = c(0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1,
 #'                             1, 0, 1, 0, 1, 1, 1, NA, 1, 0, 0, 1, 1, 1),
 #'                      x3 = c(1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0,
-#'                             1, 0, 1, 1, 0, 1, 1, 1, 0, 1, NA, 1, 0, 1),
-#'                      stringsAsFactors = FALSE)
+#'                             1, 0, 1, 1, 0, 1, 1, 1, 0, 1, NA, 1, 0, 1))
 #'
 #' #--------------------------------------
 #' # Between-Subject Design
 #'
 #' # Two-Sided 95% Confidence Interval for x1 by group1
-#  # Newcombes Hybrid Score interval
+#' # Newcombes Hybrid Score interval
 #' ci.prop.diff(x1 ~ group1, data = dat.bs)
 #'
 #' # Two-Sided 95% Confidence Interval for x1 by group1
@@ -420,7 +419,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check input 'paired'
-  if (!isTRUE(isTRUE(paired) || !isTRUE(paired))) {
+  if (!is.logical(paired)) {
 
     stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
 
@@ -490,7 +489,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -629,7 +628,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input 'sort.var'
-    if (!isTRUE(isTRUE(sort.var) || !isTRUE(sort.var))) {
+    if (!is.logical(sort.var)) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -645,7 +644,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input output
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -747,7 +746,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   # Return object and output
 
   object <- list(call = match.call(),
-                 type = ifelse(!isTRUE(paired), "prop.diff.i",  "prop.diff.p"),
+                 type = "ci", ci = ifelse(!isTRUE(paired), "prop.diff.i",  "prop.diff.p"),
                  data = list(x = x, y = y, group = group, split = split),
                  args = list(method = method, alternative = alternative,
                              conf.level = conf.level, paired = paired,
@@ -755,7 +754,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
                              as.na = as.na, check = check, output = output),
                  result = result)
 
-  class(object) <- "ci"
+  class(object) <- "misty.object"
 
   #-----------------------------------------------------------------------------------
   # Output
@@ -1007,7 +1006,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
   # Return object and output
 
   object <- list(call = match.call(),
-                 type = "prop.diff.i",
+                 type = "ci", ci = "prop.diff.i",
                  data = list(data = data[, var.formula], group = group, split = split),
                  args = list(formula = formula, method = method,
                              alternative = alternative, conf.level = conf.level,
@@ -1015,7 +1014,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
                              as.na = as.na, check = check, output = output),
                  result = result)
 
-  class(object) <- "ci"
+  class(object) <- "misty.object"
 
   #-----------------------------------------------------------------------------------
   # Output

@@ -11,7 +11,7 @@
 #'                       argument \code{sigma2} is specified.
 #' @param sigma2         a numeric vector indicating the population variance(s). In case of two sample z-test,
 #'                       equal variances are assumed when specifying one value for the argument \code{sigma2};
-#'                       when specifying two values for the argument \code{sigma}, unequal variance are aussumed.
+#'                       when specifying two values for the argument \code{sigma}, unequal variance are assumed.
 #'                       Note that either argument \code{sigma} or argument \code{sigma2} is specified.
 #' @param mu             a numeric value indicating the population mean under the null hypothesis. Note that
 #'                       the argument \code{mu} is only used when computing a one sample z-test.
@@ -44,16 +44,15 @@
 #' John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{test}, which is a list with following entries:
-#' function call (\code{call}), type of confidence interval (\code{type}), list with the input specified in \code{x}
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x}
 #' (\code{data}), specification of function arguments (\code{args}), and result table (\code{result}).
 #'
 #' @export
 #'
 #' @examples
 #' dat.bs <- data.frame(group = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
-#'                     x = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 4, 3, NA),
-#'                     stringsAsFactors = FALSE)
+#'                     x = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 4, 3, NA))
 #'
 #' #--------------------------------------
 #' # Between-Subject Design
@@ -171,7 +170,7 @@ z.test.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   #......
   # Check input 'paired'
-  if (!isTRUE(isTRUE(paired) || !isTRUE(paired))) {
+  if (!is.logical(paired)) {
 
     stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
 
@@ -245,7 +244,7 @@ z.test.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -386,8 +385,8 @@ z.test.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
     }
 
     #......
-    # Check input output
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    # Check input 'output'
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -442,7 +441,7 @@ z.test.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                                        less = pnorm(z, lower.tail = TRUE),
                                        greater = pnorm(z, lower.tail = FALSE)))
 
-    type <- "z.test.one"
+    test <- "z.test.one"
 
   # Two samples
   } else if (!is.null(y) && !isTRUE(paired)) {
@@ -469,7 +468,7 @@ z.test.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                                        less = pnorm(z, lower.tail = TRUE),
                                        greater = pnorm(z, lower.tail = FALSE)))
 
-    type <- "z.test.two"
+    test <- "z.test.two"
 
 
   # Paired samples
@@ -498,7 +497,7 @@ z.test.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                                        greater = pnorm(z, lower.tail = FALSE)))
 
 
-    type <- "z.test.paired"
+    test <- "z.test.paired"
 
   }
 
@@ -506,7 +505,7 @@ z.test.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
   # Return object and output
 
   object <- list(call = match.call(),
-                 type = type,
+                 type = "z.test", test = test,
                  data = list(x, y),
                  args = list(sigma = sigma, sigma2 = sigma2, mu = mu,
                              paired = paired, alternative = alternative,
@@ -515,7 +514,7 @@ z.test.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                              check = check, output = output),
                  result = result)
 
-  class(object) <- "test"
+  class(object) <- "misty.object"
 
   #-----------------------------------------------------------------------------------
   # Output
@@ -574,7 +573,7 @@ z.test.formula <- function(formula, data, as.na = NULL, check = TRUE, output = T
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -637,7 +636,7 @@ z.test.formula <- function(formula, data, as.na = NULL, check = TRUE, output = T
   # Return object and output
 
   object <- list(call = match.call(),
-                 type = "z.test.two",
+                 type = "z.test", test = "z.test.two",
                  data = data[, var.formula],
                  args = list(formula = object$args$formula, sigma = object$args$sigma,
                              sigma2 = object$args$sigma2, alternative = object$args$alternative,
@@ -646,7 +645,7 @@ z.test.formula <- function(formula, data, as.na = NULL, check = TRUE, output = T
                              check = check, output = object$args$output),
                  result = object$result)
 
-  class(object) <- "test"
+  class(object) <- "misty.object"
 
   #-----------------------------------------------------------------------------------
   # Output

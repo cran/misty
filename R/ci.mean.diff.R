@@ -17,7 +17,7 @@
 #' @param sigma2         a numeric vector indicating the population variance(s) when computing confidence intervals
 #'                       for the difference in arithmetic means with known variance(s). In case of independent samples,
 #'                       equal variances are assumed when specifying one value for the argument \code{sigma2}; when
-#'                       specifying two values for the argument \code{sigma}, unequal variances are aussumed. Note that
+#'                       specifying two values for the argument \code{sigma}, unequal variances are assumed. Note that
 #'                       either argument \code{sigma} or argument \code{sigma2} is specified and it is only possible
 #'                       to specify one value (i.e., equal variance assumption) or two values (i.e., unequal variance
 #'                       assumption) for the argument \code{sigma} even though multiple variables are specified in
@@ -74,8 +74,8 @@
 #' John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{ci}, which is a list with following entries:
-#' function call (\code{call}), type of confidence interval (\code{type}), list with the input specified in \code{x},
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
 #' \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
 #' and result table (\code{result}).
 #'
@@ -93,8 +93,7 @@
 #'                      x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 3, 3, 3, 1, 3, 6,
 #'                             3, 5, 2, 6, 8, 3, 4, 5, 2, 1, 3, 1, 2, NA),
 #'                      x3 = c(7, 8, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
-#'                             2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4),
-#'                      stringsAsFactors = FALSE)
+#'                             2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
 #'
 #' #--------------------------------------
 #' # Between-Subject Design
@@ -425,7 +424,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
   #......
   # Check input 'paired'
-  if (!isTRUE(isTRUE(paired) || !isTRUE(paired))) {
+  if (!is.logical(paired)) {
 
     stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
 
@@ -494,7 +493,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -582,7 +581,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
     #......
     # Check input 'paired'
-    if (!isTRUE(isTRUE(var.equal) || !isTRUE(var.equal))) {
+    if (!is.logical(var.equal)) {
 
       stop("Please specify TRUE or FALSE for the argument 'var.equal'.", call. = FALSE)
 
@@ -700,7 +699,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
       }
 
-      # Length of 'split' doest not match with 'x'
+      # Length of 'split' doesn't not match with 'x'
       if (length(split) != nrow(xy)) {
 
         stop("Length of the vector or factor specified in 'split' does not match the number of rows in 'data'.",
@@ -726,7 +725,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
     #......
     # Check input 'sort.var'
-    if (!isTRUE(isTRUE(sort.var) || !isTRUE(sort.var))) {
+    if (!is.logical(sort.var)) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -742,7 +741,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
     #......
     # Check input output
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -856,7 +855,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
   # Return object and output
 
   object <- list(call = match.call(),
-                 type = ifelse(!isTRUE(paired), "mean.diff.i",  "mean.diff.p"),
+                 type = "ci", ci = ifelse(!isTRUE(paired), "mean.diff.i", "mean.diff.p"),
                  data = list(x = x, y = y, group = group, split = split),
                  args = list(sigma = sigma, sigma2 = sigma2,
                              var.equal = var.equal, alternative = alternative,
@@ -865,7 +864,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
                              as.na = as.na, check = check, output = output),
                  result = result)
 
-  class(object) <- "ci"
+  class(object) <- "misty.object"
 
   #-----------------------------------------------------------------------------------
   # Output
@@ -1124,7 +1123,7 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
   # Return object and output
 
   object <- list(call = match.call(),
-                 type = "mean.diff.i",
+                 type = "ci", ci = "mean.diff.i",
                  data = list(data = data[, var.formula], group = group, split = split),
                  args = list(formula = formula, sigma = sigma, sigma2 = sigma2,
                              var.equal = var.equal, alternative = alternative,
@@ -1133,7 +1132,7 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
                              check = check, output = output),
                  result = result)
 
-  class(object) <- "ci"
+  class(object) <- "misty.object"
 
   #-----------------------------------------------------------------------------------
   # Output

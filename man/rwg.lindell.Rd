@@ -4,8 +4,8 @@
 \alias{rwg.lindell}
 \title{Lindell, Brandt and Whitney (1999) r*wg(j) Within-Group Agreement Index for Multi-Item Scales}
 \usage{
-rwg.lindell(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TRUE,
-            na.omit = FALSE, as.na = NULL, check = TRUE)
+rwg.lindell(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TRUE, na.omit = FALSE,
+            as.na = NULL, check = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with numeric vectors.}
@@ -63,6 +63,10 @@ Note that the \code{rwg.j.lindell()} function in the \pkg{multilevel} package us
 by default, while the \code{rwg.lindell()} function uses all available information to compute the
 r*wg(j) agreement index by default. In order to obtain equivalent results in the presence of missing
 values, listwise deletion (\code{na.omit = TRUE}) needs to be applied.
+
+Examples for the application of r*wg(j) within-group agreement index for multi-item scales can be
+found in Bardach, Yanagida, Schober and Lueftenegger (2018), Bardach, Lueftenegger, Yanagida, Schober
+and Spiel (2018), and Bardach, Lueftenegger, Yanagida, Spiel and Schober (2019).
 }
 \examples{
 dat <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
@@ -85,6 +89,18 @@ rwg.lindell(dat[, c("x1", "x2", "x3")], group = dat$group, A = 5, z = FALSE)
 rwg.lindell(dat[, c("x1", "x2", "x3")], group = dat$group, A = 5, expand = FALSE)
 }
 \references{
+Bardach, L., Lueftenegger, M., Yanagida, T., & Schober, B. (2019). Achievement or agreement - Which comes first?
+Clarifying the temporal ordering of achievement and within-class consensus on classroom goal structures.
+\emph{Learning and Instruction, 61}, 72-83. https://doi.org/10.1016/j.learninstruc.2019.01.003
+
+Bardach, L., Lueftenegger, M., Yanagida, T., Schober, B. & Spiel, C. (2019). The role of within-class consensus
+on mastery goal structures in predicting socio-emotional outcomes. \emph{British Journal of Educational Psychology, 89},
+239-258. https://doi.org/10.1111/bjep.12237
+
+Bardach, L., Yanagida, T., Schober, B. & Lueftenegger, M. (2018). Within-class consensus on classroom goal structures:
+Relations to achievement and achievement goals in mathematics and language classes. \emph{Learning and Individual Differences, 67},
+78-90. https://doi.org/10.1016/j.lindif.2018.07.002
+
 Lindell, M. K., Brandt, C. J., & Whitney, D. J. (1999). A revised index of interrater
 agreement for multi-item ratings of a single target. \emph{Applied Psychological Measurement}, \emph{23},
 127-135. https://doi.org/10.1177/01466219922031257

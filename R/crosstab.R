@@ -29,16 +29,16 @@
 #' John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{crosstab}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
-#' list with results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), matrix or data frame specified in \code{x} (\code{data}), specification
+#' of function arguments (\code{args}), and list with results (\code{result}).
 #'
 #' @export
 #'
 #' @examples
 #' dat <- data.frame(x1 = c(1, 2, 2, 1, 1, 2, 2, 1, 1, 2),
 #'                   x2 = c(1, 2, 2, 1, 2, 1, 1, 1, 2, 1),
-#'                   x3 = c(-99, 2, 1, 1, 1, 2, 2, 2, 2, 1), stringsAsFactors = FALSE)
+#'                   x3 = c(-99, 2, 1, 1, 1, 2, 2, 2, 2, 1))
 #'
 #' # Cross Tabulation for x1 and x2
 #' crosstab(dat[, c("x1", "x2")])
@@ -154,7 +154,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -193,7 +193,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'freq'
-    if (!isTRUE(isTRUE(freq) || !isTRUE(freq))) {
+    if (!is.logical(freq)) {
 
       stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE)
 
@@ -210,7 +210,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'na.omit'
-    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
+    if (!is.logical(na.omit)) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -218,7 +218,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'digits'
-    if (digits %% 1L != 0L | digits < 0L) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -226,7 +226,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) | !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -335,12 +335,13 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
   # Return object
 
   object <- list(call = match.call(),
+                 type = "crosstab",
                  data = x,
                  args = list(freq = freq, print = print, split = split, na.omit = na.omit,
                              digits = digits, as.na = as.na, check = check, output = output),
                  result = list(freq.a = freq.a, perc.r = perc.r, perc.c = perc.c, perc.t = perc.t))
 
-  class(object) <- "crosstab"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

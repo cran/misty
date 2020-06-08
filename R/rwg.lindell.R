@@ -15,6 +15,10 @@
 #' r*wg(j) agreement index by default. In order to obtain equivalent results in the presence of missing
 #' values, listwise deletion (\code{na.omit = TRUE}) needs to be applied.
 #'
+#' Examples for the application of r*wg(j) within-group agreement index for multi-item scales can be
+#' found in Bardach, Yanagida, Schober and Lueftenegger (2018), Bardach, Lueftenegger, Yanagida, Schober
+#' and Spiel (2018), and Bardach, Lueftenegger, Yanagida, Spiel and Schober (2019).
+#'
 #' @param x           a matrix or data frame with numeric vectors.
 #' @param group       a vector representing the grouping structure (i.e., group variable).
 #' @param A           a numeric value indicating the number of discrete response options of the items
@@ -41,6 +45,18 @@
 #' \code{\link{group.scores}}
 #'
 #' @references
+#' Bardach, L., Lueftenegger, M., Yanagida, T., & Schober, B. (2019). Achievement or agreement - Which comes first?
+#' Clarifying the temporal ordering of achievement and within-class consensus on classroom goal structures.
+#' \emph{Learning and Instruction, 61}, 72-83. https://doi.org/10.1016/j.learninstruc.2019.01.003
+#'
+#' Bardach, L., Lueftenegger, M., Yanagida, T., Schober, B. & Spiel, C. (2019). The role of within-class consensus
+#' on mastery goal structures in predicting socio-emotional outcomes. \emph{British Journal of Educational Psychology, 89},
+#' 239-258. https://doi.org/10.1111/bjep.12237
+#'
+#' Bardach, L., Yanagida, T., Schober, B. & Lueftenegger, M. (2018). Within-class consensus on classroom goal structures:
+#' Relations to achievement and achievement goals in mathematics and language classes. \emph{Learning and Individual Differences, 67},
+#' 78-90. https://doi.org/10.1016/j.lindif.2018.07.002
+#'
 #' Lindell, M. K., Brandt, C. J., & Whitney, D. J. (1999). A revised index of interrater
 #' agreement for multi-item ratings of a single target. \emph{Applied Psychological Measurement}, \emph{23},
 #' 127-135. https://doi.org/10.1177/01466219922031257
@@ -67,7 +83,7 @@
 #'                   group = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
 #'                   x1 = c(2, 3, 2, 1, 1, 2, 4, 3, 5),
 #'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
-#'                   x3 = c(3, 1, 1, 2, 3, 3, 5, 5, 4), stringsAsFactors = FALSE)
+#'                   x3 = c(3, 1, 1, 2, 3, 3, 5, 5, 4))
 #'
 #' # Compute Fisher z-transformed r*wg(j) for a multi-item scale with A = 5 response options
 #' rwg.lindell(dat[, c("x1", "x2", "x3")], group = dat$group, A = 5)
@@ -125,7 +141,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -191,7 +207,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
     #......
     # Check input 'z'
-    if (!isTRUE(isTRUE(z) || !isTRUE(z))) {
+    if (!is.logical(z)) {
 
       stop("Please specify TRUE or FALSE for the argument 'z'.", call. = FALSE)
 
@@ -199,7 +215,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
     #......
     # Check input 'expand'
-    if (!isTRUE(isTRUE(expand) || !isTRUE(expand))) {
+    if (!is.logical(expand)) {
 
       stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE)
 
@@ -267,3 +283,4 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
   return(object)
 
 }
+

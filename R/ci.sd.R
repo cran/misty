@@ -44,8 +44,8 @@
 #' \emph{Computational Statistics and Data Analysis, 50}, 775-782. https://doi.org/10.1016/j.csda.2004.10.003
 #'
 #' @return
-#' Returns an object of class \code{ci}, which is a list with following entries:
-#' function call (\code{call}), type of confidence interval (\code{type}), list with the input specified in \code{x},
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
 #' \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
 #' and result table (\code{result}).
 #'
@@ -61,8 +61,7 @@
 #'                   x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 3, 3, 3, 1, 3, 6,
 #'                          3, 5, 2, 6, 8, 3, 4, 5, 2, 1, 3, 1, 2, NA),
 #'                   x3 = c(7, 8, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
-#'                          2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4),
-#'                   stringsAsFactors = FALSE)
+#'                          2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
 #'
 #' # Two-Sided 95% Confidence Interval for x1
 #' ci.sd(dat$x1)
@@ -259,7 +258,7 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -386,7 +385,7 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
     #......
     # Check input 'sort.var'
-    if (!isTRUE(isTRUE(sort.var) || !isTRUE(sort.var))) {
+    if (!is.logical(sort.var)) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -394,7 +393,7 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
     #......
     # Check input 'na.omit'
-    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
+    if (!is.logical(na.omit)) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -409,8 +408,8 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
     }
 
     #......
-    # Check input output
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    # Check input 'output'
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -588,14 +587,14 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
   # Return object and output
 
   object <- list(call = match.call(),
-                 type = "sd",
+                 type = "ci", ci = "sd",
                  data = list(x = x, group = group, split = split),
                  args = list(method = method, alternative = alternative, conf.level = conf.level,
                              sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na,
                              check = check, output = output),
                  result = result)
 
-  class(object) <- "ci"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

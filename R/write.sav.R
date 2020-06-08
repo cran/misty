@@ -151,7 +151,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
   # Input check
 
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 

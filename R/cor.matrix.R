@@ -44,8 +44,9 @@
 #' John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{cor.matrix}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
 #' list with results (\code{result}).
 #'
 #' @export
@@ -218,7 +219,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -330,7 +331,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -545,6 +546,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
   if (is.null(group)) {
 
     object <- list(call = match.call(),
+                   type = "cor.matrix",
                    data = x,
                    args = list(method = method, use = use, group = group, print = print,
                                tri = tri, p.adj = p.adj, digits = digits, p.digits = p.digits,
@@ -554,6 +556,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
   } else {
 
     object <- list(call = match.call(),
+                   type = "cor.matrix",
                    data = list(group1 = x.group[[1L]], group2 = x.group[[2L]]),
                    args = list(method = method, use = use, group = group, print = print,
                                tri = tri, p.adj = p.adj, digits = digits, p.digits = p.digits,
@@ -565,7 +568,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
   }
 
-  class(object) <- "cor.matrix"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

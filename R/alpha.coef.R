@@ -63,7 +63,7 @@
 #' https://CRAN.R-project.org/package=MBESS
 #'
 #' Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens' scales of measurement do not help
-#' make it: A response to Chalmers. \emph{Journal of Modern Applied Statistical Methods, 79}, 1184-1197.
+#' make it: A response to Chalmers. \emph{Educational and Psychological Measurement, 79}, 1184-1197.
 #' https://doi.org/10.1177/0013164419844305
 #'
 #' Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of coefficients alpha and theta for
@@ -71,9 +71,10 @@
 #' https://doi.org/10.22237/jmasm/1177992180
 #'
 #' @return
-#' Returns an object of class \code{alpha.coef}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
-#' list with results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}), and list with
+#' results (\code{result}).
 #'
 #' @export
 #'
@@ -81,7 +82,7 @@
 #' dat <- data.frame(item1 = c(4, 2, 3, 4, 1, 2, 4, 2),
 #'                   item2 = c(4, 3, 3, 3, 2, 2, 4, 1),
 #'                   item3 = c(3, 2, 4, 2, 1, 3, 4, 1),
-#'                   item4 = c(4, 1, 2, 3, 2, 3, 4, 2), stringsAsFactors = FALSE)
+#'                   item4 = c(4, 1, 2, 3, 2, 3, 4, 2))
 #'
 #' # Compute unstandardized coefficient alpha and item statistics
 #' alpha.coef(dat)
@@ -136,7 +137,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -189,7 +190,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     #......
     # Check input 'std'
-    if (!isTRUE(isTRUE(std) || !isTRUE(std))) {
+    if (!is.logical(std)) {
 
       stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE)
 
@@ -197,7 +198,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     #......
     # Check input 'ordered'
-    if (!isTRUE(isTRUE(ordered) || !isTRUE(ordered))) {
+    if (!is.logical(ordered)) {
 
       stop("Please specify TRUE or FALSE for the argument 'ordered'.", call. = FALSE)
 
@@ -205,7 +206,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     #......
     # Check input 'na.omit'
-    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
+    if (!is.logical(na.omit)) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -239,7 +240,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
         stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -385,7 +386,7 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
   #----------------------------------------
   # Print coefficient alpha and/or item statistic
 
-  if (all(c(c("all", "alpha", "item")) %in% print)) { print <- c("alpha", "item") }
+  if (all(c("all", "alpha", "item") %in% print)) { print <- c("alpha", "item") }
 
   if (length(print) == 1L && "all" %in% print) { print <- c("alpha", "item") }
 
@@ -514,14 +515,14 @@ alpha.coef <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
   # Return object
 
   object <- list(call = match.call(),
-                 type = "alpha",
+                 type = "alpha.coef",
                  data = x,
                  args = list(exclude = exclude, std = std, ordered = ordered, na.omit = na.omit,
                              print = print, digits = digits, conf.level = conf.level, as.na = as.na,
                              check = check, output = output),
                  result = list(alpha = alpha.x, itemstat = itemstat))
 
-  class(object) <- "coef"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

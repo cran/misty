@@ -33,8 +33,9 @@
 #' Statistical Society, 42}, 323-328. https://doi.org/10.1016/j.jkss.2012.10.002
 #'
 #' @return
-#' Returns an object of class \code{cramers.v}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
 #' list with results (\code{result}).
 #'
 #' @export
@@ -42,7 +43,7 @@
 #' @examples
 #' dat <- data.frame(x = c(1, 1, 2, 1, 3, 3, 2, 2, 1, 2),
 #'                   y = c(1, 2, 2, 1, 3, 4, 1, 2, 3, 1),
-#'                   z = c(1, 1, 2, 1, 2, 3, 1, 2, 3, 2), stringsAsFactors = FALSE)
+#'                   z = c(1, 1, 2, 1, 2, 3, 1, 2, 3, 2))
 #'
 #' # Bias-corrected Cramer's V between x and y
 #' cramers.v(dat[, c("x", "y")])
@@ -124,7 +125,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -136,10 +137,14 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'x'
-    if (any(vapply(x, function(y) any(as.numeric(y) %% 1L != 0L, na.rm = TRUE), FUN.VALUE = logical(1L)))) {
+    if (all(!vapply(x, is.character, FUN.VALUE = logical(1L)))) {
 
-      stop("Please specify a matrix or data frame with integer vectors, character vectors or factors the argument 'x'.",
-           call. = FALSE)
+      if (any(vapply(x, function(y) any(as.numeric(y) %% 1L != 0L, na.rm = TRUE), FUN.VALUE = logical(1L)))) {
+
+        stop("Please specify a matrix or data frame with integer vectors, character vectors or factors the argument 'x'.",
+             call. = FALSE)
+
+      }
 
     }
 
@@ -163,7 +168,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'correct'
-    if (!isTRUE(isTRUE(correct) | !isTRUE(correct))) {
+    if (!is.logical(correct)) {
 
       stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE)
 
@@ -180,7 +185,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'digits'
-    if (digits %% 1L != 0L | digits < 0L) {
+    if (digits %% 1L != 0L || digits < 0L) {
 
       stop("Specify a positive integer number for the argument 'digits'", call. = FALSE)
 
@@ -188,7 +193,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) | !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -278,7 +283,7 @@ cramers.v <- function(x, correct = TRUE, tri = c("both", "lower", "upper"),
                              check = check, output = output),
                  result = v)
 
-  class(object) <- "square.matrix"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

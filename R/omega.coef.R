@@ -67,8 +67,9 @@
 #' \emph{Educational and Psychological Measurement, 38}, 75-79.
 #'
 #' @return
-#' Returns an object of class \code{omega.coef}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}),
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}),
 #' fitted lavaan object (\code{mod.fit}), and list with results (\code{result}).
 #'
 #' @export
@@ -77,8 +78,7 @@
 #' dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
 #'                   item2 = c(5, 3, 3, 5, 2, 2, 5, 1),
 #'                   item3 = c(4, 2, 4, 5, 1, 3, 5, 1),
-#'                   item4 = c(5, 1, 2, 5, 2, 3, 4, 2),
-#'                   stringsAsFactors = FALSE)
+#'                   item4 = c(5, 1, 2, 5, 2, 3, 4, 2))
 #'
 #' # Compute unstandardized coefficient omega and item statistics
 #' omega.coef(dat)
@@ -385,7 +385,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -468,7 +468,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
     #......
     # Check input 'std'
-    if (!isTRUE(isTRUE(std) || !isTRUE(std))) {
+    if (!is.logical(std)) {
 
       stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE)
 
@@ -485,7 +485,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
     #......
     # Check input 'na.omit'
-    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
+    if (!is.logical(na.omit)) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -510,7 +510,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
         stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -796,7 +796,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
   # Standardized factor loading and omega if item deleted
 
   itemstat <- matrix(rep(NA, times = ncol(x)*2L), ncol = 2L,
-                     dimnames = list(NULL, c("std.loa", "omega")))
+                     dimnames = list(NULL, c("std.ld", "omega")))
 
   # Standardized factor loadings
   lambda.std <- lavaan::inspect(omega.mod$mod.fit, what = "std")$lambda
@@ -875,7 +875,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
   # Return object
 
   object <- list(call = match.call(),
-                 type = "omega",
+                 type = "omega.coef",
                  data = x.raw,
                  args = list(resid.cov = resid.cov, type = type, exclude = exclude,
                              std = std, na.omit = na.omit, print = print,
@@ -884,7 +884,7 @@ omega.coef <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
                  mod.fit = omega.mod$mod.fit,
                  result = list(omega = omega.x, itemstat = itemstat))
 
-  class(object) <- "coef"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

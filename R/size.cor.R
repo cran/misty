@@ -25,7 +25,7 @@
 #' Rasch, D., Pilz, J., Verdooren, L. R., & Gebhardt, G. (2011).
 #' \emph{Optimal experimental design with R}. Boca Raton: Chapman & Hall/CRC.
 #'
-#' @return Returns an object of class \code{size} with following entries:
+#' @return Returns an object of class \code{misty.object} with following entries:
 #'
 #' \tabular{ll}{
 #'   \code{call}      \tab function call \cr
@@ -64,7 +64,7 @@ size.cor <- function(rho, delta,
   # Input check
 
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -176,11 +176,11 @@ size.cor <- function(rho, delta,
   # Return object
 
   object <- list(call = match.call(),
-                 type = "cor",
+                 type = "size", size = "cor",
                  args = list(delta = delta, rho = rho, alternative = alternative, alpha = alpha, beta = beta),
                  result = list(n = n))
 
-  class(object) <- "size"
+  class(object) <- "misty.object"
 
   #-----------------------------------------------------------------------------------
   # Output

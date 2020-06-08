@@ -38,7 +38,8 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 \item{output}{logical: if \code{TRUE}, output is shown.}
 }
 \value{
-Returns an object of class \code{alpha.coef}, which is a list with following entries: function call (\code{call}),
+Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
+type of analysis \code{type},
 matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
 list with results (\code{result}).
 }
@@ -66,7 +67,7 @@ Pornprasertmanit, 2016), which are implemented in the \code{ci.reliability()} fu
 dat <- data.frame(item1 = c(4, 2, 3, 4, 1, 2, 4, 2),
                   item2 = c(4, 3, 3, 3, 2, 2, 4, 1),
                   item3 = c(3, 2, 4, 2, 1, 3, 4, 1),
-                  item4 = c(4, 1, 2, 3, 2, 3, 4, 2), stringsAsFactors = FALSE)
+                  item4 = c(4, 1, 2, 3, 2, 3, 4, 2))
 
 # Compute unstandardized coefficient alpha and item statistics
 alpha.coef(dat)
@@ -117,7 +118,7 @@ Ken Kelley (2019). \emph{MBESS: The MBESS R Package}. R package version 4.6.0.
 https://CRAN.R-project.org/package=MBESS
 
 Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens' scales of measurement do not help
-make it: A response to Chalmers. \emph{Journal of Modern Applied Statistical Methods, 79}, 1184-1197.
+make it: A response to Chalmers. \emph{Educational and Psychological Measurement, 79}, 1184-1197.
 https://doi.org/10.1177/0013164419844305
 
 Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of coefficients alpha and theta for

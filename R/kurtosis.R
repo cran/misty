@@ -57,7 +57,7 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
   #.......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 

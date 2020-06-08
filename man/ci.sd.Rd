@@ -4,9 +4,11 @@
 \alias{ci.sd}
 \title{Confidence Interval for the Standard Deviation}
 \usage{
-ci.sd(x, method = c("chisq", "bonett"), alternative = c("two.sided", "less", "greater"),
-      conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
-      na.omit = FALSE, digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+ci.sd(x, method = c("chisq", "bonett"),
+      alternative = c("two.sided", "less", "greater"),
+      conf.level = 0.95, group = NULL, split = NULL,
+      sort.var = FALSE, na.omit = FALSE, digits = 2,
+      as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector, matrix or data frame with numeric variables, i.e.,
@@ -41,8 +43,8 @@ not to \code{group} or \code{split}.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{ci}, which is a list with following entries:
-function call (\code{call}), type of confidence interval (\code{type}), list with the input specified in \code{x},
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
 \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
 and result table (\code{result}).
 }
@@ -67,8 +69,7 @@ dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
                   x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 3, 3, 3, 1, 3, 6,
                          3, 5, 2, 6, 8, 3, 4, 5, 2, 1, 3, 1, 2, NA),
                   x3 = c(7, 8, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
-                         2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4),
-                  stringsAsFactors = FALSE)
+                         2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
 
 # Two-Sided 95\% Confidence Interval for x1
 ci.sd(dat$x1)

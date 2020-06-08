@@ -33,7 +33,7 @@
 #' @examples
 #' dat <- data.frame(x = c(1, NA, NA, 6, 3),
 #'                   y = c(7, NA, 8, 9, NA),
-#'                   z = c(2, NA, 3, NA, 5), stringsAsFactors = FALSE)
+#'                   z = c(2, NA, 3, NA, 5))
 #'
 #' # Create missing data indicator matrix \eqn{R}
 #' na.indicator(dat)

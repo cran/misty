@@ -58,6 +58,9 @@ x.factor <- factor(letters[1:10])
 # Omit factor levels "a", "c", "e", and "g"
 stromit(x.factor, omit = c("a", "c", "e", "g"))
 }
+\seealso{
+\code{\link{mgsub}}, \code{\link{trim}}
+}
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}
 }

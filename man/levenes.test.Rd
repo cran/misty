@@ -34,8 +34,8 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 \item{output}{logical: if \code{TRUE}, output is shown.}
 }
 \value{
-Returns an object of class \code{test}, which is a list with following entries:
-function call (\code{call}), formula (\code{formula}), data frame with the outcome and grouping variable (\code{data}), specification of function arguments (\code{args}), and a list with descriptive statistics including confidence intervals and an object of class \code{"anova"} (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), type of analysis \code{type}, formula (\code{formula}), data frame with the outcome and grouping variable (\code{data}), specification of function arguments (\code{args}), and a list with descriptive statistics including confidence intervals and an object of class \code{"anova"} (\code{result}).
 }
 \description{
 This function computes Levene's test for homogeneity of variance across two or more independent groups.

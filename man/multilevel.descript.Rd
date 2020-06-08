@@ -37,7 +37,8 @@ Note that \code{as.na()} function is only applied to \code{x} but not to
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{multilevel.descript}, which is a list with following entries: function call (\code{call}),
+Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
+type of analysis \code{type},
 matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
 list with results (\code{result}).
 }

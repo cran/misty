@@ -122,7 +122,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -134,7 +134,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
     #......
     # Check input 'as.factor'
-    if (!isTRUE(isTRUE(as.factor) || !isTRUE(as.factor))) {
+    if (!is.logical(as.factor)) {
 
       stop("Please specify TRUE or FALSE for the argument 'as.factor'.", call. = FALSE)
 
@@ -142,7 +142,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
     #......
     # Check input 'table'
-    if (!isTRUE(isTRUE(table) || !isTRUE(table))) {
+    if (!is.logical(table)) {
 
       stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
 

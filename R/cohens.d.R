@@ -100,8 +100,9 @@
 #' https://doi.org/10.3389/fpsyg.2013.00863
 #'
 #' @return
-#' Returns an object of class \code{cohens.d}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified
+#' in \code{x} (\code{data}), specification of function arguments (\code{args}), and
 #' list with results (\code{result}).
 #'
 #' @export
@@ -109,7 +110,7 @@
 #' @examples
 #' #--------------------------------------
 #' # Between-Subject Design
-#' dat.bs <- data.frame(group = c("cont", "cont", "cont", "treat",  "treat"),
+#' dat.bs <- data.frame(group = c("cont", "cont", "cont", "treat", "treat"),
 #'                      y1 = c(1, 3, 2, 5, 7),
 #'                      y2 = c(4, 3, 3, 6, 4),
 #'                      y3 = c(7, 5, 7, 3, 2), stringsAsFactors = FALSE)
@@ -136,7 +137,7 @@
 #' #--------------------------------------
 #' # Within-Subject Design
 #' dat.ws <- data.frame(pre = c(1, 3, 2, 5, 7),
-#'                      post = c(2, 2, 1, 6, 8), stringsAsFactors = FALSE)
+#'                      post = c(2, 2, 1, 6, 8))
 #'
 #' # Standardized mean difference divided by the pooled
 #' # standard deviation while controlling for the correlation
@@ -257,7 +258,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
   # Input Check
 
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -277,7 +278,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'paired'
-    if (!isTRUE(isTRUE(paired) || !isTRUE(paired))) {
+    if (!is.logical(paired)) {
 
       stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
 
@@ -375,7 +376,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -661,6 +662,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
     if (!isTRUE(paired)) {
 
       object <- list(call = match.call(),
+                     type = "cohens.d",
                      data = data,
                      args = list(formula = formula, paired = paired, weighted = weighted, correct = correct, ref = ref,
                                  digits = digits, conf.level = conf.level, check = check, output = output),
@@ -676,6 +678,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
     } else {
 
       object <- list(call = match.call(),
+                     type = "cohens.d",
                      data = data,
                      args = list(formula = formula, paired = paired, weighted = weighted, correct = correct, ref = ref,
                                  digits = digits, conf.level = conf.level, check = check, output = output),
@@ -694,6 +697,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
   } else {
 
     object <- list(call = match.call(),
+                   type = "cohens.d",
                    data = data,
                    args = list(formula = formula, paired = paired, weighted = weighted, correct = correct, ref = ref,
                                digits = digits, conf.level = conf.level, check = check, output = output),
@@ -701,7 +705,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
   }
 
-  class(object) <- "cohens.d"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

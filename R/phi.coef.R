@@ -33,8 +33,9 @@
 #' New York: John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{phi.coef}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
 #' list with results (\code{result}).
 #'
 #' @export
@@ -42,7 +43,7 @@
 #' @examples
 #' dat <- data.frame(x1 = c(0, 1, 0, 1, 0, 1, 0, 1, 1, 0),
 #'                   x2 = c(0, 1, 0, 0, 1, 1, 1, 1, 1, 1),
-#'                   x3 = c(0, 1, 0, 1, 1, 1, 1, 1, 0, 0), stringsAsFactors = FALSE)
+#'                   x3 = c(0, 1, 0, 1, 1, 1, 1, 1, 0, 0))
 #'
 #' # Phi coefficient between x1 and x2
 #' phi.coef(dat[, c("x1", "x2")])
@@ -121,7 +122,7 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
   # Input Check
 
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -168,7 +169,7 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'adjust'
-    if (!isTRUE(isTRUE(adjust) || !isTRUE(adjust))) {
+    if (!is.logical(adjust)) {
 
       stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE)
 
@@ -193,7 +194,7 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -306,7 +307,7 @@ phi.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
                              check = check, output = output),
                  result = phi)
 
-  class(object) <- "square.matrix"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

@@ -2,7 +2,7 @@
 % Please edit documentation in R/freq.R
 \name{freq}
 \alias{freq}
-\title{Frequency Tables}
+\title{Frequency Table}
 \usage{
 freq(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split = FALSE,
      labels = TRUE, val.col = FALSE, exclude = 15, digits = 2, as.na = NULL,
@@ -43,12 +43,13 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{freq}, which is a list with following entries: function call (\code{call}),
+Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
+type of analysis \code{type},
 matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
 list with results (\code{result}).
 }
 \description{
-This function computes frequency tables with absolute and percentage frequencies for one or more than one variable.
+This function computes a frequency table with absolute and percentage frequencies for one or more than one variable.
 }
 \details{
 By default, the function displays the absolute and percentage frequencies when specifying one variable in the

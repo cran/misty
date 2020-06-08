@@ -28,7 +28,7 @@ argument \code{sigma2} is specified.}
 
 \item{sigma2}{a numeric vector indicating the population variance(s). In case of two sample z-test,
 equal variances are assumed when specifying one value for the argument \code{sigma2};
-when specifying two values for the argument \code{sigma}, unequal variance are aussumed.
+when specifying two values for the argument \code{sigma}, unequal variance are assumed.
 Note that either argument \code{sigma} or argument \code{sigma2} is specified.}
 
 \item{mu}{a numeric value indicating the population mean under the null hypothesis. Note that
@@ -63,8 +63,8 @@ or factor with two values or factor levels giving the corresponding groups.}
 \item{...}{further arguments to be passed to or from methods.}
 }
 \value{
-Returns an object of class \code{test}, which is a list with following entries:
-function call (\code{call}), type of confidence interval (\code{type}), list with the input specified in \code{x}
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x}
 (\code{data}), specification of function arguments (\code{args}), and result table (\code{result}).
 }
 \description{
@@ -72,8 +72,7 @@ This function computes one sample, two sample, and paired sample z-test.
 }
 \examples{
 dat.bs <- data.frame(group = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
-                    x = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 4, 3, NA),
-                    stringsAsFactors = FALSE)
+                    x = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 4, 3, NA))
 
 #--------------------------------------
 # Between-Subject Design

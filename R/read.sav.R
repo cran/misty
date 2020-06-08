@@ -79,8 +79,8 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
   }
 
   #......
-  # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  # Check input 'check',
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -92,7 +92,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
     #......
     # Check input 'use.value.labels'
-    if (!isTRUE(isTRUE(use.value.labels) || !isTRUE(use.value.labels))) {
+    if (!is.logical(use.value.labels)) {
 
       stop("Please specify TRUE or FALSE for the argument 'use.value.labels'.", call. = FALSE)
 
@@ -100,7 +100,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
     #......
     # Check input 'use.missings'
-    if (!isTRUE(isTRUE(use.missings) || !isTRUE(use.missings))) {
+    if (!is.logical(use.missings)) {
 
       stop("Please specify TRUE or FALSE for the argument 'use.missings'.", call. = FALSE)
 
@@ -108,7 +108,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
     #......
     # Check input 'as.data.frame'
-    if (!isTRUE(isTRUE(as.data.frame) || !isTRUE(as.data.frame))) {
+    if (!is.logical(as.data.frame)) {
 
       stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE)
 

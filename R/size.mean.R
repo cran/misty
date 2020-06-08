@@ -27,7 +27,7 @@
 #' Rasch, D., Pilz, J., Verdooren, L. R., & Gebhardt, G. (2011).
 #' \emph{Optimal experimental design with R}. Boca Raton: Chapman & Hall/CRC.
 #'
-#' @return Returns an object of class \code{size} with following entries:
+#' @return Returns an object of class \code{misty.object} with following entries:
 #'
 #' \tabular{ll}{
 #'   \code{call}      \tab function call \cr
@@ -78,7 +78,7 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
   # Input check
 
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -178,12 +178,12 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
   # Return object
 
   object <- list(call = match.call(),
-                 type = "mean",
+                 type = "size", size = "mean",
                  args = list(delta = delta, sample = sample, alternative = alternative,
                              alpha = alpha, beta = beta),
                  result = list(n = n))
 
-  class(object) <- "size"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

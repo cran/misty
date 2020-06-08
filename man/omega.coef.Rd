@@ -7,7 +7,8 @@
 omega.coef(x, resid.cov = NULL, type = c("omega", "hierarch", "categ"),
            exclude = NULL, std = FALSE, na.omit = FALSE,
            print = c("all", "omega", "item"), digits = 2,
-           conf.level = 0.95, as.na = NULL, check = TRUE, output = TRUE)
+           conf.level = 0.95, as.na = NULL, check = TRUE, output = TRUE
+)
 }
 \arguments{
 \item{x}{a matrix or data frame. Note that at least three items are needed for computing omega.}
@@ -48,7 +49,8 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 \item{output}{logical: if \code{TRUE}, output is shown.}
 }
 \value{
-Returns an object of class \code{omega.coef}, which is a list with following entries: function call (\code{call}),
+Returns an object of class \code{mistsy.object}, which is a list with following entries: function call (\code{call}),
+type of analysis \code{type},
 matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}),
 fitted lavaan object (\code{mod.fit}), and list with results (\code{result}).
 }
@@ -75,7 +77,7 @@ package by Ken Kelley (2019).
 dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
                   item2 = c(5, 3, 3, 5, 2, 2, 5, 1),
                   item3 = c(4, 2, 4, 5, 1, 3, 5, 1),
-                  item4 = c(5, 1, 2, 5, 2, 3, 4, 2), stringsAsFactors = FALSE)
+                  item4 = c(5, 1, 2, 5, 2, 3, 4, 2))
 
 # Compute unstandardized coefficient omega and item statistics
 omega.coef(dat)

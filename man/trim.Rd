@@ -2,7 +2,7 @@
 % Please edit documentation in R/trim.R
 \name{trim}
 \alias{trim}
-\title{Trim Whispace from String}
+\title{Trim Whitespace from String}
 \usage{
 trim(x, side = c("both", "left", "right"), check = TRUE)
 }
@@ -40,7 +40,7 @@ Wickham, H. (2019). \emph{stringr: Simple, consistent wrappers for common string
 R package version 1.4.0. \url{https://CRAN.R-project.org/package=stringr}
 }
 \seealso{
-\code{\link{stromit}}
+\code{\link{mgsub}}, \code{\link{stromit}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -4,8 +4,10 @@
 \alias{cohens.d}
 \title{Cohen's d for Between- and Within-Subject Design}
 \usage{
-cohens.d(formula, data, paired = FALSE, weighted = TRUE, ref = NULL, correct = FALSE,
-         digits = 2, conf.level = 0.95, as.na = NULL, check = TRUE, output = TRUE)
+cohens.d(formula, data, paired = FALSE, weighted = TRUE,
+         ref = NULL, correct = FALSE, digits = 2,
+         conf.level = 0.95, as.na = NULL, check = TRUE,
+         output = TRUE)
 }
 \arguments{
 \item{formula}{in case of a between-subject design (i.e., \code{paired = FALSE}),
@@ -52,7 +54,8 @@ in a between-subject design, while \code{as.na()} function is applied to \code{p
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{cohens.d}, which is a list with following entries: function call (\code{call}),
+Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
+type of analysis \code{type},
 matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
 list with results (\code{result}).
 }
@@ -98,7 +101,7 @@ when using \code{correct = TRUE}.
 \examples{
 #--------------------------------------
 # Between-Subject Design
-dat.bs <- data.frame(group = c("cont", "cont", "cont", "treat",  "treat"),
+dat.bs <- data.frame(group = c("cont", "cont", "cont", "treat", "treat"),
                      y1 = c(1, 3, 2, 5, 7),
                      y2 = c(4, 3, 3, 6, 4),
                      y3 = c(7, 5, 7, 3, 2), stringsAsFactors = FALSE)
@@ -125,7 +128,7 @@ cohens.d(cbind(y1, y2, y3) ~ group, data = dat.bs)
 #--------------------------------------
 # Within-Subject Design
 dat.ws <- data.frame(pre = c(1, 3, 2, 5, 7),
-                     post = c(2, 2, 1, 6, 8), stringsAsFactors = FALSE)
+                     post = c(2, 2, 1, 6, 8))
 
 # Standardized mean difference divided by the pooled
 # standard deviation while controlling for the correlation

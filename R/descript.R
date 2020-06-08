@@ -38,8 +38,9 @@
 #' John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{descript}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
 #' list with results (\code{result}).
 #'
 #' @export
@@ -49,7 +50,7 @@
 #'                   group2 = c(1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2),
 #'                   x1 = c(3, 1, 4, 2, 5, 3, 2, 4, NA, 4, 5, 3),
 #'                   x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 5, 1, 3, 6),
-#'                   x3 = c(7, 8, 5, 6, 4, NA, 8, NA, 6, 5, 8, 6), stringsAsFactors = FALSE)
+#'                   x3 = c(7, 8, 5, 6, 4, NA, 8, NA, 6, 5, 8, 6))
 #'
 #' # Descriptive statistics for x1
 #' descript(dat$x1)
@@ -242,7 +243,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -351,7 +352,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
 
     #......
     # Check input 'sort.var'
-    if (!isTRUE(isTRUE(sort.var) || !isTRUE(sort.var))) {
+    if (!is.logical(sort.var)) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -359,7 +360,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
 
     #......
     # Check input 'na.omit'
-    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
+    if (!is.logical(na.omit)) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -374,8 +375,8 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
     }
 
     #......
-    # Check input output
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    # Check input 'output'
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -462,12 +463,13 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "m
   # Return object and output
 
   object <- list(call = match.call(),
+                 type = "descript",
                  data = list(x = x, group = group, split = split),
                  args = list(print = print, sort.var = sort.var, na.omit = na.omit,
                              digits = digits, as.na = as.na, check = check, output = output),
                  result = result)
 
-  class(object) <- "descript"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

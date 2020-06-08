@@ -52,8 +52,8 @@
 #' \emph{Journal of the American Statistical Association, 22}, 209-212.
 #'
 #' @return
-#' Returns an object of class \code{ci}, which is a list with following entries:
-#' function call (\code{call}), type of confidence interval (\code{type}), list with the input specified in \code{x},
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
 #' \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
 #' and result table (\code{result}).
 #'
@@ -64,8 +64,7 @@
 #'                   group2 = c(1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2),
 #'                   x1 = c(0, 1, 0, 0, 1, 1, 0, 1, NA, 0, 1, 0),
 #'                   x2 = c(0, NA, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1),
-#'                   x3 = c(1, 1, 1, 0, 1, NA, 1, NA, 0, 0, 0, 1),
-#'                   stringsAsFactors = FALSE)
+#'                   x3 = c(1, 1, 1, 0, 1, NA, 1, NA, 0, 0, 0, 1))
 #'
 #' # Two-Sided 95% Confidence Interval for x1
 #' ci.prop(dat$x1)
@@ -259,7 +258,7 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -395,7 +394,7 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
 
     #......
     # Check input 'sort.var'
-    if (!isTRUE(isTRUE(sort.var) || !isTRUE(sort.var))) {
+    if (!is.logical(sort.var)) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -403,7 +402,7 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
 
     #......
     # Check input 'na.omit'
-    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
+    if (!is.logical(na.omit)) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -419,7 +418,7 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
 
     #......
     # Check input output
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -567,14 +566,14 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
   # Return object and output
 
   object <- list(call = match.call(),
-                 type = "prop",
+                 type = "ci", ci = "prop",
                  data = list(x = x, group = group, split = split),
                  args = list(alternative = alternative, conf.level = conf.level,
                              sort.var = sort.var, na.omit = na.omit, digits = digits,
                              check = check, output = output),
                  result = result)
 
-  class(object) <- "ci"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

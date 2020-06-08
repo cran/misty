@@ -26,9 +26,9 @@
 #' New York: John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{eta.sq}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
-#' list with results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), matrix or data frame specified in \code{x} (\code{data}), specification of
+#' function arguments (\code{args}), and list with results (\code{result}).
 #'
 #' @export
 #'
@@ -36,7 +36,7 @@
 #' dat <- data.frame(x1 = c(1, 1, 1, 1, 2, 2, 2, 2, 2),
 #'                   x2 = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
 #'                   y1 = c(3, 2, 4, 5, 6, 4, 7, 5, 7),
-#'                   y2 = c(2, 4, 1, 5, 3, 3, 4, 6, 7), stringsAsFactors = FALSE)
+#'                   y2 = c(2, 4, 1, 5, 3, 3, 4, 6, 7))
 #'
 #' # Eta squared for y1 explained by x1
 #' eta.sq(dat$y1, group = dat$x1)
@@ -90,7 +90,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -167,7 +167,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -293,11 +293,12 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
   # Return object
 
   object <- list(call = match.call(),
+                 type = "eta.sq",
                  dat = list(x = x, group = group),
                  args = list(digits = digits, as.na = as.na, check = check, output = output),
                  result = eta)
 
-  class(object) <- "eta.sq"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

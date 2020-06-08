@@ -12,6 +12,9 @@
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
+#' @seealso
+#' \code{\link{mgsub}}, \code{\link{trim}}
+#'
 #' @return
 #' Returns a numeric vector, character vector or factor with values or strings
 #' specified in \code{omit} omitted from the vector specified in \code{x}.
@@ -74,7 +77,7 @@ stromit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   #.............
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -103,7 +106,7 @@ stromit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
     #.............
     # Check input 'na.omit'
-    if (!isTRUE(isTRUE(na.omit) || !isTRUE(na.omit))) {
+    if (!is.logical(na.omit)) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 

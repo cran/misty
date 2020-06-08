@@ -32,8 +32,9 @@
 #' Social Statistics Section of the American Statistical Association (Part III)}, 777-780.
 #'
 #' @return
-#' Returns an object of class \code{cont.coef}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type},  matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
 #' list with results (\code{result}).
 #'
 #' @export
@@ -41,7 +42,7 @@
 #' @examples
 #' dat <- data.frame(x = c(1, 1, 2, 1, 3, 3, 2, 2, 1, 2),
 #'                   y = c(3, 2, 3, 1, 2, 4, 1, 2, 3, 4),
-#'                   z = c(2, 2, 2, 1, 2, 2, 1, 2, 1, 2), stringsAsFactors = FALSE)
+#'                   z = c(2, 2, 2, 1, 2, 2, 1, 2, 1, 2))
 #'
 #' # Contingency coefficient between x and y
 #' cont.coef(dat[, c("x", "y")])
@@ -122,7 +123,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -144,16 +145,20 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'x' for non-integer numbers
-    if (any(vapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1L)))) {
+    if (all(!vapply(x, is.character, FUN.VALUE = logical(1L)))) {
 
-      stop("Please specify a matrix or data frame with integer vectors, character vectors or factors for the argument 'x'.",
-           call. = FALSE)
+      if (any(vapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1L)))) {
+
+        stop("Please specify a matrix or data frame with integer vectors, character vectors or factors for the argument 'x'.",
+             call. = FALSE)
+
+      }
 
     }
 
     #......
     # Check input 'adjust'
-    if (!isTRUE(isTRUE(adjust) || !isTRUE(adjust))) {
+    if (!is.logical(adjust)) {
 
       stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE)
 
@@ -178,7 +183,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -265,7 +270,7 @@ cont.coef <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
                              check = check, output = output),
                  result = cc)
 
-  class(object) <- "square.matrix"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

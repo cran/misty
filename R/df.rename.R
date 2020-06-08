@@ -14,7 +14,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{df.merge}}, \code{\link{df.rbind}}, \code{\link{df.sort}}
+#' \code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
+#' \code{\link{df.sort}}
 #'
 #' @return
 #' Returns a matrix or data frame with renamed columns or variables.
@@ -24,7 +25,7 @@
 #' @examples
 #' dat <- data.frame(a = c(3, 1, 6),
 #'                   b = c(4, 2, 5),
-#'                   c = c(7, 3, 1), stringsAsFactors = FALSE)
+#'                   c = c(7, 3, 1))
 #'
 #' # Rename variable b in the data frame 'dat' to y
 #' df.rename(dat, from = "b", to = "y")
@@ -72,7 +73,7 @@ df.rename <- function(x, from, to, check = TRUE) {
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 

@@ -1,6 +1,6 @@
-#' Frequency Tables
+#' Frequency Table
 #'
-#' This function computes frequency tables with absolute and percentage frequencies for one or more than one variable.
+#' This function computes a frequency table with absolute and percentage frequencies for one or more than one variable.
 #'
 #' By default, the function displays the absolute and percentage frequencies when specifying one variable in the
 #' argument \code{x}, while the function displays only the absolute frequencies when more than one variable is specified.
@@ -42,8 +42,9 @@
 #' Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New S Language}. Wadsworth & Brooks/Cole.
 #'
 #' @return
-#' Returns an object of class \code{freq}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type},  matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
 #' list with results (\code{result}).
 #'
 #' @export
@@ -53,7 +54,7 @@
 #'                   x2 = c(2, 2, 1, 3, 1, 1, 3, 3, 2, 2),
 #'                   y1 = c(1, 4, NA, 5, 2, 4, 3, 5, NA, 1),
 #'                   y2 = c(2, 3, 4, 3, NA, 4, 2, 3, 4, 5),
-#'                   z = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), stringsAsFactors = FALSE)
+#'                   z = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
 #'
 #' # Frequency table for one variable
 #' freq(dat$x1)
@@ -148,7 +149,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   # Input check
 
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -207,7 +208,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'freq'
-    if (!isTRUE(isTRUE(freq) || !isTRUE(freq))) {
+    if (!is.logical(freq)) {
 
       stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE)
 
@@ -224,7 +225,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'split'
-    if (!isTRUE(isTRUE(split) || !isTRUE(split))) {
+    if (!is.logical(split)) {
 
       stop("Please specify TRUE or FALSE for the argument 'split'.", call. = FALSE)
 
@@ -232,7 +233,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'labels'
-    if (!isTRUE(isTRUE(labels) || !isTRUE(labels))) {
+    if (!is.logical(labels)) {
 
       stop("Please specify TRUE or FALSE for the argument 'labels'.", call. = FALSE)
 
@@ -240,7 +241,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'val.col'
-    if (!isTRUE(isTRUE(val.col) || !isTRUE(val.col))) {
+    if (!is.logical(val.col)) {
 
       stop("Please specify TRUE or FALSE for the argument 'val.col'.", call. = FALSE)
 
@@ -264,7 +265,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -348,7 +349,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     if (length(x.exclude) > 0L) {
 
-      x <- x[, -x.exclude]
+      x <- x[, -x.exclude, drop = FALSE]
 
       if (length(x) == 0L) {
 
@@ -413,8 +414,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
       # Numeric variables
       if (any(vapply(x, is.numeric, FUN.VALUE = logical(1)))) {
 
-        x.levels <- c(x.levels,
-                      na.omit(sort(unique(unlist(x[, vapply(x, is.numeric, FUN.VALUE = logical(1L))])))))
+        x.levels <- c(x.levels, na.omit(sort(unique(unlist(x[, vapply(x, is.numeric, FUN.VALUE = logical(1L))])))))
 
       }
 
@@ -422,8 +422,19 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
       # Factors
       if (any(vapply(x, is.factor, FUN.VALUE = logical(1)))) {
 
-        x.levels <- c(x.levels,
-                      unname(unlist(sapply(x[, vapply(x, is.factor, FUN.VALUE = logical(1L))], function(y) sort(unique(as.character(y)))))))
+        f.levels <- sort(unique(unname(unlist(sapply(x[, vapply(x, is.factor, FUN.VALUE = logical(1L))], function(y) (as.character(y)))))))
+
+        # Factor levels are numbers
+        if (all(unlist(strsplit(f.levels, "")) %in% 0:9)) {
+
+          x.levels <- sort(c(x.levels, as.numeric(f.levels)))
+
+        # Factor levels are character
+        } else {
+
+          x.levels <- c(x.levels, f.levels)
+
+        }
 
       }
 
@@ -431,8 +442,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
       # Character
       if (any(vapply(x, is.character, FUN.VALUE = logical(1L)))) {
 
-        x.levels <- c(x.levels,
-                      na.omit(sort(unique(unlist(x[, vapply(x, is.character, FUN.VALUE = logical(1L))])))))
+        x.levels <- c(x.levels, na.omit(sort(unique(unlist(x[, vapply(x, is.character, FUN.VALUE = logical(1L))])))))
 
       }
 
@@ -440,8 +450,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
       # Logical
       if (any(vapply(x, is.logical, FUN.VALUE = logical(1)))) {
 
-        x.levels <- c(x.levels,
-                      c(TRUE, FALSE))
+        x.levels <- c(x.levels, c(TRUE, FALSE))
 
       }
 
@@ -495,13 +504,14 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   # Return object
 
   object <- list(call = match.call(),
+                 type = "freq",
                  data = x,
                  args = list(print = print, freq = freq, split = split, labels = labels,
                              val.col = val.col, digits = digits, as.na = as.na,
                              check = check, output = output),
                  result = freqtab)
 
-  class(object) <- "freq"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

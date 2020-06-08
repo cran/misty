@@ -4,9 +4,11 @@
 \alias{ci.prop}
 \title{Confidence Interval for Proportions}
 \usage{
-ci.prop(x, method = c("wald", "wilson"), alternative = c("two.sided", "less", "greater"),
-        conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
-        na.omit = FALSE, digits = 3, as.na = NULL, check = TRUE, output = TRUE)
+ci.prop(x, method = c("wald", "wilson"),
+        alternative = c("two.sided", "less", "greater"),
+        conf.level = 0.95, group = NULL, split = NULL,
+        sort.var = FALSE, na.omit = FALSE, digits = 3,
+        as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector, matrix or data frame with numeric variables with 0 and 1 values,
@@ -42,8 +44,8 @@ not to \code{group} or \code{split}.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{ci}, which is a list with following entries:
-function call (\code{call}), type of confidence interval (\code{type}), list with the input specified in \code{x},
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
 \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
 and result table (\code{result}).
 }
@@ -64,8 +66,7 @@ dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
                   group2 = c(1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2),
                   x1 = c(0, 1, 0, 0, 1, 1, 0, 1, NA, 0, 1, 0),
                   x2 = c(0, NA, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1),
-                  x3 = c(1, 1, 1, 0, 1, NA, 1, NA, 0, 0, 0, 1),
-                  stringsAsFactors = FALSE)
+                  x3 = c(1, 1, 1, 0, 1, NA, 1, NA, 0, 0, 0, 1))
 
 # Two-Sided 95\% Confidence Interval for x1
 ci.prop(dat$x1)

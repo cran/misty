@@ -28,8 +28,9 @@
 #' van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
 #'
 #' @return
-#' Returns an object of class \code{na.coverage}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
 #' list with results (\code{result}).
 #'
 #' @export
@@ -37,7 +38,7 @@
 #' @examples
 #' dat <- data.frame(x = c(1, NA, NA, 6, 3),
 #'                   y = c(7, NA, 8, 9, NA),
-#'                   z = c(2, NA, 3, NA, 5), stringsAsFactors = FALSE)
+#'                   z = c(2, NA, 3, NA, 5))
 #'
 #' # Create missing data indicator matrix R
 #' na.coverage(dat)
@@ -74,7 +75,7 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
 
   #.........................
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -103,7 +104,7 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -163,7 +164,7 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
                  args = list(tri = tri, digits = digits, as.na = as.na, check = TRUE, output = output),
                  result = restab)
 
-  class(object) <- "square.matrix"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

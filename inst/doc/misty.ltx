@@ -1413,6 +1413,37 @@ matrix or data frame with user-spefied values in the argument
 \subsection{Functions for data
 mangement}\label{functions-for-data-mangement}}
 
+\hypertarget{extract-duplicated-or-unique-rows}{%
+\subsubsection{Extract Duplicated or Unique
+Rows}\label{extract-duplicated-or-unique-rows}}
+
+The \texttt{df.duplicated()} and \texttt{df.unique()} function extracts
+duplicated or unique rows from a matrix or data frame.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{6}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{6}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x4 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x5 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{))}
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Extract duplicated rows based on x2 and x3}
+\ErrorTok{>}\StringTok{ }\KeywordTok{df.duplicated}\NormalTok{(dat, x2, x3)}
+   x1 x2 x3 x4 x5
+ 1  1  1  2  1  1
+ 2  1  1  2  1  1
+ 4  1  1  2  2  4
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Extract unique rows based on x1, x2, and x3}
+\ErrorTok{>}\StringTok{ }\KeywordTok{df.unique}\NormalTok{(dat, x1, x2, x3)}
+   x1 x2 x3 x4 x5
+ 1  1  1  2  1  1
+ 3  2  2  3  2  4
+ 5  4  6  6  4  3
+\end{Highlighting}
+\end{Shaded}
+
 \hypertarget{merge-multiple-data-frames}{%
 \subsubsection{Merge Multiple Data
 Frames}\label{merge-multiple-data-frames}}
@@ -1728,6 +1759,22 @@ variables for a vector with k distinct values.
 \Output{  [7,]  0  1}
 \Output{  [8,]  0  1}
 \Output{  [9,]  0  1}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{multiple-pattern-matching-and-replacements}{%
+\subsubsection{Multiple Pattern Matching And
+Replacements}\label{multiple-pattern-matching-and-replacements}}
+
+The \texttt{mgsub()} function is a multiple global string replacement
+wrapper that allows access to multiple methods of specifying matches and
+replacements.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{string <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"hey ho, let's go!"}\NormalTok{)}
+\OperatorTok{>}\StringTok{ }\KeywordTok{mgsub}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"hey"}\NormalTok{, }\StringTok{"ho"}\NormalTok{), }\KeywordTok{c}\NormalTok{(}\StringTok{"ho"}\NormalTok{, }\StringTok{"hey"}\NormalTok{), string)}
+ [1] "ho hey, let's go!"
 \end{Highlighting}
 \end{Shaded}
 
@@ -2261,6 +2308,77 @@ variable.
      2       x1       6   1 14.29% 3.83 0.97 0.21  9.75
      2       x2       6   1 14.29% 3.33 6.67 1.22 80.12
      2       x3       7   0     0% 4.29 4.90 1.47 31.54
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{collinearity-diagnostics}{%
+\subsubsection{Collinearity
+Diagnostics}\label{collinearity-diagnostics}}
+
+The \texttt{collin.diag()} function computes tolerance, standard error
+inflation factor, variance inflation factor, eigenvalues, condition
+index, and variance proportions for linear, generalized linear, and
+mixed-effects models.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{7}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x3 =} \KeywordTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{8}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{8}\NormalTok{))}
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Estimate linear model with continuous predictors}
+\ErrorTok{>}\StringTok{ }\NormalTok{mod.lm1 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(y }\OperatorTok{~}\StringTok{ }\NormalTok{x1 }\OperatorTok{+}\StringTok{ }\NormalTok{x2 }\OperatorTok{+}\StringTok{ }\NormalTok{x3, }\DataTypeTok{data =}\NormalTok{ dat)}
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Tolerance, std. error, and variance inflation factor}
+\ErrorTok{>}\StringTok{ }\CommentTok{# Eigenvalue, Condition index, and variance proportions}
+\ErrorTok{>}\StringTok{ }\KeywordTok{collin.diag}\NormalTok{(mod.lm1, }\DataTypeTok{print =} \StringTok{"all"}\NormalTok{)}
+Collinearity Diagnostics
+
+Tolerance (Tol), Std. Error Inflation Factor (SIF), and Variance Inflation Factor (VIF)
+
+                Estimate Std. Error t value Pr(>|t|)   Tol   SIF   VIF
+    (Intercept)    4.382      3.365   1.302    0.229                  
+    x1            -0.209      0.440  -0.475    0.648 0.916 1.045 1.092
+    x2            -0.131      0.330  -0.398    0.701 0.937 1.033 1.067
+    x3             0.391      0.401   0.976    0.358 0.973 1.014 1.028
+
+   Eigenvalue (Eigen), Condition Index (CI), and Variance Proportions
+
+    Dim Eigen    CI (Intercept)    x1    x2    x3
+      1 3.527 1.000       0.004 0.009 0.017 0.012
+      2 0.268 3.628       0.004 0.134 0.657 0.006
+      3 0.169 4.572       0.001 0.193 0.095 0.653
+      4 0.036 9.904       0.991 0.665 0.231 0.329
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{standardized-coefficients}{%
+\subsubsection{Standardized
+Coefficients}\label{standardized-coefficients}}
+
+The \texttt{std.coef()} function computes standardized coefficients for
+linear models estimated by using the \texttt{lm()}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\OperatorTok{>}\StringTok{ }\NormalTok{dat <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x1 =} \KeywordTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{x2 =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{7}\NormalTok{),}
+\OperatorTok{+}\StringTok{                   }\DataTypeTok{y =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{8}\NormalTok{))}
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Regression model with continuous predictors}
+\ErrorTok{>}\StringTok{ }\NormalTok{mod.lm1 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(y }\OperatorTok{~}\StringTok{ }\NormalTok{x1 }\OperatorTok{+}\StringTok{ }\NormalTok{x2, }\DataTypeTok{data =}\NormalTok{ dat)}
+\OperatorTok{>}\StringTok{ }
+\ErrorTok{>}\StringTok{ }\CommentTok{# Print all standardized coefficients}
+\ErrorTok{>}\StringTok{ }\KeywordTok{std.coef}\NormalTok{(mod.lm1, }\DataTypeTok{print =} \StringTok{"all"}\NormalTok{)}
+  Unstandardized and Standardized Coefficients
+
+               Estimate Std. Error t value Pr(>|t|)    SD   StdX   StdY  StdYX
+   (Intercept)    6.313      2.716   2.325    0.045                           
+   x1            -0.274      0.434  -0.632    0.543 1.881 -0.516 -0.113 -0.212
+   x2            -0.123      0.329  -0.375    0.716 2.480 -0.306 -0.051 -0.126
+
+   Note. SD of the criterion variable y = 2.429
 \end{Highlighting}
 \end{Shaded}
 

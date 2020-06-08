@@ -25,7 +25,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{df.rbind}}, \code{\link{df.rename}}, \code{\link{df.sort}}
+#' \code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.rbind}},
+#' \code{\link{df.rename}}, \code{\link{df.sort}}
 #'
 #' @return
 #' Returns a merged data frame.
@@ -34,16 +35,16 @@
 #'
 #' @examples
 #' adat <- data.frame(id = c(1, 2, 3),
-#'                    x1 = c(7, 3, 8), stringsAsFactors = FALSE)
+#'                    x1 = c(7, 3, 8))
 #'
 #' bdat <- data.frame(id = c(1, 2),
-#'                    x2 = c(5, 1), stringsAsFactors = FALSE)
+#'                    x2 = c(5, 1))
 #'
 #' cdat <- data.frame(id = c(2, 3),
-#'                    y3 = c(7, 9), stringsAsFactors = FALSE)
+#'                    y3 = c(7, 9))
 #'
 #' ddat <- data.frame(id = 4,
-#'                    y4 = 6, stringsAsFactors = FALSE)
+#'                    y4 = 6)
 #'
 #' # Merge adat, bdat, cdat, and data by the variable id
 #' df.merge(adat, bdat, cdat, ddat, by = "id")
@@ -56,22 +57,22 @@
 #' # Error messages
 #'
 #' adat <- data.frame(id = c(1, 2, 3),
-#'                    x1 = c(7, 3, 8), stringsAsFactors = FALSE)
+#'                    x1 = c(7, 3, 8))
 #'
 #' bdat <- data.frame(code = c(1, 2, 3),
-#'                    x2 = c(5, 1, 3), stringsAsFactors = FALSE)
+#'                    x2 = c(5, 1, 3))
 #'
 #' cdat <- data.frame(id = factor(c(1, 2, 3)),
-#'                    x3 = c(5, 1, 3), stringsAsFactors = FALSE)
+#'                    x3 = c(5, 1, 3))
 #'
 #' ddat <- data.frame(id = c(1, 2, 2),
-#'                    x2 = c(5, 1, 3), stringsAsFactors = FALSE)
+#'                    x2 = c(5, 1, 3))
 #'
 #' edat <- data.frame(id = c(1, NA, 3),
-#'                    x2 = c(5, 1, 3), stringsAsFactors = FALSE)
+#'                    x2 = c(5, 1, 3))
 #'
 #' fdat <- data.frame(id = c(1, 2, 3),
-#'                    x1 = c(5, 1, 3), stringsAsFactors = FALSE)
+#'                    x1 = c(5, 1, 3))
 #'
 #' # Error: Data frames do not have the same matching variable specified in 'by'.
 #' df.merge(adat, bdat, by = "id")
@@ -109,7 +110,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -161,7 +162,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     #......
     # Check input 'all'
-    if (!isTRUE(isTRUE(all) | !isTRUE(all))) {
+    if (!is.logical(all)) {
 
       stop("Please specify TRUE or FALSE for the argument 'all'.", call. = FALSE)
 
@@ -169,7 +170,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -212,7 +213,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
   object <- Reduce(function(xx, yy) merge(xx, yy, by = by, all = all), x = df)
 
   # Sort by matching variable
-  object <- misty::df.sort(object, object[, by])
+  object <- object[order(object[, by]), ]
 
   ####################################################################################
   # Print Output

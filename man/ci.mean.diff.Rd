@@ -8,16 +8,19 @@
 \usage{
 ci.mean.diff(x, ...)
 
-\method{ci.mean.diff}{default}(x, y, sigma = NULL, sigma2 = NULL, var.equal = FALSE,
-             paired = FALSE, alternative = c("two.sided", "less", "greater"),
+\method{ci.mean.diff}{default}(x, y, sigma = NULL, sigma2 = NULL,
+             var.equal = FALSE, paired = FALSE,
+             alternative = c("two.sided", "less", "greater"),
              conf.level = 0.95, group = NULL, split = NULL,
              sort.var = FALSE, digits = 2, as.na = NULL,
              check = TRUE, output = TRUE, ...)
 
-\method{ci.mean.diff}{formula}(formula, data, sigma = NULL, sigma2 = NULL, var.equal = FALSE,
-             alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
-             group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-             digits = 2, as.na = NULL, check = TRUE, output = TRUE, ...)
+\method{ci.mean.diff}{formula}(formula, data, sigma = NULL, sigma2 = NULL,
+             var.equal = FALSE,
+             alternative = c("two.sided", "less", "greater"),
+             conf.level = 0.95, group = NULL, split = NULL,
+             sort.var = FALSE, na.omit = FALSE, digits = 2,
+             as.na = NULL, check = TRUE, output = TRUE, ...)
 }
 \arguments{
 \item{x}{a numeric vector of data values.}
@@ -26,17 +29,17 @@ ci.mean.diff(x, ...)
 
 \item{sigma}{a numeric vector indicating the population standard deviation(s) when computing confidence
 intervals for the difference in arithmetic means with known standard deviation(s). In case
-of independent samples, equal standard deviations are assumed when specifying one value for
+of independent samples, equal standard deviation is assumed when specifying one value for
 the argument \code{sigma}; when specifying two values for the argument \code{sigma}, unequal
-standard deviations are assumed. Note that either argument \code{sigma} or argument \code{sigma2}
-is specified and it is only possible to specify one value (i.e., equal variance assumption)
-or two values (i.e., unequal variance assumption) for the argument \code{sigma} even though
+variance is assumed Note that either argument \code{sigma} or argument \code{sigma2} is
+specified and it is only possible to specify one value (i.e., equal variance assumption) or
+two values (i.e., unequal variance assumption) for the argument \code{sigma} even though
 multiple variables are specified in \code{x}.}
 
 \item{sigma2}{a numeric vector indicating the population variance(s) when computing confidence intervals
 for the difference in arithmetic means with known variance(s). In case of independent samples,
-equal variances are assumed when specifying one value for the argument \code{sigma2}; when
-specifying two values for the argument \code{sigma}, unequal variances are aussumed. Note that
+equal variance is assumed when specifying one value for the argument \code{sigma2}; when
+specifying two values for the argument \code{sigma}, unequal variance is assumed. Note that
 either argument \code{sigma} or argument \code{sigma2} is specified and it is only possible
 to specify one value (i.e., equal variance assumption) or two values (i.e., unequal variance
 assumption) for the argument \code{sigma} even though multiple variables are specified in
@@ -74,11 +77,14 @@ not to \code{group} or \code{split}.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 
-\item{formula}{a formula of the form \code{y ~ group} for one outcome variable or
-\code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where \code{y}
-is a numeric variable giving the data values and \code{group} a numeric variable,
-character variable or factor with two values or factor levels giving the corresponding
-groups.}
+\item{formula}{in case of a between-subject design (i.e., \code{paired = FALSE}), a formula of the
+form \code{y ~ group} for one outcome variable or \code{cbind(y1, y2, y3) ~ group}
+for more than one outcome variable where \code{y} is a numeric variable giving the
+data values and \code{group} a numeric variable, character variable or factor with
+two values or factor levels given the corresponding groups; in case of a within-subject
+design (i.e., \code{paired = TRUE}), a formula of the form \code{post ~ pre} where
+\code{post} and \code{pre} are numeric variables. Note that analysis for more than
+one outcome variable is not permitted in within-subject design.}
 
 \item{data}{a matrix or data frame containing the variables in the formula \code{formula}.}
 
@@ -88,8 +94,8 @@ groups.}
 \item{...}{further arguments to be passed to or from methods.}
 }
 \value{
-Returns an object of class \code{ci}, which is a list with following entries:
-function call (\code{call}), type of confidence interval (\code{type}), list with the input specified in \code{x},
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
 \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
 and result table (\code{result}).
 }
@@ -110,8 +116,7 @@ dat.bs <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
                      x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 3, 3, 3, 1, 3, 6,
                             3, 5, 2, 6, 8, 3, 4, 5, 2, 1, 3, 1, 2, NA),
                      x3 = c(7, 8, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
-                            2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4),
-                     stringsAsFactors = FALSE)
+                            2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
 
 #--------------------------------------
 # Between-Subject Design
@@ -144,7 +149,7 @@ ci.mean.diff(x1 ~ group1, data = dat.bs, sigma2 = c(2.25, 1.44))
 # unknown population variances, unequal variance assumption
 ci.mean.diff(x1 ~ group1, data = dat.bs, alternative = "less")
 
-# Two-Sided 99\% Confidence Interval for y1 by group1
+# Two-Sided 95\% Confidence Interval for y1 by group1
 # unknown population variances, unequal variance assumption
 ci.mean.diff(x1 ~ group1, data = dat.bs, conf.level = 0.99)
 
@@ -205,35 +210,35 @@ ci.mean.diff(group1, group2, var.equal = TRUE)
 #--------------------------------------
 # Within-Subject Design
 dat.ws <- data.frame(pre = c(1, 3, 2, 5, 7),
-                     post = c(2, 2, 1, 6, 8), stringsAsFactors = FALSE)
+                     post = c(2, 2, 1, 6, 8))
 
-# Two-Sided 95\% Confidence Interval for the mean difference in pre and post
+# Two-Sided 95\% Confidence Interval for the mean difference in x1 and x2
 # unknown poulation variance of difference scores
 ci.mean.diff(dat.ws$pre, dat.ws$post, paired = TRUE)
 
-# Two-Sided 95\% Confidence Interval for the mean difference in pre and post
+# Two-Sided 95\% Confidence Interval for the mean difference in x1 and x2
 # known population standard deviation of difference scores
 ci.mean.diff(dat.ws$pre, dat.ws$post, sigma = 2, paired = TRUE)
 
-# Two-Sided 95\% Confidence Interval for the mean difference in pre and post
+# Two-Sided 95\% Confidence Interval for the mean difference in x1 and x2
 # known population variance of difference scores
 ci.mean.diff(dat.ws$pre, dat.ws$post, sigma2 = 4, paired = TRUE)
 
-# One-Sided 95\% Confidence Interval for the mean difference in pre and post
-# unknown poulation variance of difference scores
+# One-Sided 95\% Confidence Interval for the mean difference in x1 and x2
+# unknown population variances, unequal variance assumption
 ci.mean.diff(dat.ws$pre, dat.ws$post, alternative = "less", paired = TRUE)
 
-# Two-Sided 99\% Confidence Interval for the mean difference in pre and post
-# unknown poulation variance of difference scores
+# Two-Sided 95\% Confidence Interval for the mean difference in x1 and x2
+# unknown population variances, unequal variance assumption
 ci.mean.diff(dat.ws$pre, dat.ws$post, conf.level = 0.99, paired = TRUE)
 
-# Two-Sided 95\% Confidence Interval for for the mean difference in pre and post
-# unknown poulation variance of difference scores
+# Two-Sided 95\% Confidence Interval for for the mean difference in x1 and x2
+# unknown population variances, unequal variance assumption
 # print results with 3 digits
 ci.mean.diff(dat.ws$pre, dat.ws$post, paired = TRUE, digits = 3)
 
-# Two-Sided 95\% Confidence Interval for for the mean difference in pre and post
-# unknown poulation variance of difference scores
+# Two-Sided 95\% Confidence Interval for y1 by group1
+# unknown population variances, unequal variance assumption
 # convert value 1 to NA
 ci.mean.diff(dat.ws$pre, dat.ws$post, as.na = 1, paired = TRUE)
 }
@@ -251,8 +256,8 @@ Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psycholog
 John Wiley & Sons.
 }
 \seealso{
-\code{\link{z.test}}, \code{\link{t.test}}, \code{\link{ci.mean}}, \code{\link{ci.median}}, \code{\link{ci.prop}},
-\code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{descript}}
+\code{\link{ci.mean}}, \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}}, \code{\link{ci.sd}},
+\code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

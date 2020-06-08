@@ -13,7 +13,7 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{stromit}}
+#' \code{\link{mgsub}}, \code{\link{stromit}}
 #'
 #' @return
 #' Returns a character vector with whitespaces removed from the vector specified in \code{x}.

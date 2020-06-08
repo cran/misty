@@ -35,7 +35,7 @@
 #' @examples
 #' dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
 #'                   item2 = c(1, 5, 3, 1, 4, 4, 1, 5),
-#'                   item3 = c(4, 2, 4, 5, 1, 3, 5, -99), stringsAsFactors = FALSE)
+#'                   item3 = c(4, 2, 4, 5, 1, 3, 5, -99))
 #'
 #' # Reverse code item2
 #' reverse.item(dat$item2, min = 1, max = 5)
@@ -86,7 +86,7 @@ reverse.item <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -140,7 +140,7 @@ reverse.item <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
 
     #......
     # Check input 'table'
-    if (!isTRUE(isTRUE(table) || !isTRUE(table))) {
+    if (!is.logical(table)) {
 
       stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
 

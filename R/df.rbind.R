@@ -25,7 +25,8 @@
 #' Hadley Wickham
 #'
 #' @seealso
-#' \code{\link{df.merge}}, \code{\link{df.rename}}, \code{\link{df.sort}}
+#' \code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.merge}},
+#' \code{\link{df.rename}}, \code{\link{df.sort}}
 #'
 #' @references
 #' Wickham, H. (2011). The split-apply-combine strategy for data analysis.
@@ -42,15 +43,15 @@
 #' @examples
 #' adat <- data.frame(id = c(1, 2, 3),
 #'                    a = c(7, 3, 8),
-#'                    b = c(4, 2, 7), stringsAsFactors = FALSE)
+#'                    b = c(4, 2, 7))
 #'
 #' bdat <- data.frame(id = c(4, 5, 6),
 #'                    a = c(2, 4, 6),
-#'                    c = c(4, 2, 7), stringsAsFactors = FALSE)
+#'                    c = c(4, 2, 7))
 #'
 #' cdat <- data.frame(id = c(7, 8, 9),
 #'                    a = c(1, 4, 6),
-#'                    d = c(9, 5, 4), stringsAsFactors = FALSE)
+#'                    d = c(9, 5, 4))
 #'
 #' df.rbind(adat, bdat, cdat)
 df.rbind <- function(...) {

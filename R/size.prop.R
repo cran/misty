@@ -32,7 +32,7 @@
 #' Rasch, D., Pilz, J., Verdooren, L. R., & Gebhardt, G. (2011).
 #' \emph{Optimal experimental design with R}. Chapman & Hall/CRC.
 #'
-#' @return Returns an object of class \code{size} with following entries:
+#' @return Returns an object of class \code{misty.object} with following entries:
 #'
 #' \tabular{ll}{
 #'   \code{call}      \tab function call \cr
@@ -83,7 +83,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
   # Input check
 
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -102,7 +102,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     if (delta <= 0L) {
 
-      stop("Argument theta out of bound, specify a value > 0.", call. = FALSE)
+      stop("Argument delta out of bound, specify a value > 0.", call. = FALSE)
 
     }
 
@@ -264,12 +264,12 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
   # Return object
 
   object <- list(call = match.call(),
-                 type = "prop",
+                 type = "size", size = "prop",
                  args = list(delta = delta, pi = pi, sample = sample, alternative = alternative,
                              alpha = alpha, beta = beta, correct = correct),
                  result = list(n = n))
 
-  class(object) <- "size"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

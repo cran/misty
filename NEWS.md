@@ -1,7 +1,24 @@
-### misty 0.3.1
+### misty 0.3.2 (2020-06-08)
 
 ##### New features
-* New functions `z.test()` for computing one sample, two sample, and paired sample z-test.
+* New function `collin.diag()` for collinearity diagnostics including tolerance, (generalized) standard error inflation factor, (generalized) variance inflation factor, eigenvalues, conditional indices, and variance proportions for linear, generalized linear, and mixed-effects models.
+
+* New function `std.coef()` for computing standardized coefficients (StdX, StdY, and StdYX) for linear models estimated by using the `lm()` function.
+
+* New function `mgsub()` for multiple pattern matching and replacements, i.e., `gsub()` function for matching and replacing a vector of character strings.
+
+* New functions `df.duplicated()` and `df.unique()` extracting duplicated or unique rows of a matrix or data frame.
+
+##### Bug fix
+* Fixed a bug in the function `read.xlsx()`, default setting of the argument `progress` was wrong.
+
+##### User-visible changes
+* Merged all print functions to a single print function called `print.misty.object()`.
+
+### misty 0.3.1 (2020-04-25)
+
+##### New features
+* New function `z.test()` for computing one sample, two sample, and paired sample z-test.
 
 ##### Bug fix
 * Function `omega.coef()` does not access internal slots of a fitted lavaan object anymore (requested by Yves Rosseel).
@@ -11,7 +28,7 @@
 * Changed the output of the functions `size.mean()`, `size.prop()`, and `size.cor()` to include greek letters.
 * Changed the argument `theta` in the `size.mean()` function into `delta`.
 
-### misty 0.3.0
+### misty 0.3.0 (2020-04-06)
 
 ##### New features
 * New functions `ci.mean()`, `ci.mean.diff()`, `ci.median()`, `ci.prop()`, `ci.prop.diff()`, `ci.sd()`, `ci.var()` for computing confidence interval for the arithmetic mean, the difference in arithmetic means, the median, the proportion, the difference in proportions, the variance, and the standard deviation.
@@ -42,7 +59,7 @@
 
 * Fixed a bug in the function `as.na()`, function converted strings in data frames to factors.
 
-### misty 0.2.2
+### misty 0.2.2 (2020-02-26)
 
 ##### New features
 

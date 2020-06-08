@@ -4,8 +4,8 @@
 \alias{cramers.v}
 \title{Cramer's V}
 \usage{
-cramers.v(x, correct = TRUE, tri = c("both", "lower", "upper"), digits = 2,
-          as.na = NULL, check = TRUE, output = TRUE)
+cramers.v(x, correct = TRUE, tri = c("both", "lower", "upper"),
+          digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with integer vectors, character vectors or factors.}
@@ -28,7 +28,8 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{cramers.v}, which is a list with following entries: function call (\code{call}),
+Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
+type of analysis \code{type},
 matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
 list with results (\code{result}).
 }
@@ -43,7 +44,7 @@ applied to obtain the bias-corrected Cramer's V.
 \examples{
 dat <- data.frame(x = c(1, 1, 2, 1, 3, 3, 2, 2, 1, 2),
                   y = c(1, 2, 2, 1, 3, 4, 1, 2, 3, 1),
-                  z = c(1, 1, 2, 1, 2, 3, 1, 2, 3, 2), stringsAsFactors = FALSE)
+                  z = c(1, 1, 2, 1, 2, 3, 1, 2, 3, 2))
 
 # Bias-corrected Cramer's V between x and y
 cramers.v(dat[, c("x", "y")])

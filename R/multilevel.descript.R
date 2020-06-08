@@ -38,8 +38,9 @@
 #' modeling} (2nd ed.). Sage Publishers.
 #'
 #' @return
-#' Returns an object of class \code{multilevel.descript}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
 #' list with results (\code{result}).
 #'
 #' @export
@@ -49,7 +50,7 @@
 #'                   group = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
 #'                   x1 = c(2, 3, 2, 2, 1, 2, 3, 4, 2),
 #'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
-#'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4), stringsAsFactors = FALSE)
+#'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
 #'
 #' # Multilevel descriptive statistics for x1
 #' multilevel.descript(dat$x1, group = dat$group)
@@ -132,7 +133,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   # Input Check
 
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -204,7 +205,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check input 'REML'
-    if (!isTRUE(isTRUE(REML) | !isTRUE(REML))) {
+    if (!is.logical(REML)) {
 
       stop("Please specify TRUE or FALSE for the argument 'REML'", call. = FALSE)
 
@@ -251,7 +252,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE)
 
@@ -308,6 +309,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   # Return object
 
   object <- list(call = match.call(),
+                 type = "multilevel.descript",
                  data = data.frame(x = x, group = group, stringsAsFactors = FALSE),
                  args = list(method = method, REML = REML,
                              digits = digits, icc.digits = icc.digits, as.na = as.na, check = check, output = output),
@@ -316,7 +318,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
                                min.group.size = min.group.size, max.group.size = max.group.size,
                                icc1 = icc1, icc2 = icc2, deff = deff, deff.sqrt = deff.sqrt, n.effect = n.effect))
 
-  class(object) <- "multilevel.descript"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

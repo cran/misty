@@ -139,7 +139,7 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
 
     #......
     # Check input 'check'
-    if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+    if (!is.logical(check)) {
 
       stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 

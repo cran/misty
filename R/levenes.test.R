@@ -39,10 +39,11 @@
 #' John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{test}, which is a list with following entries:
-#' function call (\code{call}), formula (\code{formula}), data frame with the outcome and grouping variable,
-#' (\code{data}), specification of function arguments (\code{args}), and a list with descriptive statistics
-#' including confidence interval and an object of class \code{"anova"} (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, formula (\code{formula}), data frame with
+#' the outcome and grouping variable, (\code{data}), specification of function arguments (\code{args}),
+#' and a list with descriptive statistics including confidence interval and an object of class
+#' \code{"anova"} (\code{result}).
 #'
 #' @export
 #'
@@ -196,7 +197,7 @@ levenes.test <- function(formula, data, method = c("median", "mean"),
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
         stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -260,14 +261,14 @@ levenes.test <- function(formula, data, method = c("median", "mean"),
   # Return object
 
   object <- list(call = match.call(),
-                 type = "levene",
+                 type = "levenes.test",
                  formula = formula,
                  data = data.frame(y, group, stringsAsFactors = FALSE),
                  args = list(method = method, digits = digits, p.digits = p.digits,
                              as.na = as.na, check = check, output = output),
                  result = list(descript = result.ci, aov = result.aov))
 
-  class(object) <- "test"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

@@ -24,7 +24,7 @@ must be one of \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
 \item{output}{logical: if \code{TRUE}, output is shown.}
 }
 \value{
-Returns an object of class \code{size} with following entries:
+Returns an object of class \code{misty.object} with following entries:
 
 \tabular{ll}{
   \code{call}      \tab function call \cr

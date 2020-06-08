@@ -36,7 +36,9 @@ df.rename(dat, from = "b", to = "y")
 df.rename(dat, from = c("a", "b", "c"), to = c("x", "y", "z"))
 }
 \seealso{
-\code{\link{df.merge}}, \code{\link{df.rbind}}, \code{\link{df.sort}}
+\code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
+\code{\link{df.sort}}
+
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

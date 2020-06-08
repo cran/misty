@@ -46,7 +46,8 @@ Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}
 Knuth, D. E. (1998) \emph{The Art of Computer Programming, Volume 3: Sorting and Searching} (2nd ed.). Addison-Wesley.
 }
 \seealso{
-\code{\link{df.merge}}, \code{\link{df.rename}}, \code{\link{df.rename}}
+\code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
+\code{\link{df.rename}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -73,13 +73,13 @@
 #' # Read Excel file (.xlsx), skip 2 rows before reading data
 #' read.xlsx("data.xlsx", skip = 2)
 #'
-#' # Read Excel file (.xlsx), returns a tibble
+#' # Read Excel file (.xlsx), return a tibble
 #' read.xlsx("data.xlsx", as.data.frame = FALSE)
 #' }
 read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
                       coltypes = c("skip", "guess", "logical", "numeric", "date", "text", "list"),
                       na = "", trim = TRUE, skip = 0, nmax = Inf, guessmax = min(1000, nmax),
-                      progress = read.xl::readxl_progress(), name.repair = "unique", as.data.frame = TRUE,
+                      progress = readxl::readxl_progress(), name.repair = "unique", as.data.frame = TRUE,
                       check = TRUE) {
 
 
@@ -119,7 +119,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -131,7 +131,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
     #......
     # Check input 'trim'
-    if (!isTRUE(isTRUE(trim) | !isTRUE(trim))) {
+    if (!is.logical(trim)) {
 
       stop("Please specify TRUE or FALSE for the argument 'trim'.", call. = FALSE)
 
@@ -139,7 +139,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
     #......
     # Check input 'as.data.frame'
-    if (!isTRUE(isTRUE(as.data.frame) | !isTRUE(as.data.frame))) {
+    if (!is.logical(as.data.frame)) {
 
       stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE)
 

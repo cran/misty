@@ -35,8 +35,9 @@
 #' Illinois, USA, https://CRAN.R-project.org/package=psych Version = 1.8.12.
 #'
 #' @return
-#' Returns an object of class \code{poly.cor}, which is a list with following entries: function call (\code{call}),
-#' matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+#' Returns an object of class \code{misty.object}, which is a list with following entries:
+#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
 #' list with results (\code{result}).
 #'
 #' @export
@@ -44,7 +45,7 @@
 #' @examples
 #' dat <- data.frame(x1 = c(1, 1, 3, 2, 1, 2, 3, 2, 3, 1),
 #'                   x2 = c(1, 2, 1, 1, 2, 2, 2, 1, 3, 1),
-#'                   x3 = c(1, 3, 2, 3, 3, 1, 3, 2, 1, 2), stringsAsFactors = FALSE)
+#'                   x3 = c(1, 3, 2, 3, 3, 1, 3, 2, 1, 2))
 #'
 #' # Polychoric correlation matrix
 #' poly.cor(dat)
@@ -91,7 +92,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -111,7 +112,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'smooth'
-    if (!isTRUE(isTRUE(smooth) || !isTRUE(smooth))) {
+    if (!is.logical(smooth)) {
 
       stop("Please specify TRUE or FALSE for the argument 'smooth'.", call. = FALSE)
 
@@ -119,7 +120,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'global'
-    if (!isTRUE(isTRUE(global) || !isTRUE(global))) {
+    if (!is.logical(global)) {
 
       stop("Please specify TRUE or FALSE for the argument 'global'.", call. = FALSE)
 
@@ -127,7 +128,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'na.rm'
-    if (!isTRUE(isTRUE(na.rm) || !isTRUE(na.rm))) {
+    if (!is.logical(na.rm)) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.rm'.", call. = FALSE)
 
@@ -135,14 +136,14 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'progress'
-    if (!isTRUE(isTRUE(progress) || !isTRUE(progress))) {
+    if (!is.logical(progress)) {
 
       stop("Please specify TRUE or FALSE for the argument 'progress'.", call. = FALSE)
 
     }
 
     # Check input 'delete'
-    if (!isTRUE(isTRUE(delete) || !isTRUE(delete))) {
+    if (!is.logical(delete)) {
 
       stop("Please specify TRUE or FALSE for the argument 'delete'.", call. = FALSE)
 
@@ -167,7 +168,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'output'
-    if (!isTRUE(isTRUE(output) || !isTRUE(output))) {
+    if (!is.logical(output)) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -754,7 +755,7 @@ poly.cor <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  class(object) <- "square.matrix"
+  class(object) <- "misty.object"
 
   ####################################################################################
   # Output

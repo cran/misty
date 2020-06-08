@@ -65,7 +65,7 @@
 #'                   item2 = c(2,  2, NA, 2,  4, 2, NA,  1),
 #'                   item3 = c(1,  1,  2, 2,  4, 3, NA, NA),
 #'                   item4 = c(4,  2,  4, 4, NA, 2, NA, NA),
-#'                   item5 = c(3, NA, NA, 2,  4, 3, NA,  3), stringsAsFactors = FALSE)
+#'                   item5 = c(3, NA, NA, 2,  4, 3, NA,  3))
 #'
 #' # Prorated mean scale scores
 #' scores(dat)
@@ -108,7 +108,7 @@ scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 

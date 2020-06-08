@@ -34,7 +34,7 @@
 #' @examples
 #' dat.ml <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
 #'                      group = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
-#'                      x = c(4, 2, 5, 6, 3, 4, 1, 3, 4), stringsAsFactors = FALSE)
+#'                      x = c(4, 2, 5, 6, 3, 4, 1, 3, 4))
 #'
 #' # Compute group means and expand to match the input x
 #' group.scores(dat.ml$x, group = dat.ml$group)
@@ -84,7 +84,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -123,7 +123,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
     #......
     # Check input 'expand'
-    if (!isTRUE(isTRUE(expand) || !isTRUE(expand))) {
+    if (!is.logical(expand)) {
 
       stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE)
 
@@ -160,7 +160,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
   # Main Function
 
   #----------------------------------------
-  # Compute groupr scores
+  # Compute group scores
 
   if (fun != "sum") {
 

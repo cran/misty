@@ -7,7 +7,7 @@
 read.xlsx(file, sheet = NULL, header = TRUE, range = NULL,
           coltypes = c("skip", "guess", "logical", "numeric", "date", "text", "list"),
           na = "", trim = TRUE, skip = 0, nmax = Inf, guessmax = min(1000, nmax),
-          progress = read.xl::readxl_progress(), name.repair = "unique",
+          progress = readxl::readxl_progress(), name.repair = "unique",
           as.data.frame = TRUE, check = TRUE)
 }
 \arguments{

@@ -12,7 +12,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{df.merge}}, \code{\link{df.rename}}, \code{\link{df.rename}}
+#' \code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
+#' \code{\link{df.rename}}
 #'
 #' @references
 #' Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}. Wadsworth & Brooks/Cole.
@@ -28,7 +29,7 @@
 #' @examples
 #' dat <- data.frame(x = c(5, 2, 5, 5, 7, 2),
 #'                   y = c(1, 6, 2, 3, 2, 3),
-#'                   z = c(2, 1, 6, 3, 7, 4), stringsAsFactors = FALSE)
+#'                   z = c(2, 1, 6, 3, 7, 4))
 #'
 #' # Sort data frame 'dat' by "x" in increasing order
 #' df.sort(dat, x)
@@ -44,6 +45,12 @@
 df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
   ####################################################################################
+  # Data
+
+  # Variables specified in ...
+  var.names <- misty::stromit(sapply(substitute(list(...)), as.character), omit = "list")
+
+  ####################################################################################
   # Input Check
 
   #......
@@ -54,18 +61,29 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
   }
 
-  #......
+  # No variables specified in ..., i.e., use all variables in x
+  if (length(var.names) == 0) { var.names <- colnames(x) }
+
   # Data frame for the argument 'x'?
   if (!is.data.frame(x)) {
 
-    stop("Please specifiy a data frame for the argument 'x'.", call. = FALSE)
+    stop("Please specify a data frame for the argument 'x'.", call. = FALSE)
 
   }
 
+  #......
+  # Check if input '...'
+  var.names.check <- !var.names %in% colnames(x)
+  if (any(var.names.check)) {
+
+    stop(paste0("Variables specified in '...' were not all found in 'x': ",
+                paste0(var.names[var.names.check], collapse = ", ")), call. = FALSE)
+
+  }
 
   #......
   # Check input 'check'
-  if (!isTRUE(isTRUE(check) || !isTRUE(check))) {
+  if (!is.logical(check)) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -77,7 +95,7 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
     #......
     # Check input 'decreasing'
-    if (!isTRUE(isTRUE(decreasing) || !isTRUE(decreasing))) {
+    if (!is.logical(decreasing)) {
 
       stop("Please specify TRUE or FALSE for the argument 'decreasing'.", call. = FALSE)
 
