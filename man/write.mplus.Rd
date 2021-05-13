@@ -36,7 +36,7 @@ as a single numeric value.
 dat <- data.frame(id = 1:5,
                   x = c(NA, 2, 1, 5, 6),
                   y = c(5, 3, 6, 8, 2),
-                  z = c(2, 1, 1, NA, 4))
+                  z = c(2, 1, 1, NA, 4), stringsAsFactors = FALSE)
 
 # Write Mplus Data File and a text file with variable names
 write.mplus(dat)

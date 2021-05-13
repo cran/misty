@@ -83,7 +83,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
   # Input check
 
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -94,13 +94,13 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
   if (isTRUE(check)) {
 
     # Check input 'delta'
-    if (missing(delta)) {
+    if (isTRUE(missing(delta))) {
 
       stop("Please specify a numeric value for the argument 'delta'.", call. = FALSE)
 
     }
 
-    if (delta <= 0L) {
+    if (isTRUE(delta <= 0L)) {
 
       stop("Argument delta out of bound, specify a value > 0.", call. = FALSE)
 
@@ -108,7 +108,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     ###
 
-    if (pi >= 1L|| pi <= 0L) {
+    if (isTRUE(pi >= 1L|| pi <= 0L)) {
 
       stop("Argument pi out of bound, specify a value between 0 and 1.", call. = FALSE)
 
@@ -116,7 +116,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     ###
 
-    if (!all(sample %in% c("two.sample", "one.sample"))) {
+    if (isTRUE(!all(sample %in% c("two.sample", "one.sample")))) {
 
       stop("Argument sample should be \"two.siample\" or \"one.sample\".", call. = FALSE)
 
@@ -125,7 +125,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     ###
 
-    if (!all(alternative %in% c("two.sided", "less", "greater"))) {
+    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) {
 
       stop("Argument alternative should be \"two.sided\", \"less\", or \"greater\".", call. = FALSE)
 
@@ -133,7 +133,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     ###
 
-    if (alpha <= 0L || alpha >= 1L) {
+    if (isTRUE(alpha <= 0L || alpha >= 1L)) {
 
       stop("Argument alpha out of bound, specify a value between 0 and 1.", call. = FALSE)
 
@@ -141,7 +141,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     ###
 
-    if (beta <= 0L || beta >= 1L) {
+    if (isTRUE(beta <= 0L || beta >= 1L)) {
 
       stop("Argument beta out of bound, specify a value between 0 and 1.", call. = FALSE)
 
@@ -159,9 +159,9 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
   ###
 
-  if (alternative == "two.sided") {
+  if (isTRUE(alternative == "two.sided")) {
 
-    if ((pi + delta) >= 1L || (pi - delta) <= 0L) {
+    if (isTRUE((pi + delta) >= 1L || (pi - delta) <= 0L)) {
 
       stop("Value (pi + delta) or (pi - delta) out of bound", call. = FALSE)
 
@@ -170,11 +170,11 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
   } else {
 
     # one-sample
-    if (sample == "one.sample") {
+    if (isTRUE(sample == "one.sample")) {
 
-      if (alternative == "less") {
+      if (isTRUE(alternative == "less")) {
 
-        if ((pi - delta) <= 0L) {
+        if (isTRUE((pi - delta) <= 0L)) {
 
           stop("Value (pi - delta) out of bound", call. = FALSE)
 
@@ -182,7 +182,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
       } else {
 
-        if ((pi + delta) >= 1L) {
+        if (isTRUE((pi + delta) >= 1L)) {
 
           stop("Value (pi + delta) out of bound", call. = FALSE)
 
@@ -193,9 +193,9 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
     # two-sample
     } else {
 
-      if (alternative == "less") {
+      if (isTRUE(alternative == "less")) {
 
-        if ((pi + delta) >= 1L) {
+        if (isTRUE((pi + delta) >= 1L)) {
 
           stop("Value (pi + delta) out of bound", call. = FALSE)
 
@@ -203,7 +203,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
       } else {
 
-        if ((pi - delta) <= 0L) {
+        if (isTRUE((pi - delta) <= 0L)) {
 
           stop("Value (pi - delta) out of bound", call. = FALSE)
 
@@ -223,7 +223,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
   #-------------------------------------------------
   # Two-sample
 
-  if (sample == "two.sample") {
+  if (isTRUE(sample == "two.sample")) {
 
     pi.1 <- pi
     pi.2 <- switch(alternative, two.sided = pi.1 + delta, less = pi.1 + delta, greater = pi.1 - delta)
@@ -234,7 +234,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     n <- uniroot(function(n) eval(p.body) - (1L - beta), c(1L, 1e+07))$root
 
-    if (correct == TRUE) {
+    if (isTRUE(correct == TRUE)) {
 
       n <- ceiling(n)
       n <- (n / 4L) * (1L + sqrt(1L + 4L / (n * delta)))^2L
@@ -251,7 +251,7 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
 
     n <- ((qnorm(1L - alpha / side) * sqrt(pi.0 * (1L - pi.0)) + qnorm(1L - beta) * sqrt(pi.1 * (1L - pi.1))) / (pi.1 - pi.0))^2L
 
-    if (correct == TRUE) {
+    if (isTRUE(correct == TRUE)) {
 
       n <- ceiling(n)
       n <- n + 1L / (qnorm(1L - alpha / side) * sqrt(pi.0 * (1L - pi.0) / n) + qnorm(1L - beta) * sqrt(pi.1 * (1L - pi.1) / n))

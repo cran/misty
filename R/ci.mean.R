@@ -37,7 +37,7 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{z.test}}, \code{\link{t.test}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
+#' \code{\link{test.z}}, \code{\link{test.t}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
 #' \code{\link{ci.prop}}, \code{\link{ci.var}},  \code{\link{ci.sd}}, \code{\link{descript}}
 #'
 #' @references
@@ -108,7 +108,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
          call. = FALSE)
@@ -117,7 +117,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -125,7 +125,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   #......
   # Vector, matrix or data frame for the argument 'x'?
-  if (!is.atomic(x) && !is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
          call. = FALSE)
@@ -140,14 +140,14 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
   #----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
     # Replace user-specified values with missing values
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-    if (any(x.miss)) {
+    if (isTRUE(any(x.miss))) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
                   paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
@@ -162,14 +162,14 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
   # Non-numeric variables
   non.num <- !vapply(x, is.numeric, FUN.VALUE = logical(1))
 
-  if (any(non.num)) {
+  if (isTRUE(any(non.num))) {
 
     x <- x[, -which(non.num), drop = FALSE]
 
     #......
     # Variables left
 
-    if (ncol(x) == 0L) {
+    if (isTRUE(ncol(x) == 0L)) {
 
       stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE)
 
@@ -183,11 +183,11 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
   #----------------------------------------
   # Listwise deletion
 
-  if (isTRUE(na.omit) && any(is.na(x))) {
+  if (isTRUE(na.omit && any(is.na(x)))) {
 
     #......
     # No group and split variable
-    if (is.null(group) && is.null(split)) {
+    if (isTRUE(is.null(group) && is.null(split))) {
 
       x <- na.omit(as.data.frame(x, stringsAsFactors = FALSE))
 
@@ -198,7 +198,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Group variable, no split variable
-    if (!is.null(group) && is.null(split)) {
+    if (isTRUE(!is.null(group) && is.null(split))) {
 
       x.group <- na.omit(data.frame(x, group = group, stringsAsFactors = FALSE))
 
@@ -212,7 +212,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # No group variable, split variable
-    if (is.null(group) && !is.null(split)) {
+    if (isTRUE(is.null(group) && !is.null(split))) {
 
       x.split <- na.omit(data.frame(x, split = split, stringsAsFactors = FALSE))
 
@@ -226,7 +226,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Group variable, split variable
-    if (!is.null(group) && !is.null(split)) {
+    if (isTRUE(!is.null(group) && !is.null(split))) {
 
       x.group.split <- na.omit(data.frame(x, group = group, split = split, stringsAsFactors = FALSE))
 
@@ -242,7 +242,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
     #......
     # Variable with missing values only
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-    if (any(x.miss)) {
+    if (isTRUE(any(x.miss))) {
 
       stop(paste0("After listwise deletion, following variables are completely missing: ",
                   paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
@@ -256,7 +256,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -264,11 +264,11 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   #----------------------------------------
 
-  if (isTRUE(check)) {
+  if (isTRUE(isTRUE(check))) {
 
     #......
     # Check input 'sigma' and 'sigma2'
-    if (!is.null(sigma) && !is.null(sigma2)) {
+    if (isTRUE(!is.null(sigma) && !is.null(sigma2))) {
 
         stop("Please specify either argument 'sigma' or argument 'sigma2', but not both.", call. = FALSE)
 
@@ -276,17 +276,17 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'sigma'
-    if (!is.null(sigma)) {
+    if (isTRUE(!is.null(sigma))) {
 
       # SD smaller or equal 0
-      if (any(sigma <= 0L)) {
+      if (isTRUE(any(sigma <= 0L))) {
 
         stop("Please specify a numeric value grater than 0 for the argument 'sigma'.", call. = FALSE)
 
       }
 
       # Length of 'sigma'
-      if (length(sigma) != 1L) {
+      if (isTRUE(length(sigma) != 1L)) {
 
         stop("Please specify a numeric value for the argument 'sigma'.", call. = FALSE)
 
@@ -296,17 +296,17 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'sigma2'
-    if (!is.null(sigma2)) {
+    if (isTRUE(!is.null(sigma2))) {
 
       # Variance smaller or equal 0
-      if (any(sigma2 <= 0L)) {
+      if (isTRUE(any(sigma2 <= 0L))) {
 
         stop("Please specify a numeric value grater than 0 for the argument 'sigma2'.", call. = FALSE)
 
       }
 
       # Length of 'sigma2'
-      if (length(sigma2) != 1L) {
+      if (isTRUE(length(sigma2) != 1L)) {
 
         stop("Please specify a numeric value for the argument 'sigma2'.", call. = FALSE)
 
@@ -316,7 +316,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'alternative'
-    if (!all(alternative %in%  c("two.sided", "less", "greater"))) {
+    if (isTRUE(!all(alternative %in%  c("two.sided", "less", "greater")))) {
 
       stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".",
            call. = FALSE)
@@ -325,7 +325,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'conf.level'
-    if (conf.level >= 1L || conf.level <= 0L) {
+    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) {
 
       stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
            call. = FALSE)
@@ -334,10 +334,10 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'group'
-    if (!is.null(group)) {
+    if (isTRUE(!is.null(group))) {
 
       # Population standard deviation
-      if (!is.null(sigma)) {
+      if (isTRUE(!is.null(sigma))) {
 
         stop("Grouping variable cannot be used for confidence intervals with known population standard deviation.",
              call. = FALSE)
@@ -345,7 +345,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
       }
 
       # Population variance
-      if (!is.null(sigma2)) {
+      if (isTRUE(!is.null(sigma2))) {
 
         stop("Grouping variable cannot be used for confidence intervals with known population variance.",
              call. = FALSE)
@@ -353,16 +353,16 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
       }
 
       # Vector or factor for the argument 'group'?
-      if (!is.vector(group) && !is.factor(group)) {
+      if (isTRUE(!is.vector(group) && !is.factor(group))) {
 
         stop("Please specify a vector or factor for the argument 'group'.", call. = FALSE)
 
       }
 
       # Length of 'group' match with 'x'?
-      if (length(group) != nrow(x)) {
+      if (isTRUE(length(group) != nrow(x))) {
 
-        if (ncol(x) == 1L) {
+        if (isTRUE(ncol(x) == 1L)) {
 
           stop("Length of the vector or factor specified in 'group' does not match the length of the vector in 'x'.",
                call. = FALSE)
@@ -377,14 +377,14 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
       }
 
       # Input 'group' completely missing
-      if (all(is.na(group))) {
+      if (isTRUE(all(is.na(group)))) {
 
         stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE)
 
       }
 
       # Only one group in 'group'
-      if (length(na.omit(unique(group))) == 1L) {
+      if (isTRUE(length(na.omit(unique(group))) == 1L)) {
 
         warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
 
@@ -394,10 +394,10 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'split'
-    if (!is.null(split)) {
+    if (isTRUE(!is.null(split))) {
 
       # Population standard deviation
-      if (!is.null(sigma)) {
+      if (isTRUE(!is.null(sigma))) {
 
         stop("Split variable cannot be used for confidence intervals with known population standard deviation.",
              call. = FALSE)
@@ -405,7 +405,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
       }
 
       # Population variance
-      if (!is.null(sigma2)) {
+      if (isTRUE(!is.null(sigma2))) {
 
         stop("Split variable cannot be used for confidence intervals with known population variance.",
              call. = FALSE)
@@ -413,16 +413,16 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
       }
 
       # Vector or factor for the argument 'split'?
-      if (!is.atomic(split) && !is.factor(split)) {
+      if (isTRUE(!is.atomic(split) && !is.factor(split))) {
 
         stop("Please specify a vector or factor for the argument 'split'.", call. = FALSE)
 
       }
 
       # Length of 'split' doest not match with 'x'
-      if (length(split) != nrow(x)) {
+      if (isTRUE(length(split) != nrow(x))) {
 
-        if (ncol(x) == 1L) {
+        if (isTRUE(ncol(x) == 1L)) {
 
           stop("Length of the vector or factor specified in 'split' does not match the length of the vector in 'x'.",
                call. = FALSE)
@@ -437,14 +437,14 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
       }
 
       # Input 'split' completely missing
-      if (all(is.na(split))) {
+      if (isTRUE(all(is.na(split)))) {
 
         stop("The split variable specified in 'split' is completely missing.", call. = FALSE)
 
       }
 
       # Only one group in 'split'
-      if (length(na.omit(unique(split))) == 1L) {
+      if (isTRUE(length(na.omit(unique(split))) == 1L)) {
 
         warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE)
 
@@ -454,7 +454,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'sort.var'
-    if (!is.logical(sort.var)) {
+    if (isTRUE(!is.logical(sort.var))) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -462,7 +462,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'na.omit'
-    if (!is.logical(na.omit)) {
+    if (isTRUE(!is.logical(na.omit))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -470,7 +470,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'digits'
-    if (digits %% 1L != 0L || digits < 0L) {
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -478,7 +478,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'output'
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -492,14 +492,14 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
   #----------------------------------------
   # Population standard deviation and variance
 
-  if (is.null(sigma) && !is.null(sigma2)) { sigma <- sqrt(sigma2) }
+  if (isTRUE(is.null(sigma) && !is.null(sigma2))) { sigma <- sqrt(sigma2) }
 
-  if (!is.null(sigma) && is.null(sigma2)) { sigma2 <- sigma^2 }
+  if (isTRUE(!is.null(sigma) && is.null(sigma2))) { sigma2 <- sigma^2 }
 
   #----------------------------------------
   # Alternative hypothesis
 
-  if (all(c("two.sided", "less", "greater") %in% alternative)) {
+  if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) {
 
     alternative <- "two.sided"
 
@@ -519,7 +519,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # One observation or SD = 0
-    if (length(x) <= 1L || sd(x) == 0L) {
+    if (isTRUE(length(x) <= 1L || sd(x) == 0L)) {
 
       ci <- c(NA, NA)
 
@@ -531,7 +531,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
       #......
       # Known population standard deviation
-      if (!is.null(sigma)) {
+      if (isTRUE(!is.null(sigma))) {
 
         crit <- qnorm(switch(alternative,
                              two.sided = 1L - (1L - conf.level) / 2L,
@@ -572,7 +572,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   #----------------------------------------
   # No Grouping, No Split
-  if (is.null(group) && is.null(split)) {
+  if (isTRUE(is.null(group) && is.null(split))) {
 
     result <- data.frame(variable = colnames(x),
                          n = vapply(x, function(y) length(na.omit(y)), FUN.VALUE = 1L),
@@ -589,7 +589,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   #----------------------------------------
   # Grouping, No Split
-  } else if (!is.null(group) && is.null(split)) {
+  } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(x, f = group), function(y) misty::ci.mean(y, sigma = NULL, sigma2 = NULL, alternative = alternative, conf.level = conf.level,
                                                                            group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
@@ -601,7 +601,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   #----------------------------------------
   # No Grouping, Split
-  } else if (is.null(group) && !is.null(split)) {
+  } else if (isTRUE(is.null(group) && !is.null(split))) {
 
       result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
                        function(y) misty::ci.mean(y, sigma = NULL, sigma2 = NULL, alternative = alternative, conf.level = conf.level,
@@ -610,7 +610,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   #----------------------------------------
   # Grouping, Split
-  } else if (!is.null(group) && !is.null(split)) {
+  } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split),
                        function(y) misty::ci.mean(y[, -grep("group", names(y))], sigma = NULL, sigma2 = NULL,

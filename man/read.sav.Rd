@@ -4,8 +4,9 @@
 \alias{read.sav}
 \title{Read SPSS File}
 \usage{
-read.sav(file, use.value.labels = FALSE, use.missings = TRUE, as.data.frame = TRUE,
-         check = TRUE)
+read.sav(file, use.value.labels = FALSE, use.missings = TRUE, formats = FALSE,
+         label = TRUE, labels = TRUE, missing = FALSE, widths = FALSE,
+         as.data.frame = TRUE, check = TRUE)
 }
 \arguments{
 \item{file}{a character string indicating the name of the SPSS data file
@@ -16,8 +17,19 @@ or \code{"My_SPSS_Data"}.}
 
 \item{use.missings}{logical: if \code{TRUE} (default), user-defined missing values are converted into NAs.}
 
-\item{as.data.frame}{logical: if \code{TRUE} (default), function returns a data frame (default); if \code{FALSE} function
-returns a tibble.}
+\item{formats}{logical: if \code{TRUE}, variable formats are shown in an attribute for all variables.}
+
+\item{label}{logical: if \code{TRUE} (default), variable labels are shown in an attribute for all variables.}
+
+\item{labels}{logical: if \code{TRUE} (default), value labels are shown in an attribute for all variables.}
+
+\item{missing}{logical: if \code{TRUE}, value labels for user-defined missings are shown in an attribute.
+for all variables.}
+
+\item{widths}{logical: if \code{TRUE}, widths are shown in an attribute for all variables.}
+
+\item{as.data.frame}{logical: if \code{TRUE} (default), function returns a regular data frame (default);
+if \code{FALSE} function returns a tibble.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
@@ -49,7 +61,7 @@ Hadley Wickham and Evan Miller (2019). \emph{haven: Import and Export 'SPSS', 'S
 R package version 2.1.1.\url{https://CRAN.R-project.org/package=haven}
 }
 \seealso{
-\code{\link{write.sav}}
+\code{\link{write.sav}}, \code{\link{read.xlsx}}, \code{\link{read.mplus}}
 }
 \author{
 Hadley Wickham and Evan Miller

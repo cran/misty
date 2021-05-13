@@ -5,10 +5,12 @@
 \alias{df.unique}
 \title{Extract Duplicated or Unique Rows}
 \usage{
-df.duplicated(x, ..., first = TRUE, keep.all = TRUE, from.last = FALSE,
-              keep.row.names = TRUE, check = TRUE)
+df.duplicated(x, ..., first = TRUE, keep.all = TRUE,
+              from.last = FALSE, keep.row.names = TRUE,
+              check = TRUE)
 
-df.unique(x, ..., keep.all = TRUE, from.last = FALSE, keep.row.names = TRUE,
+df.unique(x, ..., keep.all = TRUE, 
+          from.last = FALSE, keep.row.names = TRUE,
           check = TRUE)
 }
 \arguments{
@@ -110,7 +112,7 @@ df.unique(dat, x2, x3, keep.row.names = FALSE)
 Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}. Wadsworth & Brooks/Cole.
 }
 \seealso{
-\code{\link{df.merge}}, \code{\link{df.rbind}},
+\code{\link{df.unique}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
 \code{\link{df.rename}}, \code{\link{df.sort}}
 }
 \author{

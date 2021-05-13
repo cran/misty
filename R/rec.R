@@ -39,7 +39,7 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{reverse.item}}
+#' \code{\link{item.reverse}}
 #'
 #' @references
 #' Fox, J., & Weisberg S. (2019). \emph{An {R} Companion to Applied Regression} (3rd ed.).
@@ -97,7 +97,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -105,7 +105,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -113,7 +113,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
   #......
   # Check if input 'spec' is missing
-  if (missing(spec)) {
+  if (isTRUE(missing(spec))) {
 
     stop("Please specify a matrix or data frame for the argument 'spec'.", call. = FALSE)
 
@@ -122,7 +122,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -134,7 +134,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
     #......
     # Check input 'as.factor'
-    if (!is.logical(as.factor)) {
+    if (isTRUE(!is.logical(as.factor))) {
 
       stop("Please specify TRUE or FALSE for the argument 'as.factor'.", call. = FALSE)
 
@@ -142,7 +142,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
     #......
     # Check input 'table'
-    if (!is.logical(table)) {
+    if (isTRUE(!is.logical(table))) {
 
       stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
 
@@ -152,9 +152,9 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
   #----------------------------------------
   # Convert user-missing values into NA
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    df <- misty::as.na(df, as.na = as.na)
+    df <- misty::as.na(df, na = as.na)
 
   }
 
@@ -169,7 +169,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
   #----------------------------------------
   # Convert factor into character
-  if (is.factor(x)) {
+  if (isTRUE(is.factor(x))) {
 
     object <- as.character(x)
 
@@ -188,13 +188,13 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
     #----------------------------------------
     # Specification with range of values :
 
-    if (length(grep(":", i)) == 1) {
+    if (isTRUE(length(grep(":", i)) == 1)) {
 
       range <- unlist(strsplit(unlist(strsplit(i, "="))[1], ":"))
 
       low <- try(eval(parse(text = range[1])), silent = TRUE)
 
-      if (class(low) == "try-error") {
+      if (isTRUE(class(low) == "try-error")) {
 
         stop("In recode specification term: ", i, "\n       Message: ", attributes(low)$condition$message, call. = FALSE)
 
@@ -202,7 +202,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
       high <- try(eval(parse(text = range[2])), silent = TRUE)
 
-      if (class(high) == "try-error") {
+      if (isTRUE(class(high) == "try-error")) {
 
         stop("In recode specification term: ", i, "\n       Message: ", attributes(high)$condition$message, call. = FALSE)
 
@@ -210,7 +210,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
       target <- try(eval(parse(text = unlist(strsplit(i, "="))[2])), silent = TRUE)
 
-      if (class(target) == "try-error") {
+      if (isTRUE(class(target) == "try-error")) {
 
         stop("In recode specification term: ", i, "\n       Message: ", attributes(target)$condition$message, call. = FALSE)
 
@@ -223,11 +223,11 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
     #----------------------------------------
     # Specification with range of values else
 
-    if (length(grep("else", i)) == 1) {
+    if (isTRUE(length(grep("else", i)) == 1)) {
 
       target <- try(eval(parse(text = unlist(strsplit(i, "="))[2])), silent = TRUE)
 
-      if (class(target) == "try-error") {
+      if (isTRUE(class(target) == "try-error")) {
 
         stop("In recode specification term: ", i, "\n       Message: ", attributes(target)$condition$message, call. = FALSE)
 
@@ -240,11 +240,11 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
     #----------------------------------------
     # Specification with single or vector of values
 
-    if (length(grep(":", i))  == 0 && length(grep("else", i)) == 0) {
+    if (isTRUE(length(grep(":", i))  == 0 && length(grep("else", i)) == 0)) {
 
       set <- try(eval(parse(text = unlist(strsplit(i, "="))[1])), silent = TRUE)
 
-      if (class(set) == "try-error") {
+      if (isTRUE(class(set) == "try-error")) {
 
         stop("In recode specification term: ", i, "\n       Message: ", attributes(set)$condition$message, call. = FALSE)
 
@@ -252,7 +252,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
       target <- try(eval(parse(text = unlist(strsplit(i, "="))[2])), silent = TRUE)
 
-      if (class(target) == "try-error") {
+      if (isTRUE(class(target) == "try-error")) {
 
         stop("In recode specification term: ", i, "\n       Message: ", attributes(target)$condition$message, call. = FALSE)
 
@@ -260,7 +260,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
       for (j in set) {
 
-        if (is.na(j))  {
+        if (isTRUE(is.na(j)))  {
 
           object[is.na(x)] <- target
 
@@ -279,13 +279,13 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
   #----------------------------------------
   # Character and factor
 
-  if (is.character(object)) {
+  if (isTRUE(is.character(object))) {
 
     #......
     # Original vector was a factor
     if (isTRUE(is.factor(x))) {
 
-      if (is.null(levels)) {
+      if (isTRUE(is.null(levels))) {
 
         object <- factor(object, levels = c(intersect(levels(x), object), setdiff(object, levels(x))))
 
@@ -301,7 +301,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
       if (isTRUE(as.factor)) {
 
-        if (is.null(levels)) {
+        if (isTRUE(is.null(levels))) {
 
           object <- factor(object)
 
@@ -317,7 +317,7 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
         object.test <- suppressWarnings(as.numeric(object))
 
-        if (sum(is.na(object.test)) == sum(is.na(object))) {
+        if (isTRUE(sum(is.na(object.test)) == sum(is.na(object)))) {
 
           object <- as.numeric(object)
 

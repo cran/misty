@@ -8,11 +8,12 @@
 #' @param x           a vector, matrix or data frame.
 #' @param group       a vector representing the grouping structure (i.e., group variable).
 #' @param method      a character string indicating the method used to estimate intraclass correlation coefficients,
-#'                    i.e., \code{"aov"} (default) ICC estimated using the \code{aov} function,
-#'                    \code{"lme4"} ICC estimated using the \code{lmer} function in the \pkg{lme4} package,
+#'                    i.e., \code{"aov"} ICC estimated using the \code{aov} function,
+#'                    \code{"lme4"} (default) ICC estimated using the \code{lmer} function in the \pkg{lme4} package,
 #'                    \code{"nlme"} ICC estimated using the \code{lme} function in the \pkg{nlme} package.
-#' @param REML        logical: if \code{TRUE}, restricted maximum likelihood is used to estimate the null model when
-#'                    using the \code{lmer()} function in the \pkg{lme4} package or the \code{lme()} function in
+#'                    Note that if the lme4 package is not installed, method = "aov" will be used.
+#' @param REML        logical: if \code{TRUE} (default), restricted maximum likelihood is used to estimate the null model
+#'                    when using the \code{lmer()} function in the \pkg{lme4} package or the \code{lme()} function in
 #'                    the \pkg{nlme} package.
 #' @param digits      an integer value indicating the number of decimal places to be used.
 #' @param icc.digits  an integer indicating the number of decimal places to be used for displaying
@@ -68,14 +69,15 @@
 #' # Multilevel descriptive statistics for x1, x2, and x3
 #' multilevel.descript(dat[, c("x1", "x2", "x3")], group = dat$group)
 multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REML = TRUE,
-                                digits = 2, icc.digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
+                                digits = 2, icc.digits = 3, as.na = NULL, check = TRUE,
+                                output = TRUE) {
 
   ####################################################################################
   # Data
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -83,7 +85,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -91,7 +93,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
   #......
   # Vector, matrix or data frame for the argument 'x'?
-  if (!is.atomic(x) && !is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
          call. = FALSE)
@@ -100,7 +102,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
   #......
   # Check if input 'group' is missing
-  if (missing(group)) {
+  if (isTRUE(missing(group))) {
 
     stop("Please specify a vector representing the grouping structure for the argument 'group'.", call. = FALSE)
 
@@ -114,13 +116,13 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   #----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
-    if (any(x.miss)) {
+    if (isTRUE(any(x.miss))) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
                   paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
@@ -133,7 +135,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   # Input Check
 
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -145,10 +147,10 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check input 'group'
-    if (is.null(dim(x))) {
+    if (isTRUE(is.null(dim(x)))) {
 
       # Numeric vector and group?
-      if (length(x) != length(group)) {
+      if (isTRUE(length(x) != length(group))) {
 
         stop("Length of the vector 'x' does not match with the length of the grouping variable 'group'.",
              call. = FALSE)
@@ -158,7 +160,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
     } else {
 
       # Numeric vector and group?
-      if (nrow(x) != length(group)) {
+      if (isTRUE(nrow(x) != length(group))) {
 
         stop("Number of rows in 'x' does not match with the length of the grouping variable 'group'.",
              call. = FALSE)
@@ -169,7 +171,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check input 'group'
-    if (length(unique(na.omit(group))) == 1L) {
+    if (isTRUE(length(unique(na.omit(group))) == 1L)) {
 
       stop("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
 
@@ -179,9 +181,9 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
     # Check input 'x': Zero variance?
     x.check <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
 
-    if (any(x.check)) {
+    if (isTRUE(any(x.check))) {
 
-      if (length(x.check) > 1L) {
+      if (isTRUE(length(x.check) > 1L)) {
 
         warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
                        paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
@@ -196,7 +198,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check input 'method'
-    if (any(!method %in% c("aov", "lme4", "nlme"))) {
+    if (isTRUE(any(!method %in% c("aov", "lme4", "nlme")))) {
 
       stop("Character string in the argument 'method' does not match with \"aov\", \"lme4\", or \"nlme\".",
             call. = FALSE)
@@ -205,7 +207,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check input 'REML'
-    if (!is.logical(REML)) {
+    if (isTRUE(!is.logical(REML))) {
 
       stop("Please specify TRUE or FALSE for the argument 'REML'", call. = FALSE)
 
@@ -213,7 +215,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check digits argument
-    if (digits %% 1L != 0L || digits < 0L) {
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
 
       stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE)
 
@@ -221,7 +223,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check icc.digits argument
-    if (icc.digits %% 1L != 0L || icc.digits < 0L) {
+    if (isTRUE(icc.digits %% 1L != 0L || icc.digits < 0L)) {
 
       stop("Specify a positive integer value for the argument 'icc.digits'.", call. = FALSE)
 
@@ -229,9 +231,9 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Variance within groups
-    if (ncol(x) == 1L) {
+    if (isTRUE(ncol(x) == 1L)) {
 
-      if (all(tapply(unlist(x), group, function(y) length(na.omit(y))) <= 1L)) {
+      if (isTRUE(all(tapply(unlist(x), group, function(y) length(na.omit(y))) <= 1L))) {
 
         stop("Variable specified in 'x' does not have any within-group variance.", call. = FALSE)
 
@@ -241,7 +243,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
       x.check <- vapply(x, function(y) all(tapply(y, group, function(z) length(na.omit(z))) <= 1L), FUN.VALUE = logical(1))
 
-      if (any(x.check)) {
+      if (isTRUE(any(x.check))) {
 
         stop(paste0("Following variables specified in 'x' do not have any within-group variance: ",
                     paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
@@ -252,7 +254,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
     #......
     # Check input 'output'
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE)
 
@@ -265,7 +267,19 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
   #-----------------------------------------
   # Argument method
-  if (all(c("aov", "lme4", "nlme") %in% method)) { method <- "aov"}
+  if (isTRUE(all(c("aov", "lme4", "nlme") %in% method))) {
+
+    if (isTRUE(nzchar(system.file(package = "lme4")))) {
+
+      method <- "lme4"
+
+    } else {
+
+      method <- "aov"
+
+    }
+
+  }
 
   ####################################################################################
   # Main Function
@@ -302,7 +316,7 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
   deff.sqrt <- sqrt(deff)
 
-  # Effective sampel size
+  # Effective sample size
   n.effect <- no.obs / deff
 
   ####################################################################################

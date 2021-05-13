@@ -5,10 +5,9 @@
 \title{Confidence Interval for Proportions}
 \usage{
 ci.prop(x, method = c("wald", "wilson"),
-        alternative = c("two.sided", "less", "greater"),
-        conf.level = 0.95, group = NULL, split = NULL,
-        sort.var = FALSE, na.omit = FALSE, digits = 3,
-        as.na = NULL, check = TRUE, output = TRUE)
+        alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
+        group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
+        digits = 3, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector, matrix or data frame with numeric variables with 0 and 1 values,
@@ -68,41 +67,41 @@ dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
                   x2 = c(0, NA, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1),
                   x3 = c(1, 1, 1, 0, 1, NA, 1, NA, 0, 0, 0, 1))
 
-# Two-Sided 95\% Confidence Interval for x1
+# Two-Sided 95\% CI for x1
 ci.prop(dat$x1)
 
-# Two-Sided 95\% Confidence Interval for x1 using Wald method
+# Two-Sided 95\% CI for x1 using Wald method
 ci.prop(dat$x1, method = "wald")
 
-# One-Sided 95\% Confidence Interval for x1
+# One-Sided 95\% CI for x1
 ci.prop(dat$x1, alternative = "less")
 
-# Two-Sided 99\% Confidence Interval
+# Two-Sided 99\% CI
 ci.prop(dat$x1, conf.level = 0.99)
 
-# Two-Sided 95\% Confidence Interval, print results with 4 digits
+# Two-Sided 95\% CI, print results with 4 digits
 ci.prop(dat$x1, digits = 4)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
+# Two-Sided 95\% CI for x1, x2, and x3,
 # listwise deletion for missing data
 ci.prop(dat[, c("x1", "x2", "x3")], na.omit = TRUE)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
+# Two-Sided 95\% CI for x1, x2, and x3,
 # analysis by group1 separately
 ci.prop(dat[, c("x1", "x2", "x3")], group = dat$group1)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
+# Two-Sided 95\% CI for x1, x2, and x3,
 # analysis by group1 separately, sort by variables
 ci.prop(dat[, c("x1", "x2", "x3")], group = dat$group1, sort.var = TRUE)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
+# Two-Sided 95\% CI for x1, x2, and x3,
 # split analysis by group1
 ci.prop(dat[, c("x1", "x2", "x3")], split = dat$group1)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
+# Two-Sided 95\% CI for x1, x2, and x3,
 # analysis by group1 separately, split analysis by group2
- ci.prop(dat[, c("x1", "x2", "x3")],
-         group = dat$group1, split = dat$group2)
+ci.prop(dat[, c("x1", "x2", "x3")],
+        group = dat$group1, split = dat$group2)
 }
 \references{
 Agresti, A. & Coull, B.A. (1998). Approximate is better than "exact" for interval estimation of binomial

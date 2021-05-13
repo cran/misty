@@ -14,12 +14,13 @@ multilevel.descript(x, group, method = c("aov", "lme4", "nlme"), REML = TRUE,
 \item{group}{a vector representing the grouping structure (i.e., group variable).}
 
 \item{method}{a character string indicating the method used to estimate intraclass correlation coefficients,
-i.e., \code{"aov"} (default) ICC estimated using the \code{aov} function,
-\code{"lme4"} ICC estimated using the \code{lmer} function in the \pkg{lme4} package,
-\code{"nlme"} ICC estimated using the \code{lme} function in the \pkg{nlme} package.}
+i.e., \code{"aov"} ICC estimated using the \code{aov} function,
+\code{"lme4"} (default) ICC estimated using the \code{lmer} function in the \pkg{lme4} package,
+\code{"nlme"} ICC estimated using the \code{lme} function in the \pkg{nlme} package.
+Note that if the lme4 package is not installed, method = "aov" will be used.}
 
-\item{REML}{logical: if \code{TRUE}, restricted maximum likelihood is used to estimate the null model when
-using the \code{lmer()} function in the \pkg{lme4} package or the \code{lme()} function in
+\item{REML}{logical: if \code{TRUE} (default), restricted maximum likelihood is used to estimate the null model
+when using the \code{lmer()} function in the \pkg{lme4} package or the \code{lme()} function in
 the \pkg{nlme} package.}
 
 \item{digits}{an integer value indicating the number of decimal places to be used.}
@@ -37,9 +38,9 @@ Note that \code{as.na()} function is only applied to \code{x} but not to
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
-type of analysis \code{type},
-matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+\code{x} (\code{data}), specification of function arguments (\code{args}), and
 list with results (\code{result}).
 }
 \description{

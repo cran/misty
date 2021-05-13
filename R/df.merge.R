@@ -102,7 +102,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
   #......
   # Check input 'by'
-  if (missing(by)) {
+  if (isTRUE(missing(by))) {
 
     stop("Please specify a character string for the argument 'by'.", call. = FALSE)
 
@@ -110,7 +110,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -122,7 +122,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     #......
     # Same matching variable in each data frame
-    if (any(vapply(df, function(y) !by %in%  names(y), FUN.VALUE = logical(1L)))) {
+    if (isTRUE(any(vapply(df, function(y) !by %in%  names(y), FUN.VALUE = logical(1L))))) {
 
       stop("Data frames do not have the same matching variable specified in 'by'.", call. = FALSE)
 
@@ -130,7 +130,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     #......
     # Same class
-    if (length(unique(vapply(df, function(y) class(y[, by]), FUN.VALUE = character(1L)))) != 1L) {
+    if (isTRUE(length(unique(vapply(df, function(y) class(y[, by]), FUN.VALUE = character(1L)))) != 1L)) {
 
       stop("Matching variable in the data frames do not all have the same class.", call. = FALSE)
 
@@ -138,7 +138,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     #......
     # Duplicated values in the matching variable
-    if (any(vapply(df, function(y) anyDuplicated(na.omit(y[, by])), FUN.VALUE = 1L) != 0L)) {
+    if (isTRUE(any(vapply(df, function(y) anyDuplicated(na.omit(y[, by])), FUN.VALUE = 1L) != 0L))) {
 
       stop("There are duplicated values in the matching variable specified in 'by'.", call. = FALSE)
 
@@ -146,7 +146,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     #......
     # Missing values in the matching variable
-    if (any(vapply(df, function(y) any(is.na(y[, by])), FUN.VALUE = logical(1L)))) {
+    if (isTRUE(any(vapply(df, function(y) any(is.na(y[, by])), FUN.VALUE = logical(1L))))) {
 
       stop("There are missing values in the matching variable specified in 'by'.", call. = FALSE)
 
@@ -154,7 +154,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     #......
     # Duplicated variable names across the data frames
-    if (anyDuplicated(unlist(lapply(df, names))[unlist(lapply(df, names)) != by]) != 0L) {
+    if (isTRUE(anyDuplicated(unlist(lapply(df, names))[unlist(lapply(df, names)) != by]) != 0L)) {
 
       stop("There are duplicated variable names across data frames.", call. = FALSE)
 
@@ -162,7 +162,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     #......
     # Check input 'all'
-    if (!is.logical(all)) {
+    if (isTRUE(!is.logical(all))) {
 
       stop("Please specify TRUE or FALSE for the argument 'all'.", call. = FALSE)
 
@@ -170,7 +170,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     #......
     # Check input 'output'
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

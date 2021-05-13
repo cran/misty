@@ -51,9 +51,9 @@ Routledge.
 Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introduction to basic and advanced multilevel
 modeling} (2nd ed.). Sage Publishers.
 }
+\seealso{
+\code{\link{item.scores}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.icc}}
+}
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}
-
-#' @seealso
-\code{\link{scores}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.icc}}
 }

@@ -41,7 +41,7 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
 
@@ -49,7 +49,7 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -57,7 +57,7 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
   #.......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -69,7 +69,7 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
     #.......
     # Check input 'x': Missing
-    if (all(is.na(x))) {
+    if (isTRUE(all(is.na(x)))) {
 
       stop("Vector specified in the argument 'x' is  is completely missing.", call. = FALSE)
 
@@ -77,7 +77,7 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
     #.......
     # Check input 'x': Numeric vector
-    if (!is.numeric(x)) {
+    if (isTRUE(!is.numeric(x))) {
 
       stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
 
@@ -85,9 +85,9 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
     #.......
     # Check input 'x': Zero variance
-    if (length(x) > 1L) {
+    if (isTRUE(length(x) > 1L)) {
 
-      if (length(na.omit(unique(x))) == 1L) {
+      if (isTRUE(length(na.omit(unique(x))) == 1L)) {
 
         stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE)
 
@@ -101,19 +101,19 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
   # Data
 
   # Convert user-missing values into NA
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
-    if (all(is.na(x))) {
+    if (isTRUE(all(is.na(x)))) {
 
       stop("After converting user-missing values into NA, variable 'x' is completely missing.", call. = FALSE)
 
     }
 
     # Zero variance
-    if (length(na.omit(unique(x))) == 1L) {
+    if (isTRUE(length(na.omit(unique(x))) == 1L)) {
 
       stop("After converting user-missing values into NA, variable 'x' has zero variance.", call. = FALSE)
 
@@ -122,7 +122,7 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
   }
 
   # Omit missing values
-  if (any(is.na(x))) {
+  if (isTRUE(any(is.na(x)))) {
 
     x <- na.omit(x)
 
@@ -133,7 +133,7 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
   n <- length(x)
 
-  if (n >= 4L) {
+  if (isTRUE(n >= 4L)) {
 
     m <- n * sum((x - mean(x))^4) / (sum((x - mean(x))^2)^2)
 

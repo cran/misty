@@ -4,11 +4,12 @@
 \alias{print.misty.object}
 \title{Print misty.object object}
 \usage{
-\method{print}{misty.object}(x, print = x$args$print, tri = x$args$tri,
-      freq = x$args$freq, split = x$args$split, table = x$args$table,
-      digits = x$args$digits, p.digits = x$args$p.digits,
-      icc.digits = x$args$icc.digits, sort.var = x$args$sort.var,
-      order = x$args$order, check = TRUE, ...)
+\method{print}{misty.object}(x,
+      print = x$args$print, tri = x$args$tri, freq = x$args$freq,
+      hypo = x$args$hypo, descript = x$args$descript, effsize = x$args$effsize,
+      split = x$args$split, table = x$args$table, digits = x$args$digits,
+      p.digits = x$args$p.digits, icc.digits = x$args$icc.digits,
+      sort.var = x$args$sort.var, order = x$args$order, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{misty.object} object.}
@@ -22,10 +23,19 @@ to show on the console, i.e., \code{both} for upper and lower triangular,
 triangular.}
 
 \item{freq}{logical: if \code{TRUE}, absolute frequencies will be included in the cross
-tabulation (\code{freq()} function).}
+tabulation (\code{crosstab()} function).}
 
-\item{split}{logical: if \code{TRUE}, cross table is split in absolute frequencies and percentage(s)
-(\code{crosstab()} function).}
+\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis are shown on the console
+(\code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}} function).}
+
+\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown on the console
+(\code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}} function).}
+
+\item{effsize}{logical: if \code{TRUE}, effect size measure(s) is shown on the console
+(\code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}} function).}
+
+\item{split}{logical: if \code{TRUE}, output table is split by variables when specifying more than
+one variable in \code{x} (\code{\link{freq}}).}
 
 \item{table}{logical: if \code{TRUE}, a frequency table with number of observed values (\code{"nObs"}),
 percent of observed values (\code{"pObs"}), number of missing values (\code{"nNA"}), and
@@ -39,7 +49,8 @@ displaying results.}
 \emph{p}-values.}
 
 \item{icc.digits}{an integer indicating the number of decimal places to be used for displaying
-intraclass correlation coefficients (\code{multilevel.descript()} function).}
+intraclass correlation coefficients (\code{multilevel.descript()} and
+\code{multilevel.icc()} function).}
 
 \item{sort.var}{logical: if \code{TRUE}, output is sorted by variables.}
 
@@ -54,14 +65,15 @@ of missing values (\code{na.descript()} function).}
 This function prints the \code{misty.object} object
 }
 \seealso{
-\code{\link{alpha.coef}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}}, \code{\link{ci.median}},
+\code{\link{item.alpha}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}}, \code{\link{ci.median}},
 \code{\link{ci.prop.diff}}, \code{\link{ci.prop}}, \code{\link{ci.sd}}, \code{\link{ci.var}},
-\code{\link{cohens.d}}, \code{\link{collin.diag}}, \code{\link{cont.coef}}, \code{\link{cor.matrix}},
-\code{\link{cramers.v}}, \code{\link{crosstab}}, \code{\link{descript}}, \code{\link{eta.sq}},
-\code{\link{freq}}, \code{\link{levenes.test}}, \code{\link{multilevel.descript}},
+\code{\link{cohens.d}}, \code{\link{collin.diag}}, \code{\link{cor.cont}}, \code{\link{cor.matrix}},
+\code{\link{cor.cramer}}, \code{\link{crosstab}}, \code{\link{descript}}, \code{\link{eta.sq}},
+\code{\link{freq}}, \code{\link{test.levene}}, \code{\link{multilevel.descript}},
 \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-\code{\link{na.pattern}}, \code{\link{omega.coef}}, \code{\link{phi.coef}}, \code{\link{poly.cor}},
-\code{\link{size.cor}}, \code{\link{size.mean}}, \code{\link{size.prop}}, \code{\link{z.test}},
+\code{\link{na.pattern}}, \code{\link{item.omega}}, \code{\link{cor.phi}}, \code{\link{cor.poly}},
+\code{\link{size.cor}}, \code{\link{size.mean}}, \code{\link{size.prop}}, \code{\link{test.levene}},
+\code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}}.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

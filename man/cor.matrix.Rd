@@ -5,12 +5,11 @@
 \title{Correlation Matrix with Statistical Significance Testing}
 \usage{
 cor.matrix(x, method = c("pearson", "spearman", "kendall-b", "kendall-c"),
-           use = c("listwise", "pairwise"), group = NULL,
-           print = c("all", "cor", "n", "p"),
+           na.omit = FALSE, group = NULL, print = c("all", "cor", "n", "p"),
            tri = c("both", "lower", "upper"),
            p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel",
-                     "BH", "BY", "fdr"),
-           digits = 2, p.digits = 3, as.na = NULL, check = TRUE, output = TRUE)
+                     "BH", "BY", "fdr"), digits = 2, p.digits = 3, as.na = NULL,
+           check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame.}
@@ -21,9 +20,8 @@ cor.matrix(x, method = c("pearson", "spearman", "kendall-b", "kendall-c"),
 Kendall's Tau-b correlation coefficient or \code{kendall-c} for Kendall-Stuart's Tau-c
 correlation coefficient.}
 
-\item{use}{a character vector giving a method for computing a correlation matrix in the presence
-of missing values, i.e., \code{"listwise"} for listwise deletion and \code{"pairwise"} for
-pairwise deletion}
+\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
+(i.e., listwise deletion); if \code{FALSE} (default), pairwise deletion is used.}
 
 \item{group}{a numeric vector, character vector of factor as grouping variable to show results for
 each group separately, i.e., upper triangular for one group and lower triangular for
@@ -54,9 +52,9 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
-type of analysis \code{type},
-matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+\code{x} (\code{data}), specification of function arguments (\code{args}), and
 list with results (\code{result}).
 }
 \description{
@@ -68,7 +66,8 @@ dat <- data.frame(group = c("a", "a", "a", "a", "a",
                             "b", "b", "b", "b", "b"),
                   x = c(5, NA, 6, 4, 6, 7, 9, 5, 8, 7),
                   y = c(3, 3, 5, 6, 7, 4, 7, NA, NA, 8),
-                  z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6), stringsAsFactors = FALSE)
+                  z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6),
+                  stringsAsFactors = TRUE)
 
 # Pearson product-moment correlation coefficient matrix using pairwise deletion
 cor.matrix(dat[, c("x", "y", "z")])
@@ -88,11 +87,11 @@ cor.matrix(dat[, c("x", "y", "z")], print = "all")
 
 # Pearson product-moment correlation coefficient matrix using listwise deletion,
 # print sample size and significance values
-cor.matrix(dat[, c("x", "y", "z")], use = "listwise", print = "all")
+cor.matrix(dat[, c("x", "y", "z")], na.omit = TRUE, print = "all")
 
 # Pearson product-moment correlation coefficient matrix using listwise deletion,
 # print sample size and significance values with Bonferroni correction
-cor.matrix(dat[, c("x", "y", "z")], use = "listwise", print = "all", p.adj = "bonferroni")
+cor.matrix(dat[, c("x", "y", "z")], na.omit = TRUE, print = "all", p.adj = "bonferroni")
 
 # Pearson product-moment correlation coefficient matrix using pairwise deletion,
 # results for group "a" and "b" separately
@@ -103,8 +102,8 @@ Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psycholog
 John Wiley & Sons.
 }
 \seealso{
-\code{\link{alpha.coef}}, \code{\link{cohens.d}}, \code{\link{cont.coef}}, \code{\link{cramers.v}},
-\code{\link{multilevel.icc}}, \code{\link{phi.coef}}, \code{\link{na.auxiliary}}, \code{\link{size.cor}}.
+\code{\link{cohens.d}}, \code{\link{cor.cont}}, \code{\link{cor.cramer}},
+\code{\link{multilevel.icc}}, \code{\link{cor.phi}}, \code{\link{na.auxiliary}}, \code{\link{size.cor}}.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

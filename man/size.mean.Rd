@@ -5,8 +5,8 @@
 \title{Sample Size Determination for Testing Arithmetic Means}
 \usage{
 size.mean(delta, sample = c("two.sample", "one.sample"),
-          alternative = c("two.sided", "less", "greater"), alpha = 0.05,
-          beta = 0.1, check = TRUE, output = TRUE)
+          alternative = c("two.sided", "less", "greater"),
+          alpha = 0.05, beta = 0.1, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{delta}{a numeric value indicating the relative minimum difference
@@ -32,8 +32,8 @@ Returns an object of class \code{misty.object} with following entries:
 \tabular{ll}{
   \code{call}      \tab function call \cr
   \code{type}      \tab type of the test (i.e., arithmetic mean) \cr
-  \code{spec}      \tab specification of function arguments \cr
-  \code{res}       \tab list with the result, i.e., optimal sample size \cr
+  \code{args}      \tab specification of function arguments \cr
+  \code{result}       \tab list with the result, i.e., optimal sample size \cr
 }
 }
 \description{

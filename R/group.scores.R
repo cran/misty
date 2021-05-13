@@ -16,7 +16,7 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{scores}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.icc}}
+#' \code{\link{item.scores}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.icc}}
 #'
 #' @references
 #' Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis: Techniques and applications} (3rd. ed.).
@@ -52,7 +52,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
 
@@ -60,7 +60,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -68,7 +68,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
   #......
   # Numeric vector for 'x'?
-  if (!is.atomic(x) || !is.numeric(x)) {
+  if (isTRUE(!is.atomic(x) || !is.numeric(x))) {
 
     stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
 
@@ -76,7 +76,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
   #......
   # Check input 'group'
-  if (missing(group)) {
+  if (isTRUE(missing(group))) {
 
     stop("Please specify a vector representing the grouping structure for the argument 'group'.", call. = FALSE)
 
@@ -84,7 +84,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -96,7 +96,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
     #......
     # Vector for 'group'?
-    if (!is.atomic(group) && !is.factor(group) && !is.factor(character)) {
+    if (isTRUE(!is.atomic(group) && !is.factor(group) && !is.factor(character))) {
 
       stop("Please specify an integer vector, character vector, or factor for the argument 'group'.",
            call. = FALSE)
@@ -105,7 +105,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
     #......
     # Length of vector and group?
-    if (length(x) != length(group)) {
+    if (isTRUE(length(x) != length(group))) {
 
       stop("Length of the vector specified in 'x' does not match with the length of the grouping variable specified in 'group'.",
            call. = FALSE)
@@ -114,7 +114,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
     #......
     # Check input 'fun'
-    if (!all(fun %in%  c("mean", "sum", "median", "var", "sd", "min", "max"))) {
+    if (isTRUE(!all(fun %in%  c("mean", "sum", "median", "var", "sd", "min", "max")))) {
 
       stop("Character strings in the argument 'fun' dos not match with \"mean\", \"sum\", \"median\", \"var\", \"sd\", \"min\", or \"max\".",
            call. = FALSE)
@@ -123,7 +123,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
     #......
     # Check input 'expand'
-    if (!is.logical(expand)) {
+    if (isTRUE(!is.logical(expand))) {
 
       stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE)
 
@@ -141,13 +141,13 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
 
   #----------------------------------------
   # Convert user-missing values into NA
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
     #......
     # Missing values only
-    if (all(is.na(x))) {
+    if (isTRUE(all(is.na(x)))) {
 
       stop("After converting user-missing values into NA, vector specified in 'x' is completely missing.",
            call. = FALSE)
@@ -162,7 +162,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
   #----------------------------------------
   # Compute group scores
 
-  if (fun != "sum") {
+  if (isTRUE(fun != "sum")) {
 
     agg.scores <- suppressWarnings(eval(parse(text = paste0("tapply(x, INDEX = group, FUN = ", fun, ", na.rm = TRUE)"))))
 
@@ -174,7 +174,7 @@ group.scores <- function(x, group, fun = c("mean", "sum", "median", "var", "sd",
   }
 
   # Convert NaN and Inf to NA
-  if (fun %in% c("min", "max")) {
+  if (isTRUE(fun %in% c("min", "max"))) {
 
     agg.scores <- ifelse(is.infinite(agg.scores), NA, agg.scores)
 

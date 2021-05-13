@@ -105,13 +105,13 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
   #----------------------------------------
   # Convert user-missing values into NA
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
     #......
     # Missing values only
-    if (all(is.na(x))) {
+    if (isTRUE(all(is.na(x)))) {
 
       stop("After converting user-missing values into NA, matrix or data frame specified in 'x' is completely missing.",
            call. = FALSE)
@@ -125,7 +125,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE)
 
@@ -133,7 +133,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -141,7 +141,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -153,7 +153,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
     #......
     # Check input 'x'
-    if (!is.matrix(x) && !is.data.frame(x)) {
+    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
 
       stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE)
 
@@ -161,7 +161,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
     #......
     # Check input 'x'
-    if (ncol(x) == 1L) {
+    if (isTRUE(ncol(x) == 1L)) {
 
       stop("Please specify a matrix or data frame with more than one column or variable for the argument 'x'.",
            call. = FALSE)
@@ -170,7 +170,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
     #......
     # Numeric vector and group?
-    if (nrow(x) != length(group)) {
+    if (isTRUE(nrow(x) != length(group))) {
 
       stop("Number of rows in the matrix or data frame in 'x' does not match with the length of the vector in 'group'.",
            call. = FALSE)
@@ -179,9 +179,9 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
     #......
     # Check input 'A'
-    if (!is.null(A)) {
+    if (isTRUE(!is.null(A))) {
 
-      if (length(na.omit(unique(unlist(x)))) > A) {
+      if (isTRUE(length(na.omit(unique(unlist(x)))) > A)) {
 
         warning("There are more unique values in 'x' than the number of discrete response options specified in 'A'.",
                 call. = FALSE)
@@ -189,7 +189,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
       }
 
       # Check input 'x': Integer number
-      if (A %% 1L != 0L || A < 0L) {
+      if (isTRUE(A %% 1L != 0L || A < 0L)) {
 
         stop("Please specify a positive integer number for the argument 'A'.", call. = FALSE)
 
@@ -199,7 +199,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
     #......
     # Check input 'A' and 'ranvar'
-    if ((is.null(A) && is.null(ranvar)) || (!is.null(A) && !is.null(ranvar))) {
+    if (isTRUE((is.null(A) && is.null(ranvar)) || (!is.null(A) && !is.null(ranvar)))) {
 
       stop("Please specify the argument 'A' or the argument 'ranvar'.", call. = FALSE)
 
@@ -207,7 +207,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
     #......
     # Check input 'z'
-    if (!is.logical(z)) {
+    if (isTRUE(!is.logical(z))) {
 
       stop("Please specify TRUE or FALSE for the argument 'z'.", call. = FALSE)
 
@@ -215,7 +215,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
     #......
     # Check input 'expand'
-    if (!is.logical(expand)) {
+    if (isTRUE(!is.logical(expand))) {
 
       stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE)
 
@@ -230,7 +230,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
   #----------------------------------------
   # Random variance based on A
-  if (!is.null(A)) {
+  if (isTRUE(!is.null(A))) {
 
     ranvar <- (A^2L - 1L) / 12L
 
@@ -238,7 +238,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
 
   #----------------------------------------
   # Listwise deletion
-  if (isTRUE(na.omit) && any(is.na(x))) {
+  if (isTRUE(na.omit && any(is.na(x)))) {
 
     df <- na.omit(df)
 
@@ -253,7 +253,7 @@ rwg.lindell <- function(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TR
   df.split <- split(df[, -grep("group", names(df))], df$group)
 
   rwg <- misty::as.na(vapply(df.split, function(y) 1L - (mean(vapply(y, var, na.rm = TRUE, FUN.VALUE = double(1L)), na.rm = TRUE) / ranvar), FUN.VALUE = double(1L)),
-                      as.na = NaN, check = FALSE)
+                      na = NaN, check = FALSE)
 
   #......
   # Expand

@@ -8,9 +8,16 @@
 #'                         or \code{"My_SPSS_Data"}.
 #' @param use.value.labels logical: if \code{TRUE}, variables with value labels are converted into factors.
 #' @param use.missings     logical: if \code{TRUE} (default), user-defined missing values are converted into NAs.
+#' @param formats          logical: if \code{TRUE}, variable formats are shown in an attribute for all variables.
+#' @param label            logical: if \code{TRUE} (default), variable labels are shown in an attribute for all variables.
+#' @param labels           logical: if \code{TRUE} (default), value labels are shown in an attribute for all variables.
+#' @param missing          logical: if \code{TRUE}, value labels for user-defined missings are shown in an attribute.
+#'                         for all variables.
+#' @param widths           logical: if \code{TRUE}, widths are shown in an attribute for all variables.
 #' @param as.data.frame    logical: if \code{TRUE} (default), function returns a regular data frame (default);
 #'                         if \code{FALSE} function returns a tibble.
 #' @param check            logical: if \code{TRUE}, argument specification is checked.
+#'
 #'
 #' @author
 #' Hadley Wickham and Evan Miller
@@ -42,14 +49,16 @@
 #' # Read SPSS data as tibble
 #' read.sav("SPSS_Data.sav", as.data.frame = FALSE)
 #' }
-read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.data.frame = TRUE, check = TRUE) {
+read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, formats = FALSE,
+                     label = TRUE, labels = TRUE, missing = FALSE, widths = FALSE,
+                     as.data.frame = TRUE, check = TRUE) {
 
   ####################################################################################
   # Input Check
 
   #......
   # Package haven installed?
-  if (!requireNamespace("haven", quietly = TRUE)) {
+  if (isTRUE(!requireNamespace("haven", quietly = TRUE))) {
 
     stop("Package \"haven\" is needed for this function to work, please install it.",
          call. = FALSE )
@@ -58,7 +67,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
   #......
   # Check input 'file'
-  if (missing(file)) {
+  if (isTRUE(missing(file))) {
 
     stop("Please specify a character string indicating the name of the SPSS data file for the argument 'file'",
          call. = FALSE)
@@ -71,7 +80,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
   #......
   # Check if 'file' exists
-  if (!file.exists(file)) {
+  if (isTRUE(!file.exists(file))) {
 
     stop(paste0("Unable to open SPSS data file: ", sQuote(file), " does not exist."),
          call. = FALSE)
@@ -80,7 +89,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
   #......
   # Check input 'check',
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -92,7 +101,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
     #......
     # Check input 'use.value.labels'
-    if (!is.logical(use.value.labels)) {
+    if (isTRUE(!is.logical(use.value.labels))) {
 
       stop("Please specify TRUE or FALSE for the argument 'use.value.labels'.", call. = FALSE)
 
@@ -100,15 +109,55 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
     #......
     # Check input 'use.missings'
-    if (!is.logical(use.missings)) {
+    if (isTRUE(!is.logical(use.missings))) {
 
       stop("Please specify TRUE or FALSE for the argument 'use.missings'.", call. = FALSE)
 
     }
 
     #......
+    # Check input 'formats'
+    if (isTRUE(!is.logical(formats))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'formats'.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'label'
+    if (isTRUE(!is.logical(label))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'label'.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'labels'
+    if (isTRUE(!is.logical(labels))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'labels'.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'missing'
+    if (isTRUE(!is.logical(missing))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'missing'.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'widths'
+    if (isTRUE(!is.logical(widths))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'widths'.", call. = FALSE)
+
+    }
+
+    #......
     # Check input 'as.data.frame'
-    if (!is.logical(as.data.frame)) {
+    if (isTRUE(!is.logical(as.data.frame))) {
 
       stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE)
 
@@ -125,17 +174,85 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
   ####################################################################################
   # Main Function
 
+  # Read SPSS data
+  object <- haven::read_spss(file, user_na = use_na)
+
+  #-----------------------------------------
+  # Remove format
+
+  if (!isTRUE(formats)) {
+
+    for (i in names(object)) {
+
+      object[, i] <- haven::zap_formats(object[, i])
+
+    }
+
+  }
+
+  #-----------------------------------------
+  # Remove label
+
+  if (!isTRUE(label)) {
+
+    for (i in names(object)) {
+
+      object[, i] <- haven::zap_label(object[, i])
+
+    }
+
+  }
+
+  #-----------------------------------------
+  # Remove value labels
+
+  if (!isTRUE(labels)) {
+
+    for (i in names(object)) {
+
+      object[, i] <- haven::zap_labels(object[, i])
+
+    }
+
+  }
+
+  #-----------------------------------------
+  # Remove value labels for user-defined missing values
+
+  if (!isTRUE(missing)) {
+
+    for (i in names(object)) {
+
+      object[, i] <- haven::zap_missing(object[, i])
+
+    }
+
+  }
+
+  #-----------------------------------------
+  # Remove widths
+
+  if (!isTRUE(widths)) {
+
+    for (i in names(object)) {
+
+      object[, i] <- haven::zap_widths(object[, i])
+
+    }
+
+  }
+
   #-----------------------------------------
   # Data as data frame
   if (isTRUE(as.data.frame)) {
 
-    object <- as.data.frame(haven::read_spss(file, user_na = use_na), stringsAsFactors = FALSE)
+    object <- as.data.frame(object, stringsAsFactors = FALSE)
 
     object.attributes <- lapply(object, function(y) names(attributes(y)))
 
     #......
     # Factors
-    if (any(unlist(object.attributes) == "labels") && isTRUE(use.value.labels)) {
+    if (isTRUE(any(unlist(object.attributes) == "labels") && isTRUE(use.value.labels))) {
 
       var.labels.na <- NULL
       for (i in which(vapply(object.attributes, function(y) any(y == "labels"), FUN.VALUE = logical(1)))) {
@@ -144,7 +261,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
         labels <- attributes(object[, i])$labels
 
         # Labels for all values?
-        if (any(!na.omit(unique(object[, i])) %in% labels)) {
+        if (isTRUE(any(!na.omit(unique(object[, i])) %in% labels))) {
 
           var.labels.na <- c(var.labels.na, i)
 
@@ -161,7 +278,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
       }
 
-      if (!is.null(var.labels.na)) {
+      if (isTRUE(!is.null(var.labels.na))) {
 
         warning(paste0("Value labels are not specified for all values of the variable: ",
                        paste(colnames(object[, var.labels.na, drop = FALSE]), collapse = ", ")), call. = FALSE)
@@ -170,13 +287,9 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, as.dat
 
     }
 
-  #-----------------------------------------
-  # Data as tibble
-  } else {
-
-    object <- haven::read_spss(file, user_na = use_na)
-
   }
+
+  ####################################################################################
 
   return(object)
 

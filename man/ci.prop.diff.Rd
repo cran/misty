@@ -8,20 +8,15 @@
 \usage{
 ci.prop.diff(x, ...)
 
-
-## Default S3 method:
 \method{ci.prop.diff}{default}(x, y, method = c("wald", "newcombe"), paired = FALSE,
-                               alternative = c("two.sided", "less", "greater"),
-                               conf.level = 0.95, group = NULL, split = NULL,
-                               sort.var = FALSE, digits = 2, as.na = NULL,
-                               check = TRUE, output = TRUE, \dots)
+             alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
+             group = NULL, split = NULL, sort.var = FALSE, digits = 2, 
+             as.na = NULL, check = TRUE, output = TRUE, \dots)
 
-## S3 method for class 'formula'
 \method{ci.prop.diff}{formula}(formula, data, method = c("wald", "newcombe"),
-                               alternative = c("two.sided", "less", "greater"),
-                               conf.level = 0.95, group = NULL, split = NULL,
-                               sort.var = FALSE, na.omit = FALSE, digits = 2,
-                               as.na = NULL, check = TRUE, output = TRUE, \dots)
+             alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
+             group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
+             digits = 2, as.na = NULL, check = TRUE, output = TRUE, \dots)
 }
 \arguments{
 \item{x}{a numeric vector with 0 and 1 values.}
@@ -79,8 +74,8 @@ function call (\code{call}), type of analysis \code{type}, list with the input s
 and result table (\code{result}).
 }
 \description{
-This function computes a confidence interval for the difference in proportions from independent and
-paired samples for one or more variables, optionally by a grouping and/or split variable.
+This function computes a confidence interval for the difference in proportions in a two-sample
+and paired-sample design for one or more variables, optionally by a grouping and/or split variable.
 }
 \details{
 The Wald confidence interval which is based on the normal approximation to the binomial distribution are
@@ -91,104 +86,106 @@ as well as moderate to larger samples(n > 30 in each sample) and with proportion
 Wald confidence intervals does not perform well unless the sample size is large (Fagerland, Lydersen & Laake, 2011).
 }
 \examples{
-dat.bs <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
-                                1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2),
-                     group2 = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2,
-                                1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2),
-                     group3 = c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-                                1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2),
-                     x1 = c(0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, NA, 0, 0,
-                            1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0),
-                     x2 = c(0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1,
-                            1, 0, 1, 0, 1, 1, 1, NA, 1, 0, 0, 1, 1, 1),
-                     x3 = c(1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0,
-                            1, 0, 1, 1, 0, 1, 1, 1, 0, 1, NA, 1, 0, 1))
+dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
+                              1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2),
+                   group2 = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2,
+                              1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2),
+                   group3 = c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+                              1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2),
+                   x1 = c(0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, NA, 0, 0,
+                          1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0),
+                   x2 = c(0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1,
+                          1, 0, 1, 0, 1, 1, 1, NA, 1, 0, 0, 1, 1, 1),
+                   x3 = c(1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0,
+                          1, 0, 1, 1, 0, 1, 1, 1, 0, 1, NA, 1, 0, 1))
 
 #--------------------------------------
-# Between-Subject Design
+# Two-sample design
 
-# Two-Sided 95\% Confidence Interval for x1 by group1
-ci.prop.diff(x1 ~ group1, data = dat.bs)
-
-# Two-Sided 95\% Confidence Interval for x1 by group1
-# Wald confidence interval
-ci.prop.diff(x1 ~ group1, data = dat.bs, method = "wald")
-
-# One-Sided 95\% Confidence Interval for x1 by group1
+# Two-Sided 95\% CI for x1 by group1
 # Newcombes Hybrid Score interval
-ci.prop.diff(x1 ~ group1, data = dat.bs, alternative = "less")
+ci.prop.diff(x1 ~ group1, data = dat1)
 
-# Two-Sided 95\% Confidence Interval for x1 by group1
+# Two-Sided 95\% CI for x1 by group1
+# Wald CI
+ci.prop.diff(x1 ~ group1, data = dat1, method = "wald")
+
+# One-Sided 95\% CI for x1 by group1
 # Newcombes Hybrid Score interval
-ci.prop.diff(x1 ~ group1, data = dat.bs, conf.level = 0.99)
+ci.prop.diff(x1 ~ group1, data = dat1, alternative = "less")
 
-# Two-Sided 95\% Confidence Interval for y1 by group1
+# Two-Sided 99\% CI for x1 by group1
+# Newcombes Hybrid Score interval
+ci.prop.diff(x1 ~ group1, data = dat1, conf.level = 0.99)
+
+# Two-Sided 95\% CI for y1 by group1
 # # Newcombes Hybrid Score interval, print results with 3 digits
-ci.prop.diff(x1 ~ group1, data = dat.bs, digits = 3)
+ci.prop.diff(x1 ~ group1, data = dat1, digits = 3)
 
-# Two-Sided 95\% Confidence Interval for y1 by group1
+# Two-Sided 95\% CI for y1 by group1
 # # Newcombes Hybrid Score interval, convert value 0 to NA
-ci.prop.diff(x1 ~ group1, data = dat.bs, as.na = 0)
+ci.prop.diff(x1 ~ group1, data = dat1, as.na = 0)
 
-# Two-Sided 95\% Confidence Interval for y1, y2, and y3 by group1
+# Two-Sided 95\% CI for y1, y2, and y3 by group1
 # Newcombes Hybrid Score interval
-ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs)
+ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1)
 
-# Two-Sided 95\% Confidence Interval for y1, y2, and y3 by group1
+# Two-Sided 95\% CI for y1, y2, and y3 by group1
 # # Newcombes Hybrid Score interval, listwise deletion for missing data
-ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs, na.omit = TRUE)
+ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, na.omit = TRUE)
 
-# Two-Sided 95\% Confidence Interval for y1, y2, and y3 by group1
+# Two-Sided 95\% CI for y1, y2, and y3 by group1
 # Newcombes Hybrid Score interval, analysis by group2 separately
-ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs, group = dat.bs$group2)
+ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
 
-# Two-Sided 95\% Confidence Interval for y1, y2, and y3 by group1
+# Two-Sided 95\% CI for y1, y2, and y3 by group1
 # Newcombes Hybrid Score interval, analysis by group2 separately, sort by variables
-ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs, group = dat.bs$group2,
+ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2,
              sort.var = TRUE)
 
-# Two-Sided 95\% Confidence Interval for y1, y2, and y3 by group1
+# Two-Sided 95\% CI for y1, y2, and y3 by group1
 # split analysis by group2
-ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs, split = dat.bs$group2)
+ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
 
-# Two-Sided 95\% Confidence Interval for y1, y2, and y3 by group1
+# Two-Sided 95\% CI for y1, y2, and y3 by group1
 # Newcombes Hybrid Score interval, analysis by group2 separately, split analysis by group3
-ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs,
-             group = dat.bs$group2, split = dat.bs$group3)
+ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1,
+             group = dat1$group2, split = dat1$group3)
 
 #-----------------
 
 group1 <- c(0, 1, 1, 0, 0, 1, 0, 1)
 group2 <- c(1, 1, 1, 0, 0)
 
-# Two-Sided 95\% Confidence Interval for the mean difference between group1 amd group2
+# Two-Sided 95\% CI for the mean difference between group1 amd group2
 # Newcombes Hybrid Score interval
 ci.prop.diff(group1, group2)
 
 #--------------------------------------
-# Within-Subject Design
-dat.ws <- data.frame(pre = c(0, 1, 1, 0, 1),
-                     post = c(1, 1, 0, 1, 1), stringsAsFactors = FALSE)
+# Paires-sample design
 
-# Two-Sided 95\% Confidence Interval for the mean difference in x1 and x2
+dat2 <- data.frame(pre = c(0, 1, 1, 0, 1),
+                   post = c(1, 1, 0, 1, 1), stringsAsFactors = FALSE)
+
+# Two-Sided 95\% CI for the mean difference in x1 and x2
 # Newcombes Hybrid Score interval
-ci.prop.diff(dat.ws$pre, dat.ws$post, paired = TRUE)
+ci.prop.diff(dat2$pre, dat2$post, paired = TRUE)
 
-# Two-Sided 95\% Confidence Interval for the mean difference in x1 and x2
-# Wald confidence interval
-ci.prop.diff(dat.ws$pre, dat.ws$post, method = "wald", paired = TRUE)
+# Two-Sided 95\% CI for the mean difference in x1 and x2
+# Wald CI
+ci.prop.diff(dat2$pre, dat2$post, method = "wald", paired = TRUE)
 
-# One-Sided 95\% Confidence Interval for the mean difference in x1 and x2
+# One-Sided 95\% CI for the mean difference in x1 and x2
 # Newcombes Hybrid Score interval
-ci.prop.diff(dat.ws$pre, dat.ws$post, alternative = "less", paired = TRUE)
+ci.prop.diff(dat2$pre, dat2$post, alternative = "less", paired = TRUE)
 
-# Two-Sided 95\% Confidence Interval for the mean difference in x1 and x2
+# Two-Sided 99\% CI for the mean difference in x1 and x2
 # Newcombes Hybrid Score interval
-ci.prop.diff(dat.ws$pre, dat.ws$post, conf.level = 0.99, paired = TRUE)
+ci.prop.diff(dat2$pre, dat2$post, conf.level = 0.99, paired = TRUE)
 
-# Two-Sided 95\% Confidence Interval for for the mean difference in x1 and x2
+# Two-Sided 95\% CI for for the mean difference in x1 and x2
 # Newcombes Hybrid Score interval, print results with 3 digits
-ci.prop.diff(dat.ws$pre, dat.ws$post, paired = TRUE, digits = 3)
+ci.prop.diff(dat2$pre, dat2$post, paired = TRUE, digits = 3)
 }
 \references{
 Fagerland, M. W., Lydersen S., & Laake, P. (2011) Recommended confidence intervals for two independent binomial

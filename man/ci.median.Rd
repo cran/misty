@@ -4,10 +4,9 @@
 \alias{ci.median}
 \title{Confidence Interval for the Median}
 \usage{
-ci.median(x, alternative = c("two.sided", "less", "greater"),
-          conf.level = 0.95, group = NULL, split = NULL,
-          sort.var = FALSE, na.omit = FALSE, digits = 2,
-          as.na = NULL, check = TRUE, output = TRUE)
+ci.median(x, alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
+          group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
+          digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector, matrix or data frame with numeric variables, i.e.,
@@ -65,38 +64,38 @@ dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
                   x3 = c(7, 8, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
                          2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
 
-# Two-Sided 95\% Confidence Interval for x1
+# Two-Sided 95\% CI for x1
 ci.median(dat$x1)
 
-# One-Sided 95\% Confidence Interval for x1
+# One-Sided 95\% CI for x1
 ci.median(dat$x1, alternative = "less")
 
-# Two-Sided 99\% Confidence Interval
+# Two-Sided 99\% CI
 ci.median(dat$x1, conf.level = 0.99)
 
-# Two-Sided 95\% Confidence Interval, print results with 3 digits
+# Two-Sided 95\% CI, print results with 3 digits
 ci.median(dat$x1, digits = 3)
 
-# Two-Sided 95\% Confidence Interval for x1, convert value 4 to NA
+# Two-Sided 95\% CI for x1, convert value 4 to NA
 ci.median(dat$x1, as.na = 4)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
+# Two-Sided 95\% CI for x1, x2, and x3,
 # listwise deletion for missing data
 ci.median(dat[, c("x1", "x2", "x3")], na.omit = TRUE)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
+# Two-Sided 95\% CI for x1, x2, and x3,
 # analysis by group1 separately
 ci.median(dat[, c("x1", "x2", "x3")], group = dat$group1)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
+# Two-Sided 95\% CI for x1, x2, and x3,
 # analysis by group1 separately, sort by variables
 ci.median(dat[, c("x1", "x2", "x3")], group = dat$group1, sort.var = TRUE)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
+# Two-Sided 95\% CI for x1, x2, and x3,
 # split analysis by group1
 ci.median(dat[, c("x1", "x2", "x3")], split = dat$group1)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
+# Two-Sided 95\% CI for x1, x2, and x3,
 # analysis by group1 separately, split analysis by group2
 ci.median(dat[, c("x1", "x2", "x3")], group = dat$group1, split = dat$group2)
 }

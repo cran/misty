@@ -76,7 +76,7 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
   #...............
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.",
          call. = FALSE)
@@ -85,7 +85,7 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -93,7 +93,7 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
   #...............
   # Check if input 'value' is missing
-  if (missing(value)) {
+  if (isTRUE(missing(value))) {
 
     stop("Please specify a numeric value or character string for the argument 'value'.",
          call. = FALSE)
@@ -102,9 +102,9 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
   #...............
   # Convert user-missing values into NA
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
   }
 
@@ -113,7 +113,7 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
   #...............
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -125,7 +125,7 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
     #...............
     # Vector, factor, matrix or data frame for the argument 'x'?
-    if (!is.atomic(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x)) {
+    if (isTRUE(!is.atomic(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x))) {
 
       stop("Please specifiy a vector, factor, matrix or data frame for the argument 'x'.",
            call. = FALSE)
@@ -134,9 +134,9 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
     #...............
     # Factor or Vector
-    if (is.null(dim(x))) {
+    if (isTRUE(is.null(dim(x)))) {
 
-      if (all(!is.na(x))) {
+      if (isTRUE(all(!is.na(x)))) {
 
         warning("There are no missing values (NA) in the vector or factor specified in 'x'.",
                 call. = FALSE)
@@ -147,7 +147,7 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
     # Matrix or data frame
     } else {
 
-      if (all(apply(x, 2, function(y)  all(!is.na(y)))))  {
+      if (isTRUE(all(apply(x, 2, function(y)  all(!is.na(y))))))  {
 
         warning("There are no missing values (NA) in the matrix or data frame specified in 'x'.",
                 call. = FALSE)
@@ -158,7 +158,7 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
     #...............
     # Check input 'value'
-    if (length(value) != 1L) {
+    if (isTRUE(length(value) != 1L)) {
 
       stop("Please specifiy a single value or character string for the argument 'value'.",
            call. = FALSE)
@@ -171,10 +171,10 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
   # Main Function
 
   # Factor or Vector
-  if (is.null(dim(x))) {
+  if (isTRUE(is.null(dim(x)))) {
 
     # Factor
-    if (is.factor(x)) {
+    if (isTRUE(is.factor(x))) {
 
       # Factor levels
       f.levels <- sort(unique(as.numeric(x)))
@@ -198,14 +198,14 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
   } else {
 
     # Matrix
-    if (is.matrix(x)) {
+    if (isTRUE(is.matrix(x))) {
 
         object <- apply(x, 2, na.as, value = value, check = FALSE)
 
     }
 
     # Data frame
-    if (is.data.frame(x)) {
+    if (isTRUE(is.data.frame(x))) {
 
       object <- data.frame(lapply(x, na.as, value = value, check = FALSE))
 

@@ -39,7 +39,7 @@ df.rename <- function(x, from, to, check = TRUE) {
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -47,7 +47,7 @@ df.rename <- function(x, from, to, check = TRUE) {
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (!is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -55,7 +55,7 @@ df.rename <- function(x, from, to, check = TRUE) {
 
   #......
   # Check input 'from'
-  if (missing(from)) {
+  if (isTRUE(missing(from))) {
 
     stop("Please specify a character string or character vector for the argument 'from'.",
          call. = FALSE)
@@ -64,7 +64,7 @@ df.rename <- function(x, from, to, check = TRUE) {
 
   #......
   # Check input 'to'
-  if (missing(to)) {
+  if (isTRUE(missing(to))) {
 
     stop("Please specify a character string or character vector for the argument 'to'.",
          call. = FALSE)
@@ -73,7 +73,7 @@ df.rename <- function(x, from, to, check = TRUE) {
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -85,7 +85,7 @@ df.rename <- function(x, from, to, check = TRUE) {
 
     #.........................
     # Character string or vector for the argument 'from'?
-    if (!is.character(from)) {
+    if (isTRUE(!is.character(from))) {
 
       stop("Please specify a character string or character vector for the argument 'from'.",
            call. = FALSE)
@@ -94,7 +94,7 @@ df.rename <- function(x, from, to, check = TRUE) {
 
     #.........................
     # Character string or vector for the argument 'to'?
-    if (!is.character(to)) {
+    if (isTRUE(!is.character(to))) {
 
       stop("Please specify a character string or character vector for the argument 'to'.",
            call. = FALSE)
@@ -104,7 +104,7 @@ df.rename <- function(x, from, to, check = TRUE) {
     #.........................
     # Vector in argument 'from' matching with the vector in argument 'to'?
 
-    if (length(from) != length(to)) {
+    if (isTRUE(length(from) != length(to))) {
 
       stop("Length of the vector specified in 'from' does not match with the vector specified in 'to'.",
            call. = FALSE)
@@ -114,7 +114,7 @@ df.rename <- function(x, from, to, check = TRUE) {
     #.........................
     # Variables specified in the argument 'from' in 'x'?
 
-    if (any(!from %in% colnames(x))) {
+    if (isTRUE(any(!from %in% colnames(x)))) {
 
       var.from <- from[which(!from %in% colnames(x))]
 
@@ -131,12 +131,12 @@ df.rename <- function(x, from, to, check = TRUE) {
   #-----------------------------------------
   # Matrix
 
-  if (is.matrix(x)) {
+  if (isTRUE(is.matrix(x))) {
 
     colnames(x)[match(from, colnames(x))] <- to
 
     # Duplicated columns from
-    if (anyDuplicated(colnames(x))) {
+    if (isTRUE(anyDuplicated(colnames(x)))) {
 
       warning(paste0("Duplicated column names in the matrix after renaming columns: ",
                      paste(unique(colnames(x)[duplicated(colnames(x))]), collapse = ", ")), call. = FALSE)
@@ -151,7 +151,7 @@ df.rename <- function(x, from, to, check = TRUE) {
     names(x)[match(from, names(x))] <- to
 
     # Duplicated variable names
-    if (anyDuplicated(names(x))) {
+    if (isTRUE(anyDuplicated(names(x)))) {
 
       warning(paste0("Duplicated variable names in the data frame after renaming variables: ",
                      paste(unique(names(x)[duplicated(names(x))]), collapse = ", ")), call. = FALSE)

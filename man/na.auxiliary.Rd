@@ -2,10 +2,11 @@
 % Please edit documentation in R/na.auxiliary.R
 \name{na.auxiliary}
 \alias{na.auxiliary}
-\title{Auxiliary variables}
+\title{Auxiliary variables analysis}
 \usage{
-na.auxiliary(x, tri = c("both", "lower", "upper"), weighted = TRUE, correct = FALSE,
-             digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+na.auxiliary(x, tri = c("both", "lower", "upper"), weighted = TRUE,
+             correct = FALSE, digits = 2, as.na = NULL, check = TRUE,
+             output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with numeric vectors.}
@@ -30,15 +31,15 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
-type of analysis \code{type},
-matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+\code{x} (\code{data}), specification of function arguments (\code{args}), and
 list with results (\code{result}).
 }
 \description{
 This function computes (1) Pearson product-moment correlation matrix to identify variables related
 to the incomplete variable and (2) Cohen's d comparing cases with and without missing values to
-identify variables related to the probability of missigness.
+identify variables related to the probability of missingness.
 }
 \details{
 Note that non-numeric variables (i.e., factors, character vectors, and logical vectors) are excluded from to the analysis.

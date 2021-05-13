@@ -44,7 +44,7 @@ na.indicator <- function(x, as.na = NULL, check = TRUE) {
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -52,7 +52,7 @@ na.indicator <- function(x, as.na = NULL, check = TRUE) {
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -60,7 +60,7 @@ na.indicator <- function(x, as.na = NULL, check = TRUE) {
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (!is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.",
          call. = FALSE)
@@ -73,9 +73,9 @@ na.indicator <- function(x, as.na = NULL, check = TRUE) {
   #----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
   }
 
@@ -84,7 +84,7 @@ na.indicator <- function(x, as.na = NULL, check = TRUE) {
 
   object <- apply(x, 2, function(y) as.numeric(!is.na(y)))
 
-  if (is.data.frame(x)) {
+  if (isTRUE(is.data.frame(x))) {
 
     object  <- as.data.frame(object, stringsAsFactors = FALSE)
     row.names(object) <- rownames(x)

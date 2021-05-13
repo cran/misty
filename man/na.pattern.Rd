@@ -22,10 +22,10 @@ i.e. these values are converted to NA before conducting the analysis.}
 \item{output}{logical: if \code{TRUE}, output is shown.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
-type of analysis \code{type},
-matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}),
-list with results (\code{result}), and a vector with the number of missing data pattern for each case (\code{pattern}),
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+\code{x} (\code{data}), specification of function arguments (\code{args}), list with results
+(\code{result}), and a vector with the number of missing data pattern for each case (\code{pattern}),
 }
 \description{
 This function computes a summary of missing data patterns, i.e., number (%) of cases with a specific missing data pattern.

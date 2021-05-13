@@ -5,10 +5,10 @@
 \title{Descriptive Statistics}
 \usage{
 descript(x,
-         print = c("all", "n", "nNA", "pNA", "m", "var", "sd", "min", "p25",
-                   "med", "p75", "max", "range", "iqr", "skew", "kurt"),
-         group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-         digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+        print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", 
+                  "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
+        group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
+        digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector, matrix or data frame with numeric variables, i.e.,
@@ -16,7 +16,8 @@ factors and character variables are excluded from \code{x} before conducting the
 
 \item{print}{a character vector indicating which statistical measures to be printed on the console,
 i.e. \code{n} (number of observations), \code{nNA} (number of missing values),
-\code{pNA} (percentage of missing values), \code{m} (arithmetic mean), \code{var} (variance),
+\code{pNA} (percentage of missing values), \code{m} (arithmetic mean),
+\code{se.m} (standard error of the arithmetic mean), \code{var} (variance),
 \code{sd} (standard deviation), \code{med} (median),\code{min} (minimum),
 \code{p25} (25th percentile, first quartile), \code{p75} (75th percentile, third quartile),
 \code{max} (maximum),  \code{range} (range), \code{iqr} (interquartile range),
@@ -44,13 +45,13 @@ not to \code{group} or \code{split}.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
-type of analysis \code{type},
-matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
+\code{x} (\code{data}), specification of function arguments (\code{args}), and
 list with results (\code{result}).
 }
 \description{
-This function computes summary statistics for one or more variables optionally by a grouping variable.
+This function computes summary statistics for one or more variables, optionally by a grouping and/or split variable.
 }
 \examples{
 dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
@@ -99,8 +100,9 @@ Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psycholog
 John Wiley & Sons.
 }
 \seealso{
-\code{\link{crosstab}}, \code{\link{freq}}, \code{\link{multilevel.descript}},
-\code{\link{na.descript}}.
+\code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}}, \code{\link{ci.prop}},
+\code{\link{ci.prop.diff}}, \code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{freq}},
+\code{\link{crosstab}},  \code{\link{multilevel.descript}}, \code{\link{na.descript}}.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

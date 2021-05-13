@@ -90,7 +90,7 @@ read.xlsx("data.xlsx", range = "A1:B5")
 # Read Excel file (.xlsx), skip 2 rows before reading data
 read.xlsx("data.xlsx", skip = 2)
 
-# Read Excel file (.xlsx), returns a tibble
+# Read Excel file (.xlsx), return a tibble
 read.xlsx("data.xlsx", as.data.frame = FALSE)
 }
 }

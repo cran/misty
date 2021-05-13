@@ -53,7 +53,7 @@ Note that predictors can be centered on any meaningful value using the argument 
 #--------------------------------------
 # Predictors in a single-level regression
 dat.sl <- data.frame(x = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
-                     y = c(5, 3, 6, 3, 4, 5, 2, 6, 5), stringsAsFactors = FALSE)
+                     y = c(5, 3, 6, 3, 4, 5, 2, 6, 5))
 
 # Center predictor at the sample mean
 center(dat.sl$x)
@@ -87,8 +87,8 @@ Enders, C. K., & Tofighi, D. (2007). Centering predictor variables in cross-sect
 A new look at an old issue. \emph{Psychological Methods, 12}, 121-138. https://doi.org/10.1037/1082-989X.12.2.121
 }
 \seealso{
-\code{\link{dummy.c}}, \code{\link{group.scores}}, \code{\link{rec}}, \code{\link{reverse.item}},
-\code{\link{rwg.lindell}}, \code{\link{scores}}.
+\code{\link{dummy.c}}, \code{\link{group.scores}}, \code{\link{rec}}, \code{\link{item.reverse}},
+\code{\link{rwg.lindell}}, \code{\link{item.scores}}.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

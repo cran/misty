@@ -66,7 +66,7 @@ df.rbind <- function(...) {
 
     nm <- names(x)
 
-    if (is.null(nm)) {
+    if (isTRUE(is.null(nm))) {
 
       nm <- rep.int("", length(x))
 
@@ -105,7 +105,7 @@ df.rbind <- function(...) {
 
     assignment <- quote(column[rows] <<- what)
 
-    if (ndims >= 2L) {
+    if (isTRUE(ndims >= 2L)) {
 
       assignment[[2L]] <- as.call(c(as.list(assignment[[2]]), rep(list(quote(expr = )), ndims - 1L)))
 
@@ -128,21 +128,21 @@ df.rbind <- function(...) {
     a$names <- NULL
     a$class <- NULL
 
-    if (is.data.frame(example)) {
+    if (isTRUE(is.data.frame(example))) {
 
       stop("Data frame column '", var, "' not supported by the df.rbind() function.", call. = FALSE)
 
     }
 
-    if (is.array(example)) {
+    if (isTRUE(is.array(example))) {
 
-      if (length(dim(example)) > 1L) {
+      if (isTRUE(length(dim(example)) > 1L)) {
 
-        if ("dimnames" %in% names(a)) {
+        if (isTRUE("dimnames" %in% names(a))) {
 
           a$dimnames[1L] <- list(NULL)
 
-          if (!is.null(names(a$dimnames)))
+          if (isTRUE(!is.null(names(a$dimnames))))
 
             names(a$dimnames)[1L] <- ""
 
@@ -153,7 +153,7 @@ df.rbind <- function(...) {
 
         dims <- unique(lapply(dfs[df_has], function(df) dim(df[[var]])[-1]))
 
-        if (length(dims) > 1L)
+        if (isTRUE(length(dims) > 1L))
 
           stop("Array variable ", var, " has inconsistent dimensions.", call. = FALSE)
 
@@ -175,13 +175,13 @@ df.rbind <- function(...) {
 
     }
 
-    if (is.factor(example)) {
+    if (isTRUE(is.factor(example))) {
 
       df_has <- vapply(dfs, function(df) var %in% names(df), FALSE)
 
       isfactor <- vapply(dfs[df_has], function(df) is.factor(df[[var]]), FALSE)
 
-      if (all(isfactor)) {
+      if (isTRUE(all(isfactor))) {
 
         levels <- unique(unlist(lapply(dfs[df_has], function(df) levels(df[[var]]))))
 
@@ -198,7 +198,7 @@ df.rbind <- function(...) {
 
       }
 
-    } else if (inherits(example, "POSIXt")) {
+    } else if (isTRUE(inherits(example, "POSIXt"))) {
 
       tzone <- attr(example, "tzone")
       class <- c("POSIXct", "POSIXt")
@@ -213,7 +213,7 @@ df.rbind <- function(...) {
 
     column <- vector(type, length)
 
-    if (!isList) {
+    if (isTRUE(!isList)) {
 
       column[] <- NA
 
@@ -277,7 +277,7 @@ df.rbind <- function(...) {
       }
 
       seen[matching] <- TRUE
-      if (all(seen)) break
+      if (isTRUE(all(seen))) break
 
     }
 
@@ -289,13 +289,13 @@ df.rbind <- function(...) {
 
   dfs <- list(...)
 
-  if (length(dfs) == 0L) {
+  if (isTRUE(length(dfs) == 0L)) {
 
     return()
 
   }
 
-  if (is.list(dfs[[1L]]) && !is.data.frame(dfs[[1]])) {
+  if (isTRUE(is.list(dfs[[1L]]) && !is.data.frame(dfs[[1]]))) {
 
     dfs <- dfs[[1L]]
 
@@ -303,13 +303,13 @@ df.rbind <- function(...) {
 
   dfs <- Filter(Negate(is.null), dfs)
 
-  if (length(dfs) == 0L) {
+  if (isTRUE(length(dfs) == 0L)) {
 
     return()
 
   }
 
-  if (length(dfs) == 1L) {
+  if (isTRUE(length(dfs) == 1L)) {
 
     return(dfs[[1L]])
 
@@ -317,7 +317,7 @@ df.rbind <- function(...) {
 
   is_df <- vapply(dfs, is.data.frame, FUN.VALUE = logical(1))
 
-  if (any(!is_df)) {
+  if (isTRUE(any(!is_df))) {
 
     stop("Please specify data frames for all inputs of the df.rbind() function.", call. = FALSE)
 
@@ -332,7 +332,7 @@ df.rbind <- function(...) {
   setters <- ot$setters
   getters <- ot$getters
 
-  if (length(setters) == 0L) {
+  if (isTRUE(length(setters) == 0L)) {
 
     return(as.data.frame(matrix(nrow = nrows, ncol = 0L), stringsAsFactors = FALSE))
 

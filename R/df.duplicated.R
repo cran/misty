@@ -106,25 +106,25 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
   # Data
 
   # Variables specified in ...
-  var.names <- misty::stromit(sapply(substitute(list(...)), as.character), omit = "list")
+  var.names <- misty::chr.omit(sapply(substitute(list(...)), as.character), omit = "list")
 
   ####################################################################################
   # Input Check
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
 
   }
 
   # No variables specified in ..., i.e., use all variables in x
-  if (length(var.names) == 0L) { var.names <- colnames(x) }
+  if (isTRUE(length(var.names) == 0L)) { var.names <- colnames(x) }
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (!is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -133,7 +133,7 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
   #......
   # Check if input '...'
   var.names.check <- !var.names %in% colnames(x)
-  if (any(var.names.check)) {
+  if (isTRUE(any(var.names.check))) {
 
     stop(paste0("Variables specified in '...' were not all found in 'x': ",
                 paste0(var.names[var.names.check], collapse = ", ")), call. = FALSE)
@@ -142,7 +142,7 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
 
   #.............
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -154,7 +154,7 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
 
     #.............
     # Check input 'first'
-    if (!is.logical(first)) {
+    if (isTRUE(!is.logical(first))) {
 
       stop("Please specify TRUE or FALSE for the argument 'first'.", call. = FALSE)
 
@@ -162,7 +162,7 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
 
     #.............
     # Check input 'keep.all'
-    if (!is.logical(keep.all)) {
+    if (isTRUE(!is.logical(keep.all))) {
 
       stop("Please specify TRUE or FALSE for the argument 'keep.all'.", call. = FALSE)
 
@@ -170,7 +170,7 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
 
     #.............
     # Check input 'from.last'
-    if (!is.logical(from.last)) {
+    if (isTRUE(!is.logical(from.last))) {
 
       stop("Please specify TRUE or FALSE for the argument 'from.last'.", call. = FALSE)
 
@@ -178,7 +178,7 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
 
     #.............
     # Check input 'keep.row.names'
-    if (!is.logical(keep.row.names)) {
+    if (isTRUE(!is.logical(keep.row.names))) {
 
       stop("Please specify TRUE or FALSE for the argument 'keep.row.names'.", call. = FALSE)
 
@@ -233,7 +233,7 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
   ####################################################################################
   # Return object
 
-  if (nrow(object) == 0L) {
+  if (isTRUE(nrow(object) == 0L)) {
 
     warning("No duplicated rows found in the matrix or data frame specified in 'x'.",
             call. = FALSE)
@@ -252,25 +252,25 @@ df.unique <- function(x, ..., keep.all = TRUE, from.last = FALSE, keep.row.names
   # Data
 
   # Variables specified in ...
-  var.names <- misty::stromit(sapply(substitute(list(...)), as.character), omit = "list")
+  var.names <- misty::chr.omit(sapply(substitute(list(...)), as.character), omit = "list")
 
   ####################################################################################
   # Input Check
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
 
   }
 
   # No variables specified in  ..., i.e., use all variables in x
-  if (length(var.names) == 0L) { var.names <- colnames(x) }
+  if (isTRUE(length(var.names) == 0L)) { var.names <- colnames(x) }
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (!is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -279,7 +279,7 @@ df.unique <- function(x, ..., keep.all = TRUE, from.last = FALSE, keep.row.names
   #......
   # Check if input '...'
   var.names.check <- !var.names %in% colnames(x)
-  if (any(var.names.check)) {
+  if (isTRUE(any(var.names.check))) {
 
     stop(paste0("Variables specified in ... were not all found in 'x': ",
                 paste0(var.names[var.names.check], collapse = ", ")), call. = FALSE)
@@ -288,7 +288,7 @@ df.unique <- function(x, ..., keep.all = TRUE, from.last = FALSE, keep.row.names
 
   #.............
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -300,7 +300,7 @@ df.unique <- function(x, ..., keep.all = TRUE, from.last = FALSE, keep.row.names
 
     #.............
     # Check input 'keep.all'
-    if (!is.logical(keep.all)) {
+    if (isTRUE(!is.logical(keep.all))) {
 
       stop("Please specify TRUE or FALSE for the argument 'keep.all'.", call. = FALSE)
 
@@ -308,7 +308,7 @@ df.unique <- function(x, ..., keep.all = TRUE, from.last = FALSE, keep.row.names
 
     #.............
     # Check input 'from.last'
-    if (!is.logical(from.last)) {
+    if (isTRUE(!is.logical(from.last))) {
 
       stop("Please specify TRUE or FALSE for the argument 'from.last'.", call. = FALSE)
 

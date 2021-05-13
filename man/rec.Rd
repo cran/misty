@@ -12,7 +12,7 @@ rec(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table = FALSE,
 
 \item{spec}{a character string of recode specifications (see 'Details').}
 
-\item{as.factor}{logical: if \code{TRUE}, character vector will be coerced to a factor.}
+\item{as.factor}{logical: if \code{TRUE}, chara1cter vector will be coerced to a factor.}
 
 \item{levels}{a character vector for specifying the levels in the returned factor.}
 
@@ -99,7 +99,7 @@ Fox, J., & Weisberg S. (2019). \emph{An {R} Companion to Applied Regression} (3r
 Thousand Oaks CA: Sage. URL: https://socialsciences.mcmaster.ca/jfox/Books/Companion/
 }
 \seealso{
-\code{\link{reverse.item}}
+\code{\link{item.reverse}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

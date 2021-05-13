@@ -48,24 +48,24 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
   # Data
 
   # Variables specified in ...
-  var.names <- misty::stromit(sapply(substitute(list(...)), as.character), omit = "list")
+  var.names <- misty::chr.omit(sapply(substitute(list(...)), as.character), omit = "list")
 
   ####################################################################################
   # Input Check
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a data frame for the argument 'x'.", call. = FALSE)
 
   }
 
   # No variables specified in ..., i.e., use all variables in x
-  if (length(var.names) == 0) { var.names <- colnames(x) }
+  if (isTRUE(length(var.names) == 0)) { var.names <- colnames(x) }
 
   # Data frame for the argument 'x'?
-  if (!is.data.frame(x)) {
+  if (isTRUE(!is.data.frame(x))) {
 
     stop("Please specify a data frame for the argument 'x'.", call. = FALSE)
 
@@ -74,7 +74,7 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
   #......
   # Check if input '...'
   var.names.check <- !var.names %in% colnames(x)
-  if (any(var.names.check)) {
+  if (isTRUE(any(var.names.check))) {
 
     stop(paste0("Variables specified in '...' were not all found in 'x': ",
                 paste0(var.names[var.names.check], collapse = ", ")), call. = FALSE)
@@ -83,7 +83,7 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -95,7 +95,7 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
     #......
     # Check input 'decreasing'
-    if (!is.logical(decreasing)) {
+    if (isTRUE(!is.logical(decreasing))) {
 
       stop("Please specify TRUE or FALSE for the argument 'decreasing'.", call. = FALSE)
 
@@ -108,7 +108,7 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
   x.order <- eval(substitute(order(..., decreasing = decreasing)), envir = x, enclos = parent.frame())
 
-  if (length(x.order) != nrow(x)) {
+  if (isTRUE(length(x.order) != nrow(x))) {
 
     stop("Length of ordering vectors does not match with the number of rows in 'x'.", call. = FALSE)
 

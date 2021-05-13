@@ -20,15 +20,15 @@ unless \code{split = TRUE}.}
 
 \item{freq}{logical: if \code{TRUE} (default), absolute frequencies will be shown on the console.}
 
-\item{split}{logical: if \code{TRUE}, output table is split by variables when specifying more than one
-variable in \code{x}.}
+\item{split}{logical: if \code{TRUE}, output table is split by variables when specifying more than
+one variable in \code{x}.}
 
 \item{labels}{logical: if \code{TRUE} (default), labels for the factor levels will be used.}
 
 \item{val.col}{logical: if \code{TRUE}, values are shown in the columns, variables in the rows.}
 
 \item{exclude}{an integer value indicating the maximum number of unique values for variables to be
-included in the analysis when specifying more than one variable in \code{x}, i.e.,
+included in the analysis when specifying more than one variable in \code{x} i.e.,
 variables with the number of unique values exceeding \code{exclude} will be excluded
 from the analysis.}
 
@@ -43,9 +43,9 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
-type of analysis \code{type},
-matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), type of analysis (\code{type}),  matrix or data frame specified in
+\code{x} (\code{data}), specification of function arguments (\code{args}), and
 list with results (\code{result}).
 }
 \description{
@@ -111,11 +111,10 @@ freq(factor(c("a", "a", "b", "c", "b")))
 freq(factor(c("a", "a", "b", "c", "b")), labels = FALSE)
 }
 \references{
-Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New S Language}. Wadsworth & Brooks/Cole.
+Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New  S Language}. Wadsworth & Brooks/Cole.
 }
 \seealso{
-\code{\link{crosstab}}, \code{\link{descript}}, \code{\link{multilevel.descript}},
-\code{\link{na.descript}}.
+\code{\link{crosstab}}, \code{\link{descript}}, \code{\link{multilevel.descript}}, \code{\link{na.descript}}.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

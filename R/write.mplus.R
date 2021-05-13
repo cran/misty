@@ -49,7 +49,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -57,7 +57,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (!is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -73,7 +73,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -87,14 +87,14 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
     # Numeric variables
     x.numeric <-  vapply(x, is.numeric, FUN.VALUE = logical(1))
 
-    if (any(!x.numeric)) {
+    if (isTRUE(any(!x.numeric))) {
 
       x <- x[, x.numeric]
 
       warning(paste0("Non-numeric variables were excluded from the data set: ", paste(names(which(!x.numeric)), collapse = ", ")),
               call. = FALSE)
 
-      if (ncol(x) == 0L) {
+      if (isTRUE(ncol(x) == 0L)) {
 
         stop("No variables left for the data set after excluding non-numeric variables.", call. = FALSE)
 
@@ -106,7 +106,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
     # Variable names with .
     names. <- grep("\\.", names(x))
 
-    if (length(names.) > 0L) {
+    if (isTRUE(length(names.) > 0L)) {
 
       names(x) <- gsub("\\.", "_", names(x))
 
@@ -118,7 +118,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
     # Variable names begin with an alphabet character
     names.a <- tolower(substr(names(x), 1L, 1L)) %in% letters
 
-    if (any(!names.a)) {
+    if (isTRUE(any(!names.a))) {
 
       warning(paste0("Variable names must begin with an alphabet character, please modify variable names: ",
                      paste(names(which(!names.a)), collapse = ", ")) , call. = FALSE)
@@ -129,7 +129,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, n
     # Variable names have max. 8 characters
     names.l <- nchar(names(x)) <= 8L
 
-    if (any(!names.l)) {
+    if (isTRUE(any(!names.l))) {
 
       warning(paste0("Variable names must be no more than 8 characters, please modify variable names: ",
                      paste(names(x)[!names.l], collapse = ", ")), call. = FALSE)

@@ -120,12 +120,12 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
     # Correction factor
 
     # Bias-corrected Cohen's d
-    if (isTRUE(correct) && isTRUE(weighted)) {
+    if (isTRUE(correct && weighted)) {
 
       v <- sum(n.group) - 2L
 
       # Correction factor based on gamma function
-      if (sum(n.group) < 200L) {
+      if (isTRUE(sum(n.group) < 200L)) {
 
         corr.factor <- gamma(0.5*v) / ((sqrt(v / 2)) * gamma(0.5 * (v - 1L)))
 
@@ -149,7 +149,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -157,7 +157,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -165,7 +165,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (!is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -181,7 +181,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
   x.num <- vapply(x, function(y) is.numeric(y), FUN.VALUE = logical(1))
 
-  if (any(!x.num)) {
+  if (isTRUE(any(!x.num))) {
 
 
     # Select numeric variables
@@ -195,9 +195,9 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
   #-----------------------------------------
   # Convert user-missing values into NA
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
   }
 
@@ -206,7 +206,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -218,7 +218,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     #......
     # No missing values
-    if (all(!is.na(x))) {
+    if (isTRUE(all(!is.na(x)))) {
 
       stop("There are no missing values (NA) in the matrix or data frame specified in 'x'.", call. = FALSE)
 
@@ -226,7 +226,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     #......
     # Check input 'tri'
-    if (any(!tri %in% c("both", "lower", "upper"))) {
+    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) {
 
       stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".",
               call. = FALSE)
@@ -235,7 +235,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     #......
     # Check input 'weighted'
-    if (!is.logical(weighted)) {
+    if (isTRUE(!is.logical(weighted))) {
 
       stop("Please specify TRUE or FALSE for the argument 'weighted'.", call. = FALSE)
 
@@ -243,7 +243,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     #......
     # Check input 'correct'
-    if (!is.logical(correct)) {
+    if (isTRUE(!is.logical(correct))) {
 
       stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE)
 
@@ -251,7 +251,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     #......
     # Check input 'digits'
-    if (digits %% 1L != 0L | digits < 0L) {
+    if (isTRUE(digits %% 1L != 0L | digits < 0L)) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -259,7 +259,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     #......
     # Check input 'output'
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -307,8 +307,8 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     temp <- x.combn[, i]
 
-    if (length(unique(x.ind[, colnames(ind)[temp[1L]]])) == 2L &&
-        all(tapply(x.ind[,  names(x)[temp[2L]]], x.ind[colnames(ind)[temp[1]]], function(y) length(unique(na.omit(y)))) > 0L)) {
+    if (isTRUE(length(unique(x.ind[, colnames(ind)[temp[1L]]])) == 2L &&
+        all(tapply(x.ind[,  names(x)[temp[2L]]], x.ind[colnames(ind)[temp[1]]], function(y) length(unique(na.omit(y)))) > 0L))) {
 
       result.d.upp[i] <- eval(parse(text = paste0("cohens.d.na.auxiliary(", names(x)[temp[2L]], " ~ ", colnames(ind)[temp[1L]],
                                                   ", data = x.ind, weighted = weighted, correct = correct)")))
@@ -319,8 +319,8 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE, 
 
     }
 
-    if (length(unique(x.ind[, colnames(ind)[temp[2L]]])) == 2L &&
-        all(tapply(x.ind[,  names(x)[temp[1L]]], x.ind[colnames(ind)[temp[2]]], function(y) length(unique(na.omit(y)))) > 0L)) {
+    if (isTRUE(length(unique(x.ind[, colnames(ind)[temp[2L]]])) == 2L &&
+        all(tapply(x.ind[,  names(x)[temp[1L]]], x.ind[colnames(ind)[temp[2]]], function(y) length(unique(na.omit(y)))) > 0L))) {
 
       result.d.low[i] <- eval(parse(text = paste0("cohens.d.na.auxiliary(", names(x)[temp[1L]], " ~ ", colnames(ind)[temp[2L]],
                                                   ", data = x.ind, weighted = weighted, correct = correct)")))

@@ -34,6 +34,7 @@
 #'                 results.
 #' @param p.digits an integer value indicating the number of decimal places to be used for displaying the
 #'                 \emph{p}-value.#' @param check  logical: if \code{TRUE}, argument specification is checked.
+#' @param check    logical: if \code{TRUE}, argument specification is checked.
 #' @param output   logical: if \code{TRUE}, output is shown on the console.
 #'
 #' @author
@@ -99,19 +100,19 @@
 #' #----------------------------
 #' # Linear mixed-effects model
 #'
-#' # Estimate linear mixed-effets model with continuous predictors using lme4 package
+#' # Estimate linear mixed-effects model with continuous predictors using lme4 package
 #' mod.lmer <- lme4::lmer(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
 #'
 #' # Tolerance, std. error, and variance inflation factor
 #' collin.diag(mod.lmer)
 #'
-#' # Estimate linear mixed-effets model with continuous predictors using nlme package
+#' # Estimate linear mixed-effects model with continuous predictors using nlme package
 #' mod.lme <- nlme::lme(y1 ~ x1 + x2 + x3, random = ~ 1 | group, data = dat)
 #'
 #' # Tolerance, std. error, and variance inflation factor
 #' collin.diag(mod.lme)
 #'
-#' # Estimate linear mixed-effets model with continuous predictors using glmmTMB package
+#' # Estimate linear mixed-effects model with continuous predictors using glmmTMB package
 #' mod.glmmTMB1 <- glmmTMB::glmmTMB(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
 #'
 #' # Tolerance, std. error, and variance inflation factor
@@ -141,7 +142,7 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   #......
   # Check if input 'model' is missing
-  if (missing(model)) {
+  if (isTRUE(missing(model))) {
 
     stop("Input for the argument 'model' is missing.", call. = FALSE)
 
@@ -149,7 +150,7 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   #......
   # Check if input 'model' is NULL
-  if (is.null(model)) {
+  if (isTRUE(is.null(model))) {
 
     stop("Input specified for the argument 'model' is NULL.", call. = FALSE)
 
@@ -157,7 +158,7 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   #......
   # Check if input 'model' is NULL
-  if (!all(class(model) %in% c("lm", "glm", "lmerMod", "lmerModLmerTest", "glmerMod", "lme", "glmmTMB"))) {
+  if (isTRUE(!all(class(model) %in% c("lm", "glm", "lmerMod", "lmerModLmerTest", "glmerMod", "lme", "glmmTMB")))) {
 
     stop("Please specify an \"lm\", \"glm\", \"lmerMod\", \"lmerModLmerTest\", \"glmerMod\", \"lme\", or \"glmmTMB\" object for the argument 'model'.",
          call. = FALSE)
@@ -166,7 +167,7 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   #......
   # Check if model has more than one predictor variable
-  if (length(labels(terms(model))) < 2L) {
+  if (isTRUE(length(labels(terms(model))) < 2L)) {
 
     stop("Please specify a model with more than one predictor variable.", call. = FALSE)
 
@@ -174,7 +175,7 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   #.............
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -186,7 +187,7 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
     #......
     # Check input 'print'
-    if (!all(print %in% c("all", "vif", "eigen"))) {
+    if (isTRUE(!all(print %in% c("all", "vif", "eigen")))) {
 
       stop("Character strings in the argument 'print' do not all match with \"all\", \"vif\", or \"eigen\".",
            call. = FALSE)
@@ -195,7 +196,7 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
     #......
     # Check input 'digits'
-    if (digits %% 1 != 0L || digits < 0L) {
+    if (isTRUE(digits %% 1 != 0L || digits < 0L)) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -203,7 +204,7 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
     #......
     # Check input 'p.digits'
-    if (p.digits %% 1 != 0L || p.digits < 0L) {
+    if (isTRUE(p.digits %% 1 != 0L || p.digits < 0L)) {
 
       stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE)
 
@@ -211,7 +212,7 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
     #......
     # Check input 'output'
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -222,9 +223,9 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
   #----------------------------------------
   # Print variance inflation factor and/or eigenvalues
 
-  if (all(c("all", "vif", "eigen") %in% print)) { print <- "vif" }
+  if (isTRUE(all(c("all", "vif", "eigen") %in% print))) { print <- "vif" }
 
-  if (length(print) == 1L && "all" %in% print) { print <- c("vif", "eigen") }
+  if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("vif", "eigen") }
 
   ####################################################################################
   # Main function
@@ -234,10 +235,10 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   #..................
   # Class: lm or glm
-  if (all(class(model) %in% c("lm", "glm"))) {
+  if (isTRUE(all(class(model) %in% c("lm", "glm")))) {
 
     # Regression model with intercept
-    if ("(Intercept)" %in% names(coefficients(model))) {
+    if (isTRUE("(Intercept)" %in% names(coefficients(model)))) {
 
       intercept <- TRUE
 
@@ -256,10 +257,10 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
     #..................
     # Class: lmerMod, lmerModLmerTest or glmerMod
-  } else if (all(class(model) %in% c("lmerMod", "lmerModLmerTest", "glmerMod", "lme"))) {
+  } else if (isTRUE(all(class(model) %in% c("lmerMod", "lmerModLmerTest", "glmerMod", "lme")))) {
 
     # Regression model with intercept
-    if ("(Intercept)" %in% names(lme4::fixef(model))) {
+    if (isTRUE("(Intercept)" %in% names(lme4::fixef(model)))) {
 
       intercept <- TRUE
 
@@ -276,12 +277,12 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
     }
 
-    #..................
-    # Class: glmmTMB
-  } else if (all(class(model) %in% "glmmTMB")) {
+  #..................
+  # Class: glmmTMB
+  } else if (isTRUE(all(class(model) %in% "glmmTMB"))) {
 
     # Regression model with intercept
-    if ("(Intercept)" %in% names(lme4::fixef(model)$cond)) {
+    if (isTRUE("(Intercept)" %in% names(lme4::fixef(model)$cond))) {
 
       intercept <- TRUE
 
@@ -302,7 +303,7 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   #..................
   # Warning message: Model without intercept
-  if (isFALSE(intercept) && "vif" %in% print) {
+  if (isTRUE(isFALSE(intercept) && "vif" %in% print)) {
 
     warning("Variance inflation factor might not be sensible in models without an intercept.",
             call. = FALSE)
@@ -343,12 +344,12 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
   #----------------------------------------------------------------
   # Eigenvalue and Condition Index
 
-  if (all(class(model) %in% c("lmerMod", "lmerModLmerTest", "glmerMod", "lme", "glmmTMB"))) {
+  if (isTRUE(all(class(model) %in% c("lmerMod", "lmerModLmerTest", "glmerMod", "lme", "glmmTMB")))) {
 
     z <- scale(as.data.frame(model.matrix(model, data = model$data), stringsAsFactors = FALSE),
                center = FALSE, scale = TRUE)
 
-  } else if (all(class(model) %in% c("lm", "glm"))) {
+  } else if (isTRUE(all(class(model) %in% c("lm", "glm")))) {
 
     z <- scale(as.data.frame(model.matrix(model, data = model$model), stringsAsFactors = FALSE),
                center = FALSE, scale = TRUE)
@@ -380,15 +381,15 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   #....................
   # Regression coefficients
-  if (all(class(model) %in% c("lm", "glm", "lmerMod", "lmerModLmerTest", "glmerMod"))) {
+  if (isTRUE(all(class(model) %in% c("lm", "glm", "lmerMod", "lmerModLmerTest", "glmerMod")))) {
 
     coeff <- summary(model)$coefficients
 
-  } else if (any(class(model) == "lme")) {
+  } else if (isTRUE(any(class(model) == "lme"))) {
 
     coeff <- summary(model)$tTable
 
-  } else if (any(class(model) == "glmmTMB")) {
+  } else if (isTRUE(any(class(model) == "glmmTMB"))) {
 
     coeff <- summary(model)$coefficients$cond
 

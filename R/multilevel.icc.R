@@ -10,11 +10,13 @@
 #' @param type        numeric value indicating the type of intraclass correlation coefficient, i.e.,
 #'                    \code{type = 1} for ICC(1) and \code{type = 2} for ICC(2).
 #' @param method      a character string indicating the method used to estimate intraclass correlation coefficients, i.e.,
-#'                    \code{method = "aov"} (default) ICC estimated using the \code{aov} function,
-#'                    \code{method = "lme4"} ICC estimated using the \code{lmer} function in the \pkg{lme4} package,
+#'                    \code{method = "aov"} ICC estimated using the \code{aov} function,
+#'                    \code{method = "lme4"} (default) ICC estimated using the \code{lmer} function in the \pkg{lme4} package,
 #'                    \code{method = "nlme"} ICC estimated using the \code{lme} function in the \pkg{nlme} package.
-#' @param REML        logical: if \code{TRUE}, restricted maximum likelihood is used to estimate the null model when
-#'                    using the \code{lmer} function in the \pkg{lme4} package or the \code{lme} function in the \pkg{nlme} package.
+#'                    Note that if the lme4 package is not installed, method = "aov" will be used.
+#' @param REML        logical: if \code{TRUE} (default), restricted maximum likelihood is used to estimate the null model
+#'                    when using the \code{lmer} function in the \pkg{lme4} package or the \code{lme} function in the
+#'                    \pkg{nlme} package.
 #' @param as.na       a numeric vector indicating user-defined missing values,
 #'                    i.e. these values are converted to \code{NA} before conducting the analysis.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
@@ -67,7 +69,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -75,7 +77,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -83,7 +85,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
   #......
   # Vector, matrix or data frame for the argument 'x'?
-  if (!is.atomic(x) && !is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
          call. = FALSE)
@@ -92,7 +94,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
   #......
   # Check input 'group'
-  if (missing(group)) {
+  if (isTRUE(missing(group))) {
 
     stop("Please specify a vector representing the grouping structure for the argument 'group'.", call. = FALSE)
 
@@ -101,13 +103,13 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
   #----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
     x.miss <- vapply(as.data.frame(x), function(y) all(is.na(y)), FUN.VALUE = logical(1))
-    if (any(x.miss)) {
+    if (isTRUE(any(x.miss))) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
                   paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
@@ -120,7 +122,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
   # Input Check
 
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -132,7 +134,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
     #......
     # Check input 'group'
-    if (length(unique(na.omit(group))) == 1L) {
+    if (isTRUE(length(unique(na.omit(group))) == 1L)) {
 
       stop("There is only one group represented in the grouping variable specified in 'group'.",
            call. = FALSE)
@@ -141,10 +143,10 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
     #......
     # Check input 'group'
-    if (is.null(dim(x))) {
+    if (isTRUE(is.null(dim(x)))) {
 
       # Numeric vector and group?
-      if (length(x) != length(group)) {
+      if (isTRUE(length(x) != length(group))) {
 
         stop("Length of the vector 'x' does not match with the length of the grouping variable in 'group'.",
              call. = FALSE)
@@ -154,7 +156,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
     } else {
 
       # Numeric vector and group?
-      if (nrow(x) != length(group)) {
+      if (isTRUE(nrow(x) != length(group))) {
 
         stop("Number of rows in 'x' does not match with the length of the grouping variable 'group'.",
              call. = FALSE)
@@ -165,9 +167,9 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
     #......
     # Variance within group
-    if (is.null(dim(x))) {
+    if (isTRUE(is.null(dim(x)))) {
 
-      if (all(tapply(unlist(x), group, function(y) length(na.omit(y))) <= 1L)) {
+      if (isTRUE(all(tapply(unlist(x), group, function(y) length(na.omit(y))) <= 1L))) {
 
         stop("Varialbe specified in 'x' does not have any within-group variance.", call. = FALSE)
 
@@ -175,7 +177,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
     } else {
 
-      if (any(apply(x, 2, function(y) all(tapply(y, group, function(z) length(na.omit(z))) <= 1L)))) {
+      if (isTRUE(any(apply(x, 2, function(y) all(tapply(y, group, function(z) length(na.omit(z))) <= 1L))))) {
 
         stop("There are variables in 'x' without any within-group variance.", call. = FALSE)
 
@@ -187,9 +189,9 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
     # Check input 'x': Zero variance?
     x.check <- vapply(as.data.frame(x), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
 
-    if (any(x.check)) {
+    if (isTRUE(any(x.check))) {
 
-      if (length(x.check) > 1L) {
+      if (isTRUE(length(x.check) > 1L)) {
 
         warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
                        paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
@@ -204,7 +206,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
     #......
     # Check input 'type'
-    if (any(!type %in% c(1L, 2L))) {
+    if (isTRUE(any(!type %in% c(1L, 2L)))) {
 
       stop("Please specify the numeric value 1 or 2 for the argument'type'.", call. = FALSE)
 
@@ -212,7 +214,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
     #......
     # Check input 'method'
-    if (any(!method %in% c("aov", "lme4", "nlme"))) {
+    if (isTRUE(any(!method %in% c("aov", "lme4", "nlme")))) {
 
       stop("Character string in the argument 'method' does not match with \"aov\", \"lme4\", or \"nlme\".",
            call. = FALSE)
@@ -221,7 +223,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
 
     #......
     # Check input 'REML'
-    if (!is.logical(REML)) {
+    if (isTRUE(!is.logical(REML))) {
 
       stop("Please specify TRUE or FALSE for the argument 'REML'.", call. = FALSE)
 
@@ -232,31 +234,50 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
   ####################################################################################
   # Data and Arguments
 
-  if (all(c("aov", "lme4", "nlme") %in% method)) { method <- "aov"}
+  if (isTRUE(length(method) == 1)) {
 
-  # Package lme4 installed?
-  if (method == "lme4") {
+    # Package lme4 installed?
+    if (isTRUE(method == "lme4")) {
 
-    if (!requireNamespace("lme4", quietly = TRUE)) {
+      if (isTRUE(!isTRUE(nzchar(system.file(package = "lme4"))))) {
 
-      warning("Package \"lme4\" is needed for method = \"lme4\", default method \"aov\" will be used instead.",
-              call. = FALSE )
+        warning("Package \"lme4\" is needed for method = \"lme4\",  method \"aov\" will be used instead.",
+                call. = FALSE )
 
-      method <- "aov"
+        method <- "aov"
+
+      }
 
     }
 
-  }
+    # Package nlme installed?
+    if (!isTRUE(nzchar(system.file(package = "nlme")))) {
 
-  # Package nlme installed?
-  if (method == "nlme") {
+      if (isTRUE(!requireNamespace("nlme", quietly = TRUE))) {
 
-    if (!requireNamespace("lme4", quietly = TRUE)) {
+        warning("Package \"nlme\" is needed for method = \"nlme\", method \"aov\" will be used instead.",
+                call. = FALSE )
 
-      warning("Package \"nlme\" is needed for method = \"nlme\", default method \"aov\" will be used instead.",
-              call. = FALSE )
+        method <- "aov"
 
-      method <- "aov"
+      }
+
+    }
+
+  } else {
+
+    # Method default option
+    if (isTRUE(all(c("aov", "lme4", "nlme") %in% method))) {
+
+      if (isTRUE(nzchar(system.file(package = "lme4")))) {
+
+        method <- "lme4"
+
+      } else {
+
+        method <- "aov"
+
+      }
 
     }
 
@@ -268,14 +289,14 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
   #-----------------------------------------
   # One dependent variable
 
-  if (is.null(dim(x))) {
+  if (isTRUE(is.null(dim(x)))) {
 
     #............
     # Variable with non-zero variance
-    if (var(x, na.rm = TRUE) != 0L) {
+    if (isTRUE(var(x, na.rm = TRUE) != 0L)) {
 
       # ICC using aov() function
-      if (method == "aov") {
+      if (isTRUE(method == "aov")) {
 
         # Estimate model
         mod <- aov(x ~ 1 + Error(as.factor(group)))
@@ -290,7 +311,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
         MSQ.W <- unlist(mod.summary[[2]])["Mean Sq"]
 
         # ICC(1)
-        if (type == 1L) {
+        if (isTRUE(type == 1L)) {
 
           # Average group size
           group.size <- mean(tapply(x, group, function(y) sum(!is.na(y))))
@@ -298,7 +319,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
           # Intraclass correlation coefficient, ICC(1)
           object <- unname((MSQ.B - MSQ.W) / (MSQ.B + ((group.size - 1L) * MSQ.W)))
 
-          if (object < 0L) { object <- 0L }
+          if (isTRUE(object < 0L)) { object <- 0L }
 
         # ICC(2)
         } else {
@@ -306,21 +327,21 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
           # Intraclass correlation coefficient, ICC(2)
           object <- unname((MSQ.B - MSQ.W) / MSQ.B)
 
-          if (object < 0L) { object <- 0L }
+          if (isTRUE(object < 0L)) { object <- 0L }
 
         }
 
       }
 
       # ICC using lmer() function
-      if (method == "lme4") {
+      if (isTRUE(method == "lme4")) {
 
         # Estimate model
-        mod <- lme4::lmer(x ~ 1 + (1|group), REML = REML,
-                          control = lme4::lmerControl(optimizer = "bobyqa"))
+        mod <- suppressMessages(lme4::lmer(x ~ 1 + (1|group), REML = REML,
+                                control = lme4::lmerControl(optimizer = "bobyqa")))
 
         # Variance components
-        vartab <- as.data.frame(lme4::VarCorr(mod))
+        vartab <- as.data.frame(suppressMessages(lme4::VarCorr(mod)))
 
         # Between-group variance
         var.u <- vartab[vartab$grp == "group", "vcov"]
@@ -332,7 +353,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
         var.total <- var.u + var.r
 
         # ICC(1)
-        if (type == 1) {
+        if (isTRUE(type == 1)) {
 
           # Intraclass correlation coefficient, ICC(1)
           object <- var.u / var.total
@@ -351,7 +372,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
       }
 
       # ICC using lme() function
-      if (method == "nlme") {
+      if (isTRUE(method == "nlme")) {
 
         # REML or ML
         ifelse(isTRUE(REML), REML <- "REML", REML <- "ML")
@@ -370,7 +391,7 @@ multilevel.icc <- function(x, group, type = 1, method = c("aov", "lme4", "nlme")
         var.total <- var.u + var.r
 
         # ICC(1)
-        if (type == 1) {
+        if (isTRUE(type == 1)) {
 
           # Intraclass correlation coefficient, ICC(1)
           object <- var.u / var.total

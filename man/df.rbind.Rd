@@ -58,7 +58,6 @@ version 1.8.5.
 \seealso{
 \code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.merge}},
 \code{\link{df.rename}}, \code{\link{df.sort}}
-
 }
 \author{
 Hadley Wickham

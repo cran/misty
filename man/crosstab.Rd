@@ -4,8 +4,9 @@
 \alias{crosstab}
 \title{Cross Tabulation}
 \usage{
-crosstab(x, print = c("no", "all", "row", "col", "total"), freq = TRUE, split = FALSE,
-         na.omit = TRUE, digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+crosstab(x, print = c("no", "all", "row", "col", "total"), freq = TRUE,
+         split = FALSE, na.omit = TRUE, digits = 2, as.na = NULL,
+         check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with two or three columns.}
@@ -32,10 +33,9 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 \item{output}{logical: if \code{TRUE}, output is printed on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
-type of analysis \code{type},
-matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
-list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), matrix or data frame specified in \code{x} (\code{data}), specification
+of function arguments (\code{args}), and list with results (\code{result}).
 }
 \description{
 This function creates a two-way and three-way cross tabulation with absolute frequencies and row-wise, column-wise

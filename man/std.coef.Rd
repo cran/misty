@@ -4,8 +4,8 @@
 \alias{std.coef}
 \title{Standardized Coefficients}
 \usage{
-std.coef(model, print = c("all", "stdx", "stdy", "stdyx"),
-         digits = 3, p.digits = 3, check = TRUE, output = TRUE)
+std.coef(model, print = c("all", "stdx", "stdy", "stdyx"), digits = 3, p.digits = 3,
+         check = TRUE, output = TRUE)
 }
 \arguments{
 \item{model}{a fitted model of class \code{"lm"}.}

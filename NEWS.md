@@ -1,3 +1,65 @@
+### misty 0.4.0 (2021-05-13)
+
+##### New features
+* New function `test.t()` for computing one-sample, two-sample, and paired-sample t-tests including Cohen's d effect size measure.
+
+* New function `test.welch()` for computing Welch's t-test including Cohen's d effect size measure and Welch's ANOVA including $\eta^2$ and $\omega^2$ effect size measures.
+
+##### Minor features and improvements
+* Added standard error of the mean to the argument `print` in the function `descript()`.
+
+* Added the arguments `format`, `label`, `labels`, `missing` for the function `read.sav()` to remove variable formats, variable labels, value labels, value labels for user-defined missings, and widths from attributes of the variable.
+
+* Function `item.reverse()` can also be applied to to items with non-integer values.
+
+* Return object of the function `cor.matrix()` when specifying a grouping variable comprises the combined results of both groups in the matrices. 
+
+
+* Function `read.mplus()` can also deal with consecutive variables (e.g., `x1-x5`).
+
+* Added `group` and `split` arguments to the function `cohens.d()`.
+
+* Added Cohen's d effect size measure to the output of the `test.z` function.
+
+* Function `cohens.d()` computes various kinds of Cohen's d, Hedges' d, and Glass's $\Delta$ including confidence intervals, e.g., weighted and unweighted pooled standard deviation in a two-sample design, with and without controlling for the correlation between the two sets of measurement in a paired-sample design, or with and without the small-sample correction factor. 
+
+##### User-visible changes
+* Renamed following functions: `alpha.coef()` to `item.alpha()`, `cont.coef()` to `cor.cont()`, `cramers.v()` to `cor.cramer()`, `levenes.test()` to `test.levene()`, `mgsub()` to `chr.gsub()`, `omega.coef()` to `item.omega()`, `reverse.item()` to `item.reverse()`, `phi.coef()` to `cor.phi()`, `poly.cor()` to `cor.poly()`, `scores()` to `item.scores()`, `stromit()` to `chr.omit()`, `trim()` to `chr.trim()`, `z.test()` to `test.z()`,
+
+* Changed the argument `use` in the `cor.matrix()` function into `na.omit`.
+
+* Changed the default setting of the argument `method` in the functions `multilevel.descript()` and `multilevel.icc()` to `"lme4"`; if the lme4 package is not installed, `"aov"` will be used.
+
+* Changed the output of the functions `ci.mean.diff()` and `ci.mean.prop()` when computing confidence intervals in two-sample designs, i.e., results are divided in two rows according to the grouping variable.
+
+* Changed the output of the functions `ci.mean.diff()` and `ci.mean.prop()` when computing confidence intervals in paired-sample designs, i.e., output reports the number of missing data pairs (`nNA`), instead of number of missing values for each variable separately (`nNA1` and `nNA2`).
+
+* Changed the output of the functions `descript()` when specifying the argument `levenes.test()`, i.e., duplicated labels in the column `group` or `variable` are not shown.
+
+* Changed the functions `cohens.d()` into a generic function with the methods `cohens.d.default()` and `cohens.d.formula()`.
+
+* Added arguments `hypo` and `descript` to the functions `test.levene()` and `test.z()`.
+
+* Added titles to the output of the `freq`, `descript`, and `crosstab` function.
+
+* Changed the argument `as.na` in the `as.na()` function into `na`.
+
+##### Bug fix
+* Fixed a bug in the function `center()` which caused an error message in case of groups with only one observation when trying to apply group mean centering. 
+
+* Fixed a bug in the function `center()` which caused an error message when trying to apply grand mean centering of a Level 1 predictor.
+
+* Fixed a bug in the function `cohens.d()`, an error message was printed in the between subject design whenever specifying a grouping variable with missing values.
+
+* Fixed a bug in the function `cor.matrix()`, which caused an error when using listwise deletion for missing data while specifying a grouping variable.
+
+* Fixed a bug in the function `descript()`, which caused an error message when selection only one or two argument statistical measures using the argument `print`.
+
+
+* Fixed a bug in the function `freq()`, where the argument `split` was broken.
+
+* Fixed a bug in the function `test.zz()`, where the alternative hypothesis was displayed wrong when specifying `alternative = "greater"` or `alternative = "less"`.
+
 ### misty 0.3.2 (2020-06-08)
 
 ##### New features
@@ -25,7 +87,9 @@
 
 ##### User-visible changes
 * Added descriptive statistics and confidence intervals to the function `levenes.test()`.
+
 * Changed the output of the functions `size.mean()`, `size.prop()`, and `size.cor()` to include greek letters.
+
 * Changed the argument `theta` in the `size.mean()` function into `delta`.
 
 ### misty 0.3.0 (2020-04-06)

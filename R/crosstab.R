@@ -90,7 +90,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specifiy a matrix or data frame for the argumen 'x'.", call. = FALSE)
 
@@ -98,7 +98,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -106,7 +106,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (!is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specifiy a matrix or data frame for the argumen 'x'.", call. = FALSE)
 
@@ -123,14 +123,14 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
   #-----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na)
+    x <- misty::as.na(x, na = as.na)
 
     #......
     # Variable with missing values only
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
-    if (any(x.miss)) {
+    if (isTRUE(any(x.miss))) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
                   paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
@@ -140,7 +140,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
     #......
     # Zero variance
     x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
-    if (any(x.zero.var)) {
+    if (isTRUE(any(x.zero.var))) {
 
       stop(paste0("After converting user-missing values into NA, following variables have only one unique value: ",
                   paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
@@ -154,7 +154,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -166,7 +166,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'x'
-    if (ncol(x) > 3L || ncol(x) < 2L) {
+    if (isTRUE(ncol(x) > 3L || ncol(x) < 2L)) {
 
       stop("Please specify a matrix or data frame with two or three columns for the argument 'x'.", call. = FALSE)
 
@@ -175,7 +175,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
     #......
     # Check input 'x'
     x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
-    if (any(x.zero.var)) {
+    if (isTRUE(any(x.zero.var))) {
 
       stop(paste0("Following variables have only one unique value: ", paste(names(which(x.zero.var)), collapse = ", ")),
            call. = FALSE)
@@ -184,7 +184,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'print'
-    if (any(!print %in% c("no", "all", "row", "col", "total"))) {
+    if (isTRUE(any(!print %in% c("no", "all", "row", "col", "total")))) {
 
       stop("Character strings in the argument 'print' do not match with \"no\", \"all\", \"row\", \"col\" or \"total\".",
            call. = FALSE)
@@ -193,7 +193,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'freq'
-    if (!is.logical(freq)) {
+    if (isTRUE(!is.logical(freq))) {
 
       stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE)
 
@@ -201,7 +201,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check print = "no" and freq = FALSE
-    if (all(print == "no") && !isTRUE(freq)) {
+    if (isTRUE(all(print == "no") && !isTRUE(freq))) {
 
       stop("Please include either percentages (i.e., print != 'no') or absolute frequencies (i.e., freq = TRUE) in the cross tabulation.",
              call. = FALSE)
@@ -210,7 +210,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'na.omit'
-    if (!is.logical(na.omit)) {
+    if (isTRUE(!is.logical(na.omit))) {
 
       stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
@@ -218,7 +218,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'digits'
-    if (digits %% 1L != 0L || digits < 0L) {
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
 
       warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -226,7 +226,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     #......
     # Check input 'output'
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -238,9 +238,9 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
   # Data and Arguments
 
   # Argument print
-  if (all(c("no", "all", "row", "col", "total") %in% print)) { print <- "no" }
+  if (isTRUE(all(c("no", "all", "row", "col", "total") %in% print))) { print <- "no" }
 
-  if (length(print) == 1 && print == "all") { print <- c("row", "col", "total") }
+  if (isTRUE(length(print) == 1 && print == "all")) { print <- c("row", "col", "total") }
 
   ####################################################################################
   # Main Function
@@ -248,7 +248,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
   #-----------------------------------------
   # Two variables
 
-  if (x.ncol == 2L) {
+  if (isTRUE(x.ncol == 2L)) {
 
     # If na.omit = FALSE, then include NA if any present
     if (!isTRUE(na.omit)) {
@@ -257,7 +257,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     } else {
 
-      if (any(is.na(x))) {
+      if (isTRUE(any(is.na(x)))) {
 
         warning(paste0("Listwise deletion of incomplete cases, number of cases removed from the analysis: ",
                 length(attributes(na.omit(x))$na.action)), call. = FALSE)
@@ -279,7 +279,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
   #-----------------------------------------
   # Three variables
 
-  if (x.ncol == 3L) {
+  if (isTRUE(x.ncol == 3L)) {
 
     # If na.omit = FALSE, then include NA if any present
     if (!isTRUE(na.omit)) {
@@ -288,7 +288,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TR
 
     } else {
 
-      if (any(is.na(x))) {
+      if (isTRUE(any(is.na(x)))) {
 
         warning(paste0("Listwise deletion of incomplete cases, number of cases removed from the analysis: ",
                        length(attributes(na.omit(x))$na.action)), call. = FALSE)

@@ -78,7 +78,7 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
   # Input check
 
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -89,13 +89,13 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
   if (isTRUE(check)) {
 
     # Check input 'delta'
-    if (missing(delta)) {
+    if (isTRUE(missing(delta))) {
 
       stop("Please specify a numeric value for the argument 'delta'.", call. = FALSE)
 
     }
 
-    if (delta <= 0L) {
+    if (isTRUE(delta <= 0L)) {
 
       stop("Argument delta out of bound, specify a value > 0.", call. = FALSE)
 
@@ -103,7 +103,7 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
 
     ###
 
-    if (!all(sample %in% c("two.sample", "one.sample"))) {
+    if (isTRUE(!all(sample %in% c("two.sample", "one.sample")))) {
 
       stop("Argument sample should be \"two.siample\" or \"one.sample\".", call. = FALSE)
 
@@ -111,7 +111,7 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
 
     ###
 
-    if (!all(alternative %in% c("two.sided", "less", "greater"))) {
+    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) {
 
       stop("Argument alternative should be \"two.sided\", \"less\" or \"greater\"", call. = FALSE)
 
@@ -119,7 +119,7 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
 
     ###
 
-    if (alpha <= 0L || alpha >= 1L) {
+    if (isTRUE(alpha <= 0L || alpha >= 1L)) {
 
       stop("Argument alpha out of bound, specify a value between 0 and 1", call. = FALSE)
 
@@ -127,7 +127,7 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
 
     ###
 
-    if (beta <= 0L || beta >= 1L) {
+    if (isTRUE(beta <= 0L || beta >= 1L)) {
 
       stop("Argument beta out of bound, specify a value between 0 and 1", call. = FALSE)
 
@@ -150,7 +150,7 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
   #-------------------------------------------------
   # two.sided
 
-  if (alternative == "two.sided") {
+  if (isTRUE(alternative == "two.sided")) {
 
     p.body <- quote({
       nu <- (n - 1L) * samp

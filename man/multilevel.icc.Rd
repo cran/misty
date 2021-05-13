@@ -16,12 +16,14 @@ multilevel.icc(x, group, type = 1, method = c("aov", "lme4", "nlme"), REML = TRU
 \code{type = 1} for ICC(1) and \code{type = 2} for ICC(2).}
 
 \item{method}{a character string indicating the method used to estimate intraclass correlation coefficients, i.e.,
-\code{method = "aov"} (default) ICC estimated using the \code{aov} function,
-\code{method = "lme4"} ICC estimated using the \code{lmer} function in the \pkg{lme4} package,
-\code{method = "nlme"} ICC estimated using the \code{lme} function in the \pkg{nlme} package.}
+\code{method = "aov"} ICC estimated using the \code{aov} function,
+\code{method = "lme4"} (default) ICC estimated using the \code{lmer} function in the \pkg{lme4} package,
+\code{method = "nlme"} ICC estimated using the \code{lme} function in the \pkg{nlme} package.
+Note that if the lme4 package is not installed, method = "aov" will be used.}
 
-\item{REML}{logical: if \code{TRUE}, restricted maximum likelihood is used to estimate the null model when
-using the \code{lmer} function in the \pkg{lme4} package or the \code{lme} function in the \pkg{nlme} package.}
+\item{REML}{logical: if \code{TRUE} (default), restricted maximum likelihood is used to estimate the null model
+when using the \code{lmer} function in the \pkg{lme4} package or the \code{lme} function in the
+\pkg{nlme} package.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.}

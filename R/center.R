@@ -35,8 +35,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{dummy.c}}, \code{\link{group.scores}}, \code{\link{rec}}, \code{\link{reverse.item}},
-#' \code{\link{rwg.lindell}}, \code{\link{scores}}.
+#' \code{\link{dummy.c}}, \code{\link{group.scores}}, \code{\link{rec}}, \code{\link{item.reverse}},
+#' \code{\link{rwg.lindell}}, \code{\link{item.scores}}.
 #'
 #' @references
 #' Enders, C. K. (2013). Centering predictors and contextual effects. In M. A. Scott, J. S. Simonoff, &
@@ -86,7 +86,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a numeric vector frame for the argument 'x'.", call. = FALSE)
 
@@ -94,7 +94,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -102,7 +102,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -114,7 +114,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
     #......
     # Check input 'x'
-    if (!is.atomic(x) || !is.numeric(x)) {
+    if (isTRUE(!is.atomic(x) || !is.numeric(x))) {
 
       stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
 
@@ -122,7 +122,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
     #......
     # Check input 'type'
-    if (all(!type %in% c("CGM", "CWC"))) {
+    if (isTRUE(all(!type %in% c("CGM", "CWC")))) {
 
       stop("Character string in the argument 'type' does not  match with \"CGM\" or \"CWC\".", call. = FALSE)
 
@@ -130,9 +130,9 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
     #......
     # Check input 'group'
-    if (!is.null(group)) {
+    if (isTRUE(!is.null(group))) {
 
-      if (length(group) != length(x)) {
+      if (isTRUE(length(group) != length(x))) {
 
         stop("The length of the vector in 'group' does not match with the length of the vector in 'x'.",
              call. = FALSE)
@@ -143,7 +143,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
     #......
     # Centering Within Cluster
-    if (all(type == "CWC") && is.null(group)) {
+    if (isTRUE(all(type == "CWC") && is.null(group))) {
 
       stop("Please specify the argument 'group' to apply centering within cluster (CWC).",
            call. = FALSE)
@@ -151,25 +151,12 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
     }
 
     #......
-    # Grand Mean Centering of a Level 2 predictor
-    if (all(type == "CWC") && !is.null(group)) {
+    # Group Mean Centering of a Level 1 predictor
+    if (isTRUE(all(type == "CWC") && !is.null(group))) {
 
-      if (all(tapply(x, group, var, na.rm = TRUE) == 0)) {
+      if (isTRUE(all(na.omit(as.vector(tapply(x, group, var, na.rm = TRUE) == 0))))) {
 
         stop("Vector in 'x' is specified as level-1 predictor does not have any within-group variance.",
-             call. = FALSE)
-
-      }
-
-    }
-
-    #......
-    # Grand Mean Centering of a Level 2 predictor
-    if (all(type == "CGM") && !is.null(group)) {
-
-      if (!all(tapply(x, group, var, na.rm = TRUE) == 0)) {
-
-        stop("Vector in 'x' specified as level-2 predictor has within-group variance.",
              call. = FALSE)
 
       }
@@ -184,12 +171,12 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
   #----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
-    if (all(is.na(x))) {
+    if (isTRUE(all(is.na(x)))) {
 
       stop("After converting user-missing values into NA, variable 'x' is completely missing.",
            call. = FALSE)
@@ -209,14 +196,14 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
   #----------------------------------------
   # Centering at the grand mean (CGM)
 
-  if (type == "CGM") {
+  if (isTRUE(type == "CGM")) {
 
     #.........................
     # Single-level or L1 predictor
-    if (is.null(group)) {
+    if (isTRUE(is.null(group))) {
 
       # Mean centering
-      if (is.null(value)) {
+      if (isTRUE(is.null(value))) {
 
         object <- as.numeric(scale(x, scale = FALSE))
 
@@ -232,7 +219,7 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
     } else {
 
       # Mean centering
-      if (is.null(value)) {
+      if (isTRUE(is.null(value))) {
 
         object <- x - mean(x[which(!duplicated(group))], na.rm = TRUE)
 

@@ -49,7 +49,7 @@ dummy.c(dat$x, names = c("x.3_1", "x.3_2"))
 
 # Dummy coding of a numeric variable, reference = 3
 # assign user-specified variable names and attach to the data frame
-dat <- data.frame(dat, dummy.c(dat$x, names = c("x.3_1", "x.3_2")))
+dat <- data.frame(dat, dummy.c(dat$x, names = c("x.3_1", "x.3_2")), stringsAsFactors = FALSE)
 
 # Dummy coding of a character variable, reference = "c"
 dummy.c(dat$y)
@@ -63,7 +63,7 @@ dummy.c(dat$y, names = c("y.c_a", "y.c_b"))
 
 # Dummy coding of a character variable, reference = "c"
 # assign user-specified variable names and attach to the data frame
-dat <- data.frame(dat, dummy.c(dat$y, names = c("y.c_a", "y.c_b")))
+dat <- data.frame(dat, dummy.c(dat$y, names = c("y.c_a", "y.c_b")), stringsAsFactors = FALSE)
 
 # Dummy coding of a factor, reference = "C"
 dummy.c(dat$z)
@@ -77,7 +77,7 @@ dummy.c(dat$z, names = c("z.C_A", "z.C_B"))
 
 # Dummy coding of a factor, reference = "C"
 # assign user-specified variable names and attach to the data frame
-dat <- data.frame(dat, dummy.c(dat$z, names = c("z.C_A", "z.C_B")))
+dat <- data.frame(dat, dummy.c(dat$z, names = c("z.C_A", "z.C_B")), stringsAsFactors = FALSE)
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.

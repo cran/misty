@@ -1,81 +1,105 @@
-#' Cohen's d for Between- and Within-Subject Design
+#' Cohen's d
 #'
-#' This function computes Cohen's d for between- and within-subject designs with confidence intervals.
-#' By default, the function computes the standardized mean difference divided by the weighted pooled
-#' standard deviation without applying the correction factor for removing the small sample bias.
+#' This function computes Cohen's d for one-sample, two-sample (i.e., between-subject design),
+#' and paired-sample designs (i.e., within-subject design) for one or more variables, optionally
+#' by a grouping and/or split variable. In a two-sample design, the function computes the
+#' standardized mean difference by dividing the difference between  means of the two groups
+#' of observations by the weighted pooled standard deviation (i.e., Cohen's \eqn{d_s}
+#' according to Lakens, 2013) by default. In a paired-sample design, the function computes the
+#' standardized mean difference by dividing the mean of the difference scores by the standard
+#' deviation of the difference scores (i.e., Cohen's \eqn{d_z} according to Lakens, 2013) by
+#' default. Note that by default Cohen's d is computed without applying the correction factor
+#' for removing the small sample bias (i.e., Hedges' g).
 #'
-#' Cohen (1988, p.67) proposed to compute the standardized mean difference by dividing the
-#' mean difference by the unweighted pooled standard deviation (i.e., \code{weighted = FALSE}).
+#' Cohen (1988, p.67) proposed to compute the standardized mean difference in a two-sample design
+#' by dividing the mean difference by the unweighted pooled standard deviation (i.e.,
+#' \code{weighted = FALSE}).
 #'
 #' Glass et al. (1981, p. 29) suggested to use the standard deviation of the control group
-#' (e.g., \code{ref = "control"}) to compute the standardized mean difference since the
-#' standard deviation of the control group is unaffected by the treatment and will therefore
-#' more closely reflect the population standard deviation.
+#' (e.g., \code{ref = 0} if the control group is coded with 0) to compute the standardized
+#' mean difference in a two-sample design (i.e., Glass's \eqn{\Delta}) since the standard deviation of the control group
+#' is unaffected by the treatment and will therefore more closely reflect the population
+#' standard deviation.
 #'
 #' Hedges (1981, p. 110) recommended to weight each group's standard deviation by its sample
-#' size resulting in a weighted and pooled standard deviation (i.e., \code{weighted = TRUE}).
-#' According to Hedges and Olkin (1985, p. 81), the standardized mean difference based
-#' on the weighted and pooled standard deviation has a positive small sample bias, i.e.,
-#' standardized mean difference is overestimates in small samples (i.e., sample size less
-#' than 20 or less than 10 in each group). However, a correction factor can be applied to
-#' remove the small sample bias (i.e., \code{correct = TRUE}). Note that a gamma function
-#' is used for computing the correction factor when \eqn{n} < 200, while a approximation method
-#' is used when \eqn{n} >= 200.
+#' size resulting in a weighted and pooled standard deviation (i.e., \code{weighted = TRUE},
+#' default). According to Hedges and Olkin (1985, p. 81), the standardized mean difference
+#' based on the weighted and pooled standard deviation has a positive small sample bias,
+#' i.e., standardized mean difference is overestimated in small samples (i.e., sample size
+#' less than 20 or less than 10 in each group). However, a correction factor can be applied
+#' to remove the small sample bias (i.e., \code{correct = TRUE}). Note that the function uses
+#' a gamma function for computing the correction factor, while a approximation method is
+#' used if computation based on the gamma function fails.
 #'
 #' Note that the terminology is inconsistent because the standardized mean difference based
 #' on the weighted and pooled standard deviation is usually called Cohen's d, but sometimes
-#' called Hedges' g. Oftentimes, Cohen's d is called Hedges' d as soon as the correction factor
-#' is applied. It is recommended to avoid the term Hedges' g (Cumming & Calin-Jageman, 2017, p. 171),
-#' but to report which standard deviation was used to standardized the mean difference
-#' (e.g., unweighted/weighted pooled standard deviation, or the standard deviation of the control group)
-#' and whether a small sample correction factor was applied.
+#' called Hedges' g. Oftentimes, Cohen's d is called Hedges' d as soon as the small sample
+#' correction factor is applied. Cumming and Calin-Jageman (2017, p.171) recommended to avoid
+#' the term Hedges' g , but to report which standard deviation was used to standardized the
+#' mean difference (e.g., unweighted/weighted pooled standard deviation, or the standard
+#' deviation of the control group) and whether a small sample correction factor was applied.
 #'
-#' As for the terminology according to Lakens (2013), in between subject design (\code{paired = FALSE})
-#' Cohen's \eqn{d_s} is computed when using \code{weighted = TRUE} and Hedges's \eqn{g_s} is computed when
-#' using \code{correct = TRUE} in addition. In within-subject designs (\code{paired = TRUE}),
-#' Cohen's \eqn{d_rm} is computed when using \code{weighted = TRUE}, while Cohen's \eqn{d_av} is computed
-#' when using \code{weighted = FALSE}, and corresponding Hedges' \eqn{g_rm} and Hedges' \eqn{g_av} are computed
-#' when using \code{correct = TRUE}.
+#' As for the terminology according to Lakens (2013), in a two-sample design (i.e.,
+#' \code{paired = FALSE}) Cohen's \eqn{d_s} is computed when using \code{weighted = TRUE, default}
+#' and Hedges's \eqn{g_s} is computed when using \code{correct = TRUE} in addition. In a
+#' paired-sample design (i.e., \code{paired = TRUE}), Cohen's \eqn{d_z} is computed when using
+#' \code{weighted = TRUE, default}, while Cohen's \eqn{d_{rm}} is computed when using
+#' \code{weighted = FALSE} and \code{cor = TRUE, default} and Cohen's \eqn{d_{av}} is computed when
+#' using \code{weighted = FALSE} and \code{cor = FALSE}. Corresponding Hedges' \eqn{g_z}, eqn{g_{rm}},
+#' and \eqn{g_{av}} are computed when using \code{correct = TRUE} in addition.
 #'
-#' @param formula     in case of a between-subject design (i.e., \code{paired = FALSE}),
-#'                    a formula of the form \code{y ~ group} for one outcome variable or
-#'                    \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where
-#'                    \code{y} is a numeric variable giving the data values and \code{group}
-#'                    a numeric variable, character variable or factor with two values or factor
-#'                    levels giving the corresponding group; in case of a within-subject design
-#'                    (i.e., \code{paired = TRUE}), a formula of the form \code{post ~ pre} where
-#'                    \code{post} and \code{pre} are numeric variables. Note that analysis for more
-#'                    than one outcome variable is not permitted in within-subject design.
-#' @param data        a matrix or data frame containing the variables in the \code{formula}.
-#' @param paired      logical: if \code{TRUE}, Cohen's d for within-subject design is computed.
-#' @param weighted    logical: if \code{TRUE} (default), in case of a between-subject design the weighted
-#'                    pooled standard deviation is used; in case of a within-subject design the correlation
-#'                    between measures is controlled when computing the pooled standard deviation.
-#' @param correct     logical: if \code{TRUE}, correction factor to remove positive bias in small
-#'                    samples is used. Note that correction factor is only applied when \code{weighted = TRUE}
-#'                    and \code{ref = NULL}.
-#' @param ref         a numeric value or character string indicating the reference group in a between-subject
-#'                    design or a character string indicating the reference variable in a within-subject
-#'                    design. The standard deviation of the reference group or reference variable is used
-#'                    to standardized the mean difference. If the standard deviation of the control group
-#'                    is used (e.g. \code{group = "control"}), the effect size is usually called Glass' delta.
+#' @param x           a numeric vector of data values.
+#' @param y           a numeric vector of data values.
+#' @param mu          a numeric value indicating the reference mean.
+#' @param paired      logical: if \code{TRUE}, Cohen's d for a paired-sample design is computed.
+#' @param weighted    logical: if \code{TRUE} (default), the weighted pooled standard deviation is used
+#'                    to compute the standardized mean difference between two groups of a two-sample
+#'                    design (i.e., \code{paired = FALSE}), while standard deviation of the difference
+#'                    scores is used to compute the standardized mean difference in a paired-sample
+#'                    design (i.e., \code{paired = TRUE}).
+#' @param cor         logical: if \code{TRUE} (default), \code{paired = TRUE}, and \code{weighted = FALSE},
+#'                    Cohen's d for a paired-sample design while controlling for the correlation between
+#'                    the two sets of measurement is computed. Note that this argument is only used in
+#'                    a paired-sample design (i.e., \code{paired = TRUE}) when specifying \code{weighted = FALSE}.
+#' @param ref         character string \code{"x"} or \code{"y"} for specifying the reference reference
+#'                    group when using the default \code{cohens.d()} function or a numeric value or
+#'                    character string indicating the reference group in a two-sample design when using
+#'                    the formula \code{cohens.d()} function. The standard deviation of the reference variable
+#'                    or reference group is used to standardized the mean difference.
+#'                    Note that this argument is only used in a two-sample design (i.e., \code{paired = FALSE}).
+#' @param correct     logical: if \code{TRUE}, correction factor to remove positive bias in small samples is
+#'                    used.
+#' @param alternative a character string specifying the alternative hypothesis, must be one of
+#'                    \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.
+#' @param conf.level  a numeric value between 0 and 1 indicating the confidence level of the interval.
+#' @param group       a numeric vector, character vector or factor as grouping variable.
+#' @param split       a numeric vector, character vector or factor as split variable.
+#' @param sort.var    logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.
 #' @param digits      an integer value indicating the number of decimal places to be used for
 #'                    displaying results.
-#' @param conf.level  a numeric value between 0 and 1 indicating the confidence level of the interval.
 #' @param as.na       a numeric vector indicating user-defined missing values,
 #'                    i.e. these values are converted to \code{NA} before conducting the analysis.
 #'                    Note that \code{as.na()} function is only applied to \code{y} but not to \code{group}
-#'                    in a between-subject design, while \code{as.na()} function is applied to \code{pre} and
-#'                    \code{post} in a within-subject design.
+#'                    in a two-sample design, while \code{as.na()} function is applied to \code{pre}
+#'                    and \code{post} in a paired-sample design.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #' @param output      logical: if \code{TRUE}, output is shown on the console.
+#' @param formula     a formula of the form \code{y ~ group} for one outcome variable or
+#'                    \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where \code{y}
+#'                    is a numeric variable giving the data values and \code{group} a numeric variable,
+#'                    character variable or factor with two values or factor levelsgiving the
+#'                    corresponding groups.
+#' @param data        a matrix or data frame containing the variables in the formula \code{formula}.
+#' @param na.omit     logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
+#'                    (i.e., listwise deletion) when specifying more than one outcome variable.
+#' @param ...         further arguments to be passed to or from methods.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{eta.sq}}, \code{\link{cont.coef}}, \code{\link{cramers.v}},\code{\link{cor.matrix}},
-#' \code{\link{na.auxiliary}}
+#' \code{\link{test.t}}, \code{\link{test.z}}, \code{\link{eta.sq}}, \code{\link{cor.cont}},
+#' \code{\link{cor.cramer}},\code{\link{cor.matrix}}, \code{\link{na.auxiliary}}
 #'
 #' @references
 #' Cohen, J. (1988). \emph{Statistical power analysis for the behavioral sciences} (2nd ed.).
@@ -108,64 +132,993 @@
 #' @export
 #'
 #' @examples
-#' #--------------------------------------
-#' # Between-Subject Design
-#' dat.bs <- data.frame(group = c("cont", "cont", "cont", "treat", "treat"),
-#'                      y1 = c(1, 3, 2, 5, 7),
-#'                      y2 = c(4, 3, 3, 6, 4),
-#'                      y3 = c(7, 5, 7, 3, 2), stringsAsFactors = FALSE)
-#'
-#' # Standardized mean difference divided by the weighted pooled
-#' # standard deviation without small sample correction factor
-#' cohens.d(y1 ~ group, data = dat.bs)
-#'
-#' # Standardized mean difference divided by the unweighted pooled
-#' # standard deviation without small sample correction factor
-#' cohens.d(y1 ~ group, data = dat.bs, weighted = FALSE)
-#'
-#' # Standardized mean difference divided by the weighted pooled
-#' # standard deviation with small sample correction factor
-#' cohens.d(y1 ~ group, data = dat.bs, correct = TRUE)
-#'
-#' # Standardized mean difference divided by the standard deviation
-#' # of the control group without small sample correction factor
-#' cohens.d(y1 ~ group, data = dat.bs, ref = "cont")
-#'
-#' # Cohens's d for for more than one outcome variable
-#' cohens.d(cbind(y1, y2, y3) ~ group, data = dat.bs)
+#' dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
+#'                               1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1),
+#'                    group2 = c(1, 2, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 2, 2,
+#'                               1, 2, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2),
+#'                    group3 = c(1, 2, 1, 2, 1, 2, 2, 2, 1, 2, 2, 1, 1, 1,
+#'                               1, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1),
+#'                    x1 = c(3, 2, 5, 3, 6, 3, 2, 4, 6, 5, 3, 3, 5, 4,
+#'                           4, 3, 5, 3, 2, 3, 3, 6, 6, 7, 5, 6, 6, 4),
+#'                    x2 = c(4, 4, 3, 6, 4, 7, 3, 5, 3, 3, 4, 2, 3, 6,
+#'                           3, 5, 2, 6, 8, 3, 2, 5, 4, 5, 3, 2, 2, 4),
+#'                    x3 = c(7, 6, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
+#'                           2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4),
+#'                    stringsAsFactors = FALSE)
 #'
 #' #--------------------------------------
-#' # Within-Subject Design
-#' dat.ws <- data.frame(pre = c(1, 3, 2, 5, 7),
-#'                      post = c(2, 2, 1, 6, 8))
+#' # One-sample design
 #'
-#' # Standardized mean difference divided by the pooled
-#' # standard deviation while controlling for the correlation
-#' # without small sample correction factor
-#' cohens.d(post ~ pre, data = dat.ws, paired = TRUE)
+#' # Cohen's d.z
+#' # population mean = 3
+#' cohens.d(dat1$x1, mu = 3)
 #'
-#' # Standardized mean difference divided by the pooled
-#' # standard deviation whithout controlling for the correlation
-#' # without small sample correction factor
-#' cohens.d(post ~ pre, data = dat.ws, paired = TRUE, weighted = FALSE)
+#' # Cohen's d.z (aka Hedges' g.z)
+#' # population mean = 3, with small sample correction factor
 #'
-#' # Standardized mean difference divided by the pooled
-#' # standard deviation while controlling for the correlation
-#' # with small sample correction factor
-#' cohens.d(post ~ pre, data = dat.ws, paired = TRUE, correct = TRUE)
+#' cohens.d(dat1$x1, mu = 3, correct = TRUE)
 #'
-#' # Standardized mean difference divided by the standard deviation
-#' # of the pretest without small sample correction factor
-#' cohens.d(post ~ pre, data = dat.ws, paired = TRUE, ref = "pre")
-cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL, correct = FALSE,
-                     digits = 2, conf.level = 0.95, as.na = NULL, check = TRUE, output = TRUE) {
+#' # Cohen's d.z
+#' # population mean = 3, by group1 separately
+#' cohens.d(dat1$x1, mu = 3, group = dat1$group1, output = TRUE)
+#'
+#' # Cohen's d.z
+#' # population mean = 3, split analysis by group1
+#' cohens.d(dat1$x1, mu = 3, split = dat1$group1, output = TRUE)
+#'
+#' # Cohen's d.z
+#' # population mean = 3, by group1 separately1, split by group2
+#' cohens.d(dat1$x1, mu = 3, group = dat1$group1, split = dat1$group2, output = TRUE)
+#'
+#' #--------------------------------------
+#' # Two-sample design
+#'
+#' # Cohen's d.s with two-sided 95% CI
+#' # weighted pooled SD
+#' cohens.d(x1 ~ group1, data = dat1)
+#'
+#' # Cohen's d.s with two-sided 99% CI
+#' # weighted pooled SD
+#' cohens.d(x1 ~ group1, data = dat1, conf.level = 0.99)
+#'
+#' # Cohen's d.s with one-sided 99% CI
+#' # weighted pooled SD
+#' cohens.d(x1 ~ group1, data = dat1, alternative = "greater")
+#'
+#' # Cohen's d.s with two-sided 99% CI
+#' # weighted pooled SD
+#' cohens.d(x1 ~ group1, data = dat1, conf.level = 0.99)
+#'
+#' # Cohen's d.s with one-sided 95%% CI
+#' # weighted pooled SD
+#' cohens.d(x1 ~ group1, data = dat1, alternative = "greater")
+#'
+#' # Cohen's d.s for more than one variable with two-sided 95% CI
+#' # weighted pooled SD
+#' cohens.d(c(x1, x2, x3) ~ group1, data = dat1)
+#'
+#' # Cohen's d with two-sided 95% CI
+#' # unweighted SD
+#' cohens.d(x1 ~ group1, data = dat1, eighted = FALSE)
+#'
+#' # Cohen's d.s (aka Hedges' g.s) with two-sided 95% CI
+#' # weighted pooled SD, with small sample correction factor
+#' cohens.d(x1 ~ group1, data = dat1)
+#'
+#' # Cohen's d (aka Hedges' g) with two-sided 95% CI
+#' # Unweighted SD, with small sample correction factor
+#' cohens.d(x1 ~ group1, data = dat1, eighted = FALSE)
+#'
+#' # Cohen's d (aka Glass's delta) with two-sided 95% CI
+#' # SD of reference group 1
+#' cohens.d(x1 ~ group1, data = dat1, ref = 1)
+#'
+#' # Cohen's d.s with two-sided 95% CI
+#' # weighted pooled SD, by group2 separately
+#' cohens.d(x1 ~ group1, data = dat1, group = dat1$group2)
+#'
+#' # Cohen's d.s with two-sided 95% CI
+#' # weighted pooled SD, split analysis by group2
+#' cohens.d(x1 ~ group1, data = dat1, split = dat1$group2)
+#'
+#' # Cohen's d.s with two-sided 95% CI
+#' # weighted pooled SD, by group2 separately, split analysis by group3
+#' cohens.d(x1 ~ group1, data = dat1,
+#'          group = dat1$group2, split = dat1$group3)
+#'
+#' #--------------------------------------
+#' # Paired-sample design
+#'
+#' # Cohen's d.z with two-sided 95% CI
+#' # SD of the difference scores
+#' cohens.d(dat1$x1, dat1$x2, paired = TRUE)
+#'
+#' # Cohen's d.z with two-sided 99% CI
+#' # SD of the difference scores
+#' cohens.d(dat1$x1, dat1$x2, paired = TRUE)
+#'
+#' # Cohen's d.z with one-sided 95% CI
+#' # SD of the difference scores
+#' cohens.d(dat1$x1, dat1$x2, paired = TRUE, alternative = "greater")
+#'
+#' # Cohen's d.rm with two-sided 95% CI
+#' # controlling for the correlation between measures
+#' cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE)
+#'
+#' # Cohen's d.av with two-sided 95% CI
+#' # without controlling for the correlation between measures
+#' cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE, cor = FALSE)
+#'
+#' # Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
+#' # SD of the differnece scores
+#' cohens.d(dat1$x1, dat1$x2, paired = TRUE, correct = TRUE)
+#'
+#' # Cohen's d.rm (aka Hedges' g.rm) with two-sided 95% CI
+#' # controlling for the correlation between measures
+#' cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE, correct = TRUE)
+#'
+#' # Cohen's d.av (aka Hedges' g.av) with two-sided 95% CI
+#' # without controlling for the correlation between measures
+#' cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE, cor = FALSE,
+#'          correct = TRUE)
+#'
+#' # Cohen's d.z with two-sided 95% CI
+#' # SD of the difference scores, by group1 separately
+#' cohens.d(dat1$x1, dat1$x2, paired = TRUE, group = dat1$group1)
+#'
+#' # Cohen's d.z with two-sided 95% CI
+#' # SD of the difference scores, split analysis by group1
+#' cohens.d(dat1$x1, dat1$x2, paired = TRUE, split = dat1$group1)
+#'
+#' # Cohen's d.z with two-sided 95% CI
+#' # SD of the difference scores, by group1 separately, split analysis by group1
+#' cohens.d(dat1$x1, dat1$x2, paired = TRUE,
+#'          group = dat1$group1, split = dat1$group2)
+cohens.d <- function(x, ...) {
 
-  ####################################################################################
+  UseMethod("cohens.d")
+
+}
+
+####################################################################################
+# Cohen's d function
+cohens.d.function <- function(x, y, mu, paired, weighted, cor, ref, correct,
+                              alternative, conf.level) {
+
+  #-----------------------------------------
+  # One-sample
+  if (isTRUE(is.null(y))) {
+
+    # Unstandardized mean difference
+    yx.diff <- mean(x, na.rm = TRUE) - mu
+
+    # Standard deviation
+    sd.group <- x.sd <- sd(x, na.rm = TRUE)
+
+    # Sample size
+    x.n <- length(na.omit(x))
+
+    #........................................
+    # Cohen's d
+
+    d <- yx.diff / sd.group
+
+    #........................................
+    # Correction factor
+
+    # Bias-corrected Cohen's d
+    if (isTRUE(correct)) {
+
+      v <- x.n - 1
+
+      # Correction factor based on gamma function
+      corr.factor <- gamma(0.5*v) / ((sqrt(v / 2L)) * gamma(0.5 * (v - 1L)))
+
+      # Correction factor based on approximation method
+      if (isTRUE(is.na(corr.factor) || is.nan(corr.factor) || is.infinite(corr.factor))) {
+
+        corr.factor <- (1L - (3L / (4L * v - 1L)))
+
+      }
+
+      d <- d*corr.factor
+
+    }
+
+    #........................................
+    # Confidence interval
+
+    # Standard error
+    d.se <- sqrt((x.n / (x.n / 2)^2) + 0.5*(d^2 / x.n))
+
+    # Noncentrality parameter
+    t <- yx.diff / (x.sd / sqrt(x.n))
+    df <- x.n - 1
+
+    conf1 <- ifelse(alternative == "two.sided", (1 + conf.level) / 2, conf.level)
+    conf2 <- ifelse(alternative == "two.sided", (1 - conf.level) / 2, 1 - conf.level)
+
+    st <- max(0.1, abs(t))
+
+    ###
+
+    end1 <- t
+    while(pt(q = t, df = df, ncp = end1) < conf1) { end1 <- end1 - st }
+
+    ncp1 <- uniroot(function(x) conf1 - pt(q = t, df = df, ncp = x), c(end1, 2*t - end1))$root
+
+    ###
+
+    end2 <- t
+    while(pt(q = t, df = df, ncp = end2) > conf2) { end2 <- end2 + st }
+
+    ncp2 <- uniroot(function(x) conf2 - pt(q = t, df = df, ncp = x), c(2*t - end2, end2))$root
+
+    # Confidence interval around ncp
+    conf.int <- switch(alternative,
+                       two.sided = c(low = ncp1 / sqrt(df), upp = ncp2 / sqrt(df)),
+                       less = c(low = -Inf, upp = ncp2 / sqrt(df)),
+                       greater = c(low = ncp1 / sqrt(df), upp = Inf))
+
+    #.......................
+    # With correction factor
+    if(isTRUE(correct)) {
+
+      conf.int <- conf.int*corr.factor
+
+    }
+
+  #-----------------------------------------
+  # Two-sample
+  } else if (!isTRUE(paired)) {
+
+    #.................
+    # Data
+
+    # x and y
+    x <- na.omit(x)
+    y <- na.omit(y)
+
+    # Sample size for x and y
+    x.n <- length(x)
+    y.n <- length(y)
+
+    # Total sample size
+    xy.n <- sum(c(x.n, y.n))
+
+    # Unstandardized mean difference
+    yx.diff <- mean(y) - mean(x)
+
+    # Variance
+    x.var <- var(x)
+    y.var <- var(y)
+
+    # Standard deviation
+    x.sd <- sd(x)
+    y.sd <- sd(y)
+
+    #......
+    # At least 2 observations for x/y and variance in x/y
+    if (isTRUE((x.n >= 2L && y.n >= 2L) && (x.var != 0L && y.var != 0L))) {
+
+      #........................................
+      # Standard deviation
+
+      # Pooled standard deviation
+      if (isTRUE(is.null(ref))) {
+
+        # Weighted pooled standard deviation, Cohen's d.s
+        if (isTRUE(weighted)) {
+
+          sd.group <- sqrt(((x.n - 1L)*x.var + (y.n - 1L)*y.var) / (xy.n - 2L))
+
+        # Unweighted pooled standard deviation
+        } else {
+
+          sd.group <- sqrt(sum(c(x.var, y.var)) / 2L)
+
+        }
+
+      # Standard deviation from reference group x or y, Glass's delta
+      } else {
+
+        sd.group <- ifelse(ref == "x", x.sd, y.sd)
+
+      }
+
+      #........................................
+      # Cohen's d
+
+      d <- yx.diff / sd.group
+
+      #........................................
+      # Correction factor
+
+      #...........
+      # Bias-corrected Cohen's d, i.e., Hedges' g
+      if (isTRUE(correct)) {
+
+        # Degrees of freedom
+        v <- xy.n - 2L
+
+        # Correction factor based on gamma function
+        corr.factor <- gamma(0.5*v) / ((sqrt(v / 2L)) * gamma(0.5 * (v - 1L)))
+
+        # Correction factor based on approximation method
+        if (isTRUE(is.na(corr.factor) || is.nan(corr.factor) || is.infinite(corr.factor))) {
+
+          corr.factor <- (1L - (3L / (4L * v - 1L)))
+
+        }
+
+        # Applying correction factor
+        d <- d*corr.factor
+
+      }
+
+      #........................................
+      # Confidence interval
+
+      #...
+      # No reference group
+      if (isTRUE(is.null(ref))) {
+
+        #...........
+        # Cohen's d.s
+
+        # Pooled standard deviation
+        if (isTRUE(weighted)) {
+
+          d.se <- sd.group * sqrt(1 / x.n + 1 / y.n)
+          df <- xy.n - 2
+
+        # Unpooled standard deviation
+        } else {
+
+          d.se <- sqrt(sqrt(x.sd^2 / x.n)^2 + sqrt(y.sd^2 / y.n)^2)
+          df <- d.se^4 / ( sqrt(x.sd^2 / x.n)^4 / (x.n - 1) + sqrt(y.sd^2 / y.n)^4 / (y.n - 1))
+
+        }
+
+        t <- yx.diff / d.se
+        hn <- sqrt(1 / x.n + 1 / y.n)
+
+      #...
+      # Reference group
+      } else {
+
+        d.se <- sqrt(sd(c(x, y))^2*(1 / x.n + 1 / y.n))
+        df = x.n + y.n - 2
+
+        t = yx.diff / d.se
+        hn <- sqrt(1 / x.n + 1 / y.n)
+
+      }
+
+      conf1 <- ifelse(alternative == "two.sided", (1 + conf.level) / 2, conf.level)
+      conf2 <- ifelse(alternative == "two.sided", (1 - conf.level) / 2, 1 - conf.level)
+
+      # Noncentrality parameter
+      st <- max(0.1, abs(t))
+
+      ###
+
+      end1 <- t
+      while(pt(q = t, df = df, ncp = end1) < conf1) { end1 <- end1 - st }
+
+      ncp1 <- uniroot(function(x) conf1 - pt(q = t, df = df, ncp = x), c(end1, 2*t - end1))$root
+
+      ###
+
+      end2 <- t
+      while(pt(q = t, df = df, ncp = end2) > conf2) { end2 <- end2 + st }
+
+      ncp2 <- uniroot(function(x) conf2 - pt(q = t, df = df, ncp = x), c(2*t - end2, end2))$root
+
+      # Confidence interval around ncp
+      conf.int <- switch(alternative,
+                         two.sided = c(low = ncp1 * hn, upp = ncp2 * hn),
+                         less = c(low = -Inf, upp = ncp2 * hn),
+                         greater = c(low = ncp1 * hn, upp = Inf))
+
+      #.......................
+      # With correction factor
+      if(isTRUE(correct)) {
+
+        conf.int <- conf.int*corr.factor
+
+      }
+
+    #......
+    # Not at least 2 observations for x/y and variance in x/y
+    } else {
+
+      d <- NA
+      conf.int <- c(NA, NA)
+
+    }
+
+  #-----------------------------------------
+  # Paired-sample
+  } else if (isTRUE(paired)) {
+
+    #.................
+    # Data
+
+    xy.dat <- na.omit(data.frame(x = x, y = y, stringsAsFactors = FALSE))
+
+    x <- xy.dat$x
+    y <- xy.dat$y
+
+    # Standard deviation of x and y
+    x.sd <- sd(x)
+    y.sd <- sd(y)
+
+    # Unstandardized mean difference
+    yx.diff <- mean(y - x)
+
+    # Sample size
+    xy.n <- nrow(xy.dat)
+
+    #...................
+    # Standard deviation
+
+    # SD of difference score, Cohen's d.z
+    if (isTRUE(weighted)) {
+
+        sd.group <- sd(y - x)
+
+    } else {
+
+      # Controlling correlation, Cohen's d.rm
+      if (isTRUE(cor)) {
+
+        # Variance of x and y
+        x.var <- var(x)
+        y.var <- var(y)
+
+        # Sum of the variances
+        xy.var.sum <- sum(c(x.var, y.var))
+
+        # Correlation between x and y
+        xy.r <- cor(x, y)
+
+         sd.group <- sqrt(xy.var.sum - 2L * xy.r * prod(c(sqrt(x.var), sqrt(y.var))))
+
+       # Ignoring correlation, Cohen's d.av
+       } else {
+
+         sd.group <- (x.sd + y.sd) / 2
+
+       }
+
+    }
+
+    #........................................
+    # Cohen's d
+
+    # Cohen's d.rm
+    if (isTRUE(cor && !isTRUE(weighted))) {
+
+      d <- yx.diff / sd.group * sqrt(2L*(1L -xy.r))
+
+    # Cohen's d.z, d.av, and Glass's delta
+    } else {
+
+      d <- yx.diff / sd.group
+
+    }
+
+    #........................................
+    # Correction factor
+
+    # Degrees of freedom
+    v <- xy.n - 1
+
+    # Correction factor based on gamma function
+    corr.factor <- gamma(0.5*v) / ((sqrt(v / 2L)) * gamma(0.5 * (v - 1L)))
+
+    # Correction factor based on approximation method
+    if (isTRUE(is.na(corr.factor) || is.nan(corr.factor) || is.infinite(corr.factor))) {
+
+      corr.factor <- 1L - 3L / (4L * v - 1)
+
+    }
+
+    # Bias-corrected Cohen's d
+    if (isTRUE(correct)) {
+
+      d <- d*corr.factor
+
+    }
+
+    #........................................
+    # Confidence interval
+
+    # Standard error
+    d.se <- sqrt((xy.n / (xy.n / 2)^2) + 0.5*(d^2 / xy.n))
+
+    # Noncentrality parameter
+    t <- yx.diff / (sd.group / sqrt(xy.n))
+    df <- xy.n - 1
+
+    conf1 <- ifelse(alternative == "two.sided", (1 + conf.level) / 2, conf.level)
+    conf2 <- ifelse(alternative == "two.sided", (1 - conf.level) / 2, 1 - conf.level)
+
+    st <- max(0.1, abs(t))
+
+    ###
+
+    end1 <- t
+    while(pt(q = t, df = df, ncp = end1) < conf1) { end1 <- end1 - st }
+
+    ncp1 <- uniroot(function(x) conf1 - pt(q = t, df = df, ncp = x), c(end1, 2*t - end1))$root
+
+    ###
+
+    end2 <- t
+    while(pt(q = t, df = df, ncp = end2) > conf2) { end2 <- end2 + st }
+
+    ncp2 <- uniroot(function(x) conf2 - pt(q = t, df = df, ncp = x), c(2*t - end2, end2))$root
+
+    # Confidence interval around ncp
+    conf.int <- switch(alternative,
+                       two.sided = c(low = ncp1 / sqrt(df), upp = ncp2 / sqrt(df)),
+                       less = c(low = -Inf, upp = ncp2 / sqrt(df)),
+                       greater = c(low = ncp1 / sqrt(df), upp = Inf))
+
+    #.......................
+    # With correction factor
+    if(isTRUE(correct)) {
+
+      conf.int <- conf.int*corr.factor
+
+    }
+
+  }
+
+  #......
+  # Return object
+  object <- data.frame(m.diff = yx.diff, sd = sd.group,
+                       d = d, se = d.se,
+                       low = conf.int[1], upp = conf.int[2], row.names = NULL)
+
+  return(object)
+
+}
+
+####################################################################################
+# Default S3 method
+cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRUE, cor = TRUE,
+                             ref = NULL, correct = FALSE, alternative = c("two.sided", "less", "greater"),
+                             conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
+                             digits = 2, as.na = NULL, check = TRUE, output = TRUE, ...) {
+
+  #......
+  # Check if input 'x' is missing
+  if (isTRUE(missing(x))) {
+
+    stop("Please specify a numeric vector for the argument 'x'", call. = FALSE)
+
+  }
+
+  #......
+  # Check if input 'x' is NULL
+  if (isTRUE(is.null(x))) {
+
+    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
+
+  }
+
+  #......
+  # Check input 'paired'
+  if (isTRUE(!is.logical(paired))) {
+
+    stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
+
+  }
+
+  #----------------------------------------
+  # List or Dataframe
+
+  #......
+  # One-sample design
+  if (is.null(y)) {
+
+    xy  <- data.frame(x = x, stringsAsFactors = FALSE)
+
+  #......
+  # Two-sample design
+  } else if (!isTRUE(paired)) {
+
+    xy <- list(x = x, y = y, stringsAsFactors = FALSE)
+
+  #......
+  # Paired-sample design
+  } else if (isTRUE(paired)) {
+
+    # Length of 'x' and 'y'
+    if (isTRUE(length(x) != length(y))) {
+
+      stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.",
+           call. = FALSE)
+
+    }
+
+    xy <- data.frame(x = x, y = y, stringsAsFactors = FALSE)
+
+  }
+
+  #----------------------------------------
+  # Convert user-missing values into NA
+
+  if (isTRUE(!is.null(as.na))) {
+
+    # Replace user-specified values with missing values
+    xy <- misty::as.na(xy, na = as.na, check = check)
+
+    # Variable with missing values only
+    xy.miss <- vapply(xy, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    if (isTRUE(any(xy.miss))) {
+
+      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
+                  paste(names(which(xy.miss)), collapse = ", ")), call. = FALSE)
+
+    }
+
+  }
+
+  #----------------------------------------
+  # Listwise deletion
+
+  if (isTRUE(paired && nrow(na.omit(xy)) < 2)) {
+
+    stop("After listwise deletion, the number of pairs of observations is less than two.",
+         call. = FALSE)
+
+  }
+
+  #-----------------------------------------------------------------------------------
+  # Input Check
+
+  #......
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) {
+
+    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
+
+  }
+
+  if (isTRUE(check)) {
+
+    #......
+    # Check input 'weighted'
+    if (isTRUE(!is.logical(weighted))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'weighted'.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'cor'
+    if (isTRUE(!is.logical(cor))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'cor'.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'ref'
+    if (isTRUE(!is.null(ref))) {
+
+      if (isTRUE(!isTRUE(ref %in% c("x", "y")))) {
+
+        stop("Please specify \"x\" or \"y\" for the argument 'ref'.", call. = FALSE)
+
+      }
+
+    }
+
+    #......
+    # Check input 'correct'
+    if (isTRUE(!is.logical(correct))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'alternative'
+    if (isTRUE(!all(alternative %in%  c("two.sided", "less", "greater")))) {
+
+      stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".",
+           call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'conf.level'
+    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) {
+
+      stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
+           call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'group'
+    if (isTRUE(!is.null(group))) {
+
+      # Vector or factor for the argument 'group'?
+      if (isTRUE(!is.vector(group) && !is.factor(group))) {
+
+        stop("Please specify a vector or factor for the argument 'group'.", call. = FALSE)
+
+      }
+
+      # Length of 'group' match with 'x'?
+      if (isTRUE(length(group) != nrow(xy))) {
+
+        stop("Length of the vector or factor specified in 'group' does not match the number of rows of the matrix or data frame in 'data'.",
+             call. = FALSE)
+
+      }
+
+      # Input 'group' completely missing
+      if (isTRUE(all(is.na(group)))) {
+
+        stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE)
+
+      }
+
+      # Only one group in 'group'
+      if (isTRUE(length(na.omit(unique(group))) == 1L)) {
+
+        warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
+
+      }
+
+    }
+
+    #......
+    # Check input 'split'
+    if (isTRUE(!is.null(split))) {
+
+       # Vector or factor for the argument 'split'?
+      if (isTRUE(!is.atomic(split) && !is.factor(split))) {
+
+        stop("Please specify a vector or factor for the argument 'split'.", call. = FALSE)
+
+      }
+
+      # Length of 'split' doesn't not match with 'x'
+      if (isTRUE(length(split) != nrow(xy))) {
+
+        stop("Length of the vector or factor specified in 'split' does not match the number of rows in 'data'.",
+             call. = FALSE)
+
+      }
+
+      # Input 'split' completely missing
+      if (isTRUE(all(is.na(split)))) {
+
+        stop("The split variable specified in 'split' is completely missing.", call. = FALSE)
+
+      }
+
+      # Only one group in 'split'
+      if (isTRUE(length(na.omit(unique(split))) == 1L)) {
+
+        warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE)
+
+      }
+
+    }
+
+    #......
+    # Check input 'sort.var'
+    if (isTRUE(!is.logical(sort.var))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input 'digits'
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
+
+      stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE)
+
+    }
+
+    #......
+    # Check input output
+    if (isTRUE(!is.logical(output))) {
+
+      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
+
+    }
+
+  }
+
+  #-----------------------------------------------------------------------------------
+  # Arguments
+
+  #----------------------------------------
+  # Type of sample
+
+  #......
+  # One-sample
+  if (isTRUE(is.null(y))) {
+
+    sample <- "one"
+
+  #......
+  # Two-sample
+  } else if (!isTRUE(paired)) {
+
+    sample <- "two"
+
+  #......
+  # Paired-sample
+  } else if (isTRUE(paired)) {
+
+    sample <- "paired"
+
+  }
+
+  #----------------------------------------
+  # Alternative hypothesis
+
+  if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
+
+  #-----------------------------------------------------------------------------------
+  # Main Function
+
+  #----------------------------------------
+  # No Grouping, No Split
+  if (isTRUE(is.null(group) && is.null(split))) {
+
+    # Compute Cohen's d and confidence intervals
+    temp <- cohens.d.function(x = x, y = y, paired = paired, weighted = weighted,
+                              cor = cor, ref = ref, correct = correct, mu = mu,
+                              alternative = alternative, conf.level = conf.level)
+
+    #......
+    # One-sample
+    switch(sample, one = {
+
+      result <- data.frame(variable = "x",
+                           n = length(na.omit(x)),
+                           nNA = length(attributes(na.omit(x))$na.action),
+                           m = mean(x, na.rm = TRUE),
+                           m.diff =  temp$m.diff,
+                           sd = temp$sd,
+                           d = temp$d,
+                           se = temp$se,
+                           low = temp$low,
+                           upp = temp$upp,
+                           stringsAsFactors = FALSE, row.names = NULL)
+
+    #......
+    # Two-sample
+    }, two = {
+
+      result <- misty::df.rbind(data.frame(variable = "y",
+                                           between = 1,
+                                           n = length(na.omit(xy$x)),
+                                           nNA = sum(is.na(xy$x)),
+                                           m = mean(xy$x, na.rm = TRUE),
+                                           stringsAsFactors = FALSE),
+                                data.frame(variable = "y",
+                                           n = length(na.omit(xy$y)),
+                                           between = 2,
+                                           nNA = sum(is.na(xy$y)),
+                                           m = mean(xy$y, na.rm = TRUE),
+                                           m.diff = temp$m.diff,
+                                           sd = temp$sd,
+                                           d = temp$d,
+                                           se = temp$se,
+                                           low = temp$low,
+                                           upp = temp$upp,
+                                           stringsAsFactors = FALSE, row.names = NULL))
+
+    #......
+    # Paired-sample
+    }, paired = {
+
+      result <- data.frame(variable = "y",
+                           n = nrow(na.omit(xy)),
+                           nNA = length(attributes(na.omit(xy))$na.action),
+                           m1 = mean(xy$x, na.rm = TRUE),
+                           m2 = mean(xy$y, na.rm = TRUE),
+                           m.diff =  temp$m.diff,
+                           sd = temp$sd,
+                           d = temp$d,
+                           se = temp$se,
+                           low = temp$low,
+                           upp = temp$upp,
+                           stringsAsFactors = FALSE, row.names = NULL)
+
+    })
+
+  #----------------------------------------
+  # Grouping, No Split
+  } else if (isTRUE(!is.null(group) && is.null(split))) {
+
+    object.group <- lapply(split(xy, f = group),
+                           function(y) cohens.d.default(x = y$x, y = y$y, mu = mu, paired = paired, weighted = weighted,
+                                                        cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                        conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
+                                                        as.na = as.na, check = FALSE, output = FALSE)$result)
+
+    result <- data.frame(group = names(object.group),
+                         eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
+                                                                   collapse = ", "), ")"))), stringsAsFactors = FALSE)
+
+  #----------------------------------------
+  # No Grouping, Split
+  } else if (isTRUE(is.null(group) && !is.null(split))) {
+
+    result <- lapply(split(data.frame(xy, stringsAsFactors = FALSE), f = split),
+                     function(y) cohens.d.default(x = y$x, y = y$y, mu = mu, paired = paired, weighted = weighted,
+                                                  cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                  conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
+                                                  as.na = as.na, check = FALSE, output = FALSE)$result)
+
+  #----------------------------------------
+  # Grouping, Split
+  } else if (isTRUE(!is.null(group) && !is.null(split))) {
+
+    result <- lapply(split(data.frame(xy, .group = group, stringsAsFactors = FALSE, row.names = NULL), f = split),
+                     function(y) cohens.d.default(x = y$x, y = y$y, mu = mu, paired = paired, weighted = weighted,
+                                                  cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                  conf.level = conf.level, group = y$.group, split = NULL, sort.var = sort.var,
+                                                  as.na = as.na, check = FALSE, output = FALSE)$result)
+
+  }
+
+  #-----------------------------------------------------------------------------------
+  # Return object and output
+
+  object <- list(call = match.call(),
+                 type = "cohens.d",
+                 sample = sample,
+                 data = list(x = x, y = y, group = group, split = split),
+                 args = list(paired = paired, weighted = weighted, cor = cor,
+                             correct = correct, mu = mu, alternative = alternative,
+                             conf.level = conf.level, sort.var = sort.var,
+                             na.omit = na.omit, digits = digits, as.na = as.na,
+                             check = check, output = output),
+                 result = result)
+
+  class(object) <- "misty.object"
+
+  #-----------------------------------------------------------------------------------
+  # Output
+
+  if (isTRUE(output)) { print(object, check = FALSE) }
+
+  return(invisible(object))
+
+}
+
+####################################################################################
+# S3 method for class 'formula'
+
+cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
+                             ref = NULL, correct = FALSE,
+                             alternative = c("two.sided", "less", "greater"),
+                             conf.level = 0.95, group = NULL, split = NULL,
+                             sort.var = FALSE, na.omit = FALSE, digits = 2,
+                             as.na = NULL, check = TRUE, output = TRUE, ...) {
+
+  #-----------------------------------------------------------------------------------
   # Data
 
   #......
   # Check if input 'formula' is missing
-  if (missing(formula)) {
+  if (isTRUE(missing(formula))) {
 
     stop("Please specify a formula for the argument 'formula'.", call. = FALSE)
 
@@ -173,7 +1126,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
   #......
   # Check if input 'data' is missing
-  if (missing(data)) {
+  if (isTRUE(missing(data))) {
 
     stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE)
 
@@ -181,7 +1134,7 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
   #......
   # Check if input 'data' is NULL
-  if (is.null(data)) {
+  if (isTRUE(is.null(data))) {
 
     stop("Input specified for the argument 'data' is NULL.", call. = FALSE)
 
@@ -192,522 +1145,271 @@ cohens.d <- function(formula, data, paired = FALSE, weighted = TRUE, ref = NULL,
 
   #.........................................
   # Variables
+
   var.formula <- all.vars(as.formula(formula))
 
-  #.........................................
-  # Between-subject design
-  if (!isTRUE(paired)) {
+  # Grouping variable
+  group.var <- attr(terms(formula[-2L]), "term.labels")
 
-    # Outcome(s)
-    y.var <- var.formula[-length(var.formula)]
-
-    # Grouping variable
-    group.var <- var.formula[length(var.formula)]
+  # Outcome(s)
+  y.vars <- var.formula[-grep(group.var, var.formula)]
 
   #.........................................
-  # Within-subject design
-  } else {
+  # Check
 
-    # Outcome
-    y.var <- var.formula
+  #......
+  # Check if variables are in the data
+  var.data <- !var.formula %in% colnames(data)
+  if (isTRUE(any(var.data))) {
+
+    stop(paste0("Variables specified in the the formula were not found in 'data': ",
+                paste(var.formula[which(var.data)], collapse = ", ")), call. = FALSE)
 
   }
 
-  #.........................................
-  # Data
-  data <- as.data.frame(data[, var.formula], stringsAsFactors = FALSE)
+  #......
+  # Check if input 'formula' has only one grouping variable
+  if (isTRUE(length(group.var) != 1L)) {
 
-  #-----------------------------------------------------------------------------------
-  # Convert user-missing values into NA
-
-  if (!is.null(as.na)) {
-
-    # Between-subject design
-    if (!isTRUE(paired)) {
-
-      data[, -grep(group.var, names(data))] <- misty::as.na(data[, -grep(group.var, names(data))], as.na = as.na, check = FALSE)
-
-    # Within-subject design
-    } else {
-
-      data <- misty::as.na(data, as.na = as.na, check = FALSE)
-
-    }
-
-    # Variable with missing values only
-    x.miss <- vapply(data, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-    if (any(x.miss)) {
-
-      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
-                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
-
-    }
-
-    # Zero variance
-    x.zero.var <- vapply(data, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
-    if (any(x.zero.var)) {
-
-      stop(paste0("After converting user-missing values into NA, following variables have zero variance: ",
-                  paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
-
-    }
+    stop("Please specify a formula with only one grouping variable.", call. = FALSE)
 
   }
 
-  ####################################################################################
-  # Input Check
+  #......
+  # Check if grouping variable has two levels
+  if (isTRUE(length(na.omit(unique(data[, group.var]))) != 2L)) {
 
-  # Check input 'check'
-  if (!is.logical(check)) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
+    stop("Please specify a grouping variable with exactly two levels.", call. = FALSE)
 
   }
 
-  #-----------------------------------------
+  #......
+  # Check if 'ref' is in the grouping variable
+  if (!isTRUE(is.null(ref))) {
 
-  if (isTRUE(check)) {
+    if (!isTRUE(ref %in% data[, group.var])) {
 
-    #......
-    # Formula variables in 'data'?
-    if (!all(var.formula %in% colnames(data))) {
-
-      stop("Variables specified in the argument 'formula' were not found in 'data'.", call. = FALSE)
-
-    }
-
-    #......
-    # Check input 'paired'
-    if (!is.logical(paired)) {
-
-      stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
-
-    }
-
-    #......
-    if (!isTRUE(paired)) {
-
-      if (length(unique(data[, group.var])) != 2L) {
-
-        stop("Grouping variable specified in 'formula' does hot have two values or factor levels.",
-             call. = FALSE)
-
-      }
-
-    } else {
-
-      if (ncol(data) > 2L) {
-
-        stop("Analysis for morethan one outcome variable is not permitted in within-subject design.",
-             call. = FALSE)
-
-      }
-
-    }
-
-    #......
-    # Check input 'weighted'
-    if (!isTRUE(isTRUE(weighted) || !isTRUE(weighted))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'weighted'.", call. = FALSE)
-
-    }
-
-    #......
-    # Check input 'correct'
-    if (!isTRUE(isTRUE(correct) || !isTRUE(correct))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE)
-
-    }
-
-    #......
-    # Check input 'correct'
-    if ((!isTRUE(weighted) && isTRUE(correct)) || (!is.null(ref) && isTRUE(correct))) {
-
-      stop("Small sample correction factor is only applied when weighted = TRUE and ref = NULL.", call. = FALSE)
-
-    }
-
-    #......
-    # Check input 'digits'
-    if (digits %% 1L != 0L || digits < 0L) {
-
-      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
-
-    #......
-    # Check input 'group'
-    if (!is.null(ref)) {
-
-      # Between-subject design
-      if (!isTRUE(paired)) {
-
-        if (!ref %in% data[, group.var]) {
-
-           stop("Numeric value or character string specified in 'ref' was not found in the grouping variable specified in 'formula'.",
-                call. = FALSE)
-
-        }
-
-      } else {
-
-        if (!ref %in% colnames(data)) {
-
-          stop("Numeric value or character string specified in 'ref' was not found in 'data'.",
-               call. = FALSE)
-
-        }
-
-
-      }
-
-    }
-
-    #......
-    # Check input 'conf.level'
-    if (conf.level >= 1L || conf.level <= 0L) {
-
-      stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
+      stop("Reference group specified in the argument 'ref' is not represented in the grouping variable.",
            call. = FALSE)
 
     }
 
-    #......
-    # Check input 'output'
-    if (!is.logical(output)) {
+  }
 
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
+  #----------------------------------------
+  # Convert user-missing values into NA
+
+  if (isTRUE(!is.null(as.na))) {
+
+    # Replace user-specified values with missing values
+    data[, y.vars] <- misty::as.na(data[, y.vars], as.na = as.na, check = check)
+
+    # Variable with missing values only
+    data.miss <- vapply(data[, y.vars, drop = FALSE], function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    if (any(data.miss)) {
+
+      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
+                  paste(names(which(data.miss)), collapse = ", ")), call. = FALSE)
 
     }
 
   }
 
-  ####################################################################################
+  #----------------------------------------
+  # Listwise deletion
+
+  if (isTRUE(na.omit && any(is.na(data[, var.formula])))) {
+
+    #......
+    # No group and split variable
+    if (isTRUE(is.null(group) && is.null(split))) {
+
+      x <- na.omit(as.data.frame(data[, var.formula], stringsAsFactors = FALSE))
+
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
+                     length(attributes(x)$na.action)), call. = FALSE)
+
+    }
+
+    #......
+    # Group variable, no split variable
+    if (isTRUE(!is.null(group) && is.null(split))) {
+
+      data.group <- na.omit(data.frame(data[, var.formula], group = group, stringsAsFactors = FALSE))
+
+      data <- data.group[, -grep("group", names(data.group)), drop = FALSE]
+      group <- data.group$group
+
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
+                     length(attributes(data.group)$na.action)), call. = FALSE)
+
+    }
+
+    #......
+    # No group variable, split variable
+    if (isTRUE(is.null(group) && !is.null(split))) {
+
+      data.split <- na.omit(data.frame(data[, var.formula], split = split, stringsAsFactors = FALSE))
+
+      data <- data.split[, -grep("split", names(data.split)), drop = FALSE]
+      split <- data.split$split
+
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
+                     length(attributes(data.split)$na.action)), call. = FALSE)
+
+    }
+
+    #......
+    # Group variable, split variable
+    if (isTRUE(!is.null(group) && !is.null(split))) {
+
+      data.group.split <- na.omit(data.frame(data[, var.formula], group = group, split = split,
+                                             stringsAsFactors = FALSE))
+
+      data <- data.group.split[,  !names(data.group.split) %in% c("group", "split"), drop = FALSE]
+      group <- data.group.split$group
+      split <- data.group.split$split
+
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
+                     length(attributes(data.group.split)$na.action)), call. = FALSE)
+
+    }
+
+    #......
+    # Variable with missing values only
+    data.miss <- vapply(data[, var.formula], function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    if (isTRUE(any(data.miss))) {
+
+      stop(paste0("After listwise deletion, following variables are completely missing: ",
+                  paste(names(which(data.miss)), collapse = ", ")), call. = FALSE)
+
+    }
+
+  }
+
+  #-----------------------------------------------------------------------------------
+  # Arguments
+
+  #----------------------------------------
+  # Alternative hypothesis
+
+  if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
+
+  #......
+  # Reference group
+  ref.return <- ref
+
+  if (!isTRUE(is.null(ref))) {
+
+    ifelse(which(unique(sort(na.omit(data[, group.var]))) %in% ref) == 1, ref <- "x", ref <- "y")
+
+  }
+
+  #-----------------------------------------------------------------------------------
   # Main Function
 
   #----------------------------------------
-  # One outcome variable
+  # No Grouping, No Split
+  if (isTRUE(is.null(group) && is.null(split))) {
 
-  if ((!isTRUE(paired) && length(y.var) == 1L) || (isTRUE(paired) && length(y.var) == 2L))  {
+    result <- data.frame(matrix(NA, ncol = 11L, nrow = length(y.vars)*2,
+                                dimnames = list(NULL, c("variable", "between", "n", "nNA", "m", "m.diff", "sd", "d", "se", "low", "upp"))),
+                         stringsAsFactors = FALSE)
 
-    #............................................................
-    # Between-subject design
-    if (!isTRUE(paired)) {
+    loop.mat <- matrix(1:(length(y.vars)*2), ncol = 2, byrow = TRUE)
 
-      #...................
-      # Data and Arguments
+    # Loop over outcome variables
+    for (i in seq_along(y.vars)) {
 
-      # Outcome
-      x.dat <- data[, y.var]
+      data.split <- split(data[, y.vars[i]], f = data[, group.var])
 
-      # Grouping
-      group.dat <- data[, group.var]
+      # Check if variance in both groups
+      var.check <- unlist(lapply(data.split, var)) == 0
+      if (isTRUE(any(var.check))) {
 
-      #...................
-      # Descriptives
+        if (sum(var.check) == 2) {
 
-      res.descript <- Reduce(function(xx, yy) rbind(xx, yy),
-                             suppressWarnings(misty::descript(x.dat, split = group.dat, check = FALSE, output = FALSE))$result)
+          stop(paste0("There is no variance in both groups in the variable ", y.vars[i]), call. = FALSE)
 
-      # Mean difference
-      x.diff <- diff(res.descript[, "m"])
 
-      # Sample size by group
-      n.group <- res.descript[, "n"]
-
-      #...................
-      # Standard deviation
-
-      # Cohens d
-      if (is.null(ref)) {
-
-        # Variance by group
-        var.group <- res.descript[, "var"]
-
-        # Weighted pooled standard deviation
-        if (isTRUE(weighted)) {
-
-          sd.group <- sqrt(((n.group[1L] - 1L)*var.group[1] + (n.group[2L] - 1L)*var.group[2L]) / (sum(n.group) - 2L))
-
-        # Unweigted pooled standard deviation
         } else {
 
-          sd.group <- sum(res.descript["var"]) / 2L
+          stop(paste0("There is no variance in group '", names(which(var.check)), "' in the variable ", y.vars[i]), call. = FALSE)
 
         }
 
-      #...................
-      # Standard deviation from a specific reference group
-      } else {
-
-        sd.group <- sd(x.dat[which(group.dat == ref)], na.rm = TRUE)
-
       }
 
-      #........................................
-      # Cohen's d estimate
-
-      estimate <- x.diff / sd.group
-
-      #........................................
-      # Correction factor
-
-      v <- sum(n.group) - 2L
-
-      # Correction factor based on gamma function
-      if (sum(n.group) < 200L) {
-
-        corr.factor <- gamma(0.5*v) / ((sqrt(v / 2)) * gamma(0.5 * (v - 1)))
-
-      # Correction factor based on approximation
-      } else {
-
-        corr.factor <- (1L - (3L / (4L * v - 1L)))
-
-      }
-
-      # Bias-corrected Cohen's d
-      if (isTRUE(correct) && isTRUE(weighted)) {
-
-       estimate <- estimate*corr.factor
-
-      }
-
-      #........................................
-      # Confidence interval
-
-      if (isTRUE(weighted)) {
-
-        # Harmonic mean
-        n.harm <- 1 / mean(1 / n.group)
-
-        # True standard error (Hedges, 1981)
-        estimate.SE <- sqrt((v / (v - 2L)) * 2L / n.harm * (1L + estimate^2L * n.harm / 2L) - (estimate^2L / corr.factor^2L))
-
-        # Noncentrality parameter
-        ncp <- estimate * sqrt(n.harm / 2L)
-
-        # Confidence interval around ncp
-        conf.int.ncp  <- c(suppressWarnings(qt((1L - conf.level) / 2L, v, ncp = ncp)),
-                           suppressWarnings(qt(1L - (1L - conf.level) / 2L, v, ncp = ncp)))
-
-        # Confidence interval
-        conf.int <- conf.int.ncp / (ncp / estimate)
-
-        # Not a number
-        conf.int <- ifelse(is.nan(conf.int), NA, conf.int)
-
-      } else {
-
-        # Standard error (Hunter & Schmidt, 2004)
-        estimate.SE <- sqrt((sum(n.group) - 1L) / (sum(n.group) - 3L)  * ((4L / sum(n.group)) * (1L + (estimate^2L / 8L))))
-
-        # t quantile
-        t.quantile <- -qt((1L - conf.level) / 2L, (sum(n.group) - 2L))
-
-        # Confidence interval
-        conf.int <- c(estimate - t.quantile * estimate.SE, estimate + t.quantile * estimate.SE)
-
-      }
-
-    #............................................................
-    # Within-subject design
-    } else {
-
-      #...................
-      # Data and Arguments
-
-      y1 <- data[, y.var[1L]]
-      y2 <- data[, y.var[2L]]
-
-      y.r <- cor(y1, y2, use = "complete.obs")
-
-      y.dat <- na.omit(data.frame(y1, y2, stringsAsFactors = FALSE))
-
-      #...................
-      # Descriptives
-
-      res.descript <- suppressWarnings(misty::descript(y.dat, check = FALSE, output = FALSE))$result
-
-      # Mean difference
-      x.diff <- mean(y2 - y1, na.rm = TRUE)
-
-      # Sample size
-      n <- nrow(y.dat)
-
-      #...................
-      # Standard deviation
-
-      # Cohens d
-      if (is.null(ref)) {
-
-        # Weighted pooled standard deviation
-        if (isTRUE(weighted)) {
-
-          sd.group <- sqrt(sum(res.descript$var) - 2L * y.r * prod(res.descript$sd))
-
-        # Unweigted pooled standard deviation
-        } else {
-
-          sd.group <- sqrt(mean(res.descript$var))
-
-        }
-
-      # Standard deviation from a specific ref
-      } else {
-
-        sd.group <- sd(data[, ref], na.rm = TRUE)
-
-      }
-
-      #........................................
-      # Cohen's d estimate
-
-      # Cohen's d.rm
-      if (isTRUE(weighted)) {
-
-        estimate <- x.diff / sd.group * sqrt(2L*(1L -y.r))
-
-      # Cohen's d.av
-      } else {
-
-        estimate <- x.diff / sd.group
-
-      }
-
-      #........................................
-      # Correction factor
-
-      v <- n*2L - 2L
-
-      # Correction factor based on gamma function
-      if (n*2L < 200L) {
-
-        corr.factor <- gamma(0.5*v) / ((sqrt(v / 2L)) * gamma(0.5 * (v - 1L)))
-
-      # Correction factor based on approximation
-      } else {
-
-        corr.factor <- (1L - (3L / (4L * v - 1L)))
-
-      }
-
-      # Bias-corrected Cohen's d
-      if (isTRUE(correct) && isTRUE(weighted)) {
-
-        estimate <- estimate*corr.factor
-
-      }
-
-      #........................................
-      # Confidence interval
-
-      # Cohen's d.rm
-      if (isTRUE(weighted)) {
-
-        # True standard error (Hedges, 1981)
-        estimate.SE <- sqrt((v / (v - 2L)) * (2L*(1L - y.r) / n) * (1L + estimate^2L * (n / (2L*(1L - y.r)))) - (estimate^2L / corr.factor^2L))
-
-        # Noncentrality parameter
-        ncp <- estimate * sqrt(n / (2L*(1L - y.r)))
-
-        # Confidence interval around ncp
-        conf.int.ncp  <- c(suppressWarnings(qt((1L - conf.level) / 2L, v, ncp = ncp)),
-                           suppressWarnings(qt(1L - (1L - conf.level) / 2L, v, ncp = ncp)))
-
-        # Confidence interval
-        conf.int <- conf.int.ncp / (ncp / estimate)
-
-      # Cohen's d.av
-      } else {
-
-        # Standard error (Algina & Keselman, 2003, p. 539)
-        estimate.SE <- sqrt((2L*(sum(res.descript$var) - 2L * cov(y1, y2, use = "complete.obs"))) / (n*sum(res.descript$var)))
-
-        # t quantile
-        t.quantile <- -qt((1L - conf.level) / 2L, n - 1L)
-
-        # Confidence interval
-        conf.int <-  c(estimate - t.quantile * estimate.SE, estimate + t.quantile * estimate.SE)
-
-      }
+      result[loop.mat[i, ], ] <- data.frame(variable = y.vars[i],
+                                            cohens.d.default(x = data.split[[1L]],
+                                                             y = data.split[[2L]],
+                                                             paired = FALSE, weighted = weighted, cor = cor,
+                                                             ref = ref, correct = correct, alternative = alternative,
+                                                             conf.level = conf.level, group = NULL, split = NULL,
+                                                             sort.var = sort.var, digits = digits, as.na = NULL,
+                                                             check = check, output = FALSE)$result[, -1L],
+                                            stringsAsFactors = FALSE)
+
+      result[loop.mat[i, ], "between"] <- names(data.split)
 
     }
 
   #----------------------------------------
-  # More than one outcome variable
+  # Grouping, No Split
+  } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-  } else {
+    object.group <- lapply(split(data[, var.formula], f = group),
+                           function(y) cohens.d.formula(formula, data = y, weighted = weighted, cor = cor,
+                                                        ref = ref, correct = correct, alternative = alternative,
+                                                        conf.level = conf.level, group = NULL, split = NULL,
+                                                        sort.var = sort.var, digits = digits, as.na = NULL,
+                                                        check = check, output = FALSE)$result)
 
-    result <- lapply(y.var, function(y) cohens.d(paste(eval(parse(text = "y")), "~", eval(parse(text = "group.var"))),
-                                                 data = data, paired = FALSE, weighted = weighted, correct = correct, ref = ref,
-                                                 conf.level = conf.level, as.na = as.na, check = FALSE, output = FALSE)$result)
+    result <- data.frame(group = rep(names(object.group), each = length(y.vars)*2),
+                         eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
+                                                                   collapse = ", "), ")"))), stringsAsFactors = FALSE)
 
-    result <- Reduce(function(xx, yy) rbind(xx, yy, make.row.names = FALSE), result)
+  #----------------------------------------
+  # No Grouping, Split
+  } else if (isTRUE(is.null(group) && !is.null(split))) {
+
+    result <- lapply(split(data[, var.formula], f = split),
+                     function(y) cohens.d.formula(formula, data = y, weighted = weighted, cor = cor,
+                                                  ref = ref, correct = correct, alternative = alternative,
+                                                  conf.level = conf.level, group = NULL, split = NULL,
+                                                  sort.var = sort.var, digits = digits, as.na = NULL,
+                                                  check = check, output = FALSE)$result)
+
+  #----------------------------------------
+  # Grouping, Split
+  } else if (isTRUE(!is.null(group) && !is.null(split))) {
+
+    result <- lapply(split(data.frame(data[, var.formula], .group = group, stringsAsFactors = FALSE), f = split),
+                     function(y) cohens.d.formula(formula, data = y, weighted = weighted, cor = cor,
+                                                  ref = ref, correct = correct, alternative = alternative,
+                                                  conf.level = conf.level, group = y$.group, split = NULL,
+                                                  sort.var = sort.var, digits = digits, as.na = NULL,
+                                                  check = check, output = FALSE)$result)
 
   }
 
-  ####################################################################################
-  # Return object
+  #-----------------------------------------------------------------------------------
+  # Return object and output
 
-  #----------------------------------------
-  # One outcome variable
-
-  if ((!isTRUE(paired) && length(y.var) == 1L) || (isTRUE(paired) && length(y.var) == 2L)) {
-
-    #.......................................
-    # Between-subject design
-    if (!isTRUE(paired)) {
-
-      object <- list(call = match.call(),
-                     type = "cohens.d",
-                     data = data,
-                     args = list(formula = formula, paired = paired, weighted = weighted, correct = correct, ref = ref,
-                                 digits = digits, conf.level = conf.level, check = check, output = output),
-                     result = data.frame(variable = y.var,
-                                         n1 = res.descript[1L, "n"], nNA1 = res.descript[1, "nNA"], m1 = res.descript[1, "m"], sd1 = res.descript[1L, "sd"],
-                                         n2 = res.descript[2L, "n"], nNA2 = res.descript[2, "nNA"], m2 = res.descript[2, "m"], sd2 = res.descript[2L, "sd"],
-                                         m.diff =  x.diff, sd = sd.group, estimate = estimate,
-                                         SE = estimate.SE, low = conf.int[1], upp = conf.int[2],
-                                         stringsAsFactors = FALSE))
-
-    #.......................................
-    # Within-subject design
-    } else {
-
-      object <- list(call = match.call(),
-                     type = "cohens.d",
-                     data = data,
-                     args = list(formula = formula, paired = paired, weighted = weighted, correct = correct, ref = ref,
-                                 digits = digits, conf.level = conf.level, check = check, output = output),
-                     result = data.frame(n = res.descript[1, "n"], nNA = nrow(data) - res.descript[1, "n"],
-                                         variable1 = y.var[1], m1 = res.descript[1, "m"], sd1 = res.descript[1, "sd"],
-                                         variable2 = y.var[2], m2 = res.descript[2, "m"], sd2 = res.descript[2, "sd"],
-                                         m.diff =  x.diff, sd = sd.group, estimate = estimate,
-                                         SE = estimate.SE, low = conf.int[1], upp = conf.int[2],
-                                         stringsAsFactors = FALSE))
-
-    }
-
-  #----------------------------------------
-  # More than one outcome variable
-
-  } else {
-
-    object <- list(call = match.call(),
-                   type = "cohens.d",
-                   data = data,
-                   args = list(formula = formula, paired = paired, weighted = weighted, correct = correct, ref = ref,
-                               digits = digits, conf.level = conf.level, check = check, output = output),
-                   result = result)
-
-  }
+  object <- list(call = match.call(),
+                 type = "cohens.d",
+                 sample = "two",
+                 data = list(data = data[, var.formula], group = group, split = split),
+                 args = list(formula = formula, weighted = weighted, cor = cor,
+                             ref = ref.return, correct = correct, alternative = alternative,
+                             conf.level = conf.level, sort.var = sort.var,
+                             na.omit = na.omit, digits = digits, as.na = as.na,
+                             check = check, output = output),
+                 result = result)
 
   class(object) <- "misty.object"
 
-  ####################################################################################
+  #-----------------------------------------------------------------------------------
   # Output
 
   if (isTRUE(output)) { print(object, check = FALSE) }

@@ -88,7 +88,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
   #......
   # Package readxl installed?
-  if (!requireNamespace("readxl", quietly = TRUE)) {
+  if (isTRUE(!requireNamespace("readxl", quietly = TRUE))) {
 
     stop("Package \"readxl\" is needed for this function to work, please install it.",
          call. = FALSE )
@@ -97,7 +97,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
   #......
   # Check input 'file'
-  if (missing(file)) {
+  if (isTRUE(missing(file))) {
 
     stop("Please specify a character string indicating the name of the SPSS data file for the argument 'file'",
          call. = FALSE)
@@ -110,7 +110,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
   #......
   # Check if file exists
-  if (!file.exists(file)) {
+  if (isTRUE(!file.exists(file))) {
 
     stop(paste0("Unable to open Excel data file: ", sQuote(file), " does not exist."),
          call. = FALSE)
@@ -119,7 +119,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -131,7 +131,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
     #......
     # Check input 'trim'
-    if (!is.logical(trim)) {
+    if (isTRUE(!is.logical(trim))) {
 
       stop("Please specify TRUE or FALSE for the argument 'trim'.", call. = FALSE)
 
@@ -139,7 +139,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
     #......
     # Check input 'as.data.frame'
-    if (!is.logical(as.data.frame)) {
+    if (isTRUE(!is.logical(as.data.frame))) {
 
       stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE)
 
@@ -152,7 +152,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
   #-----------------------------------------
   # Argument 'coltypes'
-  if (all(c("skip", "guess", "logical", "numeric", "date", "text", "list") %in% coltypes)) {
+  if (isTRUE(all(c("skip", "guess", "logical", "numeric", "date", "text", "list") %in% coltypes))) {
 
     coltypes <- NULL
 

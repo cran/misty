@@ -9,9 +9,8 @@
 #'                     \code{"spearman"} for Spearman's rank-order correlation coefficient, \code{kendall-b} for
 #'                     Kendall's Tau-b correlation coefficient or \code{kendall-c} for Kendall-Stuart's Tau-c
 #'                     correlation coefficient.
-#' @param use          a character vector giving a method for computing a correlation matrix in the presence
-#'                     of missing values, i.e., \code{"listwise"} for listwise deletion and \code{"pairwise"} for
-#'                     pairwise deletion
+#' @param na.omit      logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
+#'                     (i.e., listwise deletion); if \code{FALSE} (default), pairwise deletion is used.
 #' @param group        a numeric vector, character vector of factor as grouping variable to show results for
 #'                     each group separately, i.e., upper triangular for one group and lower triangular for
 #'                     another group. Note that the grouping variable is limited to two groups.
@@ -36,8 +35,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{alpha.coef}}, \code{\link{cohens.d}}, \code{\link{cont.coef}}, \code{\link{cramers.v}},
-#' \code{\link{multilevel.icc}}, \code{\link{phi.coef}}, \code{\link{na.auxiliary}}, \code{\link{size.cor}}.
+#' \code{\link{cohens.d}}, \code{\link{cor.cont}}, \code{\link{cor.cramer}},
+#' \code{\link{multilevel.icc}}, \code{\link{cor.phi}}, \code{\link{na.auxiliary}}, \code{\link{size.cor}}.
 #'
 #' @references
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
@@ -77,117 +76,26 @@
 #'
 #' # Pearson product-moment correlation coefficient matrix using listwise deletion,
 #' # print sample size and significance values
-#' cor.matrix(dat[, c("x", "y", "z")], use = "listwise", print = "all")
+#' cor.matrix(dat[, c("x", "y", "z")], na.omit = TRUE, print = "all")
 #'
 #' # Pearson product-moment correlation coefficient matrix using listwise deletion,
 #' # print sample size and significance values with Bonferroni correction
-#' cor.matrix(dat[, c("x", "y", "z")], use = "listwise", print = "all", p.adj = "bonferroni")
+#' cor.matrix(dat[, c("x", "y", "z")], na.omit = TRUE, print = "all", p.adj = "bonferroni")
 #'
 #' # Pearson product-moment correlation coefficient matrix using pairwise deletion,
 #' # results for group "a" and "b" separately
 #' cor.matrix(dat[, c("x", "y", "z")], group = dat$group, print = "all")
-cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendall-c"), use = c("listwise", "pairwise"),
+cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendall-c"), na.omit = FALSE,
                        group = NULL, print = c("all", "cor", "n", "p"), tri = c("both", "lower", "upper"),
                        p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
                        digits = 2, p.digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
-
-  ##########################################################################################################
-  # Internal function: Kendall-Stuart Tau-c
-
-  .internal.tau.c <- function(x, y) {
-
-    ####################################################################################
-    # Main Function
-
-    # Contingency table
-    x.table <- table(x, y)
-
-    # Number of rows
-    x.nrow <- nrow(x.table)
-
-    # Number of columns
-    x.ncol <- ncol(x.table)
-
-    # Sample size
-    x.n <- sum(x.table)
-
-    # Minimum of number of rows/columns
-    x.m <- min(dim(x.table))
-
-    #-----------------------------------------
-    if (x.n > 1L && x.nrow > 1L && x.ncol > 1L) {
-
-      pi.c <- pi.d <- matrix(0L, nrow = x.nrow, ncol = x.ncol)
-
-      x.col <- col(x.table)
-      x.row <- row(x.table)
-
-      for (i in 1L:x.nrow) {
-
-        for (j in 1L:x.ncol) {
-
-          pi.c[i, j] <- sum(x.table[x.row < i & x.col < j]) + sum(x.table[x.row > i & x.col > j])
-          pi.d[i, j] <- sum(x.table[x.row < i & x.col > j]) + sum(x.table[x.row > i & x.col < j])
-
-        }
-
-      }
-
-      # Concordant
-      x.con <- sum(pi.c * x.table)/2L
-
-      # Discordant
-      x.dis <- sum(pi.d * x.table)/2L
-
-      # Kendall-Stuart Tau-c
-      tau.c <- (x.m*2L * (x.con - x.dis)) / ((x.n^2L) * (x.m - 1L))
-
-    } else {
-
-      tau.c <- NA
-
-    }
-
-    #-----------------------------------------
-    # If n > 2
-    if (x.n > 2L) {
-
-      # Asymptotic standard error
-      sigma <- sqrt(4L * x.m^2L / ((x.m - 1L)^2L * x.n^4L) * (sum(x.table * (pi.c - pi.d)^2L) - 4L * (x.con - x.dis)^2L/x.n))
-
-      # Test statistic
-      z <- tau.c / sigma
-
-      # Two-tailed p-value
-      pval <- pnorm(abs(z), lower.tail = FALSE)*2L
-
-    } else {
-
-      sigma <- NA
-      pval <- NA
-
-    }
-
-    ####################################################################################
-    # Return object
-
-    object <- list(data = data.frame(x, y, stringsAsFactors = FALSE),
-                   result = list(tau.c = tau.c,
-                                 n = x.n,
-                                 sigma = sigma,
-                                 z = z,
-                                 pval = pval))
-
-    return(object)
-
-  }
 
   ####################################################################################
   # Data
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -195,7 +103,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -203,7 +111,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (!is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -212,6 +120,10 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
   #-----------------------------------------
   # As data frame
 
+  # Is 'x' a matrix?
+  is.mat <- is.matrix(x) && !is.data.frame(x)
+
+  # Coerce to a data frame
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   ####################################################################################
@@ -219,7 +131,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -231,7 +143,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
     #......
     # Check input 'x'
-    if (any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1L)))) {
+    if (isTRUE(any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1L))))) {
 
       stop("Please specify a matrix or data frame with numeric vectors.", call. = FALSE)
 
@@ -239,7 +151,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
     #......
     # Check input 'method'
-    if (any(!method %in% c("pearson", "spearman", "kendall-b", "kendall-c"))) {
+    if (isTRUE(any(!method %in% c("pearson", "spearman", "kendall-b", "kendall-c")))) {
 
       stop("Character string in the argument 'method' does not match with \"pearson\", \"spearman\", \"kendall-b\", or \"kendall-c\".",
            call. = FALSE)
@@ -247,28 +159,59 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
     }
 
     #......
-    # Check input 'use'
-    if (any(!use %in% c("listwise", "pairwise"))) {
+    # Check input 'na.omit'
+    if (isTRUE(!is.logical(na.omit))) {
 
-      stop("Character string in the argument 'use' does not match with \"listwise\" or \"pairwise\".",
-           call. = FALSE)
+      stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
 
     }
 
     #......
     # Check input 'group'
-    if (!is.null(group)) {
+    if (isTRUE(!is.null(group))) {
 
       # Length of 'group' match with 'x'?
-      if (length(group) != nrow(x)) {
+      if (isTRUE(length(group) != nrow(x))) {
 
-        stop("Length of the vector or factor specified in 'group' does not match the number of rows of the matrix or data frame specified in 'x'.",
-             call. = FALSE)
+        if (isTRUE(is.vector(group) && !is.factor(group))) {
+
+          # Matrix
+          if (isTRUE(is.mat)) {
+
+            stop("Length of the vector specified in 'group' does not match the number of rows of the matrix specified in 'x'.",
+                 call. = FALSE)
+
+          # Data frame
+          } else {
+
+            stop("Length of the vector specified in 'group' does not match the number of rows of the data frame specified in 'x'.",
+                 call. = FALSE)
+
+          }
+
+        # Factor
+        } else {
+
+          # Matrix
+          if (isTRUE(is.mat)) {
+
+            stop("Length of the factor specified in 'group' does not match the number of rows of the matrix specified in 'x'.",
+                 call. = FALSE)
+
+          # Data frame
+          } else {
+
+            stop("Length of the factor specified in 'group' does not match the number of rows of the data frame specified in 'x'.",
+                 call. = FALSE)
+
+          }
+
+        }
 
       }
 
-      # Specied two groups only?
-      if (length(na.omit(unique(group))) != 2) {
+      # Specified two groups only?
+      if (isTRUE(length(na.omit(unique(group))) != 2)) {
 
         stop("Please specify a grouping variable with only two groups for the argument 'group'.", call. = FALSE)
 
@@ -277,7 +220,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
       # Zero variance in one of the groups
       x.zero.var <- vapply(split(x, f = group), function(y) apply(y, 2, function(z) length(na.omit(unique(z))) == 1L), FUN.VALUE = logical(ncol(x)))
 
-      if (any(x.zero.var)) {
+      if (isTRUE(any(x.zero.var))) {
 
         stop(paste("Following variables specified in 'x' have zero variance in at least one of the groups specified in 'group': ",
                    paste(names(which(apply(x.zero.var, 1, any))), collapse = ", ")), call. = FALSE)
@@ -288,7 +231,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
     #......
     # Check input 'print'
-    if (any(!print %in% c("all", "cor", "n", "p"))) {
+    if (isTRUE(any(!print %in% c("all", "cor", "n", "p")))) {
 
       stop("Character string(s) in the argument 'print' does not match with \"all\", \"cor\", \"n\", or \"p\".",
            call. = FALSE)
@@ -297,7 +240,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
     #......
     # Check input 'tri'
-    if (any(!tri %in% c("both", "lower", "upper"))) {
+    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) {
 
       stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".",
            call. = FALSE)
@@ -306,7 +249,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
     #......
     # Check input 'p.adj'
-    if (any(!p.adj %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr"))) {
+    if (isTRUE(any(!p.adj %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr")))) {
 
       stop("Character string in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".",
            call. = FALSE)
@@ -315,7 +258,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
     #......
     # Check input 'digits'
-    if (digits %% 1L != 0L || digits < 0L) {
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
 
       stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -323,7 +266,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
     #......
     # Check input 'p.digits'
-    if (p.digits %% 1L != 0L || p.digits < 0L) {
+    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) {
 
       stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE)
 
@@ -331,7 +274,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
     #......
     # Check input 'output'
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -340,7 +283,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
     #......
     # Check input 'x' for zero variance
     x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
-    if (any(x.zero.var)) {
+    if (isTRUE(any(x.zero.var))) {
 
       warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
                      paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
@@ -355,13 +298,13 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
   #-----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-    if (any(x.miss)) {
+    if (isTRUE(any(x.miss))) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
                   paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
@@ -370,7 +313,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
     # Constant variables
     x.con <- vapply(x, function(y) var(as.numeric(y), na.rm = TRUE) == 0L, FUN.VALUE = logical(1))
-    if (any(x.con)) {
+    if (isTRUE(any(x.con))) {
 
       stop(paste0("After converting user-missing values into NA, following variables are constant: ",
                   paste(names(which(x.con)), collapse = ", ")), call. = FALSE)
@@ -380,30 +323,133 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
   }
 
   #----------------------------------------
-
   # Correlation coefficient
+
   method <- ifelse(all(c("pearson", "spearman", "kendall-b", "kendall-c") %in% method), "pearson", method)
 
   #----------------------------------------
-  # Method for handling missing data
+  # Internal function: Kendall-Stuart Tau-c
 
-  use <- ifelse(all(c("listwise", "pairwise") %in% use) || all(use == "pairwise"), "pairwise.complete.obs", "complete.obs")
+  if (isTRUE(method == "kendall-c")) {
+
+    .internal.tau.c <- function(xx, yy) {
+
+      ####################################################################################
+      # Main Function
+
+      # Contingency table
+      x.table <- table(xx, yy)
+
+      # Number of rows
+      x.nrow <- nrow(x.table)
+
+      # Number of columns
+      x.ncol <- ncol(x.table)
+
+      # Sample size
+      x.n <- sum(x.table)
+
+      # Minimum of number of rows/columns
+      x.m <- min(dim(x.table))
+
+      #-----------------------------------------
+      if (isTRUE(x.n > 1L && x.nrow > 1L && x.ncol > 1L)) {
+
+        pi.c <- pi.d <- matrix(0L, nrow = x.nrow, ncol = x.ncol)
+
+        x.col <- col(x.table)
+        x.row <- row(x.table)
+
+        for (i in 1L:x.nrow) {
+
+          for (j in 1L:x.ncol) {
+
+            pi.c[i, j] <- sum(x.table[x.row < i & x.col < j]) + sum(x.table[x.row > i & x.col > j])
+            pi.d[i, j] <- sum(x.table[x.row < i & x.col > j]) + sum(x.table[x.row > i & x.col < j])
+
+          }
+
+        }
+
+        # Concordant
+        x.con <- sum(pi.c * x.table)/2L
+
+        # Discordant
+        x.dis <- sum(pi.d * x.table)/2L
+
+        # Kendall-Stuart Tau-c
+        tau.c <- (x.m*2L * (x.con - x.dis)) / ((x.n^2L) * (x.m - 1L))
+
+      } else {
+
+        tau.c <- NA
+
+      }
+
+      #-----------------------------------------
+      # If n > 2
+      if (isTRUE(x.n > 2L)) {
+
+        # Asymptotic standard error
+        sigma <- sqrt(4L * x.m^2L / ((x.m - 1L)^2L * x.n^4L) * (sum(x.table * (pi.c - pi.d)^2L) - 4L * (x.con - x.dis)^2L/x.n))
+
+        # Test statistic
+        z <- tau.c / sigma
+
+        # Two-tailed p-value
+        pval <- pnorm(abs(z), lower.tail = FALSE)*2L
+
+      } else {
+
+        sigma <- NA
+        pval <- NA
+
+      }
+
+      ####################################################################################
+      # Return object
+
+      object <- list(data = data.frame(xx, yy, stringsAsFactors = FALSE),
+                     result = list(tau.c = tau.c,
+                                   n = x.n,
+                                   sigma = sigma,
+                                   z = z,
+                                   pval = pval))
+
+      return(object)
+
+    }
+
+  }
 
   #-----------------------------------------
   # Listwise deletion
 
-  if (use == "complete.obs") {
+  if (isTRUE(na.omit)) {
 
-    x <- na.omit(x)
+    # Without grouping variable
+    if (isTRUE(is.null(group))) {
+
+      x <- na.omit(x)
+
+    # With grouping variable
+    } else {
+
+      x.group <- na.omit(data.frame(x, group))
+
+      x <- x.group[, colnames(x)]
+      group <- x.group[, "group"]
+
+    }
 
   }
 
   #-----------------------------------------
   # Print correlation, sample size or significance values
 
-  if (all(c("all", "cor", "n", "p") %in% print)) { print <- "cor" }
+  if (isTRUE(all(c("all", "cor", "n", "p") %in% print))) { print <- "cor" }
 
-  if (length(print) == 1 && "all" %in% print) { print <- c("cor", "n", "p") }
+  if (isTRUE(length(print) == 1 && "all" %in% print)) { print <- c("cor", "n", "p") }
 
   #-----------------------------------------
   # Print triangular
@@ -436,27 +482,27 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
   #-----------------------------------------
   # No grouping
 
-  if (is.null(group)) {
+  if (isTRUE(is.null(group))) {
 
     #........................................
     # Correlation matrix
 
     # Product-moment or Spearman correlation coefficient
-    if (!method %in% c("kendall-b", "kendall-c")) {
+    if (isTRUE(!method %in% c("kendall-b", "kendall-c"))) {
 
-      cor.mat <- suppressWarnings(cor(x, use = use, method = method))
+      cor.mat <- suppressWarnings(cor(x, use = "pairwise.complete.obs", method = method))
 
     }
 
     # Kendall Tau-b
-    if (method == "kendall-b") {
+    if (isTRUE(method == "kendall-b")) {
 
-      cor.mat <- suppressWarnings(cor(x, use = use, method = "kendall"))
+      cor.mat <- suppressWarnings(cor(x, use = "pairwise.complete.obs", method = "kendall"))
 
     }
 
     # Kendall-Stuart Tau-c
-    if (method == "kendall-c") {
+    if (isTRUE(method == "kendall-c")) {
 
       cor.mat <- matrix(NA, ncol = ncol(x), nrow = ncol(x), dimnames = list(colnames(x), colnames(x)))
 
@@ -470,7 +516,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
     #........................................
     # Sample size
 
-    if (use == "pairwise.complete.obs") {
+    if (!isTRUE(na.omit)) {
 
       n <- apply(comb, 2, function(y) nrow(na.omit(cbind(x[, y[1]], x[, y[2L]]))))
 
@@ -487,21 +533,21 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
     # p-values
 
     # Product-moment or Spearman correlation coefficient
-    if (!method %in% c("kendall-b", "kendall-c")) {
+    if (isTRUE(!method %in% c("kendall-b", "kendall-c"))) {
 
       pval <- apply(comb, 2, function(y) suppressWarnings(cor.test(x[, y[1L]], x[, y[2L]], method = method))$p.value)
 
     }
 
     # Kendall Tau-b
-    if (method == "kendall-b") {
+    if (isTRUE(method == "kendall-b")) {
 
       pval <- apply(comb, 2, function(y) suppressWarnings(cor.test(x[, y[1L]], x[, y[2L]], method = "kendall"))$p.value)
 
     }
 
     # Kendall-Stuart Tau-c
-    if (method == "kendall-c") {
+    if (isTRUE(method == "kendall-c")) {
 
       pval <- apply(comb, 2, function(y) suppressWarnings(.internal.tau.c(x[, y[1L]], x[, y[2L]])$result$pval))
 
@@ -510,7 +556,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
     ###
 
     # Adjust p-values for multiple comparison
-    if (p.adj != "none") {
+    if (isTRUE(p.adj != "none")) {
 
       pval <- p.adjust(pval, method = p.adj)
 
@@ -524,49 +570,53 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
   } else {
 
+    # At least 3 observations
+    if (isTRUE(any(table(group) < 3))) {
+
+      stop("There are not enough observations for each group specified in 'group' to compute the correlation matrix separately.",
+           call. = FALSE)
+
+    }
+
     # Grouping
     x.group <- split(x, f = group)
 
-    # Method for handling missing data
-    use <- ifelse(use == "pairwise.complete.obs", "pairwise", "listwise")
-
-    object.g1 <- misty::cor.matrix(x.group[[1]], method = method, use = use, group = NULL,
+    object.g1 <- misty::cor.matrix(x.group[[1]], method = method, na.omit = na.omit, group = NULL,
                                    digits = digits, print = print, tri = tri, p.adj = p.adj, p.digits = p.digits,
                                    check = FALSE, output = FALSE)
 
-    object.g2 <- misty::cor.matrix(x.group[[2]], method = method, use = use, group = NULL,
+    object.g2 <- misty::cor.matrix(x.group[[2]], method = method, na.omit = na.omit, group = NULL,
                                    digits = digits, print = print, tri = tri, p.adj = p.adj, p.digits = p.digits,
                                    check = FALSE, output = FALSE)
+
+    #........................................
+    # Correlation matrix, Sample size, and p-values
+
+    cor.mat <- object.g1$result$cor
+
+    n.mat <- object.g1$result$n
+
+    p.mat <- object.g1$result$p
+
+    #........................................
+    # Lower triangular: Group 1; Upper triangular: Group 2
+
+    cor.mat[upper.tri(cor.mat)] <- object.g2$result$cor[upper.tri(object.g2$result$cor)]
+    n.mat[upper.tri(n.mat)] <- object.g2$result$n[upper.tri(object.g2$result$n)]
+    p.mat[upper.tri(p.mat)] <- object.g2$result$p[upper.tri(object.g2$result$p)]
 
   }
 
   ####################################################################################
   # Return object
 
-  if (is.null(group)) {
-
-    object <- list(call = match.call(),
-                   type = "cor.matrix",
-                   data = x,
-                   args = list(method = method, use = use, group = group, print = print,
-                               tri = tri, p.adj = p.adj, digits = digits, p.digits = p.digits,
-                               as.na = as.na, check = check, output = output),
-                   result = list(cor = cor.mat, n = n.mat, p = p.mat))
-
-  } else {
-
-    object <- list(call = match.call(),
-                   type = "cor.matrix",
-                   data = list(group1 = x.group[[1L]], group2 = x.group[[2L]]),
-                   args = list(method = method, use = use, group = group, print = print,
-                               tri = tri, p.adj = p.adj, digits = digits, p.digits = p.digits,
-                               as.na = as.na, check = check, output = output),
-                   result = list(group1 = list(cor = object.g1$result$cor, n = object.g1$result$n,
-                                               p = object.g1$result$p),
-                                 group2 = list(cor = object.g2$result$cor, n = object.g2$result$n,
-                                               p = object.g2$result$p)))
-
-  }
+  object <- list(call = match.call(),
+                 type = "cor.matrix",
+                 data = x,
+                 args = list(method = method, na.omit = na.omit, group = group, print = print,
+                             tri = tri, p.adj = p.adj, digits = digits, p.digits = p.digits,
+                             as.na = as.na, check = check, output = output),
+                 result = list(cor = cor.mat, n = n.mat, p = p.mat))
 
   class(object) <- "misty.object"
 
@@ -578,5 +628,3 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
   return(invisible(object))
 
 }
-
-

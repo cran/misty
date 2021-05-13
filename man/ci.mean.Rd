@@ -115,8 +115,8 @@ Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psycholog
 John Wiley & Sons.
 }
 \seealso{
-\code{\link{ci.mean.diff}}, \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
-\code{\link{ci.sd}}, \code{\link{descript}}
+\code{\link{test.z}}, \code{\link{test.t}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
+\code{\link{ci.prop}}, \code{\link{ci.var}},  \code{\link{ci.sd}}, \code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

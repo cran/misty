@@ -16,12 +16,12 @@
 #'                    default setting when specifying more than one variable in \code{x} is \code{print = "no"}
 #'                    unless \code{split = TRUE}.
 #' @param freq        logical: if \code{TRUE} (default), absolute frequencies will be shown on the console.
-#' @param split       logical: if \code{TRUE}, output table is split by variables when specifying more than one
-#'                    variable in \code{x}.
+#' @param split       logical: if \code{TRUE}, output table is split by variables when specifying more than
+#'                    one variable in \code{x}.
 #' @param labels      logical: if \code{TRUE} (default), labels for the factor levels will be used.
 #' @param val.col     logical: if \code{TRUE}, values are shown in the columns, variables in the rows.
 #' @param exclude     an integer value indicating the maximum number of unique values for variables to be
-#'                    included in the analysis when specifying more than one variable in \code{x}, i.e.,
+#'                    included in the analysis when specifying more than one variable in \code{x} i.e.,
 #'                    variables with the number of unique values exceeding \code{exclude} will be excluded
 #'                    from the analysis.
 #' @param digits      an integer value indicating the number of decimal places to be used for displaying
@@ -35,15 +35,14 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{crosstab}}, \code{\link{descript}}, \code{\link{multilevel.descript}},
-#' \code{\link{na.descript}}.
+#' \code{\link{crosstab}}, \code{\link{descript}}, \code{\link{multilevel.descript}}, \code{\link{na.descript}}.
 #'
 #' @references
-#' Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New S Language}. Wadsworth & Brooks/Cole.
+#' Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New  S Language}. Wadsworth & Brooks/Cole.
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type},  matrix or data frame specified in
+#' function call (\code{call}), type of analysis (\code{type}),  matrix or data frame specified in
 #' \code{x} (\code{data}), specification of function arguments (\code{args}), and
 #' list with results (\code{result}).
 #'
@@ -109,7 +108,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -117,7 +116,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -125,7 +124,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
   #......
   # Vector, matrix or data frame for the argument 'x'?
-  if (!is.atomic(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.atomic(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -139,17 +138,20 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   #-----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
   }
 
   ####################################################################################
   # Input check
 
+  # Split message
+  message.split <- FALSE
+
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -161,7 +163,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'x': All values missing
-    if (all(is.na(x))) {
+    if (isTRUE(all(is.na(x)))) {
 
        stop("All values in the vector, matrix or data frame specified in the argument 'x' are missing.", call. = FALSE)
 
@@ -169,10 +171,10 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'x': Exclude variables with all missing
-    if (length(x) > 1L) {
+    if (isTRUE(length(x) > 1L)) {
 
       x.na <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-      if (any(x.na)) {
+      if (isTRUE(any(x.na))) {
 
         warning(paste0("Variables with all values missing were excluded from the analysis: ",
                        paste(names(x)[x.na], collapse = ", ")), call. = FALSE)
@@ -186,7 +188,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'print'
-    if (any(!print %in% c("no", "all", "perc", "v.perc"))) {
+    if (isTRUE(any(!print %in% c("no", "all", "perc", "v.perc")))) {
 
       stop("Character string in the argument 'print' does not match with \"no\", \"all\", \"perc\", or \"v.perc\".",
            call. = FALSE)
@@ -195,9 +197,9 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'print'
-    if (!all(c("no", "all", "perc", "v.perc") %in% print)) {
+    if (isTRUE(!all(c("no", "all", "perc", "v.perc") %in% print))) {
 
-      if (length(print) != 1L) {
+      if (isTRUE(length(print) != 1L)) {
 
         stop("Please specify one of the character strings \"no\", \"all\", \"perc\", or \"v.perc\" for the argument 'print'.",
                 call. = FALSE)
@@ -208,7 +210,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'freq'
-    if (!is.logical(freq)) {
+    if (isTRUE(!is.logical(freq))) {
 
       stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE)
 
@@ -216,7 +218,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # No frequencies and percentages
-    if (all(print == "no") && !isTRUE(freq)) {
+    if (isTRUE(all(print == "no") && !isTRUE(freq))) {
 
       stop("Please specify print = \"all\", print = \"perc\", or print = \"v.perc\" when specifying freq = FALSE.",
            call. = FALSE)
@@ -225,15 +227,22 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'split'
-    if (!is.logical(split)) {
+    if (isTRUE(!is.logical(split))) {
 
       stop("Please specify TRUE or FALSE for the argument 'split'.", call. = FALSE)
 
     }
 
+    if (isTRUE(split && ncol(x) == 1)) {
+
+      split <- FALSE
+      message.split <- TRUE
+
+    }
+
     #......
     # Check input 'labels'
-    if (!is.logical(labels)) {
+    if (isTRUE(!is.logical(labels))) {
 
       stop("Please specify TRUE or FALSE for the argument 'labels'.", call. = FALSE)
 
@@ -241,7 +250,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'val.col'
-    if (!is.logical(val.col)) {
+    if (isTRUE(!is.logical(val.col))) {
 
       stop("Please specify TRUE or FALSE for the argument 'val.col'.", call. = FALSE)
 
@@ -249,7 +258,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'exclude'
-    if (exclude %% 1L != 0L || exclude < 0L) {
+    if (isTRUE(exclude %% 1L != 0L || exclude < 0L)) {
 
       stop("Specify a positive integer number for the argument 'exclude'.", call. = FALSE)
 
@@ -257,7 +266,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'digits'
-    if (digits %% 1L != 0L || digits < 0L) {
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -265,7 +274,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'output'
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -281,9 +290,9 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
   #..................
   # One variable
-  if (length(x) == 1L) {
+  if (isTRUE(length(x) == 1L)) {
 
-    if (all(c("no", "all", "perc", "v.perc") %in% print)) { print <- c("perc", "v.perc") }
+    if (isTRUE(all(c("no", "all", "perc", "v.perc") %in% print))) { print <- c("perc", "v.perc") }
 
   #..................
   # More than one variable
@@ -293,23 +302,23 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
       if (!isTRUE(split)) {
 
-        if (all(c("no", "all", "perc", "v.perc") %in% print)) { print <- "no" }
+        if (isTRUE(all(c("no", "all", "perc", "v.perc") %in% print))) { print <- "no" }
 
       } else {
 
-        if (all(c("no", "all", "perc", "v.perc") %in% print)) { print <- c("perc", "v.perc") }
+        if (isTRUE(all(c("no", "all", "perc", "v.perc") %in% print))) { print <- c("perc", "v.perc") }
 
       }
 
     } else {
 
-      if (all(c("no", "all", "perc", "v.perc") %in% print)) { print <- c("perc", "v.perc") }
+      if (isTRUE(all(c("no", "all", "perc", "v.perc") %in% print))) { print <- c("perc", "v.perc") }
 
     }
 
   }
 
-  if (all(print == "all")) { print <- c("perc", "v.perc") }
+  if (isTRUE(all(print == "all"))) { print <- c("perc", "v.perc") }
 
   #-----------------------------------------
   # Factor labels
@@ -321,7 +330,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   if (isTRUE(any(x.factor)) && !isTRUE(labels)) {
 
     # More than one factor
-    if (sum(x.factor) > 1L) {
+    if (isTRUE(sum(x.factor) > 1L)) {
 
       # Unique factor levels for each variable
       factor.unique <- lapply(x[, x.factor, drop = FALSE], levels)
@@ -336,22 +345,22 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
     }
 
     # Remove labels
-    x <- data.frame(lapply(x, function(y) if (is.factor(y)) as.numeric(y) else y), stringsAsFactors = FALSE)
+    x <- data.frame(lapply(x, function(y) if (isTRUE(is.factor(y))) as.numeric(y) else y), stringsAsFactors = FALSE)
 
   }
 
   #-----------------------------------------
   # Exclude variables
 
-  if (length(x) > 1 && !isTRUE(split)) {
+  if (isTRUE(length(x) > 1 && !split)) {
 
     x.exclude <- which(vapply(x, function(y) length(unique(na.omit(y))), FUN.VALUE = 1L) > exclude)
 
-    if (length(x.exclude) > 0L) {
+    if (isTRUE(length(x.exclude) > 0L)) {
 
       x <- x[, -x.exclude, drop = FALSE]
 
-      if (length(x) == 0L) {
+      if (isTRUE(length(x) == 0L)) {
 
         stop(paste0("After excluding variables with more than ", exclude, " unique values, no variables are left for the analysis."),
              call. = FALSE)
@@ -373,7 +382,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   #-----------------------------------------
   # One variable
 
-  if (length(x) == 1L) {
+  if (isTRUE(length(x) == 1L)) {
 
     x.abs <- table(x, useNA = "always")
     x.perc <- prop.table(x.abs) * 100L
@@ -400,7 +409,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   #-----------------------------------------
   # More than one variable
 
-  if (length(x) > 1L) {
+  if (isTRUE(length(x) > 1L)) {
 
     #........................................
     # split = FALSE
@@ -412,7 +421,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
       #...
       # Numeric variables
-      if (any(vapply(x, is.numeric, FUN.VALUE = logical(1)))) {
+      if (isTRUE(any(vapply(x, is.numeric, FUN.VALUE = logical(1))))) {
 
         x.levels <- c(x.levels, na.omit(sort(unique(unlist(x[, vapply(x, is.numeric, FUN.VALUE = logical(1L))])))))
 
@@ -420,12 +429,12 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
       #...
       # Factors
-      if (any(vapply(x, is.factor, FUN.VALUE = logical(1)))) {
+      if (isTRUE(any(vapply(x, is.factor, FUN.VALUE = logical(1))))) {
 
         f.levels <- sort(unique(unname(unlist(sapply(x[, vapply(x, is.factor, FUN.VALUE = logical(1L))], function(y) (as.character(y)))))))
 
         # Factor levels are numbers
-        if (all(unlist(strsplit(f.levels, "")) %in% 0:9)) {
+        if (isTRUE(all(unlist(strsplit(f.levels, "")) %in% 0:9))) {
 
           x.levels <- sort(c(x.levels, as.numeric(f.levels)))
 
@@ -440,7 +449,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
       #...
       # Character
-      if (any(vapply(x, is.character, FUN.VALUE = logical(1L)))) {
+      if (isTRUE(any(vapply(x, is.character, FUN.VALUE = logical(1L))))) {
 
         x.levels <- c(x.levels, na.omit(sort(unique(unlist(x[, vapply(x, is.character, FUN.VALUE = logical(1L))])))))
 
@@ -448,7 +457,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
       #...
       # Logical
-      if (any(vapply(x, is.logical, FUN.VALUE = logical(1)))) {
+      if (isTRUE(any(vapply(x, is.logical, FUN.VALUE = logical(1))))) {
 
         x.levels <- c(x.levels, c(TRUE, FALSE))
 
@@ -517,6 +526,14 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   # Output
 
   if (isTRUE(output)) { print(object, check = FALSE) }
+
+  #--------------------------------------------------------
+  # Message
+  if (isTRUE(message.split)) {
+
+    message("Argument 'split' set to FALSE because only one variable was specified in 'x'.")
+
+  }
 
   return(invisible(object))
 

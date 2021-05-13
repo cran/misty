@@ -82,7 +82,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a numeric vector with integer values, character vector or factor for the argument 'x'.",
          call. = FALSE)
@@ -91,7 +91,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -99,7 +99,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   #......
   # Vector or factor for the argument 'x'?
-  if (!is.atomic(x) && !is.factor(x)) {
+  if (isTRUE(!is.atomic(x) && !is.factor(x))) {
 
     stop("Please specify a numeric vector with integer values, character vector or factor for the argument 'x'.",
          call. = FALSE)
@@ -109,19 +109,19 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
   #-----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable is missing values only?
-    if (all(is.na(x))) {
+    if (isTRUE(all(is.na(x)))) {
 
       stop("After converting user-missing values into NA, 'x' is completely missing.", call. = FALSE)
 
     }
 
     # One unique value
-    if (length(na.omit(unique(x))) == 1) {
+    if (isTRUE(length(na.omit(unique(x))) == 1)) {
 
       stop("After converting user-missing values into NA, 'x' has only one unique value.", call. = FALSE)
 
@@ -144,7 +144,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -156,9 +156,9 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
     #......
     # Input check 'x'
-    if (is.numeric(x)) {
+    if (isTRUE(is.numeric(x))) {
 
-      if (any(na.omit(x) %% 1L != 0L)) {
+      if (isTRUE(any(na.omit(x) %% 1L != 0L))) {
 
         stop("Please specify a vector with integer values, a character vector or a factor for the argument 'x'.",
              call. = FALSE)
@@ -169,7 +169,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
     #......
     # Input check 'x': Zero variance
-    if (length(na.omit(unique(x))) == 1) {
+    if (isTRUE(length(na.omit(unique(x))) == 1)) {
 
       stop("Variable specified in 'x' havs only one unique value.", call. = FALSE)
 
@@ -178,9 +178,9 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
     #......
     # Input check 'ref'
-    if (!is.null(ref)) {
+    if (isTRUE(!is.null(ref))) {
 
-      if (!ref %in% x) {
+      if (isTRUE(!ref %in% x)) {
 
         stop("The reference category specified in 'ref' was not found in 'x'.", call. = FALSE)
 
@@ -190,7 +190,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
     #......
     # Input check 'names'
-    if (!is.character(names)) {
+    if (isTRUE(!is.character(names))) {
 
       stop("Please specify a character string or character vector for the argument 'names'.", call. = FALSE)
 
@@ -198,9 +198,9 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
     #......
     # Input check 'names'
-    if (length(names) > 1L) {
+    if (isTRUE(length(names) > 1L)) {
 
-      if (length(names) != (length(x.unique) - 1L)) {
+      if (isTRUE(length(names) != (length(x.unique) - 1L))) {
 
         stop("The length of the vector specified in 'names' does not match with the number of unique values minus one.",
              call. = FALSE)
@@ -223,15 +223,15 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
   # Reference category
 
   # By default, the last category is the reference
-  if (is.null(ref)) {
+  if (isTRUE(is.null(ref))) {
 
-    if (is.numeric(x) || is.character(x)) {
+    if (isTRUE(is.numeric(x) || is.character(x))) {
 
       ref <- sort(x.unique)[length(x.unique)]
 
     }
 
-    if (is.factor(x)) {
+    if (isTRUE(is.factor(x))) {
 
       ref <- levels(x)[length(levels(x))]
 
@@ -247,7 +247,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
   #-----------------------------------------
   # Missing values
 
-  if (any(is.na(x))) {
+  if (isTRUE(any(is.na(x)))) {
 
     object[is.na(x), ] <- NA
 
@@ -265,7 +265,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
   #-----------------------------------------
   # Variable names
 
-  if (length(names) == ncol(object)) {
+  if (isTRUE(length(names) == ncol(object))) {
 
     colnames(object) <- names
 

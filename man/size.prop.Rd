@@ -5,8 +5,9 @@
 \title{Sample Size Determination for Testing Proportions}
 \usage{
 size.prop(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
-          alternative = c("two.sided", "less", "greater"), alpha = 0.05,
-          beta = 0.1, correct = FALSE, check = TRUE, output = TRUE)
+          alternative = c("two.sided", "less", "greater"),
+          alpha = 0.05, beta = 0.1, correct = FALSE,
+          check = TRUE, output = TRUE)
 }
 \arguments{
 \item{pi}{a number indicating the true value of the probability under the null hypothesis (one-sample test), \eqn{\pi}.0
@@ -36,8 +37,8 @@ Returns an object of class \code{misty.object} with following entries:
 \tabular{ll}{
   \code{call}      \tab function call \cr
   \code{type}      \tab type of the test (i.e., proportion) \cr
-  \code{spec}      \tab specification of function arguments \cr
-  \code{res}       \tab list with the result, i.e., optimal sample size \cr
+  \code{args}      \tab specification of function arguments \cr
+  \code{result}       \tab list with the result, i.e., optimal sample size \cr
 }
 }
 \description{
@@ -79,13 +80,13 @@ size.prop(pi = 0.5, delta = 0.2, sample = "two.sample",
 }
 \references{
 Fleiss, J. L., Levin, B., & Paik, M. C. (2003). \emph{Statistical methods for rates and proportions} (3rd ed.).
-New York: John Wiley & Sons.
+John Wiley & Sons.
 
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-New York: John Wiley & Sons.
+John Wiley & Sons.
 
 Rasch, D., Pilz, J., Verdooren, L. R., & Gebhardt, G. (2011).
-\emph{Optimal experimental design with R}. Boca Raton: Chapman & Hall/CRC.
+\emph{Optimal experimental design with R}. Chapman & Hall/CRC.
 }
 \seealso{
 \code{\link{size.mean}}, \code{\link{size.cor}}

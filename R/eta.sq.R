@@ -18,8 +18,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{cohens.d}}, \code{\link{cont.coef}}, \code{\link{cor.matrix}},
-#' \code{\link{cramers.v}}, \code{\link{phi.coef}}
+#' \code{\link{cohens.d}}, \code{\link{cor.cont}}, \code{\link{cor.matrix}},
+#' \code{\link{cor.cramer}}, \code{\link{cor.phi}}
 #'
 #' @references
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
@@ -50,7 +50,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -58,7 +58,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -66,7 +66,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
   #......
   # Vector, matrix or data frame for the argument 'x'?
-  if (!is.atomic(x) && !is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -74,7 +74,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
   #......
   # Check input 'group'
-  if (missing(group)) {
+  if (isTRUE(missing(group))) {
 
     stop("Please specify a vector, matrix or data frame for the argument 'group'.", call. = FALSE)
 
@@ -90,7 +90,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -103,7 +103,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
     #......
     # Check input 'x': Is numeric?
-    if (any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1)))) {
+    if (isTRUE(any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1))))) {
 
       stop("Please specify a numeric vector, matrix or data frame with numeric vectors for the argument 'x'.",
            call. = FALSE)
@@ -114,9 +114,9 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
     # Check input 'x': Zero variance?
     x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1))
 
-    if (any(x.zero.var)) {
+    if (isTRUE(any(x.zero.var))) {
 
-      if (length(x.zero.var) > 1L) {
+      if (isTRUE(length(x.zero.var) > 1L)) {
 
         warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
                        paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
@@ -131,7 +131,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
     #......
     # Check input 'group': Is integer, character or factors?
-    if (any(vapply(as.data.frame(group, stringsAsFactors = FALSE), function(y) any(as.numeric(y) %% 1L != 0L, na.rm = TRUE), FUN.VALUE = logical(1L)))) {
+    if (isTRUE(any(vapply(as.data.frame(group, stringsAsFactors = FALSE), function(y) any(as.numeric(y) %% 1L != 0L, na.rm = TRUE), FUN.VALUE = logical(1L))))) {
 
       stop("Please specify a integer vector, matrix or data frame with integer vectors, character vectors or factors for the argument 'x'",
            call. = FALSE)
@@ -142,9 +142,9 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
     # Check input 'group': At least two groups?
     group.check <- vapply(as.data.frame(group, stringsAsFactors = FALSE), function(y) length(na.omit(unique(y))) < 2L, FUN.VALUE = logical(1))
 
-    if (any(group.check)) {
+    if (isTRUE(any(group.check))) {
 
-      if (length(group.check) > 1L) {
+      if (isTRUE(length(group.check) > 1L)) {
 
         stop(paste0("Follwing grouping variables specified in 'group' do not have at least two groups: ",
                     paste(names(which(group.check)), collapse = ", ")), call. = FALSE)
@@ -159,7 +159,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
     #......
     # Check input 'digits'
-    if (digits %% 1L != 0L || digits < 0L) {
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
 
       warning("Specify a positive integer number for the argument 'digits'", call. = FALSE)
 
@@ -167,7 +167,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
     #......
     # Check input 'output'
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -181,13 +181,13 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
   #-----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-    if (any(x.miss)) {
+    if (isTRUE(any(x.miss))) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
                   paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
@@ -196,7 +196,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
     # Constant variables
     x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
-    if (any(x.zero.var)) {
+    if (isTRUE(any(x.zero.var))) {
 
       stop(paste0("After converting user-missing values into NA, following variables have only one unique value: ",
                   paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
@@ -218,7 +218,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
   #----------------------------------------
   # One dependent variable, one independent variable
 
-  if (x.ncol && group.dim.null) {
+  if (isTRUE(x.ncol && group.dim.null)) {
 
       # Estimate model
       mod <- aov(x ~ factor(group), data = data.frame(x, group, stringsAsFactors = FALSE))
@@ -243,7 +243,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
   #----------------------------------------
   # More than one dependent variable, one independent variable
 
-  if (!x.ncol && group.dim.null) {
+  if (isTRUE(!x.ncol && group.dim.null)) {
 
     eta <- matrix(NA, ncol = ncol(x), dimnames = list(NULL, colnames(x)))
     for (i in seq_len(ncol(x))) {
@@ -257,7 +257,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
   #----------------------------------------
   # One dependent variable, more than one independent variable
 
-  if (x.ncol && !group.dim.null) {
+  if (isTRUE(x.ncol && !group.dim.null)) {
 
     eta <-  matrix(NA, nrow = ncol(group), dimnames = list(colnames(group), NULL))
     for (i in seq_len(ncol(group))) {
@@ -271,7 +271,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
   #----------------------------------------
   # More than one dependent variable, more than one independent variable
 
-  if (!x.ncol && !group.dim.null) {
+  if (isTRUE(!x.ncol && !group.dim.null)) {
 
     eta <- matrix(NA, ncol = ncol(x), nrow = ncol(group), dimnames = list(colnames(group), colnames(x)))
 

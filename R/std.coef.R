@@ -109,7 +109,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
   #......
   # Check if input 'model' is missing
-  if (missing(model)) {
+  if (isTRUE(missing(model))) {
 
     stop("Input for the argument 'model' is missing.", call. = FALSE)
 
@@ -117,7 +117,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
   #......
   # Check if input 'model' is NULL
-  if (is.null(model)) {
+  if (isTRUE(is.null(model))) {
 
     stop("Input specified for the argument 'model' is NULL.", call. = FALSE)
 
@@ -125,7 +125,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
   #......
   # Check if input 'model' is NULL
-  if (!all(class(model) %in% "lm")) {
+  if (isTRUE(!all(class(model) %in% "lm"))) {
 
     stop("Please specify an \"lm\" object for the argument 'model'.", call. = FALSE)
 
@@ -133,7 +133,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
   #.............
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -145,7 +145,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
     #......
     # Check input 'print'
-    if (!all(print %in% c("all", "stdx", "stdy", "stdyx"))) {
+    if (isTRUE(!all(print %in% c("all", "stdx", "stdy", "stdyx")))) {
 
       stop("Character strings in the argument 'print' do not all match with \"all\", \"stdx\", \"stdy\", or \"stdyx\".",
            call. = FALSE)
@@ -154,7 +154,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
     #......
     # Check input 'digits'
-    if (digits %% 1L != 0L || digits < 0L) {
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -162,7 +162,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
     #......
     # Check input 'p.digits'
-    if (p.digits %% 1L != 0L || p.digits < 0L) {
+    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) {
 
       stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE)
 
@@ -170,7 +170,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
     #......
     # Check input 'output'
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -183,16 +183,16 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
   #................
   # Default settings
-  if (all(c("all", "stdx", "stdy", "stdyx") %in% print)) {
+  if (isTRUE(all(c("all", "stdx", "stdy", "stdyx") %in% print))) {
 
     # All predictors binary
-    if (all(sapply(model$model[, -1, drop = FALSE], function(y) length(unique(y)) == 2L))) {
+    if (isTRUE(all(sapply(model$model[, -1, drop = FALSE], function(y) length(unique(y)) == 2L)))) {
 
       print <- "stdy"
 
     # At least one predictor binary
-    } else if (any(sapply(model$model[, -1L, drop = FALSE], function(y) length(unique(y)) == 2L)) ||
-               any(attr(terms(model), "dataClasses") != "numeric")) {
+    } else if (isTRUE(any(sapply(model$model[, -1L, drop = FALSE], function(y) length(unique(y)) == 2L)) ||
+               any(attr(terms(model), "dataClasses") != "numeric"))) {
 
       print <- c("stdy", "stdyx")
 
@@ -207,7 +207,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
   #................
   # Print = "all"
-  if (length(print) == 1L && "all" %in% print) { print <- c("stdx", "stdy", "stdyx") }
+  if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("stdx", "stdy", "stdyx") }
 
   ####################################################################################
   # Main function
@@ -229,7 +229,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
   #.................
   # Model without interaction term(s), factors excluded
-  if (length(pred.var.int) == 0L && length(pred.var.poly) == 0L) {
+  if (isTRUE(length(pred.var.int) == 0L && length(pred.var.poly) == 0L)) {
 
     # Predictor standard deviations
     sd.pred <- sapply(pred.var[which(attr(terms(model), "dataClasses")[-1] %in% c("numeric", "nmatrix.1"))], function(y) sd(model$model[, y], na.rm = TRUE))
@@ -239,7 +239,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
     #.................
     # Model with interaction term(s)
     sd.pred.var.int <- rep(NA, length(pred.var.int))
-    if (length(pred.var.int) != 0L) {
+    if (isTRUE(length(pred.var.int) != 0L)) {
 
       for (i in seq_along(pred.var.int)) {
 
@@ -254,7 +254,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
     #.................
     # Model with polynomial term(s)
     sd.pred.var.poly <- rep(NA, length(pred.var.poly))
-    if (length(pred.var.poly) != 0L) {
+    if (isTRUE(length(pred.var.poly) != 0L)) {
 
       for (i in seq_along(pred.var.poly)) {
 
@@ -285,7 +285,7 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
   sd.pred <- sd.pred[match(names(coeff), names(sd.pred))]
 
   # Model with intercept
-  if ("(Intercept)" %in% names(model$coefficients)) {
+  if (isTRUE("(Intercept)" %in% names(model$coefficients))) {
 
     coefficients <- rbind(cbind(summary(model)$coefficients,
                           SD = c(NA, sd.pred),

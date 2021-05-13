@@ -24,10 +24,9 @@ Note that \code{as.na()} function is only applied to the argument \code{x}.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
-type of analysis \code{type},
-matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
-list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), matrix or data frame specified in \code{x} (\code{data}), specification of
+function arguments (\code{args}), and list with results (\code{result}).
 }
 \description{
 This function computes eta squared for one or more outcome variables in combination with one or more
@@ -50,8 +49,8 @@ Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psycholog
 New York: John Wiley & Sons.
 }
 \seealso{
-\code{\link{cohens.d}}, \code{\link{cont.coef}}, \code{\link{cor.matrix}},
-\code{\link{cramers.v}}, \code{\link{phi.coef}}
+\code{\link{cohens.d}}, \code{\link{cor.cont}}, \code{\link{cor.matrix}},
+\code{\link{cor.cramer}}, \code{\link{cor.phi}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

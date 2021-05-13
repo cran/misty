@@ -97,7 +97,6 @@ df.merge(adat, fdat, by = "id")
 \seealso{
 \code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.rbind}},
 \code{\link{df.rename}}, \code{\link{df.sort}}
-
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

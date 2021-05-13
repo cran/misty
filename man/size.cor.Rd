@@ -29,8 +29,8 @@ Returns an object of class \code{misty.object} with following entries:
 \tabular{ll}{
   \code{call}      \tab function call \cr
   \code{type}      \tab type of the test (i.e., correlation coefficient) \cr
-  \code{spec}      \tab specification of function arguments \cr
-  \code{res}       \tab list with the result, i.e., optimal sample size \cr
+  \code{args}      \tab specification of function arguments \cr
+  \code{result}       \tab list with the result, i.e., optimal sample size \cr
 }
 }
 \description{

@@ -4,9 +4,9 @@
 \alias{write.sav}
 \title{Write SPSS File}
 \usage{
-write.sav(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NULL, digits = 2,
-          write.csv = FALSE, sep = c(";", ","), na = "", write.sps = FALSE,
-          check = TRUE)
+write.sav(x, file = "SPSS_Data.sav", var.attr = NULL,   pspp.path = NULL,
+          digits = 2, write.csv = FALSE, sep = c(";", ","), na = "",
+          write.sps = FALSE,check = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame to be written in SPSS, vectors are coerced to a data frame.}
@@ -70,7 +70,7 @@ dat <- data.frame(id = 1:5,
                   gender = c(NA, 0, 1, 1, 0),
                   age = c(16, 19, 17, NA, 16),
                   status = c(1, 2, 3, 1, 4),
-                  score = c(511, 506, 497, 502, 491))
+                  score = c(511, 506, 497, 502, 491), stringsAsFactors = FALSE)
 
 # Write SPSS file using the haven package
 write.sav(dat, file = "Dataframe_haven.sav")
@@ -93,7 +93,7 @@ attr <- data.frame(# Variable names
                               "1 = Austria; 2 = former Yugoslavia; 3 = Turkey; 4 = other",
                               ""),
                    # User-missing values
-                   missing = c("", "-99", "-99", "-99", "-99"))
+                   missing = c("", "-99", "-99", "-99", "-99"), stringsAsFactors = FALSE)
 
 # Write SPSS file with variable attributes using the haven package
 write.sav(dat, file = "Dataframe_haven_Attr.sav", var.attr = attr)

@@ -11,16 +11,14 @@ ci.mean.diff(x, ...)
 \method{ci.mean.diff}{default}(x, y, sigma = NULL, sigma2 = NULL,
              var.equal = FALSE, paired = FALSE,
              alternative = c("two.sided", "less", "greater"),
-             conf.level = 0.95, group = NULL, split = NULL,
-             sort.var = FALSE, digits = 2, as.na = NULL,
-             check = TRUE, output = TRUE, ...)
+             conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
+             digits = 2, as.na = NULL, check = TRUE, output = TRUE, ...)
 
 \method{ci.mean.diff}{formula}(formula, data, sigma = NULL, sigma2 = NULL,
-             var.equal = FALSE,
-             alternative = c("two.sided", "less", "greater"),
-             conf.level = 0.95, group = NULL, split = NULL,
-             sort.var = FALSE, na.omit = FALSE, digits = 2,
-             as.na = NULL, check = TRUE, output = TRUE, ...)
+             var.equal = FALSE, alternative = c("two.sided", "less", "greater"),
+             conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
+             na.omit = FALSE, digits = 2, as.na = NULL, check = TRUE,
+             output = TRUE, ...)
 }
 \arguments{
 \item{x}{a numeric vector of data values.}
@@ -100,147 +98,148 @@ function call (\code{call}), type of analysis \code{type}, list with the input s
 and result table (\code{result}).
 }
 \description{
-This function computes a confidence interval for the difference in arithmetic means from independent and
-paired samples with known or unknown population standard deviation or population variance for one or more
-variables, optionally by a grouping and/or split variable.
+This function computes a confidence interval for the difference in arithmetic means in a two-sample and
+paired-sample design samples with known or unknown population standard deviation or population variance
+for one or more variables, optionally by a grouping and/or split variable.
 }
 \examples{
-dat.bs <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
-                                1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2),
-                     group2 = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2,
-                                1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2),
-                     group3 = c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-                                1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2),
-                     x1 = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 4, 3, NA, 5, 3,
-                            3, 2, 6, 3, 1, 4, 3, 5, 6, 7, 4, 3, 6, 4),
-                     x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 3, 3, 3, 1, 3, 6,
-                            3, 5, 2, 6, 8, 3, 4, 5, 2, 1, 3, 1, 2, NA),
-                     x3 = c(7, 8, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
-                            2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
+dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
+                              1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2),
+                   group2 = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2,
+                              1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2),
+                   group3 = c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+                              1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2),
+                   x1 = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 4, 3, NA, 5, 3,
+                          3, 2, 6, 3, 1, 4, 3, 5, 6, 7, 4, 3, 6, 4),
+                   x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 3, 3, 3, 1, 3, 6,
+                          3, 5, 2, 6, 8, 3, 4, 5, 2, 1, 3, 1, 2, NA),
+                   x3 = c(7, 8, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
+                          2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
 
 #--------------------------------------
-# Between-Subject Design
+# Two-sample design
 
-# Two-Sided 95\% Confidence Interval for y1 by group1
+# Two-Sided 95% CI for y1 by group1
 # unknown population variances, unequal variance assumption
-ci.mean.diff(x1 ~ group1, data = dat.bs)
+ci.mean.diff(x1 ~ group1, data = dat1)
 
-# Two-Sided 95\% Confidence Interval for y1 by group1
+# Two-Sided 95% CI for y1 by group1
 # unknown population variances, equal variance assumption
-ci.mean.diff(x1 ~ group1, data = dat.bs, var.equal = TRUE)
+ci.mean.diff(x1 ~ group1, data = dat1, var.equal = TRUE)
 
-# Two-Sided 95\% Confidence Interval with known standard deviations for x1 by group1
-# known population standard deviations, equal standard deviation asssumption
-ci.mean.diff(x1 ~ group1, data = dat.bs, sigma = 1.2)
+# Two-Sided 95% CI with known standard deviations for x1 by group1
+# known population standard deviations, equal standard deviation assumption
+ci.mean.diff(x1 ~ group1, data = dat1, sigma = 1.2)
 
-# Two-Sided 95\% Confidence Interval with known standard deviations for x1 by group1
-# known population standard deviations, unequal standard deviation asssumption
-ci.mean.diff(x1 ~ group1, data = dat.bs, sigma = c(1.5, 1.2))
+# Two-Sided 95% CI with known standard deviations for x1 by group1
+# known population standard deviations, unequal standard deviation assumption
+ci.mean.diff(x1 ~ group1, data = dat1, sigma = c(1.5, 1.2))
 
-# Two-Sided 95\% Confidence Interval with known variance for x1 by group1
+# Two-Sided 95% CI with known variance for x1 by group1
 # known population variances, equal variance asssumption
-ci.mean.diff(x1 ~ group1, data = dat.bs, sigma2 = 1.44)
+ci.mean.diff(x1 ~ group1, data = dat1, sigma2 = 1.44)
 
-# Two-Sided 95\% Confidence Interval with known variance for x1 by group1
+# Two-Sided 95% CI with known variance for x1 by group1
 # known population variances, unequal variance asssumption
-ci.mean.diff(x1 ~ group1, data = dat.bs, sigma2 = c(2.25, 1.44))
+ci.mean.diff(x1 ~ group1, data = dat1, sigma2 = c(2.25, 1.44))
 
-# One-Sided 95\% Confidence Interval for y1 by group1
+# One-Sided 95% CI for y1 by group1
 # unknown population variances, unequal variance assumption
-ci.mean.diff(x1 ~ group1, data = dat.bs, alternative = "less")
+ci.mean.diff(x1 ~ group1, data = dat1, alternative = "less")
 
-# Two-Sided 95\% Confidence Interval for y1 by group1
+# Two-Sided 99% CI for y1 by group1
 # unknown population variances, unequal variance assumption
-ci.mean.diff(x1 ~ group1, data = dat.bs, conf.level = 0.99)
+ci.mean.diff(x1 ~ group1, data = dat1, conf.level = 0.99)
 
-# Two-Sided 95\% Confidence Interval for y1 by group1
+# Two-Sided 95% CI for y1 by group1
 # unknown population variances, unequal variance assumption
 # print results with 3 digits
-ci.mean.diff(x1 ~ group1, data = dat.bs, digits = 3)
+ci.mean.diff(x1 ~ group1, data = dat1, digits = 3)
 
-# Two-Sided 95\% Confidence Interval for y1 by group1
+# Two-Sided 95% CI for y1 by group1
 # unknown population variances, unequal variance assumption
 # convert value 4 to NA
-ci.mean.diff(x1 ~ group1, data = dat.bs, as.na = 4)
+ci.mean.diff(x1 ~ group1, data = dat1, as.na = 4)
 
-# Two-Sided 95\% Confidence Interval for y1, y2, and y3 by group1
+# Two-Sided 95% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption
-ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs)
+ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1)
 
-# Two-Sided 95\% Confidence Interval for y1, y2, and y3 by group1
+# Two-Sided 95% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption,
 # listwise deletion for missing data
-ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs, na.omit = TRUE)
+ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, na.omit = TRUE)
 
-# Two-Sided 95\% Confidence Interval for y1, y2, and y3 by group1
+# Two-Sided 95% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption,
 # analysis by group2 separately
-ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs, group = dat.bs$group2)
+ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
 
-# Two-Sided 95\% Confidence Interval for y1, y2, and y3 by group1
+# Two-Sided 95% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption,
 # analysis by group2 separately, sort by variables
-ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs, group = dat.bs$group2,
+ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2,
              sort.var = TRUE)
 
-# Two-Sided 95\% Confidence Interval for y1, y2, and y3 by group1
+# Two-Sided 95% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption,
 # split analysis by group2
-ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs, split = dat.bs$group2)
+ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
 
-# Two-Sided 95\% Confidence Interval for y1, y2, and y3 by group1
+# Two-Sided 95% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption,
 # analysis by group2 separately, split analysis by group3
-ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs,
-             group = dat.bs$group2, split = dat.bs$group3)
+ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1,
+             group = dat1$group2, split = dat1$group3)
 
 #-----------------
 
 group1 <- c(3, 1, 4, 2, 5, 3, 6, 7)
 group2 <- c(5, 2, 4, 3, 1)
 
-# Two-Sided 95\% Confidence Interval for the mean difference between group1 amd group2
+# Two-Sided 95% CI for the mean difference between group1 amd group2
 # unknown population variances, unequal variance assumption
 ci.mean.diff(group1, group2)
 
-# Two-Sided 95\% Confidence Interval for the mean difference between group1 amd group2
+# Two-Sided 95% CI for the mean difference between group1 amd group2
 # unknown population variances, equal variance assumption
 ci.mean.diff(group1, group2, var.equal = TRUE)
 
 #--------------------------------------
-# Within-Subject Design
-dat.ws <- data.frame(pre = c(1, 3, 2, 5, 7),
-                     post = c(2, 2, 1, 6, 8))
+# Paired sample design
 
-# Two-Sided 95\% Confidence Interval for the mean difference in x1 and x2
+dat2 <- data.frame(pre = c(1, 3, 2, 5, 7),
+                     post = c(2, 2, 1, 6, 8), stringsAsFactors = FALSE)
+
+# Two-Sided 95\% CI for the mean difference in pre and post
 # unknown poulation variance of difference scores
-ci.mean.diff(dat.ws$pre, dat.ws$post, paired = TRUE)
+ci.mean.diff(dat2$pre, dat2$post, paired = TRUE)
 
-# Two-Sided 95\% Confidence Interval for the mean difference in x1 and x2
+# Two-Sided 95\% CI for the mean difference in pre and post
 # known population standard deviation of difference scores
-ci.mean.diff(dat.ws$pre, dat.ws$post, sigma = 2, paired = TRUE)
+ci.mean.diff(dat2$pre, dat2$post, sigma = 2, paired = TRUE)
 
-# Two-Sided 95\% Confidence Interval for the mean difference in x1 and x2
+# Two-Sided 95\% CI for the mean difference in pre and post
 # known population variance of difference scores
-ci.mean.diff(dat.ws$pre, dat.ws$post, sigma2 = 4, paired = TRUE)
+ci.mean.diff(dat2$pre, dat2$post, sigma2 = 4, paired = TRUE)
 
-# One-Sided 95\% Confidence Interval for the mean difference in x1 and x2
-# unknown population variances, unequal variance assumption
-ci.mean.diff(dat.ws$pre, dat.ws$post, alternative = "less", paired = TRUE)
+# One-Sided 95\% CI for the mean difference in pre and post
+# unknown poulation variance of difference scores
+ci.mean.diff(dat2$pre, dat2$post, alternative = "less", paired = TRUE)
 
-# Two-Sided 95\% Confidence Interval for the mean difference in x1 and x2
-# unknown population variances, unequal variance assumption
-ci.mean.diff(dat.ws$pre, dat.ws$post, conf.level = 0.99, paired = TRUE)
+# Two-Sided 99\% CI for the mean difference in pre and post
+# unknown poulation variance of difference scores
+ci.mean.diff(dat2$pre, dat2$post, conf.level = 0.99, paired = TRUE)
 
-# Two-Sided 95\% Confidence Interval for for the mean difference in x1 and x2
-# unknown population variances, unequal variance assumption
+# Two-Sided 95\% CI for for the mean difference in pre and post
+# unknown poulation variance of difference scores
 # print results with 3 digits
-ci.mean.diff(dat.ws$pre, dat.ws$post, paired = TRUE, digits = 3)
+ci.mean.diff(dat2$pre, dat2$post, paired = TRUE, digits = 3)
 
-# Two-Sided 95\% Confidence Interval for y1 by group1
-# unknown population variances, unequal variance assumption
+# Two-Sided 95\% CI for for the mean difference in pre and post
+# unknown poulation variance of difference scores
 # convert value 1 to NA
-ci.mean.diff(dat.ws$pre, dat.ws$post, as.na = 1, paired = TRUE)
+ci.mean.diff(dat2$pre, dat2$post, as.na = 1, paired = TRUE)
 }
 \references{
 Fagerland, M. W., Lydersen S., & Laake, P. (2011). Recommended confidence intervals for two independent binomial

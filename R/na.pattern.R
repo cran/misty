@@ -54,7 +54,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.",
          call. = FALSE)
@@ -63,7 +63,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -71,7 +71,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -83,7 +83,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     #......
     # Matrix or data frame for the argument 'x'?
-    if (!is.matrix(x) && !is.data.frame(x)) {
+    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
 
       stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -91,7 +91,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     #......
     # Check input 'order'
-    if (!is.logical(order)) {
+    if (isTRUE(!is.logical(order))) {
 
       stop("Please specify TRUE or FALSE for the argument 'order'.", call. = FALSE)
 
@@ -99,7 +99,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     #......
     # Check input 'digits'
-    if (digits %% 1L != 0L || digits < 0L) {
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
 
       stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE)
 
@@ -107,7 +107,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     #......
     # Check input 'output'
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -121,9 +121,9 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
   #----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, as.na = as.na, check = check)
+    x <- misty::as.na(x, na = as.na, check = check)
 
   }
 
@@ -156,7 +156,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
   # Remove duplicated rows
   x.na.order.dupl <- x.na.order[!duplicated(x.na.order), ]
 
-  if (!is.null(dim(x.na.order.dupl))) {
+  if (isTRUE(!is.null(dim(x.na.order.dupl)))) {
 
     restab <- rbind(data.frame(pattern = seq_len(nrow(x.na.order.dupl)),
                                n = as.vector(table(patt)),

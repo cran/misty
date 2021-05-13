@@ -56,7 +56,7 @@ na.as(x.mat, value = 2)
 # Data frame
 x.df1 <- data.frame(x1 = c(NA, 2, 3),
                     x2 = c(2, NA, 3),
-                    x3 = c(3, NA, 2))
+                    x3 = c(3, NA, 2), stringsAsFactors = FALSE)
 
 # Replace NA with -99
 na.as(x.df1, value = -99)

@@ -60,7 +60,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
   #...............
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.",
          call. = FALSE)
@@ -69,7 +69,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -77,7 +77,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (!is.matrix(x) && !is.data.frame(x)) {
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.",
          call. = FALSE)
@@ -92,9 +92,9 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
   #----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
-    df <- misty::as.na(df, as.na = as.na, check = check)
+    df <- misty::as.na(df, na = as.na, check = check)
 
   }
 
@@ -102,7 +102,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
   # Input Check
 
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -114,7 +114,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
     #......
     # Check input 'table'
-    if (!is.logical(table)) {
+    if (isTRUE(!is.logical(table))) {
 
       stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
 
@@ -122,7 +122,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
     #......
     # Check input 'digits'
-    if (digits %% 1L != 0L || digits < 0L) {
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
 
       stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE)
 
@@ -130,7 +130,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
     #......
     # Check input 'output'
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 

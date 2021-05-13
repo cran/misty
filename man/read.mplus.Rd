@@ -54,7 +54,7 @@ varnames <- read.mplus(input = "Mplus_Input.inp", return.var = TRUE)
 Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.). Muthen & Muthen.
 }
 \seealso{
-\code{\link{run.mplus}}, \code{\link{write.mplus}}
+\code{\link{run.mplus}}, \code{\link{write.mplus}}, \code{\link{read.sav}}, \code{\link{read.xlsx}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

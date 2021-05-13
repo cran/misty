@@ -1,7 +1,7 @@
 #' Confidence Interval for the Difference in Proportions
 #'
-#' This function computes a confidence interval for the difference in proportions from independent and
-#' paired samples for one or more variables, optionally by a grouping and/or split variable.
+#' This function computes a confidence interval for the difference in proportions in a two-sample
+#' and paired-sample design for one or more variables, optionally by a grouping and/or split variable.
 #'
 #' The Wald confidence interval which is based on the normal approximation to the binomial distribution are
 #' computed by specifying \code{method = "wald"}, while the Newcombe Hybrid Score interval (Newcombe, 1998a;
@@ -76,105 +76,106 @@
 #' @export
 #'
 #' @examples
-#' dat.bs <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
-#'                                 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2),
-#'                      group2 = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2,
-#'                                 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2),
-#'                      group3 = c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-#'                                 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2),
-#'                      x1 = c(0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, NA, 0, 0,
-#'                             1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0),
-#'                      x2 = c(0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1,
-#'                             1, 0, 1, 0, 1, 1, 1, NA, 1, 0, 0, 1, 1, 1),
-#'                      x3 = c(1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0,
-#'                             1, 0, 1, 1, 0, 1, 1, 1, 0, 1, NA, 1, 0, 1))
+#' dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
+#'                               1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2),
+#'                    group2 = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2,
+#'                               1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2),
+#'                    group3 = c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+#'                               1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2),
+#'                    x1 = c(0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, NA, 0, 0,
+#'                           1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0),
+#'                    x2 = c(0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1,
+#'                           1, 0, 1, 0, 1, 1, 1, NA, 1, 0, 0, 1, 1, 1),
+#'                    x3 = c(1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0,
+#'                           1, 0, 1, 1, 0, 1, 1, 1, 0, 1, NA, 1, 0, 1))
 #'
 #' #--------------------------------------
-#' # Between-Subject Design
+#' # Two-sample design
 #'
-#' # Two-Sided 95% Confidence Interval for x1 by group1
+#' # Two-Sided 95% CI for x1 by group1
 #' # Newcombes Hybrid Score interval
-#' ci.prop.diff(x1 ~ group1, data = dat.bs)
+#' ci.prop.diff(x1 ~ group1, data = dat1)
 #'
-#' # Two-Sided 95% Confidence Interval for x1 by group1
-#' # Wald confidence interval
-#' ci.prop.diff(x1 ~ group1, data = dat.bs, method = "wald")
+#' # Two-Sided 95% CI for x1 by group1
+#' # Wald CI
+#' ci.prop.diff(x1 ~ group1, data = dat1, method = "wald")
 #'
-#' # One-Sided 95% Confidence Interval for x1 by group1
+#' # One-Sided 95% CI for x1 by group1
 #' # Newcombes Hybrid Score interval
-#' ci.prop.diff(x1 ~ group1, data = dat.bs, alternative = "less")
+#' ci.prop.diff(x1 ~ group1, data = dat1, alternative = "less")
 #'
-#' # Two-Sided 99% Confidence Interval for x1 by group1
+#' # Two-Sided 99% CI for x1 by group1
 #' # Newcombes Hybrid Score interval
-#' ci.prop.diff(x1 ~ group1, data = dat.bs, conf.level = 0.99)
+#' ci.prop.diff(x1 ~ group1, data = dat1, conf.level = 0.99)
 #'
-#' # Two-Sided 95% Confidence Interval for y1 by group1
+#' # Two-Sided 95% CI for y1 by group1
 #' # # Newcombes Hybrid Score interval, print results with 3 digits
-#' ci.prop.diff(x1 ~ group1, data = dat.bs, digits = 3)
+#' ci.prop.diff(x1 ~ group1, data = dat1, digits = 3)
 #'
-#' # Two-Sided 95% Confidence Interval for y1 by group1
+#' # Two-Sided 95% CI for y1 by group1
 #' # # Newcombes Hybrid Score interval, convert value 0 to NA
-#' ci.prop.diff(x1 ~ group1, data = dat.bs, as.na = 0)
+#' ci.prop.diff(x1 ~ group1, data = dat1, as.na = 0)
 #'
-#' # Two-Sided 95% Confidence Interval for y1, y2, and y3 by group1
+#' # Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # Newcombes Hybrid Score interval
-#' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs)
+#' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1)
 #'
-#' # Two-Sided 95% Confidence Interval for y1, y2, and y3 by group1
+#' # Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # # Newcombes Hybrid Score interval, listwise deletion for missing data
-#' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs, na.omit = TRUE)
+#' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, na.omit = TRUE)
 #'
-#' # Two-Sided 95% Confidence Interval for y1, y2, and y3 by group1
+#' # Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # Newcombes Hybrid Score interval, analysis by group2 separately
-#' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs, group = dat.bs$group2)
+#' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
 #'
-#' # Two-Sided 95% Confidence Interval for y1, y2, and y3 by group1
+#' # Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # Newcombes Hybrid Score interval, analysis by group2 separately, sort by variables
-#' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs, group = dat.bs$group2,
+#' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2,
 #'              sort.var = TRUE)
 #'
-#' # Two-Sided 95% Confidence Interval for y1, y2, and y3 by group1
+#' # Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # split analysis by group2
-#' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs, split = dat.bs$group2)
+#' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
 #'
-#' # Two-Sided 95% Confidence Interval for y1, y2, and y3 by group1
+#' # Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # Newcombes Hybrid Score interval, analysis by group2 separately, split analysis by group3
-#' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat.bs,
-#'              group = dat.bs$group2, split = dat.bs$group3)
+#' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1,
+#'              group = dat1$group2, split = dat1$group3)
 #'
 #' #-----------------
 #'
 #' group1 <- c(0, 1, 1, 0, 0, 1, 0, 1)
 #' group2 <- c(1, 1, 1, 0, 0)
 #'
-#' # Two-Sided 95% Confidence Interval for the mean difference between group1 amd group2
+#' # Two-Sided 95% CI for the mean difference between group1 amd group2
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(group1, group2)
 #'
 #' #--------------------------------------
-#' # Within-Subject Design
-#' dat.ws <- data.frame(pre = c(0, 1, 1, 0, 1),
-#'                      post = c(1, 1, 0, 1, 1), stringsAsFactors = FALSE)
+#' # Paires-sample design
 #'
-#' # Two-Sided 95% Confidence Interval for the mean difference in x1 and x2
+#' dat2 <- data.frame(pre = c(0, 1, 1, 0, 1),
+#'                    post = c(1, 1, 0, 1, 1), stringsAsFactors = FALSE)
+#'
+#' # Two-Sided 95% CI for the mean difference in x1 and x2
 #' # Newcombes Hybrid Score interval
-#' ci.prop.diff(dat.ws$pre, dat.ws$post, paired = TRUE)
+#' ci.prop.diff(dat2$pre, dat2$post, paired = TRUE)
 #'
-#' # Two-Sided 95% Confidence Interval for the mean difference in x1 and x2
-#' # Wald confidence interval
-#' ci.prop.diff(dat.ws$pre, dat.ws$post, method = "wald", paired = TRUE)
+#' # Two-Sided 95% CI for the mean difference in x1 and x2
+#' # Wald CI
+#' ci.prop.diff(dat2$pre, dat2$post, method = "wald", paired = TRUE)
 #'
-#' # One-Sided 95% Confidence Interval for the mean difference in x1 and x2
+#' # One-Sided 95% CI for the mean difference in x1 and x2
 #' # Newcombes Hybrid Score interval
-#' ci.prop.diff(dat.ws$pre, dat.ws$post, alternative = "less", paired = TRUE)
+#' ci.prop.diff(dat2$pre, dat2$post, alternative = "less", paired = TRUE)
 #'
-#' # Two-Sided 99% Confidence Interval for the mean difference in x1 and x2
+#' # Two-Sided 99% CI for the mean difference in x1 and x2
 #' # Newcombes Hybrid Score interval
-#' ci.prop.diff(dat.ws$pre, dat.ws$post, conf.level = 0.99, paired = TRUE)
+#' ci.prop.diff(dat2$pre, dat2$post, conf.level = 0.99, paired = TRUE)
 #'
-#' # Two-Sided 95% Confidence Interval for for the mean difference in x1 and x2
+#' # Two-Sided 95% CI for for the mean difference in x1 and x2
 #' # Newcombes Hybrid Score interval, print results with 3 digits
-#' ci.prop.diff(dat.ws$pre, dat.ws$post, paired = TRUE, digits = 3)
+#' ci.prop.diff(dat2$pre, dat2$post, paired = TRUE, digits = 3)
 ci.prop.diff <- function(x, ...) {
 
   UseMethod("ci.prop.diff")
@@ -182,7 +183,7 @@ ci.prop.diff <- function(x, ...) {
 }
 
 ####################################################################################
-# Confidence interval for the difference of arithmetic means
+# Confidence interval for the difference in proportions
 
 prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) {
 
@@ -210,11 +211,11 @@ prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) 
 
     #.................
     # Wald confidence interval
-    if (method == "wald") {
+    if (isTRUE(method == "wald")) {
 
       #......
       # At least 2 observations for x or y
-      if ((x.n >= 2L || y.n >= 2L) && (var(x) != 0 || var(y) != 0)) {
+      if (isTRUE((x.n >= 2L || y.n >= 2L) && (var(x) != 0 || var(y) != 0))) {
 
         term <- crit * sqrt(p1*(1 - p1) / x.n + p2*(1 - p2) / y.n)
 
@@ -234,23 +235,23 @@ prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) 
 
     #.................
     # Newcombes Hybrid Score interval
-    } else if (method == "newcombe") {
+    } else if (isTRUE(method == "newcombe")) {
 
       #......
       # At least 1 observations for x and y
-      if ((x.n >= 1L && y.n >= 1L)) {
+      if (isTRUE((x.n >= 1L && y.n >= 1L))) {
 
-        if (alternative == "two.sided") {
+        if (isTRUE(alternative == "two.sided")) {
 
           x.ci.wilson <- misty::ci.prop(x, method = "wilson", conf.level = conf.level, output = FALSE)$result
           y.ci.wilson <- misty::ci.prop(y, method = "wilson", conf.level = conf.level, output = FALSE)$result
 
-        } else if (alternative == "less") {
+        } else if (isTRUE(alternative == "less")) {
 
           x.ci.wilson <- misty::ci.prop(x, method = "wilson", alternative = "greater", conf.level = conf.level, output = FALSE)$result
           y.ci.wilson <- misty::ci.prop(y, method = "wilson", alternative = "less", conf.level = conf.level, output = FALSE)$result
 
-        } else if (alternative == "greater") {
+        } else if (isTRUE(alternative == "greater")) {
 
           x.ci.wilson <- misty::ci.prop(x, method = "wilson", alternative = "less", conf.level = conf.level, output = FALSE)$result
           y.ci.wilson <- misty::ci.prop(y, method = "wilson", alternative = "greater", conf.level = conf.level, output = FALSE)$result
@@ -295,11 +296,11 @@ prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) 
 
     #.................
     # Wald confidence interval
-    if (method == "wald") {
+    if (isTRUE(method == "wald")) {
 
       #......
       # At least 2 observations for x or y
-      if (xy.diff.n >= 2 && (var(xy.dat$x) != 0 || var(xy.dat$y) != 0)) {
+      if (isTRUE(xy.diff.n >= 2 && (var(xy.dat$x) != 0 || var(xy.dat$y) != 0))) {
 
         term <- crit * sqrt((b + c) - (b - c)^2 / xy.diff.n) / xy.diff.n
 
@@ -318,22 +319,22 @@ prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) 
 
     #.................
     # Newcombes Hybrid Score interval
-    } else if (method == "newcombe") {
+    } else if (isTRUE(method == "newcombe")) {
 
       # At least 1 observations for x and y
-      if (xy.diff.n >= 1L) {
+      if (isTRUE(xy.diff.n >= 1L)) {
 
-        if (alternative == "two.sided") {
+        if (isTRUE(alternative == "two.sided")) {
 
           x.ci.wilson <- misty::ci.prop(x, method = "wilson", conf.level = conf.level, output = FALSE)$result
           y.ci.wilson <- misty::ci.prop(y, method = "wilson", conf.level = conf.level, output = FALSE)$result
 
-        } else if (alternative == "less") {
+        } else if (isTRUE(alternative == "less")) {
 
           x.ci.wilson <- misty::ci.prop(x, method = "wilson", alternative = "greater", conf.level = conf.level, output = FALSE)$result
           y.ci.wilson <- misty::ci.prop(y, method = "wilson", alternative = "less", conf.level = conf.level, output = FALSE)$result
 
-        } else if (alternative == "greater") {
+        } else if (isTRUE(alternative == "greater")) {
 
           x.ci.wilson <- misty::ci.prop(x, method = "wilson", alternative = "less", conf.level = conf.level, output = FALSE)$result
           y.ci.wilson <- misty::ci.prop(y, method = "wilson", alternative = "greater", conf.level = conf.level, output = FALSE)$result
@@ -342,7 +343,7 @@ prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) 
 
         A <- (a + b) * (c + d) * (a + c) * (b + d)
 
-        if (A == 0) {
+        if (isTRUE(A == 0)) {
 
           phi <- 0
 
@@ -386,7 +387,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check if input 'x' is missing
-  if (missing(x)) {
+  if (isTRUE(missing(x))) {
 
     stop("Please specify a numeric vector for the argument 'x'", call. = FALSE)
 
@@ -394,7 +395,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(x)) {
+  if (isTRUE(is.null(x))) {
 
     stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
 
@@ -402,7 +403,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check if input 'y' is missing
-  if (missing(y)) {
+  if (isTRUE(missing(y))) {
 
     stop("Please specify a numeric vector for the argument 'y'", call. = FALSE)
 
@@ -410,7 +411,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check if input 'x' is NULL
-  if (is.null(y)) {
+  if (isTRUE(is.null(y))) {
 
     stop("Input specified for the argument 'y' is NULL.", call. = FALSE)
 
@@ -419,7 +420,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check input 'paired'
-  if (!is.logical(paired)) {
+  if (isTRUE(!is.logical(paired))) {
 
     stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
 
@@ -440,7 +441,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   } else {
 
     # Length of 'x' and 'y'
-    if (length(x) != length(y)) {
+    if (isTRUE(length(x) != length(y))) {
 
       stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.",
            call. = FALSE)
@@ -454,14 +455,14 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   #----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
     # Replace user-specified values with missing values
-    xy <- misty::as.na(xy, as.na = as.na, check = check)
+    xy <- misty::as.na(xy, na = as.na, check = check)
 
     # Variable with missing values only
     xy.miss <- vapply(xy, function(y) all(is.na(y)), FUN.VALUE = logical(1))
-    if (any(xy.miss)) {
+    if (isTRUE(any(xy.miss))) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
                   paste(names(which(xy.miss)), collapse = ", ")), call. = FALSE)
@@ -475,7 +476,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   if (isTRUE(paired)) {
 
-    if (nrow(na.omit(xy)) < 2) {
+    if (isTRUE(nrow(na.omit(xy)) < 2)) {
 
       stop("After listwise deletion, there is only one or no pair of observations left for the analysis.",
            call. = FALSE)
@@ -489,7 +490,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -499,7 +500,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input 'x'
-    if (!all(unlist(x) %in% c(0L, 1L, NA))) {
+    if (isTRUE(!all(unlist(x) %in% c(0L, 1L, NA)))) {
 
       stop("Please specify a numeric vector with 0 and 1 values for the argument 'x'.", call. = FALSE)
 
@@ -507,7 +508,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input 'y'
-    if (!all(unlist(x) %in% c(0L, 1L, NA))) {
+    if (isTRUE(!all(unlist(x) %in% c(0L, 1L, NA)))) {
 
       stop("Please specify a numeric vector with 0 and 1 values for the argument 'y.", call. = FALSE)
 
@@ -515,7 +516,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input 'method'
-    if (!all(method %in% c("wald", "newcombe"))) {
+    if (isTRUE(!all(method %in% c("wald", "newcombe")))) {
 
       stop("Character string in the argument 'method' does not match with \"wald\", or \"newcombe\".",
            call. = FALSE)
@@ -524,7 +525,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input 'alternative'
-    if (!all(alternative %in%  c("two.sided", "less", "greater"))) {
+    if (isTRUE(!all(alternative %in%  c("two.sided", "less", "greater")))) {
 
       stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".",
            call. = FALSE)
@@ -533,7 +534,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input 'conf.level'
-    if (conf.level >= 1L || conf.level <= 0L) {
+    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) {
 
       stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
            call. = FALSE)
@@ -542,10 +543,10 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input 'group'
-    if (!is.null(group)) {
+    if (isTRUE(!is.null(group))) {
 
       # Independent samples
-      if (!isTRUE(paired)) {
+      if (isTRUE(!isTRUE(paired))) {
 
         stop("Please use formula notation for using a grouping variable in independent samples.",
              call. = FALSE)
@@ -553,14 +554,14 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
       }
 
       # Vector or factor for the argument 'group'?
-      if (!is.vector(group) && !is.factor(group)) {
+      if (isTRUE(!is.vector(group) && !is.factor(group))) {
 
         stop("Please specify a vector or factor for the argument 'group'.", call. = FALSE)
 
       }
 
       # Length of 'group' match with 'x'?
-      if (length(group) != nrow(xy)) {
+      if (isTRUE(length(group) != nrow(xy))) {
 
         stop("Length of the vector or factor specified in 'group' does not match the number of rows of the matrix or data frame in 'data'.",
              call. = FALSE)
@@ -568,7 +569,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
       }
 
       # Input 'group' completely missing
-      if (all(is.na(group))) {
+      if (isTRUE(all(is.na(group)))) {
 
         stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE)
 
@@ -585,7 +586,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input 'split'
-    if (!is.null(split)) {
+    if (isTRUE(!is.null(split))) {
 
       # Independent samples
       if (!isTRUE(paired)) {
@@ -596,14 +597,14 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
       }
 
       # Vector or factor for the argument 'split'?
-      if (!is.atomic(split) && !is.factor(split)) {
+      if (isTRUE(!is.atomic(split) && !is.factor(split))) {
 
         stop("Please specify a vector or factor for the argument 'split'.", call. = FALSE)
 
       }
 
       # Length of 'split' doest not match with 'x'
-      if (length(split) != nrow(xy)) {
+      if (isTRUE(length(split) != nrow(xy))) {
 
         stop("Length of the vector or factor specified in 'split' does not match the number of rows in 'data'.",
              call. = FALSE)
@@ -611,7 +612,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
       }
 
       # Input 'split' completely missing
-      if (all(is.na(split))) {
+      if (isTRUE(all(is.na(split)))) {
 
         stop("The split variable specified in 'split' is completely missing.", call. = FALSE)
 
@@ -628,7 +629,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input 'sort.var'
-    if (!is.logical(sort.var)) {
+    if (isTRUE(!is.logical(sort.var))) {
 
       stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
 
@@ -636,7 +637,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input 'digits'
-    if (digits %% 1L != 0L || digits < 0L) {
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
 
       stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
 
@@ -644,7 +645,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input output
-    if (!is.logical(output)) {
+    if (isTRUE(!is.logical(output))) {
 
       stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
 
@@ -658,39 +659,49 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   #----------------------------------------
   # Method
 
-  if (all(c("wald", "newcombe") %in% method)) { method <- "newcombe" }
+  if (isTRUE(all(c("wald", "newcombe") %in% method))) { method <- "newcombe" }
 
   #----------------------------------------
   # Alternative hypothesis
 
-  if (all(c("two.sided", "less", "greater") %in% alternative)) { alternative <- "two.sided" }
+  if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
   #-----------------------------------------------------------------------------------
   # Main Function
 
   #----------------------------------------
   # No Grouping, No Split
-  if (is.null(group) && is.null(split)) {
+  if (isTRUE(is.null(group) && is.null(split))) {
 
     # Independent sample
     if (!isTRUE(paired)) {
 
-      result <- data.frame(variable = "y",
-                           n1 = length(na.omit(xy$x)), nNA1 = sum(is.na(xy$x)), p1 = mean(xy$x, na.rm = TRUE),
-                           n2 = length(na.omit(xy$y)), nNA2 = sum(is.na(xy$y)), p2 = mean(xy$y, na.rm = TRUE),
-                           p.diff = mean(xy$y, na.rm = TRUE) - mean(xy$x, na.rm = TRUE),
-                           low = prop.diff.conf(x = xy$x, y = xy$y, method = method, alternative = alternative,
-                                               paired = FALSE, conf.level = conf.level, side = "low"),
-                           upp = prop.diff.conf(x = xy$x, y = xy$y, method = method, alternative = alternative,
-                                                paired = FALSE, conf.level = conf.level, side = "upp"),
-                           stringsAsFactors = FALSE, row.names = NULL)
+      result <- misty::df.rbind(data.frame(variable = "y",
+                                           between = 1,
+                                           n = length(na.omit(xy$x)),
+                                           nNA = sum(is.na(xy$x)),
+                                           p = mean(xy$x, na.rm = TRUE),
+                                           stringsAsFactors = FALSE),
+                                data.frame(variable = "y",
+                                           between = 2,
+                                           n = length(na.omit(xy$y)),
+                                           nNA = sum(is.na(xy$y)),
+                                           p = mean(xy$y, na.rm = TRUE),
+                                           p.diff = mean(xy$y, na.rm = TRUE) - mean(xy$x, na.rm = TRUE),
+                                           low = prop.diff.conf(x = xy$x, y = xy$y, method = method, alternative = alternative,
+                                                                paired = FALSE, conf.level = conf.level, side = "low"),
+                                           upp = prop.diff.conf(x = xy$x, y = xy$y, method = method, alternative = alternative,
+                                                                paired = FALSE, conf.level = conf.level, side = "upp"),
+                                           stringsAsFactors = FALSE, row.names = NULL))
 
     # Dependent sample
     } else {
 
       result <- data.frame(variable = "y",
-                           n = nrow(na.omit(xy)), nNA1 = sum(is.na(xy$x)), p1 = mean(xy$x, na.rm = TRUE),
-                                                  nNA2 = sum(is.na(xy$y)), p2 = mean(xy$y, na.rm = TRUE),
+                           n = nrow(na.omit(xy)),
+                           nNA = length(attributes(na.omit(xy))$na.action),
+                           p1 = mean(xy$x, na.rm = TRUE),
+                           p2 = mean(xy$y, na.rm = TRUE),
                            p.diff = mean(xy$y - xy$x, na.rm = TRUE),
                            low = prop.diff.conf(x = xy$x, y = xy$y, method = method, alternative = alternative,
                                                 paired = TRUE, conf.level = conf.level, side = "low"),
@@ -702,15 +713,15 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #----------------------------------------
   # Grouping, No Split
-  } else if (!is.null(group) && is.null(split)) {
+  } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(xy, f = group),
                            function(y) ci.prop.diff.default(x = y$x, y = y$y, method = method,
-                                                                   alternative = alternative,
-                                                                   conf.level = conf.level, paired = paired,
-                                                                   group = NULL, split = NULL, sort.var = sort.var,
-                                                                   na.omit = na.omit, as.na = as.na, check = FALSE,
-                                                                   output = FALSE)$result)
+                                                            alternative = alternative,
+                                                            conf.level = conf.level, paired = paired,
+                                                            group = NULL, split = NULL, sort.var = sort.var,
+                                                            na.omit = na.omit, as.na = as.na, check = FALSE,
+                                                            output = FALSE)$result)
 
     result <- data.frame(group = names(object.group),
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
@@ -718,19 +729,19 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #----------------------------------------
     # No Grouping, Split
-  } else if (is.null(group) && !is.null(split)) {
+  } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(xy, stringsAsFactors = FALSE), f = split),
                      function(y) ci.prop.diff.default(x = y$x, y = y$y,
-                                                             alternative = alternative, method = method,
-                                                             conf.level = conf.level, paired = paired,
-                                                             group = NULL, split = NULL, sort.var = sort.var,
-                                                             na.omit = na.omit, as.na = as.na, check = FALSE,
-                                                             output = FALSE)$result)
+                                                      alternative = alternative, method = method,
+                                                      conf.level = conf.level, paired = paired,
+                                                      group = NULL, split = NULL, sort.var = sort.var,
+                                                      na.omit = na.omit, as.na = as.na, check = FALSE,
+                                                      output = FALSE)$result)
 
   #----------------------------------------
   # Grouping, Split
-  } else if (!is.null(group) && !is.null(split)) {
+  } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(xy, .group = group, stringsAsFactors = FALSE, row.names = NULL), f = split),
                      function(y) ci.prop.diff.default(x = y$x, y = y$y, method = method,
@@ -776,7 +787,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
   #......
   # Check if input 'formula' is missing
-  if (missing(formula) || is.null(formula)) {
+  if (isTRUE(missing(formula) || is.null(formula))) {
 
     stop("Please specify a formula using the argument 'formula'", call. = FALSE)
 
@@ -784,7 +795,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
   #......
   # Check if input 'data' is missing
-  if (missing(data)) {
+  if (isTRUE(missing(data))) {
 
     stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
@@ -792,7 +803,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
   #......
   # Check if input 'data' is NULL
-  if (is.null(data)) {
+  if (isTRUE(is.null(data))) {
 
     stop("Input specified for the argument 'data' is NULL.", call. = FALSE)
 
@@ -818,7 +829,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
   # Check if variables are in the data
   var.data <- !var.formula %in% colnames(data)
-  if (any(var.data)) {
+  if (isTRUE(any(var.data))) {
 
     stop(paste0("Variables specified in the the formula were not found in 'data': ",
                 paste(var.formula[which(var.data)], collapse = ", ")), call. = FALSE)
@@ -826,19 +837,19 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
   }
 
   # Check if input 'formula' has only one grouping variable
-  if (length(group.var) != 1L) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
+  if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
 
   #----------------------------------------
   # Convert user-missing values into NA
 
-  if (!is.null(as.na)) {
+  if (isTRUE(!is.null(as.na))) {
 
     # Replace user-specified values with missing values
-    data[, y.vars] <- misty::as.na(data[, y.vars], as.na = as.na, check = check)
+    data[, y.vars] <- misty::as.na(data[, y.vars], na = as.na, check = check)
 
     # Variable with missing values only
     data.miss <- vapply(data[, y.vars, drop = FALSE], function(y) all(is.na(y)), FUN.VALUE = logical(1))
-    if (any(data.miss)) {
+    if (isTRUE(any(data.miss))) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
                   paste(names(which(data.miss)), collapse = ", ")), call. = FALSE)
@@ -849,11 +860,11 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
   #----------------------------------------
   # Listwise deletion
 
-  if (isTRUE(na.omit) && any(is.na(data[, var.formula]))) {
+  if (isTRUE(na.omit && any(is.na(data[, var.formula])))) {
 
     #......
     # No group and split variable
-    if (is.null(group) && is.null(split)) {
+    if (isTRUE(is.null(group) && is.null(split))) {
 
       x <- na.omit(as.data.frame(data[, var.formula], stringsAsFactors = FALSE))
 
@@ -864,7 +875,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
     #......
     # Group variable, no split variable
-    if (!is.null(group) && is.null(split)) {
+    if (isTRUE(!is.null(group) && is.null(split))) {
 
       data.group <- na.omit(data.frame(data[, var.formula], group = group, stringsAsFactors = FALSE))
 
@@ -878,7 +889,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
     #......
     # No group variable, split variable
-    if (is.null(group) && !is.null(split)) {
+    if (isTRUE(is.null(group) && !is.null(split))) {
 
       data.split <- na.omit(data.frame(data[, var.formula], split = split, stringsAsFactors = FALSE))
 
@@ -892,7 +903,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
     #......
     # Group variable, split variable
-    if (!is.null(group) && !is.null(split)) {
+    if (isTRUE(!is.null(group) && !is.null(split))) {
 
       data.group.split <- na.omit(data.frame(data[, var.formula], group = group, split = split,
                                              stringsAsFactors = FALSE))
@@ -909,7 +920,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
     #......
     # Variable with missing values only
     data.miss <- vapply(data[, var.formula], function(y) all(is.na(y)), FUN.VALUE = logical(1))
-    if (any(data.miss)) {
+    if (isTRUE(any(data.miss))) {
 
       stop(paste0("After listwise deletion, following variables are completely missing: ",
                   paste(names(which(data.miss)), collapse = ", ")), call. = FALSE)
@@ -921,8 +932,8 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
   #.........................................
   # Check
 
-  # Check if grouping varibale has two levels
-  if (length(na.omit(unique(data[, group.var]))) != 2L) {
+  # Check if grouping variable has two levels
+  if (isTRUE(length(na.omit(unique(data[, group.var]))) != 2L)) {
 
     stop("Please specify a grouping variable with exactly two levels.", call. = FALSE)
 
@@ -934,68 +945,72 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
   #----------------------------------------
   # Method
 
-  if (all(c("wald", "newcombe") %in% method)) { method <- "newcombe" }
+  if (isTRUE(all(c("wald", "newcombe") %in% method))) { method <- "newcombe" }
 
   #----------------------------------------
   # Alternative hypothesis
 
-  if (all(c("two.sided", "less", "greater") %in% alternative)) { alternative <- "two.sided" }
+  if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
   #-----------------------------------------------------------------------------------
   # Main Function
 
   #----------------------------------------
   # No Grouping, No Split
-  if (is.null(group) && is.null(split)) {
+  if (isTRUE(is.null(group) && is.null(split))) {
 
-    result <- data.frame(matrix(NA, ncol = 10L, nrow = length(y.vars),
-                                dimnames = list(NULL, c("variable", "n1", "nNA1", "p1", "n2", "nNA2", "p2", "p.diff", "low", "upp"))),
+    result <- data.frame(matrix(NA, ncol = 8L, nrow = length(y.vars)*2,
+                                dimnames = list(NULL, c("variable", "between", "n", "nNA", "p", "p.diff", "low", "upp"))),
                          stringsAsFactors = FALSE)
+
+    loop.mat <- matrix(1:(length(y.vars)*2), ncol = 2, byrow = TRUE)
 
     for (i in seq_along(y.vars)) {
 
       data.split <- split(data[, y.vars[i]], f = data[, group.var])
 
-      result[i, ] <- data.frame(variable = y.vars[i],
-                                ci.prop.diff.default(x = data.split[[1L]], y = data.split[[2L]], method = method,
-                                                     paired = FALSE, alternative = alternative,
-                                                     conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
-                                                     digits = digits, as.na = NULL, check = check, output = FALSE)$result[, -1L],
-                                stringsAsFactors = FALSE)
+      result[loop.mat[i, ], ] <- data.frame(variable = y.vars[i],
+                                            ci.prop.diff.default(x = data.split[[1L]], y = data.split[[2L]], method = method,
+                                                                 paired = FALSE, alternative = alternative,
+                                                                 conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
+                                                                 digits = digits, as.na = NULL, check = check, output = FALSE)$result[, -1L],
+                                            stringsAsFactors = FALSE)
+
+      result[loop.mat[i, ], "between"] <- names(data.split)
 
     }
 
   #----------------------------------------
   # Grouping, No Split
-  } else if (!is.null(group) && is.null(split)) {
+  } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(data[, var.formula], f = group),
-                           function(y) ci.prop.diff(formula, data = y, method = method,
+                           function(y) misty::ci.prop.diff(formula, data = y, method = method,
                                                            alternative = alternative,
                                                            conf.level = conf.level, group = NULL, split = NULL,
                                                            sort.var = sort.var, na.omit = na.omit,
                                                            as.na = as.na, check = FALSE, output = FALSE)$result)
 
-    result <- data.frame(group = rep(names(object.group), each = length(y.vars)),
+    result <- data.frame(group = rep(names(object.group), each = length(y.vars)*2),
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
                                                                    collapse = ", "), ")"))), stringsAsFactors = FALSE)
 
   #----------------------------------------
   # No Grouping, Split
-  } else if (is.null(group) && !is.null(split)) {
+  } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(data[, var.formula], stringsAsFactors = FALSE), f = split),
-                     function(y) ci.prop.diff(formula, data = y, method = method,
+                     function(y) misty::ci.prop.diff(formula, data = y, method = method,
                                                      alternative = alternative, conf.level = conf.level,
                                                      group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                      as.na = as.na, check = FALSE, output = FALSE)$result)
 
   #----------------------------------------
   # Grouping, Split
-  } else if (!is.null(group) && !is.null(split)) {
+  } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(data[, var.formula], .group = group, stringsAsFactors = FALSE), f = split),
-                     function(y) ci.prop.diff(formula, data = y, method = method,
+                     function(y) misty::ci.prop.diff(formula, data = y, method = method,
                                                      alternative = alternative, conf.level = conf.level,
                                                      group = y$.group, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                      as.na = as.na, check = FALSE, output = FALSE)$result)

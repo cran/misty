@@ -64,7 +64,7 @@ size.cor <- function(rho, delta,
   # Input check
 
   # Check input 'check'
-  if (!is.logical(check)) {
+  if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
@@ -75,13 +75,13 @@ size.cor <- function(rho, delta,
   if (isTRUE(check)) {
 
     # Check input 'delta'
-    if (missing(delta)) {
+    if (isTRUE(missing(delta))) {
 
       stop("Please specify a numeric value for the argument 'delta'.", call. = FALSE)
 
     }
 
-    if (delta <= 0L) {
+    if (isTRUE(delta <= 0L)) {
 
       stop("Argument delta out of bound, specify a value > 0.", call. = FALSE)
 
@@ -89,7 +89,7 @@ size.cor <- function(rho, delta,
 
     ###
 
-    if (is.null(rho)) {
+    if (isTRUE(is.null(rho))) {
 
       rho <- 0L
 
@@ -97,7 +97,7 @@ size.cor <- function(rho, delta,
 
     ###
 
-    if (rho <= -1L || rho >= 1L) {
+    if (isTRUE(rho <= -1L || rho >= 1L)) {
 
       stop("Argument rho out of bound, specify a value between -1 and 1.", call. = FALSE)
 
@@ -105,7 +105,7 @@ size.cor <- function(rho, delta,
 
     ###
 
-    if (!all(alternative %in% c("two.sided", "less", "greater"))) {
+    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) {
 
       stop("Argument alternative should be \"two.sided\", \"less\" or \"greater\".", call. = FALSE)
 
@@ -113,7 +113,7 @@ size.cor <- function(rho, delta,
 
     ###
 
-    if (alpha <= 0L || alpha >= 1L) {
+    if (isTRUE(alpha <= 0L || alpha >= 1L)) {
 
       stop("Argument alpha out of bound, specify a value between 0 and 1.", call. = FALSE)
 
@@ -121,7 +121,7 @@ size.cor <- function(rho, delta,
 
     ###
 
-    if (beta <= 0L || beta >= 1L) {
+    if (isTRUE(beta <= 0L || beta >= 1L)) {
 
       stop("Argument beta out of bound, specify a value between 0 and 1.", call. = FALSE)
 
@@ -129,9 +129,9 @@ size.cor <- function(rho, delta,
 
   #-----------------------------------------------------------------------------------
 
-    if (alternative == "two.sided") {
+    if (isTRUE(alternative == "two.sided")) {
 
-      if ((rho + delta) >= 1L || (rho - delta) <= -1L) {
+      if (isTRUE((rho + delta) >= 1L || (rho - delta) <= -1L)) {
 
         stop("Value (rho + delta) or (rho - delta) out of bound.", call. = FALSE)
 
@@ -139,9 +139,9 @@ size.cor <- function(rho, delta,
 
     } else {
 
-      if (alternative == "less") {
+      if (isTRUE(alternative == "less")) {
 
-        if ((rho - delta) <= -1L) {
+        if (isTRUE((rho - delta) <= -1L)) {
 
           stop("Value (rho - delta) out of bound.", call. = FALSE)
 
@@ -149,7 +149,7 @@ size.cor <- function(rho, delta,
 
       } else {
 
-        if ((rho + delta) >= 1L) {
+        if (isTRUE((rho + delta) >= 1L)) {
 
           stop("Value (rho + delta) out of bound.", call. = FALSE)
 
