@@ -6,7 +6,7 @@
 \usage{
 test.welch(formula, data, alternative = c("two.sided", "less", "greater"),
            conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
-           weighted = TRUE, ref = NULL, correct = FALSE, digits = 2,
+           weighted = FALSE, ref = NULL, correct = FALSE, digits = 2,
            p.digits = 4, as.na = NULL, check = TRUE, output = TRUE, ...)
 }
 \arguments{
@@ -33,16 +33,10 @@ Note that this argument is only used when conducting Welch's two-sample t-test.}
 (see \code{\link{cohens.d}}), \eqn{\eta^2} and \eqn{\omega^2} for Welch's ANOVA are
 shown on the console.}
 
-\item{weighted}{logical: if \code{TRUE} (default), the weighted pooled standard deviation is used
-to compute Cohen's d for a two-sample design (i.e., \code{paired = FALSE}), while
-standard deviation of the difference scores is used to compute Cohen's d for a
-paired-sample design (i.e., \code{paired = TRUE}).}
+\item{weighted}{logical: if \code{TRUE}, the weighted pooled standard deviation is used to compute Cohen's d.}
 
-\item{ref}{character string \code{"x"} or \code{"y"} for specifying the reference reference
-group when using the default \code{test.t()} function or a numeric value or
-character string indicating the reference group in a two-sample design when using
-the formula \code{test.t()} function. The standard deviation of the reference variable
-or reference group is used to standardized the mean difference to compute Cohen's d.}
+\item{ref}{a numeric value or character string indicating the reference group. The standard
+deviation of the reference group is used to standardized the mean difference to compute Cohen's d.}
 
 \item{correct}{logical: if \code{TRUE}, correction factor to remove positive bias in small samples is used.}
 
@@ -68,6 +62,11 @@ function call (\code{call}), type of analysis \code{type}, list with the input s
 }
 \description{
 This function performs Welch's two-sample t-test and Welch's ANOVA.
+}
+\details{
+Note that by default Welch's two-sample t-test reports Cohen's d based on the unweighted
+standard deviation (i.e., \code{weighted = FALSE}) when requesting an effect size measure
+(i.e., \code{effsize = TRUE}) following the recommendation by Delacre et al. (2021).
 }
 \examples{
 dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
@@ -132,6 +131,9 @@ test.welch(x ~ group2, data = dat1, descript = FALSE, hypo = FALSE)
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
 John Wiley & Sons.
+
+Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why Hedges' g*s based on the non-pooled
+standard deviation should be reported with Welch's t-test. https://doi.org/10.31234/osf.io/tu6mp
 }
 \seealso{
 \code{\link{test.t}}, \code{\link{test.z}}, \code{\link{test.levene}}, \code{\link{cohens.d}},

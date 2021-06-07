@@ -1,3 +1,19 @@
+### misty 0.4.1 (2021-06-07)
+
+##### Minor features and improvements
+* Function `write.mplus()` writes a Mplus input template awith variables names specified in the DATA command along with the tab-delimited data file by default.
+
+##### User-visible changes
+* Removed the argument `print()` in the `write.mplus()` function.
+
+* Changed the default setting of the argument `weighted` in the `test.welch()` function into `FALSE` following the recommendation
+by Delacre et al. (2021).
+
+##### Bug fix
+* Fixed a bug in the function `cohens.d()`, function printed warning messages of the `pt()` function.
+
+* Fixed a bug in the function `cohens.d()`, function could not deal with more than one variable in a one-sample design.
+
 ### misty 0.4.0 (2021-05-13)
 
 ##### New features

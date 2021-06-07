@@ -61,42 +61,41 @@ default. Note that by default Cohen's d is computed without applying the correct
 for removing the small sample bias (i.e., Hedges' g).
 }
 \details{
- Cohen (1988, p.67) proposed to compute the standardized mean difference in a two-sample design
- by dividing the mean difference by the unweighted pooled standard deviation (i.e.,
- \code{weighted = FALSE}).
+Cohen (1988, p.67) proposed to compute the standardized mean difference in a two-sample design
+by dividing the mean difference by the unweighted pooled standard deviation (i.e.,
+\code{weighted = FALSE}).
 
- Glass et al. (1981, p. 29) suggested to use the standard deviation of the control group
- (e.g., \code{ref = 0} if the control group is coded with 0) to compute the standardized
- mean difference in a two-sample design (i.e., Glass's \eqn{\Delta}) since the standard deviation of the control group
- is unaffected by the treatment and will therefore more closely reflect the population
- standard deviation.
+Glass et al. (1981, p. 29) suggested to use the standard deviation of the control group
+(e.g., \code{ref = 0} if the control group is coded with 0) to compute the standardized
+mean difference in a two-sample design (i.e., Glass's \eqn{\Delta}) since the standard deviation
+of the control group is unaffected by the treatment and will therefore more closely reflect the
+population standard deviation.
 
- Hedges (1981, p. 110) recommended to weight each group's standard deviation by its sample
- size resulting in a weighted and pooled standard deviation (i.e., \code{weighted = TRUE},
- default). According to Hedges and Olkin (1985, p. 81), the standardized mean difference
- based on the weighted and pooled standard deviation has a positive small sample bias,
- i.e., standardized mean difference is overestimated in small samples (i.e., sample size
- less than 20 or less than 10 in each group). However, a correction factor can be applied
- to remove the small sample bias (i.e., \code{correct = TRUE}). Note that the function uses
- a gamma function for computing the correction factor, while a approximation method is
- used if computation based on the gamma function fails.
+Hedges (1981, p. 110) recommended to weight each group's standard deviation by its sample
+size resulting in a weighted and pooled standard deviation (i.e., \code{weighted = TRUE},
+default). According to Hedges and Olkin (1985, p. 81), the standardized mean difference
+based on the weighted and pooled standard deviation has a positive small sample bias,
+i.e., standardized mean difference is overestimated in small samples (i.e., sample size
+less than 20 or less than 10 in each group). However, a correction factor can be applied
+to remove the small sample bias (i.e., \code{correct = TRUE}). Note that the function uses
+a gamma function for computing the correction factor, while a approximation method is
+used if computation based on the gamma function fails.
 
- Note that the terminology is inconsistent because the standardized mean difference based
- on the weighted and pooled standard deviation is usually called Cohen's d, but sometimes
- called Hedges' g. Oftentimes, Cohen's d is called Hedges' d as soon as the small sample
- correction factor is applied. Cumming and Calin-Jageman (2017, p.171) recommended to avoid
- the term Hedges' g , but to report which standard deviation was used to standardized the
- mean difference (e.g., unweighted/weighted pooled standard deviation, or the standard
- deviation of the control group) and whether a small sample correction factor was applied.
+Note that the terminology is inconsistent because the standardized mean difference based
+on the weighted and pooled standard deviation is usually called Cohen's d, but sometimes
+called Hedges' g. Oftentimes, Cohen's d is called Hedges' d as soon as the small sample
+correction factor is applied. Cumming and Calin-Jageman (2017, p.171) recommended to avoid
+the term Hedges' g , but to report which standard deviation was used to standardized the
+mean difference (e.g., unweighted/weighted pooled standard deviation, or the standard
+deviation of the control group) and whether a small sample correction factor was applied.
 
- As for the terminology according to Lakens (2013), in a two-sample design (i.e.,
- \code{paired = FALSE}) Cohen's \eqn{d_s} is computed when using \code{weighted = TRUE, default}
- and Hedges's \eqn{g_s} is computed when using \code{correct = TRUE} in addition. In a
- paired-sample design (i.e., \code{paired = TRUE}), Cohen's \eqn{d_z} is computed when using
- \code{weighted = TRUE, default}, while Cohen's \eqn{d_{rm}} is computed when using
- \code{weighted = FALSE} and \code{cor = TRUE, default} and Cohen's \eqn{d_{av}} is computed when
- using \code{weighted = FALSE} and \code{cor = FALSE}. Corresponding Hedges' \eqn{g_z}, eqn{g_{rm}},
- and \eqn{g_{av}} are computed when using \code{correct = TRUE} in addition.
+As for the terminology according to Lakens (2013), in a two-sample design (i.e.,
+\code{paired = FALSE}) Cohen's \eqn{d_s} is computed when using \code{weighted = TRUE} (default)
+and Hedges's \eqn{g_s} is computed when using \code{correct = TRUE} in addition. In a
+paired-sample design (i.e., \code{paired = TRUE}), Cohen's \eqn{d_z} is computed when using
+\code{weighted = TRUE, default}, while Cohen's \eqn{d_{rm}} is computed when using
+\code{weighted = FALSE} and \code{cor = TRUE, default} and Cohen's \eqn{d_{av}} is computed when
+using \code{weighted = FALSE} and \code{cor = FALSE}. Corresponding Hedges' \eqn{g_z}, eqn{g_{rm}},
 }
 \examples{
 dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,

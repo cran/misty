@@ -4,8 +4,8 @@
 \alias{write.mplus}
 \title{Write Mplus Data File}
 \usage{
-write.mplus(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, na = -99,
-            check = TRUE)
+write.mplus(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8,
+            var = FALSE, na = -99, check = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame to be written to a tab-delimited file.}
@@ -13,10 +13,14 @@ write.mplus(x, file = "Mplus_Data.dat", var = TRUE, print = FALSE, na = -99,
 \item{file}{a character string naming a file with or without the file extension '.dat',
 e.g., \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.}
 
+\item{input}{logical: if \code{TRUE} (default), Mplus input template is written in a text file named
+according to the argument\code{file} with the extension \code{_INPUT.inp}.}
+
+\item{n.var}{a numeric value indicating the number of variables in each line under \code{NAMES ARE}
+in the the Mplus input template.}
+
 \item{var}{logical: if \code{TRUE}, variable names are written in a text file named
 according to the argument\code{file} with the extension \code{_VARNAMES.txt}.}
-
-\item{print}{logical: if \code{TRUE}, variable names are printed on the console.}
 
 \item{na}{a numeric value or character string representing missing values (\code{NA})
 in the data set.}
@@ -27,23 +31,20 @@ in the data set.}
 None.
 }
 \description{
-This function writes a matrix or data frame to a tab-delimited file without variable names and
-a text file with variable names. Only numeric values are allowed, missing data will be coded
-as a single numeric value.
+This function writes a matrix or data frame to a tab-delimited file without variable names,
+a Mplus input template, and a text file with variable names. Note that only numeric variables
+are allowed, i.e., non-numeric variables will be removed from the data set. Missing data
+will be coded as a single numeric value.
 }
 \examples{
 \dontrun{
-dat <- data.frame(id = 1:5,
-                  x = c(NA, 2, 1, 5, 6),
-                  y = c(5, 3, 6, 8, 2),
-                  z = c(2, 1, 1, NA, 4), stringsAsFactors = FALSE)
+# Write Mplus Data File and a Mplus input template
+write.mplus(mtcars)
 
-# Write Mplus Data File and a text file with variable names
-write.mplus(dat)
-
-# Write Mplus Data File "Data.dat" and a text file with variable name,
-# print variable names on the console, missing values coded with -999
-write.mplus(dat, file = "Data.dat", print = TRUE, na = -999)
+# Write Mplus Data File "mtcars.dat" and a Mplus input template "mtcars_INPUT.inp",
+# missing values coded with -999, 4 variables in each line under "NAMES ARE"
+# write variable names in a text file called "mtcars_VARNAMES.inp"
+write.mplus(mtcars, file = "mtcars.dat", n.var = 4, var = TRUE, na = -999)
 }
 }
 \references{

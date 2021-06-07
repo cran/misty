@@ -40,7 +40,7 @@
 #' deviation of the control group) and whether a small sample correction factor was applied.
 #'
 #' As for the terminology according to Lakens (2013), in a two-sample design (i.e.,
-#' \code{paired = FALSE}) Cohen's \eqn{d_s} is computed when using \code{weighted = TRUE, default}
+#' \code{paired = FALSE}) Cohen's \eqn{d_s} is computed when using \code{weighted = TRUE} (default)
 #' and Hedges's \eqn{g_s} is computed when using \code{correct = TRUE} in addition. In a
 #' paired-sample design (i.e., \code{paired = TRUE}), Cohen's \eqn{d_z} is computed when using
 #' \code{weighted = TRUE, default}, while Cohen's \eqn{d_{rm}} is computed when using
@@ -48,8 +48,8 @@
 #' using \code{weighted = FALSE} and \code{cor = FALSE}. Corresponding Hedges' \eqn{g_z}, eqn{g_{rm}},
 #' and \eqn{g_{av}} are computed when using \code{correct = TRUE} in addition.
 #'
-#' @param x           a numeric vector of data values.
-#' @param y           a numeric vector of data values.
+#' @param x           a numeric vector or data frame.
+#' @param y           a numeric vector.
 #' @param mu          a numeric value indicating the reference mean.
 #' @param paired      logical: if \code{TRUE}, Cohen's d for a paired-sample design is computed.
 #' @param weighted    logical: if \code{TRUE} (default), the weighted pooled standard deviation is used
@@ -149,26 +149,42 @@
 #' #--------------------------------------
 #' # One-sample design
 #'
-#' # Cohen's d.z
+#' # Cohen's d.z with two-sided 95% CI
 #' # population mean = 3
 #' cohens.d(dat1$x1, mu = 3)
 #'
-#' # Cohen's d.z (aka Hedges' g.z)
+#' # Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
 #' # population mean = 3, with small sample correction factor
-#'
 #' cohens.d(dat1$x1, mu = 3, correct = TRUE)
 #'
-#' # Cohen's d.z
+#' # Cohen's d.z for more than one variable with two-sided 95% CI
+#' # population mean = 3
+#' cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, data = dat1)
+#'
+#' # Cohen's d.z with two-sided 95% CI
 #' # population mean = 3, by group1 separately
-#' cohens.d(dat1$x1, mu = 3, group = dat1$group1, output = TRUE)
+#' cohens.d(dat1$x1, mu = 3, group = dat1$group1)
 #'
-#' # Cohen's d.z
+#' # Cohen's d.z for more than one variable with two-sided 95% CI
+#' # population mean = 3, by group1 separately
+#' cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, group = dat1$group1)
+#'
+#' # Cohen's d.z with two-sided 95% CI
 #' # population mean = 3, split analysis by group1
-#' cohens.d(dat1$x1, mu = 3, split = dat1$group1, output = TRUE)
+#' cohens.d(dat1$x1, mu = 3, split = dat1$group1)
 #'
-#' # Cohen's d.z
+#' # Cohen's d.z for more than one variable with two-sided 95% CI
+#' # population mean = 3, split analysis by group1
+#' cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, split = dat1$group1)
+#'
+#' # Cohen's d.z with two-sided 95% CI
 #' # population mean = 3, by group1 separately1, split by group2
-#' cohens.d(dat1$x1, mu = 3, group = dat1$group1, split = dat1$group2, output = TRUE)
+#' cohens.d(dat1$x1, mu = 3, group = dat1$group1, split = dat1$group2)
+#'
+#' # Cohen's d.z for more than one variable with two-sided 95% CI
+#' # population mean = 3, by group1 separately1, split by group2
+#' cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, group = dat1$group1,
+#'          split = dat1$group2)
 #'
 #' #--------------------------------------
 #' # Two-sample design
@@ -199,15 +215,15 @@
 #'
 #' # Cohen's d with two-sided 95% CI
 #' # unweighted SD
-#' cohens.d(x1 ~ group1, data = dat1, eighted = FALSE)
+#' cohens.d(x1 ~ group1, data = dat1, weighted = FALSE)
 #'
 #' # Cohen's d.s (aka Hedges' g.s) with two-sided 95% CI
 #' # weighted pooled SD, with small sample correction factor
-#' cohens.d(x1 ~ group1, data = dat1)
+#' cohens.d(x1 ~ group1, data = dat1, correct = TRUE)
 #'
 #' # Cohen's d (aka Hedges' g) with two-sided 95% CI
 #' # Unweighted SD, with small sample correction factor
-#' cohens.d(x1 ~ group1, data = dat1, eighted = FALSE)
+#' cohens.d(x1 ~ group1, data = dat1, weighted = FALSE, correct = TRUE)
 #'
 #' # Cohen's d (aka Glass's delta) with two-sided 95% CI
 #' # SD of reference group 1
@@ -217,13 +233,26 @@
 #' # weighted pooled SD, by group2 separately
 #' cohens.d(x1 ~ group1, data = dat1, group = dat1$group2)
 #'
+#' # Cohen's d.s for more than one variable with two-sided 95% CI
+#' # weighted pooled SD, by group2 separately
+#' cohens.d(c(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
+#'
 #' # Cohen's d.s with two-sided 95% CI
 #' # weighted pooled SD, split analysis by group2
 #' cohens.d(x1 ~ group1, data = dat1, split = dat1$group2)
 #'
+#' # Cohen's d.s for more than one variable with two-sided 95% CI
+#' # weighted pooled SD, split analysis by group2
+#' cohens.d(c(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
+#'
 #' # Cohen's d.s with two-sided 95% CI
 #' # weighted pooled SD, by group2 separately, split analysis by group3
 #' cohens.d(x1 ~ group1, data = dat1,
+#'          group = dat1$group2, split = dat1$group3)
+#'
+#' # Cohen's d.s for more than one variable with two-sided 95% CI
+#' # weighted pooled SD, by group2 separately, split analysis by group3
+#' cohens.d(c(x1, x2, x3) ~ group1, data = dat1,
 #'          group = dat1$group2, split = dat1$group3)
 #'
 #' #--------------------------------------
@@ -271,7 +300,7 @@
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE, split = dat1$group1)
 #'
 #' # Cohen's d.z with two-sided 95% CI
-#' # SD of the difference scores, by group1 separately, split analysis by group1
+#' # SD of the difference scores, by group1 separately, split analysis by group2
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE,
 #'          group = dat1$group1, split = dat1$group2)
 cohens.d <- function(x, ...) {
@@ -343,16 +372,16 @@ cohens.d.function <- function(x, y, mu, paired, weighted, cor, ref, correct,
     ###
 
     end1 <- t
-    while(pt(q = t, df = df, ncp = end1) < conf1) { end1 <- end1 - st }
+    while(suppressWarnings(pt(q = t, df = df, ncp = end1)) < conf1) { end1 <- end1 - st }
 
-    ncp1 <- uniroot(function(x) conf1 - pt(q = t, df = df, ncp = x), c(end1, 2*t - end1))$root
+    ncp1 <- uniroot(function(x) conf1 - suppressWarnings(pt(q = t, df = df, ncp = x)), c(end1, 2*t - end1))$root
 
     ###
 
     end2 <- t
-    while(pt(q = t, df = df, ncp = end2) > conf2) { end2 <- end2 + st }
+    while(suppressWarnings(pt(q = t, df = df, ncp = end2)) > conf2) { end2 <- end2 + st }
 
-    ncp2 <- uniroot(function(x) conf2 - pt(q = t, df = df, ncp = x), c(2*t - end2, end2))$root
+    ncp2 <- uniroot(function(x) conf2 - suppressWarnings(pt(q = t, df = df, ncp = x)), c(2*t - end2, end2))$root
 
     # Confidence interval around ncp
     conf.int <- switch(alternative,
@@ -504,16 +533,16 @@ cohens.d.function <- function(x, y, mu, paired, weighted, cor, ref, correct,
       ###
 
       end1 <- t
-      while(pt(q = t, df = df, ncp = end1) < conf1) { end1 <- end1 - st }
+      while(suppressWarnings(pt(q = t, df = df, ncp = end1)) < conf1) { end1 <- end1 - st }
 
-      ncp1 <- uniroot(function(x) conf1 - pt(q = t, df = df, ncp = x), c(end1, 2*t - end1))$root
+      ncp1 <- uniroot(function(x) conf1 - suppressWarnings(pt(q = t, df = df, ncp = x)), c(end1, 2*t - end1))$root
 
       ###
 
       end2 <- t
-      while(pt(q = t, df = df, ncp = end2) > conf2) { end2 <- end2 + st }
+      while(suppressWarnings(pt(q = t, df = df, ncp = end2)) > conf2) { end2 <- end2 + st }
 
-      ncp2 <- uniroot(function(x) conf2 - pt(q = t, df = df, ncp = x), c(2*t - end2, end2))$root
+      ncp2 <- uniroot(function(x) conf2 - suppressWarnings(pt(q = t, df = df, ncp = x)), c(2*t - end2, end2))$root
 
       # Confidence interval around ncp
       conf.int <- switch(alternative,
@@ -650,16 +679,16 @@ cohens.d.function <- function(x, y, mu, paired, weighted, cor, ref, correct,
     ###
 
     end1 <- t
-    while(pt(q = t, df = df, ncp = end1) < conf1) { end1 <- end1 - st }
+    while(suppressWarnings(pt(q = t, df = df, ncp = end1)) < conf1) { end1 <- end1 - st }
 
-    ncp1 <- uniroot(function(x) conf1 - pt(q = t, df = df, ncp = x), c(end1, 2*t - end1))$root
+    ncp1 <- uniroot(function(x) conf1 - suppressWarnings(pt(q = t, df = df, ncp = x)), c(end1, 2*t - end1))$root
 
     ###
 
     end2 <- t
-    while(pt(q = t, df = df, ncp = end2) > conf2) { end2 <- end2 + st }
+    while(suppressWarnings(pt(q = t, df = df, ncp = end2)) > conf2) { end2 <- end2 + st }
 
-    ncp2 <- uniroot(function(x) conf2 - pt(q = t, df = df, ncp = x), c(2*t - end2, end2))$root
+    ncp2 <- uniroot(function(x) conf2 - suppressWarnings(pt(q = t, df = df, ncp = x)), c(2*t - end2, end2))$root
 
     # Confidence interval around ncp
     conf.int <- switch(alternative,
@@ -711,10 +740,10 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   }
 
   #......
-  # Check input 'paired'
-  if (isTRUE(!is.logical(paired))) {
+  # Check if input 'x' has length = 0
+  if (isTRUE(length(x) == 0)) {
 
-    stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
+    stop("Input specified for the argument 'x' has length = 0.", call. = FALSE)
 
   }
 
@@ -722,16 +751,32 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   # List or Dataframe
 
   #......
+  # Check input 'paired'
+  if (isTRUE(!is.logical(paired))) {
+
+    stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
+
+  }
+
+  #......
   # One-sample design
   if (is.null(y)) {
 
-    xy  <- data.frame(x = x, stringsAsFactors = FALSE)
+    if (isTRUE(is.null(dim(x)))) {
+
+      xy  <- data.frame(x = x, stringsAsFactors = FALSE)
+
+    } else {
+
+      xy <- x
+
+    }
 
   #......
   # Two-sample design
   } else if (!isTRUE(paired)) {
 
-    xy <- list(x = x, y = y, stringsAsFactors = FALSE)
+    xy <- list(x = x, y = y)
 
   #......
   # Paired-sample design
@@ -979,20 +1024,22 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   # No Grouping, No Split
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    # Compute Cohen's d and confidence intervals
-    temp <- cohens.d.function(x = x, y = y, paired = paired, weighted = weighted,
-                              cor = cor, ref = ref, correct = correct, mu = mu,
-                              alternative = alternative, conf.level = conf.level)
-
     #......
     # One-sample
     switch(sample, one = {
 
-      result <- data.frame(variable = "x",
-                           n = length(na.omit(x)),
-                           nNA = length(attributes(na.omit(x))$na.action),
-                           m = mean(x, na.rm = TRUE),
-                           m.diff =  temp$m.diff,
+      # Compute Cohen's d and confidence intervals
+      temp <- Reduce(function(xx, yy) rbind(xx, yy, make.row.names = FALSE),
+                     lapply(names(xy), function(z) cohens.d.function(eval(parse(text = "xy[, z]")), eval(parse(text = "y")),
+                                                                     paired = paired, weighted = weighted,
+                                                                     cor = cor, ref = ref, correct = correct, mu = mu,
+                                                                     alternative = alternative, conf.level = conf.level)))
+
+      result <- data.frame(variable = colnames(xy),
+                           n = sapply(xy, function(y) length(na.omit(y))),
+                           nNA = sapply(xy, function(y) length(attributes(na.omit(y))$na.action)),
+                           m = sapply(xy, function(y) mean(y, na.rm = TRUE)),
+                           m.diff = temp$m.diff,
                            sd = temp$sd,
                            d = temp$d,
                            se = temp$se,
@@ -1003,6 +1050,11 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
     #......
     # Two-sample
     }, two = {
+
+      # Compute Cohen's d and confidence intervals
+      temp <- cohens.d.function(x = x, y = y, paired = paired, weighted = weighted,
+                                cor = cor, ref = ref, correct = correct, mu = mu,
+                                alternative = alternative, conf.level = conf.level)
 
       result <- misty::df.rbind(data.frame(variable = "y",
                                            between = 1,
@@ -1027,6 +1079,11 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
     # Paired-sample
     }, paired = {
 
+      # Compute Cohen's d and confidence intervals
+      temp <- cohens.d.function(x = x, y = y, paired = paired, weighted = weighted,
+                                cor = cor, ref = ref, correct = correct, mu = mu,
+                                alternative = alternative, conf.level = conf.level)
+
       result <- data.frame(variable = "y",
                            n = nrow(na.omit(xy)),
                            nNA = length(attributes(na.omit(xy))$na.action),
@@ -1046,13 +1103,30 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   # Grouping, No Split
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    object.group <- lapply(split(xy, f = group),
-                           function(y) cohens.d.default(x = y$x, y = y$y, mu = mu, paired = paired, weighted = weighted,
-                                                        cor = cor, ref = ref, correct = correct, alternative = alternative,
-                                                        conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
-                                                        as.na = as.na, check = FALSE, output = FALSE)$result)
+    #......
+    # One-sample
+    if (isTRUE(sample == "one")) {
 
-    result <- data.frame(group = names(object.group),
+      object.group <- lapply(split(xy, f = group),
+                             function(z) cohens.d.default(eval(parse(text = "z")), y = NULL,
+                                                          mu = mu, paired = paired, weighted = weighted,
+                                                          cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                          conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
+                                                          as.na = as.na, check = FALSE, output = FALSE)$result)
+
+    #......
+    # Two-sample and Paired-sample
+    } else {
+
+      object.group <- lapply(split(xy, f = group),
+                             function(y) cohens.d.default(x = y$x, y = y$y, mu = mu, paired = paired, weighted = weighted,
+                                                          cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                          conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
+                                                          as.na = as.na, check = FALSE, output = FALSE)$result)
+
+    }
+
+    result <- data.frame(group = rep(names(object.group), each = ncol(xy)),
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]",
                                                                    collapse = ", "), ")"))), stringsAsFactors = FALSE)
 
@@ -1060,21 +1134,55 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   # No Grouping, Split
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    result <- lapply(split(data.frame(xy, stringsAsFactors = FALSE), f = split),
-                     function(y) cohens.d.default(x = y$x, y = y$y, mu = mu, paired = paired, weighted = weighted,
-                                                  cor = cor, ref = ref, correct = correct, alternative = alternative,
-                                                  conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
-                                                  as.na = as.na, check = FALSE, output = FALSE)$result)
+    #......
+    # One-sample
+    if (isTRUE(sample == "one")) {
+
+      result <- lapply(split(xy, f = split),
+                       function(z) cohens.d.default(eval(parse(text = "z")), y = NULL,
+                                                    mu = mu, paired = paired, weighted = weighted,
+                                                    cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                    conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
+                                                    as.na = as.na, check = FALSE, output = FALSE)$result)
+
+    #......
+    # Two-sample and Paired-sample
+    } else {
+
+      result <- lapply(split(xy, f = split),
+                             function(y) cohens.d.default(x = y$x, y = y$y, mu = mu, paired = paired, weighted = weighted,
+                                                          cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                          conf.level = conf.level, group = NULL, split = NULL, sort.var = sort.var,
+                                                          as.na = as.na, check = FALSE, output = FALSE)$result)
+
+    }
 
   #----------------------------------------
   # Grouping, Split
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    result <- lapply(split(data.frame(xy, .group = group, stringsAsFactors = FALSE, row.names = NULL), f = split),
-                     function(y) cohens.d.default(x = y$x, y = y$y, mu = mu, paired = paired, weighted = weighted,
-                                                  cor = cor, ref = ref, correct = correct, alternative = alternative,
-                                                  conf.level = conf.level, group = y$.group, split = NULL, sort.var = sort.var,
-                                                  as.na = as.na, check = FALSE, output = FALSE)$result)
+    #......
+    # One-sample
+    if (isTRUE(sample == "one")) {
+
+      result <- lapply(split(data.frame(xy, .group = group, stringsAsFactors = FALSE, row.names = NULL), f = split),
+                       function(z) cohens.d.default(eval(parse(text = "z[, -grep('.group', names(z))]")), y = NULL,
+                                                    mu = mu, paired = paired, weighted = weighted,
+                                                    cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                    conf.level = conf.level, group = z$.group, split = NULL, sort.var = sort.var,
+                                                    as.na = as.na, check = FALSE, output = FALSE)$result)
+
+    #......
+    # Two-sample and Paired-sample
+    } else {
+
+      result <- lapply(split(data.frame(xy, .group = group, stringsAsFactors = FALSE, row.names = NULL), f = split),
+                       function(z) cohens.d.default(x = z$x, y = z$y, mu = mu, paired = paired, weighted = weighted,
+                                                    cor = cor, ref = ref, correct = correct, alternative = alternative,
+                                                    conf.level = conf.level, group = z$.group, split = NULL, sort.var = sort.var,
+                                                    as.na = as.na, check = FALSE, output = FALSE)$result)
+
+    }
 
   }
 

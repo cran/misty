@@ -808,7 +808,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
       print.names <- switch(x$sample,
                             one = c("Group", "Variable", "n", "nNA", "M", "M.Diff", "SD", "d", "SE", "Low", "Upp"),
                             two = c("Group", "Variable", "Between", "n", "nNA", "M", "M.Diff", "SD", "d", "SE", "Low", "Upp"),
-                            paired = c("Group", "Variable", "n", "nNA", "M1", "M2", "M.Diff", "SD", "SE", "Low", "Upp"))
+                            paired = c("Group", "Variable", "n", "nNA", "M1", "M2", "M.Diff", "SD", "d", "SE", "Low", "Upp"))
 
       #......
       # Sort by variables
@@ -895,7 +895,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
           print.names <- switch(x$sample,
                                 one = c("Variable", "n", "nNA", "M", "M.Diff", "SD", "d", "SE", "Low", "Upp"),
                                 two = c("Variable", "Between", "n", "nNA", "M", "M.Diff", "SD", "d", "SE", "Low", "Upp"),
-                                paired = c("Variable", "n", "nNA", "M1", "M2", "M.Diff", "SD", "SE", "Low", "Upp"))
+                                paired = c("Variable", "n", "nNA", "M1", "M2", "M.Diff", "SD", "d", "SE", "Low", "Upp"))
 
           #......
           # Round
@@ -963,7 +963,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
           print.names <- switch(x$sample,
                                 one = c("Group", "Variable", "n", "nNA", "M", "M.Diff", "SD", "d", "SE", "Low", "Upp"),
                                 two = c("Group", "Variable", "Between", "n", "nNA", "M", "M.Diff", "SD", "d", "SE", "Low", "Upp"),
-                                paired = c("Group", "Variable", "n", "nNA", "M1", "M2", "M.Diff", "SD", "SE", "Low", "Upp"))
+                                paired = c("Group", "Variable", "n", "nNA", "M1", "M2", "M.Diff", "SD", "d", "SE", "Low", "Upp"))
 
           #......
           # Sort by variables
@@ -1031,7 +1031,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
       cat(paste(switch(x$sample,
                        one = paste0("Cohen's d for One-Sample Design with \u03BC = ", x$args$mu, " and"),
                        two = "Cohen's d for Two-Sample Design with",
-                       paired = "ohen's d for Paired-Sample Design with"),
+                       paired = "Cohen's d for Paired-Sample Design with"),
                        switch(x$args$alternative,
                               two.sided = "Two-Sided",
                               less = "One-Sided",

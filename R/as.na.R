@@ -3,9 +3,9 @@
 #' This function replaces user-specified values in the argument \code{as.na} in a vector, factor, matrix,
 #' data frame or list with \code{NA}.
 #'
-#' @param x         a vector, factor, matrix, data frame, or list.
-#' @param na     a vector indicating values or characters to replace with \code{NA}.
-#' @param check     logical: if \code{TRUE}, argument specification is checked.
+#' @param x     a vector, factor, matrix, data frame, or list.
+#' @param na    a vector indicating values or characters to replace with \code{NA}.
+#' @param check logical: if \code{TRUE}, argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}

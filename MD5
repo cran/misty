@@ -1,8 +1,8 @@
-f0c666b4b663840e46c7161309e9f3b7 *DESCRIPTION
+618e5027a660ec35fc72adbd06f2e401 *DESCRIPTION
 f988a6eca78c0879aedf94627be12320 *LICENSE
 2688c6f0e6313654ebd71b055122cef0 *NAMESPACE
-d2a729c1580a4550f2632e634f29d0bf *NEWS.md
-c52598a28d174441b00ccc95f5a5e2aa *R/as.na.R
+af131ff3d248f5f605f8b9704d768d08 *NEWS.md
+4b75ab9cc2a0264f91f8856d673ba547 *R/as.na.R
 e9eb5e0e3af029e47f25feab2097553d *R/center.R
 300d2a7ea585f0c11c6c7a3edb94607b *R/chr.gsub.R
 0f1d286b15cb5fbeba3c7237aa760f92 *R/chr.omit.R
@@ -14,7 +14,7 @@ e9eb5e0e3af029e47f25feab2097553d *R/center.R
 3ac811eda1114c729f8b58bb5fcd1586 *R/ci.prop.diff.R
 ba313161eb7d0208c08220d5f5a9d611 *R/ci.sd.R
 f26fde79c3a0a78b9bb9e2f175ae0a78 *R/ci.var.R
-74d628e5c81978a13ec0df030a71a944 *R/cohens.d.R
+0912879f4936a0f9dc939278e10abd04 *R/cohens.d.R
 59567f7aed9c3c11107d844899bc20b0 *R/collin.diag.R
 6f5ab35cfbb1afa26ff442120caa9a34 *R/cor.cont.R
 7f577f3e2bfa736fa831837d60525831 *R/cor.cramer.R
@@ -47,7 +47,7 @@ b627cbf778328fa4b48984e8512b1069 *R/na.auxiliary.R
 0cf244661148a4c9107853d28c69cb97 *R/na.indicator.R
 3732c1007209c20fcab8e71c45fb083e *R/na.pattern.R
 03b34b42b36cb18c688cdfc964171a34 *R/na.prop.R
-8848bd874ade9a3f15f741aac3efca47 *R/print.misty.object.R
+d2f75791c06d8d39de0d085d7489c91c *R/print.misty.object.R
 7b9aef88ccd5d6718f1b0df5bd17dee0 *R/read.mplus.R
 e7fb9666e219dbf6a34b4ae641563c45 *R/read.sav.R
 98014cfa7b2386d69dd9e1865e005f0c *R/read.xlsx.R
@@ -62,9 +62,9 @@ bf483c3a4254748364b08251cee30e40 *R/start_message.R
 10663d40e4960d527493a27d3f5a91a6 *R/std.coef.R
 22a3ec410a8ce046c41435c9c032372b *R/test.levene.R
 e6b4ab75bb577c896ef36c979062b577 *R/test.t.R
-1cf3909428e02fcfef10330b94b621c8 *R/test.welch.R
+de1347e795f37aa75d6290e5a7ff7a25 *R/test.welch.R
 8e608155e30f7554508cbdb54f1ffa92 *R/test.z.R
-9e01cf0814d61f8ff1ce487d2b6381c7 *R/write.mplus.R
+5898d84c6476698bf5bcd1a3b7817dc3 *R/write.mplus.R
 3d7c22a64ef07350fb674d0f8da7158b *R/write.sav.R
 db7260d00f63f8af0bb2ab3fbe0565db *man/as.na.Rd
 4cd54dbd76b6c6520d626f5fa1132aaf *man/center.Rd
@@ -78,7 +78,7 @@ f11fcb1d0d487cdff6d5914dac4409d8 *man/ci.mean.diff.Rd
 25a77a8d4aff38a28c83648a62d08cde *man/ci.prop.diff.Rd
 baafea9006aca60464c1143356d37f50 *man/ci.sd.Rd
 aab5e78b96695b50c8a43f3c1552d881 *man/ci.var.Rd
-3e12b65d1a6ec9d549f3fce091a4d743 *man/cohens.d.Rd
+17dce6162c0bf0dc0aae19c2df596197 *man/cohens.d.Rd
 e250e9fccb43c4c4a2a7301562a1b70f *man/collin.diag.Rd
 fd2b42e9db34278ec1c8ce95d86cf4f6 *man/cor.cont.Rd
 067e83bb52e917e8dac6154b876e2429 *man/cor.cramer.Rd
@@ -124,7 +124,7 @@ b9bd54839dbb9e6947b74c9c5502bf6a *man/skewness.Rd
 1b23e9afb9c55b99748384c2ecdb6c94 *man/std.coef.Rd
 d612502333c577fbbe5c0a985982c7e5 *man/test.levene.Rd
 0ef30ecb815c5f81ca3513b4f67409c3 *man/test.t.Rd
-f8d5b2fc0e3fa148505fc7bb727a051a *man/test.welch.Rd
+80b2f6d9fe0fbce1cec67b76db3d00bb *man/test.welch.Rd
 b31d5d540369c7037755a9834780331d *man/test.z.Rd
-77a8069bfee379f5e97daadb079c2e5a *man/write.mplus.Rd
+7bdb3dc483e39153129610974122cf1a *man/write.mplus.Rd
 6f494fd4c98eb4956c3c7a11165441f4 *man/write.sav.Rd
