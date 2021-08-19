@@ -4,14 +4,15 @@
 \alias{multilevel.descript}
 \title{Multilevel Descriptive Statistics}
 \usage{
-multilevel.descript(x, group, method = c("aov", "lme4", "nlme"), REML = TRUE,
+multilevel.descript(x, cluster, method = c("aov", "lme4", "nlme"), REML = TRUE,
                     digits = 2, icc.digits = 3, as.na = NULL, check = TRUE,
                     output = TRUE)
 }
 \arguments{
 \item{x}{a vector, matrix or data frame.}
 
-\item{group}{a vector representing the grouping structure (i.e., group variable).}
+\item{cluster}{a vector representing the nested grouping structure (i.e., group or
+cluster variable).}
 
 \item{method}{a character string indicating the method used to estimate intraclass correlation coefficients,
 i.e., \code{"aov"} ICC estimated using the \code{aov} function,
@@ -31,7 +32,7 @@ intraclass correlation coefficients.}
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.
 Note that \code{as.na()} function is only applied to \code{x} but not to
-\code{group}.}
+\code{cluster}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -44,7 +45,7 @@ function call (\code{call}), type of analysis \code{type}, matrix or data frame 
 list with results (\code{result}).
 }
 \description{
-This function computes descriptive statistics for multilevel data, e.g. average group size, intraclass correlation
+This function computes descriptive statistics for multilevel data, e.g. average cluster size, intraclass correlation
 coefficient, design effect and effective sample size.
 }
 \details{
@@ -52,26 +53,26 @@ Note that this function is restricted to two-level models.
 }
 \examples{
 dat <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
-                  group = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
+                  cluster = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
                   x1 = c(2, 3, 2, 2, 1, 2, 3, 4, 2),
                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
 
 # Multilevel descriptive statistics for x1
-multilevel.descript(dat$x1, group = dat$group)
+multilevel.descript(dat$x1, cluster = dat$cluster)
 
 # Multilevel descriptive statistics for x1, print ICC with 5 digits
-multilevel.descript(dat$x1, group = dat$group, icc.digits = 5)
+multilevel.descript(dat$x1, cluster = dat$cluster, icc.digits = 5)
 
 # Multilevel descriptive statistics for x1, convert value 1 to NA
-multilevel.descript(dat$x1, group = dat$group, as.na = 1)
+multilevel.descript(dat$x1, cluster = dat$cluster, as.na = 1)
 
 # Multilevel descriptive statistics for x1,
 # use lmer() function in the lme4 package to estimate ICC
-multilevel.descript(dat$x1, group = dat$group, method = "lme4")
+multilevel.descript(dat$x1, cluster = dat$cluster, method = "lme4")
 
 # Multilevel descriptive statistics for x1, x2, and x3
-multilevel.descript(dat[, c("x1", "x2", "x3")], group = dat$group)
+multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster)
 }
 \references{
 Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis: Techniques and applications} (3rd. ed.).

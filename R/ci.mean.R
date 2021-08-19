@@ -37,8 +37,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{test.z}}, \code{\link{test.t}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
-#' \code{\link{ci.prop}}, \code{\link{ci.var}},  \code{\link{ci.sd}}, \code{\link{descript}}
+#' \code{\link{test.z}}, \code{\link{test.t}}, \code{\link{ci.mean.diff}},
+#' \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
+#' \code{\link{ci.sd}}, \code{\link{descript}}
 #'
 #' @references
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
@@ -124,11 +125,46 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
   }
 
   #......
-  # Vector, matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) {
+  # Check 'group'
+  if (isTRUE(!is.null(group))) {
 
-    stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
-         call. = FALSE)
+    if (ncol(data.frame(group)) != 1) {
+
+      stop("More than one grouping variable specified for the argument 'group'.", call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(group)) != nrow(data.frame(x))) {
+
+      stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.",
+           call. = FALSE)
+
+    }
+
+    # Convert group into a vector
+    group <- unlist(group, use.names = FALSE)
+
+  }
+
+  #......
+  # Check 'split'
+  if (isTRUE(!is.null(split))) {
+
+    if (ncol(data.frame(split)) != 1) {
+
+      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(split)) != nrow(data.frame(x))) {
+
+      stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.",
+           call. = FALSE)
+
+    }
+
+    # Convert 'split' into a vector
+    split <- unlist(split, use.names = FALSE)
 
   }
 
@@ -316,7 +352,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     #......
     # Check input 'alternative'
-    if (isTRUE(!all(alternative %in%  c("two.sided", "less", "greater")))) {
+    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) {
 
       stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".",
            call. = FALSE)
@@ -349,30 +385,6 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
         stop("Grouping variable cannot be used for confidence intervals with known population variance.",
              call. = FALSE)
-
-      }
-
-      # Vector or factor for the argument 'group'?
-      if (isTRUE(!is.vector(group) && !is.factor(group))) {
-
-        stop("Please specify a vector or factor for the argument 'group'.", call. = FALSE)
-
-      }
-
-      # Length of 'group' match with 'x'?
-      if (isTRUE(length(group) != nrow(x))) {
-
-        if (isTRUE(ncol(x) == 1L)) {
-
-          stop("Length of the vector or factor specified in 'group' does not match the length of the vector in 'x'.",
-               call. = FALSE)
-
-        } else {
-
-          stop("Length of the vector or factor specified in 'group' does not match the number of rows in 'x'.",
-               call. = FALSE)
-
-        }
 
       }
 
@@ -409,30 +421,6 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
         stop("Split variable cannot be used for confidence intervals with known population variance.",
              call. = FALSE)
-
-      }
-
-      # Vector or factor for the argument 'split'?
-      if (isTRUE(!is.atomic(split) && !is.factor(split))) {
-
-        stop("Please specify a vector or factor for the argument 'split'.", call. = FALSE)
-
-      }
-
-      # Length of 'split' doest not match with 'x'
-      if (isTRUE(length(split) != nrow(x))) {
-
-        if (isTRUE(ncol(x) == 1L)) {
-
-          stop("Length of the vector or factor specified in 'split' does not match the length of the vector in 'x'.",
-               call. = FALSE)
-
-        } else {
-
-          stop("Length of the vector or factor specified in 'split' does not match the number of rows of the matrix or data frame in 'x'.",
-               call. = FALSE)
-
-        }
 
       }
 
@@ -523,8 +511,8 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
       ci <- c(NA, NA)
 
-    #......
-    # More than one observation
+      #......
+      # More than one observation
     } else {
 
       x.m <- mean(x)
@@ -540,8 +528,8 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
         se <- sigma / sqrt(length(na.omit(x)))
 
-      #......
-      # Unknown population standard deviation
+        #......
+        # Unknown population standard deviation
       } else {
 
         crit <- qt(switch(alternative,
@@ -587,8 +575,8 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
                          upp = vapply(x, m.conf, sigma = sigma, alternative = alternative, conf.level = conf.level, side = "upp", FUN.VALUE = double(1L)),
                          stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
 
-  #----------------------------------------
-  # Grouping, No Split
+    #----------------------------------------
+    # Grouping, No Split
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(x, f = group), function(y) misty::ci.mean(y, sigma = NULL, sigma2 = NULL, alternative = alternative, conf.level = conf.level,
@@ -599,25 +587,25 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))),
                          stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # No Grouping, Split
+    #----------------------------------------
+    # No Grouping, Split
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-      result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
-                       function(y) misty::ci.mean(y, sigma = NULL, sigma2 = NULL, alternative = alternative, conf.level = conf.level,
-                                                  group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
-                                                  as.na = as.na, check = FALSE, output = FALSE)$result)
+    result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
+                     function(y) misty::ci.mean(y, sigma = NULL, sigma2 = NULL, alternative = alternative, conf.level = conf.level,
+                                                group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
+                                                as.na = as.na, check = FALSE, output = FALSE)$result)
 
-  #----------------------------------------
-  # Grouping, Split
+    #----------------------------------------
+    # Grouping, Split
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split),
-                       function(y) misty::ci.mean(y[, -grep("group", names(y))], sigma = NULL, sigma2 = NULL,
-                                                  alternative = alternative, conf.level = conf.level,
-                                                  group = y$group, split = NULL, sort.var = sort.var,
-                                                  na.omit = na.omit, as.na = as.na,
-                                                  check = FALSE, output = FALSE)$result)
+                     function(y) misty::ci.mean(y[, -grep("group", names(y))], sigma = NULL, sigma2 = NULL,
+                                                alternative = alternative, conf.level = conf.level,
+                                                group = y$group, split = NULL, sort.var = sort.var,
+                                                na.omit = na.omit, as.na = as.na,
+                                                check = FALSE, output = FALSE)$result)
 
   }
 

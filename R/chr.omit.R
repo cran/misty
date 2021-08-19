@@ -75,6 +75,13 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   }
 
+  #---------------------
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
+  #-----------------------------------------
+  # Input Check
+
   #.............
   # Check input 'check'
   if (isTRUE(!is.logical(check))) {
@@ -83,17 +90,7 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   }
 
-  #-----------------------------------------
-
   if (isTRUE(check)) {
-
-    #.............
-    # Check input 'x': Vector?
-    if (isTRUE(!is.null(dim(x)))) {
-
-      stop("Please specify a vector for the argument 'x'.", call. = FALSE)
-
-    }
 
     #.............
     # Check input 'omit': Values in 'x'?

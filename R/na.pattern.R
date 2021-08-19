@@ -1,13 +1,17 @@
 #' Missing Data Pattern
 #'
-#' This function computes a summary of missing data patterns, i.e., number (%) of cases with a specific missing data pattern.
+#' This function computes a summary of missing data patterns, i.e., number (%) of
+#' cases with a specific missing data pattern.
 #'
-#' @param x           a matrix or data frame with incomplete data, where missing values are coded as \code{NA}.
-#' @param order       logical: if \code{TRUE}, variables are ordered from left to right in increasing order
-#'                    of missing values.
-#' @param digits      an integer value indicating the number of decimal places to be used for displaying percentages.
+#' @param x           a matrix or data frame with incomplete data, where missing
+#'                    values are coded as \code{NA}.
+#' @param order       logical: if \code{TRUE}, variables are ordered from left to
+#'                    right in increasing order of missing values.
+#' @param digits      an integer value indicating the number of decimal places to
+#'                    be used for displaying percentages.
 #' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to NA before conducting the analysis.
+#'                    i.e. these values are converted to NA before conducting the
+#'                    analysis.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #' @param output      logical: if \code{TRUE}, output is shown.
 #'
@@ -15,22 +19,26 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-#' \code{\link{na.indicator}}, \code{\link{na.prop}}.
+#' \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}},
+#' \code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.indicator}},
+#' \code{\link{na.prop}}, \code{\link{na.test}}
 #'
 #' @references
 #' Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
 #'
 #' Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
-#' \emph{Annual Review of Psychology, 60}, 549-576. https://doi.org/10.1146/annurev.psych.58.110405.085530
+#' \emph{Annual Review of Psychology, 60}, 549-576.
+#' https://doi.org/10.1146/annurev.psych.58.110405.085530
 #'
-#' van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
+#' van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.).
+#' Chapman & Hall.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-#' \code{x} (\code{data}), specification of function arguments (\code{args}), list with results
-#' (\code{result}), and a vector with the number of missing data pattern for each case (\code{pattern}),
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
+#' data frame specified in \code{x} (\code{data}), specification of function arguments
+#' (\code{args}), list with results (\code{result}), and a vector with the number
+#' of missing data pattern for each case (\code{pattern}).
 #'
 #' @export
 #'
@@ -47,7 +55,8 @@
 #
 #' # Data frame without cases with missing data pattern 2 and 5
 #' dat[!dat.pattern$pattern %in% c(2, 5), ]
-na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE, output = TRUE) {
+na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
+                       output = TRUE) {
 
   ####################################################################################
   # Input Check
@@ -165,7 +174,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
                                nNA = rowSums(x.na.order.dupl),
                                pNA = rowSums(x.na.order.dupl) / ncol(x.na) * 100L,
                                row.names = NULL, stringsAsFactors = FALSE),
-                    c("", sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(x.na) * 100L)), colSums(x.na), "", ""))
+                    c(NA, sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(x.na) * 100L)), colSums(x.na), NA, NA))
 
     # Number of missing data pattern
     pattern <- unname(vapply(apply(x.na[, colnames(x.na.order.dupl)], 1,  paste, collapse = " "), function(y) match(y, apply(x.na.order.dupl, 1, paste, collapse = " ")), FUN.VALUE = 1L))
@@ -179,7 +188,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
                                nNA = sum(x.na.order.dupl),
                                pNA = sum(x.na.order.dupl) / ncol(x.na) * 100L,
                                row.names = NULL, stringsAsFactors = FALSE),
-                    c("", sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(x.na) * 100L)), colSums(x.na), "", ""))
+                    c(NA, sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(x.na) * 100L)), colSums(x.na), NA, NA))
 
     pattern <- rep(1, times = nrow(x))
 

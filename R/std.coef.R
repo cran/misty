@@ -102,7 +102,7 @@
 #' mod.lm5 <- lm(y ~ x1 + I(x1^2), data = dat)
 #' std.coef(mod.lm5)
 std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
-                      digits = 3, p.digits = 3, check = TRUE, output = TRUE) {
+                      digits = 3, p.digits = 4, check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Input check

@@ -1,25 +1,30 @@
 #' Replace Missing Values With User-Specified Values
 #'
-#' This function replaces \code{NA} in a vector, factor, matrix or data frame with user-specified values in
-#' the argument \code{value}.
+#' This function replaces \code{NA} in a vector, factor, matrix or data frame with
+#' user-specified values in the argument \code{value}.
 #'
 #' @param x           a vector, factor, matrix or data frame.
-#' @param value       a numeric value or character string with which \code{NA} is replaced.
+#' @param value       a numeric value or character string with which \code{NA} is
+#'                    replaced.
 #' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting the analysis.
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
-#' \code{\link{as.na}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-#' \code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.prop}}.
+#' \code{\link{as.na}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}},
+#' \code{\link{na.descript}}, \code{\link{na.indicator}}, \code{\link{na.pattern}},
+#' \code{\link{na.prop}}, \code{\link{na.test}}
 #'
 #' @references
-#' Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}. Wadsworth & Brooks/Cole.
+#' Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}.
+#' Wadsworth & Brooks/Cole.
 #'
 #' @return
-#' Returns \code{x} with \code{NA} replaced with the numeric value or character string specified in \code{value}.
+#' Returns \code{x} with \code{NA} replaced with the numeric value or character
+#' string specified in \code{value}.
 #'
 #' @export
 #'

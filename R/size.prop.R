@@ -53,6 +53,16 @@
 #'           alternative = "two.sided", alpha = 0.05, beta = 0.2)
 #'
 #' #--------------------------------------
+#' # Two-sided one-sample test
+#' # H0: pi = 0.5, H1: pi != 0.5
+#' # alpha = 0.05, beta = 0.2, delta = 0.2
+#' # with continuity correction
+#'
+#' size.prop(pi = 0.5, delta = 0.2, sample = "one.sample",
+#'           alternative = "two.sided", alpha = 0.05, beta = 0.2,
+#'           correct = TRUE)
+#'
+#' #--------------------------------------
 #' # One-sided one-sample test
 #' # H0: pi <= 0.5, H1: pi > 0.5
 #' # alpha = 0.05, beta = 0.2, delta = 0.2

@@ -1,38 +1,50 @@
 #' Coefficient Alpha and Item Statistics
 #'
-#' This function computes point estimate and confidence interval for the (ordinal) coefficient alpha (aka Cronbach's
-#' alpha) along with the corrected item-total correlation and coefficient alpha if item deleted.
+#' This function computes point estimate and confidence interval for the (ordinal)
+#' coefficient alpha (aka Cronbach's alpha) along with the corrected item-total
+#' correlation and coefficient alpha if item deleted.
 #'
-#' Ordinal coefficient alpha was introduced by Zumbo, Gadermann and Zeisser (2007) which is obtained by applying
-#' the formula for computing coefficient alpha to the polychoric correlation matrix instead of the variance-covariance
-#' or product-moment correlation matrix. Note that Chalmers (2018) highlighted that the ordinal coefficient alpha
-#' should be interpreted only as a hypothetical estimate of an alternative reliability, whereby a test's ordinal
-#' categorical response options have be modified to include an infinite number of ordinal response options and
-#' concludes that coefficient alpha should not be reported as a measure of a test's reliability. However,
-#' Zumbo and Kroc (2019) argued that Chalmers' critique of ordinal coefficient alpha is unfounded and that
-#' ordinal coefficient alpha may be the most appropriate quantifier of reliability when using Likert-type
-#' measurement to study a latent continuous random variable.
-#' Confidence intervals are computed using the procedure by Feldt, Woodruff and Salih (1987). When computing
-#' confidence intervals using pairwise deletion, the average sample size from all pairwise samples is used.
-#' Note that there are at least 10 other procedures for computing the confidence interval (see Kelley and
-#' Pornprasertmanit, 2016), which are implemented in the \code{ci.reliability()} function in the
-#' \pkg{MBESSS} package by Ken Kelley (2019).
+#' Ordinal coefficient alpha was introduced by Zumbo, Gadermann and Zeisser (2007)
+#' which is obtained by applying the formula for computing coefficient alpha to the
+#' polychoric correlation matrix instead of the variance-covariance or product-moment
+#' correlation matrix. Note that Chalmers (2018) highlighted that the ordinal coefficient
+#' alpha should be interpreted only as a hypothetical estimate of an alternative
+#' reliability, whereby a test's ordinal categorical response options have be modified
+#' to include an infinite number of ordinal response options and concludes that
+#' coefficient alpha should not be reported as a measure of a test's reliability.
+#' However, Zumbo and Kroc (2019) argued that Chalmers' critique of ordinal coefficient
+#' alpha is unfounded and that ordinal coefficient alpha may be the most appropriate
+#' quantifier of reliability when using Likert-type measurement to study a latent
+#' continuous random variable.
+#' Confidence intervals are computed using the procedure by Feldt, Woodruff and Salih
+#' (1987). When computing confidence intervals using pairwise deletion, the average
+#' sample size from all pairwise samples is used. Note that there are at least 10
+#' other procedures for computing the confidence interval (see Kelley and Pornprasertmanit, 2016),
+#' which are implemented in the \code{ci.reliability()} function in the \pkg{MBESSS}
+#' package by Ken Kelley (2019).
 #'
-#' @param x          a matrix, data frame, variance-covariance or correlation matrix. Note that
-#'                   raw data is needed to compute ordinal coefficient alpha, i.e., \code{ordered = TRUE}.
-#' @param exclude    a character vector indicating items to be excluded from the analysis.
-#' @param std        logical: if \code{TRUE}, the standardized coefficient alpha is computed.
-#' @param ordered    logical: if \code{TRUE}, variables are treated as ordered (ordinal) variables to
-#'                   compute ordinal coefficient alpha.
-#' @param na.omit    logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-#'                   (i.e., listwise deletion); if \code{FALSE} (default), pairwise deletion is used.
-#' @param print      a character vector indicating which results to show, i.e. \code{"all"} (default), for all
-#'                   results \code{"alpha"} for the coefficient alpha, and \code{"item"} for item statistics.
-#' @param digits     an integer value indicating the number of decimal places to be used for displaying
-#'                   coefficient alpha and item-total correlations.
-#' @param conf.level a numeric value between 0 and 1 indicating the confidence level of the interval.
+#' @param x          a matrix, data frame, variance-covariance or correlation matrix.
+#'                   Note that raw data is needed to compute ordinal coefficient alpha,
+#'                   i.e., \code{ordered = TRUE}.
+#' @param exclude    a character vector indicating items to be excluded from the
+#'                   analysis.
+#' @param std        logical: if \code{TRUE}, the standardized coefficient alpha
+#'                   is computed.
+#' @param ordered    logical: if \code{TRUE}, variables are treated as ordered (ordinal)
+#'                   variables to compute ordinal coefficient alpha.
+#' @param na.omit    logical: if \code{TRUE}, incomplete cases are removed before
+#'                   conducting the analysis (i.e., listwise deletion); if
+#'                   \code{FALSE} (default), pairwise deletion is used.
+#' @param print      a character vector indicating which results to show, i.e.
+#'                   \code{"all"} (default), for all results \code{"alpha"} for
+#'                   the coefficient alpha, and \code{"item"} for item statistics.
+#' @param digits     an integer value indicating the number of decimal places to
+#'                   be used for displaying coefficient alpha and item-total correlations.
+#' @param conf.level a numeric value between 0 and 1 indicating the confidence level
+#'                   of the interval.
 #' @param as.na      a numeric vector indicating user-defined missing values,
-#'                   i.e. these values are converted to \code{NA} before conducting the analysis.
+#'                   i.e. these values are converted to \code{NA} before conducting
+#'                   the analysis.
 #' @param check      logical: if \code{TRUE}, argument specification is checked.
 #' @param output     logical: if \code{TRUE}, output is shown.
 #'
@@ -43,38 +55,43 @@
 #' \code{\link{item.omega}}, \code{\link{item.reverse}}, \code{\link{item.scores}}
 #'
 #' @references
-#' Chalmers, R. P. (2018). On misconceptions and the limited usefulness of ordinal alpha. \emph{Educational
-#' and Psychological Measurement, 78}, 1056-1071. https://doi.org/10.1177/0013164417727036
+#' Chalmers, R. P. (2018). On misconceptions and the limited usefulness of ordinal alpha.
+#' \emph{Educational and Psychological Measurement, 78}, 1056-1071.
+#' https://doi.org/10.1177/0013164417727036
 #'
-#' Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests. \emph{Psychometrika, 16}, 297-334.
-#' https://doi.org/10.1007/BF02310555
+#' Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests.
+#' \emph{Psychometrika, 16}, 297-334. https://doi.org/10.1007/BF02310555
 #'
-#' Cronbach, L.J. (2004). My current thoughts on coefficient alpha and successor procedures. \emph{Educational
-#' and Psychological Measurement, 64}, 391-418. https://doi.org/10.1177/0013164404266386
+#' Cronbach, L.J. (2004). My current thoughts on coefficient alpha and successor
+#' procedures. \emph{Educational and Psychological Measurement, 64}, 391-418.
+#' https://doi.org/10.1177/0013164404266386
 #'
-#' Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for coefficient alpha.
-#' \emph{Applied Psychological Measurement}, 11 93-103. https://doi.org/10.1177/014662168701100107
+#' Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for
+#' coefficient alpha. \emph{Applied Psychological Measurement}, 11 93-103.
+#' https://doi.org/10.1177/014662168701100107
 #'
-#' Kelley, K., & Pornprasertmanit, S. (2016). Confidence intervals for population reliability coefficients:
-#' Evaluation of methods, recommendations, and software for composite measures.
-#' \emph{Psychological Methods, 21}, 69-92. https://doi.org/10.1037/a0040086.
+#' Kelley, K., & Pornprasertmanit, S. (2016). Confidence intervals for population
+#' reliability coefficients: Evaluation of methods, recommendations, and software
+#' for composite measures. \emph{Psychological Methods, 21}, 69-92.
+#' https://doi.org/10.1037/a0040086.
 #'
 #' Ken Kelley (2019). \emph{MBESS: The MBESS R Package}. R package version 4.6.0.
 #' https://CRAN.R-project.org/package=MBESS
 #'
-#' Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens' scales of measurement do not help
-#' make it: A response to Chalmers. \emph{Educational and Psychological Measurement, 79}, 1184-1197.
+#' Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens' scales
+#' of measurement do not help make it: A response to Chalmers. \emph{Educational
+#' and Psychological Measurement, 79}, 1184-1197.
 #' https://doi.org/10.1177/0013164419844305
 #'
-#' Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of coefficients alpha and theta for
-#' Likert rating scales. \emph{Journal of Modern Applied Statistical Methods, 6}, 21-29.
-#' https://doi.org/10.22237/jmasm/1177992180
+#' Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of coefficients
+#' alpha and theta for Likert rating scales. \emph{Journal of Modern Applied Statistical
+#' Methods, 6}, 21-29. https://doi.org/10.22237/jmasm/1177992180
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-#' \code{x} (\code{data}), specification of function arguments (\code{args}), and list with
-#' results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
+#' data frame specified in \code{x} (\code{data}), specification of function arguments
+#' (\code{args}), and list with results (\code{result}).
 #'
 #' @export
 #'

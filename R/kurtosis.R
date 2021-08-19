@@ -55,6 +55,21 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
   }
 
+  #......
+  # Check if only one variable specified in the input 'x'
+  if (ncol(data.frame(x)) != 1) {
+
+    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
+
+  }
+
+  #......
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
+
+  #----------------------------------------
+
   #.......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) {
@@ -62,8 +77,6 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
   }
-
-  #----------------------------------------
 
   if (isTRUE(check)) {
 
@@ -77,7 +90,7 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
     #.......
     # Check input 'x': Numeric vector
-    if (isTRUE(!is.numeric(x))) {
+    if (isTRUE(mode(x) != "numeric")) {
 
       stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
 

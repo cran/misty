@@ -34,8 +34,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.prop.diff}},
-#' \code{\link{ci.sd}}, \code{\link{descript}}
+#' \code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
+#' \code{\link{ci.prop}}, \code{\link{ci.prop.diff}}, \code{\link{ci.sd}},
+#' \code{\link{descript}}
 #'
 #' @references
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
@@ -127,11 +128,46 @@ ci.var <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided"
   }
 
   #......
-  # Vector, matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) {
+  # Check 'group'
+  if (isTRUE(!is.null(group))) {
 
-    stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
-         call. = FALSE)
+    if (ncol(data.frame(group)) != 1) {
+
+      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(group)) != nrow(data.frame(x))) {
+
+      stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.",
+           call. = FALSE)
+
+    }
+
+    # Convert group into a vector
+    group <- unlist(group, use.names = FALSE)
+
+  }
+
+  #......
+  # Check 'split'
+  if (isTRUE(!is.null(split))) {
+
+    if (ncol(data.frame(split)) != 1) {
+
+      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(split)) != nrow(data.frame(x))) {
+
+      stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.",
+           call. = FALSE)
+
+    }
+
+    # Convert 'split' into a vector
+    split <- unlist(split, use.names = FALSE)
 
   }
 
@@ -300,30 +336,6 @@ ci.var <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided"
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
-      # Vector or factor for the argument 'group'?
-      if (isTRUE(!is.vector(group) && !is.factor(group))) {
-
-        stop("Please specify a vector or factor for the argument 'group'.", call. = FALSE)
-
-      }
-
-      # Length of 'group' match with 'x'?
-      if (isTRUE(length(group) != nrow(x))) {
-
-        if (isTRUE(ncol(x) == 1L)) {
-
-          stop("Length of the vector or factor specified in 'group' does not match the length of the vector in 'x'.",
-               call. = FALSE)
-
-        } else {
-
-          stop("Length of the vector or factor specified in 'group' does not match the number of rows in 'x'.",
-               call. = FALSE)
-
-        }
-
-      }
-
       # Input 'group' completely missing
       if (isTRUE(all(is.na(group)))) {
 
@@ -343,30 +355,6 @@ ci.var <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided"
     #......
     # Check input 'split'
     if (isTRUE(!is.null(split))) {
-
-      # Vector or factor for the argument 'split'?
-      if (isTRUE(!is.atomic(split) && !is.factor(split))) {
-
-        stop("Please specify a vector or factor for the argument 'split'.", call. = FALSE)
-
-      }
-
-      # Length of 'split' does not match with 'x'
-      if (isTRUE(length(split) != nrow(x))) {
-
-        if (isTRUE(ncol(x) == 1L)) {
-
-          stop("Length of the vector or factor specified in 'split' does not match the length of the vector in 'x'.",
-               call. = FALSE)
-
-        } else {
-
-          stop("Length of the vector or factor specified in 'split' does not match the number of rows of the matrix or data frame in 'x'.",
-               call. = FALSE)
-
-        }
-
-      }
 
       # Input 'split' completely missing
       if (isTRUE(all(is.na(split)))) {

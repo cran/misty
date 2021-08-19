@@ -5,7 +5,7 @@
 \title{Coefficient Omega, Hierarchical Omega, and Categorical Omega}
 \usage{
 item.omega(x, resid.cov = NULL, type = c("omega", "hierarch", "categ"),
-           exclude = NULL, std = FALSE, na.omit = FALSE, 
+           exclude = NULL, std = FALSE, na.omit = FALSE,
            print = c("all", "omega", "item"), digits = 2, conf.level = 0.95,
            as.na = NULL, check = TRUE, output = TRUE)
 }
@@ -125,7 +125,7 @@ http://dx.doi.org/10.1037/a0040086
 Ken Kelley (2019). \emph{MBESS: The MBESS R Package}. R package version 4.6.0.
 https://CRAN.R-project.org/package=MBESS
 
-McDonald, R. P. (1978). Generalizability in factorable domains: "Domain validity and generalizability"
+McDonald, R. P. (1978). Generalizability in factorable domains: Domain validity and generalizability
 \emph{Educational and Psychological Measurement, 38}, 75-79.
 }
 \seealso{

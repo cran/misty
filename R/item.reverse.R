@@ -71,6 +71,19 @@ item.reverse <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
 
   }
 
+
+  #......
+  # Check if only one variable specified in the input 'x'
+  if (ncol(data.frame(x)) != 1) {
+
+    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
+
+  }
+
+  #......
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
   #......
   # Argument 'min'
   if (isTRUE(is.null(min))) {
@@ -101,7 +114,7 @@ item.reverse <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
 
     #......
     # Check input 'x': Numeric vector
-    if (isTRUE(!is.numeric(x))) {
+    if (isTRUE(mode(x) != "numeric")) {
 
       stop("Please specify a numeric vector for the argument 'x'.")
 

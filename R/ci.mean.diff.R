@@ -1,83 +1,90 @@
 #' Confidence Interval for the Difference in Arithmetic Means
 #'
-#' This function computes a confidence interval for the difference in arithmetic means in a two-sample and
-#' paired-sample design samples with known or unknown population standard deviation or population variance
-#' for one or more variables, optionally by a grouping and/or split variable.
+#' This function computes a confidence interval for the difference in arithmetic
+#' means in a two-sample and paired-sample design samples with known or unknown
+#' population standard deviation or population variance for one or more variables,
+#' optionally by a grouping and/or split variable.
 #'
 #' @param x              a numeric vector of data values.
 #' @param y              a numeric vector of data values.
-#' @param sigma          a numeric vector indicating the population standard deviation(s) when computing confidence
-#'                       intervals for the difference in arithmetic means with known standard deviation(s). In case
-#'                       of independent samples, equal standard deviations are assumed when specifying one value for
-#'                       the argument \code{sigma}; when specifying two values for the argument \code{sigma}, unequal
-#'                       standard deviations are assumed. Note that either argument \code{sigma} or argument \code{sigma2}
-#'                       is specified and it is only possible to specify one value (i.e., equal variance assumption)
-#'                       or two values (i.e., unequal variance assumption) for the argument \code{sigma} even though
+#' @param sigma          a numeric vector indicating the population standard deviation(s)
+#'                       when computing confidence intervals for the difference in
+#'                       arithmetic means with known standard deviation(s). In case
+#'                       of independent samples, equal standard deviations are assumed
+#'                       when specifying one value for the argument \code{sigma}; when
+#'                       specifying two values for the argument \code{sigma}, unequal
+#'                       standard deviations are assumed. Note that either argument
+#'                       \code{sigma} or argument \code{sigma2} is specified and it
+#'                       is only possible to specify one value (i.e., equal variance
+#'                       assumption) or two values (i.e., unequal variance assumption)
+#'                       for the argument \code{sigma} even though multiple variables
+#'                       are specified in \code{x}.
+#' @param sigma2         a numeric vector indicating the population variance(s) when
+#'                       computing confidence intervals for the difference in arithmetic
+#'                       means with known variance(s). In case of independent samples,
+#'                       equal variances are assumed when specifying one value for the
+#'                       argument \code{sigma2}; when specifying two values for the
+#'                       argument \code{sigma}, unequal variances are assumed. Note
+#'                       that either argument \code{sigma} or argument \code{sigma2}
+#'                       is specified and it is only possible to specify one value
+#'                       (i.e., equal variance assumption) or two values (i.e., unequal
+#'                       variance assumption) for the argument \code{sigma} even though
 #'                       multiple variables are specified in \code{x}.
-#' @param sigma2         a numeric vector indicating the population variance(s) when computing confidence intervals
-#'                       for the difference in arithmetic means with known variance(s). In case of independent samples,
-#'                       equal variances are assumed when specifying one value for the argument \code{sigma2}; when
-#'                       specifying two values for the argument \code{sigma}, unequal variances are assumed. Note that
-#'                       either argument \code{sigma} or argument \code{sigma2} is specified and it is only possible
-#'                       to specify one value (i.e., equal variance assumption) or two values (i.e., unequal variance
-#'                       assumption) for the argument \code{sigma} even though multiple variables are specified in
-#'                       \code{x}.
-#' @param var.equal      logical: if \code{TRUE}, the population variance in the independent samples are assumed to
-#'                       be equal.
-#' @param paired         logical: if \code{TRUE}, confidence interval for the difference of arithmetic means
-#'                       in paired samples is computed.
-#' @param alternative    a character string specifying the alternative hypothesis, must be one of
-#'                       \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.
-#' @param conf.level     a numeric value between 0 and 1 indicating the confidence level of the interval.
-#' @param group          a numeric vector, character vector or factor as grouping variable. Note that a grouping
-#'                       variable can only be used when computing confidence intervals with unknown population
+#' @param var.equal      logical: if \code{TRUE}, the population variance in the
+#'                       independent samples are assumed to be equal.
+#' @param paired         logical: if \code{TRUE}, confidence interval for the difference
+#'                       of arithmetic means in paired samples is computed.
+#' @param alternative    a character string specifying the alternative hypothesis,
+#'                       must be one of \code{"two.sided"} (default), \code{"greater"}
+#'                       or \code{"less"}.
+#' @param conf.level     a numeric value between 0 and 1 indicating the confidence
+#'                       level of the interval.
+#' @param group          a numeric vector, character vector or factor as grouping
+#'                       variable. Note that a grouping variable can only be used
+#'                       when computing confidence intervals with unknown population
 #'                       standard deviation and population variance.
-#' @param split          a numeric vector, character vector or factor as split variable. Note that a split
-#'                       variable can only be used when computing confidence intervals with unknown population
-#'                       standard deviation and population variance.
-#' @param sort.var       logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.
-#' @param digits         an integer value indicating the number of decimal places to be used.
+#' @param split          a numeric vector, character vector or factor as split variable.
+#'                       Note that a split variable can only be used when computing
+#'                       confidence intervals with unknown population
+#' @param sort.var       logical: if \code{TRUE}, output table is sorted by variables
+#'                       when specifying \code{group}.
+#' @param digits         an integer value indicating the number of decimal places to
+#'                       be used.
 #' @param as.na          a numeric vector indicating user-defined missing values,
-#'                       i.e. these values are converted to \code{NA} before conducting the analysis.
-#'                       Note that \code{as.na()} function is only applied to \code{x}, but
-#'                       not to \code{group} or \code{split}.
+#'                       i.e. these values are converted to \code{NA} before conducting
+#'                       the analysis. Note that \code{as.na()} function is only applied
+#'                       to \code{x}, but not to \code{group} or \code{split}.
 #' @param check          logical: if \code{TRUE}, argument specification is checked.
 #' @param output         logical: if \code{TRUE}, output is shown on the console.
-#' @param formula        a formula of the form \code{y ~ group} for one outcome variable or
-#'                       \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where \code{y}
-#'                       is a numeric variable giving the data values and \code{group} a numeric variable,
-#'                       character variable or factor with two values or factor levelsgiving the
-#'                       corresponding groups.
-#' @param data           a matrix or data frame containing the variables in the formula \code{formula}.
-#' @param na.omit        logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-#'                       (i.e., listwise deletion) when specifying more than one outcome variable.
+#' @param formula        a formula of the form \code{y ~ group} for one outcome variable
+#'                       or \code{cbind(y1, y2, y3) ~ group} for more than one outcome
+#'                       variable where \code{y} is a numeric variable giving the data
+#'                       values and \code{group} a numeric variable, character variable
+#'                       or factor with two values or factor levelsgiving the corresponding
+#'                       groups.
+#' @param data           a matrix or data frame containing the variables in the formula
+#'                       \code{formula}.
+#' @param na.omit        logical: if \code{TRUE}, incomplete cases are removed before
+#'                       conducting the analysis (i.e., listwise deletion) when specifying
+#'                       more than one outcome variable.
 #' @param ...            further arguments to be passed to or from methods.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{test.z}}, \code{\link{test.t}}, \code{\link{ci.mean}}, \code{\link{ci.median}}, \code{\link{ci.prop}},
-#' \code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{descript}}
+#' \code{\link{test.z}}, \code{\link{test.t}}, \code{\link{ci.mean}}, \code{\link{ci.median}},
+#' \code{\link{ci.prop}}, \code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{descript}}
 #'
 #' @references
-#' Fagerland, M. W., Lydersen S., & Laake, P. (2011). Recommended confidence intervals for two independent binomial
-#' proportions. \emph{Statistical Methods in Medical Research, 24}, 224-254.
-#'
-#' Newcombe, R. G. (1998a). Interval estimation for the difference between independent proportions: Comparison of
-#' eleven methods. \emph{Statistics in Medicine, 17}, 873-890.
-#'
-#' Newcombe, R. G. (1998b). Improved confidence intervals for the difference between binomial proportions based on
-#' paired data. \emph{Statistics in Medicine, 17}, 2635-2650.
-#'
-#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-#' John Wiley & Sons.
+#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+#' - Using R and SPSS}. John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
-#' \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
-#' and result table (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries: function call (\code{call}), type of analysis (\code{type}), list with
+#' the input specified in \code{x}, \code{group}, and \code{split} (\code{data}),
+#' specification of function arguments (\code{args}), and result table (\code{result}).
 #'
 #' @export
 #'
@@ -115,11 +122,11 @@
 #' ci.mean.diff(x1 ~ group1, data = dat1, sigma = c(1.5, 1.2))
 #'
 #' # Two-Sided 95% CI with known variance for x1 by group1
-#' # known population variances, equal variance asssumption
+#' # known population variances, equal variance assumption
 #' ci.mean.diff(x1 ~ group1, data = dat1, sigma2 = 1.44)
 #'
 #' # Two-Sided 95% CI with known variance for x1 by group1
-#' # known population variances, unequal variance asssumption
+#' # known population variances, unequal variance assumption
 #' ci.mean.diff(x1 ~ group1, data = dat1, sigma2 = c(2.25, 1.44))
 #'
 #' # One-Sided 95% CI for y1 by group1
@@ -187,12 +194,23 @@
 #' #--------------------------------------
 #' # Paired sample design
 #'
-#' dat2 <- data.frame(pre = c(1, 3, 2, 5, 7),
-#'                      post = c(2, 2, 1, 6, 8), stringsAsFactors = FALSE)
+#' dat2 <- data.frame(pre = c(1, 3, 2, 5, 7, 6),
+#'                    post = c(2, 2, 1, 6, 8, 9),
+#'                    group = c(1, 1, 1, 2, 2, 2), stringsAsFactors = FALSE)
 #'
 #' # Two-Sided 95% CI for the mean difference in pre and post
 #' # unknown poulation variance of difference scores
 #' ci.mean.diff(dat2$pre, dat2$post, paired = TRUE)
+#'
+#' # Two-Sided 95% CI for the mean difference in pre and post
+#' # unknown poulation variance of difference scores
+#' # analysis by group separately
+#' ci.mean.diff(dat2$pre, dat2$post, paired = TRUE, group = dat2$group)
+#'
+#' # Two-Sided 95% CI for the mean difference in pre and post
+#' # unknown poulation variance of difference scores
+#' # analysis by group separately
+#' ci.mean.diff(dat2$pre, dat2$post, paired = TRUE, split = dat2$group)
 #'
 #' # Two-Sided 95% CI for the mean difference in pre and post
 #' # known population standard deviation of difference scores
@@ -408,6 +426,20 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
   }
 
   #......
+  # Check if only one variable specified in the input 'x'
+  if (ncol(data.frame(x)) != 1) {
+
+    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
+
+  }
+
+  #......
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
+  #----------------------------------------
+
+  #......
   # Check if input 'y' is missing
   if (isTRUE(missing(y))) {
 
@@ -424,10 +456,105 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
   }
 
   #......
+  # Check if only one variable specified in the input 'y'
+  if (ncol(data.frame(y)) != 1) {
+
+    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
+
+  }
+
+  #......
+  # Convert 'y' into a vector
+  y <- unlist(y, use.names = FALSE)
+
+  #----------------------------------------
+
+  #......
   # Check input 'paired'
   if (isTRUE(!is.logical(paired))) {
 
     stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
+
+  }
+
+
+  if (isTRUE(paired)) {
+
+    # Length of 'x' and 'y'
+    if (isTRUE(nrow(data.frame(x)) != nrow(data.frame(y)))) {
+
+      stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.",
+           call. = FALSE)
+
+    }
+
+  }
+
+  #----------------------------------------
+
+  #......
+  # Check 'group'
+  if (isTRUE(!is.null(group))) {
+
+    if (isTRUE(!paired)) {
+
+      stop("Please use formula notation for using a grouping variable in independent samples.",
+           call. = FALSE)
+
+    }
+
+    if (ncol(data.frame(group)) != 1) {
+
+      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
+
+    }
+
+    if (isTRUE(paired)) {
+
+      if (nrow(data.frame(group)) != nrow(data.frame(x))) {
+
+        stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.",
+             call. = FALSE)
+
+      }
+
+    }
+
+    # Convert 'group' into a vector
+    group <- unlist(group, use.names = FALSE)
+
+  }
+
+  #......
+  # Check 'split'
+  if (isTRUE(!is.null(split))) {
+
+    if (isTRUE(!paired)) {
+
+      stop("Please use formula notation for using a split variable in independent samples.",
+           call. = FALSE)
+
+    }
+
+    if (ncol(data.frame(split)) != 1) {
+
+      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
+
+    }
+
+    if (isTRUE(paired)) {
+
+      if (nrow(data.frame(split)) != nrow(data.frame(x))) {
+
+        stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.",
+             call. = FALSE)
+
+      }
+
+    }
+
+    # Convert 'split' into a vector
+    split <- unlist(split, use.names = FALSE)
 
   }
 
@@ -443,14 +570,6 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
   #......
   # Paired samples
   } else {
-
-    # Length of 'x' and 'y'
-    if (isTRUE(length(x) != length(y))) {
-
-      stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.",
-           call. = FALSE)
-
-    }
 
     xy <- data.frame(x = x, y = y, stringsAsFactors = FALSE)
 
@@ -521,21 +640,23 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
       }
 
-      if (isTRUE(!isTRUE(paired))) {
+      if (isTRUE(paired)) {
 
         # Length of 'sigma'
-        if (isTRUE(length(sigma) > 2L)) {
+        if (isTRUE(length(sigma) > 1L)) {
 
-          stop("Please specify one or two numeric values for the argument 'sigma' in independent samples.", call. = FALSE)
+          stop("Please specify one numeric values for the argument 'sigma' in dependent samples.",
+               call. = FALSE)
 
         }
 
       } else {
 
         # Length of 'sigma'
-        if (isTRUE(length(sigma) > 1L)) {
+        if (isTRUE(length(sigma) > 2L)) {
 
-          stop("Please specify one numeric values for the argument 'sigma' in dependent samples.", call. = FALSE)
+          stop("Please specify one or two numeric values for the argument 'sigma' in independent samples.",
+               call. = FALSE)
 
         }
 
@@ -554,21 +675,23 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
       }
 
-      if (isTRUE(!isTRUE(paired))) {
+      if (isTRUE(paired)) {
 
         # Length of 'sigma2'
-        if (isTRUE(length(sigma2) > 2L)) {
+        if (isTRUE(length(sigma2) > 1L)) {
 
-          stop("Please specify one or two numeric values for the argument 'sigma2' in independent samples.", call. = FALSE)
+          stop("Please specify one numeric values for the argument 'sigma2' in dependent samples.",
+               call. = FALSE)
 
         }
 
       } else {
 
         # Length of 'sigma2'
-        if (isTRUE(length(sigma2) > 1L)) {
+        if (isTRUE(length(sigma2) > 2L)) {
 
-          stop("Please specify one numeric values for the argument 'sigma2' in dependent samples.", call. = FALSE)
+          stop("Please specify one or two numeric values for the argument 'sigma2' in independent samples.",
+               call. = FALSE)
 
         }
 
@@ -606,14 +729,6 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
-      # Independent samples
-      if (isTRUE(!isTRUE(paired))) {
-
-        stop("Please use formula notation for using a grouping variable in paired samples.",
-             call. = FALSE)
-
-      }
-
       # Population standard deviation
       if (isTRUE(!is.null(sigma))) {
 
@@ -630,21 +745,6 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
       }
 
-      # Vector or factor for the argument 'group'?
-      if (isTRUE(!is.vector(group) && !is.factor(group))) {
-
-        stop("Please specify a vector or factor for the argument 'group'.", call. = FALSE)
-
-      }
-
-      # Length of 'group' match with 'x'?
-      if (isTRUE(length(group) != nrow(xy))) {
-
-        stop("Length of the vector or factor specified in 'group' does not match the number of rows of the matrix or data frame in 'data'.",
-             call. = FALSE)
-
-      }
-
       # Input 'group' completely missing
       if (isTRUE(all(is.na(group)))) {
 
@@ -655,7 +755,8 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
       # Only one group in 'group'
       if (isTRUE(length(na.omit(unique(group))) == 1L)) {
 
-        warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
+        warning("There is only one group represented in the grouping variable specified in 'group'.",
+                call. = FALSE)
 
       }
 
@@ -689,21 +790,6 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
       }
 
-      # Vector or factor for the argument 'split'?
-      if (isTRUE(!is.atomic(split) && !is.factor(split))) {
-
-        stop("Please specify a vector or factor for the argument 'split'.", call. = FALSE)
-
-      }
-
-      # Length of 'split' doesn't not match with 'x'
-      if (isTRUE(length(split) != nrow(xy))) {
-
-        stop("Length of the vector or factor specified in 'split' does not match the number of rows in 'data'.",
-               call. = FALSE)
-
-      }
-
       # Input 'split' completely missing
       if (isTRUE(all(is.na(split)))) {
 
@@ -714,7 +800,8 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
       # Only one group in 'split'
       if (isTRUE(length(na.omit(unique(split))) == 1L)) {
 
-        warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE)
+        warning("There is only one group represented in the split variable specified in 'split'.",
+                call. = FALSE)
 
       }
 
@@ -793,9 +880,11 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
                                          m = mean(xy$y, na.rm = TRUE),
                                          sd = sd(xy$y, na.rm = TRUE),
                                          m.diff = mean(xy$y, na.rm = TRUE) - mean(xy$x, na.rm = TRUE),
-                                         low = m.diff.conf(x = xy$x, y = xy$y, sigma = sigma, var.equal = var.equal, alternative = alternative,
+                                         low = m.diff.conf(x = xy$x, y = xy$y, sigma = sigma,
+                                                           var.equal = var.equal, alternative = alternative,
                                                            paired = FALSE, conf.level = conf.level, side = "low"),
-                                         upp = m.diff.conf(x = xy$x, y = xy$y, sigma = sigma, var.equal = var.equal, alternative = alternative,
+                                         upp = m.diff.conf(x = xy$x, y = xy$y, sigma = sigma,
+                                                           var.equal = var.equal, alternative = alternative,
                                                             paired = FALSE, conf.level = conf.level, side = "upp"),
                                          stringsAsFactors = FALSE, row.names = NULL))
 
@@ -809,9 +898,11 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
                            m2 = mean(xy$y, na.rm = TRUE), sd2 = sd(xy$y, na.rm = TRUE),
                            m.diff = mean(xy$y - xy$x, na.rm = TRUE),
                            sd.diff = sd(xy$y - xy$x, na.rm = TRUE),
-                           low = m.diff.conf(x = xy$x, y = xy$y, sigma = sigma, var.equal = var.equal, alternative = alternative,
+                           low = m.diff.conf(x = xy$x, y = xy$y, sigma = sigma,
+                                             var.equal = var.equal, alternative = alternative,
                                              paired = TRUE, conf.level = conf.level, side = "low"),
-                           upp = m.diff.conf(x = xy$x, y = xy$y, sigma = sigma, var.equal = var.equal, alternative = alternative,
+                           upp = m.diff.conf(x = xy$x, y = xy$y, sigma = sigma,
+                                             var.equal = var.equal, alternative = alternative,
                                              paired = TRUE, conf.level = conf.level, side = "upp"),
                            stringsAsFactors = FALSE, row.names = NULL)
 
@@ -892,6 +983,9 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
                                  sort.var = FALSE, na.omit = FALSE, digits = 2, as.na = NULL,
                                  check = TRUE, output = TRUE, ...) {
 
+  #-----------------------------------------------------------------------------------
+  # Data
+
   #......
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) {
@@ -915,6 +1009,55 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
     stop("Input specified for the argument 'data' is NULL.", call. = FALSE)
 
   }
+
+  #......
+  # Check 'group'
+  if (isTRUE(!is.null(group))) {
+
+    if (ncol(data.frame(group)) != 1) {
+
+      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(group)) != nrow(data)) {
+
+      stop("Length of the vector or factor specified in the argument 'group' does not match the number of rows in 'data'.",
+            call. = FALSE)
+
+    }
+
+    # Convert 'group' into a vector
+    group <- unlist(group, use.names = FALSE)
+
+  }
+
+  #......
+  # Check 'split'
+  if (isTRUE(!is.null(split))) {
+
+    if (ncol(data.frame(split)) != 1) {
+
+      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(split)) != nrow(data)) {
+
+        stop("Length of the vector or factor specified in the argument 'split' does not match the number of rows in 'data'.",
+             call. = FALSE)
+
+    }
+
+    # Convert 'split' into a vector
+    split <- unlist(split, use.names = FALSE)
+
+  }
+
+  #-----------------------------------------------------------------------------------
+  # Dataframe
+
+  data <- as.data.frame(data, stringsAsFactors = FALSE)
 
   #-----------------------------------------------------------------------------------
   # Formula
@@ -1040,7 +1183,7 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
   # Check
 
   # Check if grouping variable has two levels
-  if (isTRUE(length(na.omit(unique(data[, group.var]))) != 2L)) {
+  if (isTRUE(length(na.omit(unique(unlist(data[, group.var])))) != 2L)) {
 
     stop("Please specify a grouping variable with exactly two levels.", call. = FALSE)
 
@@ -1080,7 +1223,7 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
 
     for (i in seq_along(y.vars)) {
 
-      data.split <- split(data[, y.vars[i]], f = data[, group.var])
+      data.split <- split(unlist(data[, y.vars[i]]), f = unlist(data[, group.var]))
 
       result[loop.mat[i, ], ] <- data.frame(variable = y.vars[i],
                                             ci.mean.diff.default(x = data.split[[1L]], y = data.split[[2L]],

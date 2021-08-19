@@ -4,13 +4,13 @@
 \alias{rwg.lindell}
 \title{Lindell, Brandt and Whitney (1999) r*wg(j) Within-Group Agreement Index for Multi-Item Scales}
 \usage{
-rwg.lindell(x, group, A = NULL, ranvar = NULL, z = TRUE, expand = TRUE, na.omit = FALSE,
+rwg.lindell(x, cluster, A = NULL, ranvar = NULL, z = TRUE, expand = TRUE, na.omit = FALSE,
             as.na = NULL, check = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with numeric vectors.}
 
-\item{group}{a vector representing the grouping structure (i.e., group variable).}
+\item{cluster}{a vector representing the nested grouping structure (i.e., group or cluster variable).}
 
 \item{A}{a numeric value indicating the number of discrete response options of the items
 from which the random variance is computed based on \eqn{(A^2 - 1) / 12}. Note that
@@ -31,20 +31,20 @@ vector \code{x}.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.
-Note that \code{as.na()} function is only applied to \code{x}, but not to \code{group}.}
+Note that \code{as.na()} function is only applied to \code{x}, but not to \code{cluster}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \value{
 Returns a numeric vector containing r*wg(j) agreement index for multi-item scales with the same
-length as \code{group} if \code{expand = TRUE} or a data frame with following entries if
+length as \code{cluster} if \code{expand = TRUE} or a data frame with following entries if
 \code{expand = FALSE}:
 
 \tabular{ll}{
-  \code{group}            \tab group identifier \cr
-  \code{n}                \tab group size \code{x} \cr
-  \code{rwg.lindell}      \tab r*wg(j) estimate for each group \cr
-  \code{z.rwg.lindell}    \tab Fisher z-transformed r*wg(j) estimate for each group \cr
+  \code{cluster}            \tab cluster identifier \cr
+  \code{n}                \tab cluster size \code{x} \cr
+  \code{rwg.lindell}      \tab r*wg(j) estimate for each cluster \cr
+  \code{z.rwg.lindell}    \tab Fisher z-transformed r*wg(j) estimate for each cluster \cr
 }
 }
 \description{
@@ -70,23 +70,23 @@ and Spiel (2018), and Bardach, Lueftenegger, Yanagida, Spiel and Schober (2019).
 }
 \examples{
 dat <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
-                  group = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
+                  cluster = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
                   x1 = c(2, 3, 2, 1, 1, 2, 4, 3, 5),
                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
                   x3 = c(3, 1, 1, 2, 3, 3, 5, 5, 4))
 
 # Compute Fisher z-transformed r*wg(j) for a multi-item scale with A = 5 response options
-rwg.lindell(dat[, c("x1", "x2", "x3")], group = dat$group, A = 5)
+rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, A = 5)
 
 # Compute Fisher z-transformed r*wg(j) for a multi-item scale with a random variance of 2
-rwg.lindell(dat[, c("x1", "x2", "x3")], group = dat$group, ranvar = 2)
+rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, ranvar = 2)
 
 # Compute r*wg(j) for a multi-item scale with A = 5 response options
-rwg.lindell(dat[, c("x1", "x2", "x3")], group = dat$group, A = 5, z = FALSE)
+rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, A = 5, z = FALSE)
 
 # Compute Fisher z-transformed r*wg(j) for a multi-item scale with A = 5 response options,
 # do not expand the vector
-rwg.lindell(dat[, c("x1", "x2", "x3")], group = dat$group, A = 5, expand = FALSE)
+rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, A = 5, expand = FALSE)
 }
 \references{
 Bardach, L., Lueftenegger, M., Yanagida, T., & Schober, B. (2019). Achievement or agreement - Which comes first?
@@ -109,7 +109,7 @@ O'Neill, T. A. (2017). An overview of interrater agreement on Likert scales for 
 \emph{Frontiers in Psychology}, \emph{8}, Article 777. https://doi.org/10.3389/fpsyg.2017.00777
 }
 \seealso{
-\code{\link{group.scores}}
+\code{\link{cluster.scores}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

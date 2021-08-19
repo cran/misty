@@ -1,15 +1,20 @@
 #' Descriptive Statistics for Missing Data
 #'
-#' This function computes descriptive statistics for missing data, e.g. number (%) of incomplete cases, number (%)
-#' of missing values, and summary statistics for the number (%) of missing values across all variables.
+#' This function computes descriptive statistics for missing data, e.g. number (%)
+#' of incomplete cases, number (%) of missing values, and summary statistics for
+#' the number (%) of missing values across all variables.
 #'
 #' @param x           a matrix or data frame.
-#' @param table       logical: if \code{TRUE}, a frequency table with number of observed values (\code{"nObs"}),
-#'                    percent of observed values (\code{"pObs"}), number of missing values (\code{"nNA"}), and
-#'                    percent of missing values (\code{"pNA"}) is printed for each variable on the console.
-#' @param digits      an integer value indicating the number of decimal places to be used for displaying percentages.
+#' @param table       logical: if \code{TRUE}, a frequency table with number of
+#'                    observed values (\code{"nObs"}), percent of observed values
+#'                    (\code{"pObs"}), number of missing values (\code{"nNA"}),
+#'                    and percent of missing values (\code{"pNA"}) is printed for
+#'                    each variable on the console.
+#' @param digits      an integer value indicating the number of decimal places to
+#'                    be used for displaying percentages.
 #' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting the analysis.
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #' @param output      logical: if \code{TRUE}, output is shown on the console.
 #'
@@ -17,22 +22,25 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}},
-#' \code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.prop}}.
+#' \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}},
+#' \code{\link{na.coverage}}, \code{\link{na.indicator}}, \code{\link{na.pattern}},
+#' \code{\link{na.prop}}, \code{\link{na.test}}
 #'
 #' @references
 #' Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
 #'
 #' Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
-#' \emph{Annual Review of Psychology, 60}, 549-576. https://doi.org/10.1146/annurev.psych.58.110405.085530
+#' \emph{Annual Review of Psychology, 60}, 549-576.
+#' https://doi.org/10.1146/annurev.psych.58.110405.085530
 #'
-#' van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
+#' van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.).
+#' Chapman & Hall.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type},  matrix or data frame specified in
-#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
-#' list with results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries: function call (\code{call}), type of analysis \code{type},  matrix or
+#' data frame specified in \code{x} (\code{data}), specification of function arguments
+#' (\code{args}), and list with results (\code{result}).
 #'
 #' @export
 #'
@@ -53,7 +61,8 @@
 #'
 #' # Descriptive statistics for missing data with frequency table
 #' na.descript(dat, table = TRUE)
-na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE, output = TRUE) {
+na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE,
+                        output = TRUE) {
 
   ####################################################################################
   # Data

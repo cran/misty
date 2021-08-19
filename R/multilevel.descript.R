@@ -1,27 +1,33 @@
 #' Multilevel Descriptive Statistics
 #'
-#' This function computes descriptive statistics for multilevel data, e.g. average group size, intraclass correlation
-#' coefficient, design effect and effective sample size.
+#' This function computes descriptive statistics for multilevel data, e.g. average
+#' cluster size, intraclass correlation coefficient, design effect and effective
+#' sample size.
 #'
 #' Note that this function is restricted to two-level models.
 #'
 #' @param x           a vector, matrix or data frame.
-#' @param group       a vector representing the grouping structure (i.e., group variable).
-#' @param method      a character string indicating the method used to estimate intraclass correlation coefficients,
-#'                    i.e., \code{"aov"} ICC estimated using the \code{aov} function,
-#'                    \code{"lme4"} (default) ICC estimated using the \code{lmer} function in the \pkg{lme4} package,
-#'                    \code{"nlme"} ICC estimated using the \code{lme} function in the \pkg{nlme} package.
-#'                    Note that if the lme4 package is not installed, method = "aov" will be used.
-#' @param REML        logical: if \code{TRUE} (default), restricted maximum likelihood is used to estimate the null model
-#'                    when using the \code{lmer()} function in the \pkg{lme4} package or the \code{lme()} function in
+#' @param cluster     a vector representing the nested grouping structure (i.e.,
+#'                    group or cluster variable).
+#' @param method      a character string indicating the method used to estimate
+#'                    intraclass correlation coefficients, i.e., \code{"aov"} ICC
+#'                    estimated using the \code{aov} function, \code{"lme4"} (default)
+#'                    ICC estimated using the \code{lmer} function in the \pkg{lme4}
+#'                    package, \code{"nlme"} ICC estimated using the \code{lme} function
+#'                    in the \pkg{nlme} package. Note that if the lme4 package is
+#'                    not installed, method = "aov" will be used.
+#' @param REML        logical: if \code{TRUE} (default), restricted maximum likelihood
+#'                    is used to estimate the null model when using the \code{lmer()}
+#'                    function in the \pkg{lme4} package or the \code{lme()} function in
 #'                    the \pkg{nlme} package.
-#' @param digits      an integer value indicating the number of decimal places to be used.
-#' @param icc.digits  an integer indicating the number of decimal places to be used for displaying
-#'                    intraclass correlation coefficients.
+#' @param digits      an integer value indicating the number of decimal places to
+#'                    be used.
+#' @param icc.digits  an integer indicating the number of decimal places to be used
+#'                    for displaying intraclass correlation coefficients.
 #' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting the analysis.
-#'                    Note that \code{as.na()} function is only applied to \code{x} but not to
-#'                    \code{group}.
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis. Note that \code{as.na()} function is only applied
+#'                    to \code{x} but not to \code{cluster}.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #' @param output      logical: if \code{TRUE}, output is shown on the console.
 #'
@@ -32,45 +38,45 @@
 #' \code{\link{multilevel.icc}}
 #'
 #' @references
-#' Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis: Techniques and applications} (3rd. ed.).
-#' Routledge.
+#' Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis:
+#' Techniques and applications} (3rd. ed.). Routledge.
 #'
-#' Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introduction to basic and advanced multilevel
-#' modeling} (2nd ed.). Sage Publishers.
+#' Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introduction
+#' to basic and advanced multilevel modeling} (2nd ed.). Sage Publishers.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
-#' list with results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
+#' data frame specified in \code{x} (\code{data}), specification of function arguments
+#' (\code{args}), and list with results (\code{result}).
 #'
 #' @export
 #'
 #' @examples
 #' dat <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
-#'                   group = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
+#'                   cluster = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
 #'                   x1 = c(2, 3, 2, 2, 1, 2, 3, 4, 2),
 #'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
 #'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
 #'
 #' # Multilevel descriptive statistics for x1
-#' multilevel.descript(dat$x1, group = dat$group)
+#' multilevel.descript(dat$x1, cluster = dat$cluster)
 #'
 #' # Multilevel descriptive statistics for x1, print ICC with 5 digits
-#' multilevel.descript(dat$x1, group = dat$group, icc.digits = 5)
+#' multilevel.descript(dat$x1, cluster = dat$cluster, icc.digits = 5)
 #'
 #' # Multilevel descriptive statistics for x1, convert value 1 to NA
-#' multilevel.descript(dat$x1, group = dat$group, as.na = 1)
+#' multilevel.descript(dat$x1, cluster = dat$cluster, as.na = 1)
 #'
 #' # Multilevel descriptive statistics for x1,
 #' # use lmer() function in the lme4 package to estimate ICC
-#' multilevel.descript(dat$x1, group = dat$group, method = "lme4")
+#' multilevel.descript(dat$x1, cluster = dat$cluster, method = "lme4")
 #'
 #' # Multilevel descriptive statistics for x1, x2, and x3
-#' multilevel.descript(dat[, c("x1", "x2", "x3")], group = dat$group)
-multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REML = TRUE,
-                                digits = 2, icc.digits = 3, as.na = NULL, check = TRUE,
-                                output = TRUE) {
+#' multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster)
+multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
+                                REML = TRUE, digits = 2, icc.digits = 3, as.na = NULL,
+                                check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Data
@@ -101,12 +107,33 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   }
 
   #......
-  # Check if input 'group' is missing
-  if (isTRUE(missing(group))) {
+  # Check if input 'cluster' is missing
+  if (isTRUE(missing(cluster))) {
 
-    stop("Please specify a vector representing the grouping structure for the argument 'group'.", call. = FALSE)
+    stop("Please specify a vector representing the nested grouping structure for the argument 'cluster'.",
+         call. = FALSE)
 
   }
+
+  #......
+  # Check if input 'cluster' is NULL
+  if (isTRUE(is.null(cluster))) {
+
+    stop("Input specified for the argument 'cluster is NULL.", call. = FALSE)
+
+  }
+
+  #......
+  # Check if only one variable specified in the input 'cluster'
+  if (ncol(data.frame(cluster)) != 1) {
+
+    stop("More than one variable specified for the argument 'cluster'.",call. = FALSE)
+
+  }
+
+  #......
+  # Convert 'cluster' into a vector
+  cluster <- unlist(cluster, use.names = FALSE)
 
   #----------------------------------------
   # Data frame
@@ -146,23 +173,23 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   if (isTRUE(check)) {
 
     #......
-    # Check input 'group'
+    # Check input 'cluster'
     if (isTRUE(is.null(dim(x)))) {
 
-      # Numeric vector and group?
-      if (isTRUE(length(x) != length(group))) {
+      # Length of 'x' and 'cluster'
+      if (isTRUE(length(x) != length(cluster))) {
 
-        stop("Length of the vector 'x' does not match with the length of the grouping variable 'group'.",
+        stop("Length of the vector 'x' does not match with the length of the cluster variable 'cluster'.",
              call. = FALSE)
 
       }
 
     } else {
 
-      # Numeric vector and group?
-      if (isTRUE(nrow(x) != length(group))) {
+      # Length of 'x' and 'cluster'
+      if (isTRUE(nrow(x) != length(cluster))) {
 
-        stop("Number of rows in 'x' does not match with the length of the grouping variable 'group'.",
+        stop("Number of rows in 'x' does not match with the length of the cluster variable 'cluster'.",
              call. = FALSE)
 
       }
@@ -170,10 +197,10 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
     }
 
     #......
-    # Check input 'group'
-    if (isTRUE(length(unique(na.omit(group))) == 1L)) {
+    # Check input 'cluster'
+    if (isTRUE(length(unique(na.omit(cluster))) == 1L)) {
 
-      stop("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
+      stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE)
 
     }
 
@@ -230,22 +257,22 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
     }
 
     #......
-    # Variance within groups
+    # Variance within clusters
     if (isTRUE(ncol(x) == 1L)) {
 
-      if (isTRUE(all(tapply(unlist(x), group, function(y) length(na.omit(y))) <= 1L))) {
+      if (isTRUE(all(tapply(unlist(x), cluster, function(y) length(na.omit(y))) <= 1L))) {
 
-        stop("Variable specified in 'x' does not have any within-group variance.", call. = FALSE)
+        stop("Variable specified in 'x' does not have any within-cluster variance.", call. = FALSE)
 
       }
 
     } else {
 
-      x.check <- vapply(x, function(y) all(tapply(y, group, function(z) length(na.omit(z))) <= 1L), FUN.VALUE = logical(1))
+      x.check <- vapply(x, function(y) all(tapply(y, cluster, function(z) length(na.omit(z))) <= 1L), FUN.VALUE = logical(1))
 
       if (isTRUE(any(x.check))) {
 
-        stop(paste0("Following variables specified in 'x' do not have any within-group variance: ",
+        stop(paste0("Following variables specified in 'x' do not have any within-cluster variance: ",
                     paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
 
       }
@@ -290,29 +317,29 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
   # No. of missing values
   no.miss <- vapply(x, function(y) sum(is.na(y)), FUN.VALUE = 1L)
 
-  # No. of groups
-  no.group <- vapply(x, function(y) length(unique(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = 1L)
+  # No. of clusters
+  no.cluster <- vapply(x, function(y) length(unique(na.omit(cbind(y, cluster))[, "cluster"])), FUN.VALUE = 1L)
 
-  # Average group size
-  m.group.size <- vapply(x, function(y) mean(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = double(1L))
+  # Average cluster size
+  m.cluster.size <- vapply(x, function(y) mean(table(na.omit(cbind(y, cluster))[, "cluster"])), FUN.VALUE = double(1L))
 
-  # Standard deviation group size
-  sd.group.size <- vapply(x, function(y) sd(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = double(1L))
+  # Standard deviation cluster size
+  sd.cluster.size <- vapply(x, function(y) sd(table(na.omit(cbind(y, cluster))[, "cluster"])), FUN.VALUE = double(1L))
 
-  # Minimum group size
-  min.group.size <- vapply(x, function(y) min(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = 1L)
+  # Minimum cluster size
+  min.cluster.size <- vapply(x, function(y) min(table(na.omit(cbind(y, cluster))[, "cluster"])), FUN.VALUE = 1L)
 
-  # Maximum group size
-  max.group.size <- vapply(x, function(y) max(table(na.omit(cbind(y, group))[, "group"])), FUN.VALUE = 1L)
+  # Maximum cluster size
+  max.cluster.size <- vapply(x, function(y) max(table(na.omit(cbind(y, cluster))[, "cluster"])), FUN.VALUE = 1L)
 
   # ICC(1)
-  icc1 <- misty::multilevel.icc(x, group = group, type = 1, method = method, REML = REML, check = FALSE)
+  icc1 <- misty::multilevel.icc(x, cluster = cluster, type = 1, method = method, REML = REML, check = FALSE)
 
   # ICC(2)
-  icc2 <- misty::multilevel.icc(x, group = group, type = 2, method = method, REML = REML, check = FALSE)
+  icc2 <- misty::multilevel.icc(x, cluster = cluster, type = 2, method = method, REML = REML, check = FALSE)
 
   # Design effect
-  deff <- 1 + icc1*(m.group.size - 1L)
+  deff <- 1 + icc1*(m.cluster.size - 1L)
 
   deff.sqrt <- sqrt(deff)
 
@@ -324,12 +351,12 @@ multilevel.descript <- function(x, group, method = c("aov", "lme4", "nlme"), REM
 
   object <- list(call = match.call(),
                  type = "multilevel.descript",
-                 data = data.frame(x = x, group = group, stringsAsFactors = FALSE),
+                 data = data.frame(x = x, cluster = cluster, stringsAsFactors = FALSE),
                  args = list(method = method, REML = REML,
                              digits = digits, icc.digits = icc.digits, as.na = as.na, check = check, output = output),
-                 result = list(no.obs = no.obs, no.miss = no.miss, no.group = no.group,
-                               m.group.size = m.group.size, sd.group.size = sd.group.size,
-                               min.group.size = min.group.size, max.group.size = max.group.size,
+                 result = list(no.obs = no.obs, no.miss = no.miss, no.cluster = no.cluster,
+                               m.cluster.size = m.cluster.size, sd.cluster.size = sd.cluster.size,
+                               min.cluster.size = min.cluster.size, max.cluster.size = max.cluster.size,
                                icc1 = icc1, icc2 = icc2, deff = deff, deff.sqrt = deff.sqrt, n.effect = n.effect))
 
   class(object) <- "misty.object"

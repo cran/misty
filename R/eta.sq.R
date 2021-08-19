@@ -64,22 +64,6 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
   }
 
-  #......
-  # Vector, matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
-
-  #......
-  # Check input 'group'
-  if (isTRUE(missing(group))) {
-
-    stop("Please specify a vector, matrix or data frame for the argument 'group'.", call. = FALSE)
-
-  }
-
   #----------------------------------------
   # Data frame
 
@@ -133,7 +117,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
     # Check input 'group': Is integer, character or factors?
     if (isTRUE(any(vapply(as.data.frame(group, stringsAsFactors = FALSE), function(y) any(as.numeric(y) %% 1L != 0L, na.rm = TRUE), FUN.VALUE = logical(1L))))) {
 
-      stop("Please specify a integer vector, matrix or data frame with integer vectors, character vectors or factors for the argument 'x'",
+      stop("Please specify a integer vector, matrix or data frame with integer vectors, character vectors or factors for the argument 'group'",
            call. = FALSE)
 
     }
@@ -208,9 +192,9 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
   #-----------------------------------------
   # Number of dependent variables, number of independent variables
 
-  x.ncol <- ncol(x) == 1L
+  ncol.x <- ncol(data.frame(x))
 
-  group.dim.null <- is.null(dim(group))
+  ncol.group <- ncol(data.frame(group))
 
   ####################################################################################
   # Main Function
@@ -218,10 +202,10 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
   #----------------------------------------
   # One dependent variable, one independent variable
 
-  if (isTRUE(x.ncol && group.dim.null)) {
+  if (isTRUE(ncol.x == 1L && ncol.group == 1L)) {
 
       # Estimate model
-      mod <- aov(x ~ factor(group), data = data.frame(x, group, stringsAsFactors = FALSE))
+      mod <- aov(x ~ factor(group), data = data.frame(x = unname(x), group = unname(group), stringsAsFactors = FALSE))
 
       # Model summary
       mod.summary <- summary(mod)
@@ -238,12 +222,10 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
       # NaN to NA
       eta <- ifelse(is.nan(eta), NA, eta)
 
-  }
-
   #----------------------------------------
   # More than one dependent variable, one independent variable
 
-  if (isTRUE(!x.ncol && group.dim.null)) {
+  } else if (isTRUE(ncol.x > 1L && ncol.group == 1L)) {
 
     eta <- matrix(NA, ncol = ncol(x), dimnames = list(NULL, colnames(x)))
     for (i in seq_len(ncol(x))) {
@@ -252,26 +234,22 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
     }
 
-  }
-
   #----------------------------------------
   # One dependent variable, more than one independent variable
 
-  if (isTRUE(x.ncol && !group.dim.null)) {
+  } else if (isTRUE(ncol.x == 1L && ncol.group > 1L)) {
 
-    eta <-  matrix(NA, nrow = ncol(group), dimnames = list(colnames(group), NULL))
+    eta <- matrix(NA, nrow = ncol(group), dimnames = list(colnames(group), NULL))
     for (i in seq_len(ncol(group))) {
 
       eta[i, ] <- misty::eta.sq(x, group[, i], check = FALSE, output = FALSE)$result
 
     }
 
-  }
-
   #----------------------------------------
   # More than one dependent variable, more than one independent variable
 
-  if (isTRUE(!x.ncol && !group.dim.null)) {
+  } else if (isTRUE(ncol.x > 1L && ncol.group > 1L)) {
 
     eta <- matrix(NA, ncol = ncol(x), nrow = ncol(group), dimnames = list(colnames(group), colnames(x)))
 
@@ -281,7 +259,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
       # For each dependent variable
       for (j in seq_len(ncol(group))) {
 
-        eta[j, i] <- misty::eta.sq(x[, i], group[, j], check = FALSE, output = FALSE)$result
+        eta[j, i] <- misty::eta.sq(unlist(x[, i]), unlist(group[, j]), check = FALSE, output = FALSE)$result
 
       }
 
@@ -294,7 +272,7 @@ eta.sq <- function(x, group, digits = 2, as.na = NULL, check = TRUE, output = TR
 
   object <- list(call = match.call(),
                  type = "eta.sq",
-                 dat = list(x = x, group = group),
+                 data = list(x = x, group = group),
                  args = list(digits = digits, as.na = as.na, check = check, output = output),
                  result = eta)
 

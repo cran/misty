@@ -111,12 +111,51 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
   }
 
-  #......
-  # Vector, matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) {
+  #----------------------------------------
 
-    stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
-         call. = FALSE)
+  #......
+  # Check 'group'
+  if (isTRUE(!is.null(group))) {
+
+    if (ncol(data.frame(group)) != 1) {
+
+      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(group)) != nrow(data.frame(x))) {
+
+        stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.",
+             call. = FALSE)
+
+    }
+
+    # Convert 'group' into a vector
+    group <- unlist(group, use.names = FALSE)
+
+  }
+
+  #----------------------------------------
+
+  #......
+  # Check 'split'
+  if (isTRUE(!is.null(split))) {
+
+    if (ncol(data.frame(split)) != 1) {
+
+      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(split)) != nrow(data.frame(x))) {
+
+      stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.",
+           call. = FALSE)
+
+    }
+
+    # Convert 'split' into a vector
+    split <- unlist(split, use.names = FALSE)
 
   }
 
@@ -271,75 +310,6 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
-      # Vector or factor for the argument 'group'?
-      if (isTRUE(!is.vector(group) && !is.factor(group))) {
-
-        stop("Please specify a vector or factor for the argument 'group'.", call. = FALSE)
-
-      }
-
-      # Length of 'group' match with 'x'?
-      if (isTRUE(length(group) != nrow(x))) {
-
-        if (isTRUE(ncol(x) == 1L)) {
-
-          # Vector
-          if (isTRUE(is.vector(group) && !is.factor(group))) {
-
-            stop("Length of the vector specified in 'group' does not match the length of the vector in 'x'.",
-                 call. = FALSE)
-
-          # Factor
-          } else {
-
-            stop("Length of the factor specified in 'group' does not match the length of the vector in 'x'.",
-                 call. = FALSE)
-
-          }
-
-
-        } else {
-
-          # Vector
-          if (isTRUE(is.vector(group) && !is.factor(group))) {
-
-            # Matrix
-            if (isTRUE(is.mat)) {
-
-              stop("Length of the vector specified in 'group' does not match the number of rows of the matrix in 'x'.",
-                   call. = FALSE)
-
-            # Data frame
-            } else {
-
-              stop("Length of the vector specified in 'group' does not match the number of rows of the data frame in 'x'.",
-                   call. = FALSE)
-
-            }
-
-          # Factor
-          } else {
-
-            # Matrix
-            if (isTRUE(is.mat)) {
-
-              stop("Length of the factor specified in 'group' does not match the number of rows of the matrix in 'x'.",
-                   call. = FALSE)
-
-            # Data frame
-            } else {
-
-              stop("Length of the factor specified in 'group' does not match the number of rows of the data frame in 'x'.",
-                   call. = FALSE)
-
-            }
-
-          }
-
-        }
-
-      }
-
       # Input 'group' completely missing
       if (isTRUE(all(is.na(group)))) {
 
@@ -359,74 +329,6 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
     #......
     # Check input 'split'
     if (isTRUE(!is.null(split))) {
-
-      # Vector or factor for the argument 'split'?
-      if (isTRUE(!is.vector(split) && !is.factor(split))) {
-
-        stop("Please specify a vector or factor for the argument 'split'.", call. = FALSE)
-
-      }
-
-      # Length of 'split' does not match with 'x'
-      if (isTRUE(length(split) != nrow(x))) {
-
-        if (isTRUE(ncol(x) == 1L)) {
-
-          # Vector
-          if (is.vector(split) && !is.factor(split)) {
-
-            stop("Length of the vector specified in 'split' does not match the length of the vector in 'x'.",
-                 call. = FALSE)
-
-          # Factor
-          } else {
-
-            stop("Length of the factor specified in 'split' does not match length of the vector in 'x'.",
-                 call. = FALSE)
-
-          }
-
-        } else {
-
-          # Vector
-          if (isTRUE(is.vector(split) && !is.factor(split))) {
-
-            # Matrix
-            if (isTRUE(is.mat)) {
-
-              stop("Length of the vector specified in 'split' does not match the number of rows of the matrix in 'x'.",
-                   call. = FALSE)
-
-            # Data frame
-            } else {
-
-              stop("Length of the vector specified in 'split' does not match the number of rows of the data frame in 'x'.",
-                   call. = FALSE)
-
-            }
-
-          # Factor
-          } else {
-
-            # Matrix
-            if (isTRUE(is.mat)) {
-
-              stop("Length of the factor specified in 'split' does not match the number of rows of the matrix in 'x'.",
-                   call. = FALSE)
-
-            # Data frame
-            } else {
-
-              stop("Length of the factor specified in 'split' does not match the number of rows of the data frame in 'x'.",
-                   call. = FALSE)
-
-            }
-
-          }
-
-        }
-
-      }
 
       # Input 'split' completely missing
       if (isTRUE(all(is.na(split)))) {

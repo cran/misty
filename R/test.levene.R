@@ -94,6 +94,11 @@ test.levene <- function(formula, data, method = c("median", "mean"),
 
   }
 
+  #----------------------------------------
+  # Data frame
+
+  data <- as.data.frame(data, stringsAsFactors = FALSE)
+
   #-----------------------------------------------------------------------------------
   # Formula
 

@@ -57,6 +57,7 @@ concludes that coefficient alpha should not be reported as a measure of a test's
 Zumbo and Kroc (2019) argued that Chalmers' critique of ordinal coefficient alpha is unfounded and that
 ordinal coefficient alpha may be the most appropriate quantifier of reliability when using Likert-type
 measurement to study a latent continuous random variable.
+
 Confidence intervals are computed using the procedure by Feldt, Woodruff and Salih (1987). When computing
 confidence intervals using pairwise deletion, the average sample size from all pairwise samples is used.
 Note that there are at least 10 other procedures for computing the confidence interval (see Kelley and

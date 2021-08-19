@@ -1,41 +1,47 @@
 #' Centering at the Grand Mean or Centering Within Cluster
 #'
-#' This function is used to center predictors at the grand mean (CGM, i.e., grand mean centering) or
-#' within cluster (CWC, i.e., group-mean centering).
+#' This function is used to center predictors at the grand mean (CGM, i.e., grand
+#' mean centering) or within cluster (CWC, i.e., group-mean centering).
 #'
-#' Predictors in a single-level regression can only be centered at the grand mean (CGM) by specifying
-#' \code{type = "CGM"} (default) in conjunction with \code{group = NULL} (default).
+#' Predictors in a single-level regression can only be centered at the grand mean (CGM)
+#' by specifying \code{type = "CGM"} (default) in conjunction with \code{cluster = NULL}
+#' (default).
 #'
-#' Level-1 (L1) predictors in a multilevel regression can be centered at the grand mean (CGM)
-#' by specifying \code{type = "CGM"} (default) in conjunction with \code{group = NULL} (default) or
-#' within cluster (CWC) by specifying \code{type = "CWC"} in conjunction with specifying a group
-#' membership variable using the \code{group} argument.
+#' Level-1 (L1) predictors in a multilevel regression can be centered at the grand
+#' mean (CGM) by specifying \code{type = "CGM"} (default) in conjunction with
+#' \code{cluster = NULL} (default) or within cluster (CWC) by specifying \code{type = "CWC"}
+#' in conjunction with specifying a cluster membership variable using the \code{cluster}
+#' argument.
 #'
-#' Level-2 (L2) predictors in a multilevel regression can only be centered at the grand mean (CGM) by
-#' specifying \code{type = "CGM"} (default) in conjunction with specifying a group membership
-#' variable using the \code{group} argument.
+#' Level-2 (L2) predictors in a multilevel regression can only be centered at the
+#' grand mean (CGM) by specifying \code{type = "CGM"} (default) in conjunction with
+#' specifying a cluster membership variable using the \code{cluster} argument.
 #'
-#' Note that predictors can be centered on any meaningful value using the argument \code{value}.
+#' Note that predictors can be centered on any meaningful value using the argument
+#' \code{value}.
 #'
 #' @param x           a numeric vector.
 #' @param type        a character string indicating the type of centering, i.e.,
-#'                    \code{"CGM"} for centering at the grand mean (i.e., grand mean centering) or
-#'                    \code{"CWC"} for centering within cluster (i.e., group-mean centering).
-#' @param group       a numeric vector, character vector or factor denoting the group membership
-#'                    of each unit in \code{x}. Note, this argument is required for centering at
-#'                    the grand mean (CGM) of a level-2 predictor or centering within cluster (CWC)
-#'                    of a level-1 predictor.
+#'                    \code{"CGM"} for centering at the grand mean (i.e., grand mean
+#'                    centering) or \code{"CWC"} for centering within cluster
+#'                    (i.e., group-mean centering).
+#' @param cluster     a vector representing the nested grouping structure (i.e.,
+#'                    group or cluster variable) of each unit in \code{x}. Note,
+#'                    this argument is required for centering at the grand mean (CGM)
+#'                    of a level-2 predictor or centering within cluster (CWC) of a
+#'                    level-1 predictor.
 #' @param value       a numeric value for centering on a specific user-defined value.
 #' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting the analysis.
-#'                    Note that \code{as.na()} function is only applied to \code{x} but not to \code{group}.
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis. Note that \code{as.na()} function is only applied
+#'                    to \code{x} but not to \code{cluster}.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{dummy.c}}, \code{\link{group.scores}}, \code{\link{rec}}, \code{\link{item.reverse}},
+#' \code{\link{dummy.c}}, \code{\link{cluster.scores}}, \code{\link{rec}}, \code{\link{item.reverse}},
 #' \code{\link{rwg.lindell}}, \code{\link{item.scores}}.
 #'
 #' @references
@@ -66,7 +72,7 @@
 #' #--------------------------------------
 #' # Predictors in a multilevel regression
 #' dat.ml <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
-#'                      group = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
+#'                      cluster = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
 #'                      x.l1 = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
 #'                      x.l2 = c(4, 4, 4, 1, 1, 1, 3, 3, 3),
 #'                      y = c(5, 3, 6, 3, 4, 5, 2, 6, 5))
@@ -75,11 +81,12 @@
 #' center(dat.ml$x.l1)
 #'
 #' # Center level-1 predictor within cluster (CWC)
-#' center(dat.ml$x.l1, type = "CWC", group = dat.ml$group)
+#' center(dat.ml$x.l1, type = "CWC", cluster = dat.ml$cluster)
 #'
 #' # Center level-2 predictor at the grand mean (CGM)
-#' center(dat.ml$x.l2, type = "CGM", group = dat.ml$group)
-center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na = NULL, check = TRUE) {
+#' center(dat.ml$x.l2, type = "CGM", cluster = dat.ml$cluster)
+center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL, as.na = NULL,
+                   check = TRUE) {
 
   ####################################################################################
   # Input Check
@@ -101,6 +108,48 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
   }
 
   #......
+  # Check if only one variable specified in the input 'x'
+  if (ncol(data.frame(x)) != 1) {
+
+    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
+
+  }
+
+  #......
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
+  #-----------------------------------------
+
+  #......
+  # Check input 'cluster'
+  if (isTRUE(!is.null(cluster))) {
+
+    if (isTRUE(nrow(data.frame(cluster)) != nrow(data.frame(x)))) {
+
+      stop("The length of the vector in 'cluster' does not match with the length of the vector in 'x'.",
+           call. = FALSE)
+
+    }
+
+    #......
+    # Check if only one variable specified in the input 'cluster'
+    if (ncol(data.frame(cluster)) != 1) {
+
+      stop("More than one variable specified for the argument 'cluster'.",call. = FALSE)
+
+    }
+
+    #......
+    # Convert 'cluster' into a vector
+    cluster <- unlist(cluster, use.names = FALSE)
+
+  }
+
+  #-----------------------------------------
+  # Input Check
+
+  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) {
 
@@ -108,13 +157,11 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
 
   }
 
-  #-----------------------------------------
-
   if (isTRUE(check)) {
 
     #......
     # Check input 'x'
-    if (isTRUE(!is.atomic(x) || !is.numeric(x))) {
+    if (isTRUE(mode(x) != "numeric")) {
 
       stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
 
@@ -129,35 +176,41 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
     }
 
     #......
-    # Check input 'group'
-    if (isTRUE(!is.null(group))) {
-
-      if (isTRUE(length(group) != length(x))) {
-
-        stop("The length of the vector in 'group' does not match with the length of the vector in 'x'.",
-             call. = FALSE)
-
-      }
-
-    }
-
-    #......
     # Centering Within Cluster
-    if (isTRUE(all(type == "CWC") && is.null(group))) {
+    if (isTRUE(all(type == "CWC") && is.null(cluster))) {
 
-      stop("Please specify the argument 'group' to apply centering within cluster (CWC).",
+      stop("Please specify the argument 'cluster' to apply centering within cluster (CWC).",
            call. = FALSE)
 
     }
 
     #......
-    # Group Mean Centering of a Level 1 predictor
-    if (isTRUE(all(type == "CWC") && !is.null(group))) {
+    # Check input 'cluster'
+    if (isTRUE(!is.null(cluster))) {
 
-      if (isTRUE(all(na.omit(as.vector(tapply(x, group, var, na.rm = TRUE) == 0))))) {
+      #......
+      # Group Mean Centering of a Level 1 predictor
+      if (isTRUE(all(type == "CWC"))) {
 
-        stop("Vector in 'x' is specified as level-1 predictor does not have any within-group variance.",
-             call. = FALSE)
+        if (isTRUE(all(na.omit(as.vector(tapply(x, cluster, var, na.rm = TRUE) == 0))))) {
+
+          stop("Vector in 'x' specified as level-1 predictor does not have any within-cluster variance.",
+               call. = FALSE)
+
+        }
+
+      }
+
+      #......
+      # Group Mean Centering of a Level 2 predictor
+      if (isTRUE(all(type == "CGM"))) {
+
+        if (isTRUE(any(na.omit(as.vector(tapply(x, cluster, var, na.rm = TRUE) != 0))))) {
+
+          stop("Vector in 'x' specified as level-2 predictor has within-cluster variance.",
+               call. = FALSE)
+
+        }
 
       }
 
@@ -193,53 +246,47 @@ center <- function(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na 
   #-----------------------------------------------------------------------------------
   # Main Function
 
-  #----------------------------------------
-  # Centering at the grand mean (CGM)
+  if (isTRUE(is.null(value))) {
 
-  if (isTRUE(type == "CGM")) {
+    #----------------------------------------
+    # Centering at the grand mean (CGM)
 
-    #.........................
-    # Single-level or L1 predictor
-    if (isTRUE(is.null(group))) {
+    if (isTRUE(type == "CGM")) {
 
-      # Mean centering
-      if (isTRUE(is.null(value))) {
+      #.........................
+      # Single-level or L1 predictor
+      if (isTRUE(is.null(cluster))) {
 
+        # Mean centering
         object <- as.numeric(scale(x, scale = FALSE))
 
-      # Center on a user-defined value
+        #.........................
+        # L2 predictor
       } else {
 
-        object <- x - value
+        # Mean centering
+        object <- x - mean(x[which(!duplicated(cluster))], na.rm = TRUE)
 
       }
 
-    #.........................
-    # L2 predictor
-    } else {
+      #----------------------------------------
+      # Centering within cluster (CWC)
 
-      # Mean centering
-      if (isTRUE(is.null(value))) {
+    } else if (isTRUE(type == "CWC")) {
 
-        object <- x - mean(x[which(!duplicated(group))], na.rm = TRUE)
-
-      # Center on a user-defined value
-      } else {
-
-        object <- x - value
-
-      }
+      object <- unname(x - misty::cluster.scores(x, cluster = cluster, fun = "mean",
+                                                 check = check, expand = TRUE))
 
     }
 
-  #----------------------------------------
-  # Centering within cluster (CWC)
+    #......
+    # Centering on a user-defined value
 
-  #.........................
-  # L1 predictor
   } else {
 
-    object <- unname(x - misty::group.scores(x, group = group, fun = "mean", check = check, expand = TRUE))
+    object <- x - value
+
+    warning(paste("Variable centered at the user-defined value", value), call. = FALSE)
 
   }
 

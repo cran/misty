@@ -38,10 +38,18 @@
 chr.trim <- function(x, side = c("both", "left", "right"), check = TRUE) {
 
   #-----------------------------------------------------------------------------------
+  # Data
+
+  #---------------------
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
+  #-----------------------------------------------------------------------------------
   #  Argument
 
   # Argument perc
   if (isTRUE(all(c("both", "left", "right") %in% side))) { side <- "both" }
+
 
   #-----------------------------------------------------------------------------------
   # Input check

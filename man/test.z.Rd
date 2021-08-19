@@ -138,7 +138,7 @@ group2 <- c(5, 2, 4, 3, 1)
 
 # Two-sided two-sample z-test
 # population standard deviation (SD) = 1.2, equal SD assumption
-test.z(group1, group2, sigma = 1.2, data = dat1)
+test.z(group1, group2, sigma = 1.2)
 
 #--------------------------------------
 # Paired-Sample Design

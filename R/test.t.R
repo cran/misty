@@ -239,6 +239,33 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
   }
 
+  #......
+  # Check if only one variable specified in the input 'x'
+  if (ncol(data.frame(x)) != 1) {
+
+    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
+
+  }
+
+  #......
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
+  if (!is.null(y)) {
+
+    # Check if only one variable specified in the input 'y'
+    if (ncol(data.frame(y)) != 1) {
+
+      stop("More than one variable specified for the argument 'y'.",call. = FALSE)
+
+    }
+
+    #......
+    # Convert 'y' into a vector
+    y <- unlist(y, use.names = FALSE)
+
+  }
+
   #----------------------------------------
   # Convert user-missing values into NA
 
@@ -686,21 +713,21 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
   # Check if input 'data' is NULL
   if (isTRUE(!is.null(ref))) {
 
-    if (isTRUE(!ref %in% na.omit(data[, group.var]))) {
+    if (isTRUE(!ref %in% na.omit(unlist(data[, group.var])))) {
 
       stop("Reference group specified in the argument 'ref' is not represented in the grouping variable.",
            call. = FALSE)
 
     }
 
-    ifelse(which(unique(sort(na.omit(data[, group.var]))) %in% ref) == 1, ref <- "x", ref <- "y")
+    ifelse(which(unique(sort(na.omit(unlist(data[, group.var])))) %in% ref) == 1, ref <- "x", ref <- "y")
 
   }
 
   #-----------------------------------------------------------------------------------
   # Main Function
 
-  data.split <- split(data[, y.vars], f = data[, group.var])
+  data.split <- split(unlist(data[, y.vars]), f = unlist(data[, group.var]))
 
   object <- test.t.default(x = data.split[[1L]], y = data.split[[2L]],
                            alternative = alternative, conf.level = conf.level,

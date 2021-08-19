@@ -2,14 +2,15 @@
 % Please edit documentation in R/cor.matrix.R
 \name{cor.matrix}
 \alias{cor.matrix}
-\title{Correlation Matrix with Statistical Significance Testing}
+\title{Correlation Matrix}
 \usage{
 cor.matrix(x, method = c("pearson", "spearman", "kendall-b", "kendall-c"),
-           na.omit = FALSE, group = NULL, print = c("all", "cor", "n", "p"),
+           na.omit = FALSE, group = NULL, sig = TRUE, alpha = 0.05,
+           print = c("all", "cor", "n", "stat", "df", "p"),
            tri = c("both", "lower", "upper"),
            p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel",
-                     "BH", "BY", "fdr"), digits = 2, p.digits = 3, as.na = NULL,
-           check = TRUE, output = TRUE)
+                     "BH", "BY", "fdr"), continuity = TRUE,
+           digits = 2, p.digits = 3, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame.}
@@ -27,17 +28,22 @@ correlation coefficient.}
 each group separately, i.e., upper triangular for one group and lower triangular for
 another group. Note that the grouping variable is limited to two groups.}
 
-\item{print}{a character string or character vector indicating which additional results to show,
-i.e. \code{"all"}, for all additional results: \code{"n"} for the sample sizes, and
-\code{"p"} for \emph{p}-values.}
+\item{sig}{logical: if \code{TRUE} (default), statistically significant correlation coefficients are shown in boldface on the console.}
 
-\item{tri}{a character string indicating which triangular of the matrix to show on the console,
-i.e., \code{both} for upper and lower triangular, \code{lower} (default) for the
-lower triangular, and \code{upper} for the upper triangular.}
+\item{alpha}{a numeric value between 0 and 1 indicating the significance level at which correlation coefficients are printed boldface when \code{sig = TRUE}.}
+
+\item{print}{a character string or character vector indicating which results to show on the console,
+i.e. \code{"all"} for all results, \code{"cor"} for correlation coefficients, \code{"n"} for the
+sample sizes, and \code{"p"} for \emph{p}-values.}
+
+\item{tri}{a character string indicating which triangular of the matrix to show on the console, i.e. \code{"all"} for all results, \code{"cor"} for correlation coefficients, \code{"n"} for the sample sizes, and \code{"p"} for \emph{p}-values.}
 
 \item{p.adj}{a character string indicating an adjustment method for multiple testing based on \code{\link{p.adjust}},
-i.e.,  \code{none} (default), \code{bonferroni}, \code{holm}, \code{hochberg}, \code{hommel},
+i.e., \code{none} (default), \code{bonferroni}, \code{holm}, \code{hochberg}, \code{hommel},
 \code{BH}, \code{BY}, or \code{fdr}.}
+
+\item{continuity}{logical: if \code{TRUE} (default), continuity correction is used for testing Spearman's rank-order
+correlation coefficient and Kendall's Tau-b correlation.}
 
 \item{digits}{an integer value indicating the number of decimal places to be used for displaying
 correlation coefficients.}
@@ -58,8 +64,17 @@ function call (\code{call}), type of analysis \code{type}, matrix or data frame 
 list with results (\code{result}).
 }
 \description{
-This function computes a correlation matrix and computes significance values (\emph{p}-values) for testing the hypothesis
-H0: \eqn{\rho} = 0 for all possible pairs of variables.
+This function computes a correlation matrix based on Pearson product-moment correlation coefficient, Spearman's rank-order correlation coefficient, Kendall's Tau-b correlation coefficient, or Kendall-Stuart's Tau-c correlation coefficient and computes significance values (\emph{p}-values) for testing the hypothesis H0: \eqn{\rho} = 0 for all pairs of variables.
+}
+\details{
+Note that unlike the \code{\link[stats:cor.test]{cor.test}} function, this function
+does not compute an exact \emph{p}-value for Spearman's rank-order correlation
+coefficient or Kendall's Tau-b correlation coefficient, but uses the asymptotic
+\emph{t} approximation.
+
+Statistically significant correlation coefficients are shown in boldface on the
+console (\code{sig = TRUE}). However, this option is not supported when using
+R Markdown, i.e., the argument \code{sig} will switch to \code{FALSE}.
 }
 \examples{
 dat <- data.frame(group = c("a", "a", "a", "a", "a",
@@ -68,6 +83,9 @@ dat <- data.frame(group = c("a", "a", "a", "a", "a",
                   y = c(3, 3, 5, 6, 7, 4, 7, NA, NA, 8),
                   z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6),
                   stringsAsFactors = TRUE)
+
+# Pearson product-moment correlation coefficient using pairwise deletion
+cor.matrix(dat[, c("x", "y")])
 
 # Pearson product-moment correlation coefficient matrix using pairwise deletion
 cor.matrix(dat[, c("x", "y", "z")])
@@ -78,8 +96,12 @@ cor.matrix(dat[, c("x", "y", "z")], method = "spearman")
 # Kendall's Tau-b correlation matrix using pairwise deletion
 cor.matrix(dat[, c("x", "y", "z")], method = "kendall-b")
 
-# Kendall's Tau-c correlation matrix using pairwise deletion
+# Kendall-Stuart's Tau-c correlation matrix using pairwise deletion
 cor.matrix(dat[, c("x", "y", "z")], method = "kendall-c")
+
+# Pearson product-moment correlation coefficient matrix using pairwise deletion
+# highlight statistically significant result at alpha = 0.10
+cor.matrix(dat[, c("x", "y", "z")], alpha = 0.10)
 
 # Pearson product-moment correlation coefficient matrix using pairwise deletion,
 # print sample size and significance values
@@ -92,6 +114,10 @@ cor.matrix(dat[, c("x", "y", "z")], na.omit = TRUE, print = "all")
 # Pearson product-moment correlation coefficient matrix using listwise deletion,
 # print sample size and significance values with Bonferroni correction
 cor.matrix(dat[, c("x", "y", "z")], na.omit = TRUE, print = "all", p.adj = "bonferroni")
+
+# Pearson product-moment correlation coefficient using pairwise deletion,
+# results for group "a" and "b" separately
+cor.matrix(dat[, c("x", "y")], group = dat$group)
 
 # Pearson product-moment correlation coefficient matrix using pairwise deletion,
 # results for group "a" and "b" separately

@@ -25,7 +25,7 @@ i.e. these values are converted to NA before conducting the analysis.}
 Returns an object of class \code{misty.object}, which is a list with following entries:
 function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
 \code{x} (\code{data}), specification of function arguments (\code{args}), list with results
-(\code{result}), and a vector with the number of missing data pattern for each case (\code{pattern}),
+(\code{result}), and a vector with the number of missing data pattern for each case (\code{pattern}).
 }
 \description{
 This function computes a summary of missing data patterns, i.e., number (%) of cases with a specific missing data pattern.
@@ -52,8 +52,7 @@ Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
 }
 \seealso{
-\code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-\code{\link{na.indicator}}, \code{\link{na.prop}}.
+\code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.indicator}}, \code{\link{na.prop}}, \code{\link{na.test}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

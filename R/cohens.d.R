@@ -159,7 +159,7 @@
 #'
 #' # Cohen's d.z for more than one variable with two-sided 95% CI
 #' # population mean = 3
-#' cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, data = dat1)
+#' cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3)
 #'
 #' # Cohen's d.z with two-sided 95% CI
 #' # population mean = 3, by group1 separately
@@ -211,7 +211,7 @@
 #'
 #' # Cohen's d.s for more than one variable with two-sided 95% CI
 #' # weighted pooled SD
-#' cohens.d(c(x1, x2, x3) ~ group1, data = dat1)
+#' cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1)
 #'
 #' # Cohen's d with two-sided 95% CI
 #' # unweighted SD
@@ -235,7 +235,7 @@
 #'
 #' # Cohen's d.s for more than one variable with two-sided 95% CI
 #' # weighted pooled SD, by group2 separately
-#' cohens.d(c(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
+#' cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
 #'
 #' # Cohen's d.s with two-sided 95% CI
 #' # weighted pooled SD, split analysis by group2
@@ -243,7 +243,7 @@
 #'
 #' # Cohen's d.s for more than one variable with two-sided 95% CI
 #' # weighted pooled SD, split analysis by group2
-#' cohens.d(c(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
+#' cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
 #'
 #' # Cohen's d.s with two-sided 95% CI
 #' # weighted pooled SD, by group2 separately, split analysis by group3
@@ -252,7 +252,7 @@
 #'
 #' # Cohen's d.s for more than one variable with two-sided 95% CI
 #' # weighted pooled SD, by group2 separately, split analysis by group3
-#' cohens.d(c(x1, x2, x3) ~ group1, data = dat1,
+#' cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1,
 #'          group = dat1$group2, split = dat1$group3)
 #'
 #' #--------------------------------------
@@ -264,7 +264,7 @@
 #'
 #' # Cohen's d.z with two-sided 99% CI
 #' # SD of the difference scores
-#' cohens.d(dat1$x1, dat1$x2, paired = TRUE)
+#' cohens.d(dat1$x1, dat1$x2, paired = TRUE, conf.level = 0.99)
 #'
 #' # Cohen's d.z with one-sided 95% CI
 #' # SD of the difference scores
@@ -740,15 +740,28 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   }
 
   #......
-  # Check if input 'x' has length = 0
-  if (isTRUE(length(x) == 0)) {
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
 
-    stop("Input specified for the argument 'x' has length = 0.", call. = FALSE)
+  #----------------------------------------
+
+  if (isTRUE(!is.null(y))) {
+
+    #......
+    # Check if only one variable specified in the input 'y'
+    if (ncol(data.frame(y)) != 1) {
+
+      stop("More than one variable specified for the argument 'x'.",call. = FALSE)
+
+    }
+
+    #......
+    # Convert 'y' into a vector
+    y <- unlist(y, use.names = FALSE)
 
   }
 
   #----------------------------------------
-  # List or Dataframe
 
   #......
   # Check input 'paired'
@@ -757,6 +770,76 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
     stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
 
   }
+
+
+  if (isTRUE(paired)) {
+
+    # Length of 'x' and 'y'
+    if (isTRUE(nrow(data.frame(x)) != nrow(data.frame(y)))) {
+
+      stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.",
+           call. = FALSE)
+
+    }
+
+  }
+
+  #----------------------------------------
+
+  #......
+  # Check 'group'
+  if (isTRUE(!is.null(group))) {
+
+    if (ncol(data.frame(group)) != 1) {
+
+      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
+
+    }
+
+    if (isTRUE(paired)) {
+
+      if (nrow(data.frame(group)) != nrow(data.frame(x))) {
+
+        stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.",
+             call. = FALSE)
+
+      }
+
+    }
+
+    # Convert 'group' into a vector
+    group <- unlist(group, use.names = FALSE)
+
+  }
+
+  #......
+  # Check 'split'
+  if (isTRUE(!is.null(split))) {
+
+    if (ncol(data.frame(split)) != 1) {
+
+      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
+
+    }
+
+    if (isTRUE(paired)) {
+
+      if (nrow(data.frame(split)) != nrow(data.frame(x))) {
+
+        stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.",
+             call. = FALSE)
+
+      }
+
+    }
+
+    # Convert 'split' into a vector
+    split <- unlist(split, use.names = FALSE)
+
+  }
+
+  #----------------------------------------
+  # List or Dataframe
 
   #......
   # One-sample design
@@ -781,14 +864,6 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   #......
   # Paired-sample design
   } else if (isTRUE(paired)) {
-
-    # Length of 'x' and 'y'
-    if (isTRUE(length(x) != length(y))) {
-
-      stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.",
-           call. = FALSE)
-
-    }
 
     xy <- data.frame(x = x, y = y, stringsAsFactors = FALSE)
 
@@ -894,21 +969,6 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
-      # Vector or factor for the argument 'group'?
-      if (isTRUE(!is.vector(group) && !is.factor(group))) {
-
-        stop("Please specify a vector or factor for the argument 'group'.", call. = FALSE)
-
-      }
-
-      # Length of 'group' match with 'x'?
-      if (isTRUE(length(group) != nrow(xy))) {
-
-        stop("Length of the vector or factor specified in 'group' does not match the number of rows of the matrix or data frame in 'data'.",
-             call. = FALSE)
-
-      }
-
       # Input 'group' completely missing
       if (isTRUE(all(is.na(group)))) {
 
@@ -928,21 +988,6 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
     #......
     # Check input 'split'
     if (isTRUE(!is.null(split))) {
-
-       # Vector or factor for the argument 'split'?
-      if (isTRUE(!is.atomic(split) && !is.factor(split))) {
-
-        stop("Please specify a vector or factor for the argument 'split'.", call. = FALSE)
-
-      }
-
-      # Length of 'split' doesn't not match with 'x'
-      if (isTRUE(length(split) != nrow(xy))) {
-
-        stop("Length of the vector or factor specified in 'split' does not match the number of rows in 'data'.",
-             call. = FALSE)
-
-      }
 
       # Input 'split' completely missing
       if (isTRUE(all(is.na(split)))) {
@@ -1228,7 +1273,7 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) {
 
-    stop("Please specify a formula for the argument 'formula'.", call. = FALSE)
+    stop("Please specify a formula using the argument 'formula'", call. = FALSE)
 
   }
 
@@ -1236,7 +1281,7 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
   # Check if input 'data' is missing
   if (isTRUE(missing(data))) {
 
-    stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE)
+    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
 
   }
 
@@ -1247,6 +1292,55 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
     stop("Input specified for the argument 'data' is NULL.", call. = FALSE)
 
   }
+
+  #......
+  # Check 'group'
+  if (isTRUE(!is.null(group))) {
+
+    if (ncol(data.frame(group)) != 1) {
+
+      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(group)) != nrow(data)) {
+
+      stop("Length of the vector or factor specified in the argument 'group' does not match the number of rows in 'data'.",
+           call. = FALSE)
+
+    }
+
+    # Convert 'group' into a vector
+    group <- unlist(group, use.names = FALSE)
+
+  }
+
+  #......
+  # Check 'split'
+  if (isTRUE(!is.null(split))) {
+
+    if (ncol(data.frame(split)) != 1) {
+
+      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(split)) != nrow(data)) {
+
+      stop("Length of the vector or factor specified in the argument 'split' does not match the number of rows in 'data'.",
+           call. = FALSE)
+
+    }
+
+    # Convert 'split' into a vector
+    split <- unlist(split, use.names = FALSE)
+
+  }
+
+  #-----------------------------------------------------------------------------------
+  # Dataframe
+
+  data <- as.data.frame(data, stringsAsFactors = FALSE)
 
   #-----------------------------------------------------------------------------------
   # Formula
@@ -1310,7 +1404,7 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
   if (isTRUE(!is.null(as.na))) {
 
     # Replace user-specified values with missing values
-    data[, y.vars] <- misty::as.na(data[, y.vars], as.na = as.na, check = check)
+    data[, y.vars] <- misty::as.na(data[, y.vars], na = as.na, check = check)
 
     # Variable with missing values only
     data.miss <- vapply(data[, y.vars, drop = FALSE], function(y) all(is.na(y)), FUN.VALUE = logical(1))
@@ -1337,11 +1431,9 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
       warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
                      length(attributes(x)$na.action)), call. = FALSE)
 
-    }
-
     #......
     # Group variable, no split variable
-    if (isTRUE(!is.null(group) && is.null(split))) {
+    } else if (isTRUE(!is.null(group) && is.null(split))) {
 
       data.group <- na.omit(data.frame(data[, var.formula], group = group, stringsAsFactors = FALSE))
 
@@ -1351,11 +1443,9 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
       warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
                      length(attributes(data.group)$na.action)), call. = FALSE)
 
-    }
-
     #......
     # No group variable, split variable
-    if (isTRUE(is.null(group) && !is.null(split))) {
+    } else if (isTRUE(is.null(group) && !is.null(split))) {
 
       data.split <- na.omit(data.frame(data[, var.formula], split = split, stringsAsFactors = FALSE))
 
@@ -1365,11 +1455,9 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
       warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
                      length(attributes(data.split)$na.action)), call. = FALSE)
 
-    }
-
     #......
     # Group variable, split variable
-    if (isTRUE(!is.null(group) && !is.null(split))) {
+    } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
       data.group.split <- na.omit(data.frame(data[, var.formula], group = group, split = split,
                                              stringsAsFactors = FALSE))

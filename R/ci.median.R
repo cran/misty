@@ -1,27 +1,34 @@
 #' Confidence Interval for the Median
 #'
-#' This function computes a confidence interval for the median for one or more variables, optionally by
-#' a grouping and/or split variable.
+#' This function computes a confidence interval for the median for one or more variables,
+#' optionally by a grouping and/or split variable.
 #'
-#' The confidence interval for the median is computed by using the Binomial distribution to determine
-#' which values in the sample are the lower and the upper confidence limits. Note that at least six
-#' valid observations are needed to compute the confidence interval for the median.
+#' The confidence interval for the median is computed by using the Binomial distribution
+#' to determine which values in the sample are the lower and the upper confidence limits.
+#' Note that at least six valid observations are needed to compute the confidence interval
+#' for the median.
 #'
-#' @param x              a numeric vector, matrix or data frame with numeric variables, i.e.,
-#'                       factors and character variables are excluded from \code{x} before conducting the analysis.
-#' @param alternative    a character string specifying the alternative hypothesis, must be one of
-#'                       \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.
-#' @param conf.level     a numeric value between 0 and 1 indicating the confidence level of the interval.
+#' @param x              a numeric vector, matrix or data frame with numeric variables,
+#'                       i.e., factors and character variables are excluded from \code{x}
+#'                       before conducting the analysis.
+#' @param alternative    a character string specifying the alternative hypothesis, must
+#'                       be one of \code{"two.sided"} (default), \code{"greater"} or
+#'                       \code{"less"}.
+#' @param conf.level     a numeric value between 0 and 1 indicating the confidence level
+#'                       of the interval.
 #' @param group          a numeric vector, character vector or factor as grouping variable.
 #' @param split          a numeric vector, character vector or factor as split variable.
-#' @param sort.var       logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.
-#' @param na.omit        logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-#'                       (i.e., listwise deletion) when specifying more than one outcome variable.
-#' @param digits         an integer value indicating the number of decimal places to be used.
+#' @param sort.var       logical: if \code{TRUE}, output table is sorted by variables
+#'                       when specifying \code{group}.
+#' @param na.omit        logical: if \code{TRUE}, incomplete cases are removed before
+#'                       conducting the analysis (i.e., listwise deletion) when specifying
+#'                       more than one outcome variable.
+#' @param digits         an integer value indicating the number of decimal places to be
+#'                       used.
 #' @param as.na          a numeric vector indicating user-defined missing values,
-#'                       i.e. these values are converted to \code{NA} before conducting the analysis.
-#'                       Note that \code{as.na()} function is only applied to \code{x}, but
-#'                       not to \code{group} or \code{split}.
+#'                       i.e. these values are converted to \code{NA} before conducting
+#'                       the analysis. Note that \code{as.na()} function is only applied
+#'                       to \code{x}, but not to \code{group} or \code{split}.
 #' @param check          logical: if \code{TRUE}, argument specification is checked.
 #' @param output         logical: if \code{TRUE}, output is shown on the console.
 #'
@@ -29,18 +36,19 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.prop}}, \code{\link{ci.prop.diff}},
-#' \code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{descript}}
+#' \code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.prop}},
+#' \code{\link{ci.prop.diff}}, \code{\link{ci.var}}, \code{\link{ci.sd}},
+#' \code{\link{descript}}
 #'
 #' @references
-#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-#' John Wiley & Sons.
+#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology -
+#' Using R and SPSS}. John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
-#' \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
-#' and result table (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries: function call (\code{call}), type of analysis \code{type}, list with
+#' the input specified in \code{x}, code{group}, and \code{split} (\code{data}),
+#' specification of function arguments (\code{args}), and result table (\code{result}).
 #'
 #' @export
 #'
@@ -115,11 +123,46 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
   }
 
   #......
-  # Vector, matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) {
+  # Check 'group'
+  if (isTRUE(!is.null(group))) {
 
-    stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
-         call. = FALSE)
+    if (ncol(data.frame(group)) != 1) {
+
+      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(group)) != nrow(data.frame(x))) {
+
+      stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.",
+           call. = FALSE)
+
+    }
+
+    # Convert group into a vector
+    group <- unlist(group, use.names = FALSE)
+
+  }
+
+  #......
+  # Check 'split'
+  if (isTRUE(!is.null(split))) {
+
+    if (ncol(data.frame(split)) != 1) {
+
+      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(split)) != nrow(data.frame(x))) {
+
+      stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.",
+           call. = FALSE)
+
+    }
+
+    # Convert 'split' into a vector
+    split <- unlist(split, use.names = FALSE)
 
   }
 
@@ -185,11 +228,9 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
       warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
                      length(attributes(x)$na.action)), call. = FALSE)
 
-    }
-
     #......
     # Group variable, no split variable
-    if (isTRUE(!is.null(group) && is.null(split))) {
+    } else  if (isTRUE(!is.null(group) && is.null(split))) {
 
       x.group <- na.omit(data.frame(x, group = group, stringsAsFactors = FALSE))
 
@@ -199,11 +240,9 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
       warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
                      length(attributes(x.group)$na.action)), call. = FALSE)
 
-    }
-
     #......
     # No group variable, split variable
-    if (isTRUE(is.null(group) && !is.null(split))) {
+    } else  if (isTRUE(is.null(group) && !is.null(split))) {
 
       x.split <- na.omit(data.frame(x, split = split, stringsAsFactors = FALSE))
 
@@ -213,11 +252,9 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
       warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
                      length(attributes(x.split)$na.action)), call. = FALSE)
 
-    }
-
     #......
     # Group variable, split variable
-    if (isTRUE(!is.null(group) && !is.null(split))) {
+    } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
       x.group.split <- na.omit(data.frame(x, group = group, split = split, stringsAsFactors = FALSE))
 
@@ -231,12 +268,52 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
     }
 
     #......
-    # Variable with missing values only
+    # Check variable with missing values only
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (isTRUE(any(x.miss))) {
 
       stop(paste0("After listwise deletion, following variables are completely missing: ",
                   paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
+
+    }
+
+    #......
+    # Check group
+    if (isTRUE(!is.null(group))) {
+
+      # Input 'group' completely missing
+      if (isTRUE(all(is.na(group)))) {
+
+        stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE)
+
+      }
+
+      # Only one group in 'group'
+      if (isTRUE(length(na.omit(unique(group))) == 1L)) {
+
+        warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
+
+      }
+
+    }
+
+    #......
+    # Check split
+    if (isTRUE(!is.null(split))) {
+
+      # Input 'split' completely missing
+      if (isTRUE(all(is.na(split)))) {
+
+        stop("The split variable specified in 'split' is completely missing.", call. = FALSE)
+
+      }
+
+      # Only one group in 'split'
+      if (isTRUE(length(na.omit(unique(split))) == 1L)) {
+
+        warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE)
+
+      }
 
     }
 
@@ -272,94 +349,6 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
 
       stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
            call. = FALSE)
-
-    }
-
-    #......
-    # Check input 'group'
-    if (isTRUE(!is.null(group))) {
-
-      # Vector or factor for the argument 'group'?
-      if (isTRUE(!is.vector(group) && !is.factor(group))) {
-
-        stop("Please specify a vector or factor for the argument 'group'.", call. = FALSE)
-
-      }
-
-      # Length of 'group' match with 'x'?
-      if (isTRUE(length(group) != nrow(x))) {
-
-        if (isTRUE(ncol(x) == 1L)) {
-
-          stop("Length of the vector or factor specified in 'group' does not match the length of the vector in 'x'.",
-               call. = FALSE)
-
-        } else {
-
-          stop("Length of the vector or factor specified in 'group' does not match the number of rows in 'x'.",
-               call. = FALSE)
-
-        }
-
-      }
-
-      # Input 'group' completely missing
-      if (isTRUE(all(is.na(group)))) {
-
-        stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE)
-
-      }
-
-      # Only one group in 'group'
-      if (isTRUE(length(na.omit(unique(group))) == 1L)) {
-
-        warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
-
-      }
-
-    }
-
-    #......
-    # Check input 'split'
-    if (isTRUE(!is.null(split))) {
-
-      # Vector or factor for the argument 'split'?
-      if (isTRUE(!is.atomic(split) && !is.factor(split))) {
-
-        stop("Please specify a vector or factor for the argument 'split'.", call. = FALSE)
-
-      }
-
-      # Length of 'split' doest not match with 'x'
-      if (isTRUE(length(split) != nrow(x))) {
-
-        if (isTRUE(ncol(x) == 1L)) {
-
-          stop("Length of the vector or factor specified in 'split' does not match the length of the vector in 'x'.",
-               call. = FALSE)
-
-        } else {
-
-          stop("Length of the vector or factor specified in 'split' does not match the number of rows of the matrix or data frame in 'x'.",
-               call. = FALSE)
-
-        }
-
-      }
-
-      # Input 'split' completely missing
-      if (isTRUE(all(is.na(split)))) {
-
-        stop("The split variable specified in 'split' is completely missing.", call. = FALSE)
-
-      }
-
-      # Only one group in 'split'
-      if (isTRUE(length(na.omit(unique(split))) == 1L)) {
-
-        warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE)
-
-      }
 
     }
 

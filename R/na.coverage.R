@@ -17,7 +17,7 @@
 #'
 #' @seealso
 #' \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}}, \code{\link{na.descript}},
-#' \code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.prop}}.
+#' \code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.prop}}, \code{\link{na.test}}
 #'
 #' @references
 #' Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.

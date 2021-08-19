@@ -47,8 +47,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{ci.prop}}, \code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
-#' \code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{descript}}
+#' \code{\link{ci.prop}}, \code{\link{ci.mean}}, \code{\link{ci.mean.diff}},
+#' \code{\link{ci.median}}, \code{\link{ci.var}}, \code{\link{ci.sd}},
+#' \code{\link{descript}}
 #'
 #' @exportMethod  ci.prop.diff default
 #'
@@ -289,10 +290,10 @@ prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) 
 
     xy.diff.n <- nrow(xy.dat)
 
-    a <- sum(xy.dat$x == 1 & xy.dat$y == 1)
-    b <- sum(xy.dat$x == 1 & xy.dat$y == 0)
-    c <- sum(xy.dat$x == 0 & xy.dat$y == 1)
-    d <- sum(xy.dat$x == 0 & xy.dat$y == 0)
+    a <- as.numeric(sum(xy.dat$x == 1 & xy.dat$y == 1))
+    b <- as.numeric(sum(xy.dat$x == 1 & xy.dat$y == 0))
+    c <- as.numeric(sum(xy.dat$x == 0 & xy.dat$y == 1))
+    d <- as.numeric(sum(xy.dat$x == 0 & xy.dat$y == 0))
 
     #.................
     # Wald confidence interval
@@ -342,6 +343,8 @@ prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) 
         }
 
         A <- (a + b) * (c + d) * (a + c) * (b + d)
+
+        as.numeric(a)
 
         if (isTRUE(A == 0)) {
 
@@ -402,6 +405,20 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   }
 
   #......
+  # Check if only one variable specified in the input 'x'
+  if (ncol(data.frame(x)) != 1) {
+
+    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
+
+  }
+
+  #......
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
+  #----------------------------------------
+
+  #......
   # Check if input 'y' is missing
   if (isTRUE(missing(y))) {
 
@@ -410,13 +427,26 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   }
 
   #......
-  # Check if input 'x' is NULL
+  # Check if input 'y' is NULL
   if (isTRUE(is.null(y))) {
 
     stop("Input specified for the argument 'y' is NULL.", call. = FALSE)
 
   }
 
+  #......
+  # Check if only one variable specified in the input 'y'
+  if (ncol(data.frame(y)) != 1) {
+
+    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
+
+  }
+
+  #......
+  # Convert 'y' into a vector
+  y <- unlist(y, use.names = FALSE)
+
+  #----------------------------------------
 
   #......
   # Check input 'paired'
@@ -426,6 +456,85 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   }
 
+  if (isTRUE(paired)) {
+
+    # Length of 'x' and 'y'
+    if (isTRUE(nrow(data.frame(x)) != nrow(data.frame(y)))) {
+
+      stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.",
+           call. = FALSE)
+
+    }
+
+  }
+
+  #----------------------------------------
+
+  #......
+  # Check 'group'
+  if (isTRUE(!is.null(group))) {
+
+    if (isTRUE(!paired)) {
+
+      stop("Please use formula notation for using a grouping variable in independent samples.",
+           call. = FALSE)
+
+    }
+
+    if (ncol(data.frame(group)) != 1) {
+
+      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
+
+    }
+
+    if (isTRUE(paired)) {
+
+      if (nrow(data.frame(group)) != nrow(data.frame(x))) {
+
+        stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.",
+             call. = FALSE)
+
+      }
+
+    }
+
+    # Convert 'group' into a vector
+    group <- unlist(group, use.names = FALSE)
+
+  }
+
+  #......
+  # Check 'split'
+  if (isTRUE(!is.null(split))) {
+
+    if (isTRUE(!paired)) {
+
+      stop("Please use formula notation for using a split variable in independent samples.",
+           call. = FALSE)
+
+    }
+
+    if (ncol(data.frame(split)) != 1) {
+
+      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
+
+    }
+
+    if (isTRUE(paired)) {
+
+      if (nrow(data.frame(split)) != nrow(data.frame(x))) {
+
+        stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.",
+             call. = FALSE)
+
+      }
+
+    }
+
+    # Convert 'split' into a vector
+    split <- unlist(split, use.names = FALSE)
+
+  }
 
   #----------------------------------------
   # List or Dataframe
@@ -436,19 +545,11 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     xy <- list(x = x, y = y)
 
-    #......
-    # Paired samples
+  #......
+  # Paired samples
   } else {
 
-    # Length of 'x' and 'y'
-    if (isTRUE(length(x) != length(y))) {
-
-      stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.",
-           call. = FALSE)
-
-    }
-
-    xy <- data.frame(x = x, y = y, stringsAsFactors = FALSE)
+     xy <- data.frame(x = x, y = y, stringsAsFactors = FALSE)
 
   }
 
@@ -545,26 +646,10 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
-      # Independent samples
-      if (isTRUE(!isTRUE(paired))) {
-
-        stop("Please use formula notation for using a grouping variable in independent samples.",
-             call. = FALSE)
-
-      }
-
       # Vector or factor for the argument 'group'?
       if (isTRUE(!is.vector(group) && !is.factor(group))) {
 
         stop("Please specify a vector or factor for the argument 'group'.", call. = FALSE)
-
-      }
-
-      # Length of 'group' match with 'x'?
-      if (isTRUE(length(group) != nrow(xy))) {
-
-        stop("Length of the vector or factor specified in 'group' does not match the number of rows of the matrix or data frame in 'data'.",
-             call. = FALSE)
 
       }
 
@@ -587,29 +672,6 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
     #......
     # Check input 'split'
     if (isTRUE(!is.null(split))) {
-
-      # Independent samples
-      if (!isTRUE(paired)) {
-
-        stop("Please use formula notation for using a split variable in independent samples.",
-             call. = FALSE)
-
-      }
-
-      # Vector or factor for the argument 'split'?
-      if (isTRUE(!is.atomic(split) && !is.factor(split))) {
-
-        stop("Please specify a vector or factor for the argument 'split'.", call. = FALSE)
-
-      }
-
-      # Length of 'split' doest not match with 'x'
-      if (isTRUE(length(split) != nrow(xy))) {
-
-        stop("Length of the vector or factor specified in 'split' does not match the number of rows in 'data'.",
-             call. = FALSE)
-
-      }
 
       # Input 'split' completely missing
       if (isTRUE(all(is.na(split)))) {
@@ -787,7 +849,7 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
   #......
   # Check if input 'formula' is missing
-  if (isTRUE(missing(formula) || is.null(formula))) {
+  if (isTRUE(missing(formula))) {
 
     stop("Please specify a formula using the argument 'formula'", call. = FALSE)
 
@@ -809,6 +871,54 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
 
   }
 
+  #......
+  # Check 'group'
+  if (isTRUE(!is.null(group))) {
+
+    if (ncol(data.frame(group)) != 1) {
+
+      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(group)) != nrow(data)) {
+
+      stop("Length of the vector or factor specified in the argument 'group' does not match the number of rows in 'data'.",
+           call. = FALSE)
+
+    }
+
+    # Convert 'group' into a vector
+    group <- unlist(group, use.names = FALSE)
+
+  }
+
+  #......
+  # Check 'split'
+  if (isTRUE(!is.null(split))) {
+
+    if (ncol(data.frame(split)) != 1) {
+
+      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
+
+    }
+
+    if (nrow(data.frame(split)) != nrow(data)) {
+
+      stop("Length of the vector or factor specified in the argument 'split' does not match the number of rows in 'data'.",
+           call. = FALSE)
+
+    }
+
+    # Convert 'split' into a vector
+    split <- unlist(split, use.names = FALSE)
+
+  }
+
+  #-----------------------------------------------------------------------------------
+  # Dataframe
+
+  data <- as.data.frame(data, stringsAsFactors = FALSE)
 
   #-----------------------------------------------------------------------------------
   # Formula

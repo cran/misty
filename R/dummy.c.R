@@ -1,27 +1,32 @@
 #' Dummy Coding
 #'
-#' This function creates \eqn{k - 1} dummy coded 0/1 variables for a vector with k distinct values.
+#' This function creates \eqn{k - 1} dummy coded 0/1 variables for a vector with
+#' k distinct values.
 #'
-#' @param x           a numeric vector with integer values, character vector or factor.
-#' @param ref         a numeric value or character string indicating the reference group.
-#'                    By default, the last category is selected as reference group.
-#' @param names       a character string or character vector indicating the names of the dummy variables.
-#'                    By default, variables are named \code{"d"} with the category compared to the reference
-#'                    category (e.g., \code{"d1"} and \code{"d2"}). Variable names can be specified using
-#'                    a character string (e.g., \code{names = "dummy_"} leads to \code{dummy_1} and
-#'                    \code{dummy_2}) or a character vector matching the number of dummy coded variables
-#'                    (e.g. \code{names = c("x.3_1", "x.3_2")}) which is the number of unique categories minus
-#'                    one.
+#' @param x           a numeric vector with integer values, character vector or
+#'                    factor.
+#' @param ref         a numeric value or character string indicating the reference
+#'                    group. By default, the last category is selected as reference
+#'                    group.
+#' @param names       a character string or character vector indicating the names
+#'                    of the dummy variables. By default, variables are named \code{"d"}
+#'                    with the category compared to the reference category (e.g., \code{"d1"}
+#'                    and \code{"d2"}). Variable names can be specified using a character
+#'                    string (e.g., \code{names = "dummy_"} leads to \code{dummy_1} and
+#'                    \code{dummy_2}) or a character vector matching the number of dummy
+#'                    coded variables (e.g. \code{names = c("x.3_1", "x.3_2")}) which
+#'                    is the number of unique categories minus one.
 #' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting the analysis.
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @references
-#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-#' New York: John Wiley & Sons.
+#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+#' - Using R and SPSS}. New York: John Wiley & Sons.
 #'
 #' @return
 #' Returns a matrix with k - 1 dummy coded 0/1 variables.
@@ -97,14 +102,8 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   }
 
-  #......
-  # Vector or factor for the argument 'x'?
-  if (isTRUE(!is.atomic(x) && !is.factor(x))) {
-
-    stop("Please specify a numeric vector with integer values, character vector or factor for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  # Convert 'group' into a vector
+  x <- unlist(x, use.names = FALSE)
 
   #-----------------------------------------
   # Convert user-missing values into NA
@@ -258,7 +257,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   for (i in colnames(object)) {
 
-    object[which(x == i), i] <- 1L
+    object[which(as.character(x) == i), i] <- 1L
 
   }
 

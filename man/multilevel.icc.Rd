@@ -4,13 +4,14 @@
 \alias{multilevel.icc}
 \title{Intraclass Correlation Coefficient, ICC(1) and ICC(2)}
 \usage{
-multilevel.icc(x, group, type = 1, method = c("aov", "lme4", "nlme"), REML = TRUE,
+multilevel.icc(x, cluster, type = 1, method = c("aov", "lme4", "nlme"), REML = TRUE,
                as.na = NULL, check = TRUE)
 }
 \arguments{
 \item{x}{a vector, matrix or data frame.}
 
-\item{group}{a vector representing the grouping structure (i.e., group variable).}
+\item{cluster}{a vector representing the nested grouping structure (i.e., group or
+cluster variable).}
 
 \item{type}{numeric value indicating the type of intraclass correlation coefficient, i.e.,
 \code{type = 1} for ICC(1) and \code{type = 2} for ICC(2).}
@@ -26,7 +27,9 @@ when using the \code{lmer} function in the \pkg{lme4} package or the \code{lme} 
 \pkg{nlme} package.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting the analysis.
+Note that \code{as.na()} function is only applied to \code{x} but not to
+\code{cluster}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
@@ -42,26 +45,26 @@ Note that this function is restricted to two-level models.
 }
 \examples{
 dat <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
-                  group = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
+                  cluster = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
                   x1 = c(2, 3, 2, 2, 1, 2, 3, 4, 2),
                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
 
 # ICC(1) for x1
-multilevel.icc(dat$x1, group = dat$group)
+multilevel.icc(dat$x1, cluster = dat$cluster)
 
 # ICC(1) for x1, convert value 1 to NA
-multilevel.icc(dat$x1, group = dat$group, as.na = 1)
+multilevel.icc(dat$x1, cluster = dat$cluster, as.na = 1)
 
 # ICC(2) for x1
-multilevel.icc(dat$x1, group = dat$group, type = 2)
+multilevel.icc(dat$x1, cluster = dat$cluster, type = 2)
 
 # ICC(1) for x1,
 # use lmer() function in the lme4 package to estimate ICC
-multilevel.icc(dat$x1, group = dat$group, method = "lme4")
+multilevel.icc(dat$x1, cluster = dat$cluster, method = "lme4")
 
 # ICC(1) for x1, x2, and x3
-multilevel.icc(dat[, c("x1", "x2", "x3")], group = dat$group)
+multilevel.icc(dat[, c("x1", "x2", "x3")], cluster = dat$cluster)
 }
 \references{
 Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis: Techniques and applications} (3rd. ed.).

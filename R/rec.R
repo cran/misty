@@ -112,6 +112,18 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
   }
 
   #......
+  # Check if only one variable specified in the input 'x'
+  if (ncol(data.frame(x)) != 1) {
+
+    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
+
+  }
+
+  #......
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
+  #......
   # Check if input 'spec' is missing
   if (isTRUE(missing(spec))) {
 
@@ -119,6 +131,15 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
 
   }
 
+  #......
+  # Check if input 'spec' is NULL
+  if (isTRUE(is.null(spec))) {
+
+    stop("Input specified for the argument 'spec' is NULL.", call. = FALSE)
+
+  }
+
+  #------------------------------------------
 
   #......
   # Check input 'check'
@@ -127,8 +148,6 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table =
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
   }
-
-  #------------------------------------------
 
   if (isTRUE(check)) {
 

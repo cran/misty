@@ -1,45 +1,55 @@
 #' Coefficient Omega, Hierarchical Omega, and Categorical Omega
 #'
-#' This function computes point estimate and confidence interval for the coefficient omega (McDonald, 1978),
-#' hierarchical omega (Kelley & Pornprasertmanit, 2016), and categorical omega (Green & Yang, 2009) along with
-#' standardized factor loadings and omega if item deleted.
+#' This function computes point estimate and confidence interval for the coefficient
+#' omega (McDonald, 1978), hierarchical omega (Kelley & Pornprasertmanit, 2016),
+#' and categorical omega (Green & Yang, 2009) along with standardized factor loadings
+#' and omega if item deleted.
 #'
-#' Omega is computed by estimating a confirmatory factor analysis model using the \code{cfa()} function
-#' in the \pkg{lavaan} package by Yves Rosseel (2019). Maximum likelihood (\code{"ML"}) estimator is used
-#' for computing coefficient omega and hierarchical omega, while diagonally weighted least squares estimator
-#' (\code{"DWLS"}) is used for computing categorical omega.
+#' Omega is computed by estimating a confirmatory factor analysis model using the
+#' \code{cfa()} function in the \pkg{lavaan} package by Yves Rosseel (2019). Maximum
+#' likelihood (\code{"ML"}) estimator is used for computing coefficient omega and
+#' hierarchical omega, while diagonally weighted least squares estimator (\code{"DWLS"})
+#' is used for computing categorical omega.
 #'
-#' Note that the computation of the hierarchical and categorical omega is based on the \code{ci.reliability()}
-#' function in the \pkg{MBESS} package by Ken Kelley (2019).
+#' Note that the computation of the hierarchical and categorical omega is based on
+#' the \code{ci.reliability()} function in the \pkg{MBESS} package by Ken Kelley (2019).
 #'
-#' Approximate confidence intervals are computed using the procedure by Feldt, Woodruff and Salih (1987).
-#' Note that there are at least 10 other procedures for computing the confidence interval (see Kelley and
-#' Pornprasertmanit, 2016), which are implemented in the \code{ci.reliability()} function in the \pkg{MBESSS}
-#' package by Ken Kelley (2019).
+#' Approximate confidence intervals are computed using the procedure by Feldt, Woodruff
+#' and Salih (1987). Note that there are at least 10 other procedures for computing
+#' the confidence interval (see Kelley and Pornprasertmanit, 2016), which are implemented
+#' in the \code{ci.reliability()} function in the \pkg{MBESSS} package by Ken Kelley (2019).
 #'
-#' @param x          a matrix or data frame. Note that at least three items are needed for computing omega.
-#' @param resid.cov  a character vector or a list of character vectors for specifying residual covariances
-#'                   when computing coefficient omega, e.g. \code{resid.cov = c("x1", "x2")} for specifying
-#'                   a residual covariance between items \code{x1} and \code{x2} or
-#'                   \code{resid.cov = list(c("x1", "x2"), c("x3", "x4"))} for specifying residual
-#'                   covariances between items between items \code{x1} and \code{x2}, and items \code{x3}
-#'                   and \code{x4}.
+#' @param x          a matrix or data frame. Note that at least three items are needed
+#'                   for computing omega.
+#' @param resid.cov  a character vector or a list of character vectors for specifying
+#'                   residual covariances when computing coefficient omega, e.g.
+#'                   \code{resid.cov = c("x1", "x2")} for specifying a residual
+#'                   covariance between items \code{x1} and \code{x2} or
+#'                   \code{resid.cov = list(c("x1", "x2"), c("x3", "x4"))} for specifying
+#'                   residual covariances between items between items \code{x1} and
+#'                   \code{x2}, and items \code{x3} and \code{x4}.
 #' @param type       a character string indicating the type of omega to be computed, i.e.,
 #'                   \code{omega} (default) for coefficient omega, \code{hierarch} for
 #'                    hierarchical omega, and \code{categ} for categorical omega.
-#' @param exclude    a character vector indicating items to be excluded from the analysis.
-#' @param std        logical: if \code{TRUE}, the standardized coefficient omega is computed.
-#' @param na.omit    logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-#'                   (i.e., listwise deletion); if \code{FALSE}, full information maximum likelihood (FIML)
-#'                   is used for computing coefficient omega or hierarchical omega, while pairwise deletion
+#' @param exclude    a character vector indicating items to be excluded from the
+#'                   analysis.
+#' @param std        logical: if \code{TRUE}, the standardized coefficient omega
+#'                   is computed.
+#' @param na.omit    logical: if \code{TRUE}, incomplete cases are removed before
+#'                   conducting the analysis (i.e., listwise deletion); if \code{FALSE},
+#'                   full information maximum likelihood (FIML) is used for computing
+#'                   coefficient omega or hierarchical omega, while pairwise deletion
 #'                   is used for computing categorical omega.
-#' @param print      a character vector indicating which results to show, i.e. \code{"all"} (default), for all
-#'                   results \code{"omega"} for omega, and \code{"item"} for item statistics.
-#' @param digits     an integer value indicating the number of decimal places to be used for displaying
-#'                   omega and standardized factor loadings.
-#' @param conf.level a numeric value between 0 and 1 indicating the confidence level of the interval.
+#' @param print      a character vector indicating which results to show, i.e.
+#'                  \code{"all"} (default), for all results \code{"omega"} for omega,
+#'                   and \code{"item"} for item statistics.
+#' @param digits     an integer value indicating the number of decimal places to be
+#'                   used for displaying omega and standardized factor loadings.
+#' @param conf.level a numeric value between 0 and 1 indicating the confidence level
+#'                   of the interval.
 #' @param as.na      a numeric vector indicating user-defined missing values,
-#'                   i.e. these values are converted to \code{NA} before conducting the analysis.
+#'                   i.e. these values are converted to \code{NA} before conducting
+#'                   the analysis.
 #' @param check      logical: if \code{TRUE}, argument specification is checked.
 #' @param output     logical: if \code{TRUE}, output is shown.
 #'
@@ -50,27 +60,30 @@
 #'\code{\link{item.alpha}}, \code{\link{item.reverse}}, \code{\link{item.scores}}
 #'
 #' @references
-#' Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for coefficient alpha.
-#' \emph{Applied Psychological Measurement}, 11 93-103.
+#' Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for
+#' coefficient alpha. \emph{Applied Psychological Measurement}, 11 93-103.
 #'
-#' Green, S. B., & Yang, Y. (2009). Reliability of summed item scores using structural equation modeling:
-#' An alternative to coefficient alpha. \emph{Psychometrika, 74}, 155-167. https://doi.org/10.1007/s11336-008-9099-3
+#' Green, S. B., & Yang, Y. (2009). Reliability of summed item scores using structural
+#' equation modeling: An alternative to coefficient alpha. \emph{Psychometrika, 74},
+#' 155-167. https://doi.org/10.1007/s11336-008-9099-3
 #'
-#' Kelley, K., & Pornprasertmanit, S. (2016). Confidence intervals for population reliability coefficients:
-#' Evaluation of methods, recommendations, and software for composite measures. \emph{Psychological Methods, 21}, 69-92.
+#' Kelley, K., & Pornprasertmanit, S. (2016). Confidence intervals for population
+#' reliability coefficients: Evaluation of methods, recommendations, and software
+#' for composite measures. \emph{Psychological Methods, 21}, 69-92.
 #' http://dx.doi.org/10.1037/a0040086
 #'
 #' Ken Kelley (2019). \emph{MBESS: The MBESS R Package}. R package version 4.6.0.
 #' https://CRAN.R-project.org/package=MBESS
 #'
-#' McDonald, R. P. (1978). Generalizability in factorable domains: "Domain validity and generalizability"
-#' \emph{Educational and Psychological Measurement, 38}, 75-79.
+#' McDonald, R. P. (1978). Generalizability in factorable domains: Domain validity
+#' and generalizability. \emph{Educational and Psychological Measurement, 38}, 75-79.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-#' \code{x} (\code{data}), specification of function arguments (\code{args}),
-#' fitted lavaan object (\code{mod.fit}), and list with results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
+#' data frame specified in \code{x} (\code{data}), specification of function arguments
+#' (\code{args}), fitted lavaan object (\code{mod.fit}), and list with results
+#' (\code{result}).
 #'
 #' @export
 #'

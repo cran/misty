@@ -313,10 +313,10 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
   # Data
 
   # Outcome
-  y <- data[, y.var]
+  y <- unlist(data[, y.var])
 
   # Grouping
-  group <- data[, group.var]
+  group <- unlist(data[, group.var])
 
   ####################################################################################
   # Arguments
@@ -336,11 +336,11 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
     # Descriptive statistics
     ci <- misty::ci.mean.diff(formula = formula, data = data,  paired = FALSE,
                               alternative = alternative, conf.level = conf.level,
-                              output = FALSE)$result
+                              check = FALSE, output = FALSE)$result
 
     # Cohen's d
     d <- misty::cohens.d(formula = formula, data = data, paired = FALSE, mu = 0,
-                         weighted = weighted, cor = TRUE,  ref = ref, correct = correct,
+                         weighted = weighted, cor = TRUE, ref = ref, correct = correct,
                          alternative = alternative, conf.level = conf.level,
                          group = NULL, split = NULL, sort.var = FALSE,
                          check = FALSE, output = FALSE)$result

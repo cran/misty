@@ -115,25 +115,42 @@ dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
 #--------------------------------------
 # One-sample design
 
-# Cohen's d.z
+# Cohen's d.z with two-sided 95% CI
 # population mean = 3
 cohens.d(dat1$x1, mu = 3)
 
-# Cohen's d.z (aka Hedges' g.z)
+# Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
 # population mean = 3, with small sample correction factor
 cohens.d(dat1$x1, mu = 3, correct = TRUE)
 
-# Cohen's d.z
+# Cohen's d.z for more than one variable with two-sided 95% CI
+# population mean = 3
+cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3)
+
+# Cohen's d.z with two-sided 95% CI
 # population mean = 3, by group1 separately
-cohens.d(dat1$x1, mu = 3, group = dat1$group1, output = TRUE)
+cohens.d(dat1$x1, mu = 3, group = dat1$group1)
 
-# Cohen's d.z
+# Cohen's d.z for more than one variable with two-sided 95% CI
+# population mean = 3, by group1 separately
+cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, group = dat1$group1)
+
+# Cohen's d.z with two-sided 95% CI
 # population mean = 3, split analysis by group1
-cohens.d(dat1$x1, mu = 3, split = dat1$group1, output = TRUE)
+cohens.d(dat1$x1, mu = 3, split = dat1$group1)
 
-# Cohen's d.z
+# Cohen's d.z for more than one variable with two-sided 95% CI
+# population mean = 3, split analysis by group1
+cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, split = dat1$group1)
+
+# Cohen's d.z with two-sided 95% CI
 # population mean = 3, by group1 separately1, split by group2
-cohens.d(dat1$x1, mu = 3, group = dat1$group1, split = dat1$group2, output = TRUE)
+cohens.d(dat1$x1, mu = 3, group = dat1$group1, split = dat1$group2)
+
+# Cohen's d.z for more than one variable with two-sided 95% CI
+# population mean = 3, by group1 separately1, split by group2
+cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, group = dat1$group1,
+         split = dat1$group2)
 
 #--------------------------------------
 # Two-sample design
@@ -160,19 +177,19 @@ cohens.d(x1 ~ group1, data = dat1, alternative = "greater")
 
 # Cohen's d.s for more than one variable with two-sided 95% CI
 # weighted pooled SD
-cohens.d(c(x1, x2, x3) ~ group1, data = dat1)
+cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1)
 
 # Cohen's d with two-sided 95% CI
 # unweighted SD
-cohens.d(x1 ~ group1, data = dat1, eighted = FALSE)
+cohens.d(x1 ~ group1, data = dat1, weighted = FALSE)
 
 # Cohen's d.s (aka Hedges' g.s) with two-sided 95% CI
 # weighted pooled SD, with small sample correction factor
-cohens.d(x1 ~ group1, data = dat1)
+cohens.d(x1 ~ group1, data = dat1, correct = TRUE)
 
 # Cohen's d (aka Hedges' g) with two-sided 95% CI
 # Unweighted SD, with small sample correction factor
-cohens.d(x1 ~ group1, data = dat1, eighted = FALSE)
+cohens.d(x1 ~ group1, data = dat1, weighted = FALSE, correct = TRUE)
 
 # Cohen's d (aka Glass's delta) with two-sided 95% CI
 # SD of reference group 1
@@ -182,13 +199,26 @@ cohens.d(x1 ~ group1, data = dat1, ref = 1)
 # weighted pooled SD, by group2 separately
 cohens.d(x1 ~ group1, data = dat1, group = dat1$group2)
 
+# Cohen's d.s for more than one variable with two-sided 95% CI
+# weighted pooled SD, by group2 separately
+cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
+
 # Cohen's d.s with two-sided 95% CI
 # weighted pooled SD, split analysis by group2
 cohens.d(x1 ~ group1, data = dat1, split = dat1$group2)
 
+# Cohen's d.s for more than one variable with two-sided 95% CI
+# weighted pooled SD, split analysis by group2
+cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
+
 # Cohen's d.s with two-sided 95% CI
 # weighted pooled SD, by group2 separately, split analysis by group3
 cohens.d(x1 ~ group1, data = dat1,
+         group = dat1$group2, split = dat1$group3)
+
+# Cohen's d.s for more than one variable with two-sided 95% CI
+# weighted pooled SD, by group2 separately, split analysis by group3
+cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1,
          group = dat1$group2, split = dat1$group3)
 
 #--------------------------------------
@@ -200,7 +230,7 @@ cohens.d(dat1$x1, dat1$x2, paired = TRUE)
 
 # Cohen's d.z with two-sided 99% CI
 # SD of the difference scores
-cohens.d(dat1$x1, dat1$x2, paired = TRUE)
+cohens.d(dat1$x1, dat1$x2, paired = TRUE, conf.level = 0.99)
 
 # Cohen's d.z with one-sided 95% CI
 # SD of the difference scores
@@ -236,7 +266,7 @@ cohens.d(dat1$x1, dat1$x2, paired = TRUE, group = dat1$group1)
 cohens.d(dat1$x1, dat1$x2, paired = TRUE, split = dat1$group1)
 
 # Cohen's d.z with two-sided 95% CI
-# SD of the difference scores, by group1 separately, split analysis by group1
+# SD of the difference scores, by group1 separately, split analysis by group2
 cohens.d(dat1$x1, dat1$x2, paired = TRUE,
          group = dat1$group1, split = dat1$group2)
 }

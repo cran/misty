@@ -23,6 +23,7 @@ export(ci.prop)
 export(ci.prop.diff)
 export(ci.sd)
 export(ci.var)
+export(cluster.scores)
 export(cohens.d)
 export(collin.diag)
 export(cor.cont)
@@ -41,14 +42,16 @@ export(df.sort)
 export(dummy.c)
 export(eta.sq)
 export(freq)
-export(group.scores)
+export(indirect)
 export(item.alpha)
 export(item.omega)
 export(item.reverse)
 export(item.scores)
 export(kurtosis)
+export(multilevel.cor)
 export(multilevel.descript)
 export(multilevel.icc)
+export(multilevel.indirect)
 export(na.as)
 export(na.auxiliary)
 export(na.coverage)
@@ -56,6 +59,7 @@ export(na.descript)
 export(na.indicator)
 export(na.pattern)
 export(na.prop)
+export(na.test)
 export(read.mplus)
 export(read.sav)
 export(read.xlsx)
@@ -78,9 +82,10 @@ exportMethods(default)
 exportMethods(formula)
 importFrom(utils,packageDescription)
 
-
 importFrom("stats", "aov", "as.formula", "chisq.test", "coefficients",
-           "cor", "cor.test", "cov", "cov2cor", "df", "IQR", "median", "model.frame",
-           "model.matrix", "na.omit", "oneway.test", "optimize", "pnorm", "qbinom", "qchisq", "qf",
-           "qnorm", "qt", "quantile", "sd", "terms", "t.test", "p.adjust", "pt", "uniroot", "var", "vcov")
+           "cor", "cor.test", "cov", "cov2cor", "df", "IQR", "median", 
+           "model.frame", "model.matrix", "na.omit", "oneway.test", 
+           "optimize", "dnorm", "integrate", "pnorm", "rnorm", "pchisq",
+           "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", "sd", 
+           "terms", "t.test", "p.adjust", "pt", "uniroot", "var", "vcov")
 importFrom("utils", "combn", "packageDescription", "read.table", "write.csv", "write.csv2", "write.table")

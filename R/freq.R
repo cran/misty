@@ -122,14 +122,6 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
   }
 
-  #......
-  # Vector, matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.atomic(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
-
   #-----------------------------------------
   # Data.frame
 

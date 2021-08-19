@@ -2,13 +2,14 @@
 #'
 #' This function computes the skewness.
 #'
-#' The same method for estimating skewness is used in SAS and SPSS. Missing values (\code{NA})
-#' are stripped before the computation. Note that at least 3 observations are needed to compute
-#' skewness.
+#' The same method for estimating skewness is used in SAS and SPSS. Missing values
+#' (\code{NA}) are stripped before the computation. Note that at least 3 observations
+#' are needed to compute skewness.
 #'
 #' @param x           a numeric vector.
 #' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting the analysis.
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #'
 #' @author
@@ -18,8 +19,8 @@
 #' \code{\link{kurtosis}}
 #'
 #' @references
-#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-#' New York: John Wiley & Sons.
+#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+#' - Using R and SPSS}. New York: John Wiley & Sons.
 #'
 #' @return
 #' Returns the estimated skewness of \code{x}.
@@ -55,14 +56,26 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
 
   }
 
+  #......
+  # Check if only one variable specified in the input 'x'
+  if (ncol(data.frame(x)) != 1) {
+
+    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
+
+  }
+
+  #......
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
+  #-----------------------------------------
+
   # Check input 'check'
   if (isTRUE(!is.logical(check))) {
 
     stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
 
   }
-
-  #-----------------------------------------
 
   if (isTRUE(check)) {
 
@@ -76,7 +89,7 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
 
     #......
     # Numeric vector for the argument 'x'?
-    if (isTRUE(!is.numeric(x))) {
+    if (isTRUE(mode(x) != "numeric")) {
 
       stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
 

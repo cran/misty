@@ -45,6 +45,13 @@
 chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
 
   ####################################################################################
+  # Data
+
+  #---------------------
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
+  ####################################################################################
   # Input Check
 
   #---------------------
@@ -90,11 +97,11 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
   # Argument replacement: Character string equal in length to pattern or of length
   #                       one which are a replacement for matched pattern.
   # Argument ...: arguments to pass to gsub()
-  fastReplace = function(string, pattern, replacement, ...) {
+  fastReplace <- function(string, pattern, replacement, ...) {
 
     for(i in seq_along(pattern)) {
 
-      string = gsub(pattern[i], replacement[i], string, ...)
+      string <- gsub(pattern[i], replacement[i], string, ...)
 
     }
 
@@ -122,14 +129,14 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
 
       if(any(ps <= s & pe >= s)){
 
-        x = x[-i, ]
+        x <- x[-i, ]
         next
 
       }
 
       if(any(ps <= e & pe >= e)) {
 
-        x = x[-i,]
+        x <- x[-i,]
 
         next
 
@@ -151,7 +158,7 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
   # Argument pattern: a character string to be matched in the given character vector
   # Argument i: an iterator provided by a looping function
   # Argument ...: arguments to pass to gregexpr()
-  getMatches = function(string ,pattern, i, ...){
+  getMatches <- function(string ,pattern, i, ...){
 
     tmp <- gregexpr(pattern[i], string,...)
     start <- tmp[[1L]]

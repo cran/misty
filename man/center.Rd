@@ -4,7 +4,7 @@
 \alias{center}
 \title{Centering at the Grand Mean or Centering Within Cluster}
 \usage{
-center(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na = NULL,
+center(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL, as.na = NULL,
        check = TRUE)
 }
 \arguments{
@@ -14,8 +14,8 @@ center(x, type = c("CGM", "CWC"), group = NULL, value = NULL, as.na = NULL,
 \code{"CGM"} for centering at the grand mean (i.e., grand mean centering) or
 \code{"CWC"} for centering within cluster (i.e., group-mean centering).}
 
-\item{group}{a numeric vector, character vector or factor denoting the group membership
-of each unit in \code{x}. Note, this argument is required for centering at
+\item{cluster}{a vector representing the nested grouping structure (i.e., group or
+cluster variable) of each unit in \code{x}. Note, this argument is required for centering at
 the grand mean (CGM) of a level-2 predictor or centering within cluster (CWC)
 of a level-1 predictor.}
 
@@ -23,7 +23,7 @@ of a level-1 predictor.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.
-Note that \code{as.na()} function is only applied to \code{x} but not to \code{group}.}
+Note that \code{as.na()} function is only applied to \code{x} but not to \code{cluster}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
@@ -36,16 +36,16 @@ within cluster (CWC, i.e., group-mean centering).
 }
 \details{
 Predictors in a single-level regression can only be centered at the grand mean (CGM) by specifying
-\code{type = "CGM"} (default) in conjunction with \code{group = NULL} (default).
+\code{type = "CGM"} (default) in conjunction with \code{cluster = NULL} (default).
 
 Level-1 (L1) predictors in a multilevel regression can be centered at the grand mean (CGM)
-by specifying \code{type = "CGM"} (default) in conjunction with \code{group = NULL} (default) or
-within cluster (CWC) by specifying \code{type = "CWC"} in conjunction with specifying a group
-membership variable using the \code{group} argument.
+by specifying \code{type = "CGM"} (default) in conjunction with \code{cluster = NULL} (default) or
+within cluster (CWC) by specifying \code{type = "CWC"} in conjunction with specifying a cluster
+membership variable using the \code{cluster} argument.
 
 Level-2 (L2) predictors in a multilevel regression can only be centered at the grand mean (CGM) by
-specifying \code{type = "CGM"} (default) in conjunction with specifying a group membership
-variable using the \code{group} argument.
+specifying \code{type = "CGM"} (default) in conjunction with specifying a cluster membership
+variable using the \code{cluster} argument.
 
 Note that predictors can be centered on any meaningful value using the argument \code{value}.
 }
@@ -64,7 +64,7 @@ center(dat.sl$x, value = 3)
 #--------------------------------------
 # Predictors in a multilevel regression
 dat.ml <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
-                     group = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
+                     cluster = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
                      x.l1 = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
                      x.l2 = c(4, 4, 4, 1, 1, 1, 3, 3, 3),
                      y = c(5, 3, 6, 3, 4, 5, 2, 6, 5))
@@ -73,10 +73,10 @@ dat.ml <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
 center(dat.ml$x.l1)
 
 # Center level-1 predictor within cluster (CWC)
-center(dat.ml$x.l1, type = "CWC", group = dat.ml$group)
+center(dat.ml$x.l1, type = "CWC", cluster = dat.ml$cluster)
 
 # Center level-2 predictor at the grand mean (CGM)
-center(dat.ml$x.l2, type = "CGM", group = dat.ml$group)
+center(dat.ml$x.l2, type = "CGM", cluster = dat.ml$cluster)
 }
 \references{
 Enders, C. K. (2013). Centering predictors and contextual effects. In M. A. Scott, J. S. Simonoff, &
@@ -87,7 +87,7 @@ Enders, C. K., & Tofighi, D. (2007). Centering predictor variables in cross-sect
 A new look at an old issue. \emph{Psychological Methods, 12}, 121-138. https://doi.org/10.1037/1082-989X.12.2.121
 }
 \seealso{
-\code{\link{dummy.c}}, \code{\link{group.scores}}, \code{\link{rec}}, \code{\link{item.reverse}},
+\code{\link{dummy.c}}, \code{\link{cluster.scores}}, \code{\link{rec}}, \code{\link{item.reverse}},
 \code{\link{rwg.lindell}}, \code{\link{item.scores}}.
 }
 \author{

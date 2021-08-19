@@ -10,7 +10,7 @@ ci.prop.diff(x, ...)
 
 \method{ci.prop.diff}{default}(x, y, method = c("wald", "newcombe"), paired = FALSE,
              alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
-             group = NULL, split = NULL, sort.var = FALSE, digits = 2, 
+             group = NULL, split = NULL, sort.var = FALSE, digits = 2,
              as.na = NULL, check = TRUE, output = TRUE, \dots)
 
 \method{ci.prop.diff}{formula}(formula, data, method = c("wald", "newcombe"),
@@ -157,7 +157,7 @@ ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1,
 group1 <- c(0, 1, 1, 0, 0, 1, 0, 1)
 group2 <- c(1, 1, 1, 0, 0)
 
-# Two-Sided 95\% CI for the mean difference between group1 amd group2
+# Two-Sided 95\% CI for the mean difference between group1 and group2
 # Newcombes Hybrid Score interval
 ci.prop.diff(group1, group2)
 

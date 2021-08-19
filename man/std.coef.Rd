@@ -4,7 +4,7 @@
 \alias{std.coef}
 \title{Standardized Coefficients}
 \usage{
-std.coef(model, print = c("all", "stdx", "stdy", "stdyx"), digits = 3, p.digits = 3,
+std.coef(model, print = c("all", "stdx", "stdy", "stdyx"), digits = 3, p.digits = 4,
          check = TRUE, output = TRUE)
 }
 \arguments{

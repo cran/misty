@@ -146,7 +146,7 @@
 #'
 #' # Two-sided two-sample z-test
 #' # population standard deviation (SD) = 1.2, equal SD assumption
-#' test.z(group1, group2, sigma = 1.2, data = dat1)
+#' test.z(group1, group2, sigma = 1.2)
 #'
 #' #--------------------------------------
 #' # Paired-Sample Design
@@ -223,6 +223,33 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
   if (isTRUE(is.null(sigma) && is.null(sigma2))) {
 
     stop("Please specify either argument 'sigma' or argument 'sigma2'.", call. = FALSE)
+
+  }
+
+  #......
+  # Check if only one variable specified in the input 'x'
+  if (ncol(data.frame(x)) != 1) {
+
+    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
+
+  }
+
+  #......
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
+  if (!is.null(y)) {
+
+    # Check if only one variable specified in the input 'y'
+    if (ncol(data.frame(y)) != 1) {
+
+      stop("More than one variable specified for the argument 'y'.",call. = FALSE)
+
+    }
+
+    #......
+    # Convert 'y' into a vector
+    y <- unlist(y, use.names = FALSE)
 
   }
 
@@ -704,7 +731,7 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
   #-----------------------------------------------------------------------------------
   # Main Function
 
-  data.split <- split(data[, y.vars], f = data[, group.var])
+  data.split <- split(unlist(data[, y.vars]), f = unlist(data[, group.var]))
 
   object <- test.z.default(x = data.split[[1L]], y = data.split[[2L]],
                            sigma = sigma, sigma2 = sigma2,

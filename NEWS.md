@@ -1,13 +1,34 @@
+### misty 0.4.2 (2021-08-19)
+
+##### New features
+* New function `multilevel.cor()` for computing the within-group and between-group correlation matrix using the lavaan package.
+* New function `na.test()` for performing Little's missing completely at random (MCAR) test.
+* New function `indirect()` for computing confidence intervals for the indirect effect using the asymptotic normal method, the distribution of the product method, and the Monte Carlo method.
+* New function `multilevel.indirect()` for computing confidence intervals for the indirect effect in a 1-1-1 multilevel mediation model using the Monte Carlo method.
+
+##### Minor features and improvements
+* Function `cor.matrix()` highlights statistically significant correlation coefficients in boldface.
+* Function `cor.matrix()` shows the results in a table when computing a correlation coefficient for two variables.
+* Added test statistic (`stat`) and degrees of freedom (`df`) to the argument `print` in the function `cor.matrix()`.
+* Added the argument `continuity` for continuity correction to the function `cor.matrix()` for testing Spearman's rank-order correlation coefficient and Kendall's Tau-b correlation.
+* Substantial speed improvement for the function `cor.matrix()` when computing Spearman's rank-order correlation coefficient or Kendall's Tau-b correlation.
+
+##### User-visible changes
+* Changed the argument `group` in the functions `center()`, `group.scores()`, `multilevel.descript()`, `multilevel.icc()`, and `rwg.lindell()` to `cluster`.
+* Renamed the function `group.scores()` to `cluster.scores()`.
+
+##### Bug fix
+* Fixed a bug in the function `cor.matrix()`, function did not print sample sizes when specifying a grouping variable and using listwise deletion.
+
 ### misty 0.4.1 (2021-06-07)
 
 ##### Minor features and improvements
-* Function `write.mplus()` writes a Mplus input template awith variables names specified in the DATA command along with the tab-delimited data file by default.
+* Function `write.mplus()` writes a Mplus input template with variables names specified in the DATA command along with the tab-delimited data file by default.
 
 ##### User-visible changes
 * Removed the argument `print()` in the `write.mplus()` function.
 
-* Changed the default setting of the argument `weighted` in the `test.welch()` function into `FALSE` following the recommendation
-by Delacre et al. (2021).
+* Changed the default setting of the argument `weighted` in the `test.welch()` function into `FALSE` following the recommendation by Delacre et al. (2021).
 
 ##### Bug fix
 * Fixed a bug in the function `cohens.d()`, function printed warning messages of the `pt()` function.
@@ -17,19 +38,18 @@ by Delacre et al. (2021).
 ### misty 0.4.0 (2021-05-13)
 
 ##### New features
-* New function `test.t()` for computing one-sample, two-sample, and paired-sample t-tests including Cohen's d effect size measure.
+* New function `test.t()` for performing one-sample, two-sample, and paired-sample t-tests including Cohen's d effect size measure.
 
-* New function `test.welch()` for computing Welch's t-test including Cohen's d effect size measure and Welch's ANOVA including $\eta^2$ and $\omega^2$ effect size measures.
+* New function `test.welch()` for performing Welch's t-test including Cohen's d effect size measure and Welch's ANOVA including $\eta^2$ and $\omega^2$ effect size measures.
 
 ##### Minor features and improvements
 * Added standard error of the mean to the argument `print` in the function `descript()`.
 
-* Added the arguments `format`, `label`, `labels`, `missing` for the function `read.sav()` to remove variable formats, variable labels, value labels, value labels for user-defined missings, and widths from attributes of the variable.
+* Added the arguments `format`, `label`, `labels`, `missing` to the function `read.sav()` to remove variable formats, variable labels, value labels, value labels for user-defined missings, and widths from attributes of the variable.
 
 * Function `item.reverse()` can also be applied to to items with non-integer values.
 
 * Return object of the function `cor.matrix()` when specifying a grouping variable comprises the combined results of both groups in the matrices. 
-
 
 * Function `read.mplus()` can also deal with consecutive variables (e.g., `x1-x5`).
 
@@ -96,7 +116,7 @@ by Delacre et al. (2021).
 ### misty 0.3.1 (2020-04-25)
 
 ##### New features
-* New function `z.test()` for computing one sample, two sample, and paired sample z-test.
+* New function `z.test()` for performing one sample, two sample, and paired sample z-test.
 
 ##### Bug fix
 * Function `omega.coef()` does not access internal slots of a fitted lavaan object anymore (requested by Yves Rosseel).

@@ -87,7 +87,7 @@ Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}
 }
 \seealso{
 \code{\link{na.as}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-\code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.prop}}.
+\code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.prop}}, \code{\link{na.test}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}
