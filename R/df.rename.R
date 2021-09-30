@@ -30,7 +30,7 @@
 #' # Rename variable b in the data frame 'dat' to y
 #' df.rename(dat, from = "b", to = "y")
 #'
-#' # Rename variabley a, b, and c in the data frame 'dat' to x, y, and z
+#' # Rename variable a, b, and c in the data frame 'dat' to x, y, and z
 #' df.rename(dat, from = c("a", "b", "c"), to = c("x", "y", "z"))
 df.rename <- function(x, from, to, check = TRUE) {
 

@@ -60,9 +60,11 @@ the equal-sign (e.g., \code{0 = female}) and are separated by a semicolon (e.g.,
 User-missing values are defined in the column \code{missing} of the matrix or data frame in \code{var.attr}, either
 specifying one user-missing value (e.g., \code{-99}) or more than one but up to three user-missing values separated
 by a semicolon (e.g., \code{-77; -99}.
-
-Note that the part of the function using \emph{PSPP} was adapted from the \code{write.pspp()} function in the \pkg{miceadds}
-package by Alexander Robitzsch, Simon Grund and Thorsten Henke (2019).
+}
+\note{
+Part of the function using \emph{PSPP} was adapted from the
+\code{write.pspp()} function in the \pkg{miceadds} package by Alexander Robitzsch,
+Simon Grund and Thorsten Henke (2019).
 }
 \examples{
 \dontrun{

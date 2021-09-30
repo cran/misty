@@ -1,44 +1,55 @@
 #' Polychoric Correlation Matrix
 #'
-#' This function computes a polychoric correlation matrix, which is the estimated Pearson product-moment correlation matrix
-#' between underlying normally distributed latent variables which generate the ordinal scores.
+#' This function computes a polychoric correlation matrix, which is the estimated
+#' Pearson product-moment correlation matrix between underlying normally distributed
+#' latent variables which generate the ordinal scores.
 #'
-#' Note that this function is based on the \code{polychoric()} function in the \pkg{psych} package by William Revelle.
-#'
-#' @param x           a matrix or data frame of discrete values.
-#' @param smooth      logical: if \code{TRUE} and if the polychoric matrix is not positive definite,
-#'                    a simple smoothing algorithm using \code{cor.smooth()} function is applied.
-#' @param global      logical: if \code{TRUE}, the global values of the tau parameter is used instead of the local values.
-#' @param weight      a vector of length of the number of observations that specifies the weights to apply to each case.
-#'                    The \code{NULL} case is equivalent of weights of 1 for all cases.
-#' @param correct     a numeric value indicating the correction value to use to correct for continuity in the case
-#'                    of zero entry. Note that unlike in the \code{polychoric()} function in the \pkg{psych} the default
-#'                    value is 0.
-#' @param progress    logical: if \code{TRUE}, the progress bar is shown.
-#' @param na.rm       logical: if \code{TRUE}, missing data are deleted.
-#' @param delete      logical: if \code{TRUE}, cases with no variance are deleted with a warning before proceeding.
-#' @param tri         a character string indicating which triangular of the matrix to show on the console, i.e.,
-#'                    \code{both} for upper and lower triangular, \code{lower} (default) for the lower triangular,
-#'                    and \code{upper} for the upper triangular.
-#' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting the analysis.
-#' @param digits      an integer value indicating the number of decimal places to be used for
-#'                    displaying correlation coefficients.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
-#' @param output      logical: if \code{TRUE}, output is shown on the console.
+#' @param x        a matrix or data frame of discrete values.
+#' @param smooth   logical: if \code{TRUE} and if the polychoric matrix is not
+#'                 positive definite, a simple smoothing algorithm using \code{cor.smooth()}
+#'                 function is applied.
+#' @param global   logical: if \code{TRUE}, the global values of the tau parameter
+#'                 is used instead of the local values.
+#' @param weight   a vector of length of the number of observations that specifies
+#'                 the weights to apply to each case. The \code{NULL} case is
+#'                 equivalent of weights of 1 for all cases.
+#' @param correct  a numeric value indicating the correction value to use to
+#'                 correct for continuity in the case of zero entry. Note that
+#'                 unlike in the \code{polychoric()} function in the \pkg{psych}
+#'                 the default value is 0.
+#' @param progress logical: if \code{TRUE}, the progress bar is shown.
+#' @param na.rm    logical: if \code{TRUE}, missing data are deleted.
+#' @param delete   logical: if \code{TRUE}, cases with no variance are deleted
+#'                 with a warning before proceeding.
+#' @param tri      a character string indicating which triangular of the matrix
+#'                 to show on the console, i.e., \code{both} for upper and lower
+#'                 triangular, \code{lower} (default) for the lower triangular,
+#'                 and \code{upper} for the upper triangular.
+#' @param as.na    a numeric vector indicating user-defined missing values,
+#'                 i.e. these values are converted to \code{NA} before conducting
+#'                 the analysis.
+#' @param digits   an integer value indicating the number of decimal places to
+#'                 be used for displaying correlation coefficients.
+#' @param check    logical: if \code{TRUE}, argument specification is checked.
+#' @param output   logical: if \code{TRUE}, output is shown on the console.
 #'
 #' @author
 #' William Revelle
 #'
 #' @references
-#' Revelle, W. (2018) \emph{psych: Procedures for personality and psychological research}. Northwestern University, Evanston,
-#' Illinois, USA, https://CRAN.R-project.org/package=psych Version = 1.8.12.
+#' Revelle, W. (2018) \emph{psych: Procedures for personality and psychological
+#' research}. Northwestern University, Evanston, Illinois, USA,
+#' https://CRAN.R-project.org/package=psych Version = 1.8.12.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
-#' list with results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
+#' data frame specified in \code{x} (\code{data}), specification of function arguments
+#' (\code{args}), and list with results (\code{result}).
+#'
+#' @note
+#' This function is based on the \code{polychoric()} function in the \pkg{psych}
+#' package by William Revelle.
 #'
 #' @export
 #'

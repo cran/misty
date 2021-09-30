@@ -12,16 +12,18 @@
 #'                       quotes \code{''} or double quotes \code{""} used to determine
 #'                       duplicated or unique rows. By default, all variables in \code{x}
 #'                       are used.
-#' @param first          logical: if \code{TRUE}, the \code{df.duplicated()} function will return
-#'                       duplicated rows including the first of identical rows.
-#' @param keep.all       logical: if \code{TRUE}, the function will return all variables in \code{x}
-#'                       after extracting duplicated or unique rows based on the variables specified
-#'                       in the argument \code{...}.
-#' @param from.last      logical: if \code{TRUE}, duplication will be considered from the reversed
-#'                       side, i.e., the last of identical rows would correspond to \code{duplicated = FALSE}.
+#' @param first          logical: if \code{TRUE}, the \code{df.duplicated()} function
+#'                       will return duplicated rows including the first of identical
+#'                       rows.
+#' @param keep.all       logical: if \code{TRUE}, the function will return all variables
+#'                       in \code{x} after extracting duplicated or unique rows based
+#'                       on the variables specified in the argument \code{...}.
+#' @param from.last      logical: if \code{TRUE}, duplication will be considered
+#'                       from the reversed side, i.e., the last of identical rows
+#'                       would correspond to \code{duplicated = FALSE}.
 #'                       Note that this argument is only used when \code{first = FALSE}.
-#' @param keep.row.names logical: if \code{TRUE}, the row names from \code{x} are kept, otherwise they
-#'                       are set to \code{NULL}.
+#' @param keep.row.names logical: if \code{TRUE}, the row names from \code{x} are kept,
+#'                       otherwise they are set to \code{NULL}.
 #' @param check          logical: if \code{TRUE}, argument specification is checked.
 #'
 #' @author
@@ -34,7 +36,8 @@
 #' \code{\link{df.rename}}, \code{\link{df.sort}}
 #'
 #' @references
-#' Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}. Wadsworth & Brooks/Cole.
+#' Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}.
+#' Wadsworth & Brooks/Cole.
 #'
 #' @return
 #' Returns duplicated or unique rows of the matrix or data frame in \code{x}.

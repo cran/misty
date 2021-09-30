@@ -19,7 +19,7 @@ or \code{eigen} for eigenvalue, condition index, and variance proportions.}
 results.}
 
 \item{p.digits}{an integer value indicating the number of decimal places to be used for displaying the
-\emph{p}-value.#' @param check  logical: if \code{TRUE}, argument specification is checked.}
+\emph{p}-value.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -52,11 +52,88 @@ cutoff threshold for the VIF (e.g., VIF > 10). Note that the output of \code{col
 reports either the variance inflation factor or the squared generalized variance inflation factor
 in the column \code{VIF}, while the standard error inflation factor or the adjusted generalized
 variance inflation factor is reported in the column \code{SIF}.
-
-Note that the computation of the VIF and the GVIF is based on the \code{vif()} function in the
+}
+\note{
+The computation of the VIF and the GVIF is based on the \code{vif()} function in the
 \pkg{car} package by John Fox, Sanford Weisberg and Brad Price (2020), and the computation
 of eigenvalues, condition index, and variance proportions is based on the \code{ols_eigen_cindex()}
 function in the \pkg{olsrr} package by Aravind Hebbali (2020).
+}
+\examples{
+dat <- data.frame(group = c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4),
+                  x1 = c(3, 2, 4, 9, 5, 3, 6, 4, 5, 6, 3, 5),
+                  x2 = c(1, 4, 3, 1, 2, 4, 3, 5, 1, 7, 8, 7),
+                  x3 = c(7, 3, 4, 2, 5, 6, 4, 2, 3, 5, 2, 8),
+                  x4 = c("a", "b", "a", "c", "c", "c", "a", "b", "b", "c", "a", "c"),
+                  y1 = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8),
+                  y2 = c(0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1),
+                  stringsAsFactors = TRUE)
+
+#----------------------------
+# Linear model
+
+# Estimate linear model with continuous predictors
+mod.lm1 <- lm(y1 ~ x1 + x2 + x3, data = dat)
+
+# Tolerance, std. error, and variance inflation factor
+collin.diag(mod.lm1)
+
+# Tolerance, std. error, and variance inflation factor
+# Eigenvalue, Condition index, and variance proportions
+collin.diag(mod.lm1, print = "all")
+
+# Estimate model with continuous and categorical predictors
+mod.lm2 <- lm(y1 ~ x1 + x2 + x3 + x4, data = dat)
+
+# Tolerance, generalized std. error, and variance inflation factor
+collin.diag(mod.lm2)
+
+#----------------------------
+# Generalized linear model
+
+# Estimate logistic regression model with continuous predictors
+mod.glm <- glm(y2 ~ x1 + x2 + x3, data = dat, family = "binomial")
+
+# Tolerance, std. error, and variance inflation factor
+collin.diag(mod.glm)
+
+\dontrun{
+#----------------------------
+# Linear mixed-effects model
+
+# Estimate linear mixed-effects model with continuous predictors using lme4 package
+mod.lmer <- lme4::lmer(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
+
+# Tolerance, std. error, and variance inflation factor
+collin.diag(mod.lmer)
+
+# Estimate linear mixed-effects model with continuous predictors using nlme package
+mod.lme <- nlme::lme(y1 ~ x1 + x2 + x3, random = ~ 1 | group, data = dat)
+
+# Tolerance, std. error, and variance inflation factor
+collin.diag(mod.lme)
+
+# Estimate linear mixed-effects model with continuous predictors using glmmTMB package
+mod.glmmTMB1 <- glmmTMB::glmmTMB(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
+
+# Tolerance, std. error, and variance inflation factor
+collin.diag(mod.glmmTMB1)
+
+#----------------------------
+# Generalized linear mixed-effects model
+
+# Estimate mixed-effects logistic regression model with continuous predictors using lme4 package
+mod.glmer <- lme4::glmer(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "binomial")
+
+# Tolerance, std. error, and variance inflation factor
+collin.diag(mod.glmer)
+
+# Estimate mixed-effects logistic regression model with continuous predictors using glmmTMB package
+mod.glmmTMB2 <- glmmTMB::glmmTMB(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "binomial")
+
+# Tolerance, std. error, and variance inflation factor
+collin.diag(mod.glmmTMB2)
+}
 }
 \references{
 Fox, J., & Monette, G. (1992). Generalized collinearity diagnostics.

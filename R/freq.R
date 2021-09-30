@@ -1,33 +1,42 @@
 #' Frequency Table
 #'
-#' This function computes a frequency table with absolute and percentage frequencies for one or more than one variable.
+#' This function computes a frequency table with absolute and percentage frequencies
+#' for one or more than one variable.
 #'
-#' By default, the function displays the absolute and percentage frequencies when specifying one variable in the
-#' argument \code{x}, while the function displays only the absolute frequencies when more than one variable is specified.
-#' The function displays valid percentage frequencies only in the presence of missing values and excludes variables
-#' with all values missing from the analysis. Note that it is  possible to mix numeric variables, factors, and character
-#' variables in the data frame specified in the argument \code{x}.
+#' By default, the function displays the absolute and percentage frequencies when
+#' specifying one variable in the argument \code{x}, while the function displays
+#' only the absolute frequencies when more than one variable is specified. The function
+#' displays valid percentage frequencies only in the presence of missing values and
+#' excludes variables with all values missing from the analysis. Note that it is
+#' possible to mix numeric variables, factors, and character variables in the data
+#' frame specified in the argument \code{x}.
 #'
 #' @param x           a vector, factor, matrix or data frame.
-#' @param print       a character string indicating which percentage(s) to be printed on the console, i.e.,
-#'                    no percentages (\code{"no"}), all percentages (\code{"all"}), percentage frequencies
-#'                    (\code{"print"}), and valid percentage frequencies (\code{"v.perc"}).
-#'                    Default setting when specifying one variable in \code{x} is \code{print = "all"}, while
-#'                    default setting when specifying more than one variable in \code{x} is \code{print = "no"}
-#'                    unless \code{split = TRUE}.
-#' @param freq        logical: if \code{TRUE} (default), absolute frequencies will be shown on the console.
-#' @param split       logical: if \code{TRUE}, output table is split by variables when specifying more than
-#'                    one variable in \code{x}.
-#' @param labels      logical: if \code{TRUE} (default), labels for the factor levels will be used.
-#' @param val.col     logical: if \code{TRUE}, values are shown in the columns, variables in the rows.
-#' @param exclude     an integer value indicating the maximum number of unique values for variables to be
-#'                    included in the analysis when specifying more than one variable in \code{x} i.e.,
-#'                    variables with the number of unique values exceeding \code{exclude} will be excluded
+#' @param print       a character string indicating which percentage(s) to be printed
+#'                    on the console, i.e., no percentages (\code{"no"}), all percentages
+#'                    (\code{"all"}), percentage frequencies (\code{"print"}), and
+#'                    valid percentage frequencies (\code{"v.perc"}). Default setting
+#'                    when specifying one variable in \code{x} is \code{print = "all"},
+#'                    while default setting when specifying more than one variable
+#'                    in \code{x} is \code{print = "no"} unless \code{split = TRUE}.
+#' @param freq        logical: if \code{TRUE} (default), absolute frequencies will
+#'                    be shown on the console.
+#' @param split       logical: if \code{TRUE}, output table is split by variables
+#'                    when specifying more than one variable in \code{x}.
+#' @param labels      logical: if \code{TRUE} (default), labels for the factor levels
+#'                    will be used.
+#' @param val.col     logical: if \code{TRUE}, values are shown in the columns, variables
+#'                    in the rows.
+#' @param exclude     an integer value indicating the maximum number of unique values
+#'                    for variables to be included in the analysis when specifying
+#'                    more than one variable in \code{x} i.e., variables with the
+#'                    number of unique values exceeding \code{exclude} will be excluded
 #'                    from the analysis.
-#' @param digits      an integer value indicating the number of decimal places to be used for displaying
-#'                    percentages.
+#' @param digits      an integer value indicating the number of decimal places to be
+#'                    used for displaying percentages.
 #' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting the analysis.
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #' @param output      logical: if \code{TRUE}, output is shown on the console.
 #'
@@ -35,16 +44,18 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{crosstab}}, \code{\link{descript}}, \code{\link{multilevel.descript}}, \code{\link{na.descript}}.
+#' \code{\link{crosstab}}, \code{\link{descript}}, \code{\link{multilevel.descript}},
+#' \code{\link{na.descript}}.
 #'
 #' @references
-#' Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New  S Language}. Wadsworth & Brooks/Cole.
+#' Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New  S Language}.
+#' Wadsworth & Brooks/Cole.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis (\code{type}),  matrix or data frame specified in
-#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
-#' list with results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries: function call (\code{call}), type of analysis (\code{type}), matrix or
+#' data frame specified in \code{x} (\code{data}), specification of function arguments
+#' (\code{args}), and list with results (\code{result}).
 #'
 #' @export
 #'
@@ -110,7 +121,8 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) {
 
-    stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.", call. = FALSE)
+    stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.",
+         call. = FALSE)
 
   }
 
@@ -157,7 +169,8 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
     # Check input 'x': All values missing
     if (isTRUE(all(is.na(x)))) {
 
-       stop("All values in the vector, matrix or data frame specified in the argument 'x' are missing.", call. = FALSE)
+       stop("All values in the vector, matrix or data frame specified in the argument 'x' are missing.",
+            call. = FALSE)
 
     }
 
@@ -194,7 +207,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
       if (isTRUE(length(print) != 1L)) {
 
         stop("Please specify one of the character strings \"no\", \"all\", \"perc\", or \"v.perc\" for the argument 'print'.",
-                call. = FALSE)
+             call. = FALSE)
 
       }
 

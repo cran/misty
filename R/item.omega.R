@@ -11,9 +11,6 @@
 #' hierarchical omega, while diagonally weighted least squares estimator (\code{"DWLS"})
 #' is used for computing categorical omega.
 #'
-#' Note that the computation of the hierarchical and categorical omega is based on
-#' the \code{ci.reliability()} function in the \pkg{MBESS} package by Ken Kelley (2019).
-#'
 #' Approximate confidence intervals are computed using the procedure by Feldt, Woodruff
 #' and Salih (1987). Note that there are at least 10 other procedures for computing
 #' the confidence interval (see Kelley and Pornprasertmanit, 2016), which are implemented
@@ -30,7 +27,7 @@
 #'                   \code{x2}, and items \code{x3} and \code{x4}.
 #' @param type       a character string indicating the type of omega to be computed, i.e.,
 #'                   \code{omega} (default) for coefficient omega, \code{hierarch} for
-#'                    hierarchical omega, and \code{categ} for categorical omega.
+#'                   hierarchical omega, and \code{categ} for categorical omega.
 #' @param exclude    a character vector indicating items to be excluded from the
 #'                   analysis.
 #' @param std        logical: if \code{TRUE}, the standardized coefficient omega
@@ -85,9 +82,15 @@
 #' (\code{args}), fitted lavaan object (\code{mod.fit}), and list with results
 #' (\code{result}).
 #'
+#' @note
+#' Computation of the hierarchical and categorical omega is based on
+#' the \code{ci.reliability()} function in the \pkg{MBESS} package by Ken Kelley
+#' (2019).
+#'
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
 #'                   item2 = c(5, 3, 3, 5, 2, 2, 5, 1),
 #'                   item3 = c(4, 2, 4, 5, 1, 3, 5, 1),
@@ -125,6 +128,7 @@
 #' # Summary of the CFA model used to compute coefficient omega
 #' lavaan::summary(item.omega(dat, output = FALSE)$mod.fit,
 #'                 fit.measures = TRUE, standardized = TRUE)
+#' }
 item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ"),
                        exclude = NULL, std = FALSE, na.omit = FALSE,
                        print = c("all", "omega", "item"), digits = 2,

@@ -41,8 +41,8 @@
 #' Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis:
 #' Techniques and applications} (3rd. ed.). Routledge.
 #'
-#' Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introduction
-#' to basic and advanced multilevel modeling} (2nd ed.). Sage Publishers.
+#' Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An
+#' introduction to basic and advanced multilevel modeling} (2nd ed.). Sage Publishers.
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following

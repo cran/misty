@@ -222,11 +222,24 @@ center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL, as.n
   # Data and Arguments
 
   #----------------------------------------
-  # Convert user-missing values into NA
+  # Replace user-specified values with missing values
 
   if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    #......
+    # Check input 'as.na'
+
+    as.na.x <- !as.na %in% x
+
+    if (isTRUE(any(as.na.x))) {
+
+      warning(paste0("Values specified in the argument 'as.na' were not found in 'x': ",
+                     paste(as.na[as.na.x], collapse = ", ")), call. = FALSE)
+    }
+
+    #......
+    # Replace user-specified values with NAs
+    x <- misty::as.na(x, na = as.na, check = FALSE)
 
     # Variable with missing values only
     if (isTRUE(all(is.na(x)))) {
@@ -279,9 +292,8 @@ center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL, as.n
 
     }
 
-    #......
-    # Centering on a user-defined value
-
+  #......
+  # Centering on a user-defined value
   } else {
 
     object <- x - value

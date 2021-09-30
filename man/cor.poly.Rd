@@ -54,8 +54,8 @@ list with results (\code{result}).
 This function computes a polychoric correlation matrix, which is the estimated Pearson product-moment correlation matrix
 between underlying normally distributed latent variables which generate the ordinal scores.
 }
-\details{
-Note that this function is based on the \code{polychoric()} function in the \pkg{psych} package by William Revelle.
+\note{
+This function is based on the \code{polychoric()} function in the \pkg{psych} package by William Revelle.
 }
 \examples{
 dat <- data.frame(x1 = c(1, 1, 3, 2, 1, 2, 3, 2, 3, 1),

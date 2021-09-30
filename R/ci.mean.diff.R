@@ -576,12 +576,40 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
   }
 
   #----------------------------------------
-  # Convert user-missing values into NA
+  # Replace user-specified values with missing values
 
   if (isTRUE(!is.null(as.na))) {
 
-    # Replace user-specified values with missing values
-    xy <- misty::as.na(xy, na = as.na, check = check)
+    #......
+    # Check input 'as.na'
+
+    # Factor or Vector
+    if (isTRUE(is.atomic(xy) || is.factor(xy))) {
+
+      as.na.x <- !as.na %in% xy
+
+    # Matrix or data frame
+    } else if (isTRUE(is.matrix(xy) || is.data.frame(xy))) {
+
+      as.na.x <- vapply(as.character(as.na), function(y) !y %in% misty::chr.trim(apply(as.matrix(x), 2, as.character)),
+                        FUN.VALUE = logical(1))
+
+    # List
+    } else if (isTRUE(is.list(xy))) {
+
+      as.na.x <- !as.na %in% unlist(xy)
+
+    }
+
+    if (isTRUE(any(as.na.x))) {
+
+      warning(paste0("Values specified in the argument 'as.na' were not found in 'x': ",
+                     paste(as.na[as.na.x], collapse = ", ")), call. = FALSE)
+    }
+
+    #......
+    # Replace user-specified values with NAs
+    xy <- misty::as.na(xy, na = as.na, check = FALSE)
 
     # Variable with missing values only
     xy.miss <- vapply(xy, function(y) all(is.na(y)), FUN.VALUE = logical(1))
@@ -1093,8 +1121,35 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
 
   if (isTRUE(!is.null(as.na))) {
 
+    #......
+    # Check input 'as.na'
+
+    # Factor or Vector
+    if (isTRUE(is.atomic(data[, y.vars]) || is.factor(data[, y.vars]))) {
+
+      as.na.x <- !as.na %in% data[, y.vars]
+
+    # Matrix or data frame
+    } else if (isTRUE(is.matrix(data[, y.vars]) || is.data.frame(data[, y.vars]))) {
+
+      as.na.x <- vapply(as.character(as.na), function(y) !y %in% misty::chr.trim(apply(as.matrix(x), 2, as.character)),
+                        FUN.VALUE = logical(1))
+
+    # List
+    } else if (isTRUE(is.list(data[, y.vars]))) {
+
+      as.na.x <- !as.na %in% unlist(data[, y.vars])
+
+    }
+
+    if (isTRUE(any(as.na.x))) {
+
+      warning(paste0("Values specified in the argument 'as.na' were not found in 'x': ",
+                     paste(as.na[as.na.x], collapse = ", ")), call. = FALSE)
+    }
+
     # Replace user-specified values with missing values
-    data[, y.vars] <- misty::as.na(data[, y.vars], na = as.na, check = check)
+    data[, y.vars] <- misty::as.na(data[, y.vars], na = as.na, check = FALSE)
 
     # Variable with missing values only
     data.miss <- vapply(data[, y.vars, drop = FALSE], function(y) all(is.na(y)), FUN.VALUE = logical(1))

@@ -55,6 +55,10 @@ or nested within subdirectories.
 Note that this function is a copy of the \code{runModels()} function in the \pkg{MplusAutomation} package
 by Michael Hallquist.
 }
+\note{
+This function is a copy of the \code{runModels()} function in the
+\pkg{MplusAutomation} package by Michael Hallquist and Joshua Wiley (2018).
+}
 \examples{
 \dontrun{
 # Run Mplus models located within a single directory

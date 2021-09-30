@@ -2,7 +2,7 @@
 #'
 #' This function removes whitespace from start and/or end of a string
 #'
-#' Note that this function is based on the \code{str_trim()} function from the \pkg{stringr} package by Hadley Wickham.
+#'
 #'
 #' @param x           a character vector.
 #' @param side        a character string indicating the side on which to remove whitespace,
@@ -21,6 +21,10 @@
 #' @references
 #' Wickham, H. (2019). \emph{stringr: Simple, consistent wrappers for common string operations}.
 #' R package version 1.4.0. \url{https://CRAN.R-project.org/package=stringr}
+#'
+#' @note
+#' This function is based on the \code{str_trim()} function from the \pkg{stringr}
+#' package by Hadley Wickham.
 #'
 #' @export
 #'

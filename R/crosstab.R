@@ -81,9 +81,9 @@
 #' # Cross Tabulation for x1, x2, and x3
 #' # print all percentages, split output table
 #' crosstab(dat[, c("x1", "x2", "x3")], print = "all", split = TRUE)
-crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TRUE, split = FALSE,
-                     na.omit = TRUE,
-                     digits = 2, as.na = NULL, check = TRUE, output = TRUE) {
+crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TRUE,
+                     split = FALSE, na.omit = TRUE, digits = 2, as.na = NULL,
+                     check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Data

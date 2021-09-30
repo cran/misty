@@ -129,7 +129,8 @@
 #' indirect effects in 1-1-1 multilevel models} [Computer software]. Available from
 #' http://quantpsy.org/.
 #'
-#' @note The function was adapted from the interactive web tool by Preacher and
+#' @note
+#' The function was adapted from the interactive web tool by Preacher and
 #' Selig (2010).
 #'
 #' @return
@@ -142,7 +143,7 @@
 #'
 #' @export
 #'
-#'@examples
+#' @examples
 #' # Confidence Interval for the Indirect Effect
 #' multilevel.indirect(a = 0.25, b = 0.20, se.a = 0.11, se.b = 0.13,
 #'                     cov.ab = 0.01, cov.rand = 0.40, se.cov.rand = 0.02)

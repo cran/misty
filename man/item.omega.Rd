@@ -64,15 +64,17 @@ in the \pkg{lavaan} package by Yves Rosseel (2019). Maximum likelihood (\code{"M
 for computing coefficient omega and hierarchical omega, while diagonally weighted least squares estimator
 (\code{"DWLS"}) is used for computing categorical omega.
 
-Note that the computation of the hierarchical and categorical omega is based on the \code{ci.reliability()}
-function in the \pkg{MBESS} package by Ken Kelley (2019).
-
 Approximate confidence intervals are computed using the procedure by Feldt, Woodruff and Salih (1987).
 Note that there are at least 10 other procedures for computing the confidence interval (see Kelley and
 Pornprasertmanit, 2016), which are implemented in the \code{ci.reliability()} function in the \pkg{MBESSS}
 package by Ken Kelley (2019).
 }
+\note{
+Computation of the hierarchical and categorical omega is based on the \code{ci.reliability()}
+function in the \pkg{MBESS} package by Ken Kelley (2019).
+}
 \examples{
+\dontrun{
 dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
                   item2 = c(5, 3, 3, 5, 2, 2, 5, 1),
                   item3 = c(4, 2, 4, 5, 1, 3, 5, 1),
@@ -110,6 +112,7 @@ item.omega(dat, exclude = "item3")
 # Summary of the CFA model used to compute coefficient omega
 lavaan::summary(item.omega(dat, output = FALSE)$mod.fit,
                 fit.measures = TRUE, standardized = TRUE)
+}
 }
 \references{
 Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for coefficient alpha.

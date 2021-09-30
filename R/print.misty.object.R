@@ -3,35 +3,40 @@
 #' This function prints the \code{misty.object} object
 #'
 #' @param x          \code{misty.object} object.
-#' @param print      a character string or character vector indicating which results to to be printed
-#'                   on the console.
-#' @param tri        a character string or character vector indicating which triangular of the matrix
-#'                   to show on the console, i.e., \code{both} for upper and lower triangular,
-#'                   \code{lower} for the lower triangular, and \code{upper} for the upper
-#'                   triangular.
-#' @param freq       logical: if \code{TRUE}, absolute frequencies will be included in the cross
-#'                   tabulation (\code{crosstab()} function).
-#' @param hypo       logical: if \code{TRUE}, null and alternative hypothesis are shown on the console
-#'                   (\code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}} function).
-#' @param descript   logical: if \code{TRUE}, descriptive statistics are shown on the console
-#'                   (\code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}} function).
-#' @param effsize    logical: if \code{TRUE}, effect size measure(s) is shown on the console
-#'                   (\code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}} function).
-#' @param split      logical: if \code{TRUE}, output table is split by variables when specifying more than
-#'                   one variable in \code{x} (\code{\link{freq}}).
-#' @param table      logical: if \code{TRUE}, a frequency table with number of observed values (\code{"nObs"}),
-#'                   percent of observed values (\code{"pObs"}), number of missing values (\code{"nNA"}), and
-#'                   percent of missing values (\code{"pNA"}) is printed for each variable on the console
+#' @param print      a character string or character vector indicating which results
+#'                   to to be printed on the console.
+#' @param tri        a character string or character vector indicating which triangular
+#'                   of the matrix to show on the console, i.e., \code{both} for
+#'                   upper and lower triangular, \code{lower} for the lower triangular,
+#'                   and \code{upper} for the upper triangular.
+#' @param freq       logical: if \code{TRUE}, absolute frequencies will be included
+#'                   in the cross tabulation (\code{crosstab()} function).
+#' @param hypo       logical: if \code{TRUE}, null and alternative hypothesis are
+#'                   shown on the console (\code{\link{test.t}}, \code{\link{test.welch}},
+#'                   \code{\link{test.z}} function).
+#' @param descript   logical: if \code{TRUE}, descriptive statistics are shown on
+#'                   the console (\code{\link{test.t}}, \code{\link{test.welch}},
+#'                   \code{\link{test.z}} function).
+#' @param effsize    logical: if \code{TRUE}, effect size measure(s) is shown on
+#'                   the console (\code{\link{test.t}}, \code{\link{test.welch}},
+#'                   \code{\link{test.z}} function).
+#' @param split      logical: if \code{TRUE}, output table is split by variables
+#'                   when specifying more than one variable in \code{x} (\code{\link{freq}}).
+#' @param table      logical: if \code{TRUE}, a frequency table with number of observed
+#'                   values (\code{"nObs"}), percent of observed values (\code{"pObs"}),
+#'                   number of missing values (\code{"nNA"}), and percent of missing
+#'                   values (\code{"pNA"}) is printed for each variable on the console
 #'                   (\code{na.descript()} function).
-#' @param digits     an integer value indicating the number of decimal places digits to be used for
-#'                   displaying results.
-#' @param p.digits   an integer indicating the number of decimal places to be used for displaying
-#'                   \emph{p}-values.
-#' @param icc.digits an integer indicating the number of decimal places to be used for displaying
-#'                   intraclass correlation coefficients (\code{multilevel.descript()} and
-#'                   \code{multilevel.icc()} function).
+#' @param digits     an integer value indicating the number of decimal places digits
+#'                   to be used for displaying results.
+#' @param p.digits   an integer indicating the number of decimal places to be used
+#'                   for displaying \emph{p}-values.
+#' @param icc.digits an integer indicating the number of decimal places to be used
+#'                   for displaying intraclass correlation coefficients (\code{multilevel.descript()}
+#'                   and \code{multilevel.icc()} function).
 #' @param sort.var   logical: if \code{TRUE}, output is sorted by variables.
-#' @param order      logical: if \code{TRUE}, variables are ordered from left to right in increasing order
+#' @param order      logical: if \code{TRUE}, variables are ordered from left to
+#'                   right in increasing order
 #'                   of missing values (\code{na.descript()} function).
 #' @param check      logical: if \code{TRUE}, argument specification is checked.
 #' @param ...        further arguments passed to or from other methods.
@@ -40,15 +45,16 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{item.alpha}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}}, \code{\link{ci.median}},
-#' \code{\link{ci.prop.diff}}, \code{\link{ci.prop}}, \code{\link{ci.sd}}, \code{\link{ci.var}},
-#' \code{\link{cohens.d}}, \code{\link{collin.diag}}, \code{\link{cor.cont}}, \code{\link{cor.matrix}},
-#' \code{\link{cor.cramer}}, \code{\link{crosstab}}, \code{\link{descript}}, \code{\link{eta.sq}},
-#' \code{\link{freq}}, \code{\link{test.levene}}, \code{\link{multilevel.descript}},
-#' \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-#' \code{\link{na.pattern}}, \code{\link{item.omega}}, \code{\link{cor.phi}}, \code{\link{cor.poly}},
-#' \code{\link{size.cor}}, \code{\link{size.mean}}, \code{\link{size.prop}}, \code{\link{test.levene}},
-#' \code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}}.
+#' \code{\link{item.alpha}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}},
+#' \code{\link{ci.median}}, \code{\link{ci.prop.diff}}, \code{\link{ci.prop}},
+#' \code{\link{ci.sd}}, \code{\link{ci.var}}, \code{\link{cohens.d}}, \code{\link{collin.diag}},
+#' \code{\link{cor.cont}}, \code{\link{cor.matrix}}, \code{\link{cor.cramer}}, \code{\link{crosstab}},
+#' \code{\link{descript}}, \code{\link{eta.sq}}, \code{\link{freq}}, \code{\link{test.levene}},
+#' \code{\link{multilevel.descript}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}},
+#' \code{\link{na.descript}}, \code{\link{na.pattern}}, \code{\link{item.omega}},
+#' \code{\link{cor.phi}}, \code{\link{cor.poly}}, \code{\link{size.cor}}, \code{\link{size.mean}},
+#' \code{\link{size.prop}}, \code{\link{test.levene}}, \code{\link{test.t}}, \code{\link{test.welch}},
+#' \code{\link{test.z}}.
 #'
 #' @method print misty.object
 #'
@@ -1883,10 +1889,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
     }
 
-    #......
-    # Print object
-    print.object <- x$result
-
     #----------------------------------------
     # Two-Dimensional Matrix
 
@@ -1908,14 +1910,14 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
           restab <- restab[order(factor(restab[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA"))), ]
 
-          # Sort without NA
+        # Sort without NA
         } else {
 
           restab <- restab[order(factor(restab[, 1L], levels = levels(x$data[, 1L]), labels = levels(x$data[, 1L]))), ]
 
         }
 
-        # First variable is not a factor
+      # First variable is not a factor
       } else {
 
         restab <- restab[order(restab[, 1L]), ]
@@ -2000,8 +2002,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
         # Format percentages
         restab[grep("%", restab[, 2L]), -c(1L:2L, ncol(restab))] <- apply(restab[grep("%", restab[, 2L]), -c(1L:2L, ncol(restab))], 2L, function(y) paste0(format(formatC(as.numeric(y), digits = digits, format = "f",
                                                                                                                                                                          zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), justify = "right"), "%"))
-
-        restab <- gsub("NaN", "NA", restab)
+        restab <- gsub("NaN%", "NA", restab)
 
         # Justify right and left
         restab[, 1L] <- format(restab[, 1L], justify = "right")
@@ -2029,7 +2030,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
         }
 
         # Remove duplicated row labels
-        restab[, 1L] <- ifelse(duplicated(restab[, 1L]), paste(rep("  ", times = unique(nchar(restab[, 1L]))), collapse = ""), restab[, 1L])
+        restab[, 1L] <- ifelse(duplicated(restab[, 1L]), paste(rep(" ", times = unique(nchar(restab[, 1L]))), collapse = ""), restab[, 1L])
 
         cat(" Cross Tabulation\n\n")
 
@@ -2066,7 +2067,11 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
                               c("", "Total",
                                 rep(ifelse(digits == 0L, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%")), times = nrow(restab[grep("Row", restab[, 2L]), ]))))
 
-          restab.row[which(apply(restab.row, 1L, function(y) length(grep("NA%", y)) != 0L)), ncol(restab.row)] <- "NA%"
+          if (length(grep("NA", restab.row[, 2L])) > 0L) {
+
+            restab.row[grep("NA", restab.row[, 2L]), ncol(restab.row)] <- paste(paste(rep(" ", times = unique(nchar(restab.row[grep("NA", restab.row[, 2L]), ncol(restab.row)])) - 3L), collapse = ""), "NA", collapse = "")
+
+          }
 
           restab.row[, ncol(restab.row)] <- format(restab.row[, ncol(restab.row)], justify = "right")
 
@@ -2088,6 +2093,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
           restab.col <- rbind(restab[1L:2L, -c(2L, ncol(restab))], restab[grep("Col", restab[, 2L]), -c(2L, ncol(restab))],
                               c("Total", rep(ifelse(digits == 0L, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%")), times = ncol(restab) - 3L)))
+
+          if (length(grep("NA", restab.col[3L, ])) > 0L) {
+
+            restab.col[, grep("NA", restab.col[3L, ])][nrow(restab.col)] <- paste(paste(rep(" ", times = unique(nchar(restab.col[, grep("NA", restab.col[3, ])][nrow(restab.col)]) - 3L)), collapse = ""), "NA", collapse = "")
+
+          }
 
           restab.col[nrow(restab.col), which(apply(restab.col, 2L, function(y) length(grep("NA%", y)) != 0L))] <- "NA%"
 
@@ -2179,9 +2190,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
                       rbind(freq.a.print, perc.r.print, perc.c.print, perc.t.print),
                       c(apply(freq.a.print, 1L, sum), rep("", times = 3L*length(print.object$freq.a)*ncol(print.object$freq.a[[1L]]))))
 
-      # Convert NaN in NA
-      restab <- gsub("NaN", NA, restab)
-
       #......
       # Sort table
 
@@ -2194,7 +2202,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
           restab <-restab[order(factor(restab[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA")),
                                 factor(restab[, 2L], levels = c(levels(x$data[, 2L]), "NA"), labels = c(levels(x$data[, 2L]), "NA"))), ]
 
-          # Sort without NA
+        # Sort without NA
         } else {
 
           restab <- restab[order(factor(restab[, 1L], levels = levels(x$data[, 1L]), labels = levels(x$data[, 1L])),
@@ -2366,6 +2374,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
         restab[grep("%", restab[, 3L]), -c(1L:3L, ncol(restab))] <- apply(restab[grep("%", restab[, 3L]), -c(1L:3L, ncol(restab))], 2L, function(y) paste0(format(formatC(as.numeric(y), digits = digits, format = "f",
                                                                                                                                                                        zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), justify = "right"), "%"))
 
+        # Convert NaN in NA
+        restab <- gsub("NaN%", NA, restab)
+
         # Format variable names
         restab[2L, 1L] <- format(restab[2L, 1L], justify = "left", width = max(nchar(restab[, 1L])))
         restab[2L, 2L] <- format(restab[2L, 2L], justify = "left", width = max(nchar(restab[, 2L])))
@@ -2449,7 +2460,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
                               c("", "Total",
                                 rep(ifelse(digits == 0L, "100", paste0("100.", paste(rep("0", times = digits), collapse = ""), "%")), times = nrow(restab[grep("Row", restab[, 3L]), ]))))
 
-          restab.row[which(apply(restab.row, 1L, function(y) length(grep("NA%", y)) != 0L)), ncol(restab.row)] <- "NA%"
+          if (length(grep("NA", restab.row[, 3L])) > 0L) {
+
+            restab.row[grep("NA", restab.row[, 3L]), ncol(restab.row)] <- paste(paste(rep(" ", times = unique(nchar(restab.row[grep("NA", restab.row[, 3L]), ncol(restab.row)])) - 3L), collapse = ""), "NA", collapse = "")
+
+          }
+
 
           restab.row[, ncol(restab.row)] <- format(restab.row[, ncol(restab.row)], justify = "right")
 
@@ -2485,7 +2501,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
           for (i in unique(restab.col[, 1L])) {
 
             temp <- rbind(restab.col[restab.col[, 1L] == i, ], p)
-            temp[nrow(temp), which(apply(temp, 2L, function(y) length(grep("NA%", y)) != 0L))] <- "NA%"
+
+            if (length(grep("NA", temp[2L, ])) > 0L) {
+
+              temp[, grep("NA", temp[2L, ])][nrow(temp)] <- paste(paste(rep(" ", times = unique(nchar(temp[, grep("NA", temp[2, ])][nrow(temp)])) - 3L), collapse = ""), "NA", collapse = "")
+
+            }
 
             restab.col.p  <- rbind(restab.col.p, temp)
 

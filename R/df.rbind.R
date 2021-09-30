@@ -13,9 +13,6 @@
 #' Array and matrix columns must have identical dimensions after the row count. Aside from these there
 #' are no general checks that each column is of consistent data type.
 #'
-#' Note that this function is a copy of the \code{rbind.fill()} function in the \pkg{plyr} package
-#' by Hadley Wickham.
-#'
 #' @param ...         a sequence of data frame to be row bind together. This argument can be a
 #'                    list of data frames, in which case all other arguments are ignored.
 #'                    Any \code{NULL} inputs are silently dropped. If all inputs are \code{NULL},
@@ -37,6 +34,10 @@
 #'
 #' @return
 #' Returns a single data frame
+#'
+#' @note
+#' This function is a copy of the \code{rbind.fill()} function in the \pkg{plyr}
+#' package by Hadley Wickham.
 #'
 #' @export
 #'

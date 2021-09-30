@@ -1,32 +1,39 @@
 #' Read Mplus Data File and Variable Names
 #'
-#' This function reads a Mplus data file and/or Mplus input/output file to return a data frame with variable names
-#' extracted from the Mplus input/output file.
+#' This function reads a Mplus data file and/or Mplus input/output file to return
+#' a data frame with variable names extracted from the Mplus input/output file.
 #'
-#' @param file          a character string indicating the name of the Mplus data file with or without
-#'                      the file extension \code{.dat}, e.g., \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.
-#'                      Note that it is not necessary to specify this argument when \code{return.var = TRUE}.
-#' @param sep           a character string indicating the field separator (i.e., delimiter) used in the data file
-#'                      specified in \code{file}. By default, the separator is 'white space', i.e., one or more
+#' @param file          a character string indicating the name of the Mplus data
+#'                      file with or without the file extension \code{.dat}, e.g.,
+#'                      \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.
+#'                      Note that it is not necessary to specify this argument when
+#'                      \code{return.var = TRUE}.
+#' @param sep           a character string indicating the field separator (i.e.,
+#'                      delimiter) used in the data file specified in \code{file}.
+#'                      By default, the separator is 'white space', i.e., one or more
 #'                      spaces, tabs, newlines or carriage returns.
-#' @param input         a character string indicating the Mplus input (\code{.inp}) or output file (\code{.out})
-#'                      in which the variable names are specified in the \code{VARIABLE:} section.
-#'                      Note that if \code{input = NULL}, this function is equivalent to \code{read.table(file)}.
-#' @param print         logical: if \code{TRUE}, variable names are printed on the console.
-#' @param return.var    logical: if \code{TRUE}, the function returns the variable names extracted from the
-#'                      Mplus input or output file only.
-#' @param fileEncoding  character string declaring the encoding used on \code{file} so the character data can be
-#'                      re-encoded. See \code{\link{df.sort}}.
+#' @param input         a character string indicating the Mplus input (\code{.inp})
+#'                      or output file (\code{.out}) in which the variable names
+#'                      are specified in the \code{VARIABLE:} section. Note that if
+#'                      \code{input = NULL}, this function is equivalent to \code{read.table(file)}.
+#' @param print         logical: if \code{TRUE}, variable names are printed on the
+#'                      console.
+#' @param return.var    logical: if \code{TRUE}, the function returns the variable
+#'                      names extracted from the Mplus input or output file only.
+#' @param fileEncoding  character string declaring the encoding used on \code{file}
+#'                      so the character data can be re-encoded. See \code{\link{df.sort}}.
 #' @param check         logical: if \code{TRUE}, argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @references
-#' Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.). Muthen & Muthen.
+#' Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
+#' Muthen & Muthen.
 #'
 #' @seealso
-#' \code{\link{run.mplus}}, \code{\link{write.mplus}}, \code{\link{read.sav}}, \code{\link{read.xlsx}}
+#' \code{\link{run.mplus}}, \code{\link{write.mplus}}, \code{\link{read.sav}},
+#' \code{\link{read.xlsx}}
 #'
 #' @return
 #' A data frame containing a representation of the data in the file.

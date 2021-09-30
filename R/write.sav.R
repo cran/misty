@@ -1,48 +1,59 @@
 #' Write SPSS File
 #'
-#' This function writes a data frame or matrix into a SPSS file by either using the \code{write_sav()} function
-#' in the \pkg{haven} package by Hadley Wickham and Evan Miller (2019) or the free software \emph{PSPP}
-#' (see: \url{https://www.gnu.org/software/pspp/pspp.html}).
+#' This function writes a data frame or matrix into a SPSS file by either using the
+#' \code{write_sav()} function in the \pkg{haven} package by Hadley Wickham and Evan
+#' Miller (2019) or the free software \emph{PSPP} (see: \url{https://www.gnu.org/software/pspp/pspp.html}).
 #'
-#' If arguments \code{pspp.path} is not specified (i.e., \code{pspp.path = NULL}), \code{write_sav()} function in the
-#' \pkg{haven} is used. Otherwise the object \code{x} is written as CSV file, which is subsequently imported into SPSS
-#' using the free software \emph{PSPP} by executing a SPSS syntax written in R. Note that \emph{PSPP} needs to be installed
-#' on your computer when using the \code{pspp.path} argument.
+#' If arguments \code{pspp.path} is not specified (i.e., \code{pspp.path = NULL}),
+#' \code{write_sav()} function in the \pkg{haven} is used. Otherwise the object \code{x}
+#' is written as CSV file, which is subsequently imported into SPSS using the free
+#' software \emph{PSPP} by executing a SPSS syntax written in R. Note that \emph{PSPP}
+#' needs to be installed on your computer when using the \code{pspp.path} argument.
 #'
-#' A SPSS file with 'variable labels', 'value labels', and 'user-missing values' is written by specifying the \code{var.attr}
-#' argument. Note that the number of rows in the matrix or data frame specified in \code{var.attr} needs to match with the
-#' number of columns in the data frame or matrix specified in \code{x}, i.e., each row in \code{var.attr} represents
-#' the variable attributes of the corresponding variable in \code{x}. In addition, column names of the matrix or data frame
-#' specified in \code{var.attr} needs to be labeled as \code{label} for 'variable labels, \code{values} for 'value labels',
-#' and \code{missing} for 'user-missing values'.
+#' A SPSS file with 'variable labels', 'value labels', and 'user-missing values' is
+#' written by specifying the \code{var.attr} argument. Note that the number of rows
+#' in the matrix or data frame specified in \code{var.attr} needs to match with the
+#' number of columns in the data frame or matrix specified in \code{x}, i.e., each
+#' row in \code{var.attr} represents the variable attributes of the corresponding
+#' variable in \code{x}. In addition, column names of the matrix or data frame
+#' specified in \code{var.attr} needs to be labeled as \code{label} for 'variable
+#' labels, \code{values} for 'value labels', and \code{missing} for 'user-missing
+#' values'.
 #'
-#' Labels for the values are defined in the column \code{values} of the matrix or data frame in \code{var.attr} using
-#' the equal-sign (e.g., \code{0 = female}) and are separated by a semicolon (e.g., \code{0 = female; 1 = male}).
+#' Labels for the values are defined in the column \code{values} of the matrix or
+#' data frame in \code{var.attr} using the equal-sign (e.g., \code{0 = female}) and
+#' are separated by a semicolon (e.g., \code{0 = female; 1 = male}).
 #'
-#' User-missing values are defined in the column \code{missing} of the matrix or data frame in \code{var.attr}, either
-#' specifying one user-missing value (e.g., \code{-99}) or more than one but up to three user-missing values separated
+#' User-missing values are defined in the column \code{missing} of the matrix or
+#' data frame in \code{var.attr}, either specifying one user-missing value (e.g.,
+#' \code{-99}) or more than one but up to three user-missing values separated
 #' by a semicolon (e.g., \code{-77; -99}.
 #'
-#' Note that the part of the function using \emph{PSPP} was adapted from the \code{write.pspp()} function in the \pkg{miceadds}
-#' package by Alexander Robitzsch, Simon Grund and Thorsten Henke (2019).
-#'
-#' @param x           a matrix or data frame to be written in SPSS, vectors are coerced to a data frame.
-#' @param file        a character string naming a file with or without file extension '.sav',
-#'                    e.g., \code{"My_SPSS_Data.sav"} or \code{"My_SPSS_Data"}.
-#' @param var.attr    a matrix or data frame with variable attributes used in the SPSS file,
-#'                    only 'variable labels' (column name \code{label}), 'value labels' column name \code{values},
-#'                    and 'user-missing values' column name \code{missing} are supported (see 'Details').
-#' @param pspp.path   a character string indicating the path where the PSPP folder is located on the computer,
-#'                    e.g.\code{C:/Program Files/PSPP/}.
-#' @param digits      an integer value indicating the number of decimal places shown in the SPSS file for non-integer variables.
-#' @param write.csv    logical: if \code{TRUE}, CSV file is written along with the SPSS file.
-#' @param sep         a character string for specifying the CSV file, either \code{";"} for the separator and \code{"."}
-#'                    for the decimal point (default, i.e. equivalent to \code{write.csv2}) or \code{"."} for the decimal
-#'                    point and \code{","} for the separator (i.e. equivalent to \code{write.csv}), must be one of both
-#'                    \code{";"} (default) or \code{","}.
+#' @param x           a matrix or data frame to be written in SPSS, vectors are
+#'                    coerced to a data frame.
+#' @param file        a character string naming a file with or without file extension
+#'                    '.sav', e.g., \code{"My_SPSS_Data.sav"} or \code{"My_SPSS_Data"}.
+#' @param var.attr    a matrix or data frame with variable attributes used in the
+#'                    SPSS file, only 'variable labels' (column name \code{label}),
+#'                    'value labels' column name \code{values}, and 'user-missing values'
+#'                    column name \code{missing} are supported (see 'Details').
+#' @param pspp.path   a character string indicating the path where the PSPP folder
+#'                    is located on the computer, e.g.\code{C:/Program Files/PSPP/}.
+#' @param digits      an integer value indicating the number of decimal places shown
+#'                    in the SPSS file for non-integer variables.
+#' @param write.csv   logical: if \code{TRUE}, CSV file is written along with the
+#'                    SPSS file.
+#' @param sep         a character string for specifying the CSV file, either \code{";"}
+#'                    for the separator and \code{"."}
+#'                    for the decimal point (default, i.e. equivalent to \code{write.csv2})
+#'                    or \code{"."} for the decimal point and \code{","} for the
+#'                    separator (i.e. equivalent to \code{write.csv}), must be one
+#'                    of both \code{";"} (default) or \code{","}.
 #' @param na          a character string for specifying missing values in the CSV file.
-#' @param write.sps   logical: if \code{TRUE}, SPSS syntax is written along with the SPSS file when using PSPP.
-#' @param check       logical: if \code{TRUE}, variable attributes specified in the argument \code{var.attr} is checked.
+#' @param write.sps   logical: if \code{TRUE}, SPSS syntax is written along with
+#'                    the SPSS file when using PSPP.
+#' @param check       logical: if \code{TRUE}, variable attributes specified in the
+#'                     argument \code{var.attr} is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -54,11 +65,17 @@
 #' GNU Project (2018). \emph{GNU PSPP for GNU/Linux} (Version 1.2.0).
 #' Boston, MA: Free Software Foundation. url{https://www.gnu.org/software/pspp/}
 #'
-#' Wickham H., & Miller, E. (2019). \emph{haven: Import and Export 'SPSS', 'Stata' and 'SAS' Files}.
-#' R package version 2.2.0. \url{https://CRAN.R-project.org/package=haven}
+#' Wickham H., & Miller, E. (2019). \emph{haven: Import and Export 'SPSS', 'Stata'
+#' and 'SAS' Files}. R package version 2.2.0. \url{https://CRAN.R-project.org/package=haven}
 #'
-#' Robitzsch, A., Grund, S., & Henke, T. (2019). \emph{miceadds: Some additional multiple imputation functions, especially for mice}.
-#' R package version 3.4-17. \url{https://CRAN.R-project.org/package=miceadds}
+#' Robitzsch, A., Grund, S., & Henke, T. (2019). \emph{miceadds: Some additional
+#' multiple imputation functions, especially for mice}. R package version 3.4-17.
+#' \url{https://CRAN.R-project.org/package=miceadds}
+#'
+#' @note
+#' Part of the function using \emph{PSPP} was adapted from the \code{write.pspp()}
+#' function in the \pkg{miceadds} package by Alexander Robitzsch, Simon Grund and
+#' Thorsten Henke (2019).
 #'
 #' @export
 #'

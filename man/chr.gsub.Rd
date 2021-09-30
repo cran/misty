@@ -27,8 +27,8 @@ possible coercion to character).
 This function is a multiple global string replacement wrapper that allows access to
 multiple methods of specifying matches and replacements.
 }
-\details{
-Note that the function was adapted from the \code{mgsub()} function in the \pkg{mgsub}
+\note{
+Thisfunction was adapted from the \code{mgsub()} function in the \pkg{mgsub}
 package by Mark Ewing (2019).
 }
 \examples{

@@ -22,12 +22,9 @@
 #' For example, \code{else = NA}. Everything that does not fit a previous specification. Note that
 #' \code{else} matches all otherwise unspecified values on input, including \code{NA}.
 #'
-#' Note that the function was adapted from the \code{recode()} function in the \pkg{car} package by
-#' John Fox and Sanford Weisberg (2019).
-#'
 #' @param x           a numeric vector, character vector or factor.
 #' @param spec        a character string of recode specifications (see 'Details').
-#' @param as.factor   logical: if \code{TRUE}, chara1cter vector will be coerced to a factor.
+#' @param as.factor   logical: if \code{TRUE}, character vector will be coerced to a factor.
 #' @param levels      a character vector for specifying the levels in the returned factor.
 #' @param as.na       a numeric vector indicating user-defined missing values,
 #'                    i.e. these values are converted to \code{NA} before conducting the analysis.
@@ -47,6 +44,10 @@
 #'
 #' @return
 #' Returns a numeric vector with the same length as \code{x} containing the recoded variable.
+#'
+#' @note
+#' This function was adapted from the \code{recode()} function in the \pkg{car} package
+#' by John Fox and Sanford Weisberg (2019).
 #'
 #' @export
 #'

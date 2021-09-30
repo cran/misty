@@ -20,8 +20,8 @@ Returns a character vector with whitespaces removed from the vector specified in
 \description{
 This function removes whitespace from start and/or end of a string
 }
-\details{
-Note that this function is based on the \code{str_trim()} function from the \pkg{stringr} package by Hadley Wickham.
+\note{
+This function is based on the \code{str_trim()} function from the \pkg{stringr} package by Hadley Wickham.
 }
 \examples{
 x <- "  string  "

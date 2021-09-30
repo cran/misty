@@ -1,3 +1,11 @@
+### misty 0.4.3 (2021-09-30)
+
+##### User-visible changes
+* Examples added to the documentation of the `collin.diag()` function. 
+
+##### Bug fix
+* Fixed a bug in the function `print.misty.object()`, function did not print the result object of the the function `crosstab() correctly when requesting percentages.
+
 ### misty 0.4.2 (2021-08-19)
 
 ##### New features

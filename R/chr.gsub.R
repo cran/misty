@@ -1,10 +1,7 @@
 #' Multiple Pattern Matching And Replacements
 #'
-#' This function is a multiple global string replacement wrapper that allows access to
-#' multiple methods of specifying matches and replacements.
-#'
-#' Note that the function was adapted from the \code{mgsub()} function in the \pkg{mgsub}
-#' package by Mark Ewing (2019).
+#' This function is a multiple global string replacement wrapper that allows access
+#' to multiple methods of specifying matches and replacements.
 #'
 #' @param pattern     a character vector with character strings to be matched.
 #' @param replacement a character vector equal in length to \code{pattern} or of
@@ -21,12 +18,16 @@
 #' \code{\link{chr.omit}}, \code{\link{chr.trim}}
 #'
 #' @references
-#' Mark Ewing (2019). \emph{mgsub: Safe, Multiple, Simultaneous String Substitution}. R package
-#' version 1.7.1. https://CRAN.R-project.org/package=mgsub
+#' Mark Ewing (2019). \emph{mgsub: Safe, Multiple, Simultaneous String Substitution}.
+#' R package version 1.7.1. https://CRAN.R-project.org/package=mgsub
 #'
 #' @return
-#' Return a character vector of the same length and with the same attributes as \code{x} (after
-#' possible coercion to character).
+#' Return a character vector of the same length and with the same attributes as
+#' \code{x} (after possible coercion to character).
+#'
+#' @note
+#' This function was adapted from the \code{mgsub()} function in the \pkg{mgsub}
+#' package by Mark Ewing (2019).
 #'
 #' @export
 #'
