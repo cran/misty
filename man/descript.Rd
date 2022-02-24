@@ -5,7 +5,7 @@
 \title{Descriptive Statistics}
 \usage{
 descript(x,
-        print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", 
+        print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min",
                   "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
         group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
         digits = 2, as.na = NULL, check = TRUE, output = TRUE)
@@ -94,6 +94,11 @@ descript(dat[, c("x1", "x2", "x3")], split = dat$group1)
 # Descriptive statistics for x1, x2, and x3,
 # analysis by group1 separately, split analysis by group2
 descript(dat[, c("x1", "x2", "x3")], group = dat$group1, split = dat$group2)
+
+\dontrun{
+# Write Results into a Excel file
+result <- descript(dat[, c("x1", "x2", "x3")], output = FALSE)
+write.result(result, "Descript.xlsx") }
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.

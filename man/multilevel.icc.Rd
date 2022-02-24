@@ -74,7 +74,7 @@ Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introd
 modeling} (2nd ed.). Sage Publishers.
 }
 \seealso{
-\code{\link{multilevel.descript}}
+\code{\link{multilevel.cor}}, \code{\link{multilevel.descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

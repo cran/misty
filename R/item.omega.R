@@ -54,7 +54,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#'\code{\link{item.alpha}}, \code{\link{item.reverse}}, \code{\link{item.scores}}
+#' \code{\link{write.result}}, \code{\link{item.alpha}}, \code{\link{item.reverse}},
+#' \code{\link{item.scores}}
 #'
 #' @references
 #' Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for
@@ -128,6 +129,10 @@
 #' # Summary of the CFA model used to compute coefficient omega
 #' lavaan::summary(item.omega(dat, output = FALSE)$mod.fit,
 #'                 fit.measures = TRUE, standardized = TRUE)
+#'
+#' # Write Results into a Excel file
+#' result <- item.omega(dat, output = FALSE)
+#' write.result(result, "Omega.xlsx")
 #' }
 item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ"),
                        exclude = NULL, std = FALSE, na.omit = FALSE,

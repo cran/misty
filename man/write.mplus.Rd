@@ -38,6 +38,7 @@ will be coded as a single numeric value.
 }
 \examples{
 \dontrun{
+
 # Write Mplus Data File and a Mplus input template
 write.mplus(mtcars)
 

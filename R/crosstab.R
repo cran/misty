@@ -1,37 +1,43 @@
 #' Cross Tabulation
 #'
-#' This function creates a two-way and three-way cross tabulation with absolute frequencies and row-wise, column-wise
-#' and total percentages.
+#' This function creates a two-way and three-way cross tabulation with absolute
+#' frequencies and row-wise, column-wise and total percentages.
 #'
 #' @param x           a matrix or data frame with two or three columns.
-#' @param print       a character string or character vector indicating which percentage(s) to be printed on the
-#'                    console, i.e., no percentages (\code{"no"}) (default), all percentages (\code{"all"}),
-#'                    row-wise percentages (\code{"row"}), column-wise percentages (\code{"col"}), and
-#'                    total percentages (\code{"total"}).
-#' @param freq        logical: if \code{TRUE}, absolute frequencies will be included in the cross tabulation.
-#' @param split       logical: if \code{TRUE}, output table is split in absolute frequencies and percentage(s).
-#' @param na.omit     logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-#'                    (i.e., listwise deletion).
-#' @param digits      an integer indicating the number of decimal places digits to be used for displaying percentages.
+#' @param print       a character string or character vector indicating which
+#'                    percentage(s) to be printed on the console, i.e., no percentages
+#'                    (\code{"no"}) (default), all percentages (\code{"all"}),
+#'                    row-wise percentages (\code{"row"}), column-wise percentages
+#'                    (\code{"col"}), and total percentages (\code{"total"}).
+#' @param freq        logical: if \code{TRUE}, absolute frequencies will be included
+#'                    in the cross tabulation.
+#' @param split       logical: if \code{TRUE}, output table is split in absolute
+#'                    frequencies and percentage(s).
+#' @param na.omit     logical: if \code{TRUE}, incomplete cases are removed before
+#'                    conducting the analysis (i.e., listwise deletion).
+#' @param digits      an integer indicating the number of decimal places digits
+#'                    to be used for displaying percentages.
 #' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting the analysis.
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #' @param output      logical: if \code{TRUE}, output is printed on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
-#' \code{\link{freq}}, \code{\link{descript}}, \code{\link{multilevel.descript}},
-#' \code{\link{na.descript}}.
+#' \code{\link{write.result}}, \code{\link{freq}}, \code{\link{descript}},
+#' \code{\link{multilevel.descript}}, \code{\link{na.descript}}.
 #'
 #' @references
-#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-#' John Wiley & Sons.
+#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+#' - Using R and SPSS}. John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), matrix or data frame specified in \code{x} (\code{data}), specification
-#' of function arguments (\code{args}), and list with results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries: function call (\code{call}), matrix or data frame specified in \code{x}
+#' (\code{data}), specification of function arguments (\code{args}), and list with
+#' results (\code{result}).
 #'
 #' @export
 #'
@@ -81,9 +87,15 @@
 #' # Cross Tabulation for x1, x2, and x3
 #' # print all percentages, split output table
 #' crosstab(dat[, c("x1", "x2", "x3")], print = "all", split = TRUE)
-crosstab <- function(x, print = c("no", "all", "row", "col", "total"), freq = TRUE,
-                     split = FALSE, na.omit = TRUE, digits = 2, as.na = NULL,
-                     check = TRUE, output = TRUE) {
+#'
+#' \dontrun{
+#' Write Results into a Excel file
+#' result <- crosstab(dat[, c("x1", "x2")], print = "all", output = FALSE)
+#' write.result(result, "Crosstab.xlsx")
+#' }
+crosstab <- function(x, print = c("no", "all", "row", "col", "total"),
+                     freq = TRUE, split = FALSE, na.omit = TRUE, digits = 2,
+                     as.na = NULL, check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Data

@@ -17,8 +17,7 @@ cluster variable).}
 \item{method}{a character string indicating the method used to estimate intraclass correlation coefficients,
 i.e., \code{"aov"} ICC estimated using the \code{aov} function,
 \code{"lme4"} (default) ICC estimated using the \code{lmer} function in the \pkg{lme4} package,
-\code{"nlme"} ICC estimated using the \code{lme} function in the \pkg{nlme} package.
-Note that if the lme4 package is not installed, method = "aov" will be used.}
+\code{"nlme"} ICC estimated using the \code{lme} function in the \pkg{nlme} package.}
 
 \item{REML}{logical: if \code{TRUE} (default), restricted maximum likelihood is used to estimate the null model
 when using the \code{lmer()} function in the \pkg{lme4} package or the \code{lme()} function in
@@ -45,8 +44,8 @@ function call (\code{call}), type of analysis \code{type}, matrix or data frame 
 list with results (\code{result}).
 }
 \description{
-This function computes descriptive statistics for multilevel data, e.g. average cluster size, intraclass correlation
-coefficient, design effect and effective sample size.
+This function computes descriptive statistics for multilevel data, e.g. average cluster size, variance components,
+intraclass correlation coefficient, design effect, and effective sample size.
 }
 \details{
 Note that this function is restricted to two-level models.
@@ -68,11 +67,17 @@ multilevel.descript(dat$x1, cluster = dat$cluster, icc.digits = 5)
 multilevel.descript(dat$x1, cluster = dat$cluster, as.na = 1)
 
 # Multilevel descriptive statistics for x1,
-# use lmer() function in the lme4 package to estimate ICC
-multilevel.descript(dat$x1, cluster = dat$cluster, method = "lme4")
+# use lme() function in the nlme package to estimate ICC
+multilevel.descript(dat$x1, cluster = dat$cluster, method = "nlme")
 
 # Multilevel descriptive statistics for x1, x2, and x3
 multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster)
+
+\dontrun{
+# Write Results into a Excel file
+result <- multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster,
+                              output = FALSE)
+write.result(result, "Multilevel_Descript.xlsx") }
 }
 \references{
 Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis: Techniques and applications} (3rd. ed.).
@@ -82,7 +87,8 @@ Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introd
 modeling} (2nd ed.). Sage Publishers.
 }
 \seealso{
-\code{\link{multilevel.icc}}
+\code{\link{multilevel.cor}}, \code{\link{multilevel.icc}}, \code{\link{multilevel.indirect}},
+\code{\link{multilevel.r2}}, \code{\link{write.result}},
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

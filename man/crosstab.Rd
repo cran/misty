@@ -87,6 +87,11 @@ crosstab(dat[, c("x1", "x2", "x3")], print = "all")
 # Cross Tabulation for x1, x2, and x3
 # print all percentages, split output table
 crosstab(dat[, c("x1", "x2", "x3")], print = "all", split = TRUE)
+
+\dontrun{
+# Write Results into a Excel file
+result <- crosstab(dat[, c("x1", "x2")], print = "all", output = FALSE)
+write.result(result, "Crosstab.xlsx") }
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
@@ -95,6 +100,6 @@ John Wiley & Sons.
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}
 
-\code{\link{freq}}, \code{\link{descript}}, \code{\link{multilevel.descript}},
-\code{\link{na.descript}}.
+\code{\link{write.result}}, \code{\link{freq}}, \code{\link{descript}},
+\code{\link{multilevel.descript}}, \code{\link{na.descript}}.
 }

@@ -1,10 +1,28 @@
+### misty 0.4.4 (2021-12-31)
+
+##### New features
+* New function `multilevel.r2()` for computing R-squared measures for multilevel and linear mixed effects models.
+* New function `write.xlsx()` for writing Excel files (.xlsx).
+* New function `write.result()` for writing results of a misty object into a Excel file.
+
+##### Minor features and improvements
+* Added mean and variance components to the output of the function `multilevel.descript()`.
+* Added the argument `round` to the function `freq()` for rounding numeric variables.
+
+##### User-visible changes
+* Added a warning message in the `na.test()` function when running into numerical problems.
+* Changed the default setting of the argument `sig` in the functions `cor.matrix()`
+and `multilevel.cor()` to `FALSE`.
+
+##### Bug fix
+
 ### misty 0.4.3 (2021-09-30)
 
 ##### User-visible changes
 * Examples added to the documentation of the `collin.diag()` function. 
 
 ##### Bug fix
-* Fixed a bug in the function `print.misty.object()`, function did not print the result object of the the function `crosstab() correctly when requesting percentages.
+* Fixed a bug in the function `print.misty.object()`, function did not print the result object of the the function `crosstab()` correctly when requesting percentages.
 
 ### misty 0.4.2 (2021-08-19)
 

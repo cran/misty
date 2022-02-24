@@ -6,31 +6,33 @@
 #' coefficient and computes significance values (\emph{p}-values) for testing the
 #' hypothesis H0: \eqn{\rho} = 0 for all pairs of variables.
 #'
-#' Note that unlike the \code{\link[stats:cor.test]{cor.test}} function, this function
-#' does not compute an exact \emph{p}-value for Spearman's rank-order correlation
-#' coefficient or Kendall's Tau-b correlation coefficient, but uses the asymptotic
-#' \emph{t} approximation.
+#' Note that unlike the \code{\link[stats:cor.test]{cor.test}} function, this
+#' function does not compute an exact \emph{p}-value for Spearman's rank-order
+#' correlation coefficient or Kendall's Tau-b correlation coefficient, but uses
+#' the asymptotic \emph{t} approximation.
 #'
-#' Statistically significant correlation coefficients are shown in boldface on the
-#' console (\code{sig = TRUE}). However, this option is not supported when using
-#' R Markdown, i.e., the argument \code{sig} will switch to \code{FALSE}.
+#' Statistically significant correlation coefficients can be shown in boldface on
+#' the console when specifying \code{sig = TRUE}. However, this option is not supported
+#' when using R Markdown, i.e., the argument \code{sig} will switch to \code{FALSE}.
+#'
 #'
 #' @param x            a matrix or data frame.
 #' @param method       a character vector indicating which correlation coefficient
-#'                     is to be computed, i.e. \code{"pearson"} for Pearson product-moment
-#'                     correlation coefficient (default), \code{"spearman"} for Spearman's
-#'                     rank-order correlation coefficient, \code{kendall-b} for Kendall's
-#'                     Tau-b correlation coefficient or \code{kendall-c} for Kendall-Stuart's
-#'                     Tau-c correlation coefficient.
+#'                     is to be computed, i.e. \code{"pearson"} for Pearson product-
+#'                     moment correlation coefficient (default), \code{"spearman"}
+#'                     for Spearman's rank-order correlation coefficient, \code{kendall-b}
+#'                     for Kendall's Tau-b correlation coefficient or \code{kendall-c}
+#'                     for Kendall-Stuart's Tau-c correlation coefficient.
 #' @param na.omit      logical: if \code{TRUE}, incomplete cases are removed before
 #'                     conducting the analysis (i.e., listwise deletion); if \code{FALSE}
 #'                     (default), pairwise deletion is used.
-#' @param group        a numeric vector, character vector of factor as grouping variable
-#'                     to show results for each group separately, i.e., upper triangular
-#'                     for one group and lower triangular for another group. Note that the
-#'                     grouping variable is limited to two groups.
-#' @param sig          logical: if \code{TRUE} (default), statistically significant
-#'                     correlation coefficients are shown in boldface on the console.
+#' @param group        a numeric vector, character vector of factor as grouping
+#'                     variable to show results for each group separately, i.e.,
+#'                     upper triangular for one group and lower triangular for
+#'                     another group. Note that the grouping variable is limited
+#'                     to two groups.
+#' @param sig          logical: if \code{TRUE}, statistically significant correlation
+#'                     coefficients are shown in boldface on the console.
 #' @param alpha        a numeric value between 0 and 1 indicating the significance
 #'                     level at which correlation coefficients are printed boldface
 #'                     when \code{sig = TRUE}.
@@ -64,9 +66,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{cohens.d}}, \code{\link{cor.cont}}, \code{\link{cor.cramer}},
-#' \code{\link{multilevel.icc}}, \code{\link{cor.phi}}, \code{\link{na.auxiliary}},
-#' \code{\link{size.cor}}.
+#' \code{\link{write.result}}, \code{\link{cohens.d}}, \code{\link{cor.cont}},
+#' \code{\link{cor.cramer}}, \code{\link{multilevel.icc}}, \code{\link{cor.phi}},
+#' \code{\link{na.auxiliary}}, \code{\link{size.cor}}.
 #'
 #' @references
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
@@ -85,10 +87,9 @@
 #'                             "b", "b", "b", "b", "b"),
 #'                   x = c(5, NA, 6, 4, 6, 7, 9, 5, 8, 7),
 #'                   y = c(3, 3, 5, 6, 7, 4, 7, NA, NA, 8),
-#'                   z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6),
-#'                   stringsAsFactors = TRUE)
+#'                   z = c(1, 3, 1, NA, 2, 4, 6, 5, 9, 6))
 #'
-#' # Pearson product-moment correlation coefficient using pairwise deletion
+#' # Pearson product-moment correlation coefficient
 #' cor.matrix(dat[, c("x", "y")])
 #'
 #' # Pearson product-moment correlation coefficient matrix using pairwise deletion
@@ -104,8 +105,12 @@
 #' cor.matrix(dat[, c("x", "y", "z")], method = "kendall-c")
 #'
 #' # Pearson product-moment correlation coefficient matrix using pairwise deletion
-#' # highlight statistically significant result at alpha = 0.10
-#' cor.matrix(dat[, c("x", "y", "z")], alpha = 0.10)
+#' # highlight statistically significant result at alpha = 0.05
+#' cor.matrix(dat[, c("x", "y", "z")], sig = TRUE)
+#'
+#' # Pearson product-moment correlation coefficient matrix using pairwise deletion
+#' # highlight statistically significant result at alpha = 0.05
+#' cor.matrix(dat[, c("x", "y", "z")], sig = TRUE, alpha = 0.10)
 #'
 #' # Pearson product-moment correlation coefficient matrix using pairwise deletion,
 #' # print sample size and significance values
@@ -126,8 +131,14 @@
 #' # Pearson product-moment correlation coefficient matrix using pairwise deletion,
 #' # results for group "a" and "b" separately
 #' cor.matrix(dat[, c("x", "y", "z")], group = dat$group, print = "all")
+#'
+#' \dontrun{
+#' # Write Results into a Excel file
+#' result <- cor.matrix(dat[, c("x", "y", "z")], print = "all", output = FALSE)
+#' write.result(result, "Correlation.xlsx")
+#' }
 cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendall-c"),
-                       na.omit = FALSE, group = NULL, sig = TRUE, alpha = 0.05,
+                       na.omit = FALSE, group = NULL, sig = FALSE, alpha = 0.05,
                        print = c("all", "cor", "n", "stat", "df", "p"),
                        tri = c("both", "lower", "upper"),
                        p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
@@ -171,7 +182,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #......
-  # Convert 'x' into a vector
+  # Convert 'group' into a vector
   group <- unlist(group, use.names = FALSE)
 
   ####################################################################################

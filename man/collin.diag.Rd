@@ -137,7 +137,7 @@ collin.diag(mod.glmmTMB2)
 }
 \references{
 Fox, J., & Monette, G. (1992). Generalized collinearity diagnostics.
-\emph{Journal of the Americaln Statistical Association, 87}, 178-183.
+\emph{Journal of the American Statistical Association, 87}, 178-183.
 
 Fox, J., Weisberg, S., & Price, B. (2020). \emph{car: Companion to Applied Regression}.
 R package version 3.0-8. https://cran.r-project.org/web/packages/car/

@@ -1,14 +1,18 @@
 #' Variance-Covariance Coverage
 #'
-#' This function computes the proportion of cases that contributes for the calculation of each variance and covariance.
+#' This function computes the proportion of cases that contributes for the calculation
+#' of each variance and covariance.
 #'
 #' @param x           a matrix or data frame.
-#' @param tri         a character string or character vector indicating which triangular of the matrix to show on the console,
-#'                    i.e., \code{both} for upper and lower triangular, \code{lower} (default) for the lower triangular,
-#'                    and \code{upper} for the upper triangular.
-#' @param digits      an integer value indicating the number of decimal places to be used for displaying proportions.
+#' @param tri         a character string or character vector indicating which triangular
+#'                    of the matrix to show on the console, i.e., \code{both} for
+#'                    upper and lower triangular, \code{lower} (default) for the
+#'                    lower triangular, and \code{upper} for the upper triangular.
+#' @param digits      an integer value indicating the number of decimal places to
+#'                    be used for displaying proportions.
 #' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting the analysis.
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #' @param output      logical: if \code{TRUE}, output is shown on the console.
 #'
@@ -16,8 +20,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}}, \code{\link{na.descript}},
-#' \code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.prop}}, \code{\link{na.test}}
+#' \code{\link{write.result}}, \code{\link{as.na}}, \code{\link{na.as}},
+#' \code{\link{na.auxiliary}}, \code{\link{na.descript}}, \code{\link{na.indicator}},
+#' \code{\link{na.pattern}}, \code{\link{na.prop}}, \code{\link{na.test}}
 #'
 #' @references
 #' Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
@@ -25,13 +30,14 @@
 #' Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 #' \emph{Annual Review of Psychology, 60}, 549-576. https://doi.org/10.1146/annurev.psych.58.110405.085530
 #'
-#' van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
+#' van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.).
+#' Chapman & Hall.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
-#' list with results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
+#' data frame specified in \code{x} (\code{data}), specification of function arguments
+#' (\code{args}), and list with results (\code{result}).
 #'
 #' @export
 #'
@@ -40,8 +46,14 @@
 #'                   y = c(7, NA, 8, 9, NA),
 #'                   z = c(2, NA, 3, NA, 5))
 #'
-#' # Create missing data indicator matrix R
+#' # Compute variance-covariance coverage
 #' na.coverage(dat)
+#'
+#' \dontrun{
+#' # Write Results into a Excel file
+#' result <- na.coverage(dat, output = FALSE)
+#' write.result(result, "Coverage.xlsx")
+#' }
 na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na = NULL,
                         check = TRUE, output = TRUE) {
 

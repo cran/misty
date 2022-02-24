@@ -1,52 +1,67 @@
 #' Read Excel File
 #'
-#' This function calls the \code{read_xlsx()} function in the \pkg{readxl} package by Hadley Wickham and Jennifer Bryan (2019)
-#' to read an Excel file (.xlsx).
+#' This function calls the \code{read_xlsx()} function in the \pkg{readxl} package
+#' by Hadley Wickham and Jennifer Bryan (2019) to read an Excel file (.xlsx).
 #'
-#' @param file             a character string indicating the name of the Excel data file
-#'                         with or without file extension '.xlsx', e.g., \code{"My_Excel_Data.xlsx"}
-#'                         or \code{"My_Excel_Data"}.
-#' @param sheet            a character string indicating the name of a sheet or a numeric value indicating
-#'                         the position of the sheet to read. By default the first sheet will be read.
-#' @param header           logical: if \code{TRUE} (default), the first row is used as column names, if \code{FALSE}
-#'                         default names are used. A character vector giving a name for each column can also be used.
-#'                         If \code{coltypes} as a vector is provided, \code{colnames} can have one entry per column, i.e.
-#'                         have the same length as \code{coltypes}, or one entry per unskipped column.
-#' @param range            a character string indicating the cell range to read from, e.g. typical Excel ranges
-#'                         like \code{"B3:D87"}, possibly including the sheet name like \code{"Data!B2:G14"}.
-#'                         Interpreted strictly, even if the range forces the inclusion of leading or trailing
-#'                         empty rows or columns. Takes precedence over \code{skip}, \code{nmax} and \code{sheet}.
-#' @param coltypes         a character vector containing one entry per column from these options \code{"skip"},
-#'                         \code{"guess"}, \code{"logical"}, \code{"numeric"}, \code{"date"}, \code{"text"} or
-#'                         \code{"list"}. If exactly one \code{coltype} is specified, it will be recycled. By default
-#'                         (i.e., \code{coltypes = NULL}) coltypes will be guessed. The content of a cell in a skipped
-#'                         column is never read and that column will not appear in the data frame output. A list cell
-#'                         loads a column as a list of length 1 vectors, which are typed using the type guessing logic
-#'                         from coltypes = NULL, but on a cell-by-cell basis.
-#' @param na               a character vector indicating strings to interpret as missing values. By default, blank
-#'                         cells will be treated as missing data.
-#' @param trim             logical: if \code{TRUE} (default), leading and trailing whitespace will be trimmed
-#' @param skip             a numeric value indicating the minimum number of rows to skip before reading anything,
-#'                         be it column names or data. Leading empty rows are automatically skipped, so this is a
-#'                         lower bound. Ignored if the argument \code{range} is specified.
-#' @param nmax             a numeric value indicating the maximum number of data rows to read. Trailing empty rows
-#'                         are automatically skipped, so this is an upper bound on the number of rows in the returned
-#'                         data frame. Ignored if the argument \code{range} is specified.
-#' @param guessmax         a numeric value indicating the maximum number of data rows to use for guessing column types.
-#' @param progress         display a progress spinner? By default, the spinner appears only in an interactive session,
-#'                         outside the context of knitting a document, and when the call is likely to run for several
-#'                         seconds or more.
-#' @param name.repair      a character string indicating the handling of column names. By default, the function ensures
-#'                         column names are not empty and are unique.
-#' @param as.data.frame    logical: if \code{TRUE} (default), function returns a regular data frame (default);
-#'                         if \code{FALSE} function returns a tibble.
-#' @param check            logical: if \code{TRUE}, argument specification is checked.
+#' @param file          a character string indicating the name of the Excel data
+#'                      file with or without file extension '.xlsx', e.g., \code{"My_Excel_Data.xlsx"}
+#'                      or \code{"My_Excel_Data"}.
+#' @param sheet         a character string indicating the name of a sheet or a numeric
+#'                      value indicating the position of the sheet to read. By default
+#'                      the first sheet will be read.
+#' @param header        logical: if \code{TRUE} (default), the first row is used
+#'                      as column names, if \code{FALSE} default names are used.
+#'                      A character vector giving a name for each column can also
+#'                      be used. If \code{coltypes} as a vector is provided,
+#'                      \code{colnames} can have one entry per column, i.e. have
+#'                      the same length as \code{coltypes}, or one entry per unskipped
+#'                      column.
+#' @param range         a character string indicating the cell range to read from,
+#'                      e.g. typical Excel ranges like \code{"B3:D87"}, possibly
+#'                      including the sheet name like \code{"Data!B2:G14"}. Interpreted
+#'                      strictly, even if the range forces the inclusion of leading
+#'                      or trailing empty rows or columns. Takes precedence over
+#'                      \code{skip}, \code{nmax} and \code{sheet}.
+#' @param coltypes      a character vector containing one entry per column from
+#'                      these options \code{"skip"}, \code{"guess"}, \code{"logical"},
+#'                      \code{"numeric"}, \code{"date"}, \code{"text"} or \code{"list"}.
+#'                      If exactly one \code{coltype} is specified, it will be recycled.
+#'                      By default (i.e., \code{coltypes = NULL}) coltypes will
+#'                      be guessed. The content of a cell in a skipped column is
+#'                      never read and that column will not appear in the data frame
+#'                      output. A list cell loads a column as a list of length 1
+#'                      vectors, which are typed using the type guessing logic from
+#'                      \code{coltypes = NULL}, but on a cell-by-cell basis.
+#' @param na            a character vector indicating strings to interpret as missing
+#'                      values. By default, blank cells will be treated as missing data.
+#' @param trim          logical: if \code{TRUE} (default), leading and trailing
+#'                      whitespace will be trimmed.
+#' @param skip          a numeric value indicating the minimum number of rows to
+#'                      skip before reading anything, be it column names or data.
+#'                      Leading empty rows are automatically skipped, so this is
+#'                      a lower bound. Ignored if the argument \code{range} is specified.
+#' @param nmax          a numeric value indicating the maximum number of data rows
+#'                      to read. Trailing empty rows are automatically skipped, so
+#'                      this is an upper bound on the number of rows in the returned
+#'                      data frame. Ignored if the argument \code{range} is specified.
+#' @param guessmax      a numeric value indicating the maximum number of data rows
+#'                      to use for guessing column types.
+#' @param progress      display a progress spinner? By default, the spinner appears
+#'                      only in an interactive session, outside the context of knitting
+#'                      a document, and when the call is likely to run for several
+#'                      seconds or more.
+#' @param name.repair   a character string indicating the handling of column names.
+#'                      By default, the function ensures column names are not empty
+#'                      and are unique.
+#' @param as.data.frame logical: if \code{TRUE} (default), function returns a regular
+#'                      data frame (default); if \code{FALSE} function returns a tibble.
+#' @param check         logical: if \code{TRUE}, argument specification is checked.
 #'
 #' @author
 #' Hadley Wickham and Jennifer Bryan
 #'
 #' @seealso
-#' \code{\link{read.sav}}, \code{\link{read.mplus}}
+#' \code{\link{write.xlxs}}, \code{\link{read.sav}}, \code{\link{read.mplus}}
 #'
 #' @return
 #' Returns a data frame or tibble.
@@ -82,18 +97,8 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
                       progress = readxl::readxl_progress(), name.repair = "unique", as.data.frame = TRUE,
                       check = TRUE) {
 
-
   ####################################################################################
   # Input Check
-
-  #......
-  # Package readxl installed?
-  if (isTRUE(!requireNamespace("readxl", quietly = TRUE))) {
-
-    stop("Package \"readxl\" is needed for this function to work, please install it.",
-         call. = FALSE )
-
-  }
 
   #......
   # Check input 'file'

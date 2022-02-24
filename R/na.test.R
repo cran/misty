@@ -16,26 +16,42 @@
 #' pattern \eqn{j}, and \eqn{k} is the total number of variables. A statistically
 #' significant result provides evidence against MCAR.
 #'
-#' Note that Little's MCAR test has a number of problems (see Enders, 2010). \strong{First},
-#' the test does not identify the specific variables that violates MCAR, i.e., the
-#' test does not identify potential correlates of missingness (i.e., auxiliary variables).
-#' \strong{Second}, the test is based on multivariate normality, i.e., under departure
-#' from the normality assumption the test might be unreliable unless the sample size
-#' is large and is not suitable for categorical variables. \strong{Third}, the test
-#' investigates mean  differences assuming that the missing data pattern share a common
-#' covariance matrix, i.e., the test cannot detect covariance-based deviations from
-#' MCAR stemming from a Missing at Random (MAR) or Missing Not at Random (MNAR) mechanism
-#' because MAR and MNAR mechanisms can also produce missing data subgroups with equal
-#' means. \strong{Fourth}, simulation studies suggest that Little's MCAR test suffers
-#' from low statistical power, particularly when the number of variables that violate
-#' MCAR is small, the relationship between the data and missingness is weak, or the
-#' data are MNAR (Thoemmes & Enders, 2007). \strong{Fifth}, the test can only reject,
-#' but cannot prove the MCAR assumption, i.e., a statistically not significant result
-#' and failing to reject the null hypothesis of the MCAR test does not prove the null
-#' hypothesis that the data is MCAR. \strong{Finally}, under the null hypothesis the
-#' data are actually MCAR or MNAR, while a statistically significant result indicates
-#' that missing data are MAR or MNAR, i.e., MNAR cannot be ruled out regardless of
-#' the result of the test.
+#' Note that Little's MCAR test has a number of problems (see Enders, 2010).
+#' \strong{First}, the test does not identify the specific variables that violates
+#' MCAR, i.e., the test does not identify potential correlates of missingness (i.e.,
+#' auxiliary variables). \strong{Second}, the test is based on multivariate normality,
+#' i.e., under departure from the normality assumption the test might be unreliable
+#' unless the sample size is large and is not suitable for categorical variables.
+#' \strong{Third}, the test investigates mean  differences assuming that the missing
+#' data pattern share a common covariance matrix, i.e., the test cannot detect
+#' covariance-based deviations from MCAR stemming from a Missing at Random (MAR)
+#' or Missing Not at Random (MNAR) mechanism because MAR and MNAR mechanisms can
+#' also produce missing data subgroups with equal means. \strong{Fourth}, simulation
+#' studies suggest that Little's MCAR test suffers from low statistical power,
+#' particularly when the number of variables that violate MCAR is small, the
+#' relationship between the data and missingness is weak, or the data are MNAR
+#' (Thoemmes & Enders, 2007). \strong{Fifth}, the test can only reject, but cannot
+#' prove the MCAR assumption, i.e., a statistically not significant result and failing
+#' to reject the null hypothesis of the MCAR test does not prove the null hypothesis
+#' that the data is MCAR. \strong{Finally}, under the null hypothesis the data are
+#' actually MCAR or MNAR, while a statistically significant result indicates that
+#' missing data are MAR or MNAR, i.e., MNAR cannot be ruled out regardless of the
+#' result of the test.
+#'
+#' This function is based on the \code{prelim.norm} function in the \pkg{norm}
+#' package which can handle about 30 variables. With more than 30 variables
+#' specified in the argument \code{x}, the \code{prelim.norm} function might run
+#' into numerical problems leading to results that are not trustworthy. In this
+#' case it is recommended to reduce the number of variables specified in the argument
+#' \code{x}. If the number of variables cannot be reduced, it is recommended to
+#' use the \code{LittleMCAR} function in the \pkg{BaylorEdPsych} package which can
+#' deal with up to 50 variables. However, this package was removed from the CRAN
+#' repository and needs to be obtained from the archive along with the \pkg{mvnmle}
+#' which is needed for using the \code{LittleMCAR} function. Note that the
+#' \code{mcar_test} function in the \pkg{naniar} package is also based on the
+#' \code{prelim.norm} function which results are not trustworthy whenever the warning
+#' message \code{In norm::prelim.norm(data) : NAs introduced by coercion to integer range}
+#' is printed on the console.
 #'
 #' @param x           a matrix or data frame with incomplete data, where missing
 #'                    values are coded as \code{NA}.
@@ -80,7 +96,8 @@
 #'
 #' @examples
 #' na.test(airquality)
-na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
+na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
+                    output = TRUE) {
 
   ####################################################################################
   # R package
@@ -152,7 +169,8 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE, out
     # No missing values
     if (isTRUE(all(!is.na(x.matrix)))) {
 
-      stop("There are no missing values (NA) in the matrix or data frame specified in 'x'.", call. = FALSE)
+      stop("There are no missing values (NA) in the matrix or data frame specified in 'x'.",
+           call. = FALSE)
 
     }
 
@@ -229,7 +247,15 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE, out
   #-----------------------------------------
   # Maximum-likelihood estimation
 
-  s <- norm::prelim.norm(x.matrix)
+   s <- tryCatch(norm::prelim.norm(x.matrix), warning = function(z) {
+
+    warning("Function run into numerical problems, i.e., results are not trustworthy.",
+            call. = FALSE)
+
+     suppressWarnings(return(norm::prelim.norm(x.matrix)))
+
+    })
+
   fit <- norm::getparam.norm(s = s, theta = norm::em.norm(s, showits = FALSE))
 
   # Grand mean
@@ -281,7 +307,6 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE, out
                        statistic = d2,
                        df = df,
                        pval = pchisq(d2, df, lower.tail = FALSE), row.names = NULL)
-
 
   ####################################################################################
   # Return object

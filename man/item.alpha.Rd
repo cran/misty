@@ -97,6 +97,11 @@ item.alpha(dat.cor)
 
 # Compute ordinal coefficient alpha
 item.alpha(dat, ordered = TRUE)
+
+\dontrun{
+# Write Results into a Excel file
+result <- item.alpha(dat, output = FALSE)
+write.result(result, "Alpha.xlsx") }
 }
 \references{
 Chalmers, R. P. (2018). On misconceptions and the limited usefulness of ordinal alpha. \emph{Educational
@@ -127,7 +132,8 @@ Likert rating scales. \emph{Journal of Modern Applied Statistical Methods, 6}, 2
 https://doi.org/10.22237/jmasm/1177992180
 }
 \seealso{
-\code{\link{item.omega}}, \code{\link{item.reverse}}, \code{\link{item.scores}}
+\code{\link{write.result}}, \code{\link{item.omega}}, \code{\link{item.reverse}},
+\code{\link{item.scores}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

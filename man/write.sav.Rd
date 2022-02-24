@@ -68,6 +68,7 @@ Simon Grund and Thorsten Henke (2019).
 }
 \examples{
 \dontrun{
+
 dat <- data.frame(id = 1:5,
                   gender = c(NA, 0, 1, 1, 0),
                   age = c(16, 19, 17, NA, 16),

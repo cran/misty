@@ -53,7 +53,7 @@
 #' @param write.sps   logical: if \code{TRUE}, SPSS syntax is written along with
 #'                    the SPSS file when using PSPP.
 #' @param check       logical: if \code{TRUE}, variable attributes specified in the
-#'                     argument \code{var.attr} is checked.
+#'                    argument \code{var.attr} is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -85,7 +85,7 @@
 #'                   gender = c(NA, 0, 1, 1, 0),
 #'                   age = c(16, 19, 17, NA, 16),
 #'                   status = c(1, 2, 3, 1, 4),
-#'                   score = c(511, 506, 497, 502, 491), stringsAsFactors = FALSE)
+#'                   score = c(511, 506, 497, 502, 491))
 #'
 #' # Write SPSS file using the haven package
 #' write.sav(dat, file = "Dataframe_haven.sav")

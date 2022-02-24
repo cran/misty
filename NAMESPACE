@@ -52,6 +52,7 @@ export(multilevel.cor)
 export(multilevel.descript)
 export(multilevel.icc)
 export(multilevel.indirect)
+export(multilevel.r2)
 export(na.as)
 export(na.auxiliary)
 export(na.coverage)
@@ -76,16 +77,19 @@ export(test.t)
 export(test.welch)
 export(test.z)
 export(write.mplus)
+export(write.result)
 export(write.sav)
+export(write.xlsx)
 exportMethods(ci.prop.diff)
 exportMethods(default)
 exportMethods(formula)
 importFrom(utils,packageDescription)
 
 importFrom("stats", "aov", "as.formula", "chisq.test", "coefficients",
-           "cor", "cor.test", "cov", "cov2cor", "df", "IQR", "median", 
-           "model.frame", "model.matrix", "na.omit", "oneway.test", 
+           "cor", "cor.test", "cov", "cov2cor", "df", "formula", "IQR",
+           "median", "model.frame", "model.matrix", "na.omit", "oneway.test", 
            "optimize", "dnorm", "integrate", "pnorm", "rnorm", "pchisq",
            "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", "sd", 
-           "terms", "t.test", "p.adjust", "pt", "uniroot", "var", "vcov")
+           "terms", "t.test", "p.adjust", "pt", "uniroot", "update", 
+           "var", "vcov")
 importFrom("utils", "combn", "packageDescription", "read.table", "write.csv", "write.csv2", "write.table")

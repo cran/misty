@@ -5,8 +5,8 @@
 \title{Frequency Table}
 \usage{
 freq(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split = FALSE,
-     labels = TRUE, val.col = FALSE, exclude = 15, digits = 2, as.na = NULL,
-     check = TRUE, output = TRUE)
+     labels = TRUE, val.col = FALSE, round = 3, exclude = 15, digits = 2,
+     as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a vector, factor, matrix or data frame.}
@@ -26,6 +26,9 @@ one variable in \code{x}.}
 \item{labels}{logical: if \code{TRUE} (default), labels for the factor levels will be used.}
 
 \item{val.col}{logical: if \code{TRUE}, values are shown in the columns, variables in the rows.}
+
+\item{round}{an integer value indicating the number of decimal places to be used for rounding
+numeric variables.}
 
 \item{exclude}{an integer value indicating the maximum number of unique values for variables to be
 included in the analysis when specifying more than one variable in \code{x} i.e.,
@@ -56,7 +59,8 @@ By default, the function displays the absolute and percentage frequencies when s
 argument \code{x}, while the function displays only the absolute frequencies when more than one variable is specified.
 The function displays valid percentage frequencies only in the presence of missing values and excludes variables
 with all values missing from the analysis. Note that it is  possible to mix numeric variables, factors, and character
-variables in the data frame specified in the argument \code{x}.
+variables in the data frame specified in the argument \code{x}. By default, numeric variables are rounded to three
+digits before computing the frequency table.
 }
 \examples{
 dat <- data.frame(x1 = c(3, 3, 2, 3, 2, 3, 3, 2, 1, -99),
@@ -109,12 +113,18 @@ freq(factor(c("a", "a", "b", "c", "b")))
 # Frequency table for one variable,
 # do not use labels of the factor levels
 freq(factor(c("a", "a", "b", "c", "b")), labels = FALSE)
+
+\dontrun{
+# Write Results into a Excel file
+result <- freq(dat[, c("x1", "x2", "y1", "y2")], split = TRUE, output = FALSE)
+write.result(result, "Frequencies.xlsx") }
 }
 \references{
 Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New  S Language}. Wadsworth & Brooks/Cole.
 }
 \seealso{
-\code{\link{crosstab}}, \code{\link{descript}}, \code{\link{multilevel.descript}}, \code{\link{na.descript}}.
+\code{\link{write.result}}, \code{\link{crosstab}}, \code{\link{descript}},
+\code{\link{multilevel.descript}}, \code{\link{na.descript}}.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

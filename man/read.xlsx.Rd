@@ -34,12 +34,12 @@ empty rows or columns. Takes precedence over \code{skip}, \code{nmax} and \code{
 (i.e., \code{coltypes = NULL}) coltypes will be guessed. The content of a cell in a skipped
 column is never read and that column will not appear in the data frame output. A list cell
 loads a column as a list of length 1 vectors, which are typed using the type guessing logic
-from coltypes = NULL, but on a cell-by-cell basis.}
+from \code{coltypes = NULL}, but on a cell-by-cell basis.}
 
 \item{na}{a character vector indicating strings to interpret as missing values. By default, blank
 cells will be treated as missing data.}
 
-\item{trim}{logical: if \code{TRUE} (default), leading and trailing whitespace will be trimmed}
+\item{trim}{logical: if \code{TRUE} (default), leading and trailing whitespace will be trimmed.}
 
 \item{skip}{a numeric value indicating the minimum number of rows to skip before reading anything,
 be it column names or data. Leading empty rows are automatically skipped, so this is a
@@ -72,10 +72,11 @@ to read an Excel file (.xlsx).
 }
 \examples{
 \dontrun{
+
 # Read Excel file (.xlsx)
 read.xlsx("data.xlsx")
 
-# Read Excel file (.xlsx), use default names as column names
+# Read Exce l file (.xlsx), use default names as column names
 read.xlsx("data.xlsx", header = FALSE)
 
 # Read Excel file (.xlsx), interpret -99 as missing values
@@ -95,7 +96,7 @@ read.xlsx("data.xlsx", as.data.frame = FALSE)
 }
 }
 \seealso{
-\code{\link{read.sav}}, \code{\link{read.mplus}}
+\code{\link{write.xlsx}}, \code{\link{read.sav}}, \code{\link{read.mplus}}
 }
 \author{
 Hadley Wickham and Jennifer Bryan

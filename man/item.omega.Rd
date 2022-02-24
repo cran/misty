@@ -112,7 +112,10 @@ item.omega(dat, exclude = "item3")
 # Summary of the CFA model used to compute coefficient omega
 lavaan::summary(item.omega(dat, output = FALSE)$mod.fit,
                 fit.measures = TRUE, standardized = TRUE)
-}
+
+# Write Results into a Excel file
+result <- item.omega(dat, output = FALSE)
+write.result(result, "Omega.xlsx") }
 }
 \references{
 Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for coefficient alpha.
@@ -132,7 +135,8 @@ McDonald, R. P. (1978). Generalizability in factorable domains: Domain validity 
 \emph{Educational and Psychological Measurement, 38}, 75-79.
 }
 \seealso{
-\code{\link{item.alpha}}, \code{\link{item.reverse}}, \code{\link{item.scores}}
+\code{\link{write.result}}, \code{\link{item.alpha}}, \code{\link{item.reverse}},
+\code{\link{item.scores}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

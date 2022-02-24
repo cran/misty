@@ -517,9 +517,9 @@ cohens.d.function <- function(x, y, mu, paired, weighted, cor, ref, correct,
       } else {
 
         d.se <- sqrt(sd(c(x, y))^2*(1 / x.n + 1 / y.n))
-        df = x.n + y.n - 2
+        df <- x.n + y.n - 2
 
-        t = yx.diff / d.se
+        t <- yx.diff / d.se
         hn <- sqrt(1 / x.n + 1 / y.n)
 
       }

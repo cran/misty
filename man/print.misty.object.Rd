@@ -70,10 +70,11 @@ This function prints the \code{misty.object} object
 \code{\link{cohens.d}}, \code{\link{collin.diag}}, \code{\link{cor.cont}}, \code{\link{cor.matrix}},
 \code{\link{cor.cramer}}, \code{\link{crosstab}}, \code{\link{descript}}, \code{\link{eta.sq}},
 \code{\link{freq}}, \code{\link{test.levene}}, \code{\link{multilevel.descript}},
-\code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-\code{\link{na.pattern}}, \code{\link{item.omega}}, \code{\link{cor.phi}}, \code{\link{cor.poly}},
-\code{\link{size.cor}}, \code{\link{size.mean}}, \code{\link{size.prop}}, \code{\link{test.levene}},
-\code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}}.
+\code{\link{multilevel.r2}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}},
+\code{\link{na.descript}}, \code{\link{na.pattern}}, \code{\link{item.omega}},
+\code{\link{cor.phi}}, \code{\link{cor.poly}}, \code{\link{size.cor}}, \code{\link{size.mean}},
+\code{\link{size.prop}}, \code{\link{test.levene}}, \code{\link{test.t}}, \code{\link{test.welch}},
+\code{\link{test.z}}.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

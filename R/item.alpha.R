@@ -7,21 +7,21 @@
 #' Ordinal coefficient alpha was introduced by Zumbo, Gadermann and Zeisser (2007)
 #' which is obtained by applying the formula for computing coefficient alpha to the
 #' polychoric correlation matrix instead of the variance-covariance or product-moment
-#' correlation matrix. Note that Chalmers (2018) highlighted that the ordinal coefficient
-#' alpha should be interpreted only as a hypothetical estimate of an alternative
-#' reliability, whereby a test's ordinal categorical response options have be modified
-#' to include an infinite number of ordinal response options and concludes that
-#' coefficient alpha should not be reported as a measure of a test's reliability.
-#' However, Zumbo and Kroc (2019) argued that Chalmers' critique of ordinal coefficient
-#' alpha is unfounded and that ordinal coefficient alpha may be the most appropriate
-#' quantifier of reliability when using Likert-type measurement to study a latent
-#' continuous random variable.
+#' correlation matrix. Note that Chalmers (2018) highlighted that the ordinal
+#' coefficient alpha should be interpreted only as a hypothetical estimate of an
+#' alternative reliability, whereby a test's ordinal categorical response options
+#' have be modified to include an infinite number of ordinal response options and
+#' concludes that coefficient alpha should not be reported as a measure of a test's
+#' reliability. However, Zumbo and Kroc (2019) argued that Chalmers' critique of
+#' ordinal coefficient alpha is unfounded and that ordinal coefficient alpha may
+#' be the most appropriate quantifier of reliability when using Likert-type measurement
+#' to study a latent continuous random variable.
 #' Confidence intervals are computed using the procedure by Feldt, Woodruff and Salih
 #' (1987). When computing confidence intervals using pairwise deletion, the average
 #' sample size from all pairwise samples is used. Note that there are at least 10
-#' other procedures for computing the confidence interval (see Kelley and Pornprasertmanit, 2016),
-#' which are implemented in the \code{ci.reliability()} function in the \pkg{MBESSS}
-#' package by Ken Kelley (2019).
+#' other procedures for computing the confidence interval (see Kelley and
+#' Pornprasertmanit, 2016), which are implemented in the \code{ci.reliability()}
+#' function in the \pkg{MBESSS} package by Ken Kelley (2019).
 #'
 #' @param x          a matrix, data frame, variance-covariance or correlation matrix.
 #'                   Note that raw data is needed to compute ordinal coefficient alpha,
@@ -52,7 +52,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{item.omega}}, \code{\link{item.reverse}}, \code{\link{item.scores}}
+#' \code{\link{write.result}}, \code{\link{item.omega}}, \code{\link{item.reverse}},
+#' \code{\link{item.scores}}
 #'
 #' @references
 #' Chalmers, R. P. (2018). On misconceptions and the limited usefulness of ordinal alpha.
@@ -128,6 +129,12 @@
 #'
 #' # Compute ordinal coefficient alpha
 #' item.alpha(dat, ordered = TRUE)
+#'
+#' \dontrun{
+#' # Write Results into a Excel file
+#' result <- item.alpha(dat, output = FALSE)
+#' write.result(result, "Alpha.xlsx")
+#' }
 item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit = FALSE,
                        print = c("all", "alpha", "item"), digits = 2, conf.level = 0.95,
                        as.na = NULL, check = TRUE, output = TRUE) {

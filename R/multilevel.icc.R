@@ -261,7 +261,7 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
       if (isTRUE(!nzchar(system.file(package = "lme4")))) {
 
-        warning("Package \"lme4\" is needed for method = \"lme4\",  method \"aov\" will be used instead.",
+        warning("Package \"lme4\" is needed for method = \"lme4\", method \"aov\" will be used instead.",
                 call. = FALSE )
 
         method <- "aov"
@@ -271,9 +271,9 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
     }
 
     # Package nlme installed?
-    if (isTRUE(!nzchar(system.file(package = "nlme")))) {
+    if (isTRUE(method == "nlme")) {
 
-      if (isTRUE(!requireNamespace("nlme", quietly = TRUE))) {
+      if (isTRUE(!nzchar(system.file(package = "nlme")))) {
 
         warning("Package \"nlme\" is needed for method = \"nlme\", method \"aov\" will be used instead.",
                 call. = FALSE )
@@ -351,10 +351,8 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
         }
 
-      }
-
       # ICC using lmer() function
-      if (isTRUE(method == "lme4")) {
+      } else if (isTRUE(method == "lme4")) {
 
         # Estimate model
         mod <- suppressMessages(lme4::lmer(x ~ 1 + (1|cluster), REML = REML,
@@ -389,10 +387,8 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
         }
 
-      }
-
       # ICC using lme() function
-      if (isTRUE(method == "nlme")) {
+      } else if (isTRUE(method == "nlme")) {
 
         # REML or ML
         ifelse(isTRUE(REML), REML <- "REML", REML <- "ML")

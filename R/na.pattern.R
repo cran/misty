@@ -19,9 +19,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}},
-#' \code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.indicator}},
-#' \code{\link{na.prop}}, \code{\link{na.test}}
+#' \code{\link{write.result}}, \code{\link{as.na}}, \code{\link{na.as}},
+#' \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
+#' \code{\link{na.indicator}}, \code{\link{na.prop}}, \code{\link{na.test}}
 #'
 #' @references
 #' Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
@@ -55,6 +55,12 @@
 #
 #' # Data frame without cases with missing data pattern 2 and 5
 #' dat[!dat.pattern$pattern %in% c(2, 5), ]
+#'
+#' \dontrun{
+#' # Write Results into a Excel file
+#' result <- na.pattern(dat, output = FALSE)
+#' write.result(result, "NA_Pattern.xlsx")
+#' }
 na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
                        output = TRUE) {
 
@@ -169,7 +175,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     restab <- rbind(data.frame(pattern = seq_len(nrow(x.na.order.dupl)),
                                n = as.vector(table(patt)),
-                               Perc = as.vector(table(patt) / nrow(x.na) * 100L),
+                               perc = as.vector(table(patt) / nrow(x.na) * 100L),
                                abs(x.na.order.dupl - 1),
                                nNA = rowSums(x.na.order.dupl),
                                pNA = rowSums(x.na.order.dupl) / ncol(x.na) * 100L,
@@ -183,7 +189,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     restab <- rbind(data.frame(pattern = 1L,
                                n = as.vector(table(patt)),
-                               Perc = as.vector(table(patt) / nrow(x.na) * 100L),
+                               perc = as.vector(table(patt) / nrow(x.na) * 100L),
                                matrix(abs(x.na.order.dupl - 1L), ncol = length(x.na.order.dupl), dimnames = list(NULL, colnames(x.na.order.dupl))),
                                nNA = sum(x.na.order.dupl),
                                pNA = sum(x.na.order.dupl) / ncol(x.na) * 100L,

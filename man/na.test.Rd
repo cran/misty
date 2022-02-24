@@ -66,6 +66,21 @@ test does not prove the null hypothesis that the data is MCAR. \strong{Finally},
 null hypothesis the data are actually MCAR or MNAR, while a statistically significant result
 indicates that missing data are MAR or MNAR, i.e., MNAR cannot be ruled out regardless of the
 result of the test.
+
+This function is based on the \code{prelim.norm} function in the \pkg{norm}
+package which can handle about 30 variables. With more than 30 variables
+specified in the argument \code{x}, the \code{prelim.norm} function might run
+into numerical problems leading to results that are not trustworthy. In this
+case it is recommended to reduce the number of variables specified in the argument
+\code{x}. If the number of variables cannot be reduced, it is recommended to
+use the \code{LittleMCAR} function in the \pkg{BaylorEdPsych} package which can
+deal with up to 50 variables. However, this package was removed from the CRAN
+repository and needs to be obtained from the archive along with the \pkg{mvnmle}
+ which is needed for using the \code{LittleMCAR}  function. Note that the
+\code{mcar_test} function in the \pkg{naniar} package is also based on the
+\code{prelim.norm} function which results are not trustworthy whenever the warning
+message \code{In norm::prelim.norm(data) : NAs introduced by coercion to integer range}
+is printed on the console.
 }
 \note{
 Code is adapted from the R function by Eric Stemmler:

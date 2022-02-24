@@ -5,7 +5,7 @@
 \title{Within-Group and Between-Group Correlation Matrix}
 \usage{
 multilevel.cor(x, cluster, within = NULL, between = NULL, estimator = c("ML", "MLR"),
-               na.omit = TRUE, sig = TRUE, alpha = 0.05,
+               na.omit = TRUE, sig = FALSE, alpha = 0.05,
                print = c("all", "cor", "se", "stat", "p"), split = FALSE,
                tri = c("both", "lower", "upper"), tri.lower = TRUE,
                p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel",
@@ -43,7 +43,7 @@ the analysis (i.e., listwise deletion); if \code{FALSE} (default), full
 information maximum likelihood (FIML) is used when specifying
 \code{estimator = "ML"}.}
 
-\item{sig}{logical: if \code{TRUE} (default), statistically significant correlation
+\item{sig}{logical: if \code{TRUE}, statistically significant correlation
 coefficients are shown in boldface on the console.}
 
 \item{alpha}{a numeric value between 0 and 1 indicating the significance level at which
@@ -126,21 +126,26 @@ lavaan package uses a quasi-Newton optimization method (\code{"nlminb"}) by defa
 If the optimizer does not converge, model estimation will switch to the Expectation
 Maximization (EM) algorithm.
 
-Statistically significant correlation coefficients are shown in boldface on the
-console (\code{sig = TRUE}). However, this option is not supported when using
-R Markdown, i.e., the argument \code{sig} will switch to \code{FALSE}.
+Statistically significant correlation coefficients can be shown in boldface on
+the console when specifying \code{sig = TRUE}. However, this option is not supported
+when using R Markdown, i.e., the argument \code{sig} will switch to \code{FALSE}.
 
 Adjustment method for multiple testing when specifying the argument \code{p.adj}
-is applied to the within-group and between-broup correlation matrix separately.
+is applied to the within-group and between-group correlation matrix separately.
 }
 \examples{
 \dontrun{
+
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
 #---------------------------
 # All variables modeled on both the within and between level
 multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
+               cluster = Demo.twolevel$cluster)
+
+# Highlight statistically significant result at alpha = 0.05
+multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], sig = TRUE,
                cluster = Demo.twolevel$cluster)
 
 # Split output table in within-group and between-group correlation matrix.
@@ -177,6 +182,11 @@ multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
 mod <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
                       cluster = Demo.twolevel$cluster, output = FALSE)
 lavaan::summary(mod$mod.fit, standardized = TRUE)
+
+# Write Results into a Excel file
+result <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
+                         cluster = Demo.twolevel$cluster, output = FALSE)
+write.result(result, "Multilevel_Correlation.xlsx")
 }
 }
 \references{
@@ -187,7 +197,8 @@ Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introd
 and advanced multilevel modeling} (2nd ed.). Sage Publishers.
 }
 \seealso{
-\code{\link{multilevel.descript}}, \code{\link{multilevel.icc}}, \code{\link{cluster.scores}}
+\code{\link{cor.matrix}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.icc}},
+\code{\link{multilevel.r2}}, \code{\link{cluster.scores}}, \code{\link{write.result}},
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

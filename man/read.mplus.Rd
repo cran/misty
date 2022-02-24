@@ -39,6 +39,7 @@ extracted from the Mplus input/output file.
 }
 \examples{
 \dontrun{
+
 # Read Mplus data file and variable names extracted from the Mplus input file
 dat <- read.mplus("Mplus_Data.dat", input = "Mplus_Input.inp")
 

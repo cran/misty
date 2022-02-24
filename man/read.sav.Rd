@@ -42,6 +42,7 @@ to read an SPSS file.
 }
 \examples{
 \dontrun{
+
 # Read SPSS data
 read.sav("SPSS_Data.sav")
 read.sav("SPSS_Data")

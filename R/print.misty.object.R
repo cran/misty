@@ -50,8 +50,8 @@
 #' \code{\link{ci.sd}}, \code{\link{ci.var}}, \code{\link{cohens.d}}, \code{\link{collin.diag}},
 #' \code{\link{cor.cont}}, \code{\link{cor.matrix}}, \code{\link{cor.cramer}}, \code{\link{crosstab}},
 #' \code{\link{descript}}, \code{\link{eta.sq}}, \code{\link{freq}}, \code{\link{test.levene}},
-#' \code{\link{multilevel.descript}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}},
-#' \code{\link{na.descript}}, \code{\link{na.pattern}}, \code{\link{item.omega}},
+#' \code{\link{multilevel.descript}}, \code{\link{multilevel.r2}}, \code{\link{na.auxiliary}},
+#' \code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.pattern}}, \code{\link{item.omega}},
 #' \code{\link{cor.phi}}, \code{\link{cor.poly}}, \code{\link{size.cor}}, \code{\link{size.mean}},
 #' \code{\link{size.prop}}, \code{\link{test.levene}}, \code{\link{test.t}}, \code{\link{test.welch}},
 #' \code{\link{test.z}}.
@@ -1748,7 +1748,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
       # Note
 
       # Sample size
-      cat(paste0("\n Note. n = ", ifelse(isTRUE(x$args$na.omit), na.omit(unique(c(x$result$n))),
+      cat(paste0("\n Note. n = ", ifelse(isTRUE(x$args$na.omit || !attr(x$data, "missing")), na.omit(unique(c(x$result$n))),
                                          paste(range(c(x$result$n), na.rm = TRUE), collapse = "-")),
                                   ifelse(isTRUE(attr(x$data, "missing")),
                                          ifelse(isTRUE(x$args$na.omit), ", Listwise deletion\n", ", Pairwise deletion\n"), ", No missing data\n")))
@@ -2193,14 +2193,14 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
       #......
       # Sort table
 
-      # First and scond variable are a factor
+      # First and second variable are a factor
       if (isTRUE(is.factor(x$data[, 1L]) && is.factor(x$data[, 2L]))) {
 
         # Sort with NA
         if (isTRUE(any(is.na(x$data)) && !isTRUE(x$args$na.omit))) {
 
-          restab <-restab[order(factor(restab[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA")),
-                                factor(restab[, 2L], levels = c(levels(x$data[, 2L]), "NA"), labels = c(levels(x$data[, 2L]), "NA"))), ]
+          restab <- restab[order(factor(restab[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA")),
+                                 factor(restab[, 2L], levels = c(levels(x$data[, 2L]), "NA"), labels = c(levels(x$data[, 2L]), "NA"))), ]
 
         # Sort without NA
         } else {
@@ -2210,10 +2210,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
         }
 
-      }
-
       # First variable is a factor, second variable is not a factor
-      if (isTRUE(is.factor(x$data[, 1L]) && !is.factor(x$data[, 2L]))) {
+      } else if (isTRUE(is.factor(x$data[, 1L]) && !is.factor(x$data[, 2L]))) {
 
         # Sort with NA
         if (isTRUE(any(is.na(x$data)) && !isTRUE(x$args$na.omit))) {
@@ -2229,10 +2227,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
         }
 
-      }
-
       # First variable is not a factor, second variable is a factor
-      if (isTRUE(!is.factor(x$data[, 1L]) && is.factor(x$data[, 2L]))) {
+      } else if (isTRUE(!is.factor(x$data[, 1L]) && is.factor(x$data[, 2L]))) {
 
         # Sort with NA
         if (isTRUE(any(is.na(x$data)) && !isTRUE(x$args$na.omit))) {
@@ -2248,10 +2244,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
         }
 
-      }
-
       # First and second variable are not a factor
-      if (isTRUE(!is.factor(x$data[, 1L]) && !is.factor(x$data[, 2L]))) {
+      } else if (isTRUE(!is.factor(x$data[, 1L]) && !is.factor(x$data[, 2L]))) {
 
         # Sort with NA
         if (isTRUE(any(is.na(x$data)) && !isTRUE(x$args$na.omit))) {
@@ -2924,16 +2918,16 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
       if (!isTRUE(x$args$val.col)) {
 
         print.object <- data.frame(x = c("Value", rep("", nrow(print.object) - 1L), "Missing", "Total"),
-                                   val = c(print.object[1L:(grep("NA", print.object$Value) - 1L), 1L], "Total", "NA", ""),
-                                   rbind(print.object[1L:(grep("NA", print.object$Value) - 1L), -1L],
-                                         apply(print.object[1L:(grep("NA", print.object$Value) - 1L), -1L], 2L, function(y) sum(as.numeric(y), na.rm = TRUE)),
-                                         print.object[grep("NA", print.object$Value), -1L],
+                                   val = c(print.object[1L:(which(is.na(print.object$Value)) - 1L), 1L], "Total", "NA", ""),
+                                   rbind(print.object[1L:(which(is.na(print.object$Value)) - 1L), -1L],
+                                         apply(print.object[1L:(which(is.na(print.object$Value)) - 1L), -1L], 2L, function(y) sum(as.numeric(y), na.rm = TRUE)),
+                                         print.object[which(is.na(print.object$Value)), -1L],
                                          c(sum(as.numeric(print.object$Freq), na.rm = TRUE), "100", "")),
                                    stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
 
         # Round digits
         print.object[, c("Perc", "V.Perc")] <- suppressWarnings(apply(print.object[, c("Perc", "V.Perc")], 2L, function(y) paste0(formatC(as.numeric(y), digits = digits, format = "f",
-                                                                                                                                         zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%")))
+                                                                                                                                          zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%")))
 
         # Remove NA
         print.object[, "V.Perc"] <- gsub("NA%", "  ", print.object[, "V.Perc"])
@@ -3993,11 +3987,11 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
     print.object <- data.frame(cbind(c("No. of cases", "No. of missing values",
                                        "", "No. of clusters", "Average cluster size", "SD cluster size", "Min cluster size", "Max cluster size",
-                                       "", "ICC(1)", "ICC(2)",
+                                       "", "Mean", "Variance Within", "Variance Between", "ICC(1)", "ICC(2)",
                                        "", "Design effect", "Design effect sqrt", "Effective sample size"),
                                      rbind(x$result$no.obs, x$result$no.miss,
                                            "", x$result$no.cluster, x$result$m.cluster.size, x$result$sd.cluster.size, x$result$min.cluster.size, x$result$max.cluster.size,
-                                           "", x$result$icc1, x$result$icc2,
+                                           "", x$result$mean.x, x$result$var.w, x$result$var.b, x$result$icc1, x$result$icc2,
                                            "", x$result$deff, x$result$deff.sqrt, x$result$n.effect)),
                                stringsAsFactors = FALSE)
 
@@ -4006,16 +4000,16 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
     if (isTRUE(length(x$result$no.obs) == 1L)) {
 
       # Format
-      for (i in c(5L, 6L, 13L, 14L, 15L)) {
+      for (i in c(5L, 6L, 10L, 11L, 12L, 16L, 17L, 18L)) {
 
         print.object[i, 2L] <- formatC(as.numeric(unlist(print.object[i, 2L])), digits = digits, format = "f",
                                        zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
       }
 
-      print.object[10L, 2L] <- formatC(as.numeric(unlist(print.object[10L, 2L])), digits = icc.digits, format = "f",
+      print.object[13L, 2L] <- formatC(as.numeric(unlist(print.object[13L, 2L])), digits = icc.digits, format = "f",
                                        zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
-      print.object[11L, 2L] <- formatC(as.numeric(unlist(print.object[11L, 2L])), digits = icc.digits, format = "f",
+      print.object[14L, 2L] <- formatC(as.numeric(unlist(print.object[14L, 2L])), digits = icc.digits, format = "f",
                                        zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
 
       print.object[, 1L] <- paste(" ", print.object[, 1L])
@@ -4033,16 +4027,16 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
       print.object <- rbind(c("", names(x$result$no.obs)), print.object)
 
       # Format
-      for (i in c(6L, 7L, 14L, 15L, 16L)) {
+      for (i in c(6L, 7L, 11L, 12L, 13L, 17L, 18L, 19L)) {
 
         print.object[i, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[i, 2L:ncol(print.object)])), digits = digits, format = "f",
                                                           zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
       }
 
-      print.object[11L, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[11L, 2L:ncol(print.object)])), digits = icc.digits, format = "f",
+      print.object[14L, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[14L, 2L:ncol(print.object)])), digits = icc.digits, format = "f",
                                                           zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
-      print.object[12L, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[12L, 2L:ncol(print.object)])), digits = icc.digits, format = "f",
+      print.object[15L, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[15L, 2L:ncol(print.object)])), digits = icc.digits, format = "f",
                                                           zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
 
       print.object[, 1L] <- paste(" ", print.object[, 1L])
@@ -4066,7 +4060,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
   #-----------------------------------------------------------------------------------
   # Confidence Interval for the Indirect Effect in a 1-1-1 Multilevel Mediation Model
   }, multilevel.indirect = {
-
 
     #....................
     # Round
@@ -4105,11 +4098,94 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
   ####################################################################################
   #-----------------------------------------------------------------------------------
-  # Auxiliary variables analysis
-  }, na.auxiliary = {
+  # R-Squared Measures for Multilevel and Linear Mixed Effects Models
+  }, multilevel.r2 = {
 
     ####################################################################################
-    # Data and Arguments
+    # Main Function
+
+    if (isTRUE("RS" %in% x$args$print)) {
+
+      print.object$rs$total <- data.frame(sapply(print.object$rs$total[, !is.na(print.object$rs$total)], formatC, digits = digits, format = "f", simplify = FALSE))
+      row.names(print.object$rs$total) <- "   "
+
+      if (isTRUE(ncol(print.object$rs$decomp) != 1)) {
+
+        print.object$rs$within <- data.frame(sapply(print.object$rs$within, formatC, digits = digits, format = "f", simplify = FALSE))
+        row.names(print.object$rs$within) <- "   "
+
+        print.object$rs$between <- data.frame(sapply(print.object$rs$between, formatC, digits = digits, format = "f", simplify = FALSE))
+        row.names(print.object$rs$between) <- "   "
+
+      }
+
+    }
+
+    ####################################################################################
+    # Output
+
+    cat(" R-Squared Measures for Multilevel and Linear Mixed Effects Models\n\n")
+
+    if (isTRUE("RB" %in% x$args$print)) {
+
+      cat("  Reduction in Residual Variance (Raudenbush and Bryk, 2002)\n\n")
+
+       cat(paste0("    Within-Cluster ", ifelse(isTRUE(getOption("knitr.in.progress")), "R2: ", "R\u00B2: "), formatC(as.numeric(print.object$rb["rb1"]), digits = digits, format = "f")), "\n",
+           paste0("  Between-Cluster ", ifelse(isTRUE(getOption("knitr.in.progress")), "R2: ", "R\u00B2: "), formatC(as.numeric(print.object$rb["rb2"]), digits = digits, format = "f")), "\n")
+
+    }
+
+    if (isTRUE("SB" %in% x$args$print)) {
+
+      if (isTRUE("RB" %in% x$args$print)) cat("\n")
+
+      cat("  Reduction in Mean Squared Prediction Error (Snijders and Bosker, 1994)\n\n")
+
+       cat(paste0("             Total ", ifelse(isTRUE(getOption("knitr.in.progress")), "R2: ", "R\u00B2: "), formatC(as.numeric(print.object$sb["sb1"]), digits = digits, format = "f")), "\n",
+           paste0("  Between-Cluster ", ifelse(isTRUE(getOption("knitr.in.progress")), "R2: ", "R\u00B2: "), formatC(as.numeric(print.object$sb["sb2"]), digits = digits, format = "f")), "\n")
+
+    }
+
+    if (isTRUE("NS" %in% x$args$print)) {
+
+      if (isTRUE(any(c("RB", "SB") %in% x$args$print))) cat("\n")
+
+      cat("  Variance Partitioning (Nakagawa and Schielzeth, 2013; Johnson, 2014)\n\n")
+
+       cat(paste0("      Marginal ", ifelse(isTRUE(getOption("knitr.in.progress")), "R2: ", "R\u00B2: "), formatC(as.numeric(print.object$ns["marg"]), digits = digits, format = "f")), "\n",
+           paste0("  Conditional ", ifelse(isTRUE(getOption("knitr.in.progress")), "R2: ", "R\u00B2: "), formatC(as.numeric(print.object$ns["cond"]), digits = digits, format = "f")), "\n")
+
+    }
+
+    if (isTRUE("RS" %in% x$args$print)) {
+
+      if (isTRUE(any(c("RB", "SB", "NS") %in% x$args$print))) cat("\n")
+
+      cat("  Integrative Framework of R-Squared Measures (Rights and Sterba, 2019)\n\n")
+
+       cat(ifelse(isTRUE(getOption("knitr.in.progress")), "   Total R2\n", "   Total R\u00B2\n"))
+
+        print(print.object$rs$total, quote = FALSE, max = 99999L, right = TRUE)
+
+       # Predictors are cluster-mean-centered
+       if (isTRUE(ncol(print.object$rs$decomp) != 1)) {
+
+         cat(ifelse(isTRUE(getOption("knitr.in.progress")), "\n   Within-Cluster R2\n", "\n   Within-Cluster R\u00B2\n"))
+
+          print(print.object$rs$within, quote = FALSE, max = 99999L, right = TRUE)
+
+         cat(ifelse(isTRUE(getOption("knitr.in.progress")), "\n   Between-Cluster R2\n", "\n   Between-Cluster R\u00B2\n"))
+
+          print(print.object$rs$between, quote = FALSE, max = 99999L, right = TRUE)
+
+      }
+
+    }
+
+  ####################################################################################
+  #-----------------------------------------------------------------------------------
+  # Auxiliary variables analysis
+  }, na.auxiliary = {
 
     ####################################################################################
     # Main Function
@@ -4196,7 +4272,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
     # Format proportions
     print.object <- apply(print.object, 2L, function(y) ifelse(!is.na(as.numeric(y)), formatC(as.numeric(y), digits = digits, format = "f",
-                                                                                             zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), ""))
+                                                                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), ""))
 
     # Row names
     row.names(print.object) <- paste0("  ", row.names(x$result))
@@ -4294,7 +4370,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
     print.object[, "nNA"][is.na(print.object[, "nNA"])] <- ""
 
     # Percentages
-    print.object[, "Perc"] <- paste0(formatC(as.numeric(print.object[, "Perc"]), digits = digits, format = "f",
+    print.object[, "perc"] <- paste0(formatC(as.numeric(print.object[, "perc"]), digits = digits, format = "f",
                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%")
     print.object[, "pNA"] <- paste0(formatC(as.numeric(print.object[, "pNA"]), digits = digits, format = "f",
                                             zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%")
@@ -5034,10 +5110,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
     #-----------------------------------------
     # Round
     print.object[, -4L] <- apply(print.object[, -4L], 2L, function(y) formatC(y, digits = digits, format = "f",
-                                                                            zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+                                                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
 
     print.object[, 4L] <- formatC(as.numeric(print.object[, 4L]), digits = p.digits, format = "f",
-                                 zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+                                  zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
     #-----------------------------------------
     # Repace NA with ""

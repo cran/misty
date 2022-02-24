@@ -42,6 +42,11 @@ dat.pattern <- na.pattern(dat)
 dat.pattern$pattern
 # Data frame without cases with missing data pattern 2 and 5
 dat[!dat.pattern$pattern \%in\% c(2, 5), ]
+
+\dontrun{
+# Write Results into a Excel file
+result <- na.pattern(dat, output = FALSE)
+write.result(result, "NA_Pattern.xlsx") }
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
@@ -52,7 +57,9 @@ Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
 }
 \seealso{
-\code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.indicator}}, \code{\link{na.prop}}, \code{\link{na.test}}
+\code{\link{write.result}}, \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}},
+\code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.indicator}},
+\code{\link{na.prop}}, \code{\link{na.test}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

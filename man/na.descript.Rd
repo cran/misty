@@ -34,9 +34,9 @@ of missing values, and summary statistics for the number (%) of missing values a
 }
 \examples{
 dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
-                 x2 = c(4, 2, 5, 1, 5, 3, 4, 5),
-                 x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
-                 x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
+                  x2 = c(4, 2, 5, 1, 5, 3, 4, 5),
+                  x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
+                  x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
 
 # Descriptive statistics for missing data
 na.descript(dat)
@@ -49,6 +49,11 @@ na.descript(dat, as.na = 2)
 
 # Descriptive statistics for missing data with frequency table
 na.descript(dat, table = TRUE)
+
+\dontrun{
+# Write Results into a Excel file
+result <- na.descript(dat, table = TRUE, output = FALSE)
+write.result(result, "NA_Descriptives.xlsx") }
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
@@ -59,8 +64,9 @@ Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
 }
 \seealso{
-\code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}},
-\code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.prop}}, \code{\link{na.test}}
+\code{\link{write.result}}, \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}},
+\code{\link{na.coverage}}, \code{\link{na.indicator}}, \code{\link{na.pattern}},
+\code{\link{na.prop}}, \code{\link{na.test}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}
