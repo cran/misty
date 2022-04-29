@@ -1,9 +1,28 @@
-### misty 0.4.4 (2021-12-31)
+### misty 0.4.5 ()
+
+##### New features
+
+* New function `item.cfa()` for conducting confirmatory factor analysis using the R package lavaan.
+
+##### Minor features and improvements
+* Function `write.result()` can also write results based on the return object of the `item.cfa()` function.
+* Argument `exclude` of the function `freq()` can also be set to `FALSE`.
+
+##### User-visible changes
+* Revised the output of the function `multilevel.cor()` to make it consistent with the output of the function `item.cfa()`.
+* Changed the argument `na.omit` in the functions `multilevel.cor()` to `missing` to make it consistent with the arguments of the function `item.cfa()`.
+* Changed the default setting of the argument `estimator` in the functions `multilevel.cor()` to `ML`, so that full information maximum likelihood method is used for dealing with missing data.
+
+##### Bug fix
+* Fixed a bug in the function `multilevel.cor()`, function did not use Huber-White 
+robust standard errors, but conventional standard errors when specifying `estimator = "MLR"`. 
+
+### misty 0.4.4 (2022-02-24)
 
 ##### New features
 * New function `multilevel.r2()` for computing R-squared measures for multilevel and linear mixed effects models.
 * New function `write.xlsx()` for writing Excel files (.xlsx).
-* New function `write.result()` for writing results of a misty object into a Excel file.
+* New function `write.result()` for writing results of a misty object into an Excel file.
 
 ##### Minor features and improvements
 * Added mean and variance components to the output of the function `multilevel.descript()`.

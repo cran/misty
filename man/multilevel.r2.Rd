@@ -5,7 +5,7 @@
 \title{R-Squared Measures for Multilevel and Linear Mixed Effects Models}
 \usage{
 multilevel.r2(model, print = c("all", "RB", "SB", "NS", "RS"), digits = 3,
-              plot = FALSE, gray = FALSE, start = 0.15, end = 0.85, 
+              plot = FALSE, gray = FALSE, start = 0.15, end = 0.85,
               color = c("#D55E00", "#0072B2", "#CC79A7", "#009E73", "#E69F00"),
               check = TRUE, output = TRUE)
 }
@@ -408,7 +408,7 @@ Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel Analysis: Te
 Johnson, P. C. D. (2014). Extension of Nakagawa & Schielzeth's R2 GLMM to random slopes models.
 \emph{Methods in Ecology and Evolution, 5}(9), 944-946. https://doi.org/10.1111/2041-210X.12225
 
-LaGuis, D. M., Hartman, M. J., Hakoyama, S., & Clark, P. C. (2014). Explained variance measures
+LaHuis, D. M., Hartman, M. J., Hakoyama, S., & Clark, P. C. (2014). Explained variance measures
 for multilevel models. \emph{Organizational Research Methods, 17}, 433-451. https://doi.org/10.1177/1094428114541701
 
 Nakagawa, D., & Schielzeth, H. (2013). A general and simple method for obtaining R2 from generalized
@@ -430,7 +430,7 @@ multilevel models (pp. 219-230). In J. J. Hox & J. K. Roberts (Eds.), \emph{Hand
 of advanced multilevel analysis}. Routledge.
 
 Snijders, T. A. B., & Bosker, R. (1994). Modeled variance in two-level models.
-\emph{Sociological methods and resaerch, 22}, 342-363.
+\emph{Sociological methods and research, 22}, 342-363.
 https://doi.org/10.1177/0049124194022003004
 
 Snijders, T. A. B., & Boser, R. (2012). \emph{Multilevel analysis: An

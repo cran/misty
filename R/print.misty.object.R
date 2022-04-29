@@ -1669,7 +1669,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
         })
 
-        print(print.object$cor, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$cor, quote = FALSE, right = TRUE, max = 99999L)
 
       }
 
@@ -1681,7 +1681,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
         if (isTRUE("cor" %in% print)) { cat("\n") }
 
           cat(" Sample Size\n\n")
-          print(print.object$n, quote = FALSE, right = TRUE, max = 99999)
+          print(print.object$n, quote = FALSE, right = TRUE, max = 99999L)
 
       }
 
@@ -1749,7 +1749,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
       # Sample size
       cat(paste0("\n Note. n = ", ifelse(isTRUE(x$args$na.omit || !attr(x$data, "missing")), na.omit(unique(c(x$result$n))),
-                                         paste(range(c(x$result$n), na.rm = TRUE), collapse = "-")),
+                                         ifelse(length(unique(range(c(x$result$n), na.rm = TRUE))) == 1, unique(range(c(x$result$n), na.rm = TRUE)),
+                                                                                                                paste(range(c(x$result$n), na.rm = TRUE), collapse = "-"))),
                                   ifelse(isTRUE(attr(x$data, "missing")),
                                          ifelse(isTRUE(x$args$na.omit), ", Listwise deletion\n", ", Pairwise deletion\n"), ", No missing data\n")))
 
@@ -3597,6 +3598,618 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
   ####################################################################################
   #-----------------------------------------------------------------------------------
+  # Confirmatory factor analysis
+  }, item.cfa = {
+
+    cat(" Confirmatory Factor Analysis\n")
+
+    #----------------------------------------
+    # lavaan summary
+
+    if (isTRUE("summary" %in% x$args$print)) {
+
+      print.summary <- print.object$summary
+
+      #........................................
+      # Format
+
+      # Include spaces
+      print.summary[1L, 1L] <- paste0(" ", print.summary[1L, 1L])
+      print.summary[-1L, 1L] <- paste0("  ", print.summary[-1L, 1L])
+
+      # Justify left
+      print.summary[, 1L] <- format(print.summary[, 1L], justify = "left")
+
+      #........................................
+      # Print
+
+      # Complete data
+      if (isTRUE(print.summary[6L, 2L] == "None")) {
+
+        print.summary <- unname(print.summary[, -3L])
+
+        # No cluster variable
+        if (isTRUE(is.null(x$args$cluster))) {
+
+          print(print.summary[-c(8L, 10L), ], col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+        # With cluster variable
+        } else {
+
+          print(print.summary[-8L, -3L], col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+        }
+
+      # Missing data
+      } else {
+
+        # No cluster variable
+        if (isTRUE(is.null(x$args$cluster))) {
+
+          print(print.summary[-10L, ], col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+        # With cluster variable
+        } else {
+
+          print(print.summary, col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+        }
+
+      }
+
+    }
+
+    #----------------------------------------
+    # Covariance coverage
+
+    if (isTRUE("coverage" %in% x$args$print)) {
+
+      cat("\n  Covariance Coverage of Data\n\n")
+
+      print.coverage <- print.object$coverage
+
+      #........................................
+      # Lower triangular
+
+      print.coverage[upper.tri(print.coverage)] <- ""
+
+      #........................................
+      # Format
+      print.coverage <- apply(print.coverage, 2L, function(y) ifelse(!is.na(as.numeric(y)), formatC(as.numeric(y), digits = 2L, format = "f",
+                                                                                                    zero.print = ifelse(2L > 0L, paste0("0.", paste(rep(0L, times = 2L), collapse = "")), "0")), ""))
+
+      # Row names
+      row.names(print.coverage) <- paste0("   ", colnames(print.coverage))
+
+      #........................................
+      # Print
+
+      print(print.coverage, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+    }
+
+    #----------------------------------------
+    # Sample Statistics
+
+    if (isTRUE("descript" %in% x$args$print)) {
+
+      #........................................
+      # Continuous indicators
+      if (isTRUE(is.null(x$args$ordered))) {
+
+        cat("\n  Univariate Sample Statistics\n\n")
+
+        print.itemstat <- print.object$itemstat
+
+        #........................................
+        # Format
+
+        # Variables to round
+        print.round <- c("pNA", "m", "sd", "min", "max", "skew", "kurt")
+
+        print.itemstat[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.itemstat[, y]), formatC(print.itemstat[, y], digits = x$args$digits, format = "f",
+                                                                                                                     zero.print = ifelse(x$args$digits > 0L, paste0("0.", paste(rep(0L, times = x$args$digits), collapse = "")), "0")), NA))
+
+        # Percentages
+        print.itemstat[, "pNA"] <- paste0(print.itemstat[, "pNA"], "%")
+
+        # Column names
+        print.itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt"), print.itemstat)
+
+        # Justify left and right
+        print.itemstat[, 1L] <- format(print.itemstat[, 1L, drop = FALSE], justify = "left")
+        print.itemstat[, -1L] <- apply(print.itemstat[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+        # Add blank space
+        print.itemstat[, "variable"] <- c(paste0("   ", print.itemstat[1L, "variable"], collapse = ""), paste0("    ", print.itemstat[-1L, "variable"]))
+        print.itemstat[, "variable"] <- format(c(print.itemstat[1L, "variable"], misty::chr.trim(print.itemstat[-1L, "variable"], side = "right")), justify = "left")
+
+        #........................................
+        # Print
+
+        write.table(print.itemstat, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      #........................................
+      # Ordered indicators
+      } else if (isTRUE(x$args$ordered)) {
+
+        cat("  Univariate Counts for Ordered Variables\n\n")
+
+        print.itemfreq <- print.object$itemfreq$freq
+
+        # Column names
+        print.itemfreq <- rbind(c("Variable", colnames(print.itemfreq)[-1L]), print.itemfreq)
+
+        # Justify left and right
+        print.itemfreq[, 1L] <- format(print.itemfreq[, 1L, drop = FALSE], justify = "left")
+        print.itemfreq[, -1L] <- apply(print.itemfreq[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+        # Add blank space
+        print.itemfreq[, "Var"] <- c(paste0("   ", print.itemfreq[1L, "Var"], collapse = ""), paste0("    ", print.itemfreq[-1L, "Var"]))
+        print.itemfreq[, "Var"] <- format(c(print.itemfreq[1L, "Var"], misty::chr.trim(print.itemfreq[-1L, "Var"], side = "right")), justify = "left")
+
+        #........................................
+        # Print
+
+        write.table(print.itemfreq, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      #........................................
+      # Continuous and ordered indicators
+      } else {
+
+        #........................................
+        # Sample Statistics
+
+        cat("\n  Univariate Sample Statistics\n\n")
+
+        print.itemstat <- print.object$itemstat
+
+        print.itemstat <- print.itemstat[which(!print.itemstat$variable %in% x$args$ordered),]
+
+        #........................................
+        # Format
+
+        # Variables to round
+        print.round <- c("pNA", "m", "sd", "min", "max", "skew", "kurt")
+
+        print.itemstat[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.itemstat[, y]), formatC(print.itemstat[, y], digits = x$args$digits, format = "f",
+                                                                                                                     zero.print = ifelse(x$args$digits > 0L, paste0("0.", paste(rep(0L, times = x$args$digits), collapse = "")), "0")), NA))
+
+        # Percentages
+        print.itemstat[, "pNA"] <- paste0(print.itemstat[, "pNA"], "%")
+
+        # Column names
+        print.itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt"), print.itemstat)
+
+        # Justify left and right
+        print.itemstat[, 1L] <- format(print.itemstat[, 1L, drop = FALSE], justify = "left")
+        print.itemstat[, -1L] <- apply(print.itemstat[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+        # Add blank space
+        print.itemstat[, "variable"] <- c(paste0("   ", print.itemstat[1L, "variable"], collapse = ""), paste0("    ", print.itemstat[-1L, "variable"]))
+        print.itemstat[, "variable"] <- format(c(print.itemstat[1L, "variable"], misty::chr.trim(print.itemstat[-1L, "variable"], side = "right")), justify = "left")
+
+        #........................................
+        # Print
+
+        write.table(print.itemstat, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        #........................................
+        # Counts for ordered variables
+
+        cat("\n  Univariate Counts for Ordered Variables\n\n")
+
+        print.itemfreq <- print.object$itemfreq$freq
+
+        print.itemfreq <- print.itemfreq[which(print.itemfreq$Var %in% x$args$ordered), ]
+
+        # Column names
+        print.itemfreq <- rbind(c("Variable", colnames(print.itemfreq)[-1L]), print.itemfreq)
+
+        # Justify left and right
+        print.itemfreq[, 1L] <- format(print.itemfreq[, 1L, drop = FALSE], justify = "left")
+        print.itemfreq[, -1L] <- apply(print.itemfreq[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+        # Add blank space
+        print.itemfreq[, "Var"] <- c(paste0("   ", print.itemfreq[1L, "Var"], collapse = ""), paste0("    ", print.itemfreq[-1L, "Var"]))
+        print.itemfreq[, "Var"] <- format(c(print.itemfreq[1L, "Var"], misty::chr.trim(print.itemfreq[-1L, "Var"], side = "right")), justify = "left")
+
+        #........................................
+        # Print
+
+        write.table(print.itemfreq, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+    }
+
+    #----------------------------------------
+    # Model fit
+
+    if (isTRUE("fit" %in% x$args$print)) {
+
+      cat("\n  Model Fit Information\n")
+
+      print.fit <- print.object$fit
+
+      #........................................
+      # Round
+
+      # digits
+      print.fit[-c(1L, 5L, 6L, 17L), -1L] <- lapply(print.fit[-c(1L, 5L, 6L, 17L), -1], function(y) ifelse(!is.na(y), formatC(y, digits = x$args$digits, format = "f",
+                                                                                                                              zero.print = ifelse(x$args$digits > 0L, paste0("0.", paste(rep(0L, times = x$args$digits), collapse = "")), "0")), NA))
+
+      # p.digits
+      print.fit[c(6L, 17L), -c(1L, 4L)] <- sapply(print.fit[c(6L, 17L), -c(1L, 4L)], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = x$args$p.digits, format = "f",
+                                                                                                                           zero.print = ifelse(x$args$p.digits > 0L, paste0("0.", paste(rep(0L, times = x$args$p.digits), collapse = "")), "0")), NA))
+
+      if (isTRUE(x$args$estimator %in% c("MLMVS", "PML"))) {
+
+        print.fit[5L, 3L] <- formatC(as.numeric(print.fit[5L, 3L]), digits = x$args$digits, format = "f", zero.print = ifelse(x$args$digits > 0L, paste0("0.", paste(rep(0L, times = x$args$digits), collapse = "")), "0"))
+
+      }
+
+      #........................................
+      # Add labels
+
+      print.fit <- rbind(print.fit[1L:9L, ], c("", "Standard", "Ad hoc", "Robust"),
+                         print.fit[10L:13L, ], c("", "Standard", "Ad hoc", "Robust"), print.fit[14L:24L, ],
+                         make.row.names = FALSE)
+
+      if (isTRUE(x$args$estimator == "PML")) {
+
+        print.fit[15L, 3L] <- ""
+
+      }
+
+      #........................................
+      # Replace NA with ""
+
+      print.fit <- unname(misty::na.as(print.fit, ""))
+
+      #........................................
+      # Add blank space
+
+      print.fit[, 1L] <- paste0("  ", print.fit[, 1L])
+
+      print.fit[c(4L:7L, 11L, 12L, 16L:19L, 21L, 24L:26L), 1L] <- paste("", unlist(print.fit[c(4L:7L, 11L, 12L, 16L:19L, 21L, 24L:26L), 1L]))
+
+      #........................................
+      # Justify left and right
+
+      print.fit[, 1L] <- format(print.fit[, 1L, drop = FALSE], justify = "left")
+
+      print.fit[, -1L] <- apply(print.fit[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+      #........................................
+      # Exclude Chi-square p-value and scaling correction factor
+      if (isTRUE(as.numeric(print.fit[5, 2]) == 0)) {
+
+        print.fit <- print.fit[-c(6L, 7L), ]
+
+      } else if (isTRUE(!x$args$estimator %in% c("MLM", "MLMV", "MLMVS", "MLR", "WLSM", "WLSMV", "ULSM", "ULSMV", "DLS", "PML"))) {
+
+        print.fit <- print.fit[-7L, ]
+
+      }
+
+      #........................................
+      # Exclude information criteria
+
+      if (isTRUE(!x$args$estimator %in% c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR"))) {
+
+        print.fit <- print.fit[-c((nrow(print.fit) - 4L):nrow(print.fit)), ]
+
+      }
+
+      #........................................
+      # Print
+
+      if (isTRUE(x$args$estimator %in% c("ML", "MLF", "GLS", "WLS", "DWLS", "ULS"))) {
+
+        print(print.fit[, c(1L, 2L)], row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+      } else if (isTRUE(x$args$estimator %in% c("MLMV", "MLMVS", "WLSMV", "ULSMV"))) {
+
+        print(print.fit[, c(1L, 3L)], row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+      } else if (isTRUE(x$args$estimator %in% c("MLM", "MLR", "WLSM", "ULSM", "DLS"))) {
+
+        print(print.fit[, c(1L, 3L, 4L)], row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+      } else if (isTRUE(x$args$estimator %in% "PML")) {
+
+        # print.fit[c(21L, 24L, 25L, 26L), 3L] <- ""
+
+        print(print.fit[-c(22L:26L), c(1L, 2L, 3L)], row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+      }
+
+    }
+
+    #----------------------------------------
+    # Parameter estimates
+
+    if (isTRUE("est" %in% x$args$print)) {
+
+      cat("\n  Model Results\n\n")
+
+      print.param <- print.object$param
+
+      #........................................
+      # Round
+
+      # digits
+      print.param[, -c(1L:4L, 8L)] <- lapply(print.param[, -c(1L:4L, 8L)], function(y) ifelse(!is.na(y), formatC(y, digits = x$args$digits, format = "f",
+                                                                                                                 zero.print = ifelse(x$args$digits > 0L, paste0("0.", paste(rep(0L, times = x$args$digits), collapse = "")), "0")), NA))
+
+      # p.digits
+      print.param[, "pvalue"] <- formatC(as.numeric(print.param[, "pvalue"]), digits = x$args$p.digits, format = "f",
+                                         zero.print = ifelse(x$args$p.digits > 0L, paste0("0.", paste(rep(0L, times = x$args$p.digits), collapse = "")), "0"))
+
+      #........................................
+      # Convert NA into ""
+
+      print.param[grep("~", print.param$rhs), c("est", "se", "z", "pvalue", "stdyx")] <- ""
+
+      #........................................
+      # Column names
+      print.param <- rbind(c("", "", "", "", "Estimate", "Std.Err", "z-value", "P(>|z|)", "StdYX"),
+                           print.param)
+
+      #........................................
+      # Add blank spaces
+
+      print.param[grep("~", print.param$rhs), "rhs"] <- paste("   ", print.param[grep("~", print.param$rhs), "rhs"])
+      print.param[-grep("~", print.param$rhs), "rhs"] <- paste("     ", print.param[-grep("~", print.param$rhs), "rhs"])
+
+      #........................................
+      # Justify
+
+      print.param[, "rhs"] <- format(print.param[, "rhs", drop = FALSE], justify = "left")
+      print.param[, -c(1L:4L)] <- apply(print.param[, -c(1L:4L), drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+      #........................................
+      # Print
+
+      ###
+      # Factor loadings
+      cat("   Factor Loadings\n")
+
+      # Heading
+      write.table(print.param[1L, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      print.lv <- print.param[print.param$param == "latent variable", ]
+
+      for (i in unique(print.lv$lhs)) {
+
+        pos.NA <- grep("NA", print.lv[print.lv$lhs == i, "z"])
+
+        if (isTRUE(length(pos.NA) > 0L)) {
+
+          print.lv[print.lv$lhs == i, ][pos.NA, "se"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "se"])) + 1L), collapse = " ")
+          print.lv[print.lv$lhs == i, ][pos.NA, "z"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "z"])) + 1L), collapse = " ")
+          print.lv[print.lv$lhs == i, ][pos.NA, "pvalue"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "pvalue"])) + 1L), collapse = " ")
+
+        }
+
+        write.table(print.lv[print.lv$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ###
+      # Latent variable covariances
+      if (isTRUE(any(print.param$param %in% "latent variable covariance"))) {
+
+        cat("\n   Latent Variable Covariance\n")
+
+        print.lv.cov <- print.param[print.param$param == "latent variable covariance", ]
+
+        for (i in unique(print.lv.cov$lhs)) {
+
+          write.table(print.lv.cov[print.lv.cov$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ###
+      # Residual covariances
+      if (isTRUE(any(print.param$param %in% "residual covariance"))) {
+
+        cat("\n   Residual Covariance\n")
+
+        print.res.cov <- print.param[print.param$param == "residual covariance", ]
+
+        for (i in unique(print.res.cov$lhs)) {
+
+          write.table(print.res.cov[print.res.cov$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ###
+      # Latent mean
+      if (isTRUE(any(print.param$param %in% "latent mean"))) {
+
+        cat("\n   Latent Means\n")
+
+        print.mean <- print.param[print.param$param == "latent mean", ]
+
+        print.mean[grep("NA", print.mean[, "z"]), c("se", "z", "pvalue", "stdyx")] <- ""
+
+        write.table(print.mean[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ###
+      # Latent variance
+      if (isTRUE(any(print.param$param %in% "latent variance"))) {
+
+        cat("\n   Latent Variances\n")
+
+        print.var <- print.param[print.param$param == "latent variance", ]
+
+        print.var[grep("NA", print.var[, "z"]), c("se", "z", "pvalue", "stdyx")] <- ""
+
+        write.table(print.var[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ###
+      # Intercepts
+      if (isTRUE(any(print.param$param %in% "intercept"))) {
+
+        cat("\n   Intercepts\n")
+
+        print.inter <- print.param[print.param$param == "intercept", ]
+
+        print.inter[grep("NA", print.inter[, "z"]), c("se", "z", "pvalue", "stdyx")] <- ""
+
+        write.table(print.inter[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ###
+      # Thresholds
+      if (isTRUE(any(print.param$param %in% "threshold"))) {
+
+        cat("\n   Thresholds\n")
+
+        print.thres <- print.param[print.param$param == "threshold", ]
+
+        print.thres[grep("NA", print.thres[, "z"]), c("se", "z", "pvalue", "stdyx")] <- ""
+
+        write.table(print.thres[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ###
+      # Scales
+      if (isTRUE(any(print.param$param %in% "scale"))) {
+
+        cat("\n   Scales\n")
+
+        print.scale <- print.param[print.param$param == "scale", ]
+
+        pos.NA <- grep("NA", print.scale[, "z"])
+
+        if (isTRUE(length(pos.NA) >  0L)) {
+
+          print.scale[pos.NA, "se"] <- paste(rep("", times = unique(nchar(print.scale[pos.NA, "se"])) + 1L), collapse = " ")
+          print.scale[pos.NA, "z"] <- paste(rep("", times = unique(nchar(print.scale[pos.NA, "z"])) + 1L), collapse = " ")
+          print.scale[pos.NA, "pvalue"] <- paste(rep("", times = unique(nchar(print.scale[pos.NA, "pvalue"])) + 1L), collapse = " ")
+
+        }
+
+        write.table(print.scale[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ###
+      # Residual variance
+      if (isTRUE(any(print.param$param %in% "residual variance"))) {
+
+        cat("\n   Residual Variances\n")
+
+        print.resid <- print.param[print.param$param == "residual variance", ]
+
+        pos.NA <- grep("NA", print.resid[, "z"])
+
+        if (isTRUE(length(pos.NA) >  0L)) {
+
+        print.resid[pos.NA, "se"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "se"])) + 1L), collapse = " ")
+        print.resid[pos.NA, "z"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "z"])) + 1L), collapse = " ")
+        print.resid[pos.NA, "pvalue"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "pvalue"])) + 1L), collapse = " ")
+
+        }
+
+        write.table(print.resid[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+    }
+
+    #----------------------------------------
+    # Modification indices
+
+    if (isTRUE("modind" %in% x$args$print)) {
+
+      cat("\n  Modification Indices\n")
+
+      print.modind <- print.object$modind
+
+      #........................................
+      # No modification indices
+      if (isTRUE(is.null(print.modind))) {
+
+        cat("\n   Modification indices are not available.")
+
+      } else  if (isTRUE(nrow(print.modind) == 0L)) {
+
+        cat(paste0("\n   No modification indices above the minimum value ", round(x$args$min.value, digits = 2L), "."))
+
+      #........................................
+      # Modification indices
+      } else {
+
+        # Round
+        print.modind[, -c(1L:3L)] <- lapply(print.modind[, -c(1L:3L)], function(y) ifelse(!is.na(y), formatC(y, digits = x$args$digits, format = "f",
+                                                                                                             zero.print = ifelse(x$args$digits > 0L, paste0("0.", paste(rep(0L, times = x$args$digits), collapse = "")), "0")), NA))
+
+        # Column names
+        print.modind <- rbind(c("", "", "", "MI", "EPC", "StdYX EPC"), print.modind)
+
+        # Add blank spaces
+        print.modind[, "lhs"] <- paste("   ", print.modind[, "lhs"])
+
+        # Justify
+        print.modind[ c("lhs", "op", "rhs")] <- format(print.modind[, c("lhs", "op", "rhs")], justify = "left")
+        print.modind[, -c(1L, 2L)] <- apply(print.modind[, -c(1L, 2L), drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+        ###
+        # Factor loadings
+
+        print.modind.load <- print.modind[print.modind$op == "=~", ]
+
+        if (isTRUE(nrow(print.modind.load) > 0L)) {
+
+          cat("\n   Factor Loading\n")
+
+          # Print header
+          write.table(print.modind[1L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+          write.table(print.modind.load, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+        ###
+        # Residual covariances
+
+        print.modind.cov <- print.modind[print.modind$op == "~~", ]
+
+        if (isTRUE(nrow(print.modind.cov) > 0L)) {
+
+          cat("\n   Residual Covariance\n")
+
+          # Print header
+          write.table(print.modind[1L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+          write.table(print.modind.cov, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+        ###
+        # Note
+        cat(paste0("\n   Note. Minimum value for printing the index is ", round(x$args$min.value, digits = 2L), "."))
+
+      }
+
+    }
+
+  ####################################################################################
+  #-----------------------------------------------------------------------------------
   # Within-Group and Between-Group Correlation Matrix
   }, multilevel.cor = {
 
@@ -3803,18 +4416,29 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
     #-----------------------------------------------------------------------------------
     # Print
 
-    cat(" Within-Group and Between-Group Correlation Matrix\n\n")
+    cat(" Within-Group and Between-Group Correlation Matrix\n")
 
     #........................
-    # Model estimation
+    # lavaan summary
 
-    version <- lavaan::lavInspect(x$mod.fit, what = "version")
-    space <- paste(rep(" ", times = 10 + nchar(version)), collapse = "")
+    print.summary <- print.object$summary
 
-    cat(paste0("  lavaan ", version, " Estimator:       ", ifelse(x$args$estimator == "ML", "ML", "Robust ML"),
-               "\n", space, "Standard errors: ", ifelse(x$args$estimator == "ML", "Standard", "Huber-White"),
-               "\n", space, "Missing data:    ", ifelse(isTRUE(attr(x$data, "missing")),
-                                                       ifelse(isTRUE(x$args$na.omit), "Listwise deletion\n\n", "FIML\n\n"), "None\n\n")))
+    #.......
+    # Format
+
+    # Include spaces
+    print.summary[1L, 1L] <- paste0(" ", print.summary[1L, 1L])
+    print.summary[-1L, 1L] <- paste0("  ", print.summary[-1L, 1L])
+
+    # Justify left
+    print.summary[, 1L] <- format(print.summary[, 1L], justify = "left")
+
+    #.......
+    # Print
+
+    print(print.summary, col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+    cat("\n")
 
     #--------------------------------------------
     # Split results
@@ -3827,12 +4451,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
         # Within
         cat("  Within-Group\n")
 
-        print(print.object$with.cor, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$with.cor, quote = FALSE, right = TRUE, max = 99999L)
 
         # Between
         cat("\n  Between-Group\n")
 
-        print(print.object$betw.cor, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$betw.cor, quote = FALSE, right = TRUE, max = 99999L)
 
       }
 
@@ -3848,12 +4472,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
         # Within
         cat("  Within-Group\n")
 
-        print(print.object$with.se, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$with.se, quote = FALSE, right = TRUE, max = 99999L)
 
         # Between
         cat("\n  Between-Group\n")
 
-        print(print.object$betw.se, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$betw.se, quote = FALSE, right = TRUE, max = 99999L)
 
       }
 
@@ -3869,12 +4493,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
         # Within
         cat("  Within-Group\n")
 
-        print(print.object$with.stat, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$with.stat, quote = FALSE, right = TRUE, max = 99999L)
 
         # Between
         cat("\n  Between-Group\n")
 
-        print(print.object$betw.stat, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$betw.stat, quote = FALSE, right = TRUE, max = 99999L)
 
       }
 
@@ -3890,12 +4514,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
         # Within
         cat("  Within-Group\n")
 
-        print(print.object$with.p, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$with.p, quote = FALSE, right = TRUE, max = 99999L)
 
         # Between
         cat("\n  Between-Group\n")
 
-        print(print.object$betw.p, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$betw.p, quote = FALSE, right = TRUE, max = 99999L)
 
         cat(paste0("\n  Adjustment for multiple testing: ", x$args$p.adj, "\n"))
 
@@ -3909,7 +4533,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
       # Correlation coefficient
       if (isTRUE("cor" %in% print)) {
 
-        print(print.object$wb.cor, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$wb.cor, quote = FALSE, right = TRUE, max = 99999L)
 
       }
 
@@ -3922,7 +4546,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
         cat(" Standard Error\n\n")
 
-        print(print.object$wb.se, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$wb.se, quote = FALSE, right = TRUE, max = 99999L)
 
       }
 
@@ -3935,7 +4559,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
         cat(" Test Statistic (z value) \n\n")
 
-        print(print.object$wb.stat, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$wb.stat, quote = FALSE, right = TRUE, max = 99999L)
 
       }
 
@@ -3948,7 +4572,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
         cat(" Significance Value (p-value)\n\n")
 
-        print(print.object$wb.p, quote = FALSE, right = TRUE, max = 99999)
+        print(print.object$wb.p, quote = FALSE, right = TRUE, max = 99999L)
 
         cat(paste0("\n  Adjustment for multiple testing: ", x$args$p.adj, "\n"))
 
@@ -3960,20 +4584,20 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
     # Note
 
     # Sample size within and between
-    cat(paste0("\n Note. n(within) = ", lavaan::lavInspect(x$mod.fit, what = "nobs"), ", n(between) = ", lavaan::lavInspect(x$mod.fit, what = "nclusters")))
+    cat(paste0("\n Note. n(within) = ", lavaan::lavInspect(x$mod.fit, what = "nobs"), ", n(between) = ", lavaan::lavInspect(x$mod.fit, what = "nclusters")), "\n")
 
     # Lower and upper triangular
     if (isTRUE(!x$args$split)) {
 
-      cat(ifelse(isTRUE(x$args$tri.lower), "\n       Lower triangular: Within-Group, Upper triangular: Between-Group",
-                                           "\n       Lower triangular: Between-Group, Upper triangular: Within-Group"))
+      cat(ifelse(isTRUE(x$args$tri.lower), "       Lower triangular: Within-Group, Upper triangular: Between-Group",
+                                           "\n       Lower triangular: Between-Group, Upper triangular: Within-Group"), "\n")
 
     }
 
     # Statistical significance
     if (isTRUE(x$args$sig)) {
 
-      cat(paste0("\n       Statistically significant coefficients at \U03B1 = ", signif(x$args$alpha, digits = 2L), " are boldface\n"))
+      cat(paste0("       Statistically significant coefficients at \U03B1 = ", signif(x$args$alpha, digits = 2L), " are boldface\n"))
 
     }
 

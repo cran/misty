@@ -192,7 +192,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
   if (isTRUE(var)) {
 
     file.var <- sub(names(which(vapply(sapply(c(".dat", ".txt", ".csv"), grep, file), length, FUN.VALUE = integer(1)) != 0L)),
-                    "_VARNAMES.txt", file)
+                    "_VARNAMES.txt", file, fixed = TRUE)
 
     writeLines(paste(names(x), collapse = " "), con = file.var)
 
@@ -252,7 +252,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
                    "OUTPUT:     \n")
 
     file.inp <- sub(names(which(vapply(sapply(c(".dat", ".txt", ".csv"), grep, file), length, FUN.VALUE = integer(1)) != 0L)),
-                    "_INPUT.inp", file)
+                    "_INPUT.inp", file, fixed = TRUE)
 
     writeLines(temp, con = file.inp)
 

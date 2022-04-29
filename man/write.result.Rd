@@ -20,12 +20,12 @@ into a Excel file.
 \details{
 Currently the function supports result objects from the function
 \code{cor.matrix}, \code{crosstab}, \code{freq}, \code{item.alpha},
-\code{item.omega}, \code{multilevel.cor}, \code{multilevel.descript},
-\code{na.coverage}, \code{na.descript}, and \code{na.pattern}.
+\code{item.alpha}, \code{item.cfa}, \code{item.omega}, \code{multilevel.cor},
+\code{multilevel.descript}, \code{na.coverage}, \code{na.descript}, and
+\code{na.pattern}.
 }
 \examples{
 \dontrun{
-
 #--------------------------------------
 # cor.matrix() function
 
@@ -55,6 +55,16 @@ write.result(result, "Freq.xlsx")
 
 result <- item.alpha(attitude, output = FALSE)
 write.result(result, "Alpha.xlsx")
+
+#--------------------------------------
+# item.cfa() function
+
+# Load data set "HolzingerSwineford1939" in the lavaan package
+data("HolzingerSwineford1939", package = "lavaan")
+
+result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")],
+                   output = FALSE)
+write.result(result, "CFA.xlsx")
 
 #--------------------------------------
 # item.omega() function
@@ -116,10 +126,9 @@ write.result(result, "NA_Pattern.xlsx")
 }
 \seealso{
 \code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{freq}},
-\code{\link{item.alpha}}, \code{\link{item.omega}}, \code{\link{multilevel.cor}},
-\code{\link{multilevel.descript}}, \code{\link{na.coverage}},
-\code{\link{na.descript}}, \code{\link{na.pattern}
-}
+\code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.omega}},
+\code{\link{multilevel.cor}}, \code{\link{multilevel.descript}},
+\code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.pattern}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

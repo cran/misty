@@ -1,7 +1,7 @@
 #' Read SPSS File
 #'
-#' This function calls the \code{read_spss} function in the \pkg{haven} package by Hadley Wickham and Evan Miller (2019)
-#' to read an SPSS file.
+#' This function calls the \code{read_spss} function in the \pkg{haven} package
+#' by Hadley Wickham and Evan Miller (2019) to read an SPSS file.
 #'
 #' @param file             a character string indicating the name of the SPSS data file
 #'                         with or without file extension '.sav', e.g., \code{"My_SPSS_Data.sav"}

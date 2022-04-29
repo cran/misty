@@ -6,6 +6,35 @@
 #' effects models estimated by using the \code{lmer()} function in the package
 #' \pkg{lme4} or \code{lme()} function in the package \pkg{nlme}.
 #'
+#' @param model  a fitted model of class \code{"lmerMod"} from the \pkg{lme4}
+#'               package or \code{"lme"} from the \pkg{nlme} package.
+#' @param print  a character vector indicating which R-squared measures to be
+#'               printed on the console, i.e., \code{RB} for measures from
+#'               Raudenbush and Bryk (2002), \code{SB} for measures from Snijders
+#'               and Bosker (1994), \code{NS} for measures from Nakagawa and
+#'               Schielzeth (2013) as extended by Johnson (2014), and \code{RS}
+#'               for measures from Rights and Sterba (2019). The default setting
+#'               is \code{print = "RS"}.
+#' @param digits an integer value indicating the number of decimal places to be used.
+#' @param plot   logical: if \code{TRUE}, bar chart showing the decomposition of
+#'               scaled total, within-cluster, and between-cluster outcome variance
+#'               into five (total), three (within-cluster), and two (between-cluster)
+#'               proportions is drawn. Note that the \pkg{ggplot2} package is required
+#'               to draw the bar chart.
+#' @param gray   logical: if \code{TRUE}, graphical parameter to draw the bar chart
+#'               in gray scale.
+#' @param start  a numeric value between 0 and 1, graphical parameter to specify
+#'               the gray value at the low end of the palette.
+#' @param end    a numeric value between 0 and 1, graphical parameter to specify
+#'               the gray value at the high end of the palette.
+#' @param color  a character vector, graphical parameter indicating the color of
+#'               bars in the bar chart in the following order: Fixed slopes (Within),
+#'               Fixed slopes (Between), Slope variation (Within), Intercept variation
+#'               (Between), and Residual (Within). By default, colors from the
+#'               colorblind-friendly palettes are used
+#' @param check  logical: if \code{TRUE}, argument specification is checked.
+#' @param output logical: if \code{TRUE}, output is shown on the console.
+#'
 #' @details
 #' A number of R-squared measures for multilevel and linear mixed effects models have
 #' been developed in the methodological literature (see Rights & Sterba, 2018).
@@ -243,35 +272,6 @@
 #' Note that none of these measures provide an \eqn{R^2} for the random slope
 #' variance explained by cross-level interactions, a quantity that is frequently
 #' of interest (Hoffman & Walters, 2022).
-#'
-#' @param model  a fitted model of class \code{"lmerMod"} from the \pkg{lme4}
-#'               package or \code{"lme"} from the \pkg{nlme} package.
-#' @param print  a character vector indicating which R-squared measures to be
-#'               printed on the console, i.e., \code{RB} for measures from
-#'               Raudenbush and Bryk (2002), \code{SB} for measures from Snijders
-#'               and Bosker (1994), \code{NS} for measures from Nakagawa and
-#'               Schielzeth (2013) as extended by Johnson (2014), and \code{RS}
-#'               for measures from Rights and Sterba (2019). The default setting
-#'               is \code{print = "RS"}.
-#' @param digits an integer value indicating the number of decimal places to be used.
-#' @param plot   logical: if \code{TRUE}, bar chart showing the decomposition of
-#'               scaled total, within-cluster, and between-cluster outcome variance
-#'               into five (total), three (within-cluster), and two (between-cluster)
-#'               proportions is drawn. Note that the \pkg{ggplot2} package is required
-#'               to draw the bar chart.
-#' @param gray   logical: if \code{TRUE}, graphical parameter to draw the bar chart
-#'               in gray scale.
-#' @param start  a numeric value between 0 and 1, graphical parameter to specify
-#'               the gray value at the low end of the palette.
-#' @param end    a numeric value between 0 and 1, graphical parameter to specify
-#'               the gray value at the high end of the palette.
-#' @param color  a character vector, graphical parameter indicating the color of
-#'               bars in the bar chart in the following order: Fixed slopes (Within),
-#'               Fixed slopes (Between), Slope variation (Within), Intercept variation
-#'               (Between), and Residual (Within). By default, colors from the
-#'               colorblind-friendly palettes are used
-#' @param check  logical: if \code{TRUE}, argument specification is checked.
-#' @param output logical: if \code{TRUE}, output is shown on the console.
 #'
 #' @author
 #' Simon Grund, Alexander Robitzsch, Oliver Luedtk, Mairead Shaw, Jason D. Rights,

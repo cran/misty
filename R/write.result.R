@@ -5,8 +5,9 @@
 #'
 #' Currently the function supports result objects from the function
 #' \code{cor.matrix}, \code{crosstab}, \code{freq}, \code{item.alpha},
-#' \code{item.omega}, \code{multilevel.cor}, \code{multilevel.descript},
-#' \code{na.coverage}, \code{na.descript}, and \code{na.pattern}.
+#' \code{item.alpha}, \code{item.cfa}, \code{item.omega}, \code{multilevel.cor},
+#' \code{multilevel.descript}, \code{na.coverage}, \code{na.descript}, and
+#' \code{na.pattern}.
 #'
 #'
 #' @param x    misty object (\code{misty.object}) resulting from a misty function
@@ -19,9 +20,9 @@
 #'
 #' @seealso
 #' \code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{freq}},
-#' \code{\link{item.alpha}}, \code{\link{item.omega}}, \code{\link{multilevel.cor}},
-#' \code{\link{multilevel.descript}}, \code{\link{na.coverage}},
-#' \code{\link{na.descript}}, \code{\link{na.pattern}}
+#' \code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.omega}},
+#' \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}},
+#' \code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.pattern}}
 #'
 #' @export
 #'
@@ -56,6 +57,16 @@
 #'
 #' result <- item.alpha(attitude, output = FALSE)
 #' write.result(result, "Alpha.xlsx")
+#'
+#' #--------------------------------------
+#' # item.cfa() function
+#'
+#' # Load data set "HolzingerSwineford1939" in the lavaan package
+#' data("HolzingerSwineford1939", package = "lavaan")
+#'
+#' result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")],
+#'                    output = FALSE)
+#' write.result(result, "CFA.xlsx")
 #'
 #' #--------------------------------------
 #' # item.omega() function
@@ -145,7 +156,7 @@ write.result <- function(x, file = "Results.xlsx") {
 
   # Check if input 'x' is supported by the function
   if (isTRUE(!x$type %in% c("cor.matrix", "crosstab", "descript", "freq", "item.alpha",
-                            "item.omega", "multilevel.cor", "multilevel.descript",
+                            "item.cfa", "item.omega", "multilevel.cor", "multilevel.descript",
                             "na.coverage", "na.descript", "na.pattern"))) {
 
     stop("This type of misty object is not supported by the function.", call. = FALSE)
@@ -979,6 +990,68 @@ write.result <- function(x, file = "Results.xlsx") {
 
   ####################################################################################
   #-----------------------------------------------------------------------------------
+  # Confirmatory Factor Analysis, item.cfa()
+  }, item.cfa = {
+
+    #----------------------------------------
+    # lavaan summary
+
+    # Column names
+    colnames(write.object$summary) <- c(write.object$summary[1, 1], "", "")
+
+    summary <- write.object$summary[-1, ]
+
+    #----------------------------------------
+    # Covariance coverage
+
+    # Add variable names in the rows
+    coverage <- data.frame(colnames(write.object$coverage), write.object$coverage,
+                           row.names = NULL, check.rows = FALSE,
+                           check.names = FALSE, fix.empty.names = FALSE)
+
+    #----------------------------------------
+    # Univariate Sample Statistics
+
+    itemstat <- write.object$itemstat
+
+    colnames(itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt")
+
+    #----------------------------------------
+    # Univariate Counts for Ordered Variables
+
+    itemfreq <- write.object$itemfreq$freq
+
+    colnames(itemfreq)[1] <- "Variable"
+
+    #----------------------------------------
+    # Model fit
+
+    fit <- write.object$fit
+
+    colnames(fit) <- c("", "Standard", "Ad hoc", "Robust")
+
+    #----------------------------------------
+    # Parameter estimates
+
+    param <- write.object$param[, -c(2, 3)]
+
+    colnames(param) <- c("Param1", "Param2", "Estimate", "SE", "z", "pvalue", "StdYX")
+
+    #----------------------------------------
+    # Modification indices
+
+    modind <- write.object$modind
+
+    colnames(modind) <- c("lhs", "op", "rhs", "MI", "EPC", "STDYX EPC")
+
+    #----------------------------------------
+    # Write object
+
+    write.object <- list(summary = summary, coverage = coverage, itemstat = itemstat,
+                         itemfreq = itemfreq, fit = fit, param = param, modind = modind)
+
+  ####################################################################################
+  #-----------------------------------------------------------------------------------
   # Coefficient Omega, Hierarchical Omega, and Categorical Omega, item.omega()
   }, item.omega = {
 
@@ -1004,41 +1077,33 @@ write.result <- function(x, file = "Results.xlsx") {
     # Split results
     if (isTRUE(x$args$split)) {
 
-      write.object <- list(With.Cor = write.object$with.cor, With.SE = write.object$with.se,
-                           With.Stat = write.object$with.stat, With.p = write.object$with.p,
-                           Betw.Cor = write.object$betw.cor, Betw.SE = write.object$betw.se,
-                           Betw.Stat = write.object$betw.stat, Betw.p = write.object$betw.p)
+      write.object <- list(summary = write.object$summary,
+                           with.cor = write.object$with.cor, with.se = write.object$with.se,
+                           with.stat = write.object$with.stat, with.p = write.object$with.p,
+                           betw.cor = write.object$betw.cor, betw.se = write.object$betw.se,
+                           betw.stat = write.object$betw.stat, betw.p = write.object$betw.p)
 
     # Combined results
     } else {
 
-      write.object <- list(Cor = write.object$wb.cor, SE = write.object$wb.se,
-                           Stat = write.object$wb.stat, p = write.object$wb.p)
+      write.object <- list(summary = write.object$summary,
+                           cor = write.object$wb.cor, se = write.object$wb.se,
+                           stat = write.object$wb.stat, p = write.object$wb.p)
 
     }
 
-
     # Add variable names in the rows
-    write.object <- lapply(write.object, function(y) data.frame(colnames(y), y,
-                                                                row.names = NULL, check.rows = FALSE,
-                                                                check.names = FALSE, fix.empty.names = FALSE))
-
-    # Add infos
-    write.object$Info <- data.frame(c("lavaan", "Estimator:", "Standard errors:", "Missing data:", "Adjustment for multiple testing:", "", "n(within)", "n(between)"),
-                                    c(lavaan::lavInspect(x$mod.fit, what = "version"), ifelse(x$args$estimator == "ML", "ML", "Robust ML"),
-                                      ifelse(x$args$estimator == "ML", "Standard", "Huber-White"),
-                                      ifelse(isTRUE(attr(x$data, "missing")),
-                                             ifelse(isTRUE(x$args$na.omit), "Listwise deletion", "FIML"), "None"),
-                                      ifelse(x$args$p.adj == "none", "None", x$args$p.adj), NA,
-                                      lavaan::lavInspect(x$mod.fit, what = "nobs"), lavaan::lavInspect(x$mod.fit, what = "nclusters")),
-                                    row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
+    write.object[-1L] <- lapply(write.object[-1L], function(y) data.frame(colnames(y), y,
+                                                                          row.names = NULL, check.rows = FALSE,
+                                                                          check.names = FALSE, fix.empty.names = FALSE))
 
     # Add 'Lower triangular: Within-Group, Upper triangular: Between-Group
     if (isTRUE(!x$args$split)) {
 
-      write.object$Info <- data.frame(rbind(write.object$Info, c(NA, NA),
-                                      c("Lower triangular: Within-Group, Upper triangular: Between-Group", NA)),
-                                      row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
+      write.object$summary <- data.frame(rbind(write.object$summary,
+                                               c(NA, NA, NA),
+                                               c("Lower triangular: Within-Group, Upper triangular: Between-Group", NA, NA)),
+                                         row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
 
     }
 

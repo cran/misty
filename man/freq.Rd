@@ -30,10 +30,11 @@ one variable in \code{x}.}
 \item{round}{an integer value indicating the number of decimal places to be used for rounding
 numeric variables.}
 
-\item{exclude}{an integer value indicating the maximum number of unique values for variables to be
-included in the analysis when specifying more than one variable in \code{x} i.e.,
-variables with the number of unique values exceeding \code{exclude} will be excluded
-from the analysis.}
+\item{exclude}{an integer value indicating the maximum number of unique values for
+variables to be included in the analysis when specifying more than one variable in
+\code{x} i.e., variables with the number of unique values exceeding \code{exclude}
+will be excluded from the analysis. It is also possible to specify \code{exclude = FALSE}
+to include all variables in the analysis.}
 
 \item{digits}{an integer value indicating the number of decimal places to be used for displaying
 percentages.}

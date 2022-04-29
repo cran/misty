@@ -49,7 +49,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{cluster.scores}}, \code{\link{item.alpha}}, \code{\link{item.omega}},
+#' \code{\link{cluster.scores}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
+#' \code{\link{item.omega}},
 #'
 #' @references
 #' Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY: Guilford

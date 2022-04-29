@@ -7,7 +7,7 @@
 multilevel.indirect(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.rand, 
                     nrep = 100000, alternative = c("two.sided", "less", "greater"),
                     seed = NULL, conf.level = 0.95, digits = 3, check = TRUE,
-		    output = TRUE)
+                    output = TRUE)
 }
 \arguments{
 \item{a}{a numeric value indicating the coefficient \eqn{a}, i.e.,

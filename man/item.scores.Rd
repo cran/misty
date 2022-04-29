@@ -94,7 +94,8 @@ Schafer, J. L., & Graham, J. W. (2002). Missing data: Our view of the state of t
 https://doi.org/10.1037/1082-989X.7.2.147
 }
 \seealso{
-\code{\link{cluster.scores}}, \code{\link{item.alpha}}, \code{\link{item.omega}},
+\code{\link{cluster.scores}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
+\code{\link{item.omega}},
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

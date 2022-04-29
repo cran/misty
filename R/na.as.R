@@ -212,7 +212,8 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
     # Data frame
     if (isTRUE(is.data.frame(x))) {
 
-      object <- data.frame(lapply(x, na.as, value = value, check = FALSE))
+      object <- data.frame(lapply(x, na.as, value = value, check = FALSE),
+                           check.names = FALSE, fix.empty.names = FALSE)
 
     }
 

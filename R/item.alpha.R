@@ -52,8 +52,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{write.result}}, \code{\link{item.omega}}, \code{\link{item.reverse}},
-#' \code{\link{item.scores}}
+#' \code{\link{write.result}}, \code{\link{item.cfa}}, \code{\link{item.omega}},
+#' \code{\link{item.reverse}}, \code{\link{item.scores}}
 #'
 #' @references
 #' Chalmers, R. P. (2018). On misconceptions and the limited usefulness of ordinal alpha.

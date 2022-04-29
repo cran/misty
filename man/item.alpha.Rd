@@ -132,8 +132,8 @@ Likert rating scales. \emph{Journal of Modern Applied Statistical Methods, 6}, 2
 https://doi.org/10.22237/jmasm/1177992180
 }
 \seealso{
-\code{\link{write.result}}, \code{\link{item.omega}}, \code{\link{item.reverse}},
-\code{\link{item.scores}}
+\code{\link{write.result}}, \code{\link{item.cfa}}, \code{\link{item.omega}},
+\code{\link{item.reverse}}, \code{\link{item.scores}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -24,7 +24,7 @@
 #' \code{\link{read.xlsx}}
 #'
 #' @references
-#' Jeroen O. (2021). emph{writexl: Export Data Frames to Excel 'xlsx' Format}.
+#' Jeroen O. (2021). \emph{writexl: Export Data Frames to Excel 'xlsx' Format}.
 #' R package version 1.4.0. https://CRAN.R-project.org/package=writexl
 #'
 #' @note

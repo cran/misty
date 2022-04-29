@@ -53,7 +53,7 @@ write.xlsx(list(cars = cars, mtcars = mtcars), file = "Excel_Sheets.xlsx")
 }
 }
 \references{
-Jeroen, O. (2021). emph{writexl: Export Data Frames to Excel 'xlsx' Format}.
+Jeroen, O. (2021). \emph{writexl: Export Data Frames to Excel 'xlsx' Format}.
 R package version 1.4.0. https://CRAN.R-project.org/package=writexl
 }
 \seealso{

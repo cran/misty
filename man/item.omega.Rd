@@ -16,7 +16,7 @@ item.omega(x, resid.cov = NULL, type = c("omega", "hierarch", "categ"),
 when computing coefficient omega, e.g. \code{resid.cov = c("x1", "x2")} for specifying
 a residual covariance between items \code{x1} and \code{x2} or
 \code{resid.cov = list(c("x1", "x2"), c("x3", "x4"))} for specifying residual
-covariances between items between items \code{x1} and \code{x2}, and items \code{x3}
+covariances between items \code{x1} and \code{x2}, and items \code{x3}
 and \code{x4}.}
 
 \item{type}{a character string indicating the type of omega to be computed, i.e.,
@@ -135,8 +135,8 @@ McDonald, R. P. (1978). Generalizability in factorable domains: Domain validity 
 \emph{Educational and Psychological Measurement, 38}, 75-79.
 }
 \seealso{
-\code{\link{write.result}}, \code{\link{item.alpha}}, \code{\link{item.reverse}},
-\code{\link{item.scores}}
+\code{\link{write.result}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
+\code{\link{item.reverse}}, \code{\link{item.scores}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

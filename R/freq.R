@@ -13,33 +13,36 @@
 #' variables are rounded to three digits before computing the frequency table.
 #'
 #' @param x           a vector, factor, matrix or data frame.
-#' @param print       a character string indicating which percentage(s) to be printed
-#'                    on the console, i.e., no percentages (\code{"no"}), all percentages
-#'                    (\code{"all"}), percentage frequencies (\code{"print"}), and
-#'                    valid percentage frequencies (\code{"v.perc"}). Default setting
-#'                    when specifying one variable in \code{x} is \code{print = "all"},
-#'                    while default setting when specifying more than one variable
-#'                    in \code{x} is \code{print = "no"} unless \code{split = TRUE}.
+#' @param print       a character string indicating which percentage(s) to be
+#'                    printed on the console, i.e., no percentages (\code{"no"}),
+#'                    all percentages (\code{"all"}), percentage frequencies
+#'                    (\code{"print"}), and valid percentage frequencies
+#'                    (\code{"v.perc"}). Default setting when specifying one
+#'                    variable in \code{x} is \code{print = "all"}, while default
+#'                    setting when specifying more than one variable in \code{x}
+#'                    is \code{print = "no"} unless \code{split = TRUE}.
 #' @param freq        logical: if \code{TRUE} (default), absolute frequencies will
 #'                    be shown on the console.
 #' @param split       logical: if \code{TRUE}, output table is split by variables
 #'                    when specifying more than one variable in \code{x}.
-#' @param labels      logical: if \code{TRUE} (default), labels for the factor levels
-#'                    will be used.
+#' @param labels      logical: if \code{TRUE} (default), labels for the factor
+#'                    levels will be used.
 #' @param val.col     logical: if \code{TRUE}, values are shown in the columns,
 #'                    variables in the rows.
-#' @param round       an integer value indicating the number of decimal places to be
-#'                    used for rounding numeric variables.
-#' @param exclude     an integer value indicating the maximum number of unique values
-#'                    for variables to be included in the analysis when specifying
-#'                    more than one variable in \code{x} i.e., variables with the
-#'                    number of unique values exceeding \code{exclude} will be excluded
-#'                    from the analysis.
-#' @param digits      an integer value indicating the number of decimal places to be
-#'                    used for displaying percentages.
+#' @param round       an integer value indicating the number of decimal places
+#'                    to be used for rounding numeric variables.
+#' @param exclude     an integer value indicating the maximum number of unique
+#'                    values for variables to be included in the analysis when
+#'                    specifying more than one variable in \code{x} i.e.,
+#'                    variables with the number of unique values exceeding
+#'                    \code{exclude} will be excluded from the analysis. It is
+#'                    also possible to specify \code{exclude = FALSE} to include
+#'                    all variables in the analysis.
+#' @param digits      an integer value indicating the number of decimal places
+#'                    to be used for displaying percentages.
 #' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting
-#'                    the analysis.
+#'                    i.e. these values are converted to \code{NA} before
+#'                    conducting the analysis.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #' @param output      logical: if \code{TRUE}, output is shown on the console.
 #'
@@ -56,9 +59,9 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis (\code{type}), matrix or
-#' data frame specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), and list with results (\code{result}).
+#' entries: function call (\code{call}), type of analysis (\code{type}), matrix
+#' or data frame specified in \code{x} (\code{data}), specification of function
+#' arguments (\code{args}), and list with results (\code{result}).
 #'
 #' @export
 #'
@@ -119,9 +122,10 @@
 #' result <- freq(dat[, c("x1", "x2", "y1", "y2")], split = TRUE, output = FALSE)
 #' write.result(result, "Frequencies.xlsx")
 #' }
-freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split = FALSE,
-                 labels = TRUE, val.col = FALSE, round = 3, exclude = 15, digits = 2,
-                 as.na = NULL, check = TRUE, output = TRUE) {
+freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
+                 split = FALSE, labels = TRUE, val.col = FALSE, round = 3,
+                 exclude = 15, digits = 2, as.na = NULL, check = TRUE,
+                 output = TRUE) {
 
   ####################################################################################
   # Data
@@ -153,13 +157,6 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
   }
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
-
   #-----------------------------------------
   # Data.frame
 
@@ -182,7 +179,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
       # Matrix or data frame
       } else if (isTRUE(is.matrix(x) || is.data.frame(x))) {
 
-        na.x <- vapply(as.character(as.na), function(y) !y %in% misty::chr.trim(apply(as.matrix(x), 2, as.character)),
+        na.x <- vapply(as.character(as.na), function(y) !y %in% misty::chr.trim(apply(as.matrix(x), 2L, as.character)),
                        FUN.VALUE = logical(1))
 
       }
@@ -204,6 +201,13 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
   # Split message
   message.split <- FALSE
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) {
+
+    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
+
+  }
 
   #-----------------------------------------
 
@@ -307,9 +311,13 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
 
     #......
     # Check input 'exclude'
-    if (isTRUE(exclude %% 1L != 0L || exclude < 0L)) {
+    if (isTRUE(!is.logical(exclude))) {
 
-      stop("Specify a positive integer number for the argument 'exclude'.", call. = FALSE)
+      if (isTRUE(exclude %% 1L != 0L || exclude < 0L)) {
+
+        stop("Specify a positive integer number for the argument 'exclude'.", call. = FALSE)
+
+      }
 
     }
 
@@ -317,7 +325,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
     # Check input 'round'
     if (isTRUE(round %% 1L != 0L || round < 0L)) {
 
-      stop("Specify a positive integer number for the argument 'round'.", call. = FALSE)
+        stop("Specify a positive integer number for the argument 'round'.", call. = FALSE)
 
     }
 
@@ -392,7 +400,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
       # Unique factor levels for each variable
       factor.unique <- lapply(x[, x.factor, drop = FALSE], levels)
 
-      if (isTRUE(any(apply(combn(length(x[, x.factor]), 2L), 2, function(y) !identical(factor.unique[[y[1L]]], factor.unique[[y[2L]]]))))) {
+      if (isTRUE(any(apply(combn(length(x[, x.factor]), 2L), 2L, function(y) !identical(factor.unique[[y[1L]]], factor.unique[[y[2L]]]))))) {
 
         warning("Variable do not have the same factor levels, i.e., values may not be comparable across variables.",
                 call. = FALSE)
@@ -423,31 +431,38 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split
   #-----------------------------------------
   # Exclude variables
 
-  if (isTRUE(length(x) > 1 && !split)) {
+  if (isTRUE(!isFALSE(exclude))) {
 
-    x.exclude <- which(vapply(x, function(y) length(unique(na.omit(y))), FUN.VALUE = 1L) > exclude)
+    if (isTRUE(length(x) > 1L && !split)) {
 
-    if (isTRUE(length(x.exclude) > 0L)) {
+      # Default setting exclude variables with more than 15 unique values
+      if (isTRUE(exclude)) { exclude <- 15 }
 
-      x <- x[, -x.exclude, drop = FALSE]
+      x.exclude <- which(vapply(x, function(y) length(unique(na.omit(y))), FUN.VALUE = 1L) > exclude)
 
-      if (isTRUE(length(x) == 0L)) {
+      if (isTRUE(length(x.exclude) > 0L)) {
 
-        stop(paste0("After excluding variables with more than ", exclude, " unique values, no variables are left for the analysis."),
-             call. = FALSE)
+        x <- x[, -x.exclude, drop = FALSE]
 
-      } else {
+        if (isTRUE(length(x) == 0L)) {
 
-        # Rounded numeric variables
-        if (isTRUE(length(setdiff(x.numeric, names(x.exclude))) > 0)) {
+          stop(paste0("After excluding variables with more than ", exclude, " unique values, no variables are left for the analysis."),
+               call. = FALSE)
 
-          warning(paste0("Numeric variables with more than ", round, " digits were rounded: ",
-                         paste(setdiff(x.numeric, names(x.exclude)), collapse = ", ")), call. = FALSE)
+        } else {
+
+          # Rounded numeric variables
+          if (isTRUE(length(setdiff(x.numeric, names(x.exclude))) > 0)) {
+
+            warning(paste0("Numeric variables with more than ", round, " digits were rounded: ",
+                           paste(setdiff(x.numeric, names(x.exclude)), collapse = ", ")), call. = FALSE)
+
+          }
+
+          warning(paste0("Variables with more than ", exclude, " unique values were excluded: ", paste(names(x.exclude), collapse = ", ")),
+                  call. = FALSE)
 
         }
-
-        warning(paste0("Variables with more than ", exclude, " unique values were excluded: ", paste(names(x.exclude), collapse = ", ")),
-                call. = FALSE)
 
       }
 

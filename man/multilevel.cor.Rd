@@ -5,133 +5,154 @@
 \title{Within-Group and Between-Group Correlation Matrix}
 \usage{
 multilevel.cor(x, cluster, within = NULL, between = NULL, estimator = c("ML", "MLR"),
-               na.omit = TRUE, sig = FALSE, alpha = 0.05,
+               missing = c("listwise", "fiml"), sig = FALSE, alpha = 0.05,
                print = c("all", "cor", "se", "stat", "p"), split = FALSE,
                tri = c("both", "lower", "upper"), tri.lower = TRUE,
                p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel",
-                         "BH", "BY", "fdr"),
-               digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
-               output = TRUE)
+                         "BH", "BY", "fdr"), digits = 2, p.digits = 3,
+               as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame.}
 
-\item{cluster}{a vector representing the nested grouping structure (i.e., group or
-cluster variable).}
+\item{cluster}{a vector representing the nested grouping structure (i.e.,
+group or cluster variable).}
 
-\item{within}{a character vector representing variables that are measured on the
-within level and modeled only on the within level. Variables not
-mentioned in \code{within} or \code{between} are measured on
-the within level and will be modeled on both the within and
-between level.}
+\item{within}{a character vector representing variables that are measured
+on the within level and modeled only on the within level.
+Variables not mentioned in \code{within} or \code{between}
+are measured on the within level and will be modeled on both
+the within and between level.}
 
-\item{between}{a character vector representing variables that are measured on the
-between level and modeled only on the between level. Variables not
-mentioned in \code{within} or \code{between} are measured on
-the within level and will be modeled on both the within and
-between level.}
+\item{between}{a character vector representing variables that are measured
+on the between level and modeled only on the between level.
+Variables not mentioned in \code{within} or \code{between}
+are measured on the within level and will be modeled on
+both the within and between level.}
 
-\item{estimator}{a character string indicating the estimator to be used: \code{"ML"} for
-maximum likelihood and \code{"MLR"} (default) for maximum likelihood with
-Huber-White robust standard errors. Note that incomplete cases are removed
-listwise (i.e., \code{na.omit = TRUE}) when using \code{"MLR"}, whereas
-full information maximum likelihood (FIML) is used to deal with missing data
-when using \code{"ML"} when specifying \code{na.omit = FALSE}.}
+\item{estimator}{a character string indicating the estimator to be used:
+\code{"ML"} (default) for maximum likelihood with
+conventional standard errors and \code{"MLR"} for maximum
+likelihood with Huber-White robust standard errors. Note
+that by default, full information maximum likelihood (FIML)
+method is used to deal with missing data when using
+\code{"ML"} (\code{missing = "fiml"}), whereas incomplete
+cases are removed listwise (i.e., \code{missing = "listwise"})
+when using \code{"MLR"}.}
 
-\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting
-the analysis (i.e., listwise deletion); if \code{FALSE} (default), full
-information maximum likelihood (FIML) is used when specifying
-\code{estimator = "ML"}.}
+\item{missing}{a character string indicating how to deal with missing
+data, i.e., \code{"listwise"} for listwise deletion or \code{"fiml"}
+(default) for full information maximum likelihood (FIML) method.
+Note that FIML method is only available when \code{estimator = "ML"}.
+Note that it takes longer to estimate the model when using FIML
+and using FIML might cause issues in model convergence, these
+issues might be resolved by switching to listwise deletion.}
 
-\item{sig}{logical: if \code{TRUE}, statistically significant correlation
-coefficients are shown in boldface on the console.}
+\item{sig}{logical: if \code{TRUE}, statistically significant
+correlation coefficients are shown in boldface on the
+console.}
 
-\item{alpha}{a numeric value between 0 and 1 indicating the significance level at which
-correlation coefficients are printed boldface when \code{sig = TRUE}.}
+\item{alpha}{a numeric value between 0 and 1 indicating the significance
+level at which correlation coefficients are printed
+boldface when \code{sig = TRUE}.}
 
-\item{print}{a character string or character vector indicating which results to show
-on the console, i.e. \code{"all"} for all results, \code{"cor"} for
-correlation coefficients, \code{"se"} for standard errors, \code{"z"}
-for z test statistics, and  \code{"p"} for \emph{p}-values.}
+\item{print}{a character string or character vector indicating which
+results to show on the console, i.e. \code{"all"} for all
+results, \code{"cor"} for correlation coefficients,
+\code{"se"} for standard errors, \code{"stat"} for z test
+statistics, and \code{"p"} for \emph{p}-values.}
 
-\item{split}{logical: if \code{TRUE}, output table is split in within-group and
-between-group correlation matrix.}
+\item{split}{logical: if \code{TRUE}, output table is split in
+within-group and between-group correlation matrix.}
 
-\item{tri}{a character string indicating which triangular of the matrix to show on
-the console when \code{split = TRUE}, i.e., \code{both} for upper and
-lower triangular, \code{lower} (default) for the lower triangular, and
-\code{upper} for
-the upper triangular.}
+\item{tri}{a character string indicating which triangular of the
+matrix to show on the console when \code{split = TRUE},
+i.e., \code{both} for upper and \code{upper} for the upper
+triangular.}
 
-\item{tri.lower}{logical: if \code{TRUE} (default) and \code{split = FALSE} (default),
-within-group correlations are shown in the lower triangular and
-between-group correlation are shown in the upper triangular.}
+\item{tri.lower}{logical: if \code{TRUE} (default) and \code{split = FALSE}
+(default), within-group correlations are shown in the lower
+triangular and between-group correlation are shown in the
+upper triangular.}
 
-\item{p.adj}{a character string indicating an adjustment method for multiple testing
-based on \code{\link{p.adjust}}, i.e., \code{none} (default), \code{bonferroni},
-\code{holm}, \code{hochberg}, \code{hommel},\code{BH}, \code{BY}, or \code{fdr}.}
+\item{p.adj}{a character string indicating an adjustment method for
+multiple testing based on \code{\link{p.adjust}}, i.e.,
+\code{none} (default), \code{bonferroni}, \code{holm},
+\code{hochberg}, \code{hommel}, \code{BH}, \code{BY}, or
+\code{fdr}.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used for
-displaying correlation coefficients.}
+\item{digits}{an integer value indicating the number of decimal places
+to be used for displaying correlation coefficients.}
 
-\item{p.digits}{an integer value indicating the number of decimal places to be used for
-displaying \emph{p}-values.}
+\item{p.digits}{an integer value indicating the number of decimal places
+to be used for displaying \emph{p}-values.}
 
-\item{as.na}{a numeric vector indicating user-defined missing values, i.e. these values
-are converted to \code{NA} before conducting the analysis. Note that
-\code{as.na()} function is only applied to \code{x} but not to \code{cluster}.}
+\item{as.na}{a numeric vector indicating user-defined missing values,
+i.e. these values are converted to \code{NA} before
+conducting the analysis. Note that \code{as.na()} function
+is only applied to \code{x} but not to \code{cluster}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis (\code{type}), matrix or data frame specified in
-\code{x} (\code{data}), specification of function arguments (\code{args}), fitted lavaan
-object (\code{mod.fit}), and list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis (\code{type}), matrix
+or data frame specified in \code{x} (\code{data}), specification of function
+arguments (\code{args}), fitted lavaan object (\code{mod.fit}), and list with
+results  (\code{result}).
 }
 \description{
-This function computes the within-group and between-group correlation matrix
-using the lavaan package and provides standard errors, z test statistics,
-and significance values (\emph{p}-values) for testing the hypothesis
+This function is a wrapper function for computing the within-group and
+between-group correlation matrix by calling the \code{sem} function in the
+R package \pkg{lavaan} and provides standard errors, z test statistics, and
+significance values (\emph{p}-values) for testing the hypothesis
 H0: \eqn{\rho} = 0 for all pairs of variables within and between groups.
 }
 \details{
 The specification of the within-group and between-group variables is in line
-with the syntax in Mplus. That is, the
-\code{within} argument is used to identify the variables in the matrix or
-data frame specified in \code{x} that are measured on the individual level
-and modeled only on the within level. They are specified to have no variance
-in the between part of the model. The \code{between} argument is used to
-identify the variables in the matrix or data frame specified in \code{x}
-that are measured on the cluster level and modeled only on the between level.
-Variables not mentioned in the arguments \code{within} or \code{between}
-are measured on the individual level and will be modeled on both the within
-and between level.
+with the syntax in Mplus. That is, the \code{within} argument is used to
+identify the variables in the matrix or data frame specified in \code{x} that
+are measured on the individual level and modeled only on the within level.
+They are specified to have no variance in the between part of the model. The
+\code{between} argument is used to identify the variables in the matrix or
+data frame specified in \code{x} that are measured on the cluster level and
+modeled only on the between level. Variables not mentioned in the arguments
+\code{within} or \code{between} are measured on the individual level and will
+be modeled on both the within and between level.
 
-By default, the function uses robust maximum likelihood (\code{estimator = "MLR"}),
-i.e., maximum likelihood with Huber-White robust standard errors. When using
-\code{estimator = "MLR"}, listwise deletion is used for missing data (\code{na.omit = TRUE}).
-Note that the lavaan version 0.6-9 supports full information maximum likelihood (FIML)
-in multilevel models for maximum likelihood (\code{estimator = "ML"}), but not
-for robust maximum likelihood (\code{estimator = "MLR"}). Moreover, FIML cannot
-be used when a within-group variables has no variance within some clusters. In
-this cases, listwise deletion is used even though \code{estimator = "ML"} and
-\code{na.omit = FALSE} was specified. Note that there might be issues in model
-convergence when using FIML (\code{estimator = "ML"} and \code{na.omit = FALSE}),
-which might be resolved when switching to listwise deletion (\code{na.omit = TRUE}).
+The function uses maximum likelihood estimation with conventional standard
+errors (\code{estimator = "ML"}) which are not robust against non-normality
+and full information maximum likelihood (FIML) method (\code{missing = "fiml"})
+to deal with missing data by default. FIML method cannot be used when
+within-group variables have no variance within some clusters. In this cases,
+the function
+will switch to listwise deletion. Note that the current lavaan version 0.6-11
+supports FIML method only for maximum likelihood estimation with conventional
+standard errors (\code{estimator = "ML"}) in multilevel models. Maximum
+likelihood estimation with Huber-White robust standard errors
+(\code{estimator = "MLR"}) uses listwise deletion to deal with missing data.
+When using FIML method there might be issues in model convergence, which might
+be resolved by switching to listwise deletion (\code{missing = "listwise"}).
 
-lavaan package uses a quasi-Newton optimization method (\code{"nlminb"}) by default.
-If the optimizer does not converge, model estimation will switch to the Expectation
-Maximization (EM) algorithm.
+The lavaan package uses a quasi-Newton optimization method (\code{"nlminb"})
+by default. If the optimizer does not converge, model estimation will switch
+to the Expectation Maximization (EM) algorithm.
 
-Statistically significant correlation coefficients can be shown in boldface on
-the console when specifying \code{sig = TRUE}. However, this option is not supported
-when using R Markdown, i.e., the argument \code{sig} will switch to \code{FALSE}.
+Statistically significant correlation coefficients can be shown in boldface
+on the console when specifying \code{sig = TRUE}. However, this option is not
+supported when using R Markdown, i.e., the argument \code{sig} will switch to
+\code{FALSE}.
 
 Adjustment method for multiple testing when specifying the argument \code{p.adj}
 is applied to the within-group and between-group correlation matrix separately.
+}
+\note{
+The function uses the functions \code{sem}, \code{lavInspect},
+\code{lavMatrixRepresentation}, \code{lavTech}, \code{parameterEstimates},
+and \code{standardizedsolution} provided in the R package \pkg{lavaan} by
+Yves Rosseel (2012).
 }
 \examples{
 \dontrun{
@@ -146,7 +167,7 @@ multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
 
 # Highlight statistically significant result at alpha = 0.05
 multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], sig = TRUE,
-               cluster = Demo.twolevel$cluster)
+              cluster = Demo.twolevel$cluster)
 
 # Split output table in within-group and between-group correlation matrix.
 multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
@@ -190,15 +211,16 @@ write.result(result, "Multilevel_Correlation.xlsx")
 }
 }
 \references{
-Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis: Techniques and
-applications} (3rd. ed.). Routledge.
+Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis:
+Techniques and applications} (3rd. ed.). Routledge.
 
-Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introduction to basic
-and advanced multilevel modeling} (2nd ed.). Sage Publishers.
+Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An
+introduction to basic and advanced multilevel modeling} (2nd ed.). Sage
+Publishers.
 }
 \seealso{
-\code{\link{cor.matrix}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.icc}},
-\code{\link{multilevel.r2}}, \code{\link{cluster.scores}}, \code{\link{write.result}},
+\code{\link{write.result}}, \code{\link{multilevel.descript}},
+\code{\link{multilevel.icc}}, \code{\link{cluster.scores}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

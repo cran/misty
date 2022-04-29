@@ -23,8 +23,8 @@
 #'                   \code{resid.cov = c("x1", "x2")} for specifying a residual
 #'                   covariance between items \code{x1} and \code{x2} or
 #'                   \code{resid.cov = list(c("x1", "x2"), c("x3", "x4"))} for specifying
-#'                   residual covariances between items between items \code{x1} and
-#'                   \code{x2}, and items \code{x3} and \code{x4}.
+#'                   residual covariances between items \code{x1} and \code{x2},
+#'                   and items \code{x3} and \code{x4}.
 #' @param type       a character string indicating the type of omega to be computed, i.e.,
 #'                   \code{omega} (default) for coefficient omega, \code{hierarch} for
 #'                   hierarchical omega, and \code{categ} for categorical omega.
@@ -54,8 +54,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{write.result}}, \code{\link{item.alpha}}, \code{\link{item.reverse}},
-#' \code{\link{item.scores}}
+#' \code{\link{write.result}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
+#' \code{\link{item.reverse}}, \code{\link{item.scores}}
 #'
 #' @references
 #' Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for
@@ -150,7 +150,6 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
   #
   # MBESS: The MBESS R Package
   # https://cran.r-project.org/web/packages/MBESS/index.html
-
 
   #-----------------------------------------------------------------------------------
   # .catOmega Function
@@ -595,7 +594,7 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
   #----------------------------------------
   # Type of omega
 
-  if (isTRUE(all(c(c("omega", "hierarch", "categ")) %in% type))) { type <- "omega" }
+  if (isTRUE(all(c("omega", "hierarch", "categ") %in% type))) { type <- "omega" }
 
   #----------------------------------------
   # Method for handling missing data
@@ -685,7 +684,7 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
         }
 
-        # Degrees od freedom
+        # Degrees of freedom
         if (isTRUE(lavaan::lavInspect(mod.fit, "fit")["df"] < 0L)) {
 
           warning("CFA model has negative degrees of freedom, results are most likely unreliable.",
