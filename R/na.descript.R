@@ -4,19 +4,22 @@
 #' of incomplete cases, number (%) of missing values, and summary statistics for
 #' the number (%) of missing values across all variables.
 #'
-#' @param x           a matrix or data frame.
-#' @param table       logical: if \code{TRUE}, a frequency table with number of
-#'                    observed values (\code{"nObs"}), percent of observed values
-#'                    (\code{"pObs"}), number of missing values (\code{"nNA"}),
-#'                    and percent of missing values (\code{"pNA"}) is printed for
-#'                    each variable on the console.
-#' @param digits      an integer value indicating the number of decimal places to
-#'                    be used for displaying percentages.
-#' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting
-#'                    the analysis.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
-#' @param output      logical: if \code{TRUE}, output is shown on the console.
+#' @param x       a matrix or data frame.
+#' @param table   logical: if \code{TRUE}, a frequency table with number of
+#'                observed values (\code{"nObs"}), percent of observed values
+#'                (\code{"pObs"}), number of missing values (\code{"nNA"}),
+#'                and percent of missing values (\code{"pNA"}) is printed for
+#'                each variable on the console.
+#' @param digits  an integer value indicating the number of decimal places to
+#'                be used for displaying percentages.
+#' @param as.na   a numeric vector indicating user-defined missing values,
+#'                i.e. these values are converted to \code{NA} before conducting
+#'                the analysis.
+#' @param write   a character string for writing the results into a Excel file
+#'                naming a file with or without file extension '.xlsx', e.g.,
+#'                \code{"Results.xlsx"} or \code{"Results"}.
+#' @param check   logical: if \code{TRUE}, argument specification is checked.
+#' @param output  logical: if \code{TRUE}, output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -64,40 +67,28 @@
 #'
 #' \dontrun{
 #' # Write Results into a Excel file
+#' na.descript(dat, table = TRUE, write = "NA_Descriptives.xlsx")
+#'
 #' result <- na.descript(dat, table = TRUE, output = FALSE)
 #' write.result(result, "NA_Descriptives.xlsx")
 #' }
-na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE,
-                        output = TRUE) {
+na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, write = NULL,
+                        check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Data
 
   #...............
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #----------------------------------------
   # Data frame
@@ -107,21 +98,13 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
   #----------------------------------------
   # Convert user-missing values into NA
 
-  if (isTRUE(!is.null(as.na))) {
-
-    df <- misty::as.na(df, na = as.na, check = check)
-
-  }
+  if (isTRUE(!is.null(as.na))) { df <- misty::as.na(df, na = as.na, check = check) }
 
   ####################################################################################
   # Input Check
 
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -129,27 +112,15 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
 
     #......
     # Check input 'table'
-    if (isTRUE(!is.logical(table))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(table))) { stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -241,6 +212,11 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE
                                table.miss = table.missing))
 
   class(object) <- "misty.object"
+
+  ####################################################################################
+  # Write results
+
+  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
   ####################################################################################
   # Output

@@ -390,27 +390,15 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a numeric vector for the argument 'x'", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Check if only one variable specified in the input 'x'
-  if (ncol(data.frame(x)) != 1) {
-
-    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
-
-  }
+  if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
 
   #......
   # Convert 'x' into a vector
@@ -420,27 +408,15 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check if input 'y' is missing
-  if (isTRUE(missing(y))) {
-
-    stop("Please specify a numeric vector for the argument 'y'", call. = FALSE)
-
-  }
+  if (isTRUE(missing(y))) { stop("Please specify a numeric vector for the argument 'y'", call. = FALSE) }
 
   #......
   # Check if input 'y' is NULL
-  if (isTRUE(is.null(y))) {
-
-    stop("Input specified for the argument 'y' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(y))) { stop("Input specified for the argument 'y' is NULL.", call. = FALSE) }
 
   #......
   # Check if only one variable specified in the input 'y'
-  if (ncol(data.frame(y)) != 1) {
-
-    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
-
-  }
+  if (ncol(data.frame(y)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
 
   #......
   # Convert 'y' into a vector
@@ -450,21 +426,12 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check input 'paired'
-  if (isTRUE(!is.logical(paired))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(paired))) { stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE) }
 
   if (isTRUE(paired)) {
 
     # Length of 'x' and 'y'
-    if (isTRUE(nrow(data.frame(x)) != nrow(data.frame(y)))) {
-
-      stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(nrow(data.frame(x)) != nrow(data.frame(y)))) { stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.", call. = FALSE) }
 
   }
 
@@ -474,27 +441,13 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   # Check 'group'
   if (isTRUE(!is.null(group))) {
 
-    if (isTRUE(!paired)) {
+    if (isTRUE(!paired)) { stop("Please use formula notation for using a grouping variable in independent samples.", call. = FALSE) }
 
-      stop("Please use formula notation for using a grouping variable in independent samples.",
-           call. = FALSE)
-
-    }
-
-    if (ncol(data.frame(group)) != 1) {
-
-      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
-
-    }
+    if (ncol(data.frame(group)) != 1) { stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE) }
 
     if (isTRUE(paired)) {
 
-      if (nrow(data.frame(group)) != nrow(data.frame(x))) {
-
-        stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.",
-             call. = FALSE)
-
-      }
+      if (nrow(data.frame(group)) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.", call. = FALSE) }
 
     }
 
@@ -507,27 +460,13 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   # Check 'split'
   if (isTRUE(!is.null(split))) {
 
-    if (isTRUE(!paired)) {
+    if (isTRUE(!paired)) { stop("Please use formula notation for using a split variable in independent samples.", call. = FALSE) }
 
-      stop("Please use formula notation for using a split variable in independent samples.",
-           call. = FALSE)
-
-    }
-
-    if (ncol(data.frame(split)) != 1) {
-
-      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
-
-    }
+    if (ncol(data.frame(split)) != 1) { stop("More than one split variable specified for the argument 'split'.",call. = FALSE) }
 
     if (isTRUE(paired)) {
 
-      if (nrow(data.frame(split)) != nrow(data.frame(x))) {
-
-        stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.",
-             call. = FALSE)
-
-      }
+      if (nrow(data.frame(split)) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.", call. = FALSE) }
 
     }
 
@@ -577,12 +516,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   if (isTRUE(paired)) {
 
-    if (isTRUE(nrow(na.omit(xy)) < 2)) {
-
-      stop("After listwise deletion, there is only one or no pair of observations left for the analysis.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(nrow(na.omit(xy)) < 2L)) { stop("After listwise deletion, there is only one or no pair of observations left for the analysis.", call. = FALSE) }
 
   }
 
@@ -591,38 +525,21 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
     #......
     # Check input 'x'
-    if (isTRUE(!all(unlist(x) %in% c(0L, 1L, NA)))) {
-
-      stop("Please specify a numeric vector with 0 and 1 values for the argument 'x'.", call. = FALSE)
-
-    }
+    if (isTRUE(!all(unlist(x) %in% c(0L, 1L, NA)))) { stop("Please specify a numeric vector with 0 and 1 values for the argument 'x'.", call. = FALSE) }
 
     #......
     # Check input 'y'
-    if (isTRUE(!all(unlist(x) %in% c(0L, 1L, NA)))) {
-
-      stop("Please specify a numeric vector with 0 and 1 values for the argument 'y.", call. = FALSE)
-
-    }
+    if (isTRUE(!all(unlist(x) %in% c(0L, 1L, NA)))) { stop("Please specify a numeric vector with 0 and 1 values for the argument 'y.", call. = FALSE) }
 
     #......
     # Check input 'method'
-    if (isTRUE(!all(method %in% c("wald", "newcombe")))) {
-
-      stop("Character string in the argument 'method' does not match with \"wald\", or \"newcombe\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(!all(method %in% c("wald", "newcombe")))) { stop("Character string in the argument 'method' does not match with \"wald\", or \"newcombe\".", call. = FALSE) }
 
     #......
     # Check input 'alternative'
@@ -635,37 +552,20 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     #......
     # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) {
-
-      stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
     #......
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
       # Vector or factor for the argument 'group'?
-      if (isTRUE(!is.vector(group) && !is.factor(group))) {
-
-        stop("Please specify a vector or factor for the argument 'group'.", call. = FALSE)
-
-      }
+      if (isTRUE(!is.vector(group) && !is.factor(group))) { stop("Please specify a vector or factor for the argument 'group'.", call. = FALSE) }
 
       # Input 'group' completely missing
-      if (isTRUE(all(is.na(group)))) {
-
-        stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE)
-
-      }
+      if (isTRUE(all(is.na(group)))) { stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE) }
 
       # Only one group in 'group'
-      if (length(na.omit(unique(group))) == 1L) {
-
-        warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
-
-      }
+      if (length(na.omit(unique(group))) == 1L) { warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE) }
 
     }
 
@@ -674,44 +574,24 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
     if (isTRUE(!is.null(split))) {
 
       # Input 'split' completely missing
-      if (isTRUE(all(is.na(split)))) {
-
-        stop("The split variable specified in 'split' is completely missing.", call. = FALSE)
-
-      }
+      if (isTRUE(all(is.na(split)))) { stop("The split variable specified in 'split' is completely missing.", call. = FALSE) }
 
       # Only one group in 'split'
-      if (length(na.omit(unique(split))) == 1L) {
-
-        warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE)
-
-      }
+      if (length(na.omit(unique(split))) == 1L) { warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE) }
 
     }
 
     #......
     # Check input 'sort.var'
-    if (isTRUE(!is.logical(sort.var))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(sort.var))) { stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input output
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 

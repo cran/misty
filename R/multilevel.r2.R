@@ -443,12 +443,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   #......
   # Check if input 'model' is missing or null
-  if (isTRUE(missing(model) || is.null(model))) {
-
-    stop("Please specify a fitted model of class \"lmerMod\" or \"lme\" for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model of class \"lmerMod\" or \"lme\" for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check method
@@ -471,96 +466,54 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   # Input Check
 
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
   if (isTRUE(check)) {
 
     #......
+    # ggplot2 package
+    if (isTRUE(!nzchar(system.file(package = "ggplot2"))))  { warning("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
+
+    #......
     # Check input 'print'
-    if (isTRUE(!all(print %in%  c("all", "RB", "SB", "NS", "RS")))) {
-
-      stop("Character strings in the argument 'print' do not all match with \"all\", \"RB\", \"SB\", \"NS\", or \"RS\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(!all(print %in%  c("all", "RB", "SB", "NS", "RS")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"RB\", \"SB\", \"NS\", or \"RS\".", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'plot'
-    if (isTRUE(!is.logical(plot))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'plot'", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'", call. = FALSE) }
 
     #......
     # Check input 'gray'
-    if (isTRUE(!is.logical(gray))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'gray'", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(gray))) { stop("Please specify TRUE or FALSE for the argument 'gray'", call. = FALSE) }
 
     #......
     # Check input 'start'
-    if (isTRUE(start < 0L || start > 1L)) {
-
-      stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE)
-
-    }
+    if (isTRUE(start < 0L || start > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) }
 
     #......
     # Check input 'end'
-    if (isTRUE(end < 0L || end > 1L)) {
-
-      stop("Please specify a numeric value between 0 and 1 for the argument 'end'", call. = FALSE)
-
-    }
+    if (isTRUE(end < 0L || end > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'end'", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE) }
 
   }
 
   ####################################################################################
   # Data and Arguments
 
-  if (isTRUE(all(c("all", "RB", "SB", "NS", "RS") %in% print))) {
+  if (isTRUE(all(c("all", "RB", "SB", "NS", "RS") %in% print))) { print <- "RS" }
 
-    print <- "RS"
+  if (isTRUE(length(print) == 1L && print == "all")) { print <- c("RB", "SB", "NS", "RS") }
 
-  }
-
-  if (isTRUE(length(print) == 1L && print == "all")) {
-
-    print <- c("RB", "SB", "NS", "RS")
-
-  }
-
-  if (isTRUE(plot) & isTRUE(!"RS" %in% print)) {
-
-    warning("Bar char is only available when \"RS\" is specified in the argument 'print'.",
-            call. = FALSE)
-
-  }
+  if (isTRUE(plot) & isTRUE(!"RS" %in% print)) { warning("Bar char is only available when \"RS\" is specified in the argument 'print'.", call. = FALSE) }
 
   ####################################################################################
   # Main Function
@@ -756,12 +709,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   if (isTRUE("RS" %in% print)) {
 
     # r2mlm package
-    if (isTRUE("RS" %in% print & !nzchar(system.file(package = "r2mlm")))) {
-
-      stop("Package \"r2mlm\" is needed for to compute R-squared according to Rights and Sterba (2019), please install the package.",
-           call. = FALSE)
-
-    }
+    if (isTRUE("RS" %in% print & !nzchar(system.file(package = "r2mlm")))) { stop("Package \"r2mlm\" is needed for to compute R-squared according to Rights and Sterba (2019), please install the package.", call. = FALSE) }
 
     r2mlm.out <- r2mlm::r2mlm(model, bargraph = FALSE)
 
@@ -774,68 +722,60 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
                                                             colnames(r2mlm.out$R2s)))))
 
     #.......................................
-    # Bar Chart
+    # Plot
 
-    # ggplot2 package
-    if (isTRUE(plot & !nzchar(system.file(package = "ggplot2")))) {
+    part <- NULL
 
-      warning("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE)
+    # Predictors are not cluster-mean-centered
+    if (isTRUE(ncol(rs$decomp) == 1L)) {
 
-      plot <- FALSE
+      df <- data.frame(var = factor(rep("Total", times = 4L)),
+                       part = factor(c("Fixed Slopes", "Slope Variation", "Intercept Variation", "Residual"),
+                                     levels = c("Residual", "Intercept Variation", "Slope Variation", "Fixed Slopes")),
+                       y = as.vector(rs$decomp))
+
+    # Predictors are cluster-mean-centered
+    } else {
+
+      df <- data.frame(var = factor(rep(c("Total", "Within", "Between"), each = 5L),
+                                    levels = c("Total", "Within", "Between")),
+                       part = factor(c("Fixed Slopes (Within)", "Fixed Slopes (Between)","Slope Variation (Within)", "Intercept Variation (Between)", "Residual (Within)"),
+                                     levels = c("Residual (Within)", "Intercept Variation (Between)", "Slope Variation (Within)", "Fixed Slopes (Between)", "Fixed Slopes (Within)")),
+                       y = as.vector(rs$decomp))
+
+    }
+
+    p <- ggplot2::ggplot(df, ggplot2::aes(x = var, y = y, fill = part)) +
+           ggplot2::geom_bar(stat = "identity") +
+           ggplot2::scale_y_continuous(name = "Proportion of Variance",
+                                       breaks = seq(0L, 1L, by = 0.1)) +
+           ggplot2::theme_bw() +
+           ggplot2::theme(axis.title.x = ggplot2::element_blank(),
+                          axis.ticks.x = ggplot2::element_blank(),
+                          legend.title = ggplot2::element_blank(),
+                          legend.position = "bottom",
+                          legend.box.margin = ggplot2::margin(-10L, 6L, 6L, 6L)) +
+           ggplot2::guides(fill = ggplot2::guide_legend(nrow = 2L, reverse = TRUE))
+
+    # Gray color scales
+    if (isTRUE(gray)) {
+
+      p <- p + ggplot2::scale_fill_grey(start = end, end = start)
+
+    } else {
+
+      p <- p + ggplot2::scale_fill_manual(values = rev(color))
 
     }
 
-    if (isTRUE(plot)) {
+    # Print plot
+    if (isTRUE(plot)) { suppressWarnings(print(p)) }
 
-      part <- NULL
-
-      # Predictors are not cluster-mean-centered
-      if (isTRUE(ncol(rs$decomp) == 1)) {
-
-        df <- data.frame(var = factor(rep("Total", times = 4L)),
-                         part = factor(c("Fixed Slopes", "Slope Variation", "Intercept Variation", "Residual"),
-                                       levels = c("Residual", "Intercept Variation", "Slope Variation", "Fixed Slopes")),
-                         y = as.vector(rs$decomp))
-
-      # Predictors are cluster-mean-centered
-      } else {
-
-        df <- data.frame(var = factor(rep(c("Total", "Within", "Between"), each = 5L),
-                                      levels = c("Total", "Within", "Between")),
-                         part = factor(c("Fixed Slopes (Within)", "Fixed Slopes (Between)","Slope Variation (Within)", "Intercept Variation (Between)", "Residual (Within)"),
-                                       levels = c("Residual (Within)", "Intercept Variation (Between)", "Slope Variation (Within)", "Fixed Slopes (Between)", "Fixed Slopes (Within)")),
-                         y = as.vector(rs$decomp))
-
-      }
-
-      p <- ggplot2::ggplot(df, ggplot2::aes(x = var, y = y, fill = part)) +
-             ggplot2::geom_bar(stat = "identity") +
-
-             ggplot2::scale_y_continuous(name = "Proportion of Variance",
-                                         breaks = seq(0L, 1L, by = 0.1)) +
-             ggplot2::theme_bw() +
-             ggplot2::theme(axis.title.x = ggplot2::element_blank(),
-                            axis.ticks.x = ggplot2::element_blank(),
-                            legend.title = ggplot2::element_blank(),
-                            legend.position = "bottom",
-                            legend.box.margin = ggplot2::margin(-10L, 6L, 6L, 6L)) +
-             ggplot2::guides(fill = ggplot2::guide_legend(nrow = 2L, reverse = TRUE))
-
-      # Gray color scales
-      if (isTRUE(gray)) {
-
-        suppressWarnings(print(p + ggplot2::scale_fill_grey(start = end, end = start)))
-
-      } else {
-
-        suppressWarnings(print(p + ggplot2::scale_fill_manual(values = rev(color))))
-
-      }
-
-    }
     #.......................................
 
   } else {
+
+    p <- NULL
 
     rs <- list(decomp = matrix(NA, ncol = 3L, nrow = 5L,
                                dimnames = list(c("fixed, within", "fixed, between", "slope variation", "mean variation", "sigma2"),
@@ -852,6 +792,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   object <- list(call = match.call(),
                  type = "multilevel.r2",
                  model = model,
+                 plot = p,
                  args = list(print = print, digits = digits, plot = plot, gray = gray,
                              start = start, end = end, color = color, check = check,
                              output = output),

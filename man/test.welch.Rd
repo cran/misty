@@ -5,9 +5,14 @@
 \title{Welch's Test}
 \usage{
 test.welch(formula, data, alternative = c("two.sided", "less", "greater"),
-           conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
-           weighted = FALSE, ref = NULL, correct = FALSE, digits = 2,
-           p.digits = 4, as.na = NULL, check = TRUE, output = TRUE, ...)
+           posthoc = TRUE, conf.level = 0.95, hypo = TRUE, descript = TRUE,
+           effsize = FALSE, weighted = FALSE, ref = NULL, correct = FALSE,
+           plot = FALSE, point.size = 4, error.width = 0.1,
+           xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
+           jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.1,
+           title = "",  subtitle = "Confidence Interval",
+           digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
+           output = TRUE, ...)
 }
 \arguments{
 \item{formula}{a formula of the form \code{y ~ group} where \code{y} is a numeric variable
@@ -21,6 +26,8 @@ corresponding groups.}
 code{"two.sided"} (default), \code{"greater"} or \code{"less"}. Note that this
 argument is only used when conducting Welch's two-sample t-test.}
 
+\item{posthoc}{logical: if \code{TRUE}, Games-Howell post hoc test for multiple comparison is conducted when performing Welch's ANOVA.}
+
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval
 for Cohen's d.
 Note that this argument is only used when conducting Welch's two-sample t-test.}
@@ -30,8 +37,8 @@ Note that this argument is only used when conducting Welch's two-sample t-test.}
 \item{descript}{logical: if \code{TRUE}, descriptive statistics are shown on the console.}
 
 \item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d for Welch's two-sample t-test
-(see \code{\link{cohens.d}}), \eqn{\eta^2} and \eqn{\omega^2} for Welch's ANOVA are
-shown on the console.}
+(see \code{\link{cohens.d}}), \eqn{\eta^2} and \eqn{\omega^2} for Welch's ANOVA and Cohen's d for
+the post hoc tests are shown on the console.}
 
 \item{weighted}{logical: if \code{TRUE}, the weighted pooled standard deviation is used to compute Cohen's d.}
 
@@ -39,6 +46,20 @@ shown on the console.}
 deviation of the reference group is used to standardized the mean difference to compute Cohen's d.}
 
 \item{correct}{logical: if \code{TRUE}, correction factor to remove positive bias in small samples is used.}
+
+\item{plot}{logical: if \code{TRUE}, a plot showing error bars for confidence intervals is drawn.}
+\item{point.size}{a numeric value indicating the \code{size} aesthetic for the point representing the mean value.}
+\item{error.width}{ a numeric value indicating the horizontal bar width of the error bar.}
+\item{xlab}{a character string specifying the labels for the x-axis.}
+\item{ylab}{a character string specifying the labels for the y-axis.}
+\item{ylim}{a numeric vector of length two specifying limits of the limits of the y-axis.}
+\item{breaks}{a numeric vector specifying the points at which tick-marks are drawn at the y-axis.}
+\item{jitter}{logical: if \code{TRUE} (default), jittered data points are drawn.}
+\item{jitter.size}{ a numeric value indicating the \code{size} aesthetic for the jittered data points.}
+\item{jitter.width}{a numeric value indicating the amount of vertical and horizontal jitter.}
+\item{jitter.alpha}{a numeric value indicating the opacity of the jittered data points.}
+\item{title}{a character string specifying the text for the title for the plot.}
+\item{subtitle}{a character string specifying the text for the subtitle for the plot.}
 
 \item{digits}{an integer value indicating the number of decimal places to be used for displaying
 descriptive statistics and confidence interval.}
@@ -61,72 +82,132 @@ function call (\code{call}), type of analysis \code{type}, list with the input s
 (\code{data}), specification of function arguments (\code{args}), and result table(s) (\code{result}).
 }
 \description{
-This function performs Welch's two-sample t-test and Welch's ANOVA.
+This function performs Welch's two-sample t-test and Welch's ANOVA including
+Games-Howell post hoc test for multiple comparison and provides descriptive
+statistics, effect size measures, and a plot showing error bars for confidence
+intervals with jittered data points.
 }
 \details{
-Note that by default Welch's two-sample t-test reports Cohen's d based on the unweighted
-standard deviation (i.e., \code{weighted = FALSE}) when requesting an effect size measure
-(i.e., \code{effsize = TRUE}) following the recommendation by Delacre et al. (2021).
+Note that by default Welch's two-sample t-test and Games-Howell post hoc test
+reports Cohen's d based on the unweighted standard deviation (i.e., \code{weighted = FALSE})
+when requesting an effect size measure  (i.e., \code{effsize = TRUE}) following
+the recommendation by Delacre et al. (2021).
 }
 \examples{
 dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
                    group2 = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3),
-                   x = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 6, 3, NA))
+                   y = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 6, 3, NA))
 
 #--------------------------------------
 # Two-Sample Design
 
 # Two-sided two-sample Welch-test
-test.welch(x ~ group1, data = dat1)
+test.welch(y ~ group1, data = dat1)
 
 # One-sided two-sample Welch-test
-test.welch(x ~ group1, data = dat1, alternative = "greater")
+test.welch(y ~ group1, data = dat1, alternative = "greater")
 
 # Two-sided two-sample Welch-test
 # print Cohen's d with weighted pooled SD
-test.welch(x ~ group1, data = dat1, effsize = TRUE)
+test.welch(y ~ group1, data = dat1, effsize = TRUE)
 
 # Two-sided two-sample Welch-test
 # print Cohen's d with unweighted pooled SD
-test.welch(x ~ group1, data = dat1, effsize = TRUE, weighted = FALSE)
+test.welch(y ~ group1, data = dat1, effsize = TRUE, weighted = FALSE)
 
 # Two-sided two-sample Welch-test
 # print Cohen's d with weighted pooled SD and
 # small sample correction factor
-test.welch(x ~ group1, data = dat1, effsize = TRUE, correct = TRUE)
+test.welch(y ~ group1, data = dat1, effsize = TRUE, correct = TRUE)
 
 # Two-sided two-sample Welch-test
 # print Cohen's d with SD of the reference group 1
-test.welch(x ~ group1, data = dat1, effsize = TRUE,
+test.welch(y ~ group1, data = dat1, effsize = TRUE,
            ref = 1)
 
 # Two-sided two-sample Welch-test
 # print Cohen's d with weighted pooled SD and
 # small sample correction factor
-test.welch(x ~ group1, data = dat1, effsize = TRUE,
+test.welch(y ~ group1, data = dat1, effsize = TRUE,
            correct = TRUE)
 
 # Two-sided two-sample Welch-test
 # do not print hypotheses and descriptive statistics,
-test.welch(x ~ group1, data = dat1, descript = FALSE, hypo = FALSE)
+test.welch(y ~ group1, data = dat1, descript = FALSE, hypo = FALSE)
 
 # Two-sided two-sample Welch-test
 # print descriptive statistics with 3 digits and p-value with 5 digits
-test.welch(x ~ group1, data = dat1, digits = 3, p.digits = 5)
+test.welch(y ~ group1, data = dat1, digits = 3, p.digits = 5)
+
+\dontrun{
+# Two-sided two-sample Welch-test
+# plot results
+test.welch(y ~ group1, data = dat1, plot = TRUE)
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Save plot, ggsave() from the ggplot2 package
+ggsave("Two-sample_Welch-test.png", dpi = 600, width = 4, height = 6)
+
+# Two-sided two-sample Welch-test
+# extract plot
+p <- test.welch(y ~ group1, data = dat1, output = FALSE)$plot
+p
+
+# Extract data
+plotdat <- test.welch(y ~ group1, data = dat1, output = FALSE)$data
+
+# Draw plot in line with the default setting of test.welch()
+ggplot(plotdat, aes(factor(group), y)) +
+  geom_point(stat = "summary", fun = "mean", size = 4) +
+  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
+  scale_x_discrete(name = NULL) +
+  labs(subtitle = "Two-Sided 95% Confidence Interval") +
+  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
+}
 
 #--------------------------------------
 # Multiple-Sample Design
 
 # Welch's ANOVA
-test.welch(x ~ group2, data = dat1)
+test.welch(y ~ group2, data = dat1)
 
 # Welch's ANOVA
 # print eta-squared and omega-squared
-test.welch(x ~ group2, data = dat1, effsize = TRUE)
+test.welch(y ~ group2, data = dat1, effsize = TRUE)
 
 # Welch's ANOVA
 # do not print hypotheses and descriptive statistics,
-test.welch(x ~ group2, data = dat1, descript = FALSE, hypo = FALSE)
+test.welch(y ~ group2, data = dat1, descript = FALSE, hypo = FALSE)
+
+\dontrun{
+# Welch's ANOVA
+# plot results
+test.welch(y ~ group2, data = dat1, plot = TRUE)
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Save plot, ggsave() from the ggplot2 package
+ggsave("Multiple-sample_Welch-test.png", dpi = 600, width = 4.5, height = 6)
+
+# Welch's ANOVA
+# extract plot
+p <- test.welch(y ~ group2, data = dat1, output = FALSE)$plot
+p
+
+# Extract data
+plotdat <- test.welch(y ~ group2, data = dat1, output = FALSE)$data
+
+# Draw plot in line with the default setting of test.welch()
+ggplot(plotdat, aes(group, y)) +
+  geom_point(stat = "summary", fun = "mean", size = 4) +
+  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
+  scale_x_discrete(name = NULL) +
+  labs(subtitle = "Two-Sided 95% Confidence Interval") +
+  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
+}
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
@@ -136,8 +217,7 @@ Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why Hedges' g*s ba
 standard deviation should be reported with Welch's t-test. https://doi.org/10.31234/osf.io/tu6mp
 }
 \seealso{
-\code{\link{test.t}}, \code{\link{test.z}}, \code{\link{test.levene}}, \code{\link{cohens.d}},
-\code{\link{ci.mean.diff}}, \code{\link{ci.mean}}
+\code{\link{test.t}}, \code{\link{test.z}}, \code{\link{test.levene}}, \code{\link{aov.b}}, \code{\link{cohens.d}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

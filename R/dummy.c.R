@@ -87,20 +87,11 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a numeric vector with integer values, character vector or factor for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a numeric vector with integer values, character vector or factor for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   # Convert 'group' into a vector
   x <- unlist(x, use.names = FALSE)
@@ -113,18 +104,10 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
     x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable is missing values only?
-    if (isTRUE(all(is.na(x)))) {
-
-      stop("After converting user-missing values into NA, 'x' is completely missing.", call. = FALSE)
-
-    }
+    if (isTRUE(all(is.na(x)))) { stop("After converting user-missing values into NA, 'x' is completely missing.", call. = FALSE) }
 
     # One unique value
-    if (isTRUE(length(na.omit(unique(x))) == 1)) {
-
-      stop("After converting user-missing values into NA, 'x' has only one unique value.", call. = FALSE)
-
-    }
+    if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("After converting user-missing values into NA, 'x' has only one unique value.", call. = FALSE) }
 
   }
 
@@ -143,11 +126,7 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -157,54 +136,32 @@ dummy.c <- function(x, ref = NULL, names = "d", as.na = NULL, check = TRUE) {
     # Input check 'x'
     if (isTRUE(is.numeric(x))) {
 
-      if (isTRUE(any(na.omit(x) %% 1L != 0L))) {
-
-        stop("Please specify a vector with integer values, a character vector or a factor for the argument 'x'.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(any(na.omit(x) %% 1L != 0L))) { stop("Please specify a vector with integer values, a character vector or a factor for the argument 'x'.", call. = FALSE) }
 
     }
 
     #......
     # Input check 'x': Zero variance
-    if (isTRUE(length(na.omit(unique(x))) == 1)) {
-
-      stop("Variable specified in 'x' havs only one unique value.", call. = FALSE)
-
-    }
+    if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Variable specified in 'x' havs only one unique value.", call. = FALSE) }
 
 
     #......
     # Input check 'ref'
     if (isTRUE(!is.null(ref))) {
 
-      if (isTRUE(!ref %in% x)) {
-
-        stop("The reference category specified in 'ref' was not found in 'x'.", call. = FALSE)
-
-      }
+      if (isTRUE(!ref %in% x)) { stop("The reference category specified in 'ref' was not found in 'x'.", call. = FALSE) }
 
     }
 
     #......
     # Input check 'names'
-    if (isTRUE(!is.character(names))) {
-
-      stop("Please specify a character string or character vector for the argument 'names'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.character(names))) { stop("Please specify a character string or character vector for the argument 'names'.", call. = FALSE) }
 
     #......
     # Input check 'names'
     if (isTRUE(length(names) > 1L)) {
 
-      if (isTRUE(length(names) != (length(x.unique) - 1L))) {
-
-        stop("The length of the vector specified in 'names' does not match with the number of unique values minus one.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(length(names) != (length(x.unique) - 1L))) { stop("The length of the vector specified in 'names' does not match with the number of unique values minus one.", call. = FALSE) }
 
     }
 

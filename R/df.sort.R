@@ -55,21 +55,13 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a data frame for the argument 'x'.", call. = FALSE) }
 
   # No variables specified in ..., i.e., use all variables in x
   if (isTRUE(length(var.names) == 0)) { var.names <- colnames(x) }
 
   # Data frame for the argument 'x'?
-  if (isTRUE(!is.data.frame(x))) {
-
-    stop("Please specify a data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.data.frame(x))) { stop("Please specify a data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input '...'
@@ -83,11 +75,7 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -95,11 +83,7 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
     #......
     # Check input 'decreasing'
-    if (isTRUE(!is.logical(decreasing))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'decreasing'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(decreasing))) { stop("Please specify TRUE or FALSE for the argument 'decreasing'.", call. = FALSE) }
 
   }
 

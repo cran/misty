@@ -4,7 +4,7 @@
 \alias{write.sav}
 \title{Write SPSS File}
 \usage{
-write.sav(x, file = "SPSS_Data.sav", var.attr = NULL,   pspp.path = NULL,
+write.sav(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NULL,
           digits = 2, write.csv = FALSE, sep = c(";", ","), na = "",
           write.sps = FALSE,check = TRUE)
 }

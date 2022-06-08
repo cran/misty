@@ -56,29 +56,16 @@ item.reverse <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a numeric vector for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
 
   #......
   # Check if only one variable specified in the input 'x'
-  if (ncol(data.frame(x)) != 1) {
-
-    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
-
-  }
+  if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
 
   #......
   # Convert 'x' into a vector
@@ -102,11 +89,7 @@ item.reverse <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -114,27 +97,15 @@ item.reverse <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
 
     #......
     # Check input 'x': Numeric vector
-    if (isTRUE(mode(x) != "numeric")) {
-
-      stop("Please specify a numeric vector for the argument 'x'.")
-
-    }
+    if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.") }
 
     #......
     # Check input 'min'
-    if (isTRUE(length(min) !=  1 || !is.numeric(min) || min %% 1 != 0)) {
-
-      stop("Please specify a single integer value for the argument 'min'.")
-
-    }
+    if (isTRUE(length(min) !=  1L || !is.numeric(min) || min %% 1L != 0L)) { stop("Please specify a single integer value for the argument 'min'.") }
 
     #......
     # Check input 'max'
-    if (isTRUE(length(max) !=  1 || !is.numeric(max) || max %% 1 != 0)) {
-
-      stop("Please specify a single integer value for the argument 'max'.")
-
-    }
+    if (isTRUE(length(max) !=  1L || !is.numeric(max) || max %% 1L != 0L)) { stop("Please specify a single integer value for the argument 'max'.") }
 
     #......
     # Check input 'keep'
@@ -148,11 +119,7 @@ item.reverse <- function(x, min = NULL, max = NULL, keep = NULL, as.na = NULL,
 
     #......
     # Check input 'table'
-    if (isTRUE(!is.logical(table))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(table))) { stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE) }
 
   }
 

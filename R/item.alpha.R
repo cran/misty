@@ -45,6 +45,9 @@
 #' @param as.na      a numeric vector indicating user-defined missing values,
 #'                   i.e. these values are converted to \code{NA} before conducting
 #'                   the analysis.
+#' @param write      a character string for writing the results into a Excel file
+#'                   naming a file with or without file extension '.xlsx', e.g.,
+#'                   \code{"Results.xlsx"} or \code{"Results"}.
 #' @param check      logical: if \code{TRUE}, argument specification is checked.
 #' @param output     logical: if \code{TRUE}, output is shown.
 #'
@@ -132,40 +135,29 @@
 #'
 #' \dontrun{
 #' # Write Results into a Excel file
+#' result <- item.alpha(dat, write = "Alpha.xlsx")
+#'
 #' result <- item.alpha(dat, output = FALSE)
 #' write.result(result, "Alpha.xlsx")
 #' }
 item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit = FALSE,
                        print = c("all", "alpha", "item"), digits = 2, conf.level = 0.95,
-                       as.na = NULL, check = TRUE, output = TRUE) {
+                       as.na = NULL, write = NULL, check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Input Check
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix, data frame, variance-covariance or correlation matrix for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix, data frame, variance-covariance or correlation matrix for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #----------------------------------------
 
@@ -173,20 +165,11 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     #......
     # Matrix or data frame for the argument 'x'?
-    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-      stop("Please specify a matrix, a data frame, a variance-covariance or correlation matrix for the argument 'x'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix, a data frame, a variance-covariance or correlation matrix for the argument 'x'.", call. = FALSE) }
 
     #......
     # Check input 'x': One item
-    if (isTRUE(ncol(x) == 1L)) {
-
-      stop("Please specify at least two items to compute coefficient alpha.", call. = FALSE)
-
-    }
+    if (isTRUE(ncol(x) == 1L)) { stop("Please specify at least two items to compute coefficient alpha.", call. = FALSE) }
 
     #......
     # Check input 'x': Zero variance
@@ -214,61 +197,31 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     #......
     # Check input 'std'
-    if (isTRUE(!is.logical(std))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(std))) { stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE) }
 
     #......
     # Check input 'ordered'
-    if (isTRUE(!is.logical(ordered))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'ordered'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(ordered))) { stop("Please specify TRUE or FALSE for the argument 'ordered'.", call. = FALSE) }
 
     #......
     # Check input 'na.omit'
-    if (isTRUE(!is.logical(na.omit))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
 
     #......
     # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "alpha", "item")))) {
-
-      stop("Character strings in the argument 'print' do not all match with \"all\", \"alpha\", or \"item\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(!all(print %in% c("all", "alpha", "item")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"alpha\", or \"item\".", call. = FALSE) }
 
     #......
     # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) {
-
-      stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1 != 0L || digits < 0L)) {
-
-      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-        stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -547,6 +500,11 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
                  result = list(alpha = alpha.x, itemstat = itemstat))
 
   class(object) <- "misty.object"
+
+  ####################################################################################
+  # Write results
+
+  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
   ####################################################################################
   # Output

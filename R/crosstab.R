@@ -3,25 +3,28 @@
 #' This function creates a two-way and three-way cross tabulation with absolute
 #' frequencies and row-wise, column-wise and total percentages.
 #'
-#' @param x           a matrix or data frame with two or three columns.
-#' @param print       a character string or character vector indicating which
-#'                    percentage(s) to be printed on the console, i.e., no percentages
-#'                    (\code{"no"}) (default), all percentages (\code{"all"}),
-#'                    row-wise percentages (\code{"row"}), column-wise percentages
-#'                    (\code{"col"}), and total percentages (\code{"total"}).
-#' @param freq        logical: if \code{TRUE}, absolute frequencies will be included
-#'                    in the cross tabulation.
-#' @param split       logical: if \code{TRUE}, output table is split in absolute
-#'                    frequencies and percentage(s).
-#' @param na.omit     logical: if \code{TRUE}, incomplete cases are removed before
-#'                    conducting the analysis (i.e., listwise deletion).
-#' @param digits      an integer indicating the number of decimal places digits
-#'                    to be used for displaying percentages.
-#' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting
-#'                    the analysis.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
-#' @param output      logical: if \code{TRUE}, output is printed on the console.
+#' @param x         a matrix or data frame with two or three columns.
+#' @param print     a character string or character vector indicating which
+#'                  percentage(s) to be printed on the console, i.e., no percentages
+#'                  (\code{"no"}) (default), all percentages (\code{"all"}),
+#'                  row-wise percentages (\code{"row"}), column-wise percentages
+#'                  (\code{"col"}), and total percentages (\code{"total"}).
+#' @param freq      logical: if \code{TRUE}, absolute frequencies will be included
+#'                  in the cross tabulation.
+#' @param split     logical: if \code{TRUE}, output table is split in absolute
+#'                  frequencies and percentage(s).
+#' @param na.omit   logical: if \code{TRUE}, incomplete cases are removed before
+#'                  conducting the analysis (i.e., listwise deletion).
+#' @param digits    an integer indicating the number of decimal places digits
+#'                  to be used for displaying percentages.
+#' @param as.na     a numeric vector indicating user-defined missing values,
+#'                  i.e. these values are converted to \code{NA} before conducting
+#'                  the analysis.
+#' @param write     a character string for writing the results into a Excel file
+#'                  naming a file with or without file extension '.xlsx', e.g.,
+#'                  \code{"Results.xlsx"} or \code{"Results"}.
+#' @param check     logical: if \code{TRUE}, argument specification is checked.
+#' @param output    logical: if \code{TRUE}, output is printed on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -90,39 +93,29 @@
 #'
 #' \dontrun{
 #' Write Results into a Excel file
+#' crosstab(dat[, c("x1", "x2")], print = "all", write = "Crosstab.xlsx)
+#'
 #' result <- crosstab(dat[, c("x1", "x2")], print = "all", output = FALSE)
 #' write.result(result, "Crosstab.xlsx")
 #' }
 crosstab <- function(x, print = c("no", "all", "row", "col", "total"),
                      freq = TRUE, split = FALSE, na.omit = TRUE, digits = 2,
-                     as.na = NULL, check = TRUE, output = TRUE) {
+                     as.na = NULL, write = NULL, check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Data
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specifiy a matrix or data frame for the argumen 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specifiy a matrix or data frame for the argumen 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specifiy a matrix or data frame for the argumen 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argumen 'x'.", call. = FALSE) }
 
   #----------------------------------------
   # Data frame
@@ -166,11 +159,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"),
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -178,11 +167,7 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"),
 
     #......
     # Check input 'x'
-    if (isTRUE(ncol(x) > 3L || ncol(x) < 2L)) {
-
-      stop("Please specify a matrix or data frame with two or three columns for the argument 'x'.", call. = FALSE)
-
-    }
+    if (isTRUE(ncol(x) > 3L || ncol(x) < 2L)) { stop("Please specify a matrix or data frame with two or three columns for the argument 'x'.", call. = FALSE) }
 
     #......
     # Check input 'x'
@@ -196,53 +181,27 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"),
 
     #......
     # Check input 'print'
-    if (isTRUE(any(!print %in% c("no", "all", "row", "col", "total")))) {
-
-      stop("Character strings in the argument 'print' do not match with \"no\", \"all\", \"row\", \"col\" or \"total\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!print %in% c("no", "all", "row", "col", "total")))) { stop("Character strings in the argument 'print' do not match with \"no\", \"all\", \"row\", \"col\" or \"total\".", call. = FALSE) }
 
     #......
     # Check input 'freq'
-    if (isTRUE(!is.logical(freq))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(freq))) { stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE) }
 
     #......
     # Check print = "no" and freq = FALSE
-    if (isTRUE(all(print == "no") && !isTRUE(freq))) {
-
-      stop("Please include either percentages (i.e., print != 'no') or absolute frequencies (i.e., freq = TRUE) in the cross tabulation.",
-             call. = FALSE)
-
-    }
+    if (isTRUE(all(print == "no") && !isTRUE(freq))) { stop("Please include either percentages (i.e., print != 'no') or absolute frequencies (i.e., freq = TRUE) in the cross tabulation.", call. = FALSE) }
 
     #......
     # Check input 'na.omit'
-    if (isTRUE(!is.logical(na.omit))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -354,6 +313,11 @@ crosstab <- function(x, print = c("no", "all", "row", "col", "total"),
                  result = list(freq.a = freq.a, perc.r = perc.r, perc.c = perc.c, perc.t = perc.t))
 
   class(object) <- "misty.object"
+
+  ####################################################################################
+  # Write results
+
+  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
   ####################################################################################
   # Output

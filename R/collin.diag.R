@@ -150,19 +150,11 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   #......
   # Check if input 'model' is missing
-  if (isTRUE(missing(model))) {
-
-    stop("Input for the argument 'model' is missing.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(model))) { stop("Input for the argument 'model' is missing.", call. = FALSE) }
 
   #......
   # Check if input 'model' is NULL
-  if (isTRUE(is.null(model))) {
-
-    stop("Input specified for the argument 'model' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
 
   #......
   # Check if input 'model' is NULL
@@ -175,19 +167,11 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   #......
   # Check if model has more than one predictor variable
-  if (isTRUE(length(labels(terms(model))) < 2L)) {
-
-    stop("Please specify a model with more than one predictor variable.", call. = FALSE)
-
-  }
+  if (isTRUE(length(labels(terms(model))) < 2L)) { stop("Please specify a model with more than one predictor variable.", call. = FALSE) }
 
   #.............
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -195,36 +179,21 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
     #......
     # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "vif", "eigen")))) {
-
-      stop("Character strings in the argument 'print' do not all match with \"all\", \"vif\", or \"eigen\".",
-           call. = FALSE)
+    if (isTRUE(!all(print %in% c("all", "vif", "eigen")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"vif\", or \"eigen\".", call. = FALSE)
 
     }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1 != 0L || digits < 0L)) {
-
-      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1 != 0L || p.digits < 0L)) {
-
-      stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 

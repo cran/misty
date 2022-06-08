@@ -53,19 +53,11 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #-----------------------------------------
   # As data frame
@@ -83,10 +75,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
     warning(paste0("Non-numeric variables were excluded from the data set: ",
                    paste(names(which(!x.numeric)), collapse = ", ")), call. = FALSE)
 
-    if (isTRUE(ncol(x) == 0L)) {
-
-      stop("No variables left for the data set after excluding non-numeric variables.",
-           call. = FALSE)
+    if (isTRUE(ncol(x) == 0L)) { stop("No variables left for the data set after excluding non-numeric variables.", call. = FALSE)
 
     }
 
@@ -97,11 +86,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -109,27 +94,15 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
 
     #......
     # Check input 'input'
-    if (isTRUE(!is.logical(input))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'input'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(input))) { stop("Please specify TRUE or FALSE for the argument 'input'.", call. = FALSE) }
 
     #......
     # Check input 'n.var'
-    if (isTRUE(n.var %% 1L != 0L || n.var < 0L)) {
-
-      stop("Specify a positive integer number for the argument 'n.var'.", call. = FALSE)
-
-    }
+    if (isTRUE(n.var %% 1L != 0L || n.var < 0L)) { stop("Specify a positive integer number for the argument 'n.var'.", call. = FALSE) }
 
     #......
     # Check input 'var'
-    if (isTRUE(!is.logical(var))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'var'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(var))) { stop("Please specify TRUE or FALSE for the argument 'var'.", call. = FALSE) }
 
     #......
     # Variable names with .

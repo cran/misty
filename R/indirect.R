@@ -187,11 +187,7 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #----------------------------------------
 
@@ -199,97 +195,45 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
     #......
     # Check input 'a', 'b', 'se.a', and 'se.b'
-    if (isTRUE(mode(a) != "numeric")) {
+    if (isTRUE(mode(a) != "numeric")) { stop("Please specify a numeric value for the argument 'a'.", call. = FALSE) }
 
-      stop("Please specify a numeric value for the argument 'a'.", call. = FALSE)
+    if (isTRUE(mode(b) != "numeric")) { stop("Please specify a numeric value for the argument 'b'.", call. = FALSE) }
 
-    }
+    if (isTRUE(mode(se.a) != "numeric" || se.a <= 0L)) { stop("Please specify a positive numeric value for the argument 'se.a'.", call. = FALSE) }
 
-    if (isTRUE(mode(b) != "numeric")) {
-
-      stop("Please specify a numeric value for the argument 'b'.", call. = FALSE)
-
-    }
-
-    if (isTRUE(mode(se.a) != "numeric" || se.a <= 0)) {
-
-      stop("Please specify a positive numeric value for the argument 'se.a'.", call. = FALSE)
-
-    }
-
-    if (isTRUE(mode(se.b) != "numeric" || se.a <= 0)) {
-
-      stop("Please specify a positive numeric value for the argument 'se.b'.", call. = FALSE)
-
-    }
+    if (isTRUE(mode(se.b) != "numeric" || se.a <= 0L)) { stop("Please specify a positive numeric value for the argument 'se.b'.", call. = FALSE) }
 
     #......
     # Check input 'print'
-    if (isTRUE(any(!print %in% c("all", "asymp", "dop", "mc")))) {
-
-      stop("Character string(s) in the argument 'print' does not match with \"all\", \"asymp\", \"dop\", or \"mc\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!print %in% c("all", "asymp", "dop", "mc")))) { stop("Character string(s) in the argument 'print' does not match with \"all\", \"asymp\", \"dop\", or \"mc\".", call. = FALSE) }
 
     #......
     # Check input 'se'
-    if (isTRUE(any(!se %in% c("sobel", "aroian", "goodman")))) {
-
-      stop("Character string(s) in the argument 'se' does not match with \"sobel\", \"aroian\", or \"goodman\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!se %in% c("sobel", "aroian", "goodman")))) { stop("Character string(s) in the argument 'se' does not match with \"sobel\", \"aroian\", or \"goodman\".", call. = FALSE) }
 
     #......
     # Check input 'nrep'
-    if (isTRUE(mode(nrep) != "numeric" || nrep <= 1)) {
-
-      stop("Please specify a positive numeric value greater 1 for the argument 'nrep'.", call. = FALSE)
-
-    }
+    if (isTRUE(mode(nrep) != "numeric" || nrep <= 1L)) { stop("Please specify a positive numeric value greater 1 for the argument 'nrep'.", call. = FALSE) }
 
     #......
     # Check input 'alternative'
-    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) {
-
-      stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
 
     #......
     # Check input 'seed'
-    if (isTRUE(mode(seed) != "numeric" && !is.null(seed))) {
-
-      stop("Please specify a numeric value greater for the argument 'seed'.", call. = FALSE)
-
-    }
+    if (isTRUE(mode(seed) != "numeric" && !is.null(seed))) { stop("Please specify a numeric value greater for the argument 'seed'.", call. = FALSE) }
 
     #......
     # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) {
-
-      stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 

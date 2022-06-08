@@ -1,4 +1,18 @@
-### misty 0.4.5 ()
+### misty 0.4.6 (2022-06-08)
+
+##### New features
+* New function `aov.b()` for performing between-subject analysis of variance including Tukey HSD post hoc test for multiple comparison.
+
+##### Minor features and improvements
+* Function `as.na()` is also applicable to arrays
+* Added the argument `plot` and arguments for various graphical parameters for plotting results to the functions `test.levene()`, `test.t()`, `test.welch()`, and `test.z()`.
+* Added the argument `write` for writing results into an Excel file to the functions `cor.matrix()`, `crosstab()`,
+`descript()`, `freq()`, `item.alpha()`, `item.cfa()`, `item.omega()`, `multilevel.cor()`, `multilevel.descript()`,
+`na.coverage()`, `na.descript()`, and `na.pattern()`
+* Added the argument `posthoc` for conducting Games-Howell post hoc test for multiple comparison 
+to the functions `test.welch()`.
+
+### misty 0.4.5 (2022-04-29)
 
 ##### New features
 

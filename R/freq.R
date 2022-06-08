@@ -12,39 +12,42 @@
 #' in the data frame specified in the argument \code{x}. By default, numeric
 #' variables are rounded to three digits before computing the frequency table.
 #'
-#' @param x           a vector, factor, matrix or data frame.
-#' @param print       a character string indicating which percentage(s) to be
-#'                    printed on the console, i.e., no percentages (\code{"no"}),
-#'                    all percentages (\code{"all"}), percentage frequencies
-#'                    (\code{"print"}), and valid percentage frequencies
-#'                    (\code{"v.perc"}). Default setting when specifying one
-#'                    variable in \code{x} is \code{print = "all"}, while default
-#'                    setting when specifying more than one variable in \code{x}
-#'                    is \code{print = "no"} unless \code{split = TRUE}.
-#' @param freq        logical: if \code{TRUE} (default), absolute frequencies will
-#'                    be shown on the console.
-#' @param split       logical: if \code{TRUE}, output table is split by variables
-#'                    when specifying more than one variable in \code{x}.
-#' @param labels      logical: if \code{TRUE} (default), labels for the factor
-#'                    levels will be used.
-#' @param val.col     logical: if \code{TRUE}, values are shown in the columns,
-#'                    variables in the rows.
-#' @param round       an integer value indicating the number of decimal places
-#'                    to be used for rounding numeric variables.
-#' @param exclude     an integer value indicating the maximum number of unique
-#'                    values for variables to be included in the analysis when
-#'                    specifying more than one variable in \code{x} i.e.,
-#'                    variables with the number of unique values exceeding
-#'                    \code{exclude} will be excluded from the analysis. It is
-#'                    also possible to specify \code{exclude = FALSE} to include
-#'                    all variables in the analysis.
-#' @param digits      an integer value indicating the number of decimal places
-#'                    to be used for displaying percentages.
-#' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before
-#'                    conducting the analysis.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
-#' @param output      logical: if \code{TRUE}, output is shown on the console.
+#' @param x         a vector, factor, matrix or data frame.
+#' @param print     a character string indicating which percentage(s) to be
+#'                  printed on the console, i.e., no percentages (\code{"no"}),
+#'                  all percentages (\code{"all"}), percentage frequencies
+#'                  (\code{"print"}), and valid percentage frequencies
+#'                  (\code{"v.perc"}). Default setting when specifying one
+#'                  variable in \code{x} is \code{print = "all"}, while default
+#'                  setting when specifying more than one variable in \code{x}
+#'                  is \code{print = "no"} unless \code{split = TRUE}.
+#' @param freq      logical: if \code{TRUE} (default), absolute frequencies will
+#'                  be shown on the console.
+#' @param split     logical: if \code{TRUE}, output table is split by variables
+#'                  when specifying more than one variable in \code{x}.
+#' @param labels    logical: if \code{TRUE} (default), labels for the factor
+#'                  levels will be used.
+#' @param val.col   logical: if \code{TRUE}, values are shown in the columns,
+#'                  variables in the rows.
+#' @param round     an integer value indicating the number of decimal places
+#'                  to be used for rounding numeric variables.
+#' @param exclude   an integer value indicating the maximum number of unique
+#'                  values for variables to be included in the analysis when
+#'                  specifying more than one variable in \code{x} i.e.,
+#'                  variables with the number of unique values exceeding
+#'                  \code{exclude} will be excluded from the analysis. It is
+#'                  also possible to specify \code{exclude = FALSE} to include
+#'                  all variables in the analysis.
+#' @param digits    an integer value indicating the number of decimal places
+#'                  to be used for displaying percentages.
+#' @param as.na     a numeric vector indicating user-defined missing values,
+#'                  i.e. these values are converted to \code{NA} before
+#'                  conducting the analysis.
+#' @param write     a character string for writing the results into a Excel file
+#'                  naming a file with or without file extension '.xlsx', e.g.,
+#'                  \code{"Results.xlsx"} or \code{"Results"}.
+#' @param check     logical: if \code{TRUE}, argument specification is checked.
+#' @param output    logical: if \code{TRUE}, output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -119,43 +122,31 @@
 #'
 #' \dontrun{
 #' # Write Results into a Excel file
+#' freq(dat[, c("x1", "x2", "y1", "y2")], split = TRUE, write = "Frequencies.xlsx")
+#'
 #' result <- freq(dat[, c("x1", "x2", "y1", "y2")], split = TRUE, output = FALSE)
 #' write.result(result, "Frequencies.xlsx")
 #' }
 freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
                  split = FALSE, labels = TRUE, val.col = FALSE, round = 3,
-                 exclude = 15, digits = 2, as.na = NULL, check = TRUE,
-                 output = TRUE) {
+                 exclude = 15, digits = 2, as.na = NULL, write = NULL,
+                 check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Data
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Check if input 'x' is not a list or an array
 
-  if (isTRUE((is.list(x) & !is.data.frame(x)) || (!is.vector(x) & !is.factor(x) & !is.matrix(x) & !is.data.frame(x)))) {
-
-    stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE((is.list(x) && !is.data.frame(x)) || (is.array(x) && !is.matrix(x)))) { stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #-----------------------------------------
   # Data.frame
@@ -180,14 +171,18 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
       } else if (isTRUE(is.matrix(x) || is.data.frame(x))) {
 
         na.x <- vapply(as.character(as.na), function(y) !y %in% misty::chr.trim(apply(as.matrix(x), 2L, as.character)),
-                       FUN.VALUE = logical(1))
+                       FUN.VALUE = logical(1L))
 
       }
 
       if (isTRUE(any(na.x))) {
 
-        warning(paste0("Values specified in the argument 'as.na' were not found in 'x': ",
-                       paste(as.na[na.x], collapse = ", ")), call. = FALSE)
+        warning(paste0(ifelse(sum(na.x) == 1L, "Value ", "Values "),
+                       "specified in the argument 'na' ",
+                       ifelse(sum(na.x) == 1L, "was ", "were "),
+                       "not found in 'x': ",
+                       paste(na[na.x], collapse = ", ")), call. = FALSE)
+
       }
 
     }
@@ -203,11 +198,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
   message.split <- FALSE
 
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -215,12 +206,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
 
     #......
     # Check input 'x': All values missing
-    if (isTRUE(all(is.na(x)))) {
-
-       stop("All values in the vector, matrix or data frame specified in the argument 'x' are missing.",
-            call. = FALSE)
-
-    }
+    if (isTRUE(all(is.na(x)))) { stop("All values in the vector, matrix or data frame specified in the argument 'x' are missing.", call. = FALSE) }
 
     #......
     # Check input 'x': Exclude variables with all missing
@@ -229,7 +215,10 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
       x.na <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
       if (isTRUE(any(x.na))) {
 
-        warning(paste0("Variables with all values missing were excluded from the analysis: ",
+        warning(paste0(ifelse(sum(na.x) == 1L, "Variable ", "Variables "),
+                       "with all values missing ",
+                       ifelse(sum(na.x) == 1L, "was ", "were "),
+                       "excluded from the analysis: ",
                        paste(names(x)[x.na], collapse = ", ")), call. = FALSE)
 
         # Exclude variables with all values missing
@@ -241,52 +230,29 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
 
     #......
     # Check input 'print'
-    if (isTRUE(any(!print %in% c("no", "all", "perc", "v.perc")))) {
-
-      stop("Character string in the argument 'print' does not match with \"no\", \"all\", \"perc\", or \"v.perc\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!print %in% c("no", "all", "perc", "v.perc")))) { stop("Character string in the argument 'print' does not match with \"no\", \"all\", \"perc\", or \"v.perc\".", call. = FALSE) }
 
     #......
     # Check input 'print'
     if (isTRUE(!all(c("no", "all", "perc", "v.perc") %in% print))) {
 
-      if (isTRUE(length(print) != 1L)) {
-
-        stop("Please specify one of the character strings \"no\", \"all\", \"perc\", or \"v.perc\" for the argument 'print'.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(length(print) != 1L)) { stop("Please specify one of the character strings \"no\", \"all\", \"perc\", or \"v.perc\" for the argument 'print'.", call. = FALSE) }
 
     }
 
     #......
     # Check input 'freq'
-    if (isTRUE(!is.logical(freq))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(freq))) { stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE) }
 
     #......
     # No frequencies and percentages
-    if (isTRUE(all(print == "no") && !isTRUE(freq))) {
-
-      stop("Please specify \"all\", \"perc\", or \"v.perc\" for the argument 'print' when specifying freq = FALSE.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(all(print == "no") && !isTRUE(freq))) { stop("Please specify \"all\", \"perc\", or \"v.perc\" for the argument 'print' when specifying freq = FALSE.", call. = FALSE) }
 
     #......
     # Check input 'split'
-    if (isTRUE(!is.logical(split))) {
+    if (isTRUE(!is.logical(split))) { stop("Please specify TRUE or FALSE for the argument 'split'.", call. = FALSE) }
 
-      stop("Please specify TRUE or FALSE for the argument 'split'.", call. = FALSE)
-
-    }
-
-    if (isTRUE(split && ncol(x) == 1)) {
+    if (isTRUE(split && ncol(x) == 1L)) {
 
       split <- FALSE
       message.split <- TRUE
@@ -295,60 +261,39 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
 
     #......
     # Check input 'labels'
-    if (isTRUE(!is.logical(labels))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'labels'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(labels))) { stop("Please specify TRUE or FALSE for the argument 'labels'.", call. = FALSE) }
 
     #......
     # Check input 'val.col'
-    if (isTRUE(!is.logical(val.col))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'val.col'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(val.col))) { stop("Please specify TRUE or FALSE for the argument 'val.col'.", call. = FALSE) }
 
     #......
     # Check input 'exclude'
     if (isTRUE(!is.logical(exclude))) {
 
-      if (isTRUE(exclude %% 1L != 0L || exclude < 0L)) {
-
-        stop("Specify a positive integer number for the argument 'exclude'.", call. = FALSE)
-
-      }
+      if (isTRUE(exclude %% 1L != 0L || exclude < 0L)) { stop("Specify a positive integer number for the argument 'exclude'.", call. = FALSE) }
 
     }
 
     #......
     # Check input 'round'
-    if (isTRUE(round %% 1L != 0L || round < 0L)) {
-
-        stop("Specify a positive integer number for the argument 'round'.", call. = FALSE)
-
-    }
+    if (isTRUE(round %% 1L != 0L || round < 0L)) { stop("Specify a positive integer number for the argument 'round'.", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
   ####################################################################################
   # Data and Arguments
+
+  # Global variable
+  na <- NULL
 
   #-----------------------------------------
   # Argument 'print'
@@ -436,7 +381,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
     if (isTRUE(length(x) > 1L && !split)) {
 
       # Default setting exclude variables with more than 15 unique values
-      if (isTRUE(exclude)) { exclude <- 15 }
+      if (isTRUE(exclude)) { exclude <- 15L }
 
       x.exclude <- which(vapply(x, function(y) length(unique(na.omit(y))), FUN.VALUE = 1L) > exclude)
 
@@ -452,7 +397,7 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
         } else {
 
           # Rounded numeric variables
-          if (isTRUE(length(setdiff(x.numeric, names(x.exclude))) > 0)) {
+          if (isTRUE(length(setdiff(x.numeric, names(x.exclude))) > 0L)) {
 
             warning(paste0("Numeric variables with more than ", round, " digits were rounded: ",
                            paste(setdiff(x.numeric, names(x.exclude)), collapse = ", ")), call. = FALSE)
@@ -682,6 +627,11 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
                  result = freqtab)
 
   class(object) <- "misty.object"
+
+  ####################################################################################
+  # Write results
+
+  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
   ####################################################################################
   # Output

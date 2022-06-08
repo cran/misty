@@ -4,7 +4,8 @@
 \alias{na.pattern}
 \title{Missing Data Pattern}
 \usage{
-na.pattern(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+na.pattern(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
+           check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with incomplete data, where missing values are coded as \code{NA}.}
@@ -16,6 +17,8 @@ of missing values.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to NA before conducting the analysis.}
+
+\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -45,6 +48,8 @@ dat[!dat.pattern$pattern \%in\% c(2, 5), ]
 
 \dontrun{
 # Write Results into a Excel file
+result <- na.pattern(dat, write = "NA_Pattern.xlsx")
+
 result <- na.pattern(dat, output = FALSE)
 write.result(result, "NA_Pattern.xlsx") }
 }

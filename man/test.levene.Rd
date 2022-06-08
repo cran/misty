@@ -4,9 +4,15 @@
 \alias{test.levene}
 \title{Levene's Test for Homogeneity of Variance}
 \usage{
-test.levene(formula, data, method = c("median", "mean"), conf.level = 0.95,
-            hypo = TRUE, descript = TRUE, digits = 2, p.digits = 3,
-            as.na = NULL, check = TRUE, output = TRUE)
+test.levene(formula, data, method = c("median", "mean"),
+            conf.level = 0.95, hypo = TRUE, descript = TRUE,
+            plot = TRUE, violin.alpha = 0.3, violin.trim = FALSE,
+            box = TRUE, box.alpha = 0.2, box.width = 0.2,
+            jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.2,
+            gray = FALSE, start = 0.9, end = 0.4, color = NULL,
+            xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
+            title = "", subtitle = "",  digits = 2, p.digits = 3, as.na = NULL,
+            check = TRUE, output = TRUE)
 }
 \arguments{
 \item{formula}{a formula of the form \code{y ~ group} where \code{y} is a numeric variable giving the
@@ -15,7 +21,7 @@ data values and \code{group} a numeric variable, character variable or factor wi
 \item{data}{a matrix or data frame containing the variables in the formula \code{formula}.}
 
 \item{method}{a character string specifying the method to compute the center of each group, i.e.
-\code{method = "median"} (default) to compute the Levene's test basd on the median
+\code{method = "median"} (default) to compute the Levene's test based on the median
 (aka Brown-Forsythe test) or \code{method = "mean"} to compute the Levene's test
 based on the arithmetic mean.}
 
@@ -24,6 +30,27 @@ based on the arithmetic mean.}
 \item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis are shown on the console.}
 
 \item{descript}{logical: if \code{TRUE}, descriptive statistics are shown on the console.}
+
+\item{plot}{logical: if \code{TRUE}, a plot showing violin plots with boxplots is drawn.}
+\item{violin.alpha}{a numeric value indicating the opacity of the violins.}
+\item{violin.trim}{logical: if \code{TRUE}, the tails of the violins to the range of the data is trimmed.}
+\item{box}{logical: if \code{TRUE} (default), boxplots are drawn.}
+\item{box.alpha}{a numeric value indicating the opacity of the boxplots.}
+\item{box.width}{a numeric value indicating the width of the boxplots.}
+\item{jitter}{logical: if \code{TRUE} (default), jittered data points are drawn.}
+\item{jitter.size}{a numeric value indicating the \code{size} aesthetic for the jittered data points.}
+\item{jitter.width}{a numeric value indicating the amount of vertical and horizontal jitter.}
+\item{jitter.alpha}{a numeric value indicating the opacity of the jittered data points.}
+\item{gray}{logical: if \code{TRUE}, the plot is drawn in gray scale.}
+\item{start}{a numeric value between 0 and 1, graphical parameter to specify the gray value at the low end of the palette.}
+\item{end}{a numeric value between 0 and 1, graphical parameter to specify the gray value at the high end of the palette.}
+\item{color}{a character vector, indicating the color of the violins and the boxes. By default, default ggplot2 colors are used.}
+\item{xlab}{a character string specifying the labels for the x-axis.}
+\item{ylab}{a character string specifying the labels for the y-axis.}
+\item{ylim}{a numeric vector of length two specifying limits of the limits of the y-axis.}
+\item{breaks}{a numeric vector specifying the points at which tick-marks are drawn at the y-axis.}
+\item{title}{a character string specifying the text for the title for the plot.}
+\item{subtitle}{a character string specifying the text for the subtitlefor the plot.}
 
 \item{digits}{an integer value indicating the number of decimal places to be used for displaying results.}
 
@@ -66,6 +93,32 @@ test.levene(y ~ group, data = dat, method = "mean")
 
 # Levene's test based on the median with 99\% confidence interval
 test.levene(y ~ group, data = dat, conf.level = 0.99)
+\dontrun{
+# Levene's test based on the median with 95% confidence interval
+# plot results
+test.levene(y ~ group, data = dat, plot = TRUE)
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Save plot, ggsave() from the ggplot2 package
+ggsave("Levene-test.png", dpi = 600, width = 5, height = 6)
+
+# Levene's test based on the median with 95% confidence interval
+# extract plot
+p <- test.levene(y ~ group, data = dat, output = FALSE)$plot
+p
+
+# Extract data
+plotdat <- test.levene(y ~ group, data = dat, output = FALSE)$data
+
+# Draw violin and boxplots in line with the default setting of test.levene()
+ggplot(plotdat, aes(group, y, fill = group)) +
+  geom_violin(alpha = 0.3, trim = FALSE) +
+  geom_boxplot(alpha = 0.2, width = 0.2) +
+  geom_jitter(alpha = 0.2, width = 0.05, size = 1.25) +
+  theme_bw() + guides(fill = "none")
+}
 }
 \references{
 Brown, M. B., & Forsythe, A. B. (1974). Robust tests for the equality of variances. \emph{Journal of the American
@@ -75,7 +128,7 @@ Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psycholog
 John Wiley & Sons.
 }
 \seealso{
-\code{\link{t.test}}, \code{\link{aov}}
+\code{\link{aov.b}}, \code{\link{test.t}}, \code{\link{test.welch}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

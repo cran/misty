@@ -5,8 +5,8 @@
 \title{Multilevel Descriptive Statistics}
 \usage{
 multilevel.descript(x, cluster, method = c("aov", "lme4", "nlme"), REML = TRUE,
-                    digits = 2, icc.digits = 3, as.na = NULL, check = TRUE,
-                    output = TRUE)
+                    digits = 2, icc.digits = 3, as.na = NULL, write = NULL,
+                    check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a vector, matrix or data frame.}
@@ -32,6 +32,8 @@ intraclass correlation coefficients.}
 i.e. these values are converted to \code{NA} before conducting the analysis.
 Note that \code{as.na()} function is only applied to \code{x} but not to
 \code{cluster}.}
+
+\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -75,6 +77,9 @@ multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster)
 
 \dontrun{
 # Write Results into a Excel file
+multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster,
+                    write = "Multilevel_Descript.xlsx")
+
 result <- multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster,
                               output = FALSE)
 write.result(result, "Multilevel_Descript.xlsx") }

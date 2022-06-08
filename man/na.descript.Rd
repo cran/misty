@@ -4,7 +4,8 @@
 \alias{na.descript}
 \title{Descriptive Statistics for Missing Data}
 \usage{
-na.descript(x, table = FALSE, digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+na.descript(x, table = FALSE, digits = 2, as.na = NULL, write = NULL,
+            check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame.}
@@ -17,6 +18,8 @@ percent of missing values (\code{"pNA"}) is printed for each variable on the con
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.}
+
+\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -52,6 +55,8 @@ na.descript(dat, table = TRUE)
 
 \dontrun{
 # Write Results into a Excel file
+na.descript(dat, table = TRUE, write = "NA_Descriptives.xlsx")
+
 result <- na.descript(dat, table = TRUE, output = FALSE)
 write.result(result, "NA_Descriptives.xlsx") }
 }

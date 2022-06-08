@@ -47,6 +47,9 @@
 #' @param as.na      a numeric vector indicating user-defined missing values,
 #'                   i.e. these values are converted to \code{NA} before conducting
 #'                   the analysis.
+#' @param write      a character string for writing the results into a Excel file
+#'                   naming a file with or without file extension '.xlsx', e.g.,
+#'                   \code{"Results.xlsx"} or \code{"Results"}.
 #' @param check      logical: if \code{TRUE}, argument specification is checked.
 #' @param output     logical: if \code{TRUE}, output is shown.
 #'
@@ -131,13 +134,16 @@
 #'                 fit.measures = TRUE, standardized = TRUE)
 #'
 #' # Write Results into a Excel file
+#' item.omega(dat, write = "Omega.xlsx")
+#'
 #' result <- item.omega(dat, output = FALSE)
 #' write.result(result, "Omega.xlsx")
 #' }
 item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ"),
                        exclude = NULL, std = FALSE, na.omit = FALSE,
                        print = c("all", "omega", "item"), digits = 2,
-                       conf.level = 0.95, as.na = NULL, check = TRUE, output = TRUE) {
+                       conf.level = 0.95, as.na = NULL, write = NULL,
+                       check = TRUE, output = TRUE) {
 
   #-----------------------------------------------------------------------------------
   ####################################################################################
@@ -368,19 +374,11 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Package 'lavaan' installed?
@@ -406,11 +404,7 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #----------------------------------------
 
@@ -418,19 +412,11 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
     #......
     # Matrix or data frame for the argument 'x'?
-    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-      stop("Please specify a matrix or a data frame for the argument 'x'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or a data frame for the argument 'x'.", call. = FALSE) }
 
     #......
     # Check input 'x': One or two item
-    if (isTRUE(ncol(x) < 3L)) {
-
-      stop("Please specify at least three items to compute coefficient omega", call. = FALSE)
-
-    }
+    if (isTRUE(ncol(x) < 3L)) { stop("Please specify at least three items to compute coefficient omega", call. = FALSE) }
 
     #......
     # Check input 'x': Zero variance
@@ -471,12 +457,7 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
     #......
     # Check input 'type'
-    if (isTRUE(!all(type %in% c("omega", "hierarch", "categ")))) {
-
-      stop("Character strings in the argument 'type' do not all match with \"omega\", \"hierarch\", or \"categ\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(!all(type %in% c("omega", "hierarch", "categ")))) { stop("Character strings in the argument 'type' do not all match with \"omega\", \"hierarch\", or \"categ\".", call. = FALSE) }
 
     #......
     # Check input 'exclude'
@@ -489,53 +470,29 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
     #......
     # Check input 'std'
-    if (isTRUE(!is.logical(std))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(std))) { stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE) }
 
     #......
     # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "omega", "item")))) {
-
-      stop("Character strings in the argument 'print' do not all match with \"all\", \"omega\", or \"item\".",
-           call. = FALSE)
+    if (isTRUE(!all(print %in% c("all", "omega", "item")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"omega\", or \"item\".", call. = FALSE)
 
     }
 
     #......
     # Check input 'na.omit'
-    if (isTRUE(!is.logical(na.omit))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) {
-
-      stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-        stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -906,6 +863,11 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
                  result = list(omega = omega.x, itemstat = itemstat))
 
   class(object) <- "misty.object"
+
+  ####################################################################################
+  # Write results
+
+  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
   ####################################################################################
   # Output

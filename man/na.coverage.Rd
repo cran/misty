@@ -5,7 +5,7 @@
 \title{Variance-Covariance Coverage}
 \usage{
 na.coverage(x, tri = c("both", "lower", "upper"), digits = 2, as.na = NULL,
-            check = TRUE, output = TRUE)
+            write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame.}
@@ -18,6 +18,8 @@ and \code{upper} for the upper triangular.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.}
+
+\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -42,6 +44,8 @@ na.coverage(dat)
 
 \dontrun{
 # Write Results into a Excel file
+na.coverage(dat, write = "Coverage.xlsx")
+
 result <- na.coverage(dat, output = FALSE)
 write.result(result, "Coverage.xlsx") }
 }

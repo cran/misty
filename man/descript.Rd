@@ -8,7 +8,7 @@ descript(x,
         print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min",
                   "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
         group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-        digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+        digits = 2, as.na = NULL, write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector, matrix or data frame with numeric variables, i.e.,
@@ -39,6 +39,8 @@ The default setting is \code{print = ("n", "nNA", "pNA", "m", "sd", "min", "max"
 i.e. these values are converted to \code{NA} before conducting the analysis.
 Note that \code{as.na()} function is only applied to \code{x}, but
 not to \code{group} or \code{split}.}
+
+\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -97,6 +99,8 @@ descript(dat[, c("x1", "x2", "x3")], group = dat$group1, split = dat$group2)
 
 \dontrun{
 # Write Results into a Excel file
+descript(dat[, c("x1", "x2", "x3")], write = "Descript.xlsx")
+
 result <- descript(dat[, c("x1", "x2", "x3")], output = FALSE)
 write.result(result, "Descript.xlsx") }
 }

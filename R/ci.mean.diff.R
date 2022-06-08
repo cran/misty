@@ -411,27 +411,15 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a numeric vector for the argument 'x'", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Check if only one variable specified in the input 'x'
-  if (ncol(data.frame(x)) != 1) {
-
-    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
-
-  }
+  if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
 
   #......
   # Convert 'x' into a vector
@@ -441,27 +429,15 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
   #......
   # Check if input 'y' is missing
-  if (isTRUE(missing(y))) {
-
-    stop("Please specify a numeric vector for the argument 'y'", call. = FALSE)
-
-  }
+  if (isTRUE(missing(y))) { stop("Please specify a numeric vector for the argument 'y'", call. = FALSE) }
 
   #......
   # Check if input 'y' is NULL
-  if (isTRUE(is.null(y))) {
-
-    stop("Input specified for the argument 'y' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(y))) { stop("Input specified for the argument 'y' is NULL.", call. = FALSE) }
 
   #......
   # Check if only one variable specified in the input 'y'
-  if (ncol(data.frame(y)) != 1) {
-
-    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
-
-  }
+  if (ncol(data.frame(y)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
 
   #......
   # Convert 'y' into a vector
@@ -471,11 +447,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
   #......
   # Check input 'paired'
-  if (isTRUE(!is.logical(paired))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(paired))) { stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE) }
 
 
   if (isTRUE(paired)) {
@@ -496,18 +468,9 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
   # Check 'group'
   if (isTRUE(!is.null(group))) {
 
-    if (isTRUE(!paired)) {
+    if (isTRUE(!paired)) { stop("Please use formula notation for using a grouping variable in independent samples.", call. = FALSE) }
 
-      stop("Please use formula notation for using a grouping variable in independent samples.",
-           call. = FALSE)
-
-    }
-
-    if (ncol(data.frame(group)) != 1) {
-
-      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
-
-    }
+    if (ncol(data.frame(group)) != 1) { stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE) }
 
     if (isTRUE(paired)) {
 
@@ -529,27 +492,13 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
   # Check 'split'
   if (isTRUE(!is.null(split))) {
 
-    if (isTRUE(!paired)) {
+    if (isTRUE(!paired)) { stop("Please use formula notation for using a split variable in independent samples.", call. = FALSE) }
 
-      stop("Please use formula notation for using a split variable in independent samples.",
-           call. = FALSE)
-
-    }
-
-    if (ncol(data.frame(split)) != 1) {
-
-      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
-
-    }
+    if (ncol(data.frame(split)) != 1) { stop("More than one split variable specified for the argument 'split'.",call. = FALSE) }
 
     if (isTRUE(paired)) {
 
-      if (nrow(data.frame(split)) != nrow(data.frame(x))) {
-
-        stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.",
-             call. = FALSE)
-
-      }
+      if (nrow(data.frame(split)) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.", call. = FALSE) }
 
     }
 
@@ -592,7 +541,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
     } else if (isTRUE(is.matrix(xy) || is.data.frame(xy))) {
 
       as.na.x <- vapply(as.character(as.na), function(y) !y %in% misty::chr.trim(apply(as.matrix(x), 2, as.character)),
-                        FUN.VALUE = logical(1))
+                        FUN.VALUE = logical(1L))
 
     # List
     } else if (isTRUE(is.list(xy))) {
@@ -637,11 +586,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
@@ -649,11 +594,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
     # Check input 'sigma' and 'sigma2'
     if (isTRUE(!is.null(sigma) && !is.null(sigma2))) {
 
-      if (isTRUE(!identical(sigma^2, sigma2))) {
-
-        stop("Arguments 'sigma' and 'sigma2' do not match.", call. = FALSE)
-
-      }
+      if (isTRUE(!identical(sigma^2, sigma2))) { stop("Arguments 'sigma' and 'sigma2' do not match.", call. = FALSE) }
 
     }
 
@@ -662,31 +603,17 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
     if (isTRUE(!is.null(sigma))) {
 
       # SD smaller or equal 0
-      if (isTRUE(any(sigma <= 0L))) {
-
-        stop("Please specify numeric values grater than 0 for the argument 'sigma'.", call. = FALSE)
-
-      }
+      if (isTRUE(any(sigma <= 0L))) { stop("Please specify numeric values grater than 0 for the argument 'sigma'.", call. = FALSE) }
 
       if (isTRUE(paired)) {
 
         # Length of 'sigma'
-        if (isTRUE(length(sigma) > 1L)) {
-
-          stop("Please specify one numeric values for the argument 'sigma' in dependent samples.",
-               call. = FALSE)
-
-        }
+        if (isTRUE(length(sigma) > 1L)) { stop("Please specify one numeric values for the argument 'sigma' in dependent samples.", call. = FALSE) }
 
       } else {
 
         # Length of 'sigma'
-        if (isTRUE(length(sigma) > 2L)) {
-
-          stop("Please specify one or two numeric values for the argument 'sigma' in independent samples.",
-               call. = FALSE)
-
-        }
+        if (isTRUE(length(sigma) > 2L)) { stop("Please specify one or two numeric values for the argument 'sigma' in independent samples.", call. = FALSE) }
 
       }
 
@@ -697,31 +624,17 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
     if (isTRUE(!is.null(sigma2))) {
 
       # Variance smaller or equal 0
-      if (isTRUE(any(sigma2 <= 0L))) {
-
-        stop("Please specify numeric values grater than 0 for the argument 'sigma2'.", call. = FALSE)
-
-      }
+      if (isTRUE(any(sigma2 <= 0L))) { stop("Please specify numeric values grater than 0 for the argument 'sigma2'.", call. = FALSE) }
 
       if (isTRUE(paired)) {
 
         # Length of 'sigma2'
-        if (isTRUE(length(sigma2) > 1L)) {
-
-          stop("Please specify one numeric values for the argument 'sigma2' in dependent samples.",
-               call. = FALSE)
-
-        }
+        if (isTRUE(length(sigma2) > 1L)) { stop("Please specify one numeric values for the argument 'sigma2' in dependent samples.", call. = FALSE) }
 
       } else {
 
         # Length of 'sigma2'
-        if (isTRUE(length(sigma2) > 2L)) {
-
-          stop("Please specify one or two numeric values for the argument 'sigma2' in independent samples.",
-               call. = FALSE)
-
-        }
+        if (isTRUE(length(sigma2) > 2L)) { stop("Please specify one or two numeric values for the argument 'sigma2' in independent samples.", call. = FALSE) }
 
       }
 
@@ -729,11 +642,7 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
     #......
     # Check input 'var.equal'
-    if (isTRUE(!is.logical(var.equal))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'var.equal'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(var.equal))) { stop("Please specify TRUE or FALSE for the argument 'var.equal'.", call. = FALSE) }
 
     #......
     # Check input 'alternative'
@@ -746,47 +655,23 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
 
     #......
     # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) {
-
-      stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
     #......
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
       # Population standard deviation
-      if (isTRUE(!is.null(sigma))) {
-
-        stop("Grouping variable cannot be used for confidence intervals with known population standard deviation.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(!is.null(sigma))) { stop("Grouping variable cannot be used for confidence intervals with known population standard deviation.", call. = FALSE) }
 
       # Population variance
-      if (isTRUE(!is.null(sigma2))) {
-
-        stop("Grouping variable cannot be used for confidence intervals with known population variance.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(!is.null(sigma2))) { stop("Grouping variable cannot be used for confidence intervals with known population variance.", call. = FALSE) }
 
       # Input 'group' completely missing
-      if (isTRUE(all(is.na(group)))) {
-
-        stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE)
-
-      }
+      if (isTRUE(all(is.na(group)))) { stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE) }
 
       # Only one group in 'group'
-      if (isTRUE(length(na.omit(unique(group))) == 1L)) {
-
-        warning("There is only one group represented in the grouping variable specified in 'group'.",
-                call. = FALSE)
-
-      }
+      if (isTRUE(length(na.omit(unique(group))) == 1L)) { warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE) }
 
     }
 
@@ -795,69 +680,33 @@ ci.mean.diff.default <- function(x, y, sigma = NULL, sigma2 = NULL, var.equal = 
     if (isTRUE(!is.null(split))) {
 
       # Independent samples
-      if (!isTRUE(paired)) {
-
-        stop("Please use formula notation for using a split variable in paired samples.",
-             call. = FALSE)
-
-      }
+      if (!isTRUE(paired)) { stop("Please use formula notation for using a split variable in paired samples.", call. = FALSE) }
 
       # Population standard deviation
-      if (isTRUE(!is.null(sigma))) {
-
-        stop("Split variable cannot be used for confidence intervals with known population standard deviation.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(!is.null(sigma))) { stop("Split variable cannot be used for confidence intervals with known population standard deviation.", call. = FALSE) }
 
       # Population variance
-      if (isTRUE(!is.null(sigma2))) {
-
-        stop("Split variable cannot be used for confidence intervals with known population variance.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(!is.null(sigma2))) { stop("Split variable cannot be used for confidence intervals with known population variance.", call. = FALSE) }
 
       # Input 'split' completely missing
-      if (isTRUE(all(is.na(split)))) {
-
-        stop("The split variable specified in 'split' is completely missing.", call. = FALSE)
-
-      }
+      if (isTRUE(all(is.na(split)))) { stop("The split variable specified in 'split' is completely missing.", call. = FALSE) }
 
       # Only one group in 'split'
-      if (isTRUE(length(na.omit(unique(split))) == 1L)) {
-
-        warning("There is only one group represented in the split variable specified in 'split'.",
-                call. = FALSE)
-
-      }
+      if (isTRUE(length(na.omit(unique(split))) == 1L)) { warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE) }
 
     }
 
     #......
     # Check input 'sort.var'
-    if (isTRUE(!is.logical(sort.var))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(sort.var))) { stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input output
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 

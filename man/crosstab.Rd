@@ -6,7 +6,7 @@
 \usage{
 crosstab(x, print = c("no", "all", "row", "col", "total"), freq = TRUE,
          split = FALSE, na.omit = TRUE, digits = 2, as.na = NULL,
-         check = TRUE, output = TRUE)
+         write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with two or three columns.}
@@ -27,6 +27,8 @@ total percentages (\code{"total"}).}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.}
+
+\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -90,6 +92,8 @@ crosstab(dat[, c("x1", "x2", "x3")], print = "all", split = TRUE)
 
 \dontrun{
 # Write Results into a Excel file
+crosstab(dat[, c("x1", "x2")], print = "all", write = "Crosstab.xlsx)
+
 result <- crosstab(dat[, c("x1", "x2")], print = "all", output = FALSE)
 write.result(result, "Crosstab.xlsx") }
 }

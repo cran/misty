@@ -725,19 +725,11 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a numeric vector for the argument 'x'", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Convert 'x' into a vector
@@ -749,11 +741,7 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
     #......
     # Check if only one variable specified in the input 'y'
-    if (ncol(data.frame(y)) != 1) {
-
-      stop("More than one variable specified for the argument 'x'.",call. = FALSE)
-
-    }
+    if (ncol(data.frame(y)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
 
     #......
     # Convert 'y' into a vector
@@ -765,22 +753,13 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   #......
   # Check input 'paired'
-  if (isTRUE(!is.logical(paired))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(paired))) { stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE) }
 
 
   if (isTRUE(paired)) {
 
     # Length of 'x' and 'y'
-    if (isTRUE(nrow(data.frame(x)) != nrow(data.frame(y)))) {
-
-      stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(nrow(data.frame(x)) != nrow(data.frame(y)))) { stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.", call. = FALSE) }
 
   }
 
@@ -790,20 +769,11 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   # Check 'group'
   if (isTRUE(!is.null(group))) {
 
-    if (ncol(data.frame(group)) != 1) {
-
-      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
-
-    }
+    if (ncol(data.frame(group)) != 1L) { stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE) }
 
     if (isTRUE(paired)) {
 
-      if (nrow(data.frame(group)) != nrow(data.frame(x))) {
-
-        stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.",
-             call. = FALSE)
-
-      }
+      if (nrow(data.frame(group)) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.", call. = FALSE) }
 
     }
 
@@ -816,20 +786,11 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   # Check 'split'
   if (isTRUE(!is.null(split))) {
 
-    if (ncol(data.frame(split)) != 1) {
-
-      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
-
-    }
+    if (ncol(data.frame(split)) != 1L) { stop("More than one split variable specified for the argument 'split'.",call. = FALSE) }
 
     if (isTRUE(paired)) {
 
-      if (nrow(data.frame(split)) != nrow(data.frame(x))) {
-
-        stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.",
-             call. = FALSE)
-
-      }
+      if (nrow(data.frame(split)) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.", call. = FALSE) }
 
     }
 
@@ -891,10 +852,7 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   #----------------------------------------
   # Listwise deletion
 
-  if (isTRUE(paired && nrow(na.omit(xy)) < 2)) {
-
-    stop("After listwise deletion, the number of pairs of observations is less than two.",
-         call. = FALSE)
+  if (isTRUE(paired && nrow(na.omit(xy)) < 2L)) { stop("After listwise deletion, the number of pairs of observations is less than two.", call. = FALSE)
 
   }
 
@@ -903,49 +861,29 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
     #......
     # Check input 'weighted'
-    if (isTRUE(!is.logical(weighted))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'weighted'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(weighted))) { stop("Please specify TRUE or FALSE for the argument 'weighted'.", call. = FALSE) }
 
     #......
     # Check input 'cor'
-    if (isTRUE(!is.logical(cor))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'cor'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(cor))) { stop("Please specify TRUE or FALSE for the argument 'cor'.", call. = FALSE) }
 
     #......
     # Check input 'ref'
     if (isTRUE(!is.null(ref))) {
 
-      if (isTRUE(!isTRUE(ref %in% c("x", "y")))) {
-
-        stop("Please specify \"x\" or \"y\" for the argument 'ref'.", call. = FALSE)
-
-      }
+      if (isTRUE(!isTRUE(ref %in% c("x", "y")))) { stop("Please specify \"x\" or \"y\" for the argument 'ref'.", call. = FALSE) }
 
     }
 
     #......
     # Check input 'correct'
-    if (isTRUE(!is.logical(correct))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(correct))) { stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE) }
 
     #......
     # Check input 'alternative'
@@ -958,10 +896,7 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
     #......
     # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) {
-
-      stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.",
-           call. = FALSE)
+    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE)
 
     }
 
@@ -970,18 +905,10 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
     if (isTRUE(!is.null(group))) {
 
       # Input 'group' completely missing
-      if (isTRUE(all(is.na(group)))) {
-
-        stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE)
-
-      }
+      if (isTRUE(all(is.na(group)))) { stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE) }
 
       # Only one group in 'group'
-      if (isTRUE(length(na.omit(unique(group))) == 1L)) {
-
-        warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
-
-      }
+      if (isTRUE(length(na.omit(unique(group))) == 1L)) { warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE) }
 
     }
 
@@ -990,44 +917,24 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
     if (isTRUE(!is.null(split))) {
 
       # Input 'split' completely missing
-      if (isTRUE(all(is.na(split)))) {
-
-        stop("The split variable specified in 'split' is completely missing.", call. = FALSE)
-
-      }
+      if (isTRUE(all(is.na(split)))) { stop("The split variable specified in 'split' is completely missing.", call. = FALSE) }
 
       # Only one group in 'split'
-      if (isTRUE(length(na.omit(unique(split))) == 1L)) {
-
-        warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE)
-
-      }
+      if (isTRUE(length(na.omit(unique(split))) == 1L)) { warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE) }
 
     }
 
     #......
     # Check input 'sort.var'
-    if (isTRUE(!is.logical(sort.var))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(sort.var))) { stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input output
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 

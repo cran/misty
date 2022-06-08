@@ -69,45 +69,25 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   #......
   # Package mnormt installed?
-  if (isTRUE(!requireNamespace("mnormt", quietly = TRUE))) {
-
-    stop("Package \"mnormt\" is needed for this function to work, please install it.",
-         call. = FALSE )
+  if (isTRUE(!requireNamespace("mnormt", quietly = TRUE))) { stop("Package \"mnormt\" is needed for this function to work, please install it.", call. = FALSE )
 
   }
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame of discrete values for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame of discrete values for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specify a matrix or data frame of discrete values for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame of discrete values for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -115,75 +95,38 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     #......
     # Check input 'x': Discrete values
-    if (isTRUE(any(apply(x, 2, function(y) any(na.omit(y) %% 1L != 0L))))) {
-
-      stop("Please specify a matrix or data frame of discrete values for the argument 'x'.", call. = FALSE)
-
-    }
+    if (isTRUE(any(apply(x, 2, function(y) any(na.omit(y) %% 1L != 0L))))) { stop("Please specify a matrix or data frame of discrete values for the argument 'x'.", call. = FALSE) }
 
     #......
     # Check input 'smooth'
-    if (isTRUE(!is.logical(smooth))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'smooth'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(smooth))) { stop("Please specify TRUE or FALSE for the argument 'smooth'.", call. = FALSE) }
 
     #......
     # Check input 'global'
-    if (isTRUE(!is.logical(global))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'global'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(global))) { stop("Please specify TRUE or FALSE for the argument 'global'.", call. = FALSE) }
 
     #......
     # Check input 'na.rm'
-    if (isTRUE(!is.logical(na.rm))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'na.rm'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(na.rm))) { stop("Please specify TRUE or FALSE for the argument 'na.rm'.", call. = FALSE) }
 
     #......
     # Check input 'progress'
-    if (isTRUE(!is.logical(progress))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'progress'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(progress))) { stop("Please specify TRUE or FALSE for the argument 'progress'.", call. = FALSE) }
 
     # Check input 'delete'
-    if (isTRUE(!is.logical(delete))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'delete'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(delete))) { stop("Please specify TRUE or FALSE for the argument 'delete'.", call. = FALSE) }
 
     #......
     # Check input 'tri'
-    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) {
-
-      warning("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".",
-              call. = FALSE)
-
-    }
+    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { warning("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 

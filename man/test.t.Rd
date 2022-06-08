@@ -9,15 +9,24 @@
 test.t(x, ...)
 
 \method{test.t}{default}(x, y = NULL, mu = 0, paired = FALSE,
-       alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
-       hypo = TRUE, descript = TRUE, effsize = FALSE, weighted = TRUE,
-       cor = TRUE, ref = NULL, correct = FALSE, digits = 2, p.digits = 4,
-       as.na = NULL, check = TRUE, output = TRUE, ...)
+       alternative = c("two.sided", "less", "greater"),
+       conf.level = 0.95,  hypo = TRUE, descript = TRUE, effsize = FALSE,
+       weighted = TRUE, cor = TRUE, ref = NULL, correct = FALSE,
+       plot = FALSE, point.size = 4, error.width = 0.1,
+       xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
+       line = TRUE, line.type = 3, line.size = 0.8,
+       jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.1,
+       title = "",  subtitle = "Confidence Interval",
+       digits = 2, p.digits = 4, as.na = NULL, check = TRUE, output = TRUE, ...)
 
 \method{test.t}{formula}(formula, data, alternative = c("two.sided", "less", "greater"),
        conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
-       weighted = TRUE, cor = TRUE, ref = NULL, correct = FALSE, digits = 2,
-       p.digits = 4, as.na = NULL, check = TRUE, output = TRUE, ...)
+       weighted = TRUE, cor = TRUE, ref = NULL, correct = FALSE,
+       plot = FALSE, point.size = 4, error.width = 0.1,
+       xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
+       jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.1,
+       title = "",  subtitle = "Confidence Interval",
+       digits = 2, p.digits = 4, as.na = NULL, check = TRUE, output = TRUE, ...)
 }
 \arguments{
 \item{x}{a numeric vector of data values.}
@@ -25,7 +34,6 @@ test.t(x, ...)
 \item{mu}{a numeric value indicating the population mean under the null hypothesis. Note that the argument \code{mu} is only used when computing a one sample t-test.}
 \item{paired}{logical: if \code{TRUE}, paired-samples t-test is computed.}
 \item{alternative}{a character string specifying the alternative hypothesis, must be one of \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
-\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
 \item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis are shown on the console.}
 \item{descript}{logical: if \code{TRUE}, descriptive statistics are shown on the console.}
 \item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d is shown on the console, see \code{\link{cohens.d}} function.}
@@ -33,6 +41,23 @@ test.t(x, ...)
 \item{cor}{logical: if \code{TRUE} (default), \code{paired = TRUE}, and \code{weighted = FALSE}, Cohen's d for a paired-sample design while controlling for the correlation between the two sets of measurement is computed. Note that this argument is only used in a paired-sample design (i.e., \code{paired = TRUE}) when specifying \code{weighted = FALSE}.}
 \item{ref}{character string \code{"x"} or \code{"y"} for specifying the reference reference group when using the default \code{test.t()} function or a numeric value or character string indicating the reference group in a two-sample design when using the formula \code{test.t()} function. The standard deviation of the reference variable or reference group is used to standardized the mean difference to compute Cohen's d. Note that this argument is only used in a two-sample design (i.e., \code{paired = FALSE}).}
 \item{correct}{logical: if \code{TRUE}, correction factor to remove positive bias in small samples is used.}
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
+\item{plot}{logical: if \code{TRUE}, a plot showing error bars for confidence intervals is drawn.}
+\item{point.size}{a numeric value indicating the \code{size} aesthetic for the point representing the mean value.}
+\item{error.width}{ a numeric value indicating the horizontal bar width of the error bar.}
+\item{xlab}{a character string specifying the labels for the x-axis.}
+\item{ylab}{a character string specifying the labels for the y-axis.}
+\item{ylim}{a numeric vector of length two specifying limits of the limits of the y-axis.}
+\item{breaks}{a numeric vector specifying the points at which tick-marks are drawn at the y-axis.}
+\item{line}{logical: if \code{TRUE} (default), a horizontal line is drawn at \code{mu} for the one-sample t-test or at 0 for the paired-sample t-test.}
+\item{line.type}{an integer value or character string specifying the line type for the line representing the population mean under the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed, 3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash.}
+\item{line.size}{a numeric value indicating the \code{size} aesthetic for the line representing the population mean under the null hypothesis.}
+\item{jitter}{logical: if \code{TRUE} (default), jittered data points are drawn.}
+\item{jitter.size}{ a numeric value indicating the \code{size} aesthetic for the jittered data points.}
+\item{jitter.width}{a numeric value indicating the amount of vertical and horizontal jitter.}
+\item{jitter.alpha}{a numeric value indicating the opacity of the jittered data points.}
+\item{title}{a character string specifying the text for the title for the plot.}
+\item{subtitle}{a character string specifying the text for the subtitle for the plot.}
 \item{digits}{an integer value indicating the number of decimal places to be used for displaying descriptive statistics and confidence interval.}
 \item{p.digits}{an integer value indicating the number of decimal places to be used for displaying the \emph{p}-value.}
 \item{as.na}{a numeric vector indicating user-defined missing values, i.e. these values are converted to \code{NA} before conducting the analysis.}
@@ -42,12 +67,16 @@ test.t(x, ...)
 \item{data}{a matrix or data frame containing the variables in the formula \code{formula}.}
 \item{...}{further arguments to be passed to or from methods.}}
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x}
-(\code{data}), specification of function arguments (\code{args}), and result table (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, list with
+the input specified in \code{x} and \code{y} (\code{data}), data used to plot
+the results (\code{plot.data}), specification of function arguments (\code{args}),
+and result table (\code{result}).
 }
 \description{
-This function performs one-sample, two-sample, and paired-sample t-tests.
+This function performs one-sample, two-sample, and paired-sample t-tests and
+provides descriptive statistics, effect size measure, and a plot showing error
+bars for confidence intervals with jittered data points.
 }
 \examples{
 dat1 <- data.frame(group = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
@@ -85,6 +114,37 @@ test.t(dat1$x, sigma = 1.2, mu = 3, hypo = FALSE, descript = FALSE)
 # print descriptive statistics with 3 digits and p-value with 5 digits
 test.t(dat1$x,  mu = 3, digits = 3, p.digits = 5)
 
+\dontrun{
+# Two-sided one-sample t-test
+# population mean = 3, plot results
+test.t(dat1$x, mu = 3, plot = TRUE)
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Save plot, ggsave() from the ggplot2 package
+ggsave("One-sample_t-test.png", dpi = 600, width = 3, height = 6)
+
+# Two-sided one-sample t-test
+# population mean = 3, extract plot
+p <- test.t(dat1$x, mu = 3, output = FALSE)$plot
+p
+
+# Extract data
+plotdat <- data.frame(x = test.t(dat1$x, mu = 3, output = FALSE)$data[[1]])
+
+# Draw plot in line with the default setting of test.t()
+ggplot(plotdat, aes(0, x)) +
+  geom_point(stat = "summary", fun = "mean", size = 4) +
+  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
+  scale_x_continuous(name = NULL, limits = c(-2, 2)) +
+  scale_y_continuous(name = NULL) +
+  geom_hline(yintercept = 3, linetype = 3, size = 0.8) +
+  labs(subtitle = "Two-Sided 95% Confidence Interval") +
+  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
+                     axis.text.x = element_blank(),
+                     axis.ticks.x = element_blank())
+}
 #--------------------------------------
 # Two-Sample Design
 
@@ -109,14 +169,12 @@ test.t(x ~ group, data = dat1, effsize = TRUE, correct = TRUE)
 
 # Two-sided two-sample t-test
 # print Cohen's d with SD of the reference group 1
-test.t(x ~ group, data = dat1, effsize = TRUE,
-       ref = 1)
+test.t(x ~ group, data = dat1, effsize = TRUE, ref = 1)
 
 # Two-sided two-sample t-test
 # print Cohen's d with weighted pooled SD and
 # small sample correction factor
-test.t(x ~ group, data = dat1, effsize = TRUE,
-       correct = TRUE)
+test.t(x ~ group, data = dat1, effsize = TRUE, correct = TRUE)
 
 # Two-sided two-sample t-test
 # do not print hypotheses and descriptive statistics,
@@ -126,11 +184,37 @@ test.t(x ~ group, data = dat1, descript = FALSE, hypo = FALSE)
 # print descriptive statistics with 3 digits and p-value with 5 digits
 test.t(x ~ group, data = dat1, digits = 3, p.digits = 5)
 
+\dontrun{
+# Two-sided two-sample t-test
+# Plot results
+test.t(x ~ group, data = dat1, plot = TRUE)
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Save plot, ggsave() from the ggplot2 package
+ggsave("Two-sample_t-test.png", dpi = 600, width = 4, height = 6)
+
+# Two-sided two-sample t-test
+# extract plot
+p <- test.t(x ~ group, data = dat1, output = FALSE)$plot
+p
+
+# Extract data used to plot results
+plotdat <- test.t(x ~ group, data = dat1, output = FALSE)$data
+
+# Draw plot in line with the default setting of test.t()
+ggplot(plotdat, aes(factor(group), x)) +
+  geom_point(stat = "summary", fun = "mean", size = 4) +
+  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
+  scale_x_discrete(name = NULL) + scale_y_continuous(name = "y") +
+  labs(title = "", subtitle = "Two-Sided 95% Confidence Interval")
+}
 #-----------------
 
 group1 <- c(3, 1, 4, 2, 5, 3, 6, 7)
 group2 <- c(5, 2, 4, 3, 1)
-
+#'
 # Two-sided two-sample t-test
 test.t(group1, group2)
 
@@ -138,14 +222,13 @@ test.t(group1, group2)
 # Paired-Sample Design
 
 dat2 <- data.frame(pre = c(1, 3, 2, 5, 7),
-                   post = c(2, 2, 1, 6, 8), stringsAsFactors = FALSE)
+                   post = c(2, 2, 1, 6, 8))
 
 # Two-sided paired-sample t-test
 test.t(dat2$pre, dat2$post, paired = TRUE)
 
 # One-sided paired-sample t-test
-test.t(dat2$pre, dat2$post, paired = TRUE,
-       alternative = "greater")
+test.t(dat2$pre, dat2$post, paired = TRUE, alternative = "greater")
 
 # Two-sided paired-sample t-test
 # convert value 1 to NA
@@ -158,13 +241,11 @@ test.t(dat2$pre, dat2$post, paired = TRUE, effsize = TRUE)
 # Two-sided paired-sample t-test
 # print Cohen's d based on the standard deviation of the difference scores
 # with small sample correction factor
-test.t(dat2$pre, dat2$post, paired = TRUE, effsize = TRUE,
-       correct = TRUE)
+test.t(dat2$pre, dat2$post, paired = TRUE, effsize = TRUE, correct = TRUE)
 
 # Two-sided paired-sample t-test
 # print Cohen's d controlling for the correlation between measures
-test.t(dat2$pre, dat2$post, paired = TRUE, effsize = TRUE,
-       weighted = FALSE)
+test.t(dat2$pre, dat2$post, paired = TRUE, effsize = TRUE, weighted = FALSE)
 
 # Two-sided paired-sample t-test
 # print Cohen's d controlling for the correlation between measures
@@ -186,14 +267,49 @@ test.t(dat2$pre, dat2$post, paired = TRUE, hypo = FALSE, descript = FALSE)
 # print descriptive statistics with 3 digits and p-value with 5 digits
 test.t(dat2$pre, dat2$post, paired = TRUE, digits = 3,
        p.digits = 5)
+
+\dontrun{
+# Two-sided paired-sample t-test
+# Plot results
+test.t(dat2$pre, dat2$post, paired = TRUE, plot = TRUE)
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Two-sided paired-sample t-test
+# Extract plot
+p <- test.t(dat2$pre, dat2$post, paired = TRUE, output = FALSE)$plot
+p
+
+# Save plot, ggsave() from the ggplot2 package
+ggsave("Paired-sample_t-test.png", dpi = 600, width = 3, height = 6)
+
+# Extract data used to plot results
+plotdat <- data.frame(test.t(dat2$pre, dat2$post, paired = TRUE, output = FALSE)$data)
+
+# Difference score
+plotdat$diff <- plotdat$y - plotdat$x
+
+# Draw plot in line with the default setting of test.t()
+ggplot(plotdat, aes(0, diff)) +
+  geom_point(stat = "summary", fun = "mean", size = 4) +
+  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
+  scale_x_discrete(name = NULL) + scale_y_continuous(name = NULL) +
+  geom_hline(yintercept = 0, linetype = 3, size = 0.8) +
+  labs(subtitle = "Two-Sided 95% Confidence Interval") +
+  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
+                     axis.text.x = element_blank(),
+                     axis.ticks.x = element_blank())
+}
 }
 \references{
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. John Wiley & Sons.
 }
 \seealso{
-\code{\link{test.welch}}, \code{\link{test.z}}, \code{\link{test.levene}}, \code{\link{cohens.d}},
-\code{\link{ci.mean.diff}}, \code{\link{ci.mean}}
+\code{\link{aov.b}}, \code{\link{test.welch}}, \code{\link{test.z}},
+\code{\link{test.levene}}, \code{\link{cohens.d}}, \code{\link{ci.mean.diff}},
+\code{\link{ci.mean}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

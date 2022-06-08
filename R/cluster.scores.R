@@ -55,67 +55,34 @@ cluster.scores <- function(x, cluster, fun = c("mean", "sum", "median", "var", "
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
-
-  if (ncol(data.frame(x)) != 1) {
-
-    stop("More than one variable specified for the argument 'x'.", call. = FALSE)
-
-  }
+  if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.", call. = FALSE) }
 
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
 
   #......
   # Numeric vector for 'x'?
-  if (isTRUE(mode(x) != "numeric")) {
-
-    stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
 
   #----------------------------------------
 
   #......
   # Check input 'cluster'
-  if (isTRUE(missing(cluster))) {
-
-    stop("Please specify a vector representing the grouping structure for the argument 'cluster'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(cluster))) { stop("Please specify a vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
   #......
   # Check if input 'cluster' is NULL
-  if (isTRUE(is.null(cluster))) {
+  if (isTRUE(is.null(cluster))) { stop("Input specified for the argument 'cluster' is NULL.", call. = FALSE) }
 
-    stop("Input specified for the argument 'cluster' is NULL.", call. = FALSE)
+  if (ncol(data.frame(cluster)) != 1L) { stop("More than one cluster variable specified for the argument 'cluster'.", call. = FALSE) }
 
-  }
-
-  if (ncol(data.frame(cluster)) != 1) {
-
-    stop("More than one cluster variable specified for the argument 'cluster'.", call. = FALSE)
-
-  }
-
-  if (nrow(data.frame(cluster)) != nrow(data.frame(x))) {
-
-    stop("Length of the cluster variable specified in the argument 'cluster' does not match with 'x'.",
-         call. = FALSE)
-
-  }
+  if (nrow(data.frame(cluster)) != nrow(data.frame(x))) { stop("Length of the cluster variable specified in the argument 'cluster' does not match with 'x'.", call. = FALSE) }
 
   # Convert 'cluster' into a vector
   cluster <- unlist(cluster, use.names = FALSE)
@@ -125,11 +92,7 @@ cluster.scores <- function(x, cluster, fun = c("mean", "sum", "median", "var", "
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #----------------------------------------
 
@@ -146,11 +109,7 @@ cluster.scores <- function(x, cluster, fun = c("mean", "sum", "median", "var", "
 
     #......
     # Check input 'expand'
-    if (isTRUE(!is.logical(expand))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(expand))) { stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE) }
 
   }
 

@@ -69,20 +69,11 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
 
   #......
   # Check input 'recycle'
-  if (isTRUE(!is.logical(recycle))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'recycle'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(recycle))) { stop("Please specify TRUE or FALSE for the argument 'recycle'.", call. = FALSE) }
 
   #......
   # Check if arguments 'argument' and 'replacement' have the same length
-  if (isTRUE(!recycle & length(pattern) != length(replacement))) {
-
-    stop("Pattern and replacement vectors must be the same length if recycle = FALSE.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(!recycle & length(pattern) != length(replacement))) { stop("Pattern and replacement vectors must be the same length if recycle = FALSE.", call. = FALSE) }
 
   ####################################################################################
   # Functions

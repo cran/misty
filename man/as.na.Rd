@@ -7,7 +7,7 @@
 as.na(x, na, check = TRUE)
 }
 \arguments{
-\item{x}{a vector, factor, matrix, data frame, or list.}
+\item{x}{a vector, factor, matrix, array, data frame, or list.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -18,7 +18,7 @@ Returns \code{x} with values specified in \code{na} replaced with \code{NA}.
 }
 \description{
 This function replaces user-specified values in the argument \code{as.na} in a vector, factor, matrix,
-data frame or list with \code{NA}.
+array, list, or data frame with \code{NA}.
 }
 \examples{
 #--------------------------------------
@@ -60,6 +60,13 @@ as.na(x.mat, na = 8)
 
 # Replace 8, 14, and 20 with NA
 as.na(x.mat, na = c(8, 14, 20))
+
+#--------------------------------------
+# Array
+x.array <- array(1:20,dim = c(2, 3, 2))
+
+# Replace 1 and 10 with NA
+as.na(x.array, na = c(1, 10))
 
 #--------------------------------------
 # Data frame

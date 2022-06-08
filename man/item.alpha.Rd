@@ -6,7 +6,7 @@
 \usage{
 item.alpha(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit = FALSE,
            print = c("all", "alpha", "item"), digits = 2, conf.level = 0.95,
-           as.na = NULL, check = TRUE, output = TRUE)
+           as.na = NULL, write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix, data frame, variance-covariance or correlation matrix. Note that
@@ -32,6 +32,8 @@ coefficient alpha and item-total correlations.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.}
+
+\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -100,6 +102,8 @@ item.alpha(dat, ordered = TRUE)
 
 \dontrun{
 # Write Results into a Excel file
+result <- item.alpha(dat, write = "Alpha.xlsx")
+
 result <- item.alpha(dat, output = FALSE)
 write.result(result, "Alpha.xlsx") }
 }

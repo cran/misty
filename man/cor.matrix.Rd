@@ -10,7 +10,8 @@ cor.matrix(x, method = c("pearson", "spearman", "kendall-b", "kendall-c"),
            tri = c("both", "lower", "upper"),
            p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel",
                      "BH", "BY", "fdr"), continuity = TRUE,
-           digits = 2, p.digits = 3, as.na = NULL, check = TRUE, output = TRUE)
+           digits = 2, p.digits = 3, as.na = NULL,
+           write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame.}
@@ -52,6 +53,8 @@ correlation coefficients.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.}
+
+\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -128,6 +131,8 @@ cor.matrix(dat[, c("x", "y", "z")], group = dat$group, print = "all")
 
 \dontrun{
 # Write Results into a Excel file
+cor.matrix(dat[, c("x", "y", "z")], print = "all", write = "Correlation.xlsx")
+
 result <- cor.matrix(dat[, c("x", "y", "z")], print = "all", output = FALSE)
 write.result(result, "Correlation.xlsx") }
 }

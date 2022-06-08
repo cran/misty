@@ -7,8 +7,8 @@
 \method{print}{misty.object}(x,
       print = x$args$print, tri = x$args$tri, freq = x$args$freq,
       hypo = x$args$hypo, descript = x$args$descript, effsize = x$args$effsize,
-      split = x$args$split, table = x$args$table, digits = x$args$digits,
-      p.digits = x$args$p.digits, icc.digits = x$args$icc.digits,
+      posthoc = x$args$posthoc, split = x$args$split, table = x$args$table,
+      digits = x$args$digits, p.digits = x$args$p.digits, icc.digits = x$args$icc.digits,
       sort.var = x$args$sort.var, order = x$args$order, check = TRUE, ...)
 }
 \arguments{
@@ -33,6 +33,9 @@ tabulation (\code{crosstab()} function).}
 
 \item{effsize}{logical: if \code{TRUE}, effect size measure(s) is shown on the console
 (\code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}} function).}
+
+\item{posthoc}{logical: if \code{TRUE}, post hoc test for multiple comparison is
+shown on the console (\code{\link{test.welch}})}.
 
 \item{split}{logical: if \code{TRUE}, output table is split by variables when specifying more than
 one variable in \code{x} (\code{\link{freq}}).}
@@ -65,11 +68,11 @@ of missing values (\code{na.descript()} function).}
 This function prints the \code{misty.object} object
 }
 \seealso{
-\code{\link{item.alpha}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}}, \code{\link{ci.median}},
-\code{\link{ci.prop.diff}}, \code{\link{ci.prop}}, \code{\link{ci.sd}}, \code{\link{ci.var}},
-\code{\link{cohens.d}}, \code{\link{collin.diag}}, \code{\link{cor.cont}}, \code{\link{cor.matrix}},
-\code{\link{cor.cramer}}, \code{\link{crosstab}}, \code{\link{descript}}, \code{\link{eta.sq}},
-\code{\link{freq}}, \code{\link{test.levene}}, \code{\link{multilevel.descript}},
+\code{\link{aov.b}}, \code{\link{item.alpha}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}},
+\code{\link{ci.median}}, \code{\link{ci.prop.diff}}, \code{\link{ci.prop}}, \code{\link{ci.sd}},
+\code{\link{ci.var}}, \code{\link{cohens.d}}, \code{\link{collin.diag}}, \code{\link{cor.cont}},
+\code{\link{cor.matrix}}, \code{\link{cor.cramer}}, \code{\link{crosstab}}, \code{\link{descript}},
+\code{\link{eta.sq}}, \code{\link{freq}}, \code{\link{test.levene}}, \code{\link{multilevel.descript}},
 \code{\link{multilevel.r2}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}},
 \code{\link{na.descript}}, \code{\link{na.pattern}}, \code{\link{item.omega}},
 \code{\link{cor.phi}}, \code{\link{cor.poly}}, \code{\link{size.cor}}, \code{\link{size.mean}},

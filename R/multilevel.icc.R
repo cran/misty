@@ -77,44 +77,23 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Vector, matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) { stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check input 'cluster'
-  if (isTRUE(missing(cluster))) {
-
-    stop("Please specify a vector representing the grouping structure for the argument 'cluster'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(cluster))) { stop("Please specify a vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
   #......
   # Check if only one variable specified in the input 'cluster'
-  if (ncol(data.frame(cluster)) != 1) {
-
-    stop("More than one variable specified for the argument 'cluster'.",call. = FALSE)
-
-  }
+  if (ncol(data.frame(cluster)) != 1L) { stop("More than one variable specified for the argument 'cluster'.",call. = FALSE) }
 
   #......
   # Convert 'cluster' into a vector
@@ -142,11 +121,7 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
   # Input Check
 
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -154,12 +129,7 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
     #......
     # Check input 'cluster'
-    if (isTRUE(length(unique(na.omit(cluster))) == 1L)) {
-
-      stop("There is only one group represented in the cluster variable specified in 'cluster'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(length(unique(na.omit(cluster))) == 1L)) { stop("There is only one group represented in the cluster variable specified in 'cluster'.", call. = FALSE) }
 
     #......
     # Check input 'cluster'
@@ -226,28 +196,15 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
     #......
     # Check input 'type'
-    if (isTRUE(any(!type %in% c(1L, 2L)))) {
-
-      stop("Please specify the numeric value 1 or 2 for the argument'type'.", call. = FALSE)
-
-    }
+    if (isTRUE(any(!type %in% c(1L, 2L)))) { stop("Please specify the numeric value 1 or 2 for the argument'type'.", call. = FALSE) }
 
     #......
     # Check input 'method'
-    if (isTRUE(any(!method %in% c("aov", "lme4", "nlme")))) {
-
-      stop("Character string in the argument 'method' does not match with \"aov\", \"lme4\", or \"nlme\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!method %in% c("aov", "lme4", "nlme")))) { stop("Character string in the argument 'method' does not match with \"aov\", \"lme4\", or \"nlme\".", call. = FALSE) }
 
     #......
     # Check input 'REML'
-    if (isTRUE(!is.logical(REML))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'REML'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(REML))) { stop("Please specify TRUE or FALSE for the argument 'REML'.", call. = FALSE) }
 
   }
 

@@ -3,17 +3,20 @@
 #' This function computes a summary of missing data patterns, i.e., number (%) of
 #' cases with a specific missing data pattern.
 #'
-#' @param x           a matrix or data frame with incomplete data, where missing
-#'                    values are coded as \code{NA}.
-#' @param order       logical: if \code{TRUE}, variables are ordered from left to
-#'                    right in increasing order of missing values.
-#' @param digits      an integer value indicating the number of decimal places to
-#'                    be used for displaying percentages.
-#' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to NA before conducting the
-#'                    analysis.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
-#' @param output      logical: if \code{TRUE}, output is shown.
+#' @param x       a matrix or data frame with incomplete data, where missing
+#'                values are coded as \code{NA}.
+#' @param order   logical: if \code{TRUE}, variables are ordered from left to
+#'                right in increasing order of missing values.
+#' @param digits  an integer value indicating the number of decimal places to
+#'                be used for displaying percentages.
+#' @param as.na   a numeric vector indicating user-defined missing values,
+#'                i.e. these values are converted to NA before conducting the
+#'                analysis.
+#' @param write   a character string for writing the results into a Excel file
+#'                naming a file with or without file extension '.xlsx', e.g.,
+#'                \code{"Results.xlsx"} or \code{"Results"}.
+#' @param check   logical: if \code{TRUE}, argument specification is checked.
+#' @param output  logical: if \code{TRUE}, output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -58,39 +61,28 @@
 #'
 #' \dontrun{
 #' # Write Results into a Excel file
+#' result <- na.pattern(dat, write = "NA_Pattern.xlsx")
+#'
 #' result <- na.pattern(dat, output = FALSE)
 #' write.result(result, "NA_Pattern.xlsx")
 #' }
-na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
-                       output = TRUE) {
+na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
+                       check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Input Check
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #.........................................
 
@@ -98,35 +90,19 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
 
     #......
     # Matrix or data frame for the argument 'x'?
-    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-      stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
     #......
     # Check input 'order'
-    if (isTRUE(!is.logical(order))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'order'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(order))) { stop("Please specify TRUE or FALSE for the argument 'order'.", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -136,11 +112,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
   #----------------------------------------
   # Convert user-missing values into NA
 
-  if (isTRUE(!is.null(as.na))) {
-
-    x <- misty::as.na(x, na = as.na, check = check)
-
-  }
+  if (isTRUE(!is.null(as.na))) { x <- misty::as.na(x, na = as.na, check = check) }
 
   #----------------------------------------
   # As data.frame
@@ -211,6 +183,11 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, check = TRUE,
                  pattern = pattern)
 
   class(object) <- "misty.object"
+
+  ####################################################################################
+  # Write results
+
+  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
   ####################################################################################
   # Output

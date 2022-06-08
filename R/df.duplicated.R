@@ -116,22 +116,14 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE) }
 
   # No variables specified in ..., i.e., use all variables in x
   if (isTRUE(length(var.names) == 0L)) { var.names <- colnames(x) }
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input '...'
@@ -145,11 +137,7 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
 
   #.............
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -157,35 +145,19 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
 
     #.............
     # Check input 'first'
-    if (isTRUE(!is.logical(first))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'first'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(first))) { stop("Please specify TRUE or FALSE for the argument 'first'.", call. = FALSE) }
 
     #.............
     # Check input 'keep.all'
-    if (isTRUE(!is.logical(keep.all))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'keep.all'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(keep.all))) { stop("Please specify TRUE or FALSE for the argument 'keep.all'.", call. = FALSE) }
 
     #.............
     # Check input 'from.last'
-    if (isTRUE(!is.logical(from.last))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'from.last'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(from.last))) { stop("Please specify TRUE or FALSE for the argument 'from.last'.", call. = FALSE) }
 
     #.............
     # Check input 'keep.row.names'
-    if (isTRUE(!is.logical(keep.row.names))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'keep.row.names'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(keep.row.names))) { stop("Please specify TRUE or FALSE for the argument 'keep.row.names'.", call. = FALSE) }
 
   }
 

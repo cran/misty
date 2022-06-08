@@ -39,45 +39,23 @@ df.rename <- function(x, from, to, check = TRUE) {
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check input 'from'
-  if (isTRUE(missing(from))) {
-
-    stop("Please specify a character string or character vector for the argument 'from'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(from))) { stop("Please specify a character string or character vector for the argument 'from'.", call. = FALSE) }
 
   #......
   # Check input 'to'
-  if (isTRUE(missing(to))) {
-
-    stop("Please specify a character string or character vector for the argument 'to'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(to))) { stop("Please specify a character string or character vector for the argument 'to'.", call. = FALSE) }
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -85,31 +63,16 @@ df.rename <- function(x, from, to, check = TRUE) {
 
     #.........................
     # Character string or vector for the argument 'from'?
-    if (isTRUE(!is.character(from))) {
-
-      stop("Please specify a character string or character vector for the argument 'from'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(!is.character(from))) { stop("Please specify a character string or character vector for the argument 'from'.", call. = FALSE) }
 
     #.........................
     # Character string or vector for the argument 'to'?
-    if (isTRUE(!is.character(to))) {
-
-      stop("Please specify a character string or character vector for the argument 'to'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(!is.character(to))) { stop("Please specify a character string or character vector for the argument 'to'.", call. = FALSE) }
 
     #.........................
     # Vector in argument 'from' matching with the vector in argument 'to'?
 
-    if (isTRUE(length(from) != length(to))) {
-
-      stop("Length of the vector specified in 'from' does not match with the vector specified in 'to'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(length(from) != length(to))) { stop("Length of the vector specified in 'from' does not match with the vector specified in 'to'.", call. = FALSE) }
 
     #.........................
     # Variables specified in the argument 'from' in 'x'?

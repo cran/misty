@@ -59,43 +59,22 @@ chr.trim <- function(x, side = c("both", "left", "right"), check = TRUE) {
   # Input check
 
   # Check input 'x'
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a character vector for the argument 'x'", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a character vector for the argument 'x'", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
     # Check input 'x'
-    if (isTRUE(!is.character(x))) {
-
-      stop("Please specify a character vector for the argument 'x'", call. = FALSE)
-
-    }
+    if (isTRUE(!is.character(x))) { stop("Please specify a character vector for the argument 'x'", call. = FALSE) }
 
     # Check input 'side'
-    if (isTRUE(length(side) != 1L)) {
-
-      stop("Please specify \"both\", \"left\", or \"right\ for the argument 'side'.", call. = FALSE)
-
-    }
+    if (isTRUE(length(side) != 1L)) { stop("Please specify \"both\", \"left\", or \"right\ for the argument 'side'.", call. = FALSE) }
 
     # Check input 'side'
-    if (isTRUE(!side %in% c("both", "left", "right"))) {
-
-      stop("Character string in the argument 'side' does not match with \"both\", \"left\", or \"right\".",
-              call. = FALSE)
-
-    }
+    if (isTRUE(!side %in% c("both", "left", "right"))) { stop("Character string in the argument 'side' does not match with \"both\", \"left\", or \"right\".", call. = FALSE) }
 
   }
 

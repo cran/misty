@@ -6,7 +6,7 @@
 \usage{
 freq(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split = FALSE,
      labels = TRUE, val.col = FALSE, round = 3, exclude = 15, digits = 2,
-     as.na = NULL, check = TRUE, output = TRUE)
+     as.na = NULL, write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a vector, factor, matrix or data frame.}
@@ -41,6 +41,8 @@ percentages.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.}
+
+\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -117,6 +119,8 @@ freq(factor(c("a", "a", "b", "c", "b")), labels = FALSE)
 
 \dontrun{
 # Write Results into a Excel file
+freq(dat[, c("x1", "x2", "y1", "y2")], split = TRUE, write = "Frequencies.xlsx")
+
 result <- freq(dat[, c("x1", "x2", "y1", "y2")], split = TRUE, output = FALSE)
 write.result(result, "Frequencies.xlsx") }
 }

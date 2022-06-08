@@ -14,7 +14,7 @@ item.cfa(x, model = NULL, rescov = NULL, hierarch = FALSE,
                      "two.stage", "robust.two.stage", "doubly.robust"),
          print = c("all", "summary", "coverage", "descript", "fit", "est", "modind"),
          min.value = 10, digits = 3, p.digits = 3, as.na = NULL,
-         check = TRUE, output = TRUE)
+         write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame. If \code{model = NULL},
@@ -145,6 +145,8 @@ i.e. these values are converted to \code{NA} before
 conducting the analysis. Note that \code{as.na()}
 function is only applied to \code{x} but not to
 \code{cluster}.}
+
+\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -437,6 +439,7 @@ lavaan::summary(mod$mod.fit, standardized = TRUE, fit.measures = TRUE)
 
 #---------------------------
 # Write Results into a Excel file
+item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.xlsx")
 
 result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
 

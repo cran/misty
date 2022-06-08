@@ -42,27 +42,15 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a numeric vector for the argument 'x'", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Check if only one variable specified in the input 'x'
-  if (ncol(data.frame(x)) != 1) {
-
-    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
-
-  }
+  if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
 
   #......
   # Convert 'x' into a vector
@@ -71,37 +59,21 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
   #-----------------------------------------
 
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
     #......
     # Check if input 'x' is missing
-    if (isTRUE(all(is.na(x)))) {
-
-      stop("Vector specified in the argument 'x' is is completely missing.", call. = FALSE)
-
-    }
+    if (isTRUE(all(is.na(x)))) { stop("Vector specified in the argument 'x' is is completely missing.", call. = FALSE) }
 
     #......
     # Numeric vector for the argument 'x'?
-    if (isTRUE(mode(x) != "numeric")) {
-
-      stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
-
-    }
+    if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
 
     #.......
     # Check input 'x': Yero variance
-    if (isTRUE(length(na.omit(unique(x))) == 1L)) {
-
-        stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE)
-
-    }
+    if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE) }
 
   }
 

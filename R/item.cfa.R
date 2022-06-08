@@ -117,6 +117,9 @@
 #'                         conducting the analysis. Note that \code{as.na()}
 #'                         function is only applied to \code{x} but not to
 #'                         \code{cluster}.
+#' @param write            a character string for writing the results into a Excel
+#'                         file naming a file with or without file extension '.xlsx',
+#'                         e.g., \code{"Results.xlsx"} or \code{"Results"}.
 #' @param check            logical: if \code{TRUE}, argument specification is checked.
 #' @param output           logical: if \code{TRUE}, output is shown.
 #'
@@ -426,9 +429,9 @@
 #'
 #' #---------------------------
 #' # Write Results into a Excel file
+#' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.xlsx")
 #'
 #' result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
-#'
 #' write.result(result, "CFA.xlsx")
 #' }
 item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstructure = TRUE,
@@ -439,51 +442,32 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                                    "ULS", "ULSM", "ULSMV", "DLS", "PML"),
                      missing = c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust"),
                      print = c("all", "summary", "coverage", "descript", "fit", "est", "modind"),
-                     min.value = 10, digits = 3, p.digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
+                     min.value = 10, digits = 3, p.digits = 3, as.na = NULL, write = NULL,
+                     check = TRUE, output = TRUE) {
 
   ##############################################################################
   # R package
 
-  if (isTRUE(!nzchar(system.file(package = "lavaan")))) {
-
-    stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE)
-
-  }
+  if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
 
   ##############################################################################
   # Data
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Check if input 'x' is a matrix or a data frame
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specify a matrix or a data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or a data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'model' is a character vector or list of character vectors
-  if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) {
-
-    stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
 
   #......
   # Check if variables in input 'model' are available in input 'x'
@@ -499,11 +483,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -517,35 +497,19 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
       if (isTRUE(length(cluster) == 1L)) {
 
         # One cluster variable
-        if (isTRUE(!is.character(cluster))) {
-
-          stop("Please specify a character string for the name of the cluster variable in 'x'", call. = FALSE)
-
-        }
+        if (isTRUE(!is.character(cluster))) { stop("Please specify a character string for the name of the cluster variable in 'x'", call. = FALSE) }
 
         # Cluster variable in 'x'
-        if (isTRUE(!cluster %in% colnames(x))) {
-
-          stop(paste0("Cluster variable \"", cluster, "\" specified in 'cluster' was not found in 'x'"), call. = FALSE)
-
-        }
+        if (isTRUE(!cluster %in% colnames(x))) { stop(paste0("Cluster variable \"", cluster, "\" specified in 'cluster' was not found in 'x'"), call. = FALSE) }
 
       # Cluster variable
       } else {
 
         # Length of cluster variable
-        if (isTRUE(nrow(x) != length(cluster))) {
-
-          stop("The cluster variable does not match with the number of rows in 'x'.",call. = FALSE)
-
-        }
+        if (isTRUE(nrow(x) != length(cluster))) { stop("The cluster variable does not match with the number of rows in 'x'.",call. = FALSE) }
 
         # Number of groups
-        if (isTRUE(length(unique(na.omit(cluster))) == 1L)) {
-
-          stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE)
-
-        }
+        if (isTRUE(length(unique(na.omit(cluster))) == 1L)) { stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE) }
 
       }
 
@@ -555,19 +519,11 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
     # Check input 'x'
     if (isTRUE(is.null(cluster) || length(cluster) != 1L)) {
 
-      if (isTRUE(is.null(model) && ncol(data.frame(x)) < 3L)) {
-
-        stop("Please specify at least three indicators for the measurement model in 'x'.", call. = FALSE)
-
-      }
+      if (isTRUE(is.null(model) && ncol(data.frame(x)) < 3L)) { stop("Please specify at least three indicators for the measurement model in 'x'.", call. = FALSE) }
 
     } else if (isTRUE(cluster == 1L)) {
 
-      if (isTRUE(is.null(model) && ncol(data.frame(x)[, !colnames(data.frame(x)) %in% cluster, drop = FALSE]) < 3L)) {
-
-        stop("Please specify at least three indicators for the measurement model in 'x'.", call. = FALSE)
-
-      }
+      if (isTRUE(is.null(model) && ncol(data.frame(x)[, !colnames(data.frame(x)) %in% cluster, drop = FALSE]) < 3L)) { stop("Please specify at least three indicators for the measurement model in 'x'.", call. = FALSE) }
 
     }
 
@@ -577,19 +533,11 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
       if (isTRUE(!is.list(model))) {
 
-        if (isTRUE(length(unique(model)) < 3L)) {
-
-          stop("Please specify at least three indicators for the measurement model.", call. = FALSE)
-
-        }
+        if (isTRUE(length(unique(model)) < 3L)) { stop("Please specify at least three indicators for the measurement model.", call. = FALSE) }
 
       } else {
 
-        if (isTRUE(length(model) == 1L && length(unique(unlist(model))) < 3L)) {
-
-          stop("Please specify at least three indicators for the measurement model.", call. = FALSE)
-
-        }
+        if (isTRUE(length(model) == 1L && length(unique(unlist(model))) < 3L)) { stop("Please specify at least three indicators for the measurement model.", call. = FALSE) }
 
       }
 
@@ -643,37 +591,22 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
     #......
     # Check input 'hierarch'
-    if (isTRUE(!is.logical(hierarch))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'hierarch'.", call. = FALSE)
-
+    if (isTRUE(!is.logical(hierarch))) { stop("Please specify TRUE or FALSE for the argument 'hierarch'.", call. = FALSE)
     }
 
     #......
     # Check input 'meanstructure'
-    if (isTRUE(!is.logical(meanstructure))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'meanstructure'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(meanstructure))) { stop("Please specify TRUE or FALSE for the argument 'meanstructure'.", call. = FALSE) }
 
     #......
     # Check input 'ident'
-    if (isTRUE(!all(ident %in% c("marker", "var", "effect")))) {
-
-      stop("Character string in the argument 'ident' does not match with \"marker\", \"var\", or \"effect\".",
-           call. = FALSE)
+    if (isTRUE(!all(ident %in% c("marker", "var", "effect")))) { stop("Character string in the argument 'ident' does not match with \"marker\", \"var\", or \"effect\".", call. = FALSE)
 
     }
 
     #......
     # Check input 'parameterization'
-    if (isTRUE(!all(parameterization %in% c("delta", "theta")))) {
-
-      stop("Character string in the argument 'parameterization' does not match with \"delta\" or \"theta\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(!all(parameterization %in% c("delta", "theta")))) { stop("Character string in the argument 'parameterization' does not match with \"delta\" or \"theta\".", call. = FALSE) }
 
 
     #......
@@ -735,35 +668,19 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
     #......
     # Check input 'min.value'
-    if (isTRUE(min.value <= 0L)) {
-
-      stop("Please specify a value greater than 0 for the argument 'min.value'.", call. = FALSE)
-
-    }
+    if (isTRUE(min.value <= 0L)) { stop("Please specify a value greater than 0 for the argument 'min.value'.", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) {
-
-      stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -1500,6 +1417,11 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                                modind = model.modind))
 
   class(object) <- "misty.object"
+
+  ####################################################################################
+  # Write results
+
+  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
   ##############################################################################
   # Output

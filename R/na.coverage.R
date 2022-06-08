@@ -3,18 +3,21 @@
 #' This function computes the proportion of cases that contributes for the calculation
 #' of each variance and covariance.
 #'
-#' @param x           a matrix or data frame.
-#' @param tri         a character string or character vector indicating which triangular
-#'                    of the matrix to show on the console, i.e., \code{both} for
-#'                    upper and lower triangular, \code{lower} (default) for the
-#'                    lower triangular, and \code{upper} for the upper triangular.
-#' @param digits      an integer value indicating the number of decimal places to
-#'                    be used for displaying proportions.
-#' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting
-#'                    the analysis.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
-#' @param output      logical: if \code{TRUE}, output is shown on the console.
+#' @param x       a matrix or data frame.
+#' @param tri     a character string or character vector indicating which triangular
+#'                of the matrix to show on the console, i.e., \code{both} for
+#'                upper and lower triangular, \code{lower} (default) for the
+#'                lower triangular, and \code{upper} for the upper triangular.
+#' @param digits  an integer value indicating the number of decimal places to
+#'                be used for displaying proportions.
+#' @param as.na   a numeric vector indicating user-defined missing values,
+#'                i.e. these values are converted to \code{NA} before conducting
+#'                the analysis.
+#' @param write   a character string for writing the results into a Excel file
+#'                naming a file with or without file extension '.xlsx', e.g.,
+#'                \code{"Results.xlsx"} or \code{"Results"}.
+#' @param check   logical: if \code{TRUE}, argument specification is checked.
+#' @param output  logical: if \code{TRUE}, output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -51,47 +54,32 @@
 #'
 #' \dontrun{
 #' # Write Results into a Excel file
+#' na.coverage(dat, write = "Coverage.xlsx")
+#'
 #' result <- na.coverage(dat, output = FALSE)
 #' write.result(result, "Coverage.xlsx")
 #' }
 na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na = NULL,
-                        check = TRUE, output = TRUE) {
+                        write = NULL, check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Input Check
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #.........................
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #.........................................
 
@@ -99,28 +87,15 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
 
     #......
     # Check input 'tri'
-    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) {
-
-      stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -177,6 +152,11 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
                  result = restab)
 
   class(object) <- "misty.object"
+
+  ####################################################################################
+  # Write results
+
+  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
   ####################################################################################
   # Output

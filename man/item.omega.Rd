@@ -7,7 +7,7 @@
 item.omega(x, resid.cov = NULL, type = c("omega", "hierarch", "categ"),
            exclude = NULL, std = FALSE, na.omit = FALSE,
            print = c("all", "omega", "item"), digits = 2, conf.level = 0.95,
-           as.na = NULL, check = TRUE, output = TRUE)
+           as.na = NULL, write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame. Note that at least three items are needed for computing omega.}
@@ -42,6 +42,8 @@ omega and standardized factor loadings.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting the analysis.}
+
+\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -114,6 +116,8 @@ lavaan::summary(item.omega(dat, output = FALSE)$mod.fit,
                 fit.measures = TRUE, standardized = TRUE)
 
 # Write Results into a Excel file
+item.omega(dat, write = "Omega.xlsx")
+
 result <- item.omega(dat, output = FALSE)
 write.result(result, "Omega.xlsx") }
 }

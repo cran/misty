@@ -29,6 +29,9 @@
 #'                 i.e. these values are converted to \code{NA} before conducting
 #'                 the analysis. Note that \code{as.na()} function is only applied
 #'                 to \code{x}, but not to \code{group} or \code{split}.
+#' @param write     a character string for writing the results into a Excel file
+#'                  naming a file with or without file extension '.xlsx', e.g.,
+#'                  \code{"Results.xlsx"} or \code{"Results"}.
 #' @param check    logical: if \code{TRUE}, argument specification is checked.
 #' @param output   logical: if \code{TRUE}, output is shown on the console.
 #'
@@ -97,32 +100,25 @@
 #'
 #' \dontrun{
 #' # Write Results into a Excel file
+#' descript(dat[, c("x1", "x2", "x3")], write = "Descript.xlsx")
+#'
 #' result <- descript(dat[, c("x1", "x2", "x3")], output = FALSE)
 #' write.result(result, "Descript.xlsx")
 #' }
 descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
                      group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-                     digits = 2, as.na = NULL, check = TRUE, output = TRUE) {
+                     digits = 2, as.na = NULL, write = NULL, check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Data
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #----------------------------------------
 
@@ -130,18 +126,9 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
   # Check 'group'
   if (isTRUE(!is.null(group))) {
 
-    if (ncol(data.frame(group)) != 1) {
+    if (ncol(data.frame(group)) != 1L) { stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE) }
 
-      stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE)
-
-    }
-
-    if (nrow(data.frame(group)) != nrow(data.frame(x))) {
-
-        stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.",
-             call. = FALSE)
-
-    }
+    if (nrow(data.frame(group)) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.", call. = FALSE) }
 
     # Convert 'group' into a vector
     group <- unlist(group, use.names = FALSE)
@@ -154,18 +141,9 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
   # Check 'split'
   if (isTRUE(!is.null(split))) {
 
-    if (ncol(data.frame(split)) != 1) {
+    if (ncol(data.frame(split)) != 1L) { stop("More than one split variable specified for the argument 'split'.",call. = FALSE) }
 
-      stop("More than one split variable specified for the argument 'split'.",call. = FALSE)
-
-    }
-
-    if (nrow(data.frame(split)) != nrow(data.frame(x))) {
-
-      stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.",
-           call. = FALSE)
-
-    }
+    if (nrow(data.frame(split)) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.", call. = FALSE) }
 
     # Convert 'split' into a vector
     split <- unlist(split, use.names = FALSE)
@@ -204,7 +182,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
   # Numeric Variables
 
   # Non-numeric variables
-  non.num <- !vapply(x, is.numeric, FUN.VALUE = logical(1))
+  non.num <- !vapply(x, is.numeric, FUN.VALUE = logical(1L))
 
   if (isTRUE(any(non.num))) {
 
@@ -300,11 +278,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #----------------------------------------
 
@@ -324,18 +298,10 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
     if (isTRUE(!is.null(group))) {
 
       # Input 'group' completely missing
-      if (isTRUE(all(is.na(group)))) {
-
-        stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE)
-
-      }
+      if (isTRUE(all(is.na(group)))) { stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE) }
 
       # Only one group in 'group'
-      if (isTRUE(length(na.omit(unique(group))) == 1L)) {
-
-        warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE)
-
-      }
+      if (isTRUE(length(na.omit(unique(group))) == 1L)) { warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE) }
 
     }
 
@@ -344,52 +310,28 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
     if (isTRUE(!is.null(split))) {
 
       # Input 'split' completely missing
-      if (isTRUE(all(is.na(split)))) {
-
-        stop("The split variable specified in 'split' is completely missing.", call. = FALSE)
-
-      }
+      if (isTRUE(all(is.na(split)))) { stop("The split variable specified in 'split' is completely missing.", call. = FALSE) }
 
       # Only one group in 'split'
-      if (isTRUE(length(na.omit(unique(split))) == 1L)) {
-
-        warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE)
-
-      }
+      if (isTRUE(length(na.omit(unique(split))) == 1L)) { warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE) }
 
     }
 
     #......
     # Check input 'sort.var'
-    if (isTRUE(!is.logical(sort.var))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(sort.var))) { stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE) }
 
     #......
     # Check input 'na.omit'
-    if (isTRUE(!is.logical(na.omit))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -480,6 +422,11 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
                  result = result)
 
   class(object) <- "misty.object"
+
+  ####################################################################################
+  # Write results
+
+  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
   ####################################################################################
   # Output

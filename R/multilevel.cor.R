@@ -43,72 +43,75 @@
 #' Adjustment method for multiple testing when specifying the argument \code{p.adj}
 #' is applied to the within-group and between-group correlation matrix separately.
 #'
-#' @param x           a matrix or data frame.
-#' @param cluster     a vector representing the nested grouping structure (i.e.,
-#'                    group or cluster variable).
-#' @param within      a character vector representing variables that are measured
-#'                    on the within level and modeled only on the within level.
-#'                    Variables not mentioned in \code{within} or \code{between}
-#'                    are measured on the within level and will be modeled on both
-#'                    the within and between level.
-#' @param between     a character vector representing variables that are measured
-#'                    on the between level and modeled only on the between level.
-#'                    Variables not mentioned in \code{within} or \code{between}
-#'                    are measured on the within level and will be modeled on
-#'                    both the within and between level.
-#' @param estimator   a character string indicating the estimator to be used:
-#'                    \code{"ML"} (default) for maximum likelihood with
-#'                    conventional standard errors and \code{"MLR"} for maximum
-#'                    likelihood with Huber-White robust standard errors. Note
-#'                    that by default, full information maximum likelihood (FIML)
-#'                    method is used to deal with missing data when using
-#'                    \code{"ML"} (\code{missing = "fiml"}), whereas incomplete
-#'                    cases are removed listwise (i.e., \code{missing = "listwise"})
-#'                    when using \code{"MLR"}.
-#' @param missing     a character string indicating how to deal with missing
-#'                    data, i.e., \code{"listwise"} for listwise deletion or
-#'                    \code{"fiml"} (default) for full information maximum
-#'                    likelihood (FIML) method. Note that FIML method is only
-#'                    available when \code{estimator = "ML"}. Note that it takes
-#'                    longer to estimate the model when using FIML and using FIML
-#'                    might cause issues in model convergence, these issues might
-#'                    be resolved by switching to listwise deletion.
-#' @param sig         logical: if \code{TRUE}, statistically significant
-#'                    correlation coefficients are shown in boldface on the
-#'                    console.
-#' @param alpha       a numeric value between 0 and 1 indicating the significance
-#'                    level at which correlation coefficients are printed
-#'                    boldface when \code{sig = TRUE}.
-#' @param print       a character string or character vector indicating which
-#'                    results to show on the console, i.e. \code{"all"} for all
-#'                    results, \code{"cor"} for correlation coefficients,
-#'                    \code{"se"} for standard errors, \code{"stat"} for z test
-#'                    statistics, and \code{"p"} for \emph{p}-values.
-#' @param split       logical: if \code{TRUE}, output table is split in
-#'                    within-group and between-group correlation matrix.
-#' @param tri         a character string indicating which triangular of the
-#'                    matrix to show on the console when \code{split = TRUE},
-#'                    i.e., \code{both} for upper and \code{upper} for the upper
-#'                    triangular.
-#' @param tri.lower   logical: if \code{TRUE} (default) and \code{split = FALSE}
-#'                    (default), within-group correlations are shown in the lower
-#'                    triangular and between-group correlation are shown in the
-#'                    upper triangular.
-#' @param p.adj       a character string indicating an adjustment method for
-#'                    multiple testing based on \code{\link{p.adjust}}, i.e.,
-#'                    \code{none} (default), \code{bonferroni}, \code{holm},
-#'                    \code{hochberg}, \code{hommel}, \code{BH}, \code{BY}, or
-#'                    \code{fdr}.
-#' @param digits      an integer value indicating the number of decimal places
-#'                    to be used for displaying correlation coefficients.
-#' @param p.digits    an integer value indicating the number of decimal places
-#'                    to be used for displaying \emph{p}-values.
-#' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before
-#'                    conducting the analysis. Note that \code{as.na()} function
-#'                    is only applied to \code{x} but not to \code{cluster}.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
-#' @param output      logical: if \code{TRUE}, output is shown on the console.
+#' @param x         a matrix or data frame.
+#' @param cluster   a vector representing the nested grouping structure (i.e.,
+#'                  group or cluster variable).
+#' @param within    a character vector representing variables that are measured
+#'                  on the within level and modeled only on the within level.
+#'                  Variables not mentioned in \code{within} or \code{between}
+#'                  are measured on the within level and will be modeled on both
+#'                  the within and between level.
+#' @param between   a character vector representing variables that are measured
+#'                  on the between level and modeled only on the between level.
+#'                  Variables not mentioned in \code{within} or \code{between}
+#'                  are measured on the within level and will be modeled on
+#'                  both the within and between level.
+#' @param estimator a character string indicating the estimator to be used:
+#'                  \code{"ML"} (default) for maximum likelihood with
+#'                  conventional standard errors and \code{"MLR"} for maximum
+#'                  likelihood with Huber-White robust standard errors. Note
+#'                  that by default, full information maximum likelihood (FIML)
+#'                  method is used to deal with missing data when using
+#'                  \code{"ML"} (\code{missing = "fiml"}), whereas incomplete
+#'                  cases are removed listwise (i.e., \code{missing = "listwise"})
+#'                  when using \code{"MLR"}.
+#' @param missing   a character string indicating how to deal with missing
+#'                  data, i.e., \code{"listwise"} for listwise deletion or
+#'                  \code{"fiml"} (default) for full information maximum
+#'                  likelihood (FIML) method. Note that FIML method is only
+#'                  available when \code{estimator = "ML"}. Note that it takes
+#'                  longer to estimate the model when using FIML and using FIML
+#'                  might cause issues in model convergence, these issues might
+#'                  be resolved by switching to listwise deletion.
+#' @param sig       logical: if \code{TRUE}, statistically significant
+#'                  correlation coefficients are shown in boldface on the
+#'                  console.
+#' @param alpha     a numeric value between 0 and 1 indicating the significance
+#'                  level at which correlation coefficients are printed
+#'                  boldface when \code{sig = TRUE}.
+#' @param print     a character string or character vector indicating which
+#'                  results to show on the console, i.e. \code{"all"} for all
+#'                  results, \code{"cor"} for correlation coefficients,
+#'                  \code{"se"} for standard errors, \code{"stat"} for z test
+#'                  statistics, and \code{"p"} for \emph{p}-values.
+#' @param split     logical: if \code{TRUE}, output table is split in
+#'                  within-group and between-group correlation matrix.
+#' @param tri       a character string indicating which triangular of the
+#'                  matrix to show on the console when \code{split = TRUE},
+#'                  i.e., \code{both} for upper and \code{upper} for the upper
+#'                  triangular.
+#' @param tri.lower logical: if \code{TRUE} (default) and \code{split = FALSE}
+#'                  (default), within-group correlations are shown in the lower
+#'                  triangular and between-group correlation are shown in the
+#'                  upper triangular.
+#' @param p.adj     a character string indicating an adjustment method for
+#'                  multiple testing based on \code{\link{p.adjust}}, i.e.,
+#'                  \code{none} (default), \code{bonferroni}, \code{holm},
+#'                  \code{hochberg}, \code{hommel}, \code{BH}, \code{BY}, or
+#'                  \code{fdr}.
+#' @param digits    an integer value indicating the number of decimal places
+#'                  to be used for displaying correlation coefficients.
+#' @param p.digits  an integer value indicating the number of decimal places
+#'                  to be used for displaying \emph{p}-values.
+#' @param as.na     a numeric vector indicating user-defined missing values,
+#'                  i.e. these values are converted to \code{NA} before
+#'                  conducting the analysis. Note that \code{as.na()} function
+#'                  is only applied to \code{x} but not to \code{cluster}.
+#' @param write     a character string for writing the results into a Excel file
+#'                  naming a file with or without file extension '.xlsx', e.g.,
+#'                  \code{"Results.xlsx"} or \code{"Results"}.
+#' @param check     logical: if \code{TRUE}, argument specification is checked.
+#' @param output    logical: if \code{TRUE}, output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -190,6 +193,10 @@
 #' lavaan::summary(mod$mod.fit, standardized = TRUE)
 #'
 #' # Write Results into a Excel file
+#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
+#'                cluster = Demo.twolevel$cluster,
+#'                write = "Multilevel_Correlation.xlsx")
+#'
 #' result <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
 #'                          cluster = Demo.twolevel$cluster, output = FALSE)
 #' write.result(result, "Multilevel_Correlation.xlsx")
@@ -199,69 +206,40 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
                            sig = FALSE, alpha = 0.05, print = c("all", "cor", "se", "stat", "p"),
                            split = FALSE, tri = c("both", "lower", "upper"), tri.lower = TRUE,
                            p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
-                           digits = 2, p.digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
+                           digits = 2, p.digits = 3, as.na = NULL, write = NULL,
+                           check = TRUE, output = TRUE) {
 
   ####################################################################################
   # R package
 
-  if (isTRUE(!nzchar(system.file(package = "lavaan")))) {
-
-    stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE)
-
-  }
+  if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
 
   ####################################################################################
   # Data
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Check if input 'x' is a matrix or a data frame
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specify a matrix or data frame with numeric variables for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'cluster' is missing
-  if (isTRUE(missing(cluster))) {
-
-    stop("Please specify a vector representing the nested grouping structure for the argument 'cluster'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(cluster))) { stop("Please specify a vector representing the nested grouping structure for the argument 'cluster'.", call. = FALSE) }
 
   #......
   # Check if input 'cluster' is NULL
-  if (isTRUE(is.null(cluster))) {
-
-    stop("Input specified for the argument 'cluster is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(cluster))) { stop("Input specified for the argument 'cluster is NULL.", call. = FALSE) }
 
   #......
   # Check if only one variable specified in the input 'cluster'
-  if (isTRUE(ncol(data.frame(cluster)) != 1L)) {
-
-    stop("More than one variable specified for the argument 'cluster'.",call. = FALSE)
-
-  }
+  if (isTRUE(ncol(data.frame(cluster)) != 1L)) { stop("More than one variable specified for the argument 'cluster'.",call. = FALSE) }
 
   #......
   # Convert 'cluster' into a vector
@@ -362,11 +340,7 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   #......
   # No between variables
-  if (length(var.betw) == 0L) {
-
-    stop("Please specify at least two between-group variables.", call. = FALSE)
-
-  }
+  if (length(var.betw) == 0L) { stop("Please specify at least two between-group variables.", call. = FALSE) }
 
   #......
   # Variables in 'within' or 'between'
@@ -389,11 +363,7 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -401,19 +371,11 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
     #......
     # Check input 'cluster'
-    if (isTRUE(nrow(x) != length(cluster))) {
-
-      stop("The cluster variable does not match with the number of rows in 'x'.",call. = FALSE)
-
-    }
+    if (isTRUE(nrow(x) != length(cluster))) { stop("The cluster variable does not match with the number of rows in 'x'.",call. = FALSE) }
 
     #......
     # Check input 'cluster'
-    if (isTRUE(length(unique(na.omit(cluster))) == 1L)) {
-
-      stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE)
-
-    }
+    if (isTRUE(length(unique(na.omit(cluster))) == 1L)) { stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE) }
 
     #......
     # Check input 'x': Zero variance?
@@ -443,71 +405,35 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
     #......
     # Check input 'estimator'
-    if (isTRUE(any(!estimator %in% c("ML", "MLR")))) {
-
-      stop("Character string in the argument 'estimator' does not match with \"ML\" or \"MLR\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!estimator %in% c("ML", "MLR")))) { stop("Character string in the argument 'estimator' does not match with \"ML\" or \"MLR\".", call. = FALSE) }
 
     #......
     # Check input 'missing'
-    if (isTRUE(any(!missing %in% c("listwise", "fiml")))) {
-
-      stop("Character string in the argument 'estimator' does not match with \"listwise\" or \"fiml\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!missing %in% c("listwise", "fiml")))) { stop("Character string in the argument 'estimator' does not match with \"listwise\" or \"fiml\".", call. = FALSE) }
 
     #......
     # Check input 'sig'
-    if (isTRUE(!is.logical(sig))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'sig'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(sig))) { stop("Please specify TRUE or FALSE for the argument 'sig'.", call. = FALSE) }
 
     #......
     # Check input 'alpha'
-    if (isTRUE(alpha >= 1L || alpha <= 0L)) {
-
-      stop("Please specify a number between 0 and 1 for the argument 'alpha'.", call. = FALSE)
-
-    }
+    if (isTRUE(alpha >= 1L || alpha <= 0L)) { stop("Please specify a number between 0 and 1 for the argument 'alpha'.", call. = FALSE) }
 
     #......
     # Check input 'print'
-    if (isTRUE(any(!print %in% c("all", "cor", "se", "stat", "p")))) {
-
-      stop("Character string(s) in the argument 'print' does not match with \"all\", \"cor\", \"se\", \"stat\", or \"p\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!print %in% c("all", "cor", "se", "stat", "p")))) { stop("Character string(s) in the argument 'print' does not match with \"all\", \"cor\", \"se\", \"stat\", or \"p\".", call. = FALSE) }
 
     #......
     # Check input 'split'
-    if (isTRUE(!is.logical(split))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'split'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(split))) { stop("Please specify TRUE or FALSE for the argument 'split'.", call. = FALSE) }
 
     #......
     # Check input 'tri'
-    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) {
-
-      stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
 
     #......
     # Check input 'tri.lower'
-    if (isTRUE(!is.logical(tri.lower))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'tri.lower'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(tri.lower))) { stop("Please specify TRUE or FALSE for the argument 'tri.lower'.", call. = FALSE) }
 
     #......
     # Check input 'p.adj'
@@ -520,27 +446,15 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) {
-
-      stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -866,6 +780,11 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
                                betw.stat = betw.stat, betw.p = betw.p))
 
   class(object) <- "misty.object"
+
+  ####################################################################################
+  # Write results
+
+  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
   ####################################################################################
   # Output

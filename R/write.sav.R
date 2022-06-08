@@ -125,19 +125,11 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #----------------------------------------
   # Data.frame
@@ -168,11 +160,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
   # Input check
 
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -182,11 +170,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
     # Check input 'pspp.path'
     if (isTRUE(!is.null(pspp.path))) {
 
-      if (isTRUE(length(grep("pspp.exe", list.files(paste0(pspp.path, "/bin/")))) != 1L)) {
-
-        stop("PSPP file \'pspp.exe\' was not found in the folder specified in the pspp.path argument.", call. = FALSE)
-
-      }
+      if (isTRUE(length(grep("pspp.exe", list.files(paste0(pspp.path, "/bin/")))) != 1L)) { stop("PSPP file \'pspp.exe\' was not found in the folder specified in the pspp.path argument.", call. = FALSE) }
 
     }
 
@@ -195,21 +179,11 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
     if (isTRUE(!is.null(var.attr))) {
 
       # Number of rows in var.attr match with number of columns in x?
-      if (isTRUE(nrow(var.attr) != ncol(x))) {
-
-        stop("Number of rows in the data frame or matrix specified in the argument var.attr does not match with the number of columns in x.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(nrow(var.attr) != ncol(x))) { stop("Number of rows in the data frame or matrix specified in the argument var.attr does not match with the number of columns in x.", call. = FALSE) }
 
       #......
       # Any column name "label", "values", "missing"?
-      if (isTRUE(all(is.na(match(names(var.attr), c("label", "values", "missing")))))) {
-
-        stop("None of the column names of the data frame or matrix specified in the argument var.attr match with \"label\", \"values\" or \"missing\".",
-             call. = FALSE)
-
-      }
+      if (isTRUE(all(is.na(match(names(var.attr), c("label", "values", "missing")))))) { stop("None of the column names of the data frame or matrix specified in the argument var.attr match with \"label\", \"values\" or \"missing\".", call. = FALSE) }
 
       #......
       # Value labels match with data?
@@ -242,19 +216,11 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Specify a positive integer number for the argument digits.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument digits.", call. = FALSE) }
 
     #......
     # Check input 'sep'
-    if (isTRUE(write.csv & any(!sep %in% c(";", ",")))) {
-
-      stop("Specify either \";\" or \",\" for the argument sep.", call. = FALSE)
-
-    }
+    if (isTRUE(write.csv & any(!sep %in% c(";", ",")))) { stop("Specify either \";\" or \",\" for the argument sep.", call. = FALSE) }
 
   }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/center.R
 \name{center}
 \alias{center}
-\title{Centering at the Grand Mean or Centering Within Cluster}
+\title{Centering at the Grand Mean and Centering Within Cluster}
 \usage{
 center(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL, as.na = NULL,
        check = TRUE)
@@ -79,12 +79,26 @@ center(dat.ml$x.l1, type = "CWC", cluster = dat.ml$cluster)
 center(dat.ml$x.l2, type = "CGM", cluster = dat.ml$cluster)
 }
 \references{
-Enders, C. K. (2013). Centering predictors and contextual effects. In M. A. Scott, J. S. Simonoff, &
-B. D. Marx (Eds.), \emph{The Sage handbook of multilevel modeling} (pp. 89-109). Sage.
-https://dx.doi.org/10.4135/9781446247600
+Chang, C.-N., & Kwok, O.-M. (2022) Partitioning Variance for a Within-Level
+Predictor in Multilevel Models. \emph{Structural Equation Modeling: A Multidisciplinary Journal}.
+Advance online publication. https://doi.org/10.1080/10705511.2022.2051175#'
 
-Enders, C. K., & Tofighi, D. (2007). Centering predictor variables in cross-sectional multilevel models:
-A new look at an old issue. \emph{Psychological Methods, 12}, 121-138. https://doi.org/10.1037/1082-989X.12.2.121
+Enders, C. K. (2013). Centering predictors and contextual effects. In M. A.
+Scott, J. S. Simonoff, & B. D. Marx (Eds.), \emph{The Sage handbook of multilevel modeling}
+(pp. 89-109). Sage. https://dx.doi.org/10.4135/9781446247600
+
+Enders, C. K., & Tofighi, D. (2007). Centering predictor variables in
+cross-sectional multilevel models: A new look at an old issue. \emph{Psychological Methods, 12},
+121-138. https://doi.org/10.1037/1082-989X.12.2.121
+
+Rights, J. D., Preacher, K. J., & Cole, D. A. (2020). The danger of conflating
+level-specific effects of control variables when primary interest lies in level-2 effects.
+\emph{British Journal of Mathematical & Statistical Psychology, 73}, 194-211.
+https://doi.org/10.1111/bmsp.12194
+
+Yaremych, H. E., Preacher, K. J., & Hedeker, D. (2021). Centering categorical
+predictors in multilevel models: Best practices and interpretation.
+\emph{Psychological Methods}. Advance online publication. https://doi.org/10.1037/met0000434
 }
 \seealso{
 \code{\link{dummy.c}}, \code{\link{cluster.scores}}, \code{\link{rec}}, \code{\link{item.reverse}},

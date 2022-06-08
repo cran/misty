@@ -10,13 +10,24 @@ test.z(x, ...)
 
 \method{test.z}{default}(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
        paired = FALSE, alternative = c("two.sided", "less", "greater"),
-       hypo = TRUE, descript = TRUE, effsize = FALSE, digits = 2, p.digits = 4,
-       as.na = NULL, check = TRUE, output = TRUE, ...)
+       conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
+       plot = FALSE, point.size = 4, error.width = 0.1,
+       xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
+       line = TRUE, line.type = 3, line.size = 0.8, jitter = TRUE,
+       jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.1,
+       title = "",  subtitle = "Confidence Interval",
+       digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
+       output = TRUE, ...)
 
 \method{test.z}{formula}(formula, data, sigma = NULL, sigma2 = NULL,
-       alternative = c("two.sided", "less", "greater"), hypo = TRUE,
-       descript = TRUE, effsize = FALSE, digits = 2, p.digits = 4,
-       as.na = NULL, check = TRUE, output = TRUE, ...)
+       alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
+       hypo = TRUE, descript = TRUE, effsize = FALSE,
+       plot = FALSE, point.size = 4, error.width = 0.1,
+       xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
+       jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.1,
+       title = "",  subtitle = "Confidence Interval",
+       digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
+       output = TRUE, ...)
 
 }
 \arguments{
@@ -30,6 +41,23 @@ test.z(x, ...)
 \item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis are shown on the console.}
 \item{descript}{logical: if \code{TRUE}, descriptive statistics are shown on the console.}
 \item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d is shown on the console.}
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
+\item{plot}{logical: if \code{TRUE}, a plot showing error bars for confidence intervals is drawn.}
+\item{point.size}{a numeric value indicating the \code{size} aesthetic for the point representing the mean value.}
+\item{error.width}{ a numeric value indicating the horizontal bar width of the error bar.}
+\item{xlab}{a character string specifying the labels for the x-axis.}
+\item{ylab}{a character string specifying the labels for the y-axis.}
+\item{ylim}{a numeric vector of length two specifying limits of the limits of the y-axis.}
+\item{breaks}{a numeric vector specifying the points at which tick-marks are drawn at the y-axis.}
+\item{line}{logical: if \code{TRUE} (default), a horizontal line is drawn at \code{mu} for the one-sample t-test or at 0 for the paired-sample t-test.}
+\item{line.type}{an integer value or character string specifying the line type for the line representing the population mean under the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed, 3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash.}
+\item{line.size}{a numeric value indicating the \code{size} aesthetic for the line representing the population mean under the null hypothesis.}
+\item{jitter}{logical: if \code{TRUE} (default), jittered data points are drawn.}
+\item{jitter.size}{ a numeric value indicating the \code{size} aesthetic for the jittered data points.}
+\item{jitter.width}{a numeric value indicating the amount of vertical and horizontal jitter.}
+\item{jitter.alpha}{a numeric value indicating the opacity of the jittered data points.}
+\item{title}{a character string specifying the text for the title for the plot.}
+\item{subtitle}{a character string specifying the text for the subtitle for the plot.}
 \item{digits}{an integer value indicating the number of decimal places to be used for displaying descriptive statistics and confidence interval.}
 \item{p.digits}{an integer value indicating the number of decimal places to be used for displaying the \emph{p}-value.}
 \item{as.na}{a numeric vector indicating user-defined missing values, i.e. these values are converted to \code{NA} before conducting the analysis.}
@@ -45,7 +73,9 @@ function call (\code{call}), type of analysis \code{type}, list with the input s
 (\code{data}), specification of function arguments (\code{args}), and result table (\code{result}).
 }
 \description{
-This function performs one-sample, two-sample, and paired-sample z-tests.
+This function performs one-sample, two-sample, and paired-sample z-tests and
+provides descriptive statistics, effect size measure, and a plot showing error
+bars for confidence intervals with jittered data points.
 }
 \details{
 Cohen's d reported when argument \code{effsize = TRUE} is based on the population standard deviation
@@ -96,6 +126,44 @@ test.z(dat1$x, sigma = 1.2, mu = 3, hypo = FALSE, descript = FALSE)
 # print descriptive statistics with 3 digits and p-value with 5 digits
 test.z(dat1$x, sigma = 1.2, mu = 3, digits = 3, p.digits = 5)
 
+\dontrun{
+# Two-sided one-sample z-test
+# population mean = 3, population standard deviation = 1.2
+# plot results
+test.z(dat1$x, sigma = 1.2, mu = 3, plot = TRUE)
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Save plot, ggsave() from the ggplot2 package
+ggsave("One-sample_z-test.png", dpi = 600, width = 3, height = 6)
+
+# Two-sided one-sample z-test
+# population mean = 3, population standard deviation = 1.2
+# extract plot
+p <- test.z(dat1$x, sigma = 1.2, mu = 3, output = FALSE)$plot
+p
+
+# Extract data
+plotdat <- data.frame(test.z(dat1$x, sigma = 1.2, mu = 3, output = FALSE)$data[[1]])
+
+# Extract results
+result <- test.z(dat1$x, sigma = 1.2, mu = 3, output = FALSE)$result
+
+# Draw plot in line with the default setting of test.z()
+ggplot(plotdat, aes(0, x)) +
+  geom_point(data = result, aes(x = 0L, m), size = 4) +
+  geom_errorbar(data = result, aes(x = 0L, y = m, ymin = m.low, ymax = m.upp),
+                width = 0.2) +
+  scale_x_continuous(name = NULL, limits = c(-2, 2)) +
+  scale_y_continuous(name = NULL) +
+  geom_hline(yintercept = 3, linetype = 3, size = 0.8) +
+  labs(subtitle = "Two-Sided 95% Confidence Interval") +
+  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
+                     axis.text.x = element_blank(),
+                     axis.ticks.x = element_blank())
+}
+
 #--------------------------------------
 # Two-Sample Design
 
@@ -130,6 +198,25 @@ test.z(x ~ group, sigma = 1.2, data = dat1, descript = FALSE, hypo = FALSE)
 # population mean = 3, population standard deviation = 1.2
 # print descriptive statistics with 3 digits and p-value with 5 digits
 test.z(x ~ group, sigma = 1.2, data = dat1, digits = 3, p.digits = 5)
+
+\dontrun{
+# Two-sided two-sample z-test
+# population standard deviation (SD) = 1.2, equal SD assumption
+# plot results
+test.z(x ~ group, sigma = 1.2, data = dat1, plot = TRUE)
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Save plot, ggsave() from the ggplot2 package
+ggsave("Two-sample_z-test.png", dpi = 600, width = 4, height = 6)
+
+# Two-sided two-sample z-test
+# population standard deviation (SD) = 1.2, equal SD assumption
+# extract plot
+p <- test.z(x ~ group, sigma = 1.2, data = dat1, output = FALSE)$plot
+p
+}
 
 #-----------------
 
@@ -180,6 +267,48 @@ test.z(dat2$pre, dat2$post, sigma = 1.2, mu = 3, paired = TRUE,
 # print descriptive statistics with 3 digits and p-value with 5 digits
 test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE,
        digits = 3, p.digits = 5)
+
+\dontrun{
+# Two-sided paired-sample z-test
+# population standard deviation of difference score = 1.2
+# plotresults
+test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE, plot = TRUE)
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Save plot, ggsave() from the ggplot2 package
+ggsave("Paired-sample_z-test.png", dpi = 600, width = 3, height = 6)
+
+# Two-sided paired-sample z-test
+# population standard deviation of difference score = 1.2
+# extract plot
+p <- test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE, output = FALSE)$plot
+p
+
+# Extract data
+plotdat <- data.frame(test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE,
+                      output = FALSE)$data)
+
+# Difference score
+plotdat$diff <- plotdat$y - plotdat$x
+
+# Extract results
+result <- test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE,
+                 output = FALSE)$result
+# Draw plot in line with the default setting of test.t()
+ggplot(plotdat, aes(0, diff)) +
+  geom_point(data = result, aes(x = 0, m.diff), size = 4) +
+  geom_errorbar(data = result,
+                aes(x = 0L, y = m.diff, ymin = m.low, ymax = m.upp), width = 0.2) +
+  scale_x_continuous(name = NULL, limits = c(-2, 2)) +
+  scale_y_continuous(name = "y") +
+  geom_hline(yintercept = 0, linetype = 3, size = 0.8) +
+  labs(subtitle = "Two-Sided 95% Confidence Interval") +
+  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
+                     axis.text.x = element_blank(),
+                     axis.ticks.x = element_blank())
+}
 }
 \references{
 Lakens, D. (2013). Calculating and reporting effect sizes to facilitate cumulative science:
@@ -190,8 +319,8 @@ Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psycholog
 John Wiley & Sons.
 }
 \seealso{
-\code{\link{test.t}}, \code{\link{cohens.d}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}}
-}
+\code{\link{test.t}}, \code{\link{aov.b}}, \code{\link{test.welch}},
+\code{\link{cohens.d}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}}}
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}
 }

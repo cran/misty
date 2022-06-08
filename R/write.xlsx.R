@@ -55,28 +55,15 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix, data frame or list of matrices or data frames for the argument 'x'.",
-         call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix, data frame or list of matrices or data frames for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -84,19 +71,11 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
 
     #......
     # Check input 'col.names'
-    if (isTRUE(!is.logical(col.names))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'col.names'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(col.names))) { stop("Please specify TRUE or FALSE for the argument 'col.names'.", call. = FALSE) }
 
     #......
     # Check input 'use.zip64'
-    if (isTRUE(!is.logical(use.zip64))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'use.zip64'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(use.zip64))) { stop("Please specify TRUE or FALSE for the argument 'use.zip64'.", call. = FALSE) }
 
   }
 

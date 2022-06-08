@@ -16,51 +16,54 @@
 #' when using R Markdown, i.e., the argument \code{sig} will switch to \code{FALSE}.
 #'
 #'
-#' @param x            a matrix or data frame.
-#' @param method       a character vector indicating which correlation coefficient
-#'                     is to be computed, i.e. \code{"pearson"} for Pearson product-
-#'                     moment correlation coefficient (default), \code{"spearman"}
-#'                     for Spearman's rank-order correlation coefficient, \code{kendall-b}
-#'                     for Kendall's Tau-b correlation coefficient or \code{kendall-c}
-#'                     for Kendall-Stuart's Tau-c correlation coefficient.
-#' @param na.omit      logical: if \code{TRUE}, incomplete cases are removed before
-#'                     conducting the analysis (i.e., listwise deletion); if \code{FALSE}
-#'                     (default), pairwise deletion is used.
-#' @param group        a numeric vector, character vector of factor as grouping
-#'                     variable to show results for each group separately, i.e.,
-#'                     upper triangular for one group and lower triangular for
-#'                     another group. Note that the grouping variable is limited
-#'                     to two groups.
-#' @param sig          logical: if \code{TRUE}, statistically significant correlation
-#'                     coefficients are shown in boldface on the console.
-#' @param alpha        a numeric value between 0 and 1 indicating the significance
-#'                     level at which correlation coefficients are printed boldface
-#'                     when \code{sig = TRUE}.
-#' @param print        a character string or character vector indicating which results
-#'                     to show on the console, i.e. \code{"all"} for all results,
-#'                     \code{"cor"} for correlation coefficients, \code{"n"} for the
-#'                     sample sizes, \code{"stat"} for the test statistic, \code{"df"}
-#'                     for the degrees of freedom, and \code{"p"} for \emph{p}-values.
-#' @param tri          a character string indicating which triangular of the matrix
-#'                     to show on the console, i.e., \code{both} for upper and lower
-#'                     triangular, \code{lower} (default) for the lower triangular,
-#'                     and \code{upper} for the upper triangular.
-#' @param p.adj        a character string indicating an adjustment method for multiple
-#'                     testing based on \code{\link{p.adjust}}, i.e., \code{none} (default),
-#'                     \code{bonferroni}, \code{holm}, \code{hochberg}, \code{hommel},
-#'                     \code{BH}, \code{BY}, or \code{fdr}.
-#' @param continuity   logical: if \code{TRUE} (default), continuity correction is
-#'                     used for testing Spearman's rank-order correlation coefficient
-#'                     and Kendall's Tau-b correlation.
-#' @param digits       an integer value indicating the number of decimal places to be
-#'                     used for displaying correlation coefficients.
-#' @param p.digits     an integer value indicating the number of decimal places to be
-#'                     used for displaying \emph{p}-values.
-#' @param as.na        a numeric vector indicating user-defined missing values,
-#'                     i.e. these values are converted to \code{NA} before conducting
-#'                     the analysis.
-#' @param check        logical: if \code{TRUE}, argument specification is checked.
-#' @param output       logical: if \code{TRUE}, output is shown on the console.
+#' @param x          a matrix or data frame.
+#' @param method     a character vector indicating which correlation coefficient
+#'                   is to be computed, i.e. \code{"pearson"} for Pearson product-
+#'                   moment correlation coefficient (default), \code{"spearman"}
+#'                   for Spearman's rank-order correlation coefficient, \code{kendall-b}
+#'                   for Kendall's Tau-b correlation coefficient or \code{kendall-c}
+#'                   for Kendall-Stuart's Tau-c correlation coefficient.
+#' @param na.omit    logical: if \code{TRUE}, incomplete cases are removed before
+#'                   conducting the analysis (i.e., listwise deletion); if \code{FALSE}
+#'                   (default), pairwise deletion is used.
+#' @param group      a numeric vector, character vector of factor as grouping
+#'                   variable to show results for each group separately, i.e.,
+#'                   upper triangular for one group and lower triangular for
+#'                   another group. Note that the grouping variable is limited
+#'                   to two groups.
+#' @param sig        logical: if \code{TRUE}, statistically significant correlation
+#'                   coefficients are shown in boldface on the console.
+#' @param alpha      a numeric value between 0 and 1 indicating the significance
+#'                   level at which correlation coefficients are printed boldface
+#'                   when \code{sig = TRUE}.
+#' @param print      a character string or character vector indicating which results
+#'                   to show on the console, i.e. \code{"all"} for all results,
+#'                   \code{"cor"} for correlation coefficients, \code{"n"} for the
+#'                   sample sizes, \code{"stat"} for the test statistic, \code{"df"}
+#'                   for the degrees of freedom, and \code{"p"} for \emph{p}-values.
+#' @param tri        a character string indicating which triangular of the matrix
+#'                   to show on the console, i.e., \code{both} for upper and lower
+#'                   triangular, \code{lower} (default) for the lower triangular,
+#'                   and \code{upper} for the upper triangular.
+#' @param p.adj      a character string indicating an adjustment method for multiple
+#'                   testing based on \code{\link{p.adjust}}, i.e., \code{none} (default),
+#'                   \code{bonferroni}, \code{holm}, \code{hochberg}, \code{hommel},
+#'                   \code{BH}, \code{BY}, or \code{fdr}.
+#' @param continuity logical: if \code{TRUE} (default), continuity correction is
+#'                   used for testing Spearman's rank-order correlation coefficient
+#'                   and Kendall's Tau-b correlation.
+#' @param digits     an integer value indicating the number of decimal places to be
+#'                   used for displaying correlation coefficients.
+#' @param p.digits   an integer value indicating the number of decimal places to be
+#'                   used for displaying \emph{p}-values.
+#' @param as.na      a numeric vector indicating user-defined missing values,
+#'                   i.e. these values are converted to \code{NA} before conducting
+#'                   the analysis.
+#' @param check      logical: if \code{TRUE}, argument specification is checked.
+#' @param write      a character string for writing the results into a Excel file
+#'                   naming a file with or without file extension '.xlsx', e.g.,
+#'                   \code{"Results.xlsx"} or \code{"Results"}.
+#' @param output     logical: if \code{TRUE}, output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -134,6 +137,8 @@
 #'
 #' \dontrun{
 #' # Write Results into a Excel file
+#' cor.matrix(dat[, c("x", "y", "z")], print = "all", write = "Correlation.xlsx")
+#'
 #' result <- cor.matrix(dat[, c("x", "y", "z")], print = "all", output = FALSE)
 #' write.result(result, "Correlation.xlsx")
 #' }
@@ -143,34 +148,22 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
                        tri = c("both", "lower", "upper"),
                        p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
                        continuity = TRUE, digits = 2, p.digits = 3, as.na = NULL,
-                       check = TRUE, output = TRUE) {
+                       write = NULL, check = TRUE, output = TRUE) {
 
   ####################################################################################
   # Data
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-    stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #-----------------------------------------
   # As data frame
@@ -190,11 +183,7 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #----------------------------------------
 
@@ -202,28 +191,15 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
     #......
     # Check input 'x'
-    if (isTRUE(any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1L))))) {
-
-      stop("Please specify a matrix or data frame with numeric vectors.", call. = FALSE)
-
-    }
+    if (isTRUE(any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1L))))) { stop("Please specify a matrix or data frame with numeric vectors.", call. = FALSE) }
 
     #......
     # Check input 'method'
-    if (isTRUE(any(!method %in% c("pearson", "spearman", "kendall-b", "kendall-c")))) {
-
-      stop("Character string in the argument 'method' does not match with \"pearson\", \"spearman\", \"kendall-b\", or \"kendall-c\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!method %in% c("pearson", "spearman", "kendall-b", "kendall-c")))) { stop("Character string in the argument 'method' does not match with \"pearson\", \"spearman\", \"kendall-b\", or \"kendall-c\".", call. = FALSE) }
 
     #......
     # Check input 'na.omit'
-    if (isTRUE(!is.logical(na.omit))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
 
     #......
     # Check input 'group'
@@ -270,14 +246,14 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
       }
 
       # Specified two groups only?
-      if (isTRUE(length(na.omit(unique(group))) != 2)) {
+      if (isTRUE(length(na.omit(unique(group))) != 2L)) {
 
         stop("Please specify a grouping variable with only two groups for the argument 'group'.", call. = FALSE)
 
       }
 
       # Zero variance in one of the groups
-      x.zero.var <- vapply(split(x, f = group), function(y) apply(y, 2, function(z) length(na.omit(unique(z))) == 1L), FUN.VALUE = logical(ncol(x)))
+      x.zero.var <- vapply(split(x, f = group), function(y) apply(y, 2L, function(z) length(na.omit(unique(z))) == 1L), FUN.VALUE = logical(ncol(x)))
 
       if (isTRUE(any(x.zero.var))) {
 
@@ -290,74 +266,39 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
     #......
     # Check input 'sig'
-    if (isTRUE(!is.logical(sig))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'sig'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(sig))) { stop("Please specify TRUE or FALSE for the argument 'sig'.", call. = FALSE) }
 
     #......
     # Check input 'alpha'
-    if (isTRUE(alpha >= 1L || alpha <= 0L)) {
-
-      stop("Please specify a number between 0 and 1 for the argument 'alpha'.", call. = FALSE)
-
-    }
+    if (isTRUE(alpha >= 1L || alpha <= 0L)) { stop("Please specify a number between 0 and 1 for the argument 'alpha'.", call. = FALSE) }
 
     #......
     # Check input 'print'
-    if (isTRUE(any(!print %in% c("all", "cor", "n", "stat", "df", "p")))) {
-
-      stop("Character string(s) in the argument 'print' does not match with \"all\", \"cor\", \"n\", \"stat\", \"df\", or \"p\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!print %in% c("all", "cor", "n", "stat", "df", "p")))) { stop("Character string(s) in the argument 'print' does not match with \"all\", \"cor\", \"n\", \"stat\", \"df\", or \"p\".", call. = FALSE) }
 
     #......
     # Check input 'tri'
-    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) {
-
-      stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
 
     #......
     # Check input 'p.adj'
-    if (isTRUE(any(!p.adj %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr")))) {
-
-      stop("Character string in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(!p.adj %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr")))) { stop("Character string in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".", call. = FALSE) }
 
     #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
-
-      stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     #......
     # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) {
-
-      stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
     #......
     # Check input 'output'
-    if (isTRUE(!is.logical(output))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
     #......
     # Check input 'x' for zero variance
-    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
     if (isTRUE(any(x.zero.var))) {
 
       warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
@@ -874,10 +815,16 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
                  args = list(method = method, na.omit = na.omit,
                              sig = sig, alpha = alpha, print = print, tri = tri,
                              p.adj = p.adj, continuity = continuity, digits = digits,
-                             p.digits = p.digits, as.na = as.na, check = check, output = output),
+                             p.digits = p.digits, as.na = as.na, write, check = check,
+                             output = output),
                  result = list(cor = cor.mat, n = n.mat, stat = stat.mat, df = df.mat,p = p.mat))
 
   class(object) <- "misty.object"
+
+  ####################################################################################
+  # Write results
+
+  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
   ####################################################################################
   # Output

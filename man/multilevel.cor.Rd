@@ -10,7 +10,7 @@ multilevel.cor(x, cluster, within = NULL, between = NULL, estimator = c("ML", "M
                tri = c("both", "lower", "upper"), tri.lower = TRUE,
                p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel",
                          "BH", "BY", "fdr"), digits = 2, p.digits = 3,
-               as.na = NULL, check = TRUE, output = TRUE)
+               as.na = NULL, write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame.}
@@ -91,6 +91,8 @@ to be used for displaying \emph{p}-values.}
 i.e. these values are converted to \code{NA} before
 conducting the analysis. Note that \code{as.na()} function
 is only applied to \code{x} but not to \code{cluster}.}
+
+\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -205,6 +207,10 @@ mod <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
 lavaan::summary(mod$mod.fit, standardized = TRUE)
 
 # Write Results into a Excel file
+multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
+               cluster = Demo.twolevel$cluster,
+               write = "Multilevel_Correlation.xlsx")
+
 result <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
                          cluster = Demo.twolevel$cluster, output = FALSE)
 write.result(result, "Multilevel_Correlation.xlsx")

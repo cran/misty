@@ -11,6 +11,7 @@ S3method(test.t,formula)
 S3method(test.z,default)
 S3method(test.z,formula)
 S3method(print,misty.object)
+export(aov.b)
 export(as.na)
 export(center)
 export(chr.gsub)
@@ -89,8 +90,8 @@ importFrom(utils,packageDescription)
 importFrom("stats", "aov", "as.formula", "chisq.test", "coefficients",
            "cor", "cor.test", "cov", "cov2cor", "df", "formula", "IQR",
            "median", "model.frame", "model.matrix", "na.omit", "oneway.test", 
-           "optimize", "dnorm", "integrate", "pnorm", "rnorm", "pchisq",
-           "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", "sd", 
+           "optimize", "dnorm", "integrate", "pnorm", "rnorm", "setNames", 
+           "pchisq", "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", "sd", 
            "terms", "t.test", "p.adjust", "pt", "uniroot", "update", 
            "var", "vcov")
 importFrom("utils", "combn", "packageDescription", "read.table", "write.csv", "write.csv2", "write.table")

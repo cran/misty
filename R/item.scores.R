@@ -113,27 +113,15 @@ item.scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", 
 
   #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   #-----------------------------------------
 
@@ -141,20 +129,11 @@ item.scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", 
 
     #......
     # Check input 'x'
-    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-      stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
     #......
     # Check input 'x'
-    if (isTRUE(any(apply(x, 2, function(y) !is.numeric(y))))) {
-
-      stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(any(apply(x, 2L, function(y) !is.numeric(y))))) { stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE) }
 
     #......
     # Check input 'fun'
@@ -169,12 +148,7 @@ item.scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", 
     # Check argument p.avail
     if (isTRUE(!is.null(p.avail))) {
 
-      if (isTRUE(!p.avail > 0L || !p.avail <= 1L)) {
-
-        stop("Please specify a number greater than 0 and less than or equal 1 for the argument 'p.avail'.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(!p.avail > 0L || !p.avail <= 1L)) { stop("Please specify a number greater than 0 and less than or equal 1 for the argument 'p.avail'.", call. = FALSE) }
 
     }
 
@@ -182,31 +156,17 @@ item.scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", 
     # Check argument n.avail
     if (isTRUE(!is.null(n.avail))) {
 
-      if (isTRUE(!n.avail >= 1L || !n.avail <= ncol(x))) {
-
-        stop("Please specify a number greater than or equal 1 and less than or equal the number of items for the argument 'n.avail'.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(!n.avail >= 1L || !n.avail <= ncol(x))) { stop("Please specify a number greater than or equal 1 and less than or equal the number of items for the argument 'n.avail'.", call. = FALSE) }
 
     }
 
     #......
     # Check argument p.avail
-    if (isTRUE(!is.null(p.avail) && !is.null(n.avail))) {
-
-      stop("Please specify either argument 'p.avail' or 'n.avail', but not both arguments.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.null(p.avail) && !is.null(n.avail))) { stop("Please specify either argument 'p.avail' or 'n.avail', but not both arguments.", call. = FALSE) }
 
     #......
     # Check argument p.avail and prorated
-    if (isTRUE(!prorated && (!is.null(p.avail) | !is.null(n.avail)))) {
-
-      warning("Argument specification 'prorated = FALSE' is equivalent to 'p.avail = 1' or 'n.avail = ncol(x).",
-              call. = FALSE)
-
-    }
+    if (isTRUE(!prorated && (!is.null(p.avail) | !is.null(n.avail)))) { warning("Argument specification 'prorated = FALSE' is equivalent to 'p.avail = 1' or 'n.avail = ncol(x).", call. = FALSE) }
 
   }
 
