@@ -94,70 +94,61 @@
 #' as.na(x.list, na = 1)
 as.na <- function(x, na, check = TRUE) {
 
-  ##############################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a vector, factor, matrix,  data frame or list for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check if input 'na' is missing
   if (isTRUE(missing(na))) { stop("Please specify a numeric vector or character vector for the argument 'na'.", call. = FALSE) }
 
-  #......
   # Check if input 'na' is NULL
   if (isTRUE(is.null(na))) { stop("Input specified for the argument 'na' is NULL.", call. = FALSE) }
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #----------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
     #...............
     # Check input 'na': Values in 'na'?
 
-    if (isTRUE(is.list(x))) {
+    if (isTRUE(is.list(x))) { na.x <- !na %in% unlist(x)
 
-      na.x <- !na %in% unlist(x)
-
-    } else {
-
-      na.x <- !na %in% as.vector(x)
-
-    }
+    } else { na.x <- !na %in% as.vector(x) }
 
     if (isTRUE(any(na.x))) {
 
-      warning(paste0(ifelse(sum(na.x) == 1L, "Value ", "Values "),
-                     "specified in the argument 'na' ",
-                     ifelse(sum(na.x) == 1L, "was ", "were "),
-                     "not found in 'x': ",
+      warning(paste0(ifelse(sum(na.x) == 1L, "Value ", "Values "), "specified in the argument 'na' ",
+                     ifelse(sum(na.x) == 1L, "was ", "were "), "not found in 'x': ",
                      paste(na[na.x], collapse = ", ")), call. = FALSE)
 
     }
 
   }
 
-  ##############################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #---------------------------------
-  # Dimension of the object = NULL
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Dimension of the object = NULL ####
   if (isTRUE(is.null(dim(x)))) {
 
-    #...............
-    # Atomic
+    #...................
+    ### Atomic ####
+
     if (isTRUE(is.atomic(x))) {
 
-      #...............
       # Factor
       if (isTRUE(is.factor(x))) {
 
@@ -171,51 +162,33 @@ as.na <- function(x, na, check = TRUE) {
 
         }
 
-        object <- setNames(factor(ifelse(x %in% na, NA, x), levels = f.levels, labels = f.labels),
-                           nm = names(x))
+        object <- setNames(factor(ifelse(x %in% na, NA, x), levels = f.levels, labels = f.labels), nm = names(x))
 
-      #...............
       # Vector
-      } else {
+      } else { object <- setNames(ifelse(x %in% na, NA, x), nm = names(x)) }
 
-        object <- setNames(ifelse(x %in% na, NA, x), nm = names(x))
+    #...................
+    ### List ####
+    } else if (isTRUE(is.list(x))) { object <- lapply(x, misty::as.na, na = na, check = FALSE) }
 
-      }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Dimension of the object != NULL ####
 
-    #...............
-    # List
-    } else if (isTRUE(is.list(x))) {
+  #...................
+  ### Matrix ####
+  } else if (isTRUE(is.matrix(x))) { object <- apply(x, 2L, misty::as.na, na = na, check = FALSE)
 
-      object <- lapply(x, misty::as.na, na = na, check = FALSE)
+  #...................
+  ### Array ####
+  } else if (isTRUE(is.array(x))) { object <- array(sapply(x, misty::as.na, na = na, check = FALSE), dim = dim(x))
 
-    }
+  #...................
+  ### Data frame ####
+  } else if (isTRUE(is.data.frame(x))) { object <- data.frame(lapply(x, misty::as.na, na = na, check = FALSE), stringsAsFactors = FALSE) }
 
-  #---------------------------------
-  # Dimension of the object != NULL
-
-  #...............
-  # Matrix
-  } else if (isTRUE(is.matrix(x))) {
-
-    object <- apply(x, 2L, misty::as.na, na = na, check = FALSE)
-
-  #...............
-  # Array
-  } else if (isTRUE(is.array(x))) {
-
-    object <- array(sapply(x, misty::as.na, na = na, check = FALSE), dim = dim(x))
-
-  #...............
-  # Data frame
-  } else if (isTRUE(is.data.frame(x))) {
-
-    object <- data.frame(lapply(x, misty::as.na, na = na, check = FALSE),
-                         stringsAsFactors = FALSE)
-
-  }
-
-  ##############################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   return(object)
 

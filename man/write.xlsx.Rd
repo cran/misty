@@ -8,14 +8,14 @@ write.xlsx(x, file = "Excel_Data.xlsx", col.names = TRUE, format = FALSE,
            use.zip64 = FALSE, check = TRUE)
 }
 \arguments{
-\item{x}{a matrix, data frame or (named) list of matrices or data frames that
-will be written in the Excel file.}
+\item{x}{a matrix, data frame or (named) list of matrices or data frames
+that will be written in the Excel file.}
 
 \item{file}{a character string naming a file with or without file extension
 '.xlsx', e.g., \code{"My_Excle.xlsx"} or \code{"My_Excel"}.}
 
 \item{col.names}{logical: if \code{TRUE}, column names are written at the top
- of the Excel sheet.}
+of the Excel sheet.}
 
 \item{format}{logical: if \code{TRUE}, column names in the Excel file are
 centered and bold.}
@@ -38,7 +38,6 @@ package by Jeroen Ooms (2021).
 }
 \examples{
 \dontrun{
-
 # Write Excel file (.xlsx)
 dat <- data.frame(id = 1:5,
                   gender = c(NA, 0, 1, 1, 0),
@@ -53,7 +52,7 @@ write.xlsx(list(cars = cars, mtcars = mtcars), file = "Excel_Sheets.xlsx")
 }
 }
 \references{
-Jeroen, O. (2021). \emph{writexl: Export Data Frames to Excel 'xlsx' Format}.
+Jeroen O. (2021). \emph{writexl: Export Data Frames to Excel 'xlsx' Format}.
 R package version 1.4.0. https://CRAN.R-project.org/package=writexl
 }
 \seealso{

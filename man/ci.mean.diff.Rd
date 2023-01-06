@@ -8,7 +8,7 @@
 \usage{
 ci.mean.diff(x, ...)
 
-\method{ci.mean.diff}{default}(x, y, sigma = NULL, sigma2 = NULL,
+\method{ci.mean.diff}{default}(x, y, mu = 0, sigma = NULL, sigma2 = NULL,
              var.equal = FALSE, paired = FALSE,
              alternative = c("two.sided", "less", "greater"),
              conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
@@ -23,84 +23,101 @@ ci.mean.diff(x, ...)
 \arguments{
 \item{x}{a numeric vector of data values.}
 
+\item{...}{further arguments to be passed to or from methods.}
+
 \item{y}{a numeric vector of data values.}
 
-\item{sigma}{a numeric vector indicating the population standard deviation(s) when computing confidence
-intervals for the difference in arithmetic means with known standard deviation(s). In case
-of independent samples, equal standard deviation is assumed when specifying one value for
-the argument \code{sigma}; when specifying two values for the argument \code{sigma}, unequal
-variance is assumed Note that either argument \code{sigma} or argument \code{sigma2} is
-specified and it is only possible to specify one value (i.e., equal variance assumption) or
-two values (i.e., unequal variance assumption) for the argument \code{sigma} even though
+\item{mu}{a numeric value indicating the population mean under the
+null hypothesis. Note that the argument \code{mu} is only
+used when {y = NULL}.}
+
+\item{sigma}{a numeric vector indicating the population standard deviation(s)
+when computing confidence intervals for the difference in
+arithmetic means with known standard deviation(s). In case
+of independent samples, equal standard deviations are assumed
+when specifying one value for the argument \code{sigma}; when
+specifying two values for the argument \code{sigma}, unequal
+standard deviations are assumed. Note that either argument
+\code{sigma} or argument \code{sigma2} is specified and it
+is only possible to specify one value (i.e., equal variance
+assumption) or two values (i.e., unequal variance assumption)
+for the argument \code{sigma} even though multiple variables
+are specified in \code{x}.}
+
+\item{sigma2}{a numeric vector indicating the population variance(s) when
+computing confidence intervals for the difference in arithmetic
+means with known variance(s). In case of independent samples,
+equal variances are assumed when specifying one value for the
+argument \code{sigma2}; when specifying two values for the
+argument \code{sigma}, unequal variances are assumed. Note
+that either argument \code{sigma} or argument \code{sigma2}
+is specified and it is only possible to specify one value
+(i.e., equal variance assumption) or two values (i.e., unequal
+variance assumption) for the argument \code{sigma} even though
 multiple variables are specified in \code{x}.}
 
-\item{sigma2}{a numeric vector indicating the population variance(s) when computing confidence intervals
-for the difference in arithmetic means with known variance(s). In case of independent samples,
-equal variance is assumed when specifying one value for the argument \code{sigma2}; when
-specifying two values for the argument \code{sigma}, unequal variance is assumed. Note that
-either argument \code{sigma} or argument \code{sigma2} is specified and it is only possible
-to specify one value (i.e., equal variance assumption) or two values (i.e., unequal variance
-assumption) for the argument \code{sigma} even though multiple variables are specified in
-\code{x}.}
+\item{var.equal}{logical: if \code{TRUE}, the population variance in the
+independent samples are assumed to be equal.}
 
-\item{var.equal}{logical: if \code{TRUE}, the population variance in the independent samples are assumed to
-be equal.}
+\item{paired}{logical: if \code{TRUE}, confidence interval for the difference
+of arithmetic means in paired samples is computed.}
 
-\item{paired}{logical: if \code{TRUE}, confidence interval for the difference of arithmetic means
-in paired samples is computed.}
+\item{alternative}{a character string specifying the alternative hypothesis,
+must be one of \code{"two.sided"} (default), \code{"greater"}
+or \code{"less"}.}
 
-\item{alternative}{a character string specifying the alternative hypothesis, must be one of
-\code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence
+level of the interval.}
 
-\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
-
-\item{group}{a numeric vector, character vector or factor as grouping variable. Note that a grouping
-variable can only be used when computing confidence intervals with unknown population
+\item{group}{a numeric vector, character vector or factor as grouping
+variable. Note that a grouping variable can only be used
+when computing confidence intervals with unknown population
 standard deviation and population variance.}
 
-\item{split}{a numeric vector, character vector or factor as split variable. Note that a split
-variable can only be used when computing confidence intervals with unknown population
-standard deviation and population variance.}
+\item{split}{a numeric vector, character vector or factor as split variable.
+Note that a split variable can only be used when computing
+confidence intervals with unknown population}
 
-\item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.}
+\item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables
+when specifying \code{group}.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used.}
+\item{digits}{an integer value indicating the number of decimal places to
+be used.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.
-Note that \code{as.na()} function is only applied to \code{x}, but
-not to \code{group} or \code{split}.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis. Note that \code{as.na()} function is only applied
+to \code{x}, but not to \code{group} or \code{split}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 
-\item{formula}{in case of a between-subject design (i.e., \code{paired = FALSE}), a formula of the
-form \code{y ~ group} for one outcome variable or \code{cbind(y1, y2, y3) ~ group}
-for more than one outcome variable where \code{y} is a numeric variable giving the
-data values and \code{group} a numeric variable, character variable or factor with
-two values or factor levels given the corresponding groups; in case of a within-subject
-design (i.e., \code{paired = TRUE}), a formula of the form \code{post ~ pre} where
-\code{post} and \code{pre} are numeric variables. Note that analysis for more than
-one outcome variable is not permitted in within-subject design.}
+\item{formula}{a formula of the form \code{y ~ group} for one outcome variable
+or \code{cbind(y1, y2, y3) ~ group} for more than one outcome
+variable where \code{y} is a numeric variable giving the data
+values and \code{group} a numeric variable, character variable
+or factor with two values or factor levels giving the corresponding
+groups.}
 
-\item{data}{a matrix or data frame containing the variables in the formula \code{formula}.}
+\item{data}{a matrix or data frame containing the variables in the formula
+\code{formula}.}
 
-\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-(i.e., listwise deletion) when specifying more than one outcome variable.}
-
-\item{...}{further arguments to be passed to or from methods.}
+\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before
+conducting the analysis (i.e., listwise deletion) when specifying
+more than one outcome variable.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis (\code{type}), list with the input specified in \code{x},
-\code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
-and result table (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis (\code{type}), list with
+the input specified in \code{x}, \code{group}, and \code{split} (\code{data}),
+specification of function arguments (\code{args}), and result table (\code{result}).
 }
 \description{
-This function computes a confidence interval for the difference in arithmetic means in a two-sample and
-paired-sample design samples with known or unknown population standard deviation or population variance
-for one or more variables, optionally by a grouping and/or split variable.
+This function computes a confidence interval for the difference in arithmetic
+means in a one-sample, two-sample and paired-sample design with known or unknown
+population standard deviation or population variance for one or more variables,
+optionally by a grouping and/or split variable.
 }
 \examples{
 dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
@@ -115,6 +132,13 @@ dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
                           3, 5, 2, 6, 8, 3, 4, 5, 2, 1, 3, 1, 2, NA),
                    x3 = c(7, 8, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
                           2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
+
+#--------------------------------------
+# One-sample design
+
+# Two-Sided 95\% CI for x1
+# population mean = 3
+ci.mean.diff(dat1$x1, mu = 3)
 
 #--------------------------------------
 # Two-sample design
@@ -179,7 +203,7 @@ ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
 # unknown population variances, unequal variance assumption,
 # analysis by group2 separately, sort by variables
 ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2,
-             sort.var = TRUE)
+             sort.var = TRUE)# Check if input 'y' is NULL
 
 # Two-Sided 95\% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption,
@@ -206,24 +230,24 @@ ci.mean.diff(group1, group2)
 ci.mean.diff(group1, group2, var.equal = TRUE)
 
 #--------------------------------------
-# Paired sample design
+# Paired-sample design
 
- dat2 <- data.frame(pre = c(1, 3, 2, 5, 7, 6),
-                    post = c(2, 2, 1, 6, 8, 9),
-                    group = c(1, 1, 1, 2, 2, 2), stringsAsFactors = FALSE)
+dat2 <- data.frame(pre = c(1, 3, 2, 5, 7, 6),
+                   post = c(2, 2, 1, 6, 8, 9),
+                   group = c(1, 1, 1, 2, 2, 2), stringsAsFactors = FALSE)
 
 # Two-Sided 95\% CI for the mean difference in pre and post
-# unknown population variance of difference scores
+# unknown poulation variance of difference scores
 ci.mean.diff(dat2$pre, dat2$post, paired = TRUE)
 
 # Two-Sided 95\% CI for the mean difference in pre and post
-# unknown population variance of difference scores
+# unknown poulation variance of difference scores
 # analysis by group separately
 ci.mean.diff(dat2$pre, dat2$post, paired = TRUE, group = dat2$group)
 
 # Two-Sided 95\% CI for the mean difference in pre and post
-# unknown population variance of difference scores
-# split analysis by group
+# unknown poulation variance of difference scores
+# analysis by group separately
 ci.mean.diff(dat2$pre, dat2$post, paired = TRUE, split = dat2$group)
 
 # Two-Sided 95\% CI for the mean difference in pre and post
@@ -235,29 +259,30 @@ ci.mean.diff(dat2$pre, dat2$post, sigma = 2, paired = TRUE)
 ci.mean.diff(dat2$pre, dat2$post, sigma2 = 4, paired = TRUE)
 
 # One-Sided 95\% CI for the mean difference in pre and post
-# unknown population variance of difference scores
+# unknown poulation variance of difference scores
 ci.mean.diff(dat2$pre, dat2$post, alternative = "less", paired = TRUE)
 
 # Two-Sided 99\% CI for the mean difference in pre and post
-# unknown population variance of difference scores
+# unknown poulation variance of difference scores
 ci.mean.diff(dat2$pre, dat2$post, conf.level = 0.99, paired = TRUE)
 
 # Two-Sided 95\% CI for for the mean difference in pre and post
-# unknown population variance of difference scores
+# unknown poulation variance of difference scores
 # print results with 3 digits
 ci.mean.diff(dat2$pre, dat2$post, paired = TRUE, digits = 3)
 
 # Two-Sided 95\% CI for for the mean difference in pre and post
-# unknown population variance of difference scores
+# unknown poulation variance of difference scores
 # convert value 1 to NA
 ci.mean.diff(dat2$pre, dat2$post, as.na = 1, paired = TRUE)
 }
 \references{
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. John Wiley & Sons.
 }
 \seealso{
-\code{\link{ci.mean}}, \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{descript}}
+\code{\link{test.z}}, \code{\link{test.t}}, \code{\link{ci.mean}}, \code{\link{ci.median}},
+\code{\link{ci.prop}}, \code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

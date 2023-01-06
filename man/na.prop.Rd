@@ -9,20 +9,22 @@ na.prop(x, digits = 2, as.na = NULL, check = TRUE)
 \arguments{
 \item{x}{a matrix or data frame.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used for displaying
-proportions.}
+\item{digits}{an integer value indicating the number of decimal places to be
+used for displaying proportions.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \value{
-Returns a numeric vector with the same length as the number of rows in \code{x} containing the
-proportion of missing data.
+Returns a numeric vector with the same length as the number of rows in \code{x}
+containing the proportion of missing data.
 }
 \description{
-This function computes the proportion of missing data for each case in a matrix or data frame.
+This function computes the proportion of missing data for each case in a matrix
+or data frame.
 }
 \examples{
 dat <- data.frame(x = c(1, NA, NA, 6, 3),
@@ -36,13 +38,16 @@ na.prop(dat)
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
 
 Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
-\emph{Annual Review of Psychology, 60}, 549-576. https://doi.org/10.1146/annurev.psych.58.110405.085530
+\emph{Annual Review of Psychology, 60}, 549-576.
+https://doi.org/10.1146/annurev.psych.58.110405.085530
 
-van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
+van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.).
+Chapman & Hall.
 }
 \seealso{
-\code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}},
-\code{\link{na.descript}}, \code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.test}}
+\code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}},
+\code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.indicator}},
+\code{\link{na.pattern}}, \code{\link{na.test}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

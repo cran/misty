@@ -7,21 +7,25 @@
 dummy.c(x, ref = NULL, names = "d", as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector with integer values, character vector or factor.}
+\item{x}{a numeric vector with integer values, character vector or
+factor.}
 
-\item{ref}{a numeric value or character string indicating the reference group.
-By default, the last category is selected as reference group.}
+\item{ref}{a numeric value or character string indicating the reference
+group. By default, the last category is selected as reference
+group.}
 
-\item{names}{a character string or character vector indicating the names of the dummy variables.
-By default, variables are named \code{"d"} with the category compared to the reference
-category (e.g., \code{"d1"} and \code{"d2"}). Variable names can be specified using
-a character string (e.g., \code{names = "dummy_"} leads to \code{dummy_1} and
-\code{dummy_2}) or a character vector matching the number of dummy coded variables
-(e.g. \code{names = c("x.3_1", "x.3_2")}) which is the number of unique categories minus
-one.}
+\item{names}{a character string or character vector indicating the names
+of the dummy variables. By default, variables are named \code{"d"}
+with the category compared to the reference category (e.g., \code{"d1"}
+and \code{"d2"}). Variable names can be specified using a character
+string (e.g., \code{names = "dummy_"} leads to \code{dummy_1} and
+\code{dummy_2}) or a character vector matching the number of dummy
+coded variables (e.g. \code{names = c("x.3_1", "x.3_2")}) which
+is the number of unique categories minus one.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
@@ -29,7 +33,8 @@ i.e. these values are converted to \code{NA} before conducting the analysis.}
 Returns a matrix with k - 1 dummy coded 0/1 variables.
 }
 \description{
-This function creates \eqn{k - 1} dummy coded 0/1 variables for a vector with k distinct values.
+This function creates \eqn{k - 1} dummy coded 0/1 variables for a vector with
+k distinct values.
 }
 \examples{
 dat <- data.frame(x = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
@@ -80,8 +85,8 @@ dummy.c(dat$z, names = c("z.C_A", "z.C_B"))
 dat <- data.frame(dat, dummy.c(dat$z, names = c("z.C_A", "z.C_B")), stringsAsFactors = FALSE)
 }
 \references{
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-New York: John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. New York: John Wiley & Sons.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

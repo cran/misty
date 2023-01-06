@@ -8,56 +8,63 @@ collin.diag(model, print = c("all", "vif", "eigen"), digits = 3, p.digits = 3,
             check = TRUE, output = TRUE)
 }
 \arguments{
-\item{model}{a fitted model of class \code{"lm"}, \code{"glm"}, \code{"lmerMod"}, \code{"lmerModLmerTest"},
-\code{"glmerMod"}, \code{"lme"}, or \code{"glmmTMB"}.}
+\item{model}{a fitted model of class \code{"lm"}, \code{"glm"}, \code{"lmerMod"},
+\code{"lmerModLmerTest"}, \code{"glmerMod"}, \code{"lme"}, or
+\code{"glmmTMB"}.}
 
-\item{print}{a character vector indicating which results to show, i.e. \code{"all"}, for all results,
-\code{"vif"} for tolerance, std. error inflation factor, and variance inflation factor,
-or \code{eigen} for eigenvalue, condition index, and variance proportions.}
+\item{print}{a character vector indicating which results to show, i.e. \code{"all"},
+for all results, \code{"vif"} for tolerance, std. error inflation
+factor, and variance inflation factor, or \code{eigen} for eigenvalue,
+condition index, and variance proportions.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used for displaying
-results.}
+\item{digits}{an integer value indicating the number of decimal places to be
+used for displaying results.}
 
-\item{p.digits}{an integer value indicating the number of decimal places to be used for displaying the
-\emph{p}-value.}
+\item{p.digits}{an integer value indicating the number of decimal places to be
+used for displaying the \emph{p}-value.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, model specified in the
-\code{model} argument (\code{model}), specification of function arguments (\code{args}),
-list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, model specified
+in the \code{model} argument (\code{model}), specification of function arguments
+(\code{args}), list with results (\code{result}).
 }
 \description{
-This function computes tolerance, standard error inflation factor, variance inflation factor, eigenvalues,
-condition index, and variance proportions for linear, generalized linear, and mixed-effects models.
+This function computes tolerance, standard error inflation factor, variance inflation
+factor, eigenvalues, condition index, and variance proportions for linear, generalized
+linear, and mixed-effects models.
 }
 \details{
-Collinearity diagnostics can be conducted for objects returned from the \code{lm()} and \code{glm()}
-function, but also from objects returned from the \code{lmer()} and \code{glmer()} function from
-the \pkg{lme4} package, \code{lme()} function from the \pkg{nlme} package, and the \code{glmmTMB()}
-function from the \pkg{glmmTMB} package.
+Collinearity diagnostics can be conducted for objects returned from the \code{lm()}
+and \code{glm()} function, but also from objects returned from the \code{lmer()}
+and \code{glmer()} function from the \pkg{lme4} package, \code{lme()} function
+from the \pkg{nlme} package, and the \code{glmmTMB()} function from the \pkg{glmmTMB}
+package.
 
-The generalized variance inflation factor (Fox & Monette, 1992) is computed for terms with more than
-1 df resulting from factors with more than two levels. The generalized VIF (GVIF) is interpretable
-as the inflation in size of the confidence ellipse or ellipsoid for the coefficients of the term
-in comparison with what would be obtained for orthogonal data. GVIF is invariant to the coding of
-the terms in the model. In order to adjust for the dimension of the confidence ellipsoid,
-GVIF\eqn{^\frac{1}{2df}} is computed. Note that the adjusted GVIF (aGVIF) is actually a generalized
-standard error inflation factor (GSIF). Thus, the aGIF needs to be squared before applying a common
-cutoff threshold for the VIF (e.g., VIF > 10). Note that the output of \code{collin.diag()} function
-reports either the variance inflation factor or the squared generalized variance inflation factor
-in the column \code{VIF}, while the standard error inflation factor or the adjusted generalized
-variance inflation factor is reported in the column \code{SIF}.
+The generalized variance inflation factor (Fox & Monette, 1992) is computed for
+terms with more than 1 df resulting from factors with more than two levels. The
+generalized VIF (GVIF) is interpretable as the inflation in size of the confidence
+ellipse or ellipsoid for the coefficients of the term in comparison with what would
+be obtained for orthogonal data. GVIF is invariant to the coding of the terms in
+the model. In order to adjust for the dimension of the confidence ellipsoid,
+GVIF\eqn{^\frac{1}{2df}} is computed. Note that the adjusted GVIF (aGVIF) is
+actually a generalized standard error inflation factor (GSIF). Thus, the aGIF
+needs to be squared before applying a common cutoff threshold for the VIF (e.g.,
+VIF > 10). Note that the output of \code{collin.diag()} function reports either
+the variance inflation factor or the squared generalized variance inflation factor
+in the column \code{VIF}, while the standard error inflation factor or the adjusted
+generalized variance inflation factor is reported in the column \code{SIF}.
 }
 \note{
-The computation of the VIF and the GVIF is based on the \code{vif()} function in the
-\pkg{car} package by John Fox, Sanford Weisberg and Brad Price (2020), and the computation
-of eigenvalues, condition index, and variance proportions is based on the \code{ols_eigen_cindex()}
-function in the \pkg{olsrr} package by Aravind Hebbali (2020).
+The computation of the VIF and the GVIF is based on the \code{vif()} function
+in the \pkg{car} package by John Fox, Sanford Weisberg and Brad Price (2020),
+and the computation of eigenvalues, condition index, and variance proportions
+is based on the \code{ols_eigen_cindex()} function in the \pkg{olsrr} package
+by Aravind Hebbali (2020).
 }
 \examples{
 dat <- data.frame(group = c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4),
@@ -118,7 +125,7 @@ mod.glmmTMB1 <- glmmTMB::glmmTMB(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
 
 # Tolerance, std. error, and variance inflation factor
 collin.diag(mod.glmmTMB1)
-
+#'
 #----------------------------
 # Generalized linear mixed-effects model
 
@@ -139,8 +146,8 @@ collin.diag(mod.glmmTMB2)
 Fox, J., & Monette, G. (1992). Generalized collinearity diagnostics.
 \emph{Journal of the American Statistical Association, 87}, 178-183.
 
-Fox, J., Weisberg, S., & Price, B. (2020). \emph{car: Companion to Applied Regression}.
-R package version 3.0-8. https://cran.r-project.org/web/packages/car/
+Fox, J., Weisberg, S., & Price, B. (2020). \emph{car: Companion to Applied
+Regression}. R package version 3.0-8. https://cran.r-project.org/web/packages/car/
 
 Hebbali, A. (2020). \emph{olsrr: Tools for building OLS regression models}.
 R package version 0.5.3. https://cran.r-project.org/web/packages/olsrr/

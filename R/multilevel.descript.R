@@ -74,7 +74,7 @@
 #' # use lme() function in the nlme package to estimate ICC
 #' multilevel.descript(dat$x1, cluster = dat$cluster, method = "nlme")
 #'
-#' Multilevel descriptive statistics for x1, x2, and x3
+#' # Multilevel descriptive statistics for x1, x2, and x3
 #' multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster)
 #'
 #' \dontrun{

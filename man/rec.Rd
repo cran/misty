@@ -52,8 +52,8 @@ For example, \code{else = NA}. Everything that does not fit a previous specifica
 \code{else} matches all otherwise unspecified values on input, including \code{NA}.
 }
 \note{
-This function was adapted from the \code{recode()} function in the \pkg{car} package by
-John Fox and Sanford Weisberg (2019).
+This function was adapted from the \code{recode()} function in the \pkg{car} package
+by John Fox and Sanford Weisberg (2019).
 }
 \examples{
 #--------------------------------------

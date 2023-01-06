@@ -15,13 +15,15 @@ i.e., \code{"both"} (default), \code{"left"} or \code{"right"}.}
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \value{
-Returns a character vector with whitespaces removed from the vector specified in \code{x}.
+Returns a character vector with whitespaces removed from the vector specified
+in \code{x}.
 }
 \description{
 This function removes whitespace from start and/or end of a string
 }
 \note{
-This function is based on the \code{str_trim()} function from the \pkg{stringr} package by Hadley Wickham.
+This function is based on the \code{str_trim()} function from the \pkg{stringr}
+package by Hadley Wickham.
 }
 \examples{
 x <- "  string  "
@@ -36,7 +38,8 @@ chr.trim(x, side = "left")
 chr.trim(x, side = "right")
 }
 \references{
-Wickham, H. (2019). \emph{stringr: Simple, consistent wrappers for common string operations}.
+Wickham, H. (2019). \emph{stringr: Simple, consistent wrappers for common string
+operations}.
 R package version 1.4.0. \url{https://CRAN.R-project.org/package=stringr}
 }
 \seealso{

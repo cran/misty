@@ -4,50 +4,57 @@
 \alias{center}
 \title{Centering at the Grand Mean and Centering Within Cluster}
 \usage{
-center(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL, as.na = NULL,
-       check = TRUE)
+center(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
+       as.na = NULL, check = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector.}
 
 \item{type}{a character string indicating the type of centering, i.e.,
-\code{"CGM"} for centering at the grand mean (i.e., grand mean centering) or
-\code{"CWC"} for centering within cluster (i.e., group-mean centering).}
+\code{"CGM"} for centering at the grand mean (i.e., grand mean
+centering) or \code{"CWC"} for centering within cluster (i.e.,
+group-mean centering).}
 
-\item{cluster}{a vector representing the nested grouping structure (i.e., group or
-cluster variable) of each unit in \code{x}. Note, this argument is required for centering at
-the grand mean (CGM) of a level-2 predictor or centering within cluster (CWC)
-of a level-1 predictor.}
+\item{cluster}{a vector representing the nested grouping structure (i.e.,
+group or cluster variable) of each unit in \code{x}. Note, this
+argument is required for centering at the grand mean (CGM) of
+a level-2 predictor or centering within cluster (CWC) of a
+level-1 predictor.}
 
 \item{value}{a numeric value for centering on a specific user-defined value.}
 
-\item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.
-Note that \code{as.na()} function is only applied to \code{x} but not to \code{cluster}.}
+\item{as.na}{a numeric vector indicating user-defined missing values, i.e.
+these values are converted to \code{NA} before conducting the
+analysis. Note that \code{as.na()} function is only applied to
+\code{x} but not to \code{cluster}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \value{
-Returns a numeric vector with the same length as \code{x} containing centered values.
+Returns a numeric vector with the same length as \code{x} containing centered
+values.
 }
 \description{
-This function is used to center predictors at the grand mean (CGM, i.e., grand mean centering) or
-within cluster (CWC, i.e., group-mean centering).
+This function is used to center predictors at the grand mean (CGM, i.e., grand
+mean centering) or within cluster (CWC, i.e., group-mean centering).
 }
 \details{
-Predictors in a single-level regression can only be centered at the grand mean (CGM) by specifying
-\code{type = "CGM"} (default) in conjunction with \code{cluster = NULL} (default).
+Predictors in a single-level regression can only be centered at the grand mean
+(CGM) by specifying \code{type = "CGM"} (default) in conjunction with
+\code{cluster = NULL} (default).
 
-Level-1 (L1) predictors in a multilevel regression can be centered at the grand mean (CGM)
-by specifying \code{type = "CGM"} (default) in conjunction with \code{cluster = NULL} (default) or
-within cluster (CWC) by specifying \code{type = "CWC"} in conjunction with specifying a cluster
-membership variable using the \code{cluster} argument.
+Level-1 (L1) predictors in a multilevel regression can be centered at the
+grand mean (CGM) by specifying \code{type = "CGM"} (default) in conjunction
+with code{cluster = NULL} (default) or within cluster (CWC) by specifying
+\code{type = "CWC"} in conjunction with specifying a cluster membership variable
+using the \code{cluster} argument.
 
-Level-2 (L2) predictors in a multilevel regression can only be centered at the grand mean (CGM) by
-specifying \code{type = "CGM"} (default) in conjunction with specifying a cluster membership
-variable using the \code{cluster} argument.
+Level-2 (L2) predictors in a multilevel regression can only be centered at
+the grand mean (CGM) by specifying \code{type = "CGM"} (default) in conjunction
+with specifying a cluster membership variable using the \code{cluster} argument.
 
-Note that predictors can be centered on any meaningful value using the argument \code{value}.
+Note that predictors can be centered on any meaningful value using the argument
+\code{value}.
 }
 \examples{
 #--------------------------------------
@@ -80,29 +87,31 @@ center(dat.ml$x.l2, type = "CGM", cluster = dat.ml$cluster)
 }
 \references{
 Chang, C.-N., & Kwok, O.-M. (2022) Partitioning Variance for a Within-Level
-Predictor in Multilevel Models. \emph{Structural Equation Modeling: A Multidisciplinary Journal}.
-Advance online publication. https://doi.org/10.1080/10705511.2022.2051175#'
+Predictor in Multilevel Models. \emph{Structural Equation Modeling: A
+Multidisciplinary Journal}. Advance online publication.
+https://doi.org/10.1080/10705511.2022.2051175#'
 
 Enders, C. K. (2013). Centering predictors and contextual effects. In M. A.
-Scott, J. S. Simonoff, & B. D. Marx (Eds.), \emph{The Sage handbook of multilevel modeling}
-(pp. 89-109). Sage. https://dx.doi.org/10.4135/9781446247600
+Scott, J. S. Simonoff, & B. D. Marx (Eds.), \emph{The Sage handbook of
+multilevel modeling} (pp. 89-109). Sage. https://dx.doi.org/10.4135/9781446247600
 
 Enders, C. K., & Tofighi, D. (2007). Centering predictor variables in
-cross-sectional multilevel models: A new look at an old issue. \emph{Psychological Methods, 12},
-121-138. https://doi.org/10.1037/1082-989X.12.2.121
+cross-sectional multilevel models: A new look at an old issue. \emph{Psychological
+Methods, 12}, 121-138. https://doi.org/10.1037/1082-989X.12.2.121
 
 Rights, J. D., Preacher, K. J., & Cole, D. A. (2020). The danger of conflating
-level-specific effects of control variables when primary interest lies in level-2 effects.
-\emph{British Journal of Mathematical & Statistical Psychology, 73}, 194-211.
-https://doi.org/10.1111/bmsp.12194
+level-specific effects of control variables when primary interest lies in
+level-2 effects. \emph{British Journal of Mathematical & Statistical Psychology,
+73}, 194-211. https://doi.org/10.1111/bmsp.12194
 
 Yaremych, H. E., Preacher, K. J., & Hedeker, D. (2021). Centering categorical
 predictors in multilevel models: Best practices and interpretation.
-\emph{Psychological Methods}. Advance online publication. https://doi.org/10.1037/met0000434
+\emph{Psychological Methods}. Advance online publication.
+https://doi.org/10.1037/met0000434
 }
 \seealso{
-\code{\link{dummy.c}}, \code{\link{cluster.scores}}, \code{\link{rec}}, \code{\link{item.reverse}},
-\code{\link{rwg.lindell}}, \code{\link{item.scores}}.
+\code{\link{dummy.c}}, \code{\link{cluster.scores}}, \code{\link{rec}},
+\code{\link{item.reverse}}, code{\link{rwg.lindell}}, \code{\link{item.scores}}.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

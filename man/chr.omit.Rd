@@ -9,11 +9,13 @@ chr.omit(x, omit = "", na.omit = FALSE, check = TRUE)
 \arguments{
 \item{x}{a numeric vector, character vector or factor.}
 
-\item{omit}{a numeric vector or character vector indicating values or strings to be omitted
-from the vector \code{x}, the default setting is the empty strings \code{""}.}
+\item{omit}{a numeric vector or character vector indicating values or
+strings to be omitted
+from the vector \code{x}, the default setting is the empty
+strings \code{""}.}
 
-\item{na.omit}{logical: if \code{TRUE}, missing values (\code{NA}) are also omitted from the
-vector.}
+\item{na.omit}{logical: if \code{TRUE}, missing values (\code{NA}) are also
+omitted from the vector.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
@@ -22,7 +24,8 @@ Returns a numeric vector, character vector or factor with values or strings
 specified in \code{omit} omitted from the vector specified in \code{x}.
 }
 \description{
-This function omits user-specified values or strings from a numeric vector, character vector or factor.
+This function omits user-specified values or strings from a numeric vector,
+character vector or factor.
 }
 \examples{
 #--------------------------------------

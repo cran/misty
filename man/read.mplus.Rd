@@ -8,25 +8,30 @@ read.mplus(file, sep = "", input = NULL, print = FALSE, return.var = FALSE,
            fileEncoding = "UTF-8-BOM", check = TRUE)
 }
 \arguments{
-\item{file}{a character string indicating the name of the Mplus data file with or without
-the file extension \code{.dat}, e.g., \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.
-Note that it is not necessary to specify this argument when \code{return.var = TRUE}.}
+\item{file}{a character string indicating the name of the Mplus data
+file with or without the file extension \code{.dat}, e.g.,
+\code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.
+Note that it is not necessary to specify this argument when
+\code{return.var = TRUE}.}
 
-\item{sep}{a character string indicating the field separator (i.e., delimiter) used in the data file
-specified in \code{file}. By default, the separator is 'white space', i.e., one or more
+\item{sep}{a character string indicating the field separator (i.e.,
+delimiter) used in the data file specified in \code{file}.
+By default, the separator is 'white space', i.e., one or more
 spaces, tabs, newlines or carriage returns.}
 
-\item{input}{a character string indicating the Mplus input (\code{.inp}) or output file (\code{.out})
-in which the variable names are specified in the \code{VARIABLE:} section.
-Note that if \code{input = NULL}, this function is equivalent to \code{read.table(file)}.}
+\item{input}{a character string indicating the Mplus input (\code{.inp})
+or output file (\code{.out}) in which the variable names
+are specified in the \code{VARIABLE:} section. Note that if
+\code{input = NULL}, this function is equivalent to \code{read.table(file)}.}
 
-\item{print}{logical: if \code{TRUE}, variable names are printed on the console.}
+\item{print}{logical: if \code{TRUE}, variable names are printed on the
+console.}
 
-\item{return.var}{logical: if \code{TRUE}, the function returns the variable names extracted from the
-Mplus input or output file only.}
+\item{return.var}{logical: if \code{TRUE}, the function returns the variable
+names extracted from the Mplus input or output file only.}
 
-\item{fileEncoding}{character string declaring the encoding used on \code{file} so the character data can be
-re-encoded. See \code{\link{df.sort}}.}
+\item{fileEncoding}{character string declaring the encoding used on \code{file}
+so the character data can be re-encoded. See \code{\link{df.sort}}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
@@ -34,12 +39,11 @@ re-encoded. See \code{\link{df.sort}}.}
 A data frame containing a representation of the data in the file.
 }
 \description{
-This function reads a Mplus data file and/or Mplus input/output file to return a data frame with variable names
-extracted from the Mplus input/output file.
+This function reads a Mplus data file and/or Mplus input/output file to return
+a data frame with variable names extracted from the Mplus input/output file.
 }
 \examples{
 \dontrun{
-
 # Read Mplus data file and variable names extracted from the Mplus input file
 dat <- read.mplus("Mplus_Data.dat", input = "Mplus_Input.inp")
 
@@ -52,10 +56,12 @@ varnames <- read.mplus(input = "Mplus_Input.inp", return.var = TRUE)
 }
 }
 \references{
-Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.). Muthen & Muthen.
+Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
+Muthen & Muthen.
 }
 \seealso{
-\code{\link{run.mplus}}, \code{\link{write.mplus}}, \code{\link{read.sav}}, \code{\link{read.xlsx}}
+\code{\link{run.mplus}}, \code{\link{write.mplus}}, \code{\link{read.sav}},
+\code{\link{read.xlsx}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

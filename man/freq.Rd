@@ -11,59 +11,72 @@ freq(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE, split = FALSE,
 \arguments{
 \item{x}{a vector, factor, matrix or data frame.}
 
-\item{print}{a character string indicating which percentage(s) to be printed on the console, i.e.,
-no percentages (\code{"no"}), all percentages (\code{"all"}), percentage frequencies
-(\code{"print"}), and valid percentage frequencies (\code{"v.perc"}).
-Default setting when specifying one variable in \code{x} is \code{print = "all"}, while
-default setting when specifying more than one variable in \code{x} is \code{print = "no"}
-unless \code{split = TRUE}.}
+\item{print}{a character string indicating which percentage(s) to be
+printed on the console, i.e., no percentages (\code{"no"}),
+all percentages (\code{"all"}), percentage frequencies
+(\code{"print"}), and valid percentage frequencies
+(\code{"v.perc"}). Default setting when specifying one
+variable in \code{x} is \code{print = "all"}, while default
+setting when specifying more than one variable in \code{x}
+is \code{print = "no"} unless \code{split = TRUE}.}
 
-\item{freq}{logical: if \code{TRUE} (default), absolute frequencies will be shown on the console.}
+\item{freq}{logical: if \code{TRUE} (default), absolute frequencies will
+be shown on the console.}
 
-\item{split}{logical: if \code{TRUE}, output table is split by variables when specifying more than
-one variable in \code{x}.}
+\item{split}{logical: if \code{TRUE}, output table is split by variables
+when specifying more than one variable in \code{x}.}
 
-\item{labels}{logical: if \code{TRUE} (default), labels for the factor levels will be used.}
+\item{labels}{logical: if \code{TRUE} (default), labels for the factor
+levels will be used.}
 
-\item{val.col}{logical: if \code{TRUE}, values are shown in the columns, variables in the rows.}
+\item{val.col}{logical: if \code{TRUE}, values are shown in the columns,
+variables in the rows.}
 
-\item{round}{an integer value indicating the number of decimal places to be used for rounding
-numeric variables.}
+\item{round}{an integer value indicating the number of decimal places
+to be used for rounding numeric variables.}
 
-\item{exclude}{an integer value indicating the maximum number of unique values for
-variables to be included in the analysis when specifying more than one variable in
-\code{x} i.e., variables with the number of unique values exceeding \code{exclude}
-will be excluded from the analysis. It is also possible to specify \code{exclude = FALSE}
-to include all variables in the analysis.}
+\item{exclude}{an integer value indicating the maximum number of unique
+values for variables to be included in the analysis when
+specifying more than one variable in \code{x} i.e.,
+variables with the number of unique values exceeding
+\code{exclude} will be excluded from the analysis. It is
+also possible to specify \code{exclude = FALSE} to include
+all variables in the analysis.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used for displaying
-percentages.}
+\item{digits}{an integer value indicating the number of decimal places
+to be used for displaying percentages.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before
+conducting the analysis.}
 
-\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string for writing the results into a Excel file
+naming a file with or without file extension '.xlsx', e.g.,
+\code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis (\code{type}),  matrix or data frame specified in
-\code{x} (\code{data}), specification of function arguments (\code{args}), and
-list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis (\code{type}), matrix
+or data frame specified in \code{x} (\code{data}), specification of function
+arguments (\code{args}), and list with results (\code{result}).
 }
 \description{
-This function computes a frequency table with absolute and percentage frequencies for one or more than one variable.
+This function computes a frequency table with absolute and percentage frequencies
+for one or more than one variable.
 }
 \details{
-By default, the function displays the absolute and percentage frequencies when specifying one variable in the
-argument \code{x}, while the function displays only the absolute frequencies when more than one variable is specified.
-The function displays valid percentage frequencies only in the presence of missing values and excludes variables
-with all values missing from the analysis. Note that it is  possible to mix numeric variables, factors, and character
-variables in the data frame specified in the argument \code{x}. By default, numeric variables are rounded to three
-digits before computing the frequency table.
+By default, the function displays the absolute and percentage frequencies when
+specifying one variable in the argument \code{x}, while the function displays
+only the absolute frequencies when more than one variable is specified. The
+function displays valid percentage frequencies only in the presence of missing
+values and excludes variables with all values missing from the analysis. Note
+that it is possible to mix numeric variables, factors, and character variables
+in the data frame specified in the argument \code{x}. By default, numeric
+variables are rounded to three digits before computing the frequency table.
 }
 \examples{
 dat <- data.frame(x1 = c(3, 3, 2, 3, 2, 3, 3, 2, 1, -99),
@@ -122,10 +135,12 @@ freq(factor(c("a", "a", "b", "c", "b")), labels = FALSE)
 freq(dat[, c("x1", "x2", "y1", "y2")], split = TRUE, write = "Frequencies.xlsx")
 
 result <- freq(dat[, c("x1", "x2", "y1", "y2")], split = TRUE, output = FALSE)
-write.result(result, "Frequencies.xlsx") }
+write.result(result, "Frequencies.xlsx")
+}
 }
 \references{
-Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New  S Language}. Wadsworth & Brooks/Cole.
+Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New  S Language}.
+Wadsworth & Brooks/Cole.
 }
 \seealso{
 \code{\link{write.result}}, \code{\link{crosstab}}, \code{\link{descript}},

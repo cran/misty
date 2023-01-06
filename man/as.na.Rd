@@ -9,16 +9,16 @@ as.na(x, na, check = TRUE)
 \arguments{
 \item{x}{a vector, factor, matrix, array, data frame, or list.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
-
 \item{na}{a vector indicating values or characters to replace with \code{NA}.}
+
+\item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \value{
 Returns \code{x} with values specified in \code{na} replaced with \code{NA}.
 }
 \description{
-This function replaces user-specified values in the argument \code{as.na} in a vector, factor, matrix,
-array, list, or data frame with \code{NA}.
+This function replaces user-specified values in the argument \code{as.na} in
+a vector, factor, matrix, array, list, or data frame with \code{NA}.
 }
 \examples{
 #--------------------------------------
@@ -90,11 +90,13 @@ x.list <- list(x1 = c(1, 2, 3, 1, 2, 3),
 as.na(x.list, na = 1)
 }
 \references{
-Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}. Wadsworth & Brooks/Cole.
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}.
+Wadsworth & Brooks/Cole.
 }
 \seealso{
-\code{\link{na.as}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-\code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.prop}}, \code{\link{na.test}}
+\code{\link{na.as}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}},
+\code{\link{na.descript}}, \code{\link{na.indicator}}, \code{\link{na.pattern}},
+\code{\link{na.prop}}, \code{\link{na.test}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

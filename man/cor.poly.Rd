@@ -12,50 +12,59 @@ cor.poly(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0,
 \arguments{
 \item{x}{a matrix or data frame of discrete values.}
 
-\item{smooth}{logical: if \code{TRUE} and if the polychoric matrix is not positive definite,
-a simple smoothing algorithm using \code{cor.smooth()} function is applied.}
+\item{smooth}{logical: if \code{TRUE} and if the polychoric matrix is not
+positive definite, a simple smoothing algorithm using \code{cor.smooth()}
+function is applied.}
 
-\item{global}{logical: if \code{TRUE}, the global values of the tau parameter is used instead of the local values.}
+\item{global}{logical: if \code{TRUE}, the global values of the tau parameter
+is used instead of the local values.}
 
-\item{weight}{a vector of length of the number of observations that specifies the weights to apply to each case.
-The \code{NULL} case is equivalent of weights of 1 for all cases.}
+\item{weight}{a vector of length of the number of observations that specifies
+the weights to apply to each case. The \code{NULL} case is
+equivalent of weights of 1 for all cases.}
 
-\item{correct}{a numeric value indicating the correction value to use to correct for continuity in the case
-of zero entry. Note that unlike in the \code{polychoric()} function in the \pkg{psych} the default
-value is 0.}
+\item{correct}{a numeric value indicating the correction value to use to
+correct for continuity in the case of zero entry. Note that
+unlike in the \code{polychoric()} function in the \pkg{psych}
+the default value is 0.}
 
 \item{progress}{logical: if \code{TRUE}, the progress bar is shown.}
 
 \item{na.rm}{logical: if \code{TRUE}, missing data are deleted.}
 
-\item{delete}{logical: if \code{TRUE}, cases with no variance are deleted with a warning before proceeding.}
+\item{delete}{logical: if \code{TRUE}, cases with no variance are deleted
+with a warning before proceeding.}
 
-\item{tri}{a character string indicating which triangular of the matrix to show on the console, i.e.,
-\code{both} for upper and lower triangular, \code{lower} (default) for the lower triangular,
+\item{tri}{a character string indicating which triangular of the matrix
+to show on the console, i.e., \code{both} for upper and lower
+triangular, \code{lower} (default) for the lower triangular,
 and \code{upper} for the upper triangular.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used for
-displaying correlation coefficients.}
+\item{digits}{an integer value indicating the number of decimal places to
+be used for displaying correlation coefficients.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-\code{x} (\code{data}), specification of function arguments (\code{args}), and
-list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, matrix or
+data frame specified in \code{x} (\code{data}), specification of function arguments
+(\code{args}), and list with results (\code{result}).
 }
 \description{
-This function computes a polychoric correlation matrix, which is the estimated Pearson product-moment correlation matrix
-between underlying normally distributed latent variables which generate the ordinal scores.
+This function computes a polychoric correlation matrix, which is the estimated
+Pearson product-moment correlation matrix between underlying normally distributed
+latent variables which generate the ordinal scores.
 }
 \note{
-This function is based on the \code{polychoric()} function in the \pkg{psych} package by William Revelle.
+This function is based on the \code{polychoric()} function in the \pkg{psych}
+package by William Revelle.
 }
 \examples{
 dat <- data.frame(x1 = c(1, 1, 3, 2, 1, 2, 3, 2, 3, 1),
@@ -66,12 +75,9 @@ dat <- data.frame(x1 = c(1, 1, 3, 2, 1, 2, 3, 2, 3, 1),
 cor.poly(dat)
 }
 \references{
-Revelle, W. (2018) \emph{psych: Procedures for personality and psychological research}. Northwestern University, Evanston,
-Illinois, USA, https://CRAN.R-project.org/package=psych Version = 1.8.12.
-}
-\seealso{
-\code{\link{cor.matrix}}, \code{\link{cor.cont}}, \code{\link{cor.cramer}}, \code{\link{cor.phi}},
-\code{\link{cohens.d}}.
+Revelle, W. (2018) \emph{psych: Procedures for personality and psychological
+research}. Northwestern University, Evanston, Illinois, USA,
+https://CRAN.R-project.org/package=psych Version = 1.8.12.
 }
 \author{
 William Revelle

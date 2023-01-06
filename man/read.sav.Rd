@@ -37,12 +37,11 @@ if \code{FALSE} function returns a tibble.}
 Returns a data frame or tibble.
 }
 \description{
-This function calls the \code{read_spss} function in the \pkg{haven} package by Hadley Wickham and Evan Miller (2019)
-to read an SPSS file.
+This function calls the \code{read_spss} function in the \pkg{haven} package
+by Hadley Wickham and Evan Miller (2019) to read an SPSS file.
 }
 \examples{
 \dontrun{
-
 # Read SPSS data
 read.sav("SPSS_Data.sav")
 read.sav("SPSS_Data")

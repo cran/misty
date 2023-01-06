@@ -4,7 +4,7 @@
 \alias{multilevel.indirect}
 \title{Confidence Interval for the Indirect Effect in a 1-1-1 Multilevel Mediation Model}
 \usage{
-multilevel.indirect(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.rand, 
+multilevel.indirect(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.rand,
                     nrep = 100000, alternative = c("two.sided", "less", "greater"),
                     seed = NULL, conf.level = 0.95, digits = 3, check = TRUE,
                     output = TRUE)
@@ -71,16 +71,16 @@ refers to the effect of the independent variable \eqn{X} on the outcome variable
 effect \eqn{ab} is quantified by the product of the the coefficient \eqn{a}
 (i.e., effect of \eqn{X} on \eqn{M}) and the coefficient \eqn{b} (i.e., effect of
 \eqn{M} on \eqn{Y} adjusted for \eqn{X}). However, mediation in the context of a
-1-1-1 multilevel model where variables \eqn{X}, \eqn{M}, and \eqn{Y} are measured
-at level 1, the coefficients \eqn{a} and \eqn{b} can vary across level-2 units
-(i.e., random slope). As a result, \eqn{a} and \eqn{b} may covary so that the
-estimate of the indirect effect is no longer simply the product of the coefficients
-\eqn{\hat{a}\hat{b}}, but \eqn{\hat{a}\hat{b} + \tau_{a,b}}, where \eqn{\tau_{a,b}}
-is the level-2 covariance between the random slopes \eqn{a} and \eqn{b}. The
-covariance term needs to be added to \eqn{\hat{a}\hat{b}} only when random slopes
-are estimated for both \eqn{a} and \eqn{b}. Otherwise, the simple product is
-sufficient to quantify the indirect effect, and the \code{\link{indirect}} function
-can be used instead.
+1-1-1 multilevel mediation model where variables \eqn{X}, \eqn{M}, and \eqn{Y}
+are measured at level 1, the coefficients \eqn{a} and \eqn{b} can vary across
+level-2 units (i.e., random slope). As a result, \eqn{a} and \eqn{b} may covary
+so that the estimate of the indirect effect is no longer simply the product of
+the coefficients \eqn{\hat{a}\hat{b}}, but \eqn{\hat{a}\hat{b} + \tau_{a,b}},
+where \eqn{\tau_{a,b}} (i.e., \code{cov.rand}) is the level-2 covariance between
+the random slopes \eqn{a} and \eqn{b}. The covariance term needs to be added to
+\eqn{\hat{a}\hat{b}} only when random slopes are estimated for both \eqn{a} and
+\eqn{b}. Otherwise, the simple product is sufficient to quantify the indirect
+effect, and the \code{\link{indirect}} function can be used instead.
 
 In practice, researchers are often interested in confidence limit estimation
 for the indirect effect. There are several methods for computing a confidence
@@ -127,11 +127,11 @@ mediation model:
 }
 
 Note that all pieces of information except \code{cov.ab} can be looked up in
-the standard result output of the multilevel mediation model. In order to
-specify \code{cov.ab}, the covariance matrix for the parameter estimates
-(i.e., asymptotic covariance matrix) is required. In practice, \code{cov.ab}
-will oftentimes be very small so that \code{cov.ab} may be set to 0 (i.e.,
-default value) with negligible impact on the results.
+the standard output of the multilevel mediation model. In order to specify
+\code{cov.ab}, the covariance matrix for the parameter estimates (i.e.,
+asymptotic covariance matrix) is required. In practice, \code{cov.ab} will
+oftentimes be very small so that \code{cov.ab} may be set to 0 (i.e., default
+value) with negligible impact on the results.
 }
 \note{
 The function was adapted from the interactive web tool by Preacher and

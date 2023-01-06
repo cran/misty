@@ -50,22 +50,18 @@
 write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = FALSE,
                        use.zip64 = FALSE, check = TRUE) {
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix, data frame or list of matrices or data frames for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  #-----------------------------------------
 
   if (isTRUE(check)) {
 
@@ -79,14 +75,13 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
 
   }
 
-  ####################################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #......
   # File extension .xlsx
   file <- ifelse(length(grep(".xlsx", file)) == 0, file <- paste0(file, ".xlsx"), file)
 
-  #......
   # Matrix
 
   if (is.list(x)) {
@@ -107,8 +102,9 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   writexl::write_xlsx(x = x, path = file, col_names = col.names, format_headers = format,
                       use_zip64 = use.zip64)

@@ -120,53 +120,55 @@
 write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NULL, digits = 2,
                       write.csv = FALSE, sep = c(";", ","), na = "", write.sps = FALSE, check = TRUE) {
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Matrix or data frame for the argument 'x'?
   if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #----------------------------------------
-  # Data.frame
+  #_____________________________________________________________________________
+  #
+  # Data and Variables ---------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Variable names
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Variable names ####
 
   varnames <- colnames(x)
 
-  #----------------------------------------
-  # Number of variables
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Number of variables ####
+
 
   var.length <- length(varnames)
 
-  #----------------------------------------
-  # File extension .sav
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## File extension .sav ####
 
   file <- ifelse(length(grep(".sav", file)) == 1L, file <- gsub(".sav", "", file), file)
 
-  #----------------------------------------
-  # Separator
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Separator ####
 
   sep <- ifelse(all(c(";", ".") %in% sep), ";", sep)
 
-  ####################################################################################
-  # Input check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'pspp.path'
     if (isTRUE(!is.null(pspp.path))) {
 
@@ -174,18 +176,15 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
     }
 
-    #......
     # Check input 'var.attr'
     if (isTRUE(!is.null(var.attr))) {
 
       # Number of rows in var.attr match with number of columns in x?
       if (isTRUE(nrow(var.attr) != ncol(x))) { stop("Number of rows in the data frame or matrix specified in the argument var.attr does not match with the number of columns in x.", call. = FALSE) }
 
-      #......
       # Any column name "label", "values", "missing"?
       if (isTRUE(all(is.na(match(names(var.attr), c("label", "values", "missing")))))) { stop("None of the column names of the data frame or matrix specified in the argument var.attr match with \"label\", \"values\" or \"missing\".", call. = FALSE) }
 
-      #......
       # Value labels match with data?
       if (isTRUE(any(!is.na(match(names(var.attr), "values"))))) {
 
@@ -214,42 +213,38 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
     }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument digits.", call. = FALSE) }
 
-    #......
     # Check input 'sep'
     if (isTRUE(write.csv & any(!sep %in% c(";", ",")))) { stop("Specify either \";\" or \",\" for the argument sep.", call. = FALSE) }
 
   }
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  ####################################################################################
-  # Main Function
-
-  #----------------------------------------
-  # Use haven package
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Use haven package ####
 
   if (isTRUE(is.null(pspp.path))) {
 
-    #......
     # Package haven installed?
     if (isTRUE(!requireNamespace("haven", quietly = TRUE))) {
 
-      stop("Package \"haven\" is needed for this function to work, please install it.",
-           call. = FALSE )
+      stop("Package \"haven\" is needed for this function to work, please install it.", call. = FALSE )
 
     }
 
-    #......
-    # Without variable attributes
+    #...................
+    ### Without variable attributes ####
     if (isTRUE(is.null(var.attr))) {
 
       # Write .sav
       haven::write_sav(x, paste0(file, ".sav"), compress = FALSE)
 
-    #......
-    # With variable attributes
+    #...................
+    ### Witht variable attributes ####
     } else {
 
       # Variable labels, value labels, and user-missing values
@@ -260,7 +255,6 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
       # For numeric variables only, i.e., exclude factors, strings, and dates
       for (i in which(vapply(x, is.numeric, FUN.VALUE = logical(1L)))) {
 
-        #...
         # Value labels
         if (misty::chr.trim(labels[i]) == "") {
 
@@ -298,7 +292,6 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
         }
 
-        #...
         # User-missing values
         if (isTRUE(misty::chr.trim(na[i]) == "")) {
 
@@ -331,7 +324,6 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
     }
 
-    #......
     # Save CSV file
     if (isTRUE(write.csv)) {
 
@@ -347,24 +339,20 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
     }
 
-  #----------------------------------------
-  # Use PSPP
-
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Use PSPP ####
   } else {
 
-    #........................................
     # Function to add quotes
     add.quote <- function(x) { paste0("\"", x, "\"") }
 
-    #........................................
     # Convert factors and logical to numeric
 
     any.factors <- any(vapply(x, is.factor, FUN.VALUE = logical(1)))
 
     if (isTRUE(any.factors)) {
 
-      xf <- data.frame(lapply(x, function(x) if (is.factor(x) | is.logical(x)) as.numeric(x) else x),
-                        stringsAsFactors = FALSE)
+      xf <- data.frame(lapply(x, function(x) if (is.factor(x) | is.logical(x)) as.numeric(x) else x), stringsAsFactors = FALSE)
 
     } else {
 
@@ -372,13 +360,12 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
     }
 
-    #----------------------------------------
     # Write CSV
 
     utils::write.csv2(xf, paste0(file, ".csv"), row.names = FALSE, quote = FALSE, na = na)
 
-    #----------------------------------------
-    # Variable formats
+    #...................
+    ### Variable formats ####
 
     type <- rep("F", times = var.length)
     width <- rep(8L, times = var.length)
@@ -386,13 +373,11 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
     for (i in seq_len(var.length)) {
 
-      #......
       # Numeric
       if (isTRUE(is.numeric(xf[, i]))) {
 
         i.nchar <- nchar(round(xf[, i], digits = digits))
 
-        #......
         # Size of the elements > 8
         if (isTRUE(any(na.omit(i.nchar) > 8L))) { width[i] <- max(i.nchar) }
 
@@ -402,7 +387,6 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
       } else {
 
-        #......
         # Character
         type[i] <- "A"
         width[i] <- max(nchar(xf[, i]))
@@ -411,15 +395,11 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
     }
 
-    #......
     # PSPP variable format
     variables <- paste(varnames, ifelse(!is.na(decimals), paste0(type, paste(width, decimals, sep = ".")), paste0(type, width)), collapse = "\n  ")
 
-    #----------------------------------------
-    # Write PSPP syntax
-
-    #......
-    # PSPP syntax file
+    #...................
+    ### Write PSPP syntax ####
     code <- paste0(file, ".sps")
 
     cat(paste0("GET DATA\n",
@@ -433,10 +413,9 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
                "  /VARIABLES=\n"),  file = code)
     cat(paste0("  ", variables, " ."), file = code, append = TRUE)
 
-    #----------------------------------------
-    # Variable attributes
+    #...................
+    ### Variable attributes ####
 
-    #......
     # Attributes from object var.attr
     if (isTRUE(!is.null(var.attr))) {
 
@@ -550,21 +529,21 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
     }
 
-    #----------------------------------------
-    # Save PSPP
+    #...................
+    ### Save PSPP ####
 
     cat("\nEXECUTE.\n", file = code, append = TRUE)
 
     cat(paste0( "\nSAVE OUTFILE='", getwd() , "/" , file , ".sav'.\nEXECUTE."),
         file = code, append = TRUE)
 
-    #----------------------------------------
-    # Run PSPP
+    #...................
+    ### Run PSPP ####
 
     system(paste0("\"", pspp.path, "/bin/pspp.exe\" ", code))
 
-    #----------------------------------------
-    # Remove sps and csv file
+    #...................
+    ### Remove sps and csv file ####
 
     if (!isTRUE(write.sps)) { unlink(paste0(file, ".sps")) }
 

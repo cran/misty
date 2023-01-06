@@ -286,7 +286,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
     #......
     # Check input 'print'
-    if (isTRUE(!all(print %in%  c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "skew", "range", "iqr", "kurt")))) {
+    if (isTRUE(!all(print %in% c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "skew", "range", "iqr", "kurt")))) {
 
       stop("Character strings in the argument 'print' do not all match with \"all\", \"n\", \"nNA\", \"pNA\", \"m\", \"se.m\", \"var\", \"sd\", \"min\", \"p25\", \"med\", \"p75\", \"max\", \"range\", \"iqr\", \"skew\", or \"kurt\".",
            call. = FALSE)

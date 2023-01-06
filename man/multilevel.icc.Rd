@@ -10,26 +10,30 @@ multilevel.icc(x, cluster, type = 1, method = c("aov", "lme4", "nlme"), REML = T
 \arguments{
 \item{x}{a vector, matrix or data frame.}
 
-\item{cluster}{a vector representing the nested grouping structure (i.e., group or
-cluster variable).}
+\item{cluster}{a vector representing the nested grouping structure (i.e.,
+group or cluster variable).}
 
-\item{type}{numeric value indicating the type of intraclass correlation coefficient, i.e.,
-\code{type = 1} for ICC(1) and \code{type = 2} for ICC(2).}
+\item{type}{numeric value indicating the type of intraclass correlation
+coefficient, i.e., \code{type = 1} for ICC(1) and \code{type = 2}
+for ICC(2).}
 
-\item{method}{a character string indicating the method used to estimate intraclass correlation coefficients, i.e.,
-\code{method = "aov"} ICC estimated using the \code{aov} function,
-\code{method = "lme4"} (default) ICC estimated using the \code{lmer} function in the \pkg{lme4} package,
-\code{method = "nlme"} ICC estimated using the \code{lme} function in the \pkg{nlme} package.
-Note that if the lme4 package is not installed, method = "aov" will be used.}
+\item{method}{a character string indicating the method used to estimate
+intraclass correlation coefficients, i.e., \code{method = "aov"}
+ICC estimated using the \code{aov} function, \code{method = "lme4"}
+(default) ICC estimated using the \code{lmer} function in the
+\pkg{lme4} package, \code{method = "nlme"} ICC estimated using
+the \code{lme} function in the \pkg{nlme} package. Note that
+if the lme4 package is not installed, method = "aov" will be used.}
 
-\item{REML}{logical: if \code{TRUE} (default), restricted maximum likelihood is used to estimate the null model
-when using the \code{lmer} function in the \pkg{lme4} package or the \code{lme} function in the
-\pkg{nlme} package.}
+\item{REML}{logical: if \code{TRUE} (default), restricted maximum likelihood
+is used to estimate the null model when using the \code{lmer}
+function in the \pkg{lme4} package or the \code{lme} function
+in the \pkg{nlme} package.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.
-Note that \code{as.na()} function is only applied to \code{x} but not to
-\code{cluster}.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis. Note that \code{as.na()} function is only applied
+to \code{x} but not to \code{cluster}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
@@ -37,8 +41,9 @@ Note that \code{as.na()} function is only applied to \code{x} but not to
 Returns a numeric vector with intraclass correlation coefficient(s).
 }
 \description{
-This function computes the intraclass correlation coefficient ICC(1), i.e., proportion of the total variance explained
-by the grouping structure, and ICC(2), i.e., reliability of aggregated variables.
+This function computes the intraclass correlation coefficient ICC(1), i.e.,
+proportion of the total variance explained by the grouping structure, and ICC(2),
+i.e., reliability of aggregated variables.
 }
 \details{
 Note that this function is restricted to two-level models.
@@ -67,14 +72,14 @@ multilevel.icc(dat$x1, cluster = dat$cluster, method = "lme4")
 multilevel.icc(dat[, c("x1", "x2", "x3")], cluster = dat$cluster)
 }
 \references{
-Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis: Techniques and applications} (3rd. ed.).
-Routledge.
+Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis:
+Techniques and applications} (3rd. ed.). Routledge.
 
-Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introduction to basic and advanced multilevel
-modeling} (2nd ed.). Sage Publishers.
+Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introduction
+to basic and advanced multilevel modeling} (2nd ed.). Sage Publishers.
 }
 \seealso{
-\code{\link{multilevel.cor}}, \code{\link{multilevel.descript}}
+\code{\link{multilevel.descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

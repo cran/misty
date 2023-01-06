@@ -60,7 +60,8 @@ not to \code{group} or \code{split}.}
 \item{formula}{a formula of the form \code{y ~ group} for one outcome variable or
 \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where
 \code{y} is a numeric variable with 0 and 1 values and \code{group} a numeric
-variable, character variable or factor with two values of factor levels given the corresponding group.}
+variable, character variable or factor with two values or factor levels giving
+the corresponding group.}
 
 \item{data}{a matrix or data frame containing the variables in the formula \code{formula}.}
 
@@ -69,7 +70,7 @@ variable, character variable or factor with two values of factor levels given th
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
+function call (\code{call}),type of analysis \code{type}, list with the input specified in \code{x},
 \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
 and result table (\code{result}).
 }
@@ -157,7 +158,7 @@ ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1,
 group1 <- c(0, 1, 1, 0, 0, 1, 0, 1)
 group2 <- c(1, 1, 1, 0, 0)
 
-# Two-Sided 95\% CI for the mean difference between group1 and group2
+# Two-Sided 95\% CI for the mean difference between group1 amd group2
 # Newcombes Hybrid Score interval
 ci.prop.diff(group1, group2)
 
@@ -201,8 +202,9 @@ Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psycholog
 John Wiley & Sons.
 }
 \seealso{
-\code{\link{ci.prop}}, \code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
-\code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{descript}}
+\code{\link{ci.prop}}, \code{\link{ci.mean}}, \code{\link{ci.mean.diff}},
+\code{\link{ci.median}}, \code{\link{ci.var}}, \code{\link{ci.sd}},
+\code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

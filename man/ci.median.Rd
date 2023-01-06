@@ -9,48 +9,55 @@ ci.median(x, alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
           digits = 2, as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector, matrix or data frame with numeric variables, i.e.,
-factors and character variables are excluded from \code{x} before conducting the analysis.}
+\item{x}{a numeric vector, matrix or data frame with numeric variables,
+i.e., factors and character variables are excluded from \code{x}
+before conducting the analysis.}
 
-\item{alternative}{a character string specifying the alternative hypothesis, must be one of
-\code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
+\item{alternative}{a character string specifying the alternative hypothesis, must
+be one of \code{"two.sided"} (default), \code{"greater"} or
+\code{"less"}.}
 
-\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level
+of the interval.}
 
 \item{group}{a numeric vector, character vector or factor as grouping variable.}
 
 \item{split}{a numeric vector, character vector or factor as split variable.}
 
-\item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.}
+\item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables
+when specifying \code{group}.}
 
-\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-(i.e., listwise deletion) when specifying more than one outcome variable.}
+\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before
+conducting the analysis (i.e., listwise deletion) when specifying
+more than one outcome variable.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used.}
+\item{digits}{an integer value indicating the number of decimal places to be
+used.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.
-Note that \code{as.na()} function is only applied to \code{x}, but
-not to \code{group} or \code{split}.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis. Note that \code{as.na()} function is only applied
+to \code{x}, but not to \code{group} or \code{split}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
-\code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
-and result table (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, list with
+the input specified in \code{x}, code{group}, and \code{split} (\code{data}),
+specification of function arguments (\code{args}), and result table (\code{result}).
 }
 \description{
-This function computes a confidence interval for the median for one or more variables, optionally by
-a grouping and/or split variable.
+This function computes a confidence interval for the median for one or more variables,
+optionally by a grouping and/or split variable.
 }
 \details{
-The confidence interval for the median is computed by using the Binomial distribution to determine
-which values in the sample are the lower and the upper confidence limits. Note that at least six
-valid observations are needed to compute the confidence interval for the median.
+The confidence interval for the median is computed by using the Binomial distribution
+to determine which values in the sample are the lower and the upper confidence limits.
+Note that at least six valid observations are needed to compute the confidence interval
+for the median.
 }
 \examples{
 dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
@@ -100,12 +107,13 @@ ci.median(dat[, c("x1", "x2", "x3")], split = dat$group1)
 ci.median(dat[, c("x1", "x2", "x3")], group = dat$group1, split = dat$group2)
 }
 \references{
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology -
+Using R and SPSS}. John Wiley & Sons.
 }
 \seealso{
-\code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.prop}}, \code{\link{ci.prop.diff}},
-\code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{descript}}
+\code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.prop}},
+\code{\link{ci.prop.diff}}, \code{\link{ci.var}}, \code{\link{ci.sd}},
+\code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

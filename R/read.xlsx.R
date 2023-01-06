@@ -61,7 +61,7 @@
 #' Hadley Wickham and Jennifer Bryan
 #'
 #' @seealso
-#' \code{\link{write.xlxs}}, \code{\link{read.sav}}, \code{\link{read.mplus}}
+#' \code{\link{write.xlsx}}, \code{\link{read.sav}}, \code{\link{read.mplus}}
 #'
 #' @return
 #' Returns a data frame or tibble.

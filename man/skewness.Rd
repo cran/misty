@@ -10,7 +10,8 @@ skewness(x, as.na = NULL, check = TRUE)
 \item{x}{a numeric vector.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
@@ -21,9 +22,9 @@ Returns the estimated skewness of \code{x}.
 This function computes the skewness.
 }
 \details{
-The same method for estimating skewness is used in SAS and SPSS. Missing values (\code{NA})
-are stripped before the computation. Note that at least 3 observations are needed to compute
-skewness.
+The same method for estimating skewness is used in SAS and SPSS. Missing values
+(\code{NA}) are stripped before the computation. Note that at least 3 observations
+are needed to compute skewness.
 }
 \examples{
 # Set seed of the random number generation
@@ -35,8 +36,8 @@ x <- rnorm(100)
 skewness(x)
 }
 \references{
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-New York: John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. New York: John Wiley & Sons.
 }
 \seealso{
 \code{\link{kurtosis}}

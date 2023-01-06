@@ -93,7 +93,7 @@
 #'
 #' \dontrun{
 #' Write Results into a Excel file
-#' crosstab(dat[, c("x1", "x2")], print = "all", write = "Crosstab.xlsx)
+#' crosstab(dat[, c("x1", "x2")], print = "all", write = "Crosstab.xlsx")
 #'
 #' result <- crosstab(dat[, c("x1", "x2")], print = "all", output = FALSE)
 #' write.result(result, "Crosstab.xlsx")

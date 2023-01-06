@@ -11,49 +11,57 @@ descript(x,
         digits = 2, as.na = NULL, write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector, matrix or data frame with numeric variables, i.e.,
-factors and character variables are excluded from \code{x} before conducting the analysis.}
+\item{x}{a numeric vector, matrix or data frame with numeric variables,
+i.e., factors and character variables are excluded from \code{x}
+before conducting the analysis.}
 
-\item{print}{a character vector indicating which statistical measures to be printed on the console,
-i.e. \code{n} (number of observations), \code{nNA} (number of missing values),
-\code{pNA} (percentage of missing values), \code{m} (arithmetic mean),
-\code{se.m} (standard error of the arithmetic mean), \code{var} (variance),
-\code{sd} (standard deviation), \code{med} (median),\code{min} (minimum),
-\code{p25} (25th percentile, first quartile), \code{p75} (75th percentile, third quartile),
-\code{max} (maximum),  \code{range} (range), \code{iqr} (interquartile range),
-\code{skew} (skewness), and \code{kurt} (excess kurtosis).
-The default setting is \code{print = ("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")}.}
+\item{print}{a character vector indicating which statistical measures to be
+printed on the console, i.e. \code{n} (number of observations),
+\code{nNA} (number of missing values), \code{pNA} (percentage of
+missing values), \code{m} (arithmetic mean), \code{se.m} (standard
+error of the arithmetic mean), \code{var} (variance), \code{sd}
+(standard deviation), \code{med} (median),\code{min} (minimum),
+\code{p25} (25th percentile, first quartile), \code{p75} (75th
+percentile, third quartile), \code{max} (maximum),  \code{range}
+(range), \code{iqr} (interquartile range), \code{skew} (skewness),
+and \code{kurt} (excess kurtosis). The default setting is
+\code{print = ("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")}.}
 
 \item{group}{a numeric vector, character vector or factor as grouping variable.}
 
 \item{split}{a numeric vector, character vector or factor as split variable.}
 
-\item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.}
+\item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when
+specifying \code{group}.}
 
-\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-(i.e., listwise deletion).}
+\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before
+conducting the analysis (i.e., listwise deletion).}
 
-\item{digits}{an integer value indicating the number of decimal places to be used.}
+\item{digits}{an integer value indicating the number of decimal places to be
+used.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.
-Note that \code{as.na()} function is only applied to \code{x}, but
-not to \code{group} or \code{split}.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis. Note that \code{as.na()} function is only applied
+to \code{x}, but not to \code{group} or \code{split}.}
 
-\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string for writing the results into a Excel file
+naming a file with or without file extension '.xlsx', e.g.,
+\code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-\code{x} (\code{data}), specification of function arguments (\code{args}), and
-list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, matrix or
+data frame specified in \code{x} (\code{data}), specification of function arguments
+(\code{args}), and list with results (\code{result}).
 }
 \description{
-This function computes summary statistics for one or more variables, optionally by a grouping and/or split variable.
+This function computes summary statistics for one or more variables, optionally
+by a grouping and/or split variable.
 }
 \examples{
 dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
@@ -102,16 +110,18 @@ descript(dat[, c("x1", "x2", "x3")], group = dat$group1, split = dat$group2)
 descript(dat[, c("x1", "x2", "x3")], write = "Descript.xlsx")
 
 result <- descript(dat[, c("x1", "x2", "x3")], output = FALSE)
-write.result(result, "Descript.xlsx") }
+write.result(result, "Descript.xlsx")
+}
 }
 \references{
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. John Wiley & Sons.
 }
 \seealso{
-\code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}}, \code{\link{ci.prop}},
-\code{\link{ci.prop.diff}}, \code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{freq}},
-\code{\link{crosstab}},  \code{\link{multilevel.descript}}, \code{\link{na.descript}}.
+\code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
+\code{\link{ci.prop}}, \code{\link{ci.prop.diff}}, \code{\link{ci.var}},
+\code{\link{ci.sd}}, \code{\link{freq}}, \code{\link{crosstab}},
+\code{\link{multilevel.descript}}, \code{\link{na.descript}}.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

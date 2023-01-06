@@ -11,37 +11,45 @@ crosstab(x, print = c("no", "all", "row", "col", "total"), freq = TRUE,
 \arguments{
 \item{x}{a matrix or data frame with two or three columns.}
 
-\item{print}{a character string or character vector indicating which percentage(s) to be printed on the
-console, i.e., no percentages (\code{"no"}) (default), all percentages (\code{"all"}),
-row-wise percentages (\code{"row"}), column-wise percentages (\code{"col"}), and
-total percentages (\code{"total"}).}
+\item{print}{a character string or character vector indicating which
+percentage(s) to be printed on the console, i.e., no percentages
+(\code{"no"}) (default), all percentages (\code{"all"}),
+row-wise percentages (\code{"row"}), column-wise percentages
+(\code{"col"}), and total percentages (\code{"total"}).}
 
-\item{freq}{logical: if \code{TRUE}, absolute frequencies will be included in the cross tabulation.}
+\item{freq}{logical: if \code{TRUE}, absolute frequencies will be included
+in the cross tabulation.}
 
-\item{split}{logical: if \code{TRUE}, output table is split in absolute frequencies and percentage(s).}
+\item{split}{logical: if \code{TRUE}, output table is split in absolute
+frequencies and percentage(s).}
 
-\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-(i.e., listwise deletion).}
+\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before
+conducting the analysis (i.e., listwise deletion).}
 
-\item{digits}{an integer indicating the number of decimal places digits to be used for displaying percentages.}
+\item{digits}{an integer indicating the number of decimal places digits
+to be used for displaying percentages.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
 
-\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string for writing the results into a Excel file
+naming a file with or without file extension '.xlsx', e.g.,
+\code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is printed on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), matrix or data frame specified in \code{x} (\code{data}), specification
-of function arguments (\code{args}), and list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), matrix or data frame specified in \code{x}
+(\code{data}), specification of function arguments (\code{args}), and list with
+results (\code{result}).
 }
 \description{
-This function creates a two-way and three-way cross tabulation with absolute frequencies and row-wise, column-wise
-and total percentages.
+This function creates a two-way and three-way cross tabulation with absolute
+frequencies and row-wise, column-wise and total percentages.
 }
 \examples{
 dat <- data.frame(x1 = c(1, 2, 2, 1, 1, 2, 2, 1, 1, 2),
@@ -91,15 +99,16 @@ crosstab(dat[, c("x1", "x2", "x3")], print = "all")
 crosstab(dat[, c("x1", "x2", "x3")], print = "all", split = TRUE)
 
 \dontrun{
-# Write Results into a Excel file
-crosstab(dat[, c("x1", "x2")], print = "all", write = "Crosstab.xlsx)
+Write Results into a Excel file
+crosstab(dat[, c("x1", "x2")], print = "all", write = "Crosstab.xlsx")
 
 result <- crosstab(dat[, c("x1", "x2")], print = "all", output = FALSE)
-write.result(result, "Crosstab.xlsx") }
+write.result(result, "Crosstab.xlsx")
+}
 }
 \references{
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. John Wiley & Sons.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

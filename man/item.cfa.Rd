@@ -146,7 +146,9 @@ conducting the analysis. Note that \code{as.na()}
 function is only applied to \code{x} but not to
 \code{cluster}.}
 
-\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string for writing the results into a Excel
+file naming a file with or without file extension '.xlsx',
+e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -346,7 +348,6 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 }
 \examples{
 \dontrun{
-
 Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
@@ -442,7 +443,6 @@ lavaan::summary(mod$mod.fit, standardized = TRUE, fit.measures = TRUE)
 item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.xlsx")
 
 result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
-
 write.result(result, "CFA.xlsx")
 }
 }

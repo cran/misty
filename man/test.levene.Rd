@@ -4,81 +4,128 @@
 \alias{test.levene}
 \title{Levene's Test for Homogeneity of Variance}
 \usage{
-test.levene(formula, data, method = c("median", "mean"),
-            conf.level = 0.95, hypo = TRUE, descript = TRUE,
-            plot = TRUE, violin.alpha = 0.3, violin.trim = FALSE,
-            box = TRUE, box.alpha = 0.2, box.width = 0.2,
-            jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.2,
-            gray = FALSE, start = 0.9, end = 0.4, color = NULL,
-            xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
-            title = "", subtitle = "",  digits = 2, p.digits = 3, as.na = NULL,
+test.levene(formula, data, method = c("median", "mean"), conf.level = 0.95,
+            hypo = TRUE, descript = TRUE, plot = TRUE, violin.alpha = 0.3,
+            violin.trim = FALSE, box = TRUE, box.alpha = 0.2, box.width = 0.2,
+            jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
+            jitter.height = 0, jitter.alpha = 0.2, gray = FALSE,
+            start = 0.9, end = 0.4, color = NULL, xlab = NULL, ylab = NULL,
+            ylim = NULL, breaks = ggplot2::waiver(), title = "",
+            subtitle = "", digits = 2, p.digits = 3, as.na = NULL,
             check = TRUE, output = TRUE)
 }
 \arguments{
-\item{formula}{a formula of the form \code{y ~ group} where \code{y} is a numeric variable giving the
-data values and \code{group} a numeric variable, character variable or factor with two or more than two values or factor levels giving the corresponding groups.}
+\item{formula}{a formula of the form \code{y ~ group} where \code{y} is
+a numeric variable giving the data values and \code{group}
+a numeric variable, character variable or factor with two
+or more than two values or factor levels giving the
+corresponding groups.}
 
-\item{data}{a matrix or data frame containing the variables in the formula \code{formula}.}
+\item{data}{a matrix or data frame containing the variables in the
+formula \code{formula}.}
 
-\item{method}{a character string specifying the method to compute the center of each group, i.e.
-\code{method = "median"} (default) to compute the Levene's test based on the median
-(aka Brown-Forsythe test) or \code{method = "mean"} to compute the Levene's test
-based on the arithmetic mean.}
+\item{method}{a character string specifying the method to compute the
+center of each group, i.e. \code{method = "median"} (default)
+to compute the Levene's test based on the median (aka
+Brown-Forsythe test) or \code{method = "mean"} to compute
+the Levene's test based on the arithmetic mean.}
 
-\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence
+level of the interval.}
 
-\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis are shown on the console.}
+\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis
+are shown on the console.}
 
-\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown on the console.}
+\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown
+on the console.}
 
-\item{plot}{logical: if \code{TRUE}, a plot showing violin plots with boxplots is drawn.}
+\item{plot}{logical: if \code{TRUE}, a plot showing violin plots with
+boxplots is drawn.}
+
 \item{violin.alpha}{a numeric value indicating the opacity of the violins.}
-\item{violin.trim}{logical: if \code{TRUE}, the tails of the violins to the range of the data is trimmed.}
+
+\item{violin.trim}{logical: if \code{TRUE}, the tails of the violins to the
+range of the data is trimmed.}
+
 \item{box}{logical: if \code{TRUE} (default), boxplots are drawn.}
+
 \item{box.alpha}{a numeric value indicating the opacity of the boxplots.}
+
 \item{box.width}{a numeric value indicating the width of the boxplots.}
-\item{jitter}{logical: if \code{TRUE} (default), jittered data points are drawn.}
-\item{jitter.size}{a numeric value indicating the \code{size} aesthetic for the jittered data points.}
-\item{jitter.width}{a numeric value indicating the amount of vertical and horizontal jitter.}
-\item{jitter.alpha}{a numeric value indicating the opacity of the jittered data points.}
+
+\item{jitter}{logical: if \code{TRUE} (default), jittered data points
+are drawn.}
+
+\item{jitter.size}{a numeric value indicating the \code{size} aesthetic
+for the jittered data points.}
+
+\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
+
+\item{jitter.height}{a numeric value indicating the amount of vertical jitter.}
+
+\item{jitter.alpha}{a numeric value indicating the opacity of the jittered
+data points.}
+
 \item{gray}{logical: if \code{TRUE}, the plot is drawn in gray scale.}
-\item{start}{a numeric value between 0 and 1, graphical parameter to specify the gray value at the low end of the palette.}
-\item{end}{a numeric value between 0 and 1, graphical parameter to specify the gray value at the high end of the palette.}
-\item{color}{a character vector, indicating the color of the violins and the boxes. By default, default ggplot2 colors are used.}
+
+\item{start}{a numeric value between 0 and 1, graphical parameter to
+specify the gray value at the low end of the palette.}
+
+\item{end}{a numeric value between 0 and 1, graphical parameter to
+specify the gray value at the high end of the palette.}
+
+\item{color}{a character vector, indicating the color of the violins
+and the boxes. By default, default ggplot2 colors are
+used.}
+
 \item{xlab}{a character string specifying the labels for the x-axis.}
+
 \item{ylab}{a character string specifying the labels for the y-axis.}
-\item{ylim}{a numeric vector of length two specifying limits of the limits of the y-axis.}
-\item{breaks}{a numeric vector specifying the points at which tick-marks are drawn at the y-axis.}
-\item{title}{a character string specifying the text for the title for the plot.}
-\item{subtitle}{a character string specifying the text for the subtitlefor the plot.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used for displaying results.}
+\item{ylim}{a numeric vector of length two specifying limits of the
+limits of the y-axis.}
 
-\item{p.digits}{an integer value indicating the number of decimal places to be used for displaying the
-\emph{p}-value.}
+\item{breaks}{a numeric vector specifying the points at which tick-marks
+are drawn at the y-axis.}
+
+\item{title}{a character string specifying the text for the title for
+the plot.}
+
+\item{subtitle}{a character string specifying the text for the subtitle
+for the plot.}
+
+\item{digits}{an integer value indicating the number of decimal places
+to be used for displaying results.}
+
+\item{p.digits}{an integer value indicating the number of decimal places
+to be used for displaying the \emph{p}-value.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before
+conducting the analysis.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, formula (\code{formula}), data frame with
-the outcome and grouping variable, (\code{data}), specification of function arguments (\code{args}),
-and a list with descriptive statistics including confidence interval and an object of class
-\code{"anova"} (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, formula
+(\code{formula}), data frame with the outcome and grouping variable, (\code{data}),
+data used to plot the results (\code{plot.data}), specification of function
+arguments (\code{args}), and a list with descriptive statistics including
+confidence interval and an object of class \code{"anova"} (\code{result}).
 }
 \description{
-This function performs Levene's test for homogeneity of variance across two or more independent groups.
+This function performs Levene's test for homogeneity of variance across two
+or more independent groups.
 }
 \details{
-Levene's test is equivalent to a one-way analysis of variance (ANOVA) with the absolute deviations
-of observations from the mean of each group as dependent variable (\code{center = "mean"}). Brown
-and Forsythe (1974) modified the Levene's test by using the absolute deviations of observations
-from the median (\code{center = "median"}). By default, the Levene's test uses the absolute
+Levene's test is equivalent to a one-way analysis of variance (ANOVA) with the
+absolute deviations of observations from the mean of each group as dependent
+variable (\code{center = "mean"}). Brown and Forsythe (1974) modified the
+Levene's test by using the absolute deviations of observations from the median
+(\code{center = "median"}). By default, the Levene's test uses the absolute
 deviations of observations from the median.
 }
 \examples{
@@ -93,18 +140,19 @@ test.levene(y ~ group, data = dat, method = "mean")
 
 # Levene's test based on the median with 99\% confidence interval
 test.levene(y ~ group, data = dat, conf.level = 0.99)
+
 \dontrun{
-# Levene's test based on the median with 95% confidence interval
+# Levene's test based on the median with 95\% confidence interval
 # plot results
 test.levene(y ~ group, data = dat, plot = TRUE)
 
-# Load ggplot2 package
+#' # Load ggplot2 package
 library(ggplot2)
 
 # Save plot, ggsave() from the ggplot2 package
 ggsave("Levene-test.png", dpi = 600, width = 5, height = 6)
 
-# Levene's test based on the median with 95% confidence interval
+# Levene's test based on the median with 95\% confidence interval
 # extract plot
 p <- test.levene(y ~ group, data = dat, output = FALSE)$plot
 p
@@ -121,11 +169,12 @@ ggplot(plotdat, aes(group, y, fill = group)) +
 }
 }
 \references{
-Brown, M. B., & Forsythe, A. B. (1974). Robust tests for the equality of variances. \emph{Journal of the American
-Statistical Association, 69}, 364-367.
+Brown, M. B., & Forsythe, A. B. (1974). Robust tests for the equality of
+variances. \emph{Journal of the American  Statistical Association, 69},
+364-367.
 
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. John Wiley & Sons.
 }
 \seealso{
 \code{\link{aov.b}}, \code{\link{test.t}}, \code{\link{test.welch}}

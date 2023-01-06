@@ -2,107 +2,109 @@
 #'
 #' This function performs one-sample, two-sample, and paired-sample t-tests and
 #' provides descriptive statistics, effect size measure, and a plot showing error
-#' bars for confidence intervals with jittered data points.
+#' bars for (difference-adjusted) confidence intervals with jittered data points.
 #'
-#' @param x            a numeric vector of data values.
-#' @param y            a numeric vector of data values.
-#' @param mu           a numeric value indicating the population mean under the
-#'                     null hypothesis. Note that the argument \code{mu} is only
-#'                     used when computing a one sample t-test.
-#' @param paired       logical: if \code{TRUE}, paired-samples t-test is computed.
-#' @param alternative  a character string specifying the alternative hypothesis,
-#'                     must be one of \code{"two.sided"} (default),
-#'                     \code{"greater"} or \code{"less"}.
-#' @param hypo         logical: if \code{TRUE}, null and alternative hypothesis
-#'                     are shown on the console.
-#' @param descript     logical: if \code{TRUE}, descriptive statistics are shown
-#'                     on the console.
-#' @param effsize      logical: if \code{TRUE}, effect size measure Cohen's d is
-#'                     shown on the console, see \code{\link{cohens.d}} function.
-#' @param weighted     logical: if \code{TRUE} (default), the weighted pooled
-#'                     standard deviation is used
-#'                     to compute Cohen's d for a two-sample design (i.e.,
-#'                     \code{paired = FALSE}), while standard deviation of the
-#'                     difference scores is used to compute Cohen's d for a
-#'                     paired-sample design (i.e., \code{paired = TRUE}).
-#' @param cor          logical: if \code{TRUE} (default), \code{paired = TRUE},
-#'                     and \code{weighted = FALSE}, Cohen's d for a paired-sample
-#'                     design while controlling for the correlation between the
-#'                     two sets of measurement is computed. Note that this
-#'                     argument is only used in
-#'                     a paired-sample design (i.e., \code{paired = TRUE}) when
-#'                     specifying \code{weighted = FALSE}.
-#' @param ref          character string \code{"x"} or \code{"y"} for specifying
-#'                     the reference reference group when using the default
-#'                     \code{test.t()} function or a numeric value or character
-#'                     string indicating the reference group in a two-sample
-#'                     design when using the formula \code{test.t()} function.
-#'                     The standard deviation of the reference variable or
-#'                     reference group is used to standardized the mean difference
-#'                     to compute Cohen's d. Note that this argument is only used
-#'                     in a two-sample design (i.e., \code{paired = FALSE}).
-#' @param correct      logical: if \code{TRUE}, correction factor to remove
-#'                     positive bias in small samples is used.
-#' @param conf.level   a numeric value between 0 and 1 indicating the confidence
-#'                     level of the interval.
-#' @param plot         logical: if \code{TRUE}, a plot showing error bars for
-#'                     confidence intervals is drawn.
-#' @param point.size   a numeric value indicating the \code{size} aesthetic for
-#'                     the point representing the mean value.
-#' @param error.width  a numeric value indicating the horizontal bar width of
-#'                     the error bar.
-#' @param xlab         a character string specifying the labels for the x-axis.
-#' @param ylab         a character string specifying the labels for the y-axis.
-#' @param ylim         a numeric vector of length two specifying limits of the
-#'                     limits of the y-axis.
-#' @param breaks       a numeric vector specifying the points at which tick-marks
-#'                     are drawn at the y-axis.
-#' @param line         logical: if \code{TRUE} (default), a horizontal line
-#'                     is drawn at \code{mu} for the one-sample t-test or at
-#'                     0 for the paired-sample t-test.
-#' @param line.type    an integer value or character string specifying the line
-#'                     type for the line representing the population mean under
-#'                     the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed,
-#'                     3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash.
-#' @param line.size    a numeric value indicating the \code{size} aesthetic
-#'                     for the line representing the population mean under the
-#'                     null hypothesis.
-#' @param jitter       logical: if \code{TRUE} (default), jittered data points
-#'                     are drawn.
-#' @param jitter.size  a numeric value indicating the \code{size} aesthetic
-#'                     for the jittered data points.
-#' @param jitter.width a numeric value indicating the amount of vertical and
-#'                     horizontal jitter.
-#' @param jitter.alpha a numeric value indicating the opacity of the jittered
-#'                     data points.
-#' @param title        a character string specifying the text for the title for
-#'                     the plot.
-#' @param subtile      a character string specifying the text for the subtitle for
-#'                     the plot.
-#' @param digits       an integer value indicating the number of decimal places
-#'                     to be used for displaying descriptive statistics and
-#'                     confidence interval.
-#' @param p.digits     an integer value indicating the number of decimal places
-#'                     to be used for displaying the \emph{p}-value.
-#' @param as.na        a numeric vector indicating user-defined missing values,
-#'                     i.e. these values are converted to \code{NA} before
-#'                     conducting the analysis.
-#' @param check        logical: if \code{TRUE}, argument specification is checked.
-#' @param output       logical: if \code{TRUE}, output is shown on the console.
-#' @param formula      in case of two sample t-test (i.e., \code{paired = FALSE}),
-#'                     a formula of the form \code{y ~ group} where \code{group}
-#'                     is a numeric variable, character variable or factor with
-#'                     two values or factor levels giving the corresponding
-#'                     groups.
-#' @param data         a matrix or data frame containing the variables in the
-#'                     formula \code{formula}.
-#' @param ...          further arguments to be passed to or from methods.
+#' @param x             a numeric vector of data values.
+#' @param y             a numeric vector of data values.
+#' @param mu            a numeric value indicating the population mean under the
+#'                      null hypothesis. Note that the argument \code{mu} is only
+#'                      used when computing a one sample t-test.
+#' @param paired        logical: if \code{TRUE}, paired-samples t-test is computed.
+#' @param alternative   a character string specifying the alternative hypothesis,
+#'                      must be one of \code{"two.sided"} (default),
+#'                      \code{"greater"} or \code{"less"}.
+#' @param hypo          logical: if \code{TRUE}, null and alternative hypothesis
+#'                      are shown on the console.
+#' @param descript      logical: if \code{TRUE}, descriptive statistics are shown
+#'                      on the console.
+#' @param effsize       logical: if \code{TRUE}, effect size measure Cohen's d is
+#'                      shown on the console, see \code{\link{cohens.d}} function.
+#' @param weighted      logical: if \code{TRUE} (default), the weighted pooled
+#'                      standard deviation is used
+#'                      to compute Cohen's d for a two-sample design (i.e.,
+#'                      \code{paired = FALSE}), while standard deviation of the
+#'                      difference scores is used to compute Cohen's d for a
+#'                      paired-sample design (i.e., \code{paired = TRUE}).
+#' @param cor           logical: if \code{TRUE} (default), \code{paired = TRUE},
+#'                      and \code{weighted = FALSE}, Cohen's d for a paired-sample
+#'                      design while controlling for the correlation between the
+#'                      two sets of measurement is computed. Note that this
+#'                      argument is only used in
+#'                      a paired-sample design (i.e., \code{paired = TRUE}) when
+#'                      specifying \code{weighted = FALSE}.
+#' @param ref           character string \code{"x"} or \code{"y"} for specifying
+#'                      the reference reference group when using the default
+#'                      \code{test.t()} function or a numeric value or character
+#'                      string indicating the reference group in a two-sample
+#'                      design when using the formula \code{test.t()} function.
+#'                      The standard deviation of the reference variable or
+#'                      reference group is used to standardized the mean difference
+#'                      to compute Cohen's d. Note that this argument is only used
+#'                      in a two-sample design (i.e., \code{paired = FALSE}).
+#' @param correct       logical: if \code{TRUE}, correction factor to remove
+#'                      positive bias in small samples is used.
+#' @param conf.level    a numeric value between 0 and 1 indicating the confidence
+#'                      level of the interval.
+#' @param plot          logical: if \code{TRUE}, a plot showing error bars for
+#'                      confidence intervals is drawn.
+#' @param point.size    a numeric value indicating the \code{size} aesthetic for
+#'                      the point representing the mean value.
+#' @param adjust        logical: if \code{TRUE} (default), difference-adjustment
+#'                      for the confidence intervals in a two-sample design is
+#'                      applied.
+#' @param error.width   a numeric value indicating the horizontal bar width of
+#'                      the error bar.
+#' @param xlab          a character string specifying the labels for the x-axis.
+#' @param ylab          a character string specifying the labels for the y-axis.
+#' @param ylim          a numeric vector of length two specifying limits of the
+#'                      limits of the y-axis.
+#' @param breaks        a numeric vector specifying the points at which tick-marks
+#'                      are drawn at the y-axis.
+#' @param line          logical: if \code{TRUE} (default), a horizontal line
+#'                      is drawn at \code{mu} for the one-sample t-test or at
+#'                      0 for the paired-sample t-test.
+#' @param line.type     an integer value or character string specifying the line
+#'                      type for the line representing the population mean under
+#'                      the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed,
+#'                      3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash.
+#' @param line.size     a numeric value indicating the \code{size} aesthetic
+#'                      for the line representing the population mean under the
+#'                      null hypothesis.
+#' @param jitter        logical: if \code{TRUE} (default), jittered data points
+#'                      are drawn.
+#' @param jitter.size   a numeric value indicating the \code{size} aesthetic
+#' @param jitter.width  a numeric value indicating the amount of horizontal jitter.
+#' @param jitter.height a numeric value indicating the amount of vertical jitter.
+#' @param jitter.alpha  a numeric value indicating the opacity of the jittered
+#'                      data points.
+#' @param title         a character string specifying the text for the title for
+#'                      the plot.
+#' @param subtitle      a character string specifying the text for the subtitle for
+#'                      the plot.
+#' @param digits        an integer value indicating the number of decimal places
+#'                      to be used for displaying descriptive statistics and
+#'                      confidence interval.
+#' @param p.digits      an integer value indicating the number of decimal places
+#'                      to be used for displaying the \emph{p}-value.
+#' @param as.na         a numeric vector indicating user-defined missing values,
+#'                      i.e. these values are converted to \code{NA} before
+#'                      conducting the analysis.
+#' @param check         logical: if \code{TRUE}, argument specification is checked.
+#' @param output        logical: if \code{TRUE}, output is shown on the console.
+#' @param formula       in case of two sample t-test (i.e., \code{paired = FALSE}),
+#'                      a formula of the form \code{y ~ group} where \code{group}
+#'                      is a numeric variable, character variable or factor with
+#'                      two values or factor levels giving the corresponding
+#'                      groups.
+#' @param data          a matrix or data frame containing the variables in the
+#'                      formula \code{formula}.
+#' @param ...           further arguments to be passed to or from methods.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{aov.b}}, \code{\link{test.welch}}, \code{\link{test.z}},
+#' \code{\link{aov.b}}, \code{\link{aov.w}}, \code{\link{test.welch}}, \code{\link{test.z}},
 #' \code{\link{test.levene}}, \code{\link{cohens.d}}, \code{\link{ci.mean.diff}},
 #' \code{\link{ci.mean}}
 #'
@@ -363,11 +365,12 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                            alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
                            hypo = TRUE, descript = TRUE, effsize = FALSE, weighted = TRUE,
                            cor = TRUE, ref = NULL, correct = FALSE,
-                           plot = FALSE, point.size = 4, error.width = 0.1,
+                           plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
                            xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
                            line = TRUE, line.type = 3, line.size = 0.8,
-                           jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.1,
-                           title = "",  subtitle = "Confidence Interval",
+                           jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
+                           jitter.height = 0, jitter.alpha = 0.1,
+                           title = "", subtitle = "Confidence Interval",
                            digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
                            output = TRUE, ...) {
 
@@ -514,6 +517,10 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
     if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'.", call. = FALSE) }
 
     #......
+    # Check input 'adjust'
+    if (isTRUE(!is.logical(adjust))) { stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE) }
+
+    #......
     # Check input 'line'
     if (isTRUE(!is.logical(line))) { stop("Please specify TRUE or FALSE for the argument 'line'.", call. = FALSE) }
 
@@ -554,8 +561,8 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
   if (isTRUE(is.null(y))) {
 
     # Confidence intervals
-    x.ci <- misty::ci.mean(x = x, alternative = alternative, conf.level = conf.level,
-                           check = FALSE, output = FALSE)$result
+    x.ci <- misty::ci.mean.diff(x = x, y = NULL, alternative = alternative,
+                                conf.level = conf.level, check = FALSE, output = FALSE)$result
 
     # Cohen's d
     d <- misty::cohens.d(x = x, y = NULL, paired = FALSE, mu = mu,
@@ -569,9 +576,9 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
     result <- data.frame(n = x.ci[["n"]], nNA = x.ci[["nNA"]],
                          m = x.ci[["m"]], sd = x.ci[["sd"]],
-                         m.diff = x.ci[["m"]] - mu,
+                         m.diff = x.ci[["m"]] - mu, se = t$stderr,
                          m.low = x.ci[["low"]], m.upp = x.ci[["upp"]],
-                         se = t$stderr, t = t$statistic, df = t$parameter,
+                         t = t$statistic, df = t$parameter,
                          pval = t$p.value, d = d$d, d.low = d$low, d.upp = d$upp,
                          row.names = NULL, check.names = FALSE)
 
@@ -659,7 +666,7 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
            ###
            # Add jittered points
-           if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, size = jitter.size) }
+           if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size) }
 
            p <-  p + ggplot2::geom_point(data = result, ggplot2::aes(x = 0L, m), size = point.size) +
                    ggplot2::geom_errorbar(data = result, ggplot2::aes(x = 0L, y = m, ymin = m.low, ymax = m.upp), width = error.width) +
@@ -686,7 +693,7 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
            if (isTRUE(subtitle == "Confidence Interval")) { subtitle <- paste0("Two-Sided ", round(conf.level * 100, digits = 2), "% Confidence Interval") }
 
            # Confidence interval
-           plot.ci <- misty::ci.mean(plotdat[, "y"], group = plotdat[, "group"],
+           plot.ci <- misty::ci.mean(plotdat[, "y"], group = plotdat[, "group"], adjust = adjust,
                                      conf.level = conf.level, output = FALSE)$result
 
            ###
@@ -757,17 +764,18 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                  data = list(x = x, y = y),
                  plot = p,
                  args = list(mu = mu, paired = paired, alternative = alternative,
-                             conf.level = conf.level,  hypo = hypo, descript = descript,
+                             conf.level = conf.level, hypo = hypo, descript = descript,
                              effsize = effsize, weighted = weighted, cor = cor, ref = ref,
                              correct = correct, conf.level = conf.level,
-                             plot = plot, point.size = point.size, error.width = error.width,
-                             xlab = xlab, ylab = ylab, ylim = ylim, breaks = breaks,
-                             line = line, line.type = line.type, line.size = line.size,
+                             plot = plot, point.size = point.size, adjust = adjust,
+                             error.width = error.width, xlab = xlab, ylab = ylab,
+                             ylim = ylim, breaks = breaks, line = line,
+                             line.type = line.type, line.size = line.size,
                              jitter = jitter, jitter.size = jitter.size, jitter.width = jitter.width,
-                             jitter.alpha = jitter.alpha,
-                             title = title, subtitle = subtitle,
-                             digits = digits, p.digits = p.digits, as.na = as.na,
-                             check = check, output = output),
+                             jitter.height = jitter.height, jitter.alpha = jitter.alpha,
+                             title = title, subtitle = subtitle, digits = digits,
+                             p.digits = p.digits, as.na = as.na, check = check,
+                             output = output),
                  result = result)
 
   class(object) <- "misty.object"
@@ -788,10 +796,11 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "greater"),
                            conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
                            weighted = TRUE, cor = TRUE, ref = NULL, correct = FALSE,
-                           plot = FALSE, point.size = 4, error.width = 0.1,
+                           plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
                            xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
-                           jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.1,
-                           title = "",  subtitle = "Confidence Interval",
+                           jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
+                           jitter.height = 0, jitter.alpha = 0.1,
+                           title = "", subtitle = "Confidence Interval",
                            digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
                            output = TRUE, ...) {
 
@@ -907,11 +916,12 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
   object <- test.t.default(x = data.split[[1L]], y = data.split[[2L]], alternative = alternative,
                            conf.level = conf.level, hypo = hypo, descript = descript, effsize = effsize,
                            weighted = weighted, cor = cor, ref = ref, correct = correct,
-                           plot = FALSE, point.size = point.size, error.width = error.width,
-                           xlab = xlab, ylab = ylab, ylim = ylim, breaks = breaks,
-                           jitter = jitter, jitter.size = jitter.size, jitter.width = jitter.width,
-                           jitter.alpha = jitter.alpha, title = title,  subtitle = subtitle,
-                           check = check, output = FALSE)
+                           plot = FALSE, point.size = point.size, adjust = adjust,
+                           error.width = error.width, xlab = xlab, ylab = ylab,
+                           ylim = ylim, breaks = breaks, jitter = jitter,
+                           jitter.size = jitter.size, jitter.width = jitter.width,
+                           jitter.height = jitter.height, jitter.alpha = jitter.alpha, title = title,
+                           subtitle = subtitle, check = check, output = FALSE)
 
   object$result[, "group"] <- names(data.split)
 
@@ -933,16 +943,18 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
                  type = "test.t",
                  sample = "two",
                  data = data[, var.formula],
+                 formula = formula,
                  plot = p,
-                 args = list(formula = formula, alternative = alternative,
+                 args = list(alternative = alternative,
                              conf.level = conf.level, hypo = hypo, descript = descript,
                              effsize = effsize, weighted = weighted, cor = cor,
-                             ref = ref.return, correct = correct,
-                             plot = plot, point.size = point.size, error.width = error.width,
-                             xlab = xlab, ylab = ylab, ylim = ylim, breaks = breaks,
-                             jitter = jitter, jitter.size = jitter.size, jitter.alpha = jitter.alpha,
-                             jitter.width = jitter.width, title = title, subtitle = subtitle,
-                             digits = digits, p.digits = p.digits,
+                             ref = ref.return, correct = correct, plot = plot,
+                             point.size = point.size, adjust = adjust,
+                             error.width = error.width, xlab = xlab, ylab = ylab,
+                             ylim = ylim, breaks = breaks, jitter = jitter,
+                             jitter.size = jitter.size, jitter.width = jitter.width,
+                             jitter.height = jitter.height, jitter.alpha = jitter.alpha,
+                             title = title, subtitle = subtitle, digits = digits, p.digits = p.digits,
                              as.na = as.na, check = check, output = output),
                  result = object$result)
 

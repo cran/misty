@@ -31,8 +31,8 @@ Array and matrix columns must have identical dimensions after the row count. Asi
 are no general checks that each column is of consistent data type.
 }
 \note{
-This function is a copy of the \code{rbind.fill()} function in the \pkg{plyr} package
-by Hadley Wickham.
+This function is a copy of the \code{rbind.fill()} function in the \pkg{plyr}
+package by Hadley Wickham.
 }
 \examples{
 adat <- data.frame(id = c(1, 2, 3),

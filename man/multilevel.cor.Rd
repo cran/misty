@@ -41,12 +41,13 @@ cases are removed listwise (i.e., \code{missing = "listwise"})
 when using \code{"MLR"}.}
 
 \item{missing}{a character string indicating how to deal with missing
-data, i.e., \code{"listwise"} for listwise deletion or \code{"fiml"}
-(default) for full information maximum likelihood (FIML) method.
-Note that FIML method is only available when \code{estimator = "ML"}.
-Note that it takes longer to estimate the model when using FIML
-and using FIML might cause issues in model convergence, these
-issues might be resolved by switching to listwise deletion.}
+data, i.e., \code{"listwise"} for listwise deletion or
+\code{"fiml"} (default) for full information maximum
+likelihood (FIML) method. Note that FIML method is only
+available when \code{estimator = "ML"}. Note that it takes
+longer to estimate the model when using FIML and using FIML
+might cause issues in model convergence, these issues might
+be resolved by switching to listwise deletion.}
 
 \item{sig}{logical: if \code{TRUE}, statistically significant
 correlation coefficients are shown in boldface on the
@@ -92,7 +93,9 @@ i.e. these values are converted to \code{NA} before
 conducting the analysis. Note that \code{as.na()} function
 is only applied to \code{x} but not to \code{cluster}.}
 
-\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string for writing the results into a Excel file
+naming a file with or without file extension '.xlsx', e.g.,
+\code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
@@ -158,7 +161,6 @@ Yves Rosseel (2012).
 }
 \examples{
 \dontrun{
-
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 

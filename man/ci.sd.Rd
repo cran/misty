@@ -117,7 +117,9 @@ Bonett, D. G. (2006). Approximate confidence interval for standard deviation of 
 \emph{Computational Statistics and Data Analysis, 50}, 775-782. https://doi.org/10.1016/j.csda.2004.10.003
 }
 \seealso{
-\code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.prop.diff}}, \code{\link{ci.var}}, \code{\link{descript}}
+\code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
+\code{\link{ci.prop}}, \code{\link{ci.prop.diff}}, \code{\link{ci.var}},
+\code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

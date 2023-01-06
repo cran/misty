@@ -4,7 +4,7 @@
 \alias{ci.mean}
 \title{Confidence Interval for the Arithmetic Mean}
 \usage{
-ci.mean(x, sigma = NULL, sigma2 = NULL,
+ci.mean(x, sigma = NULL, sigma2 = NULL, adjust = FALSE,
         alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
         group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
         digits = 2, as.na = NULL, check = TRUE, output = TRUE)
@@ -23,6 +23,9 @@ for the arithmetic mean with known variance. Note that either argument \code{sig
 or argument \code{sigma2} is specified and it is only possible to specify one value for the
 argument \code{sigma2} even though multiple variables are specified in \code{x}.}
 
+\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment for the
+confidence intervals is applied.}
+
 \item{alternative}{a character string specifying the alternative hypothesis, must be one of
 \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
 
@@ -33,7 +36,7 @@ variable can only be used when computing confidence intervals with unknown popul
 standard deviation and population variance.}
 
 \item{split}{a numeric vector, character vector or factor as split variable. Note that a split
-variable can ?nly be used when computing confidence intervals with unknown population
+variable can only be used when computing confidence intervals with unknown population
 standard deviation and population variance.}
 
 \item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.}
@@ -62,6 +65,10 @@ and result table (\code{result}).
 This function computes a confidence interval for the arithmetic mean with known or unknown population standard
 deviation or population variance for one or more variables, optionally by a grouping and/or split variable.
 }
+\details{
+A difference-adjusted confidence interval (Baguley, 2012) can be computed by
+specifying \code{adjust = TRUE}.
+}
 \examples{
 dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
                   group2 = c(1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2),
@@ -71,6 +78,9 @@ dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
 
 # Two-Sided 95\% Confidence Interval for x1
 ci.mean(dat$x1)
+
+# Two-Sided 95\% Difference-Adjusted Confidence Interval for x1
+ci.mean(dat$x1, adjust = TRUE)
 
 # Two-Sided 95\% Confidence Interval with known standard deviation for x1
 ci.mean(dat$x1, sigma = 1.2)
@@ -111,11 +121,16 @@ ci.mean(dat[, c("x1", "x2", "x3")], split = dat$group1)
 ci.mean(dat[, c("x1", "x2", "x3")], group = dat$group1, split = dat$group2)
 }
 \references{
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-John Wiley & Sons.
+Baguley, T. S. (2012). \emph{Serious stats: A guide to advanced statistics for
+the behavioral sciences}. Palgrave Macmillan.
+
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. John Wiley & Sons.
 }
 \seealso{
-\code{\link{test.z}}, \code{\link{test.t}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},  \code{\link{ci.sd}}, \code{\link{descript}}
+\code{\link{test.z}}, \code{\link{test.t}}, \code{\link{ci.mean.diff}},
+\code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
+\code{\link{ci.sd}}, \code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

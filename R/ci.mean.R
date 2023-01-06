@@ -1,37 +1,56 @@
 #' Confidence Interval for the Arithmetic Mean
 #'
-#' This function computes a confidence interval for the arithmetic mean with known or unknown population standard
-#' deviation or population variance for one or more variables, optionally by a grouping and/or split variable.
+#' This function computes a confidence interval for the arithmetic mean with known
+#' or unknown population standard deviation or population variance for one or more
+#' variables, optionally by a grouping and/or split variable.
 #'
-#' @param x              a numeric vector, matrix or data frame with numeric variables, i.e.,
-#'                       factors and character variables are excluded from \code{x} before conducting the analysis.
-#' @param sigma          a numeric vector indicating the population standard deviation when computing confidence
-#'                       intervals for the arithmetic mean with known standard deviation Note that either argument
-#'                       \code{sigma} or argument \code{sigma2} is specified and it is only possible to specify one
-#'                       value for the argument \code{sigma} even though multiple variables are specified in \code{x}.
-#' @param sigma2         a numeric vector indicating the population variance when computing confidence intervals
-#'                       for the arithmetic mean with known variance. Note that either argument \code{sigma}
-#'                       or argument \code{sigma2} is specified and it is only possible to specify one value for the
-#'                       argument \code{sigma2} even though multiple variables are specified in \code{x}.
-#' @param alternative    a character string specifying the alternative hypothesis, must be one of
-#'                       \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.
-#' @param conf.level     a numeric value between 0 and 1 indicating the confidence level of the interval.
-#' @param group          a numeric vector, character vector or factor as grouping variable. Note that a grouping
-#'                       variable can only be used when computing confidence intervals with unknown population
-#'                       standard deviation and population variance.
-#' @param split          a numeric vector, character vector or factor as split variable. Note that a split
-#'                       variable can ?nly be used when computing confidence intervals with unknown population
-#'                       standard deviation and population variance.
-#' @param sort.var       logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.
-#' @param na.omit        logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-#'                       (i.e., listwise deletion) when specifying more than one outcome variable.
-#' @param digits         an integer value indicating the number of decimal places to be used.
-#' @param as.na          a numeric vector indicating user-defined missing values,
-#'                       i.e. these values are converted to \code{NA} before conducting the analysis.
-#'                       Note that \code{as.na()} function is only applied to \code{x}, but
-#'                       not to \code{group} or \code{split}.
-#' @param check          logical: if \code{TRUE}, argument specification is checked.
-#' @param output         logical: if \code{TRUE}, output is shown on the console.
+#' A difference-adjusted confidence interval (Baguley, 2012) can be computed by
+#' specifying \code{adjust = TRUE}.
+#'
+#' @param x           a numeric vector, matrix or data frame with numeric variables,
+#'                    i.e., factors and character variables are excluded from \code{x}
+#'                    before conducting the analysis.
+#' @param sigma       a numeric vector indicating the population standard deviation
+#'                    when computing confidence intervals for the arithmetic mean
+#'                    with known standard deviation Note that either argument
+#'                    \code{sigma} or argument \code{sigma2} is specified and it
+#'                    is only possible to specify one value for the argument
+#'                    \code{sigma} even though multiple variables are specified
+#'                    in \code{x}.
+#' @param sigma2      a numeric vector indicating the population variance when
+#'                    computing confidence intervals for the arithmetic mean with
+#'                    known variance. Note that either argument \code{sigma}
+#'                    or argument \code{sigma2} is specified and it is only possible
+#'                    to specify one value for the argument \code{sigma2} even
+#'                    though multiple variables are specified in \code{x}.
+#' @param adjust      logical: if \code{TRUE} (default), difference-adjustment
+#'                    for the confidence intervals is applied.
+#' @param alternative a character string specifying the alternative hypothesis,
+#'                    must be one of \code{"two.sided"} (default), \code{"greater"}
+#'                    or \code{"less"}.
+#' @param conf.level  a numeric value between 0 and 1 indicating the confidence
+#'                    level of the interval.
+#' @param group       a numeric vector, character vector or factor as grouping
+#'                    variable. Note that a grouping variable can only be used
+#'                    when computing confidence intervals with unknown population
+#'                    standard deviation and population variance.
+#' @param split       a numeric vector, character vector or factor as split variable.
+#'                    Note that a split variable can only be used when computing
+#'                    confidence intervals with unknown population standard deviation
+#'                    and population variance.
+#' @param sort.var    logical: if \code{TRUE}, output table is sorted by variables
+#'                    when specifying \code{group}.
+#' @param na.omit     logical: if \code{TRUE}, incomplete cases are removed before
+#'                    conducting the analysis (i.e., listwise deletion) when
+#'                    specifying more than one outcome variable.
+#' @param digits      an integer value indicating the number of decimal places to
+#'                    be used.
+#' @param as.na       a numeric vector indicating user-defined missing values,
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis. Note that \code{as.na()} function is only
+#'                    applied to \code{x}, but not to \code{group} or \code{split}.
+#' @param check       logical: if \code{TRUE}, argument specification is checked.
+#' @param output      logical: if \code{TRUE}, output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -42,14 +61,17 @@
 #' \code{\link{ci.sd}}, \code{\link{descript}}
 #'
 #' @references
-#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-#' John Wiley & Sons.
+#' Baguley, T. S. (2012). \emph{Serious stats: A guide to advanced statistics for
+#' the behavioral sciences}. Palgrave Macmillan.
+#'
+#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+#' - Using R and SPSS}. John Wiley & Sons.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
-#' \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
-#' and result table (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries: function call (\code{call}), type of analysis \code{type}, list with
+#' the input specified in \code{x}, \code{group}, and \code{split} (\code{data}),
+#' specification of function arguments (\code{args}), and result table (\code{result}).
 #'
 #' @export
 #'
@@ -62,6 +84,9 @@
 #'
 #' # Two-Sided 95% Confidence Interval for x1
 #' ci.mean(dat$x1)
+#'
+#' # Two-Sided 95% Difference-Adjusted Confidence Interval for x1
+#' ci.mean(dat$x1, adjust = TRUE)
 #'
 #' # Two-Sided 95% Confidence Interval with known standard deviation for x1
 #' ci.mean(dat$x1, sigma = 1.2)
@@ -100,22 +125,22 @@
 #' # Two-Sided 95% Confidence Interval for x1, x2, and x3,
 #' # analysis by group1 separately, split analysis by group2
 #' ci.mean(dat[, c("x1", "x2", "x3")], group = dat$group1, split = dat$group2)
-ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided", "less", "greater"),
-                    conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
+ci.mean <- function(x, sigma = NULL, sigma2 = NULL, adjust = FALSE,
+                    alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
+                    group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
                     digits = 2, as.na = NULL, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
+
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check 'group'
   if (isTRUE(!is.null(group))) {
 
@@ -128,7 +153,6 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   }
 
-  #......
   # Check 'split'
   if (isTRUE(!is.null(split))) {
 
@@ -141,13 +165,17 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   }
 
-  #----------------------------------------
-  # Data frame
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data Frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -165,8 +193,8 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   }
 
-  #----------------------------------------
-  # Numeric Variables
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Numeric Variables ####
 
   # Non-numeric variables
   non.num <- !vapply(x, is.numeric, FUN.VALUE = logical(1))
@@ -175,27 +203,20 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     x <- x[, -which(non.num), drop = FALSE]
 
-    #......
     # Variables left
+    if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
 
-    if (isTRUE(ncol(x) == 0L)) {
-
-      stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE)
-
-    }
-
-    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(non.num)), collapse = ", ")),
-            call. = FALSE)
+    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(non.num)), collapse = ", ")), call. = FALSE)
 
   }
 
-  #----------------------------------------
-  # Listwise deletion
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise deletion ####
 
   if (isTRUE(na.omit && any(is.na(x)))) {
 
-    #......
-    # No group and split variable
+    #...................
+    ### No group and split variable ####
     if (isTRUE(is.null(group) && is.null(split))) {
 
       x <- na.omit(as.data.frame(x, stringsAsFactors = FALSE))
@@ -205,8 +226,8 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     }
 
-    #......
-    # Group variable, no split variable
+    #...................
+    ### Group variable, no split variable ####
     if (isTRUE(!is.null(group) && is.null(split))) {
 
       x.group <- na.omit(data.frame(x, group = group, stringsAsFactors = FALSE))
@@ -219,8 +240,8 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     }
 
-    #......
-    # No group variable, split variable
+    #...................
+    ### No group variable, split variable ####
     if (isTRUE(is.null(group) && !is.null(split))) {
 
       x.split <- na.omit(data.frame(x, split = split, stringsAsFactors = FALSE))
@@ -233,8 +254,8 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     }
 
-    #......
-    # Group variable, split variable
+    #...................
+    ### Group variable, split variable ####
     if (isTRUE(!is.null(group) && !is.null(split))) {
 
       x.group.split <- na.omit(data.frame(x, group = group, split = split, stringsAsFactors = FALSE))
@@ -248,8 +269,8 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     }
 
-    #......
-    # Variable with missing values only
+    #...................
+    ### Variable with missing values only ####
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (isTRUE(any(x.miss))) {
 
@@ -260,22 +281,18 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #----------------------------------------
-
   if (isTRUE(isTRUE(check))) {
 
-    #......
     # Check input 'sigma' and 'sigma2'
     if (isTRUE(!is.null(sigma) && !is.null(sigma2))) { stop("Please specify either argument 'sigma' or argument 'sigma2', but not both.", call. = FALSE) }
 
-    #......
     # Check input 'sigma'
     if (isTRUE(!is.null(sigma))) {
 
@@ -287,7 +304,6 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     }
 
-    #......
     # Check input 'sigma2'
     if (isTRUE(!is.null(sigma2))) {
 
@@ -299,20 +315,19 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     }
 
-    #......
+    # Check input 'adjust'
+    if (isTRUE(!is.logical(adjust))) { stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE) }
+
     # Check input 'alternative'
     if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) {
 
-      stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".",
-           call. = FALSE)
+      stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE)
 
     }
 
-    #......
     # Check input 'conf.level'
     if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
-    #......
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
@@ -330,7 +345,6 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     }
 
-    #......
     # Check input 'split'
     if (isTRUE(!is.null(split))) {
 
@@ -348,36 +362,33 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
     }
 
-    #......
     # Check input 'sort.var'
     if (isTRUE(!is.logical(sort.var))) { stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE) }
 
-    #......
     # Check input 'na.omit'
     if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #----------------------------------------
-  # Population standard deviation and variance
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Population standard deviation and variance ####
 
   if (isTRUE(is.null(sigma) && !is.null(sigma2))) { sigma <- sqrt(sigma2) }
 
   if (isTRUE(!is.null(sigma) && is.null(sigma2))) { sigma2 <- sigma^2 }
 
-  #----------------------------------------
-  # Alternative hypothesis
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) {
 
@@ -385,32 +396,34 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #----------------------------------------
-  # Confidence interval for the mean
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Confidence interval for the mean ####
 
-  m.conf <- function(x, sigma, alternative, conf.level, side) {
+  m.conf <- function(x, sigma, adjust, alternative, conf.level, side) {
 
-    #......
     # Data
     x <- na.omit(x)
 
-    #......
+    # Difference-adjustment factor
+    adjust.factor <- ifelse(isTRUE(adjust), sqrt(2L) / 2L, 1L)
+
     # One observation or SD = 0
     if (isTRUE(length(x) <= 1L || sd(x) == 0L)) {
 
       ci <- c(NA, NA)
 
-      #......
-      # More than one observation
+    # More than one observation
     } else {
 
       x.m <- mean(x)
 
-      #......
-      # Known population standard deviation
+      #...................
+      ### Known population standard deviation ####
+
       if (isTRUE(!is.null(sigma))) {
 
         crit <- qnorm(switch(alternative,
@@ -420,8 +433,8 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
         se <- sigma / sqrt(length(na.omit(x)))
 
-        #......
-        # Unknown population standard deviation
+      #...................
+      ### Unknown population standard deviation ####
       } else {
 
         crit <- qt(switch(alternative,
@@ -433,25 +446,29 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
 
       }
 
-      #......
-      # Confidence interval
+      #...................
+      ### Confidence interval ####
       ci <- switch(alternative,
-                   two.sided = c(low = x.m - crit * se, upp = x.m + crit * se),
-                   less = c(low = -Inf, upp = x.m + crit * se),
-                   greater = c(low = x.m - crit * se, upp = Inf))
+                   two.sided = c(low = x.m - adjust.factor * crit * se,
+                                 upp = x.m + adjust.factor * crit * se),
+                   less = c(low = -Inf,
+                            upp = x.m + adjust.factor * crit * se),
+                   greater = c(low = x.m - adjust.factor * crit * se,
+                               upp = Inf))
 
     }
 
-    #......
-    # Return object
+    #...................
+    ### Return object ####
     object <- switch(side, both = ci, low = ci[1], upp = ci[2])
 
     return(object)
 
   }
 
-  #----------------------------------------
-  # No Grouping, No Split
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, No Split ####
   if (isTRUE(is.null(group) && is.null(split))) {
 
     result <- data.frame(variable = colnames(x),
@@ -463,15 +480,15 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
                          # Standard deviation
                          sd = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, sd(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
                          # Confidence interval for the arithmetic mean
-                         low = vapply(x, m.conf, sigma = sigma, alternative = alternative, conf.level = conf.level, side = "low", FUN.VALUE = double(1L)),
-                         upp = vapply(x, m.conf, sigma = sigma, alternative = alternative, conf.level = conf.level, side = "upp", FUN.VALUE = double(1L)),
+                         low = vapply(x, m.conf, sigma = sigma, adjust = adjust, alternative = alternative, conf.level = conf.level, side = "low", FUN.VALUE = double(1L)),
+                         upp = vapply(x, m.conf, sigma = sigma, adjust = adjust, alternative = alternative, conf.level = conf.level, side = "upp", FUN.VALUE = double(1L)),
                          stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
 
-    #----------------------------------------
-    # Grouping, No Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##  Grouping, No Split ####
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    object.group <- lapply(split(x, f = group), function(y) misty::ci.mean(y, sigma = NULL, sigma2 = NULL, alternative = alternative, conf.level = conf.level,
+    object.group <- lapply(split(x, f = group), function(y) misty::ci.mean(y, sigma = NULL, sigma2 = NULL, adjust = adjust, alternative = alternative, conf.level = conf.level,
                                                                            group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                                            as.na = as.na, check = FALSE, output = FALSE)$result)
 
@@ -479,43 +496,46 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, alternative = c("two.sided",
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))),
                          stringsAsFactors = FALSE)
 
-    #----------------------------------------
-    # No Grouping, Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, Split ####
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
-                     function(y) misty::ci.mean(y, sigma = NULL, sigma2 = NULL, alternative = alternative, conf.level = conf.level,
+                     function(y) misty::ci.mean(y, sigma = NULL, sigma2 = NULL, adjust = adjust, alternative = alternative, conf.level = conf.level,
                                                 group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                 as.na = as.na, check = FALSE, output = FALSE)$result)
 
-    #----------------------------------------
-    # Grouping, Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping, Split ####
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split),
                      function(y) misty::ci.mean(y[, -grep("group", names(y))], sigma = NULL, sigma2 = NULL,
-                                                alternative = alternative, conf.level = conf.level,
+                                                adjust = adjust, alternative = alternative, conf.level = conf.level,
                                                 group = y$group, split = NULL, sort.var = sort.var,
                                                 na.omit = na.omit, as.na = as.na,
                                                 check = FALSE, output = FALSE)$result)
 
   }
 
-  ####################################################################################
-  # Return object and output
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "ci", ci = "mean",
                  data = list(x = x, group = group, split = split),
-                 args = list(sigma = sigma, sigma2 = sigma2, alternative = alternative, conf.level = conf.level,
-                             sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na,
-                             check = check, output = output),
+                 args = list(sigma = sigma, sigma2 = sigma2, adjust = adjust,
+                             alternative = alternative, conf.level = conf.level,
+                             sort.var = sort.var, na.omit = na.omit, digits = digits,
+                             as.na = as.na, check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

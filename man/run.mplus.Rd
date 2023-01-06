@@ -9,51 +9,60 @@ run.mplus(target = getwd(), recursive = FALSE, filefilter = NULL, showOutput = F
           Mplus = "Mplus", killOnFail = TRUE, local_tmpdir = FALSE)
 }
 \arguments{
-\item{target}{a character string indicating the directory containing Mplus input files (\code{.inp})
-to run or the single \code{.inp} file to be run. May be a full path, relative path, or
-a filename within the working directory.}
+\item{target}{a character string indicating the directory containing
+Mplus input files (\code{.inp})
+to run or the single \code{.inp} file to be run. May be
+a full path, relative path, or a filename within the working
+directory.}
 
-\item{recursive}{logical: if \code{TRUE}, run all models nested in subdirectories within directory.
-Not relevant if target is a single file.}
+\item{recursive}{logical: if \code{TRUE}, run all models nested in subdirectories
+within directory. Not relevant if target is a single file.}
 
-\item{filefilter}{a Perl regular expression (PCRE-compatible) specifying particular input files to be
-run within directory. See regex or http://www.pcre.org/pcre.txt for details about
-regular expression syntax. Not relevant if target is a single file.}
+\item{filefilter}{a Perl regular expression (PCRE-compatible) specifying particular
+input files to be run within directory. See regex or
+http://www.pcre.org/pcre.txt for details about regular
+expression syntax. Not relevant if target is a single file.}
 
-\item{showOutput}{logical: if \code{TRUE}, estimation output (\code{TECH8}) is show on the R console.
-Note that if run within Rgui, output will display within R, but if run via Rterm,
+\item{showOutput}{logical: if \code{TRUE}, estimation output (\code{TECH8})
+is show on the R console. Note that if run within Rgui,
+output will display within R, but if run via Rterm,
 a separate window will appear during estimation.}
 
-\item{replaceOutfile}{a character string for specifying three settings: \code{"always"} (default), which runs all models, regardless
-of whether an output file for the model exists, \code{"never"}, which does not run any model that
-has an existing output file, and \code{"modifiedDate"}, which only runs a model if the modified
-date for the input file is more recent than the output file modified date.}
+\item{replaceOutfile}{a character string for specifying three settings:
+\code{"always"} (default), which runs all models, regardless
+of whether an output file for the model exists, \code{"never"},
+which does not run any model that has an existing output file,
+and \code{"modifiedDate"}, which only runs a model if the
+modified date for the input file is more recent than the
+output file modified date.}
 
-\item{logFile}{a character string specifying a file that records the settings passed into the function and
-the models run (or skipped) during the run.}
+\item{logFile}{a character string specifying a file that records the settings
+passed into the function and the models run (or skipped)
+during the run.}
 
-\item{Mplus}{a character string for specifying the name or path of the Mplus executable to be used for
-running models. This covers situations where Mplus is not in the system's path, or where
-one wants to test different versions of the Mplus program.Note that there is no need to specify
-this argument for most users since it has intelligent defaults.}
+\item{Mplus}{a character string for specifying the name or path of the
+Mplus executable to be used for running models. This covers
+situations where Mplus is not in the system's path, or where
+one wants to test different versions of the Mplus program.
+Note that there is no need to specify this argument for most
+users since it has intelligent defaults.}
 
-\item{killOnFail}{logical: if \code{TRUE}, all processes named mplus.exe when \code{mplus.run()} does not terminate
-normally are killed. Windows only.}
+\item{killOnFail}{logical: if \code{TRUE}, all processes named mplus.exe when
+\code{mplus.run()} does not terminate normally are killed.
+Windows only.}
 
-\item{local_tmpdir}{logical: if \code{TRUE}, the TMPDIR environment variable is set to the location of the \code{.inp file}
-prior to execution. This is useful in Monte Carlo studies where many instances of Mplus may run
-in parallel and we wish to avoid collisions in temporary files among processes. Linux/Mac only.}
+\item{local_tmpdir}{logical: if \code{TRUE}, the TMPDIR environment variable
+is set to the location of the \code{.inp file} prior to
+execution. This is useful in Monte Carlo studies where many
+instances of Mplus may run in parallel and we wish to avoid
+collisions in temporary files among processes. Linux/Mac only.}
 }
 \value{
 None.
 }
 \description{
-This function runs a group of Mplus models (\code{.inp} files) located within a single directory
-or nested within subdirectories.
-}
-\details{
-Note that this function is a copy of the \code{runModels()} function in the \pkg{MplusAutomation} package
-by Michael Hallquist.
+This function runs a group of Mplus models (\code{.inp} files) located within
+a single directory or nested within subdirectories.
 }
 \note{
 This function is a copy of the \code{runModels()} function in the
@@ -70,11 +79,12 @@ run.mplus(recursive = TRUE,
 }
 }
 \references{
-Hallquist, M. N. & Wiley, J. F. (2018). MplusAutomation: An R package for facilitating large-scale latent variable
-analyses in Mplus. \emph{Structural Equation Modeling: A Multidisciplinary Journal, 25}, 621-638.
-https://doi.org/10.1080/10705511.2017.1402334.
+Hallquist, M. N. & Wiley, J. F. (2018). MplusAutomation: An R package for facilitating
+large-scale latent variable analyses in Mplus. \emph{Structural Equation Modeling:
+A Multidisciplinary Journal, 25}, 621-638. https://doi.org/10.1080/10705511.2017.1402334.
 
-Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.). Muthen & Muthen.
+Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
+Muthen & Muthen.
 }
 \author{
 Michael Hallquist

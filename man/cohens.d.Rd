@@ -20,32 +20,76 @@ cohens.d(x, ...)
          output = TRUE, ...)
 }
 \arguments{
-\item{x}{a numeric vector of data values.}
-\item{y}{a numeric vector of data values.}
-\item{mu}{a numeric value indicating the reference mean.}
-\item{paired}{logical: if \code{TRUE}, Cohen's d for a paired-sample design is computed.}
-\item{weighted}{logical: if \code{TRUE} (default), the weighted pooled standard deviation is used to compute the standardized mean difference between two groups of a two-sample design (i.e., \code{paired = FALSE}), while standard deviation of the difference scores is used to compute the standardized mean difference in a paired-sample design (i.e., \code{paired = TRUE}).}
-\item{cor}{logical: if \code{TRUE} (default), \code{paired = TRUE}, and \code{weighted = FALSE}, Cohen's d for a paired-sample design while controlling for the correlation between the two sets of measurement is computed. Note that this argument is only used in a paired-sample design (i.e., \code{paired = TRUE}) when specifying \code{weighted = FALSE}.}
-\item{ref}{character string \code{"x"} or \code{"y"} for specifying the reference reference group when using the default \code{cohens.d()} function or a numeric value or character string indicating the reference group in a two-sample design when using the formula \code{cohens.d()} function. The standard deviation of the reference variable or reference group is used to standardized the mean difference. Note that this argument is only used in a two-sample design (i.e., \code{paired = FALSE}).}
-\item{correct}{logical: if \code{TRUE}, correction factor to remove positive bias in small samples is used.}
-\item{alternative}{ a character string specifying the alternative hypothesis, must be one of \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
-\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
-\item{group}{a numeric vector, character vector or factor as grouping variable.}
-\item{split}{a numeric vector, character vector or factor as split variable.}
-\item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.}
-\item{digits}{an integer value indicating the number of decimal places to be used for displaying results.}
-\item{as.na}{a numeric vector indicating user-defined missing values, i.e. these values are converted to \code{NA} before conducting the analysis. Note that \code{as.na()} function is only applied to \code{y} but not to \code{group} in a two-sample design, while \code{as.na()} function is applied to \code{pre} and \code{post} in a paired-sample design.}
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
-\item{formula}{a formula of the form \code{y ~ group} for one outcome variable or \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where \code{y} is a numeric variable giving the data values and \code{group} a numeric variable, character variable or factor with two values or factor levels giving the corresponding groups.}
-\item{data}{a matrix or data frame containing the variables in the formula \code{formula}.}
-\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis (i.e., listwise deletion) when specifying more than one outcome variable.}
+\item{x}{a numeric vector or data frame.}
+
 \item{...}{further arguments to be passed to or from methods.}
+
+\item{y}{a numeric vector.}
+
+\item{mu}{a numeric value indicating the reference mean.}
+
+\item{paired}{logical: if \code{TRUE}, Cohen's d for a paired-sample design is computed.}
+
+\item{weighted}{logical: if \code{TRUE} (default), the weighted pooled standard deviation is used
+to compute the standardized mean difference between two groups of a two-sample
+design (i.e., \code{paired = FALSE}), while standard deviation of the difference
+scores is used to compute the standardized mean difference in a paired-sample
+design (i.e., \code{paired = TRUE}).}
+
+\item{cor}{logical: if \code{TRUE} (default), \code{paired = TRUE}, and \code{weighted = FALSE},
+Cohen's d for a paired-sample design while controlling for the correlation between
+the two sets of measurement is computed. Note that this argument is only used in
+a paired-sample design (i.e., \code{paired = TRUE}) when specifying \code{weighted = FALSE}.}
+
+\item{ref}{character string \code{"x"} or \code{"y"} for specifying the reference reference
+group when using the default \code{cohens.d()} function or a numeric value or
+character string indicating the reference group in a two-sample design when using
+the formula \code{cohens.d()} function. The standard deviation of the reference variable
+or reference group is used to standardized the mean difference.
+Note that this argument is only used in a two-sample design (i.e., \code{paired = FALSE}).}
+
+\item{correct}{logical: if \code{TRUE}, correction factor to remove positive bias in small samples is
+used.}
+
+\item{alternative}{a character string specifying the alternative hypothesis, must be one of
+\code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
+
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
+
+\item{group}{a numeric vector, character vector or factor as grouping variable.}
+
+\item{split}{a numeric vector, character vector or factor as split variable.}
+
+\item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.}
+
+\item{digits}{an integer value indicating the number of decimal places to be used for
+displaying results.}
+
+\item{as.na}{a numeric vector indicating user-defined missing values,
+i.e. these values are converted to \code{NA} before conducting the analysis.
+Note that \code{as.na()} function is only applied to \code{y} but not to \code{group}
+in a two-sample design, while \code{as.na()} function is applied to \code{pre}
+and \code{post} in a paired-sample design.}
+
+\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+
+\item{formula}{a formula of the form \code{y ~ group} for one outcome variable or
+\code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where \code{y}
+is a numeric variable giving the data values and \code{group} a numeric variable,
+character variable or factor with two values or factor levels giving the
+corresponding groups.}
+
+\item{data}{a matrix or data frame containing the variables in the formula \code{formula}.}
+
+\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
+(i.e., listwise deletion) when specifying more than one outcome variable.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries: function call (\code{call}),
-type of analysis \code{type},
-matrix or data frame specified in \code{x} (\code{data}), specification of function arguments (\code{args}), and
+Returns an object of class \code{misty.object}, which is a list with following entries:
+function call (\code{call}), type of analysis \code{type}, matrix or data frame specified
+in \code{x} (\code{data}), specification of function arguments (\code{args}), and
 list with results (\code{result}).
 }
 \description{
@@ -67,9 +111,9 @@ by dividing the mean difference by the unweighted pooled standard deviation (i.e
 
 Glass et al. (1981, p. 29) suggested to use the standard deviation of the control group
 (e.g., \code{ref = 0} if the control group is coded with 0) to compute the standardized
-mean difference in a two-sample design (i.e., Glass's \eqn{\Delta}) since the standard deviation
-of the control group is unaffected by the treatment and will therefore more closely reflect the
-population standard deviation.
+mean difference in a two-sample design (i.e., Glass's \eqn{\Delta}) since the standard deviation of the control group
+is unaffected by the treatment and will therefore more closely reflect the population
+standard deviation.
 
 Hedges (1981, p. 110) recommended to weight each group's standard deviation by its sample
 size resulting in a weighted and pooled standard deviation (i.e., \code{weighted = TRUE},
@@ -96,6 +140,7 @@ paired-sample design (i.e., \code{paired = TRUE}), Cohen's \eqn{d_z} is computed
 \code{weighted = TRUE, default}, while Cohen's \eqn{d_{rm}} is computed when using
 \code{weighted = FALSE} and \code{cor = TRUE, default} and Cohen's \eqn{d_{av}} is computed when
 using \code{weighted = FALSE} and \code{cor = FALSE}. Corresponding Hedges' \eqn{g_z}, eqn{g_{rm}},
+and \eqn{g_{av}} are computed when using \code{correct = TRUE} in addition.
 }
 \examples{
 dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
@@ -115,39 +160,39 @@ dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
 #--------------------------------------
 # One-sample design
 
-# Cohen's d.z with two-sided 95% CI
+# Cohen's d.z with two-sided 95\% CI
 # population mean = 3
 cohens.d(dat1$x1, mu = 3)
 
-# Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
+# Cohen's d.z (aka Hedges' g.z) with two-sided 95\% CI
 # population mean = 3, with small sample correction factor
 cohens.d(dat1$x1, mu = 3, correct = TRUE)
 
-# Cohen's d.z for more than one variable with two-sided 95% CI
+# Cohen's d.z for more than one variable with two-sided 95\% CI
 # population mean = 3
 cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3)
 
-# Cohen's d.z with two-sided 95% CI
+# Cohen's d.z with two-sided 95\% CI
 # population mean = 3, by group1 separately
 cohens.d(dat1$x1, mu = 3, group = dat1$group1)
 
-# Cohen's d.z for more than one variable with two-sided 95% CI
+# Cohen's d.z for more than one variable with two-sided 95\% CI
 # population mean = 3, by group1 separately
 cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, group = dat1$group1)
 
-# Cohen's d.z with two-sided 95% CI
+# Cohen's d.z with two-sided 95\% CI
 # population mean = 3, split analysis by group1
 cohens.d(dat1$x1, mu = 3, split = dat1$group1)
 
-# Cohen's d.z for more than one variable with two-sided 95% CI
+# Cohen's d.z for more than one variable with two-sided 95\% CI
 # population mean = 3, split analysis by group1
 cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, split = dat1$group1)
 
-# Cohen's d.z with two-sided 95% CI
+# Cohen's d.z with two-sided 95\% CI
 # population mean = 3, by group1 separately1, split by group2
 cohens.d(dat1$x1, mu = 3, group = dat1$group1, split = dat1$group2)
 
-# Cohen's d.z for more than one variable with two-sided 95% CI
+# Cohen's d.z for more than one variable with two-sided 95\% CI
 # population mean = 3, by group1 separately1, split by group2
 cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, group = dat1$group1,
          split = dat1$group2)
@@ -155,68 +200,68 @@ cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, group = dat1$group1,
 #--------------------------------------
 # Two-sample design
 
-# Cohen's d.s with two-sided 95% CI
+# Cohen's d.s with two-sided 95\% CI
 # weighted pooled SD
 cohens.d(x1 ~ group1, data = dat1)
 
-# Cohen's d.s with two-sided 99% CI
+# Cohen's d.s with two-sided 99\% CI
 # weighted pooled SD
 cohens.d(x1 ~ group1, data = dat1, conf.level = 0.99)
 
-# Cohen's d.s with one-sided 99% CI
+# Cohen's d.s with one-sided 99\% CI
 # weighted pooled SD
 cohens.d(x1 ~ group1, data = dat1, alternative = "greater")
 
-# Cohen's d.s with two-sided 99% CI
+# Cohen's d.s with two-sided 99\% CI
 # weighted pooled SD
 cohens.d(x1 ~ group1, data = dat1, conf.level = 0.99)
 
-# Cohen's d.s with one-sided 95%% CI
+# Cohen's d.s with one-sided 95\%\% CI
 # weighted pooled SD
 cohens.d(x1 ~ group1, data = dat1, alternative = "greater")
 
-# Cohen's d.s for more than one variable with two-sided 95% CI
+# Cohen's d.s for more than one variable with two-sided 95\% CI
 # weighted pooled SD
 cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1)
 
-# Cohen's d with two-sided 95% CI
+# Cohen's d with two-sided 95\% CI
 # unweighted SD
 cohens.d(x1 ~ group1, data = dat1, weighted = FALSE)
 
-# Cohen's d.s (aka Hedges' g.s) with two-sided 95% CI
+# Cohen's d.s (aka Hedges' g.s) with two-sided 95\% CI
 # weighted pooled SD, with small sample correction factor
 cohens.d(x1 ~ group1, data = dat1, correct = TRUE)
 
-# Cohen's d (aka Hedges' g) with two-sided 95% CI
+# Cohen's d (aka Hedges' g) with two-sided 95\% CI
 # Unweighted SD, with small sample correction factor
 cohens.d(x1 ~ group1, data = dat1, weighted = FALSE, correct = TRUE)
 
-# Cohen's d (aka Glass's delta) with two-sided 95% CI
+# Cohen's d (aka Glass's delta) with two-sided 95\% CI
 # SD of reference group 1
 cohens.d(x1 ~ group1, data = dat1, ref = 1)
 
-# Cohen's d.s with two-sided 95% CI
+# Cohen's d.s with two-sided 95\% CI
 # weighted pooled SD, by group2 separately
 cohens.d(x1 ~ group1, data = dat1, group = dat1$group2)
 
-# Cohen's d.s for more than one variable with two-sided 95% CI
+# Cohen's d.s for more than one variable with two-sided 95\% CI
 # weighted pooled SD, by group2 separately
 cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
 
-# Cohen's d.s with two-sided 95% CI
+# Cohen's d.s with two-sided 95\% CI
 # weighted pooled SD, split analysis by group2
 cohens.d(x1 ~ group1, data = dat1, split = dat1$group2)
 
-# Cohen's d.s for more than one variable with two-sided 95% CI
+# Cohen's d.s for more than one variable with two-sided 95\% CI
 # weighted pooled SD, split analysis by group2
 cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
 
-# Cohen's d.s with two-sided 95% CI
+# Cohen's d.s with two-sided 95\% CI
 # weighted pooled SD, by group2 separately, split analysis by group3
 cohens.d(x1 ~ group1, data = dat1,
          group = dat1$group2, split = dat1$group3)
 
-# Cohen's d.s for more than one variable with two-sided 95% CI
+# Cohen's d.s for more than one variable with two-sided 95\% CI
 # weighted pooled SD, by group2 separately, split analysis by group3
 cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1,
          group = dat1$group2, split = dat1$group3)
@@ -224,48 +269,48 @@ cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1,
 #--------------------------------------
 # Paired-sample design
 
-# Cohen's d.z with two-sided 95% CI
+# Cohen's d.z with two-sided 95\% CI
 # SD of the difference scores
 cohens.d(dat1$x1, dat1$x2, paired = TRUE)
 
-# Cohen's d.z with two-sided 99% CI
+# Cohen's d.z with two-sided 99\% CI
 # SD of the difference scores
 cohens.d(dat1$x1, dat1$x2, paired = TRUE, conf.level = 0.99)
 
-# Cohen's d.z with one-sided 95% CI
+# Cohen's d.z with one-sided 95\% CI
 # SD of the difference scores
 cohens.d(dat1$x1, dat1$x2, paired = TRUE, alternative = "greater")
 
-# Cohen's d.rm with two-sided 95% CI
+# Cohen's d.rm with two-sided 95\% CI
 # controlling for the correlation between measures
 cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE)
 
-# Cohen's d.av with two-sided 95% CI
+# Cohen's d.av with two-sided 95\% CI
 # without controlling for the correlation between measures
 cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE, cor = FALSE)
 
-# Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
+# Cohen's d.z (aka Hedges' g.z) with two-sided 95\% CI
 # SD of the differnece scores
 cohens.d(dat1$x1, dat1$x2, paired = TRUE, correct = TRUE)
 
-# Cohen's d.rm (aka Hedges' g.rm) with two-sided 95% CI
+# Cohen's d.rm (aka Hedges' g.rm) with two-sided 95\% CI
 # controlling for the correlation between measures
 cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE, correct = TRUE)
 
-# Cohen's d.av (aka Hedges' g.av) with two-sided 95% CI
+# Cohen's d.av (aka Hedges' g.av) with two-sided 95\% CI
 # without controlling for the correlation between measures
 cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE, cor = FALSE,
          correct = TRUE)
 
-# Cohen's d.z with two-sided 95% CI
+# Cohen's d.z with two-sided 95\% CI
 # SD of the difference scores, by group1 separately
 cohens.d(dat1$x1, dat1$x2, paired = TRUE, group = dat1$group1)
 
-# Cohen's d.z with two-sided 95% CI
+# Cohen's d.z with two-sided 95\% CI
 # SD of the difference scores, split analysis by group1
 cohens.d(dat1$x1, dat1$x2, paired = TRUE, split = dat1$group1)
 
-# Cohen's d.z with two-sided 95% CI
+# Cohen's d.z with two-sided 95\% CI
 # SD of the difference scores, by group1 separately, split analysis by group2
 cohens.d(dat1$x1, dat1$x2, paired = TRUE,
          group = dat1$group1, split = dat1$group2)
@@ -293,8 +338,8 @@ A practical primer for t-tests and ANOVAs. \emph{Frontiers in Psychology, 4}, 1-
 https://doi.org/10.3389/fpsyg.2013.00863
 }
 \seealso{
-\code{\link{eta.sq}}, \code{\link{cor.cont}}, \code{\link{cor.cramer}},\code{\link{cor.matrix}},
-\code{\link{na.auxiliary}}
+\code{\link{test.t}}, \code{\link{test.z}}, \code{\link{eta.sq}}, \code{\link{cor.cont}},
+\code{\link{cor.cramer}},\code{\link{cor.matrix}}, \code{\link{na.auxiliary}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -105,89 +105,75 @@
 center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
                    as.na = NULL, check = TRUE) {
 
-  ##############################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check if only one variable specified in the input 'x'
   if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
 
-  #......
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
 
   #-----------------------------------------
 
-  #......
   # Check input 'cluster'
   if (isTRUE(!is.null(cluster))) {
 
     if (isTRUE(nrow(data.frame(cluster)) != nrow(data.frame(x)))) { stop("The length of the vector in 'cluster' does not match with the length of the vector in 'x'.", call. = FALSE) }
 
-    #......
     # Check if only one variable specified in the input 'cluster'
     if (isTRUE(ncol(data.frame(cluster)) != 1L)) { stop("More than one variable specified for the argument 'cluster'.",call. = FALSE) }
 
-    #......
     # Convert 'cluster' into a vector
     cluster <- unlist(cluster, use.names = FALSE)
 
   }
 
-  #-----------------------------------------
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
-    #......
     # Check input 'x'
     if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
 
-    #......
     # Check input 'type'
     if (isTRUE(all(!type %in% c("CGM", "CWC")))) { stop("Character string in the argument 'type' does not match with \"CGM\" or \"CWC\".", call. = FALSE) }
 
-    #......
     # Centering Within Cluster
     if (isTRUE(all(type == "CWC") && is.null(cluster))) { stop("Please specify the argument 'cluster' to apply centering within cluster (CWC).", call. = FALSE) }
 
-    #......
     # Check input 'cluster'
     if (isTRUE(!is.null(cluster))) {
 
-      #......
       # Group Mean Centering of a Level 1 predictor
       if (isTRUE(all(type == "CWC"))) {
 
         if (isTRUE(all(na.omit(as.vector(tapply(x, cluster, var, na.rm = TRUE) == 0L))))) {
 
-          stop("Vector in 'x' specified as level-1 predictor does not have any within-cluster variance.",
-               call. = FALSE)
+          stop("Vector in 'x' specified as level-1 predictor does not have any within-cluster variance.", call. = FALSE)
 
         }
 
       }
 
-      #......
       # Group Mean Centering of a Level 2 predictor
       if (isTRUE(all(type == "CGM"))) {
 
         if (isTRUE(any(na.omit(as.vector(tapply(x, cluster, var, na.rm = TRUE) != 0L))))) {
 
-          stop("Vector in 'x' specified as level-2 predictor has within-cluster variance.",
-               call. = FALSE)
+          stop("Vector in 'x' specified as level-2 predictor has within-cluster variance.", call. = FALSE)
 
         }
 
@@ -197,15 +183,15 @@ center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
 
   }
 
-  ##############################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
-  #----------------------------------------
-  # Replace user-specified values with missing values
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
-    #......
     # Replace user-specified values with NAs
     x <- misty::as.na(x, na = as.na, check = check)
 
@@ -214,30 +200,30 @@ center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
 
   }
 
-  #----------------------------------------
-  # Type of centering
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Type of centering ####
 
   type <- ifelse (all(c("CGM", "CWC") %in% type), "CGM", type)
 
-  #-----------------------------------------------------------------------------
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   if (isTRUE(is.null(value))) {
 
-    #----------------------------------------
-    # Centering at the grand mean (CGM)
-
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Centering at the grand mean (CGM) ####
     if (isTRUE(type == "CGM")) {
 
-      #.........................
-      # Single-level or L1 predictor
+      #...................
+      ### Single-level or L1 predictor ####
       if (isTRUE(is.null(cluster))) {
 
         # Mean centering
         object <- as.numeric(scale(x, scale = FALSE))
 
-      #.........................
-      # L2 predictor
+      #...................
+      ### L2 predictor ####
       } else {
 
         # Mean centering
@@ -245,17 +231,16 @@ center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
 
       }
 
-    #----------------------------------------
-    # Centering within cluster (CWC)
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Centering within cluster (CWC) ####
     } else if (isTRUE(type == "CWC")) {
 
-      object <- unname(x - misty::cluster.scores(x, cluster = cluster, fun = "mean",
-                                                 check = check, expand = TRUE))
+      object <- unname(x - misty::cluster.scores(x, cluster = cluster, fun = "mean", check = check, expand = TRUE))
 
     }
 
-  #......
-  # Centering on a user-defined value
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Centering on a user-defined value ####
   } else {
 
     object <- x - value
@@ -264,8 +249,9 @@ center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
 
   }
 
-  ##############################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   return(object)
 

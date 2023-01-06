@@ -45,41 +45,38 @@
 #' chr.gsub(c("[Dd]opa([^ ]*?mine)","fake"), c("Meta\\1","real"), string)
 chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #---------------------
+  if (isTRUE(all(is.na(x)))) { return(x) }
+
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
 
-  ####################################################################################
-  # Input Check
-
-  #---------------------
-  # All elements missing
-  if (isTRUE(all(is.na(x)))) {
-
-    return(x)
-
-  }
-
-  #---------------------
   # Logical vector with TRUE = not missing
   sna <- !is.na(x)
 
-  #......
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
   # Check input 'recycle'
   if (isTRUE(!is.logical(recycle))) { stop("Please specify TRUE or FALSE for the argument 'recycle'.", call. = FALSE) }
 
-  #......
   # Check if arguments 'argument' and 'replacement' have the same length
   if (isTRUE(!recycle & length(pattern) != length(replacement))) { stop("Pattern and replacement vectors must be the same length if recycle = FALSE.", call. = FALSE) }
 
-  ####################################################################################
-  # Functions
+  #_____________________________________________________________________________
+  #
+  # Internal Functions ---------------------------------------------------------
 
-  #----------------------------------------
-  # Fast escape replace
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Fast escape replace ####
   #
   # Fast escape function for limited case where only one pattern
   # provided actually matches anything
@@ -91,7 +88,7 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
   # Argument ...: arguments to pass to gsub()
   fastReplace <- function(string, pattern, replacement, ...) {
 
-    for(i in seq_along(pattern)) {
+    for (i in seq_along(pattern)) {
 
       string <- gsub(pattern[i], replacement[i], string, ...)
 
@@ -101,8 +98,8 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
 
   }
 
-  #----------------------------------------
-  # Filter overlaps from matches
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Filter overlaps from matches ####
   #
   # Helper function used to identify which results from gregexpr()
   # overlap other matches and filter out shorter, overlapped results
@@ -112,21 +109,21 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
   #             a worker function in chr.gsub
   filterOverlap <- function(x) {
 
-    for(i in nrow(x):2L) {
+    for (i in nrow(x):2L) {
 
       s <- x[i, 2L]
       ps <- x[1L:(i - 1L), 2L]
       e <- x[i, 4]
       pe <- x[1L:(i - 1L), 4L]
 
-      if(any(ps <= s & pe >= s)){
+      if (any(ps <= s & pe >= s)){
 
         x <- x[-i, ]
         next
 
       }
 
-      if(any(ps <= e & pe >= e)) {
+      if (any(ps <= e & pe >= e)) {
 
         x <- x[-i,]
 
@@ -140,8 +137,8 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
 
   }
 
-  #----------------------------------------
-  # Get all matches
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Get all matches ####
   #
   # Helper function to be used in a loop to check each pattern
   # provided for matches
@@ -159,10 +156,8 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
 
   }
 
-  ###################
-  # chr.gsub() worker
-  #
-  # The hard worker doing everything for chr.gsub()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## chr.gsub() worker ####
   #
   # Argument string: a character vector where replacements are sought
   # Argument pattern: a character string to be matched in the given character vector
@@ -172,28 +167,28 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
   worker <- function(string, pattern, replacement,...){
 
     x0 <- do.call(rbind, lapply(seq_along(pattern), getMatches, string = string, pattern = pattern, ...))
-    x0 <- matrix(x0[x0[, 2] != -1L, ], ncol = 4L)
+    x0 <- matrix(x0[x0[, 2L] != -1L, ], ncol = 4L)
 
     uid <- unique(x0[, 1L])
-    if(nrow(x0) == 0L) {
+    if (nrow(x0) == 0L) {
 
       return(string)
 
     }
 
-    if(length(unique(x0[, 1])) == 1L) {
+    if (length(unique(x0[, 1])) == 1L) {
 
       return(fastReplace(string, pattern[uid], replacement[uid], ...))
 
     }
 
-    if(nrow(x0) > 1L) {
+    if (nrow(x0) > 1L) {
 
       x <- x0[order(x0[, 3L], decreasing = TRUE), ]
       x <- filterOverlap(x)
       uid <- unique(x[, 1L])
 
-      if(length(uid) == 1L) {
+      if (length(uid) == 1L) {
 
         return(fastReplace(string, pattern[uid], replacement[uid], ...))
 
@@ -202,16 +197,16 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
       x <- x[order(x[, 2L]), ]
     }
 
-    for(i in nrow(x):1L){
+    for (i in nrow(x):1L){
 
       s <- x[i, 2L]
       e <- x[i, 4L]
       p <- pattern[x[i, 1L]]
       r <- replacement[x[i, 1L]]
 
-      pre <- if(s > 1) { substr(string, 1L, s - 1L) } else { "" }
+      pre <- if (s > 1L) { substr(string, 1L, s - 1L) } else { "" }
       r0 <- sub(p,r,substr(string, s, e), ...)
-      end <- if(e < nchar(string)) { substr(string, e + 1, nchar(string)) } else { "" }
+      end <- if (e < nchar(string)) { substr(string, e + 1, nchar(string)) } else { "" }
       string <- paste0(pre, r0, end)
 
     }
@@ -220,13 +215,13 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   if (isTRUE(length(replacement) > length(pattern))) {
 
-    warning("More replacements than search strings provided, some will be dropped.",
-            call. = FALSE)
+    warning("More replacements than search strings provided, some will be dropped.", call. = FALSE)
 
     replacement <- replacement[seq_along(pattern)]
 
@@ -244,6 +239,10 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {
                   USE.NAMES = FALSE, pattern = pattern, replacement = replacement, ...)
 
   x[sna] <- result
+
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(x)
 

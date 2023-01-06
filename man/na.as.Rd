@@ -9,19 +9,22 @@ na.as(x, value, as.na = NULL, check = TRUE)
 \arguments{
 \item{x}{a vector, factor, matrix or data frame.}
 
-\item{value}{a numeric value or character string with which \code{NA} is replaced.}
+\item{value}{a numeric value or character string with which \code{NA} is
+replaced.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \value{
-Returns \code{x} with \code{NA} replaced with the numeric value or character string specified in \code{value}.
+Returns \code{x} with \code{NA} replaced with the numeric value or character
+string specified in \code{value}.
 }
 \description{
-This function replaces \code{NA} in a vector, factor, matrix or data frame with user-specified values in
-the argument \code{value}.
+This function replaces \code{NA} in a vector, factor, matrix or data frame with
+user-specified values in the argument \code{value}.
 }
 \examples{
 #--------------------------------------
@@ -71,11 +74,13 @@ x.df2 <- data.frame(x1 = c(1, 2, 30),
 na.as(x.df2, value = 3, as.na = 30)
 }
 \references{
-Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}. Wadsworth & Brooks/Cole.
+Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}.
+Wadsworth & Brooks/Cole.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}
 
-\code{\link{as.na}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-\code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.prop}}, \code{\link{na.test}}
+\code{\link{as.na}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}},
+\code{\link{na.descript}}, \code{\link{na.indicator}}, \code{\link{na.pattern}},
+\code{\link{na.prop}}, \code{\link{na.test}}
 }

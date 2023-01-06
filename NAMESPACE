@@ -12,12 +12,14 @@ S3method(test.z,default)
 S3method(test.z,formula)
 S3method(print,misty.object)
 export(aov.b)
+export(aov.w)
 export(as.na)
 export(center)
 export(chr.gsub)
 export(chr.omit)
 export(chr.trim)
 export(ci.mean)
+export(ci.mean.w)
 export(ci.mean.diff)
 export(ci.median)
 export(ci.prop)
@@ -91,7 +93,7 @@ importFrom("stats", "aov", "as.formula", "chisq.test", "coefficients",
            "cor", "cor.test", "cov", "cov2cor", "df", "formula", "IQR",
            "median", "model.frame", "model.matrix", "na.omit", "oneway.test", 
            "optimize", "dnorm", "integrate", "pnorm", "rnorm", "setNames", 
-           "pchisq", "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", "sd", 
-           "terms", "t.test", "p.adjust", "pt", "uniroot", "update", 
-           "var", "vcov")
+           "pchisq", "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", 
+           "reshape", "sd", "terms", "time", "t.test", "p.adjust", "pf", "pt", 
+           "uniroot", "update", "var", "vcov")
 importFrom("utils", "combn", "packageDescription", "read.table", "write.csv", "write.csv2", "write.table")

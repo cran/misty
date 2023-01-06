@@ -10,30 +10,37 @@ na.descript(x, table = FALSE, digits = 2, as.na = NULL, write = NULL,
 \arguments{
 \item{x}{a matrix or data frame.}
 
-\item{table}{logical: if \code{TRUE}, a frequency table with number of observed values (\code{"nObs"}),
-percent of observed values (\code{"pObs"}), number of missing values (\code{"nNA"}), and
-percent of missing values (\code{"pNA"}) is printed for each variable on the console.}
+\item{table}{logical: if \code{TRUE}, a frequency table with number of
+observed values (\code{"nObs"}), percent of observed values
+(\code{"pObs"}), number of missing values (\code{"nNA"}),
+and percent of missing values (\code{"pNA"}) is printed for
+each variable on the console.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used for displaying percentages.}
+\item{digits}{an integer value indicating the number of decimal places to
+be used for displaying percentages.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
 
-\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string for writing the results into a Excel file
+naming a file with or without file extension '.xlsx', e.g.,
+\code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type},  matrix or data frame specified in
-\code{x} (\code{data}), specification of function arguments (\code{args}), and
-list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type},  matrix or
+data frame specified in \code{x} (\code{data}), specification of function arguments
+(\code{args}), and list with results (\code{result}).
 }
 \description{
-This function computes descriptive statistics for missing data, e.g. number (%) of incomplete cases, number (%)
-of missing values, and summary statistics for the number (%) of missing values across all variables.
+This function computes descriptive statistics for missing data, e.g. number (%)
+of incomplete cases, number (%) of missing values, and summary statistics for
+the number (%) of missing values across all variables.
 }
 \examples{
 dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
@@ -58,20 +65,23 @@ na.descript(dat, table = TRUE)
 na.descript(dat, table = TRUE, write = "NA_Descriptives.xlsx")
 
 result <- na.descript(dat, table = TRUE, output = FALSE)
-write.result(result, "NA_Descriptives.xlsx") }
+write.result(result, "NA_Descriptives.xlsx")
+}
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
 
 Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
-\emph{Annual Review of Psychology, 60}, 549-576. https://doi.org/10.1146/annurev.psych.58.110405.085530
+\emph{Annual Review of Psychology, 60}, 549-576.
+https://doi.org/10.1146/annurev.psych.58.110405.085530
 
-van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
+van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.).
+Chapman & Hall.
 }
 \seealso{
-\code{\link{write.result}}, \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}},
-\code{\link{na.coverage}}, \code{\link{na.indicator}}, \code{\link{na.pattern}},
-\code{\link{na.prop}}, \code{\link{na.test}}
+\code{\link{write.result}}, \code{\link{as.na}}, \code{\link{na.as}},
+\code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.indicator}},
+\code{\link{na.pattern}}, \code{\link{na.prop}}, \code{\link{na.test}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

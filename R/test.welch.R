@@ -2,80 +2,82 @@
 #'
 #' This function performs Welch's two-sample t-test and Welch's ANOVA including
 #' Games-Howell post hoc test for multiple comparison and provides descriptive
-#' statistics, effect size measures, and a plot showing error bars for confidence
-#' intervals with jittered data points.
+#' statistics, effect size measures, and a plot showing error bars for
+#' difference-adjusted confidence intervals with jittered data points.
 #'
 #' Note that by default Welch's two-sample t-test and Games-Howell post hoc test
 #' reports Cohen's d based on the unweighted standard deviation (i.e.,
 #' \code{weighted = FALSE}) when requesting an effect size measure (i.e.,
 #' \code{effsize = TRUE}) following the recommendation by Delacre et al. (2021).
 #'
-#' @param formula      a formula of the form \code{y ~ group} where \code{y} is
-#'                     a numeric variable giving the data values and \code{group}
-#'                     a numeric variable, character variable or factor with two
-#'                     or more than two values or factor levelsgiving the
-#'                     corresponding groups.
-#' @param data         a matrix or data frame containing the variables in the
-#'                     formula \code{formula}.
-#' @param alternative  a character string specifying the alternative hypothesis,
-#'                     must be one of code{"two.sided"} (default), \code{"greater"}
-#'                     or \code{"less"}. Note that this argument is only used when
-#'                     conducting Welch's two-sample t-test.
-#' @param posthoc      logical: if \code{TRUE}, Games-Howell post hoc test for
-#'                     multiple comparison is conducted when performing Welch's
-#'                     ANOVA.
-#' @param conf.level   a numeric value between 0 and 1 indicating the confidence
-#'                     level of the interval.
-#' @param hypo         logical: if \code{TRUE}, null and alternative hypothesis
-#'                     are shown on the console.
-#' @param descript     logical: if \code{TRUE}, descriptive statistics are shown
-#'                     on the console.
-#' @param effsize      logical: if \code{TRUE}, effect size measure Cohen's d for
-#'                     Welch's two-sample t-test (see \code{\link{cohens.d}}),
-#'                     \eqn{\eta^2} and \eqn{\omega^2} for Welch's ANOVA and
-#'                     Cohen's d for the post hoc tests are shown on the console.
-#' @param weighted     logical: if \code{TRUE}, the weighted pooled standard
-#'                     deviation is used to compute Cohen's d.
-#' @param ref          a numeric value or character string indicating the reference
-#'                     group. The standard deviation of the reference group is used
-#'                     to standardized the mean difference to compute Cohen's d.
-#' @param correct      logical: if \code{TRUE}, correction factor to remove positive
-#'                     bias in small samples is used.
-#' @param plot         logical: if \code{TRUE}, a plot showing error bars for
-#'                     confidence intervals is drawn.
-#' @param point.size   a numeric value indicating the \code{size} aesthetic for
-#'                     the point representing the mean value.
-#' @param error.width  a numeric value indicating the horizontal bar width of
-#'                     the error bar.
-#' @param xlab         a character string specifying the labels for the x-axis.
-#' @param ylab         a character string specifying the labels for the y-axis.
-#' @param ylim         a numeric vector of length two specifying limits of the
-#'                     limits of the y-axis.
-#' @param breaks       a numeric vector specifying the points at which tick-marks
-#'                     are drawn at the y-axis.
-#' @param jitter       logical: if \code{TRUE} (default), jittered data points
-#'                     are drawn.
-#' @param jitter.size  a numeric value indicating the \code{size} aesthetic
-#'                     for the jittered data points.
-#' @param jitter.width a numeric value indicating the amount of vertical and
-#'                     horizontal jitter.
-#' @param jitter.alpha a numeric value indicating the opacity of the jittered
-#'                     data points.
-#' @param title        a character string specifying the text for the title for
-#'                     the plot.
-#' @param subtile      a character string specifying the text for the subtitle for
-#'                     the plot.
-#' @param digits       an integer value indicating the number of decimal places
-#'                     to be used for displaying descriptive statistics and
-#'                     confidence interval.
-#' @param p.digits     an integer value indicating the number of decimal places
-#'                     to be used for displaying the \emph{p}-value.
-#' @param as.na        a numeric vector indicating user-defined missing values,
-#'                     i.e. these values are converted to \code{NA} before conducting
-#'                     the analysis.
-#' @param check        logical: if \code{TRUE}, argument specification is checked.
-#' @param output       logical: if \code{TRUE}, output is shown on the console.
-#' @param ...          further arguments to be passed to or from methods.
+#' @param formula       a formula of the form \code{y ~ group} where \code{y} is
+#'                      a numeric variable giving the data values and \code{group}
+#'                      a numeric variable, character variable or factor with two
+#'                      or more than two values or factor levels giving the
+#'                      corresponding groups.
+#' @param data          a matrix or data frame containing the variables in the
+#'                      formula \code{formula}.
+#' @param alternative   a character string specifying the alternative hypothesis,
+#'                      must be one of code{"two.sided"} (default), \code{"greater"}
+#'                      or \code{"less"}. Note that this argument is only used when
+#'                      conducting Welch's two-sample t-test.
+#' @param posthoc       logical: if \code{TRUE}, Games-Howell post hoc test for
+#'                      multiple comparison is conducted when performing Welch's
+#'                      ANOVA.
+#' @param conf.level    a numeric value between 0 and 1 indicating the confidence
+#'                      level of the interval.
+#' @param hypo          logical: if \code{TRUE}, null and alternative hypothesis
+#'                      are shown on the console.
+#' @param descript      logical: if \code{TRUE}, descriptive statistics are shown
+#'                      on the console.
+#' @param effsize       logical: if \code{TRUE}, effect size measure Cohen's d for
+#'                      Welch's two-sample t-test (see \code{\link{cohens.d}}),
+#'                      \eqn{\eta^2} and \eqn{\omega^2} for Welch's ANOVA and
+#'                      Cohen's d for the post hoc tests are shown on the console.
+#' @param weighted      logical: if \code{TRUE}, the weighted pooled standard
+#'                      deviation is used to compute Cohen's d.
+#' @param ref           a numeric value or character string indicating the reference
+#'                      group. The standard deviation of the reference group is used
+#'                      to standardized the mean difference to compute Cohen's d.
+#' @param correct       logical: if \code{TRUE}, correction factor to remove positive
+#'                      bias in small samples is used.
+#' @param plot          logical: if \code{TRUE}, a plot showing error bars for
+#'                      confidence intervals is drawn.
+#' @param point.size    a numeric value indicating the \code{size} aesthetic for
+#'                      the point representing the mean value.
+#' @param adjust        logical: if \code{TRUE} (default), difference-adjustment
+#'                      for the confidence intervals is applied.
+#' @param error.width   a numeric value indicating the horizontal bar width of
+#'                      the error bar.
+#' @param xlab          a character string specifying the labels for the x-axis.
+#' @param ylab          a character string specifying the labels for the y-axis.
+#' @param ylim          a numeric vector of length two specifying limits of the
+#'                      limits of the y-axis.
+#' @param breaks        a numeric vector specifying the points at which tick-marks
+#'                      are drawn at the y-axis.
+#' @param jitter        logical: if \code{TRUE} (default), jittered data points
+#'                      are drawn.
+#' @param jitter.size   a numeric value indicating the \code{size} aesthetic
+#'                      for the jittered data points.
+#' @param jitter.width  a numeric value indicating the amount of horizontal jitter.
+#' @param jitter.height a numeric value indicating the amount of vertical jitter.
+#' @param jitter.alpha  a numeric value indicating the opacity of the jittered
+#'                      data points.
+#' @param title         a character string specifying the text for the title for
+#'                      the plot.
+#' @param subtitle      a character string specifying the text for the subtitle for
+#'                      the plot.
+#' @param digits        an integer value indicating the number of decimal places
+#'                      to be used for displaying descriptive statistics and
+#'                      confidence interval.
+#' @param p.digits      an integer value indicating the number of decimal places
+#'                      to be used for displaying the \emph{p}-value.
+#' @param as.na         a numeric vector indicating user-defined missing values,
+#'                      i.e. these values are converted to \code{NA} before conducting
+#'                      the analysis.
+#' @param check         logical: if \code{TRUE}, argument specification is checked.
+#' @param output        logical: if \code{TRUE}, output is shown on the console.
+#' @param ...           further arguments to be passed to or from methods.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -218,9 +220,10 @@
 test.welch <- function(formula, data, alternative = c("two.sided", "less", "greater"),
                        posthoc = TRUE, conf.level = 0.95, hypo = TRUE, descript = TRUE,
                        effsize = FALSE, weighted = FALSE, ref = NULL, correct = FALSE,
-                       plot = FALSE, point.size = 4, error.width = 0.1,
+                       plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
                        xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
-                       jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.1,
+                       jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
+                       jitter.height = 0, jitter.alpha = 0.1,
                        title = "",  subtitle = "Confidence Interval",
                        digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
                        output = TRUE, ...) {
@@ -382,7 +385,7 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
   if (isTRUE(sample == "two")) {
 
     # Descriptive statistics
-    ci <- misty::df.rename(misty::ci.mean.diff(formula = formula, data = data,  paired = FALSE, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)$result,
+    ci <- misty::df.rename(misty::ci.mean.diff(formula = formula, data = data,  paired = FALSE, adjust = adjust, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)$result,
                            from = c("between", "low", "upp"), to = c("group", "m.low", "m.upp"))
 
     # Cohen's d
@@ -405,7 +408,7 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
     result <- data.frame(cbind(ci[, c("group", "n", "nNA", "m", "sd", "m.diff")],
                                se = c(NA, welch$stderr), ci[, c("m.low", "m.upp")],
                                t = c(NA, welch$statistic)*-1L, df = c(NA, welch$parameter), pval = c(NA, welch$p.value),
-                               d = d$d, low = d$low, upp = d$upp),
+                               d = d$d, d.low = d$low, d.upp = d$upp),
                          row.names = NULL)
 
     sample <- "two"
@@ -416,7 +419,7 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
 
     #....................
     # Descriptive statistics
-    ci <- misty::ci.mean(y, group = group, output = FALSE)$result[, -c(2L, 5L)]
+    ci <- misty::ci.mean(y, group = group, adjust = adjust, output = FALSE)$result[, -c(2L, 5L)]
 
     #....................
     # ANOVA table
@@ -537,7 +540,7 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
   # Plot data
 
   # Confidence interval
-  plot.ci <- misty::ci.mean(data[, y.var], group = data[, group.var], conf.level = conf.level, output = FALSE)$result
+  plot.ci <- misty::ci.mean(data[, y.var], group = data[, group.var], adjust = adjust, conf.level = conf.level, output = FALSE)$result
 
   plotdat <-  data.frame(group = group, y = y, row.names = NULL)
 
@@ -550,7 +553,7 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
 
   ###
   # Add jittered points
-  if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, size = jitter.size) }
+  if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size) }
 
   p <- p + ggplot2::geom_point(data = plot.ci, ggplot2::aes(group, m), stat = "identity", size = point.size) +
          ggplot2::geom_errorbar(data = plot.ci, ggplot2::aes(group, m, ymin = low, ymax = upp), width = error.width) +
@@ -572,16 +575,17 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
                  type = "test.welch",
                  sample = sample,
                  data = data.frame(y, group, stringsAsFactors = FALSE),
+                 formula = formula,
                  plot = p,
-                 args = list(formula = formula, alternative = alternative,
+                 args = list(alternative = alternative, posthoc = posthoc,
                              conf.level = conf.level, hypo = hypo, descript = descript,
                              effsize = effsize, weighted = weighted, ref = ref, correct = correct,
                              plot = plot, point.size = point.size, error.width = error.width,
                              xlab = xlab, ylab = ylab, ylim = ylim, breaks = breaks,
-                             jitter = jitter, jitter.size = jitter.size, jitter.alpha = jitter.alpha,
-                             jitter.width = jitter.width, title = title, subtitle = subtitle,
-                             digits = digits, p.digits = p.digits, as.na = as.na,
-                             check = check, output = output),
+                             jitter = jitter, jitter.size = jitter.size, jitter.width = jitter.width,
+                             jitter.height = jitter.height, jitter.alpha = jitter.alpha,
+                             title = title, subtitle = subtitle, digits = digits, p.digits = p.digits,
+                             as.na = as.na, check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"

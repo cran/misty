@@ -8,30 +8,37 @@ na.pattern(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
            check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame with incomplete data, where missing values are coded as \code{NA}.}
+\item{x}{a matrix or data frame with incomplete data, where missing
+values are coded as \code{NA}.}
 
-\item{order}{logical: if \code{TRUE}, variables are ordered from left to right in increasing order
-of missing values.}
+\item{order}{logical: if \code{TRUE}, variables are ordered from left to
+right in increasing order of missing values.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used for displaying percentages.}
+\item{digits}{an integer value indicating the number of decimal places to
+be used for displaying percentages.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to NA before conducting the analysis.}
+i.e. these values are converted to NA before conducting the
+analysis.}
 
-\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string for writing the results into a Excel file
+naming a file with or without file extension '.xlsx', e.g.,
+\code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-\code{x} (\code{data}), specification of function arguments (\code{args}), list with results
-(\code{result}), and a vector with the number of missing data pattern for each case (\code{pattern}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, matrix or
+data frame specified in \code{x} (\code{data}), specification of function arguments
+(\code{args}), list with results (\code{result}), and a vector with the number
+of missing data pattern for each case (\code{pattern}).
 }
 \description{
-This function computes a summary of missing data patterns, i.e., number (%) of cases with a specific missing data pattern.
+This function computes a summary of missing data patterns, i.e., number (%) of
+cases with a specific missing data pattern.
 }
 \examples{
 dat <- data.frame(x = c(1, NA, NA, 6, 3),
@@ -51,20 +58,23 @@ dat[!dat.pattern$pattern \%in\% c(2, 5), ]
 result <- na.pattern(dat, write = "NA_Pattern.xlsx")
 
 result <- na.pattern(dat, output = FALSE)
-write.result(result, "NA_Pattern.xlsx") }
+write.result(result, "NA_Pattern.xlsx")
+}
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
 
 Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
-\emph{Annual Review of Psychology, 60}, 549-576. https://doi.org/10.1146/annurev.psych.58.110405.085530
+\emph{Annual Review of Psychology, 60}, 549-576.
+https://doi.org/10.1146/annurev.psych.58.110405.085530
 
-van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
+van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.).
+Chapman & Hall.
 }
 \seealso{
-\code{\link{write.result}}, \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}},
-\code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.indicator}},
-\code{\link{na.prop}}, \code{\link{na.test}}
+\code{\link{write.result}}, \code{\link{as.na}}, \code{\link{na.as}},
+\code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
+\code{\link{na.indicator}}, \code{\link{na.prop}}, \code{\link{na.test}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

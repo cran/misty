@@ -11,55 +11,70 @@ read.xlsx(file, sheet = NULL, header = TRUE, range = NULL,
           as.data.frame = TRUE, check = TRUE)
 }
 \arguments{
-\item{file}{a character string indicating the name of the Excel data file
-with or without file extension '.xlsx', e.g., \code{"My_Excel_Data.xlsx"}
+\item{file}{a character string indicating the name of the Excel data
+file with or without file extension '.xlsx', e.g., \code{"My_Excel_Data.xlsx"}
 or \code{"My_Excel_Data"}.}
 
-\item{sheet}{a character string indicating the name of a sheet or a numeric value indicating
-the position of the sheet to read. By default the first sheet will be read.}
+\item{sheet}{a character string indicating the name of a sheet or a numeric
+value indicating the position of the sheet to read. By default
+the first sheet will be read.}
 
-\item{header}{logical: if \code{TRUE} (default), the first row is used as column names, if \code{FALSE}
-default names are used. A character vector giving a name for each column can also be used.
-If \code{coltypes} as a vector is provided, \code{colnames} can have one entry per column, i.e.
-have the same length as \code{coltypes}, or one entry per unskipped column.}
+\item{header}{logical: if \code{TRUE} (default), the first row is used
+as column names, if \code{FALSE} default names are used.
+A character vector giving a name for each column can also
+be used. If \code{coltypes} as a vector is provided,
+\code{colnames} can have one entry per column, i.e. have
+the same length as \code{coltypes}, or one entry per unskipped
+column.}
 
-\item{range}{a character string indicating the cell range to read from, e.g. typical Excel ranges
-like \code{"B3:D87"}, possibly including the sheet name like \code{"Data!B2:G14"}.
-Interpreted strictly, even if the range forces the inclusion of leading or trailing
-empty rows or columns. Takes precedence over \code{skip}, \code{nmax} and \code{sheet}.}
+\item{range}{a character string indicating the cell range to read from,
+e.g. typical Excel ranges like \code{"B3:D87"}, possibly
+including the sheet name like \code{"Data!B2:G14"}. Interpreted
+strictly, even if the range forces the inclusion of leading
+or trailing empty rows or columns. Takes precedence over
+\code{skip}, \code{nmax} and \code{sheet}.}
 
-\item{coltypes}{a character vector containing one entry per column from these options \code{"skip"},
-\code{"guess"}, \code{"logical"}, \code{"numeric"}, \code{"date"}, \code{"text"} or
-\code{"list"}. If exactly one \code{coltype} is specified, it will be recycled. By default
-(i.e., \code{coltypes = NULL}) coltypes will be guessed. The content of a cell in a skipped
-column is never read and that column will not appear in the data frame output. A list cell
-loads a column as a list of length 1 vectors, which are typed using the type guessing logic
-from \code{coltypes = NULL}, but on a cell-by-cell basis.}
+\item{coltypes}{a character vector containing one entry per column from
+these options \code{"skip"}, \code{"guess"}, \code{"logical"},
+\code{"numeric"}, \code{"date"}, \code{"text"} or \code{"list"}.
+If exactly one \code{coltype} is specified, it will be recycled.
+By default (i.e., \code{coltypes = NULL}) coltypes will
+be guessed. The content of a cell in a skipped column is
+never read and that column will not appear in the data frame
+output. A list cell loads a column as a list of length 1
+vectors, which are typed using the type guessing logic from
+\code{coltypes = NULL}, but on a cell-by-cell basis.}
 
-\item{na}{a character vector indicating strings to interpret as missing values. By default, blank
-cells will be treated as missing data.}
+\item{na}{a character vector indicating strings to interpret as missing
+values. By default, blank cells will be treated as missing data.}
 
-\item{trim}{logical: if \code{TRUE} (default), leading and trailing whitespace will be trimmed.}
+\item{trim}{logical: if \code{TRUE} (default), leading and trailing
+whitespace will be trimmed.}
 
-\item{skip}{a numeric value indicating the minimum number of rows to skip before reading anything,
-be it column names or data. Leading empty rows are automatically skipped, so this is a
-lower bound. Ignored if the argument \code{range} is specified.}
+\item{skip}{a numeric value indicating the minimum number of rows to
+skip before reading anything, be it column names or data.
+Leading empty rows are automatically skipped, so this is
+a lower bound. Ignored if the argument \code{range} is specified.}
 
-\item{nmax}{a numeric value indicating the maximum number of data rows to read. Trailing empty rows
-are automatically skipped, so this is an upper bound on the number of rows in the returned
+\item{nmax}{a numeric value indicating the maximum number of data rows
+to read. Trailing empty rows are automatically skipped, so
+this is an upper bound on the number of rows in the returned
 data frame. Ignored if the argument \code{range} is specified.}
 
-\item{guessmax}{a numeric value indicating the maximum number of data rows to use for guessing column types.}
+\item{guessmax}{a numeric value indicating the maximum number of data rows
+to use for guessing column types.}
 
-\item{progress}{display a progress spinner? By default, the spinner appears only in an interactive session,
-outside the context of knitting a document, and when the call is likely to run for several
+\item{progress}{display a progress spinner? By default, the spinner appears
+only in an interactive session, outside the context of knitting
+a document, and when the call is likely to run for several
 seconds or more.}
 
-\item{name.repair}{a character string indicating the handling of column names. By default, the function ensures
-column names are not empty and are unique.}
+\item{name.repair}{a character string indicating the handling of column names.
+By default, the function ensures column names are not empty
+and are unique.}
 
-\item{as.data.frame}{logical: if \code{TRUE} (default), function returns a regular data frame (default);
-if \code{FALSE} function returns a tibble.}
+\item{as.data.frame}{logical: if \code{TRUE} (default), function returns a regular
+data frame (default); if \code{FALSE} function returns a tibble.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
@@ -67,16 +82,15 @@ if \code{FALSE} function returns a tibble.}
 Returns a data frame or tibble.
 }
 \description{
-This function calls the \code{read_xlsx()} function in the \pkg{readxl} package by Hadley Wickham and Jennifer Bryan (2019)
-to read an Excel file (.xlsx).
+This function calls the \code{read_xlsx()} function in the \pkg{readxl} package
+by Hadley Wickham and Jennifer Bryan (2019) to read an Excel file (.xlsx).
 }
 \examples{
 \dontrun{
-
 # Read Excel file (.xlsx)
 read.xlsx("data.xlsx")
 
-# Read Exce l file (.xlsx), use default names as column names
+# Read Excel file (.xlsx), use default names as column names
 read.xlsx("data.xlsx", header = FALSE)
 
 # Read Excel file (.xlsx), interpret -99 as missing values

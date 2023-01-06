@@ -36,7 +36,7 @@
 #' @param formula        a formula of the form \code{y ~ group} for one outcome variable or
 #'                       \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where
 #'                       \code{y} is a numeric variable with 0 and 1 values and \code{group} a numeric
-#'                       variable, character variable or factor with two values or factor levelsgiving
+#'                       variable, character variable or factor with two values or factor levels giving
 #'                       the corresponding group.
 #' @param data           a matrix or data frame containing the variables in the formula \code{formula}.
 #' @param na.omit        logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis

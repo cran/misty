@@ -48,24 +48,28 @@
 write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var = FALSE,
                         na = -99, check = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Matrix or data frame for the argument 'x'?
   if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #-----------------------------------------
-  # As data frame
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #......
-  # Numeric variables
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Numeric variables ####
+
   x.numeric <- vapply(x, is.numeric, FUN.VALUE = logical(1))
 
   if (isTRUE(any(!x.numeric))) {
@@ -81,30 +85,24 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
 
   }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'input'
     if (isTRUE(!is.logical(input))) { stop("Please specify TRUE or FALSE for the argument 'input'.", call. = FALSE) }
 
-    #......
     # Check input 'n.var'
     if (isTRUE(n.var %% 1L != 0L || n.var < 0L)) { stop("Specify a positive integer number for the argument 'n.var'.", call. = FALSE) }
 
-    #......
     # Check input 'var'
     if (isTRUE(!is.logical(var))) { stop("Please specify TRUE or FALSE for the argument 'var'.", call. = FALSE) }
 
-    #......
     # Variable names with .
     names. <- grep("\\.", names(x))
 
@@ -112,12 +110,10 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
 
       names(x) <- gsub("\\.", "_", names(x))
 
-      warning("Special character \".\" (dot) in the variable names were replaced with  \"_\" (underscore).",
-              call. = FALSE)
+      warning("Special character \".\" (dot) in the variable names were replaced with  \"_\" (underscore).", call. = FALSE)
 
     }
 
-    #......
     # Variable names begin with an alphabet character
     names.a <- tolower(substr(names(x), 1L, 1L)) %in% letters
 
@@ -128,7 +124,6 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
 
     }
 
-    #......
     # Variable names have max. 8 characters
     names.l <- nchar(names(x)) <= 8L
 
@@ -141,26 +136,28 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
 
   }
 
-  ####################################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #-----------------------------------------
-  # File extension .dat, .txt. or .csv
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## File extension .dat, .txt. or .csv ####
 
   file <- ifelse(length(grep(".dat", file)) == 0L && length(grep(".txt", file)) == 0L && length(grep(".csv", file)) == 0L,
                  file <- paste0(file, ".dat"), file)
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #-----------------------------------------
-  # Save .dat file
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Save .dat file ####
 
   write.table(x, file = file, quote = FALSE, na = as.character(na),
               row.names = FALSE, col.names = FALSE)
 
-  #-----------------------------------------
-  # Save variable names
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Save variable names ####
 
   if (isTRUE(var)) {
 
@@ -171,8 +168,8 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
 
   }
 
-  #-----------------------------------------
-  # Save Mplus input
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Save Mplus input ####
 
   if (isTRUE(input)) {
 
@@ -180,7 +177,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
     var.n <- length(names(x)) / n.var
 
     temp <- NULL
-    #....
+
     # Length of variable names greater than n.var
     if (isTRUE(floor(var.n) > 0L)) {
 
@@ -205,7 +202,6 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
 
       }
 
-    #....
     # Length of variable names smaller than n.var
     } else {
 
@@ -214,7 +210,6 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
 
     }
 
-    #....
     # Mplus input template
     temp <- paste0("DATA:       FILE IS ", file, ";\n\n",
                    "VARIABLE:   NAMES ARE \n", paste(temp, collapse = ""), "\n",

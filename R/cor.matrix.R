@@ -46,9 +46,9 @@
 #'                   triangular, \code{lower} (default) for the lower triangular,
 #'                   and \code{upper} for the upper triangular.
 #' @param p.adj      a character string indicating an adjustment method for multiple
-#'                   testing based on \code{\link{p.adjust}}, i.e., \code{none} (default),
-#'                   \code{bonferroni}, \code{holm}, \code{hochberg}, \code{hommel},
-#'                   \code{BH}, \code{BY}, or \code{fdr}.
+#'                   testing based on \code{\link{p.adjust}}, i.e., \code{none} ,
+#'                   \code{bonferroni}, \code{holm} (default), \code{hochberg},
+#'                   \code{hommel}, \code{BH}, \code{BY}, or \code{fdr}.
 #' @param continuity logical: if \code{TRUE} (default), continuity correction is
 #'                   used for testing Spearman's rank-order correlation coefficient
 #'                   and Kendall's Tau-b correlation.
@@ -603,11 +603,11 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
 
   if (isTRUE(method %in% c("pearson", "spearman"))) {
 
-    if (isTRUE(length(print) == 1 && "all" %in% print)) { print <- c("cor", "n", "stat", "df", "p") }
+    if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("cor", "n", "stat", "df", "p") }
 
   } else {
 
-    if (isTRUE(length(print) == 1 && "all" %in% print)) { print <- c("cor", "n", "stat", "p") }
+    if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("cor", "n", "stat", "p") }
 
   }
 

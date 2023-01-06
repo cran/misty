@@ -1,13 +1,16 @@
 #' Omit Strings
 #'
-#' This function omits user-specified values or strings from a numeric vector, character vector or factor.
+#' This function omits user-specified values or strings from a numeric vector,
+#' character vector or factor.
 #'
-#' @param x           a numeric vector, character vector or factor.
-#' @param omit        a numeric vector or character vector indicating values or strings to be omitted
-#'                    from the vector \code{x}, the default setting is the empty strings \code{""}.
-#' @param na.omit     logical: if \code{TRUE}, missing values (\code{NA}) are also omitted from the
-#'                    vector.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
+#' @param x       a numeric vector, character vector or factor.
+#' @param omit    a numeric vector or character vector indicating values or
+#'                strings to be omitted
+#'                from the vector \code{x}, the default setting is the empty
+#'                strings \code{""}.
+#' @param na.omit logical: if \code{TRUE}, missing values (\code{NA}) are also
+#'                omitted from the vector.
+#' @param check   logical: if \code{TRUE}, argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -56,31 +59,28 @@
 #' chr.omit(x.factor, omit = c("a", "c", "e", "g"))
 chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
-  ####################################################################################
-  # Input check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector, character vector or factor for the argument 'x'", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #---------------------
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
 
-  #-----------------------------------------
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #.............
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
-    #.............
     # Check input 'omit': Values in 'x'?
     na.x <- vapply(omit, function(y) !y %in% x, FUN.VALUE = logical(1))
     if (isTRUE(any(na.x))) {
@@ -89,7 +89,6 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
                      paste(omit[na.x], collapse = ", ")), call. = FALSE)
     }
 
-    #.............
     # Check input 'na.omit'
     if (isTRUE(!is.logical(na.omit))) {
 
@@ -99,11 +98,12 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #-----------------------------------
-  # Omit NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Omit NA ####
 
   if (isTRUE(na.omit)) {
 
@@ -111,8 +111,8 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   }
 
-  #-----------------------------------
-  # Omit values or strings
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Omit values or strings ####
 
   object <- x[which(!x %in% omit)]
 
@@ -123,8 +123,9 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
 
   }
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(object)
 

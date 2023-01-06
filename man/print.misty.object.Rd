@@ -6,58 +6,71 @@
 \usage{
 \method{print}{misty.object}(x,
       print = x$args$print, tri = x$args$tri, freq = x$args$freq,
-      hypo = x$args$hypo, descript = x$args$descript, effsize = x$args$effsize,
-      posthoc = x$args$posthoc, split = x$args$split, table = x$args$table,
-      digits = x$args$digits, p.digits = x$args$p.digits, icc.digits = x$args$icc.digits,
-      sort.var = x$args$sort.var, order = x$args$order, check = TRUE, ...)
+      hypo = x$args$hypo, descript = x$args$descript, epsilon = x$args$epsilon,
+      effsize = x$args$effsize, posthoc = x$args$posthoc, split = x$args$split,
+      table = x$args$table, digits = x$args$digits, p.digits = x$args$p.digits,
+      icc.digits = x$args$icc.digits, sort.var = x$args$sort.var,
+      order = x$args$order, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{misty.object} object.}
 
-\item{print}{a character string or character vector indicating which results to to be printed
-on the console.}
+\item{print}{a character string or character vector indicating which
+results to to be printed on the console.}
 
-\item{tri}{a character string or character vector indicating which triangular of the matrix
-to show on the console, i.e., \code{both} for upper and lower triangular,
-\code{lower} for the lower triangular, and \code{upper} for the upper
+\item{tri}{a character string or character vector indicating which
+triangular of the matrix to show on the console, i.e.,
+\code{both} for upper and lower triangular, \code{lower}
+for the lower triangular, and \code{upper} for the upper
 triangular.}
 
-\item{freq}{logical: if \code{TRUE}, absolute frequencies will be included in the cross
-tabulation (\code{crosstab()} function).}
+\item{freq}{logical: if \code{TRUE}, absolute frequencies will be included
+in the cross tabulation (\code{crosstab()} function).}
 
-\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis are shown on the console
-(\code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}} function).}
+\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis are
+shown on the console (\code{\link{test.t}},
+\code{\link{test.welch}}, \code{\link{test.z}} function).}
 
-\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown on the console
-(\code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}} function).}
+\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown on
+the console (\code{\link{test.t}}, \code{\link{test.welch}},
+\code{\link{test.z}} function).}
 
-\item{effsize}{logical: if \code{TRUE}, effect size measure(s) is shown on the console
-(\code{\link{test.t}}, \code{\link{test.welch}}, \code{\link{test.z}} function).}
+\item{epsilon}{logical: if \code{TRUE}, box indices of sphericity (epsilon)
+are shown on the console (\code{\link{aov.w}}).}
 
-\item{posthoc}{logical: if \code{TRUE}, post hoc test for multiple comparison is
-shown on the console (\code{\link{test.welch}})}.
+\item{effsize}{logical: if \code{TRUE}, effect size measure(s) is shown on
+the console (\code{\link{test.t}}, \code{\link{test.welch}},
+\code{\link{test.z}} function).
+\code{\link{test.z}} function).}
 
-\item{split}{logical: if \code{TRUE}, output table is split by variables when specifying more than
-one variable in \code{x} (\code{\link{freq}}).}
+\item{posthoc}{logical: if \code{TRUE},post hoc test for multiple comparison
+is shown on the console (\code{\link{test.welch}}).}
 
-\item{table}{logical: if \code{TRUE}, a frequency table with number of observed values (\code{"nObs"}),
-percent of observed values (\code{"pObs"}), number of missing values (\code{"nNA"}), and
-percent of missing values (\code{"pNA"}) is printed for each variable on the console
-(\code{na.descript()} function).}
+\item{split}{logical: if \code{TRUE}, output table is split by variables
+when specifying more than one variable in \code{x}
+(\code{\link{freq}}).}
 
-\item{digits}{an integer value indicating the number of decimal places digits to be used for
-displaying results.}
+\item{table}{logical: if \code{TRUE}, a frequency table with number of
+observed values (\code{"nObs"}), percent of observed values
+(\code{"pObs"}), number of missing values (\code{"nNA"}),
+and percent of missing values (\code{"pNA"}) is printed for
+each variable on the console (\code{na.descript()} function).}
 
-\item{p.digits}{an integer indicating the number of decimal places to be used for displaying
-\emph{p}-values.}
+\item{digits}{an integer value indicating the number of decimal places digits
+to be used for displaying results.}
 
-\item{icc.digits}{an integer indicating the number of decimal places to be used for displaying
-intraclass correlation coefficients (\code{multilevel.descript()} and
-\code{multilevel.icc()} function).}
+\item{p.digits}{an integer indicating the number of decimal places to be used
+for displaying \emph{p}-values.}
+
+\item{icc.digits}{an integer indicating the number of decimal places to be used
+for displaying intraclass correlation coefficients
+(\code{multilevel.descript()} and \code{multilevel.icc()}
+function).}
 
 \item{sort.var}{logical: if \code{TRUE}, output is sorted by variables.}
 
-\item{order}{logical: if \code{TRUE}, variables are ordered from left to right in increasing order
+\item{order}{logical: if \code{TRUE}, variables are ordered from left to
+right in increasing order
 of missing values (\code{na.descript()} function).}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
@@ -68,16 +81,19 @@ of missing values (\code{na.descript()} function).}
 This function prints the \code{misty.object} object
 }
 \seealso{
-\code{\link{aov.b}}, \code{\link{item.alpha}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}},
-\code{\link{ci.median}}, \code{\link{ci.prop.diff}}, \code{\link{ci.prop}}, \code{\link{ci.sd}},
-\code{\link{ci.var}}, \code{\link{cohens.d}}, \code{\link{collin.diag}}, \code{\link{cor.cont}},
-\code{\link{cor.matrix}}, \code{\link{cor.cramer}}, \code{\link{crosstab}}, \code{\link{descript}},
-\code{\link{eta.sq}}, \code{\link{freq}}, \code{\link{test.levene}}, \code{\link{multilevel.descript}},
-\code{\link{multilevel.r2}}, \code{\link{na.auxiliary}}, \code{\link{na.coverage}},
-\code{\link{na.descript}}, \code{\link{na.pattern}}, \code{\link{item.omega}},
-\code{\link{cor.phi}}, \code{\link{cor.poly}}, \code{\link{size.cor}}, \code{\link{size.mean}},
-\code{\link{size.prop}}, \code{\link{test.levene}}, \code{\link{test.t}}, \code{\link{test.welch}},
-\code{\link{test.z}}.
+\code{\link{aov.b}}, \code{\link{aov.w}}, \code{\link{aov.w}}, \code{\link{item.alpha}},
+\code{\link{ci.mean.diff}}, \code{\link{ci.mean}}, \code{\link{ci.mean.w}},
+\code{\link{ci.median}}, \code{\link{ci.prop.diff}}, \code{\link{ci.prop}},
+\code{\link{ci.sd}}, \code{\link{ci.var}}, \code{\link{cohens.d}},
+\code{\link{collin.diag}}, \code{\link{cor.cont}}, \code{\link{cor.matrix}},
+\code{\link{cor.cramer}}, \code{\link{crosstab}}, \code{\link{descript}},
+\code{\link{eta.sq}}, \code{\link{freq}}, \code{\link{test.levene}},
+\code{\link{multilevel.descript}}, \code{\link{multilevel.r2}}, \code{\link{na.auxiliary}},
+\code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.pattern}},
+\code{\link{item.omega}}, \code{\link{cor.phi}}, \code{\link{cor.poly}},
+\code{\link{size.cor}}, \code{\link{size.mean}}, \code{\link{size.prop}},
+\code{\link{test.levene}}, \code{\link{test.t}}, \code{\link{test.welch}},
+\code{\link{test.z}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

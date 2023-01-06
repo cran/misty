@@ -10,20 +10,22 @@ write.mplus(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8,
 \arguments{
 \item{x}{a matrix or data frame to be written to a tab-delimited file.}
 
-\item{file}{a character string naming a file with or without the file extension '.dat',
-e.g., \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.}
+\item{file}{a character string naming a file with or without the file extension
+'.dat', e.g., \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.}
 
-\item{input}{logical: if \code{TRUE} (default), Mplus input template is written in a text file named
-according to the argument\code{file} with the extension \code{_INPUT.inp}.}
+\item{input}{logical: if \code{TRUE} (default), Mplus input template is written
+in a text file named according to the argument\code{file} with the
+extension \code{_INPUT.inp}.}
 
-\item{n.var}{a numeric value indicating the number of variables in each line under \code{NAMES ARE}
-in the the Mplus input template.}
+\item{n.var}{a numeric value indicating the number of variables in each line
+under \code{NAMES ARE} in the the Mplus input template.}
 
-\item{var}{logical: if \code{TRUE}, variable names are written in a text file named
-according to the argument\code{file} with the extension \code{_VARNAMES.txt}.}
+\item{var}{logical: if \code{TRUE}, variable names are written in a text file
+named according to the argument\code{file} with the extension
+\code{_VARNAMES.txt}.}
 
-\item{na}{a numeric value or character string representing missing values (\code{NA})
-in the data set.}
+\item{na}{a numeric value or character string representing missing values
+(\code{NA}) in the data set.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
@@ -31,14 +33,13 @@ in the data set.}
 None.
 }
 \description{
-This function writes a matrix or data frame to a tab-delimited file without variable names,
-a Mplus input template, and a text file with variable names. Note that only numeric variables
-are allowed, i.e., non-numeric variables will be removed from the data set. Missing data
-will be coded as a single numeric value.
+This function writes a matrix or data frame to a tab-delimited file without variable
+names, a Mplus input template, and a text file with variable names. Note that only
+numeric variables are allowed, i.e., non-numeric variables will be removed from
+the data set. Missing data will be coded as a single numeric value.
 }
 \examples{
 \dontrun{
-
 # Write Mplus Data File and a Mplus input template
 write.mplus(mtcars)
 
@@ -49,7 +50,8 @@ write.mplus(mtcars, file = "mtcars.dat", n.var = 4, var = TRUE, na = -999)
 }
 }
 \references{
-Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.). Muthen & Muthen.
+Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
+Muthen & Muthen.
 }
 \seealso{
 \code{\link{read.mplus}}, \code{\link{run.mplus}}

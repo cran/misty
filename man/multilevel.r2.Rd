@@ -396,49 +396,53 @@ ggplot(df, aes(x = var, y = y, fill = part)) +
 }
 }
 \references{
-Enders, C. K., & Tofighi, D. (2008) Centering predictor variables in cross-sectional multilevel
-models: A new look at on old issue. \emph{Psychological Methods, 12}, 121-138. https://doi.org/10.1037/1082-989X.12.2.121
+Enders, C. K., & Tofighi, D. (2007). Centering predictor variables in
+cross-sectional multilevel models: A new look at an old issue.
+\emph{Psychological Methods, 12}, 121-138. https://doi.org/10.1037/1082-989X.12.2.121
 
-Hoffmann, L., & Walter, W. R. (2022). Catching up on multilevel modeling. \emph{Annual Review of Psychology, 73},
-629-658. https://doi.org/10.1146/annurev-psych-020821-103525
+Hoffmann, L., & Walter, W. R. (2022). Catching up on multilevel modeling.
+\emph{Annual Review of Psychology, 73}, 629-658. https://doi.org/10.1146/annurev-psych-020821-103525
 
-Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel Analysis: Techniques and Applications}
-(3rd ed.). Routledge.
+Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel Analysis:
+Techniques and Applications} (3rd ed.) Routledge.
 
-Johnson, P. C. D. (2014). Extension of Nakagawa & Schielzeth's R2 GLMM to random slopes models.
-\emph{Methods in Ecology and Evolution, 5}(9), 944-946. https://doi.org/10.1111/2041-210X.12225
+Johnson, P. C. D. (2014). Extension of Nakagawa & Schielzeth’s R2 GLMM to random
+slopes models. \emph{Methods in Ecology and Evolution, 5}(9), 944-946.
+https://doi.org/10.1111/2041-210X.12225
 
-LaHuis, D. M., Hartman, M. J., Hakoyama, S., & Clark, P. C. (2014). Explained variance measures
-for multilevel models. \emph{Organizational Research Methods, 17}, 433-451. https://doi.org/10.1177/1094428114541701
+LaHuis, D. M., Hartman, M. J., Hakoyama, S., & Clark, P. C. (2014). Explained
+variance measures for multilevel models. \emph{Organizational Research Methods, 17},
+433-451. https://doi.org/10.1177/1094428114541701
 
-Nakagawa, D., & Schielzeth, H. (2013). A general and simple method for obtaining R2 from generalized
-linear mixed-effects models. \emph{Methods in Ecology and Evolution, 4}(2), 133-142. https://doi.org/10.1111/j.2041-210x.2012.00261.x
+Nakagawa, S., & Schielzeth, H. (2013). A general and simple method for obtaining
+R2 from generalized linear mixed-effects models. \emph{Methods in Ecology and Evolution, 4}(2),
+133-142. https://doi.org/10.1111/j.2041-210x.2012.00261.x
 
-Raudenbush, S. W., & Bryk, A. S. (2002). \emph{Hierarchical linear models: Application and data analysis methods}.
-Sage.
+Raudenbush, S. W., & Bryk, A. S., (2002). \emph{Hierarchical linear models: Applications
+and data analysis methods}. Sage.
 
-Rights, J. D., Preacher, K. J., & Cole, D. A. (2020). The danger of conflating level-specific effects
-of control variables when primary interest lies in level-2 effects. \emph{British Journal of
-Mathematical and Statistical Psychology, 73}(Suppl 1), 194-211. https://doi.org/10.1111/bmsp.12194
+Rights, J. D., Preacher, K. J., & Cole, D. A. (2020). The danger of conflating
+level-specific effects of control variables when primary interest lies in level-2
+effects. \emph{British Journal of Mathematical and Statistical Psychology, 73}(Suppl 1),
+194-211. https://doi.org/10.1111/bmsp.12194
 
-Rights, J. D., & Sterba, S. K. (2019). Quantifying explained variance in multilevel models:
-An integrative framework for defining R-squared measures. \emph{Psychological Methods, 24},
+Rights, J. D., & Sterba, S. K. (2019). Quantifying explained variance in multilevel
+models: An integrative framework for defining R-squared measures. \emph{Psychological Methods, 24},
 309-338. https://doi.org/10.1037/met0000184
 
-Roberts, K. J., Monaco, J. P., Stovall, H., & Foster, V. (2011). Explained variance in
-multilevel models (pp. 219-230). In J. J. Hox & J. K. Roberts (Eds.), \emph{Handbook
-of advanced multilevel analysis}. Routledge.
+Roberts, K. J., Monaco, J. P., Stovall, H., & Foster, V. (2011). Explained variance
+in multilevel models (pp. 219-230). In J. J. Hox & J. K. Roberts (Eds.), \emph{Handbook
+of Advanced Multilevel Analysis}. Routledge.
 
 Snijders, T. A. B., & Bosker, R. (1994). Modeled variance in two-level models.
-\emph{Sociological methods and research, 22}, 342-363.
-https://doi.org/10.1177/0049124194022003004
+\emph{Sociological methods and research, 22}, 342-363. https://doi.org/10.1177/0049124194022003004
 
-Snijders, T. A. B., & Boser, R. (2012). \emph{Multilevel analysis: An
-introduction to basic and advanced multilevel modeling} (2nd ed.). Sage.
+Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introduction
+to basic and advanced multilevel modeling} (2nd ed.). Sage.
 
 Yaremych, H. E., Preacher, K. J., & Hedeker, D. (2021). Centering categorical
 predictors in multilevel models: Best practices and interpretation. \emph{Psychological
-Methods}. Advanced online publication. https://doi.org/10.1037/met0000434
+Methods}. Advance online publication. https://doi.org/10.1037/met0000434
 }
 \seealso{
 \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}},

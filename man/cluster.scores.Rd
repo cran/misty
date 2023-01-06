@@ -13,14 +13,16 @@ cluster.scores(x, cluster, fun = c("mean", "sum", "median", "var", "sd", "min", 
 \item{cluster}{a vector representing the nested grouping structure (i.e., group or
 cluster variable).}
 
-\item{fun}{character string indicating the function used to compute cluster scores, default: \code{"mean"}.}
+\item{fun}{character string indicating the function used to compute group scores,
+default: \code{"mean"}.}
 
-\item{expand}{logical: if \code{TRUE}, vector of cluster scores is expanded to match the input vector \code{x}.}
+\item{expand}{logical: if \code{TRUE}, vector of cluster scores is expanded to match
+the input vector \code{x}.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.
-Note that \code{as.na()} function is only applied to the argument \code{x},
-but not to \code{cluster}.}
+i.e. these values are converted to \code{NA} before conducting the
+analysis. Note that \code{as.na()} function is only applied to the
+argument \code{x}, but not to \code{cluster}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
@@ -29,7 +31,7 @@ Returns a numeric vector containing cluster scores with the same length as \code
 or with the length \code{length(unique(cluster))} if \code{expand = FALSE}.
 }
 \description{
-This function computes cluster means by default.
+This function computes group means by default.
 }
 \examples{
 dat.ml <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),

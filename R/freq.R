@@ -177,11 +177,9 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
 
       if (isTRUE(any(na.x))) {
 
-        warning(paste0(ifelse(sum(na.x) == 1L, "Value ", "Values "),
-                       "specified in the argument 'na' ",
-                       ifelse(sum(na.x) == 1L, "was ", "were "),
-                       "not found in 'x': ",
-                       paste(na[na.x], collapse = ", ")), call. = FALSE)
+        warning(paste0(ifelse(sum(na.x) == 1L, "Value ", "Values "), "specified in the argument 'as.na' ",
+                       ifelse(sum(na.x) == 1L, "was ", "were "), "not found in 'x': ",
+                       paste(as.na[na.x], collapse = ", ")), call. = FALSE)
 
       }
 

@@ -24,10 +24,10 @@ these values are converted to NA before conducting the analysis.}
 \item{output}{logical: if \code{TRUE}, output is shown.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-\code{x} (\code{data}), specification of function arguments (\code{args}), list with results
-(\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, matrix or
+data frame specified in \code{x} (\code{data}), specification of function arguments
+(\code{args}), list with results (\code{result}).
 }
 \description{
 This function performs Little's Missing Completely at Random (MCAR) test
@@ -47,24 +47,26 @@ of freedom, where \eqn{k_j} is the number of complete variables for missing data
 pattern \eqn{j}, and \eqn{k} is the total number of variables. A statistically
 significant result provides evidence against MCAR.
 
-Note that Little's MCAR test has a number of problems (see Enders, 2010). \strong{First},
-the test does not identify the specific variables that violates MCAR, i.e., the test
-does not identify potential correlates of missingness (i.e., auxiliary variables).
-\strong{Second}, the test is based on multivariate normality, i.e., under departure
-from the normality assumption the test might be unreliable unless the sample size is
-large and is not suitable for categorical variables. \strong{Third}, the test investigates
-mean  differences assuming that the missing data pattern share a common covariance matrix,
-i.e., the test cannot detect covariance-based deviations from MCAR stemming from a
-Missing at Random (MAR) or Missing Not at Random (MNAR) mechanism because MAR and MNAR
-mechanisms can also produce missing data subgroups with equal means. \strong{Fourth},
-simulation studies suggest that Little's MCAR test suffers from low statistical power,
-particularly when the number of variables that violate MCAR is small, the relationship
-between the data and missingness is weak, or the data are MNAR (Thoemmes & Enders, 2007).
-\strong{Fifth}, the test can only reject, but cannot prove the MCAR assumption, i.e., a
-statistically not significant result and failing to reject the null hypothesis of the MCAR
-test does not prove the null hypothesis that the data is MCAR. \strong{Finally}, under the
-null hypothesis the data are actually MCAR or MNAR, while a statistically significant result
-indicates that missing data are MAR or MNAR, i.e., MNAR cannot be ruled out regardless of the
+Note that Little's MCAR test has a number of problems (see Enders, 2010).
+\strong{First}, the test does not identify the specific variables that violates
+MCAR, i.e., the test does not identify potential correlates of missingness (i.e.,
+auxiliary variables). \strong{Second}, the test is based on multivariate normality,
+i.e., under departure from the normality assumption the test might be unreliable
+unless the sample size is large and is not suitable for categorical variables.
+\strong{Third}, the test investigates mean  differences assuming that the missing
+data pattern share a common covariance matrix, i.e., the test cannot detect
+covariance-based deviations from MCAR stemming from a Missing at Random (MAR)
+or Missing Not at Random (MNAR) mechanism because MAR and MNAR mechanisms can
+also produce missing data subgroups with equal means. \strong{Fourth}, simulation
+studies suggest that Little's MCAR test suffers from low statistical power,
+particularly when the number of variables that violate MCAR is small, the
+relationship between the data and missingness is weak, or the data are MNAR
+(Thoemmes & Enders, 2007). \strong{Fifth}, the test can only reject, but cannot
+prove the MCAR assumption, i.e., a statistically not significant result and failing
+to reject the null hypothesis of the MCAR test does not prove the null hypothesis
+that the data is MCAR. \strong{Finally}, under the null hypothesis the data are
+actually MCAR or MNAR, while a statistically significant result indicates that
+missing data are MAR or MNAR, i.e., MNAR cannot be ruled out regardless of the
 result of the test.
 
 This function is based on the \code{prelim.norm} function in the \pkg{norm}
@@ -76,7 +78,7 @@ case it is recommended to reduce the number of variables specified in the argume
 use the \code{LittleMCAR} function in the \pkg{BaylorEdPsych} package which can
 deal with up to 50 variables. However, this package was removed from the CRAN
 repository and needs to be obtained from the archive along with the \pkg{mvnmle}
- which is needed for using the \code{LittleMCAR}  function. Note that the
+which is needed for using the \code{LittleMCAR} function. Note that the
 \code{mcar_test} function in the \pkg{naniar} package is also based on the
 \code{prelim.norm} function which results are not trustworthy whenever the warning
 message \code{In norm::prelim.norm(data) : NAs introduced by coercion to integer range}

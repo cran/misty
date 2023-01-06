@@ -125,8 +125,7 @@
 #'
 #' # Tolerance, std. error, and variance inflation factor
 #' collin.diag(mod.glmmTMB1)
-#' }
-#'
+#' #'
 #' #----------------------------
 #' # Generalized linear mixed-effects model
 #'

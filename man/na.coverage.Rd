@@ -10,29 +10,35 @@ na.coverage(x, tri = c("both", "lower", "upper"), digits = 2, as.na = NULL,
 \arguments{
 \item{x}{a matrix or data frame.}
 
-\item{tri}{a character string or character vector indicating which triangular of the matrix to show on the console,
-i.e., \code{both} for upper and lower triangular, \code{lower} (default) for the lower triangular,
-and \code{upper} for the upper triangular.}
+\item{tri}{a character string or character vector indicating which triangular
+of the matrix to show on the console, i.e., \code{both} for
+upper and lower triangular, \code{lower} (default) for the
+lower triangular, and \code{upper} for the upper triangular.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used for displaying proportions.}
+\item{digits}{an integer value indicating the number of decimal places to
+be used for displaying proportions.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
 
-\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string for writing the results into a Excel file
+naming a file with or without file extension '.xlsx', e.g.,
+\code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-\code{x} (\code{data}), specification of function arguments (\code{args}), and
-list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, matrix or
+data frame specified in \code{x} (\code{data}), specification of function arguments
+(\code{args}), and list with results (\code{result}).
 }
 \description{
-This function computes the proportion of cases that contributes for the calculation of each variance and covariance.
+This function computes the proportion of cases that contributes for the calculation
+of each variance and covariance.
 }
 \examples{
 dat <- data.frame(x = c(1, NA, NA, 6, 3),
@@ -47,7 +53,8 @@ na.coverage(dat)
 na.coverage(dat, write = "Coverage.xlsx")
 
 result <- na.coverage(dat, output = FALSE)
-write.result(result, "Coverage.xlsx") }
+write.result(result, "Coverage.xlsx")
+}
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
@@ -55,12 +62,13 @@ Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
 Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 \emph{Annual Review of Psychology, 60}, 549-576. https://doi.org/10.1146/annurev.psych.58.110405.085530
 
-van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
+van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.).
+Chapman & Hall.
 }
 \seealso{
-\code{\link{write.result}}, \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}},
-\code{\link{na.descript}}, \code{\link{na.indicator}}, \code{\link{na.pattern}},
-\code{\link{na.prop}}, \code{\link{na.test}}
+\code{\link{write.result}}, \code{\link{as.na}}, \code{\link{na.as}},
+\code{\link{na.auxiliary}}, \code{\link{na.descript}}, \code{\link{na.indicator}},
+\code{\link{na.pattern}}, \code{\link{na.prop}}, \code{\link{na.test}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

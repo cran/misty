@@ -11,81 +11,167 @@ test.z(x, ...)
 \method{test.z}{default}(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
        paired = FALSE, alternative = c("two.sided", "less", "greater"),
        conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
-       plot = FALSE, point.size = 4, error.width = 0.1,
+       plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
        xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
        line = TRUE, line.type = 3, line.size = 0.8, jitter = TRUE,
-       jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.1,
-       title = "",  subtitle = "Confidence Interval",
+       jitter.size = 1.25, jitter.width = 0.05, jitter.height = 0,
+       jitter.alpha = 0.1, title = "", subtitle = "Confidence Interval",
        digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
        output = TRUE, ...)
 
 \method{test.z}{formula}(formula, data, sigma = NULL, sigma2 = NULL,
        alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
        hypo = TRUE, descript = TRUE, effsize = FALSE,
-       plot = FALSE, point.size = 4, error.width = 0.1,
+       plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
        xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
-       jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.1,
-       title = "",  subtitle = "Confidence Interval",
+       jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.height = 0,
+       jitter.alpha = 0.1, title = "",  subtitle = "Confidence Interval",
        digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
        output = TRUE, ...)
-
 }
 \arguments{
 \item{x}{a numeric vector of data values.}
-\item{y}{a numeric vector of data values.}
-\item{sigma}{a numeric vector indicating the population standard deviation(s). In case of two-sample z-test, equal standard deviations are assumed when specifying one value for the argument \code{sigma}; when specifying two values for the argument \code{sigma}, unequal standard deviations are assumed. Note that either argument \code{sigma} or argument \code{sigma2} is specified.}
-\item{sigma2}{a numeric vector indicating the population variance(s). In case of two-sample z-test, equal variances are assumed when specifying one value for the argument \code{sigma2}; when specifying two values for the argument \code{sigma}, unequal variance are assumed. Note that either argument \code{sigma} or argument \code{sigma2} is specified.}
-\item{mu}{a numeric value indicating the population mean under the null hypothesis. Note that the argument \code{mu} is only used when computing a one-sample z-test.}
-\item{paired}{logical: if \code{TRUE}, paired-sample z-test is computed.}
-\item{alternative}{a character string specifying the alternative hypothesis, must be one of \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
-\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis are shown on the console.}
-\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown on the console.}
-\item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d is shown on the console.}
-\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
-\item{plot}{logical: if \code{TRUE}, a plot showing error bars for confidence intervals is drawn.}
-\item{point.size}{a numeric value indicating the \code{size} aesthetic for the point representing the mean value.}
-\item{error.width}{ a numeric value indicating the horizontal bar width of the error bar.}
-\item{xlab}{a character string specifying the labels for the x-axis.}
-\item{ylab}{a character string specifying the labels for the y-axis.}
-\item{ylim}{a numeric vector of length two specifying limits of the limits of the y-axis.}
-\item{breaks}{a numeric vector specifying the points at which tick-marks are drawn at the y-axis.}
-\item{line}{logical: if \code{TRUE} (default), a horizontal line is drawn at \code{mu} for the one-sample t-test or at 0 for the paired-sample t-test.}
-\item{line.type}{an integer value or character string specifying the line type for the line representing the population mean under the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed, 3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash.}
-\item{line.size}{a numeric value indicating the \code{size} aesthetic for the line representing the population mean under the null hypothesis.}
-\item{jitter}{logical: if \code{TRUE} (default), jittered data points are drawn.}
-\item{jitter.size}{ a numeric value indicating the \code{size} aesthetic for the jittered data points.}
-\item{jitter.width}{a numeric value indicating the amount of vertical and horizontal jitter.}
-\item{jitter.alpha}{a numeric value indicating the opacity of the jittered data points.}
-\item{title}{a character string specifying the text for the title for the plot.}
-\item{subtitle}{a character string specifying the text for the subtitle for the plot.}
-\item{digits}{an integer value indicating the number of decimal places to be used for displaying descriptive statistics and confidence interval.}
-\item{p.digits}{an integer value indicating the number of decimal places to be used for displaying the \emph{p}-value.}
-\item{as.na}{a numeric vector indicating user-defined missing values, i.e. these values are converted to \code{NA} before conducting the analysis.}
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
-\item{formula}{in case of two sample z-test (i.e., \code{paired = FALSE}), a formula of the form \code{y ~ group} where \code{group} is a numeric variable, character variable or factor with two values or factor levels giving the corresponding groups.}
-\item{data}{a matrix or data frame containing the variables in the formula \code{formula}.}
+
 \item{...}{further arguments to be passed to or from methods.}
+
+\item{y}{a numeric vector of data values.}
+
+\item{sigma}{a numeric vector indicating the population standard deviation(s).
+In case of two-sample z-test, equal standard deviations are
+assumed when specifying one value for the argument \code{sigma};
+when specifying two values for the argument \code{sigma},
+unequal standard deviations are assumed. Note that either
+argument \code{sigma} or argument \code{sigma2} is specified.}
+
+\item{sigma2}{a numeric vector indicating the population variance(s). In
+case of two-sample z-test, equal variances are assumed when
+specifying one value for the argument \code{sigma2}; when
+specifying two values for the argument \code{sigma}, unequal
+variance are assumed. Note that either argument \code{sigma}
+or argument \code{sigma2} is specified.}
+
+\item{mu}{a numeric value indicating the population mean under the null
+hypothesis. Note that the argument \code{mu} is only used
+when computing a one-sample z-test.}
+
+\item{paired}{logical: if \code{TRUE}, paired-sample z-test is computed.}
+
+\item{alternative}{a character string specifying the alternative hypothesis,
+must be one of \code{"two.sided"} (default), \code{"greater"}
+or \code{"less"}.}
+
+\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis are
+shown on the console.}
+
+\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown
+on the console.}
+
+\item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d is
+shown on the console.}
+
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence
+level of the interval.}
+
+\item{plot}{logical: if \code{TRUE}, a plot showing error bars for
+confidence intervals is drawn.}
+
+\item{point.size}{a numeric value indicating the \code{size} aesthetic for
+the point representing the mean value.}
+
+\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment for the
+confidence intervals in a two-sample design is applied.}
+
+\item{error.width}{a numeric value indicating the horizontal bar width of
+the error bar.}
+
+\item{xlab}{a character string specifying the labels for the x-axis.}
+
+\item{ylab}{a character string specifying the labels for the y-axis.}
+
+\item{ylim}{a numeric vector of length two specifying limits of the
+limits of the y-axis.}
+
+\item{breaks}{a numeric vector specifying the points at which tick-marks
+are drawn at the y-axis.}
+
+\item{line}{logical: if \code{TRUE} (default), a horizontal line
+is drawn at \code{mu} for the one-sample t-test or at
+0 for the paired-sample t-test.}
+
+\item{line.type}{an integer value or character string specifying the line
+type for the line representing the population mean under
+the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed,
+3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash.}
+
+\item{line.size}{a numeric value indicating the \code{size} aesthetic
+for the line representing the population mean under the
+null hypothesis.}
+
+\item{jitter}{logical: if \code{TRUE} (default), jittered data points
+are drawn.}
+
+\item{jitter.size}{a numeric value indicating the \code{size} aesthetic
+for the jittered data points.}
+
+\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
+
+\item{jitter.height}{a numeric value indicating the amount of vertical jitter.}
+
+\item{jitter.alpha}{a numeric value indicating the opacity of the jittered
+data points.}
+
+\item{title}{a character string specifying the text for the title for
+the plot.}
+
+\item{subtitle}{a character string specifying the text for the subtitle for
+the plot.}
+
+\item{digits}{an integer value indicating the number of decimal places to
+be used for displaying descriptive statistics and confidence
+interval.}
+
+\item{p.digits}{an integer value indicating the number of decimal places to
+be used for displaying the \emph{p}-value.}
+
+\item{as.na}{a numeric vector indicating user-defined missing values,
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
+
+\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+
+\item{formula}{in case of two sample z-test (i.e., \code{paired = FALSE}),
+a formula of the form \code{y ~ group} where \code{group}
+is a numeric variable, character variable
+or factor with two values or factor levels giving the
+corresponding groups.}
+
+\item{data}{a matrix or data frame containing the variables in the formula
+\code{formula}.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x}
-(\code{data}), specification of function arguments (\code{args}), and result table (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, list with
+the input specified in \code{x} (\code{data}), specification of function arguments
+(\code{args}), and result table (\code{result}).
 }
 \description{
 This function performs one-sample, two-sample, and paired-sample z-tests and
 provides descriptive statistics, effect size measure, and a plot showing error
-bars for confidence intervals with jittered data points.
+bars for (difference-adjusted) confidence intervals with jittered data points.
 }
 \details{
-Cohen's d reported when argument \code{effsize = TRUE} is based on the population standard deviation
-specified in \code{sigma} or the square root of the population variance specified in \code{sigma2}.
-In a one-sample and paired-sample design, Cohen's d is the mean of the difference scores divided
-by the population standard deviation of the difference scores (i.e., equivalent to Cohen's \eqn{d_z}
-according to Lakens, 2013). In a two-sample design, Cohen's d is the difference between means of the
-two groups of observations divided by either the population standard deviation when assuming and
-specifying equal standard deviations or the unweighted pooled population standard deviation
-when assuming and specifying unequal standard deviations.
+Cohen's d reported when argument \code{effsize = TRUE} is based on the population
+standard deviation specified in \code{sigma} or the square root of the population
+variance specified in \code{sigma2}. In a one-sample and paired-sample design,
+Cohen's d is the mean of the difference scores divided by the population standard
+deviation of the difference scores (i.e., equivalent to Cohen's \eqn{d_z} according
+to Lakens, 2013). In a two-sample design, Cohen's d is the difference between
+means of the two groups of observations divided by either the population standard
+deviation when assuming and specifying equal standard deviations or the unweighted
+pooled population standard deviation when assuming and specifying unequal standard
+deviations.
 }
 \examples{
 dat1 <- data.frame(group = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
@@ -158,7 +244,7 @@ ggplot(plotdat, aes(0, x)) +
   scale_x_continuous(name = NULL, limits = c(-2, 2)) +
   scale_y_continuous(name = NULL) +
   geom_hline(yintercept = 3, linetype = 3, size = 0.8) +
-  labs(subtitle = "Two-Sided 95% Confidence Interval") +
+  labs(subtitle = "Two-Sided 95\% Confidence Interval") +
   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
                      axis.text.x = element_blank(),
                      axis.ticks.x = element_blank())
@@ -271,7 +357,7 @@ test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE,
 \dontrun{
 # Two-sided paired-sample z-test
 # population standard deviation of difference score = 1.2
-# plotresults
+# plot results
 test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE, plot = TRUE)
 
 # Load ggplot2 package
@@ -295,32 +381,34 @@ plotdat$diff <- plotdat$y - plotdat$x
 
 # Extract results
 result <- test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE,
-                 output = FALSE)$result
+                  output = FALSE)$result
+
 # Draw plot in line with the default setting of test.t()
 ggplot(plotdat, aes(0, diff)) +
   geom_point(data = result, aes(x = 0, m.diff), size = 4) +
   geom_errorbar(data = result,
                 aes(x = 0L, y = m.diff, ymin = m.low, ymax = m.upp), width = 0.2) +
-  scale_x_continuous(name = NULL, limits = c(-2, 2)) +
-  scale_y_continuous(name = "y") +
-  geom_hline(yintercept = 0, linetype = 3, size = 0.8) +
-  labs(subtitle = "Two-Sided 95% Confidence Interval") +
-  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
-                     axis.text.x = element_blank(),
-                     axis.ticks.x = element_blank())
+   scale_x_continuous(name = NULL, limits = c(-2, 2)) +
+   scale_y_continuous(name = "y") +
+   geom_hline(yintercept = 0, linetype = 3, size = 0.8) +
+   labs(subtitle = "Two-Sided 95\% Confidence Interval") +
+   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
+                      axis.text.x = element_blank(),
+                      axis.ticks.x = element_blank())
 }
 }
 \references{
-Lakens, D. (2013). Calculating and reporting effect sizes to facilitate cumulative science:
-A practical primer for t-tests and ANOVAs. \emph{Frontiers in Psychology, 4}, 1-12.
-https://doi.org/10.3389/fpsyg.2013.00863
+Lakens, D. (2013). Calculating and reporting effect sizes to facilitate cumulative
+science: A practical primer for t-tests and ANOVAs. \emph{Frontiers in Psychology, 4},
+1-12. https://doi.org/10.3389/fpsyg.2013.00863
 
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. John Wiley & Sons.
 }
 \seealso{
-\code{\link{test.t}}, \code{\link{aov.b}}, \code{\link{test.welch}},
-\code{\link{cohens.d}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}}}
+\code{\link{test.t}}, \code{\link{aov.b}}, \code{\link{aov.w}}, \code{\link{test.welch}},
+\code{\link{cohens.d}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}}
+}
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}
 }

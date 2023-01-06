@@ -10,67 +10,67 @@
 #' (\code{center = "median"}). By default, the Levene's test uses the absolute
 #' deviations of observations from the median.
 #'
-#' @param formula      a formula of the form \code{y ~ group} where \code{y} is
-#'                     a numeric variable giving the data values and \code{group}
-#'                     a numeric variable, character variable or factor with two
-#'                     or more than two values or factor levels giving the
-#'                     corresponding groups.
-#' @param data         a matrix or data frame containing the variables in the
-#'                     formula \code{formula}.
-#' @param method       a character string specifying the method to compute the
-#'                     center of each group, i.e. \code{method = "median"} (default)
-#'                     to compute the Levene's test based on the median (aka
-#'                     Brown-Forsythe test) or \code{method = "mean"} to compute
-#'                     the Levene's test based on the arithmetic mean.
-#' @param as.na        a numeric vector indicating user-defined missing values,
-#'                     i.e. these values are converted to \code{NA} before
-#'                     conducting the analysis.
-#' @param conf.level   a numeric value between 0 and 1 indicating the confidence
-#'                     level of the interval.
-#' @param hypo         logical: if \code{TRUE}, null and alternative hypothesis
-#'                     are shown on the console.
-#' @param descript     logical: if \code{TRUE}, descriptive statistics are shown
-#'                     on the console.
-#' @param plot         logical: if \code{TRUE}, a plot showing violin plots with
-#'                     boxplots is drawn.
-#' @param violin.alpha a numeric value indicating the opacity of the violins.
-#' @param violin.trim  logical: if \code{TRUE}, the tails of the violins to the
-#'                     range of the data is trimmed.
-#' @param box          logical: if \code{TRUE} (default), boxplots are drawn.
-#' @param box.alpha    a numeric value indicating the opacity of the boxplots.
-#' @param box.width    a numeric value indicating the width of the boxplots.
-#' @param jitter       logical: if \code{TRUE} (default), jittered data points
-#'                     are drawn.
-#' @param jitter.size  a numeric value indicating the \code{size} aesthetic
-#'                     for the jittered data points.
-#' @param jitter.width a numeric value indicating the amount of vertical and
-#'                     horizontal jitter.
-#' @param jitter.alpha a numeric value indicating the opacity of the jittered
-#'                     data points.
-#' @param gray         logical: if \code{TRUE}, the plot is drawn in gray scale.
-#' @param start        a numeric value between 0 and 1, graphical parameter to
-#'                     specify the gray value at the low end of the palette.
-#' @param end          a numeric value between 0 and 1, graphical parameter to
-#'                     specify the gray value at the high end of the palette.
-#' @param color        a character vector, indicating the color of the violins
-#'                     and the boxes. By default, default ggplot2 colors are
-#'                     used.
-#' @param xlab         a character string specifying the labels for the x-axis.
-#' @param ylab         a character string specifying the labels for the y-axis.
-#' @param ylim         a numeric vector of length two specifying limits of the
-#'                     limits of the y-axis.
-#' @param breaks       a numeric vector specifying the points at which tick-marks
-#'                     are drawn at the y-axis.
-#' @param title        a character string specifying the text for the title for
-#'                     the plot.
-#' @param subtitle     a character string specifying the text for the subtitle
-#'                     for the plot.
-#' @param digits       an integer value indicating the number of decimal places
-#'                     to be used for displaying results.
-#' @param p.digits     an integer value indicating the number of decimal places
-#'                     to be used for displaying the \emph{p}-value.
-#' @param check        logical: if \code{TRUE}, argument specification is checked.
-#' @param output       logical: if \code{TRUE}, output is shown.
+#' @param formula       a formula of the form \code{y ~ group} where \code{y} is
+#'                      a numeric variable giving the data values and \code{group}
+#'                      a numeric variable, character variable or factor with two
+#'                      or more than two values or factor levels giving the
+#'                      corresponding groups.
+#' @param data          a matrix or data frame containing the variables in the
+#'                      formula \code{formula}.
+#' @param method        a character string specifying the method to compute the
+#'                      center of each group, i.e. \code{method = "median"} (default)
+#'                      to compute the Levene's test based on the median (aka
+#'                      Brown-Forsythe test) or \code{method = "mean"} to compute
+#'                      the Levene's test based on the arithmetic mean.
+#' @param as.na         a numeric vector indicating user-defined missing values,
+#'                      i.e. these values are converted to \code{NA} before
+#'                      conducting the analysis.
+#' @param conf.level    a numeric value between 0 and 1 indicating the confidence
+#'                      level of the interval.
+#' @param hypo          logical: if \code{TRUE}, null and alternative hypothesis
+#'                      are shown on the console.
+#' @param descript      logical: if \code{TRUE}, descriptive statistics are shown
+#'                      on the console.
+#' @param plot          logical: if \code{TRUE}, a plot showing violin plots with
+#'                      boxplots is drawn.
+#' @param violin.alpha  a numeric value indicating the opacity of the violins.
+#' @param violin.trim   logical: if \code{TRUE}, the tails of the violins to the
+#'                      range of the data is trimmed.
+#' @param box           logical: if \code{TRUE} (default), boxplots are drawn.
+#' @param box.alpha     a numeric value indicating the opacity of the boxplots.
+#' @param box.width     a numeric value indicating the width of the boxplots.
+#' @param jitter        logical: if \code{TRUE} (default), jittered data points
+#'                      are drawn.
+#' @param jitter.size   a numeric value indicating the \code{size} aesthetic
+#'                      for the jittered data points.
+#' @param jitter.width  a numeric value indicating the amount of horizontal jitter.
+#' @param jitter.height a numeric value indicating the amount of vertical jitter.
+#' @param jitter.alpha  a numeric value indicating the opacity of the jittered
+#'                      data points.
+#' @param gray          logical: if \code{TRUE}, the plot is drawn in gray scale.
+#' @param start         a numeric value between 0 and 1, graphical parameter to
+#'                      specify the gray value at the low end of the palette.
+#' @param end           a numeric value between 0 and 1, graphical parameter to
+#'                      specify the gray value at the high end of the palette.
+#' @param color         a character vector, indicating the color of the violins
+#'                      and the boxes. By default, default ggplot2 colors are
+#'                      used.
+#' @param xlab          a character string specifying the labels for the x-axis.
+#' @param ylab          a character string specifying the labels for the y-axis.
+#' @param ylim          a numeric vector of length two specifying limits of the
+#'                      limits of the y-axis.
+#' @param breaks        a numeric vector specifying the points at which tick-marks
+#'                      are drawn at the y-axis.
+#' @param title         a character string specifying the text for the title for
+#'                      the plot.
+#' @param subtitle      a character string specifying the text for the subtitle
+#'                      for the plot.
+#' @param digits        an integer value indicating the number of decimal places
+#'                      to be used for displaying results.
+#' @param p.digits      an integer value indicating the number of decimal places
+#'                      to be used for displaying the \emph{p}-value.
+#' @param check         logical: if \code{TRUE}, argument specification is checked.
+#' @param output        logical: if \code{TRUE}, output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -139,7 +139,8 @@ test.levene <- function(formula, data, method = c("median", "mean"),
                         conf.level = 0.95, hypo = TRUE, descript = TRUE,
                         plot = TRUE, violin.alpha = 0.3, violin.trim = FALSE,
                         box = TRUE, box.alpha = 0.2, box.width = 0.2,
-                        jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.2,
+                        jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
+                        jitter.height = 0, jitter.alpha = 0.2,
                         gray = FALSE, start = 0.9, end = 0.4, color = NULL,
                         xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
                         title = "", subtitle = "",  digits = 2, p.digits = 3, as.na = NULL,
@@ -372,7 +373,7 @@ test.levene <- function(formula, data, method = c("median", "mean"),
 
   #......................................
   # Add jittered points
-  if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, size = jitter.size) }
+  if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size) }
 
   #......................................
   # Gray color scales
@@ -402,16 +403,16 @@ test.levene <- function(formula, data, method = c("median", "mean"),
                  formula = formula,
                  data = data.frame(y, factor(group), stringsAsFactors = FALSE),
                  plot = p,
-                 args = list(method = method, hypo = hypo, descript = descript,
-                             plot = plot, violin.alpha = violin.alpha, violin.trim = violin.trim,
-                             box = box, box.alpha = box.alpha, box.width = box.width,
-                             jitter = jitter, jitter.size = jitter.size, jitter.width = jitter.width,
-                             jitter.alpha = jitter.alpha,
-                             gray = gray, start = start, end = end, color = color,
-                             xlab = xlab, ylab = ylab, ylim = ylim, breaks = breaks,
-                             title = title, subtitle = subtitle,
-                             digits = digits, p.digits = p.digits,
-                             as.na = as.na, check = check, output = output),
+                 args = list(method = method, conf.level = conf.level, hypo = hypo,
+                             descript = descript, plot = plot, violin.alpha = violin.alpha,
+                             violin.trim = violin.trim, box = box, box.alpha = box.alpha,
+                             box.width = box.width, jitter = jitter, jitter.size = jitter.size,
+                             jitter.width = jitter.width, jitter.height = jitter.height ,
+                             jitter.alpha = jitter.alpha, gray = gray, start = start,
+                             end = end, color = color, xlab = xlab, ylab = ylab,
+                             ylim = ylim, breaks = breaks, title = title, subtitle = subtitle,
+                             digits = digits, p.digits = p.digits, as.na = as.na,
+                             check = check, output = output),
                  result = list(descript = result.ci, test = result.aov))
 
   class(object) <- "misty.object"

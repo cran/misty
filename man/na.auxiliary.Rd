@@ -11,38 +11,44 @@ na.auxiliary(x, tri = c("both", "lower", "upper"), weighted = TRUE,
 \arguments{
 \item{x}{a matrix or data frame with numeric vectors.}
 
-\item{tri}{a character string indicating which triangular of the correlation matrix to show on the console,
-i.e., \code{both} for upper and lower triangular, \code{lower} (default) for the
-lower triangular, and \code{upper} for the upper triangular.}
+\item{tri}{a character string indicating which triangular of the correlation
+matrix to show on the console, i.e., \code{both} for upper and
+lower triangular, \code{lower} (default) for the lower triangular,
+and \code{upper} for the upper triangular.}
 
-\item{weighted}{logical: if \code{TRUE} (default), the weighted pooled standard deviation is used.}
+\item{weighted}{logical: if \code{TRUE} (default), the weighted pooled standard
+deviation is used.}
 
-\item{correct}{logical: if \code{TRUE}, correction factor for Cohen's d to remove positive bias
-in small samples is used.}
+\item{correct}{logical: if \code{TRUE}, correction factor for Cohen's d to
+remove positive bias in small samples is used.}
 
-\item{digits}{integer value indicating the number of decimal places digits to be used for displaying
-correlation coefficients and Cohen's d estimates.}
+\item{digits}{integer value indicating the number of decimal places digits
+to be used for displaying correlation coefficients and Cohen's d
+estimates.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-\code{x} (\code{data}), specification of function arguments (\code{args}), and
-list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, matrix or
+data frame specified in \code{x} (\code{data}), specification of function arguments
+(\code{args}), and list with results (\code{result}).
 }
 \description{
-This function computes (1) Pearson product-moment correlation matrix to identify variables related
-to the incomplete variable and (2) Cohen's d comparing cases with and without missing values to
-identify variables related to the probability of missingness.
+This function computes (1) Pearson product-moment correlation matrix to identify
+variables related to the incomplete variable and (2) Cohen's d comparing cases
+with and without missing values to identify variables related to the probability
+of missingness.
 }
 \details{
-Note that non-numeric variables (i.e., factors, character vectors, and logical vectors) are excluded from to the analysis.
+Note that non-numeric variables (i.e., factors, character vectors, and logical
+vectors) are excluded from to the analysis.
 }
 \examples{
 dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
@@ -57,13 +63,16 @@ na.auxiliary(dat)
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
 
 Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
-\emph{Annual Review of Psychology, 60}, 549-576. https://doi.org/10.1146/annurev.psych.58.110405.085530
+\emph{Annual Review of Psychology, 60}, 549-576.
+https://doi.org/10.1146/annurev.psych.58.110405.085530
 
-van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
+van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.).
+Chapman & Hall.
 }
 \seealso{
-\code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-\code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.prop}}, \code{\link{na.test}}
+\code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.coverage}},
+\code{\link{na.descript}}, \code{\link{na.indicator}}, \code{\link{na.pattern}},
+\code{\link{na.prop}}, \code{\link{na.test}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

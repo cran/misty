@@ -127,14 +127,13 @@
 #' }
 write.result <- function(x, file = "Results.xlsx") {
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
@@ -150,18 +149,19 @@ write.result <- function(x, file = "Results.xlsx") {
 
   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
   # Write object
   write.object <- x$result
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
-  # Correlation Matrix, cor.matrix()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Correlation Matrix, cor.matrix() ####
   switch(x$type, cor.matrix = {
 
     # Add variable names in the rows
@@ -189,9 +189,8 @@ write.result <- function(x, file = "Results.xlsx") {
 
     names(write.object) <- c("Cor", "n", "Stat", "df", "p", "Info")
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
-  # Cross Tabulation, crosstab()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Cross Tabulation, crosstab() ####
   }, crosstab = {
 
     #.......................
@@ -580,14 +579,12 @@ write.result <- function(x, file = "Results.xlsx") {
 
     }
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
-  # Descriptive Statistics, descript()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Descriptive Statistics, descript() ####
   }, descript = {
 
-    #----------------------------------------
-    # No Grouping, No Split
-
+    #...................
+    ### No Grouping, No Split ####
     if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
 
       #...............
@@ -612,8 +609,8 @@ write.result <- function(x, file = "Results.xlsx") {
 
       }
 
-    #----------------------------------------
-    # Grouping, No Split
+    #...................
+    ### Grouping, No Split ####
     } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
 
       #...............
@@ -642,8 +639,8 @@ write.result <- function(x, file = "Results.xlsx") {
       write.object$Group <- ifelse(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)",
                                              x = write.object$Group), as.numeric(write.object$Group), write.object$Group)
 
-    #----------------------------------------
-    # Split, without or with Grouping
+    #...................
+    ### Split, without or with Grouping ####
     } else if (isTRUE(!is.null(x$data$split))) {
 
       #......
@@ -706,13 +703,12 @@ write.result <- function(x, file = "Results.xlsx") {
 
     }
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
-  # Frequency Table, freq()
+  #...................
+  ### Frequency Table, freq() ####
   }, freq = {
 
-    #-----------------------------------------
-    # One variable
+    #...................
+    ### One variable ####
     if (isTRUE(ncol(x$data) == 1)) {
 
       #......................
@@ -782,8 +778,8 @@ write.result <- function(x, file = "Results.xlsx") {
 
       }
 
-    #-----------------------------------------
-    # More than one variable
+    #...................
+    ### More than one variable ####
     } else {
 
       #......................
@@ -956,9 +952,8 @@ write.result <- function(x, file = "Results.xlsx") {
 
     }
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
-  # Coefficient Alpha and Item Statistics, item.alpha()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Coefficient Alpha and Item Statistics, item.alpha() ####
   }, item.alpha = {
 
     if (is.null(write.object$itemstat)) {
@@ -975,71 +970,69 @@ write.result <- function(x, file = "Results.xlsx") {
 
     }
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
-  # Confirmatory Factor Analysis, item.cfa()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Confirmatory Factor Analysis, item.cfa() ####
   }, item.cfa = {
 
-    #----------------------------------------
-    # lavaan summary
+    #...................
+    ### lavaan summary ####
 
     # Column names
     colnames(write.object$summary) <- c(write.object$summary[1, 1], "", "")
 
     summary <- write.object$summary[-1, ]
 
-    #----------------------------------------
-    # Covariance coverage
+    #...................
+    ### Covariance coverage ####
 
     # Add variable names in the rows
     coverage <- data.frame(colnames(write.object$coverage), write.object$coverage,
                            row.names = NULL, check.rows = FALSE,
                            check.names = FALSE, fix.empty.names = FALSE)
 
-    #----------------------------------------
-    # Univariate Sample Statistics
+    #...................
+    ### Univariate Sample Statistics ####
 
     itemstat <- write.object$itemstat
 
     colnames(itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt")
 
-    #----------------------------------------
-    # Univariate Counts for Ordered Variables
+    #...................
+    ### Univariate Counts for Ordered Variables ####
 
     itemfreq <- write.object$itemfreq$freq
 
     colnames(itemfreq)[1] <- "Variable"
 
-    #----------------------------------------
-    # Model fit
+    #...................
+    ### Model fit ####
 
     fit <- write.object$fit
 
     colnames(fit) <- c("", "Standard", "Ad hoc", "Robust")
 
-    #----------------------------------------
-    # Parameter estimates
+    #...................
+    ### Parameter estimates ####
 
     param <- write.object$param[, -c(2, 3)]
 
     colnames(param) <- c("Param1", "Param2", "Estimate", "SE", "z", "pvalue", "StdYX")
 
-    #----------------------------------------
-    # Modification indices
+    #...................
+    ### Modification indices ####
 
     modind <- write.object$modind
 
     colnames(modind) <- c("lhs", "op", "rhs", "MI", "EPC", "STDYX EPC")
 
-    #----------------------------------------
-    # Write object
+    #...................
+    ### Write object ####
 
     write.object <- list(summary = summary, coverage = coverage, itemstat = itemstat,
                          itemfreq = itemfreq, fit = fit, param = param, modind = modind)
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
-  # Coefficient Omega, Hierarchical Omega, and Categorical Omega, item.omega()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Coefficient Omega, Hierarchical Omega, and Categorical Omega, item.omega() ####
   }, item.omega = {
 
     if (is.null(write.object$itemstat)) {
@@ -1056,9 +1049,8 @@ write.result <- function(x, file = "Results.xlsx") {
 
     }
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
-  # Within-Group and Between-Group Correlation Matrix, multilevel.cor()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Within-Group and Between-Group Correlation Matrix, multilevel.cor() ####
   }, multilevel.cor = {
 
     # Split results
@@ -1094,9 +1086,8 @@ write.result <- function(x, file = "Results.xlsx") {
 
     }
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
-  # Multilevel Descriptive Statistics, multilevel.descript()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Multilevel Descriptive Statistics, multilevel.descript() ####
   }, multilevel.descript = {
 
     write.object <- data.frame(cbind(c("No. of cases", "No. of missing values", "",
@@ -1110,15 +1101,15 @@ write.result <- function(x, file = "Results.xlsx") {
                                            x$result$deff, x$result$deff.sqrt, x$result$n.effect)),
                                stringsAsFactors = FALSE)
 
-    #-----------------------------------------
-    # One variable
+    #...................
+    ### One variable ####
     if (isTRUE(length(x$result$no.obs) == 1L)) {
 
       write.object[, -1] <- as.numeric(write.object[, -1])
       names(write.object)[1] <- ""
 
-    #-----------------------------------------
-    # More than one variable
+    #...................
+    ### More than one variable ####
     } else {
 
       write.object[, -1] <- vapply(write.object[, -1], as.numeric, FUN.VALUE = numeric(18))
@@ -1127,9 +1118,8 @@ write.result <- function(x, file = "Results.xlsx") {
 
     }
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
-  # Variance-Covariance Coverage, na.coverage()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Variance-Covariance Coverage, na.coverage() ####
   }, na.coverage = {
 
     # Add variable names in the rows
@@ -1137,9 +1127,8 @@ write.result <- function(x, file = "Results.xlsx") {
                                row.names = NULL, check.rows = FALSE,
                                check.names = FALSE, fix.empty.names = FALSE)
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
-  # Descriptive Statistics for Missing Data, na.descript()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Descriptive Statistics for Missing Data, na.descript() ####
   }, na.descript = {
 
     write.object <- data.frame(c("No. of cases", "No. of complete cases", "No. of incomplete cases", NA,
@@ -1162,17 +1151,17 @@ write.result <- function(x, file = "Results.xlsx") {
     # Frequency table fir each variable
     write.object <- list(Summary = write.object, Table = x$result$table.miss)
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
-  # Missing Data Pattern, na.pattern()
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data Pattern, na.pattern() ####
   }, na.pattern = {
 
     names(write.object)[c(1, 3)] <- c("Pattern", "Perc")
 
   })
 
-  #-----------------------------------------------------------------------------------
-  # Write Excel file
+  #_____________________________________________________________________________
+  #
+  # Write Excel file -----------------------------------------------------------
 
   misty::write.xlsx(write.object, file = file)
 

@@ -3,20 +3,23 @@
 #' This function prints the \code{misty.object} object
 #'
 #' @param x          \code{misty.object} object.
-#' @param print      a character string or character vector indicating which results
-#'                   to to be printed on the console.
-#' @param tri        a character string or character vector indicating which triangular
-#'                   of the matrix to show on the console, i.e., \code{both} for
-#'                   upper and lower triangular, \code{lower} for the lower triangular,
-#'                   and \code{upper} for the upper triangular.
+#' @param print      a character string or character vector indicating which
+#'                   results to to be printed on the console.
+#' @param tri        a character string or character vector indicating which
+#'                   triangular of the matrix to show on the console, i.e.,
+#'                   \code{both} for upper and lower triangular, \code{lower}
+#'                   for the lower triangular, and \code{upper} for the upper
+#'                   triangular.
 #' @param freq       logical: if \code{TRUE}, absolute frequencies will be included
 #'                   in the cross tabulation (\code{crosstab()} function).
 #' @param hypo       logical: if \code{TRUE}, null and alternative hypothesis are
-#'                   shown on the console (\code{\link{test.t}}, \code{\link{test.welch}},
-#'                   \code{\link{test.z}} function).
+#'                   shown on the console (\code{\link{test.t}},
+#'                   \code{\link{test.welch}}, \code{\link{test.z}} function).
 #' @param descript   logical: if \code{TRUE}, descriptive statistics are shown on
 #'                   the console (\code{\link{test.t}}, \code{\link{test.welch}},
 #'                   \code{\link{test.z}} function).
+#' @param epsilon    logical: if \code{TRUE}, box indices of sphericity (epsilon)
+#'                   are shown on the console (\code{\link{aov.w}}).
 #' @param effsize    logical: if \code{TRUE}, effect size measure(s) is shown on
 #'                   the console (\code{\link{test.t}}, \code{\link{test.welch}},
 #'                   \code{\link{test.z}} function).
@@ -24,19 +27,21 @@
 #' @param posthoc    logical: if \code{TRUE},post hoc test for multiple comparison
 #'                   is shown on the console (\code{\link{test.welch}}).
 #' @param split      logical: if \code{TRUE}, output table is split by variables
-#'                   when specifying more than one variable in \code{x} (\code{\link{freq}}).
-#' @param table      logical: if \code{TRUE}, a frequency table with number of observed
-#'                   values (\code{"nObs"}), percent of observed values (\code{"pObs"}),
-#'                   number of missing values (\code{"nNA"}), and percent of missing
-#'                   values (\code{"pNA"}) is printed for each variable on the console
-#'                   (\code{na.descript()} function).
+#'                   when specifying more than one variable in \code{x}
+#'                   (\code{\link{freq}}).
+#' @param table      logical: if \code{TRUE}, a frequency table with number of
+#'                   observed values (\code{"nObs"}), percent of observed values
+#'                   (\code{"pObs"}), number of missing values (\code{"nNA"}),
+#'                   and percent of missing values (\code{"pNA"}) is printed for
+#'                   each variable on the console (\code{na.descript()} function).
 #' @param digits     an integer value indicating the number of decimal places digits
 #'                   to be used for displaying results.
 #' @param p.digits   an integer indicating the number of decimal places to be used
 #'                   for displaying \emph{p}-values.
 #' @param icc.digits an integer indicating the number of decimal places to be used
-#'                   for displaying intraclass correlation coefficients (\code{multilevel.descript()}
-#'                   and \code{multilevel.icc()} function).
+#'                   for displaying intraclass correlation coefficients
+#'                   (\code{multilevel.descript()} and \code{multilevel.icc()}
+#'                   function).
 #' @param sort.var   logical: if \code{TRUE}, output is sorted by variables.
 #' @param order      logical: if \code{TRUE}, variables are ordered from left to
 #'                   right in increasing order
@@ -48,30 +53,32 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{aov.b}, \code{\link{item.alpha}}, \code{\link{ci.mean.diff}},
-#' \code{\link{ci.mean}}, \code{\link{ci.median}}, \code{\link{ci.prop.diff}},
-#' \code{\link{ci.prop}}, \code{\link{ci.sd}}, \code{\link{ci.var}},
-#' \code{\link{cohens.d}}, \code{\link{collin.diag}}, \code{\link{cor.cont}},
-#' \code{\link{cor.matrix}}, \code{\link{cor.cramer}}, \code{\link{crosstab}},
-#' \code{\link{descript}}, \code{\link{eta.sq}}, \code{\link{freq}},
-#' \code{\link{test.levene}}, \code{\link{multilevel.descript}},
-#' \code{\link{multilevel.r2}}, \code{\link{na.auxiliary}},
+#' \code{\link{aov.b}}, \code{\link{aov.w}}, \code{\link{aov.w}},
+#' \code{\link{item.alpha}},
+#' \code{\link{ci.mean.diff}}, \code{\link{ci.mean}}, \code{\link{ci.mean.w}},
+#' \code{\link{ci.median}}, \code{\link{ci.prop.diff}}, \code{\link{ci.prop}},
+#' \code{\link{ci.sd}}, \code{\link{ci.var}}, \code{\link{cohens.d}},
+#' \code{\link{collin.diag}}, \code{\link{cor.cont}}, \code{\link{cor.matrix}},
+#' \code{\link{cor.cramer}}, \code{\link{crosstab}}, \code{\link{descript}},
+#' \code{\link{eta.sq}}, \code{\link{freq}}, \code{\link{test.levene}},
+#' \code{\link{multilevel.descript}}, \code{\link{multilevel.r2}}, \code{\link{na.auxiliary}},
 #' \code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.pattern}},
 #' \code{\link{item.omega}}, \code{\link{cor.phi}}, \code{\link{cor.poly}},
 #' \code{\link{size.cor}}, \code{\link{size.mean}}, \code{\link{size.prop}},
 #' \code{\link{test.levene}}, \code{\link{test.t}}, \code{\link{test.welch}},
-#' \code{\link{test.z}}.
+#' \code{\link{test.z}}
 #'
 #' @method print misty.object
 #'
 #' @export
-#'
-#' @examples
-print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq = x$args$freq,
-                               hypo = x$args$hypo, descript = x$args$descript, effsize = x$args$effsize,
-                               posthoc = x$args$posthoc, split = x$args$split, table = x$args$table,
-                               digits = x$args$digits, p.digits = x$args$p.digits, icc.digits = x$args$icc.digits,
-                               sort.var = x$args$sort.var, order = x$args$order, check = TRUE, ...) {
+print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
+                               freq = x$args$freq, hypo = x$args$hypo,
+                               descript = x$args$descript, epsilon = x$args$epsilon,
+                               effsize = x$args$effsize, posthoc = x$args$posthoc,
+                               split = x$args$split, table = x$args$table,
+                               digits = x$args$digits, p.digits = x$args$p.digits,
+                               icc.digits = x$args$icc.digits, sort.var = x$args$sort.var,
+                               order = x$args$order, check = TRUE, ...) {
 
   ####################################################################################
   # Global binding
@@ -267,7 +274,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
     ###
     # Print effects size
-    if (!isTRUE(effsize)) {
+    if (isTRUE(!effsize)) {
 
       print.object[["test"]] <- print.object[["test"]][, -which(colnames(print.object[["test"]]) %in% c("eta.sq", "omega.sq"))]
 
@@ -280,11 +287,282 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
     ###
     # Print post-hoc test
-    if (!isTRUE(posthoc)) {
+    if (isTRUE(posthoc)) {
 
       cat(paste0("\n  Tukey HSD Post Hoc Test for Multiple Comparison\n\n"))
 
       write.table(print.object[["posthoc"]], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+    }
+
+  ####################################################################################
+  #-----------------------------------------------------------------------------------
+  # Repeated Measures Analysis of Variance
+  }, aov.w = {
+
+    #.....................................
+    # Rename
+
+    names(print.object[["epsilon"]]) <- c("index", "ep")
+    print.object[["epsilon"]][, 1L] <- c("Lower Bound:", "Greenhouse and Geisser (GG):", "Huynh and Feldt (HF):", "Average of GG and HF:")
+
+    names(print.object[["test"]][["none"]]) <- c("Source", "Sum Sq", "df", "Mean Sq", "F", "pval", "et", "et.p", "om", "om.p")
+    names(print.object[["test"]][["lb"]]) <- c("Source", "Sum Sq", "df", "Mean Sq", "F", "pval", "et", "et.p", "om", "om.p")
+    names(print.object[["test"]][["gg"]]) <- c("Source", "Sum Sq", "df", "Mean Sq", "F", "pval", "et", "et.p", "om", "om.p")
+    names(print.object[["test"]][["hf"]]) <- c("Source", "Sum Sq", "df", "Mean Sq", "F", "pval", "et", "et.p", "om", "om.p")
+
+    #.....................................
+    # Round
+
+    # Descriptive statistics
+    print.object[["descript"]][, c("m", "sd", "low", "upp")] <- vapply(print.object[["descript"]][, c("m", "sd", "low", "upp")], formatC,
+                                                                       digits = digits, format = "f",
+                                                                       zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["descript"]])))
+
+    # Box Index of Sphericity
+    print.object[["epsilon"]][, "ep"] <- formatC(print.object[["epsilon"]][, "ep"] , digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+
+    # ANOVA tables
+    print.object[["test"]][["none"]][, c("Sum Sq", "Mean Sq", "F", "et", "et.p", "om", "om.p")] <- vapply(print.object[["test"]][["none"]][, c("Sum Sq", "Mean Sq", "F", "et", "et.p", "om", "om.p")], formatC,
+                                                                                                                              digits = digits, format = "f",
+                                                                                                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]][["none"]])))
+
+    print.object[["test"]][["none"]][, "df"] <- formatC(print.object[["test"]][["none"]][, "df"], digits = 0L, mode = "integer")
+
+    print.object[["test"]][["none"]][, "pval"] <- formatC(print.object[["test"]][["none"]][, "pval"], digits = p.digits, format = "f",
+                                                          zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+    ##
+
+    print.object[["test"]][["lb"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")] <- vapply(print.object[["test"]][["lb"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")], formatC,
+                                                                                                              digits = digits, format = "f",
+                                                                                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]][["lb"]])))
+
+    print.object[["test"]][["lb"]][, "pval"] <- formatC(print.object[["test"]][["lb"]][, "pval"], digits = p.digits, format = "f",
+                                                        zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+    ##
+
+    print.object[["test"]][["gg"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")] <- vapply(print.object[["test"]][["gg"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")], formatC,
+                                                                                                              digits = digits, format = "f",
+                                                                                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]][["gg"]])))
+
+    print.object[["test"]][["gg"]][, "pval"] <- formatC(print.object[["test"]][["gg"]][, "pval"], digits = p.digits, format = "f",
+                                                        zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+
+    ###
+
+    print.object[["test"]][["hf"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")] <- vapply(print.object[["test"]][["hf"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")], formatC,
+                                                                                                              digits = digits, format = "f",
+                                                                                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]][["hf"]])))
+
+    print.object[["test"]][["hf"]][, "pval"] <- formatC(print.object[["test"]][["hf"]][, "pval"], digits = p.digits, format = "f",
+                                                        zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+    # Post hoc tests
+    print.object[["posthoc"]][, c("m.diff", "t", "d", "d.low", "d.upp")] <- vapply(print.object[["posthoc"]][, c("m.diff", "t", "d", "d.low", "d.upp")], formatC,
+                                                                                   digits = digits, format = "f",
+                                                                                   zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["posthoc"]])))
+
+    print.object[["posthoc"]][, "pval"] <- formatC(print.object[["posthoc"]][, "pval"], digits = p.digits, format = "f",
+                                                   zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+    #.....................................
+    # Format
+
+    print.object[["descript"]] <- rbind(c("Variable", "n", "nNA", "M", "SD", "Low", "Upp"), print.object[["descript"]])
+    print.object[["epsilon"]] <- rbind(c("Box Index of Sphericity", "ep"), print.object[["epsilon"]])
+    print.object[["test"]] <- lapply(print.object[["test"]], function(y) rbind(c("Source", "Sum Sq", "df", "Mean Sq", "F", "pval", "et", "et.p", "om", "om.p"), y))
+    print.object[["posthoc"]] <- rbind(c("Variable1", "Variable2", "M.diff", "t", "df", "pval", "d", "Low", "Upp"), print.object[["posthoc"]])
+
+    # Descriptive statistics
+    print.object[["descript"]][, -1L] <- apply(print.object[["descript"]][, -1L], 2L, format, justify = "right")
+    print.object[["descript"]][-1L, 1L] <- paste0(" ", print.object[["descript"]][-1L, 1L])
+    print.object[["descript"]][, 1L] <- apply(print.object[["descript"]][, 1L, drop = FALSE], 2L, format, justify = "left")
+
+    # Epsilon, Eta and omega squared
+    print.object[["epsilon"]][1L, "ep"] <- "\u03B5"
+
+    print.object[["test"]][["none"]][1L, "et"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["none"]][1L, "et"]) - 2L), collapse = ""), "\u03B7\u00B2", collapes = "")
+    print.object[["test"]][["none"]][1L, "et.p"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["none"]][1L, "et.p"]) - 2L), collapse = ""), "\u03B7\u00B2p", collapes = "")
+    print.object[["test"]][["none"]][1L, "om"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["none"]][1L, "om"]) - 2L), collapse = ""), "\u03C9\u00B2", collapes = "")
+    print.object[["test"]][["none"]][1L, "om.p"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["none"]][1L, "om.p"]) - 2L), collapse = ""), "\u03C9\u00B2p", collapes = "")
+
+    print.object[["test"]][["lb"]][1L, "et"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["lb"]][1L, "et"]) - 2L), collapse = ""), "\u03B7\u00B2", collapes = "")
+    print.object[["test"]][["lb"]][1L, "et.p"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["lb"]][1L, "et.p"]) - 2L), collapse = ""), "\u03B7\u00B2p", collapes = "")
+    print.object[["test"]][["lb"]][1L, "om"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["lb"]][1L, "om"]) - 2L), collapse = ""), "\u03C9\u00B2", collapes = "")
+    print.object[["test"]][["lb"]][1L, "om.p"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["lb"]][1L, "om.p"]) - 2L), collapse = ""), "\u03C9\u00B2p", collapes = "")
+
+    print.object[["test"]][["gg"]][1L, "et"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["gg"]][1L, "et"]) - 2L), collapse = ""), "\u03B7\u00B2", collapes = "")
+    print.object[["test"]][["gg"]][1L, "et.p"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["gg"]][1L, "et.p"]) - 2L), collapse = ""), "\u03B7\u00B2p", collapes = "")
+    print.object[["test"]][["gg"]][1L, "om"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["gg"]][1L, "om"]) - 2L), collapse = ""), "\u03C9\u00B2", collapes = "")
+    print.object[["test"]][["gg"]][1L, "om.p"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["gg"]][1L, "om.p"]) - 2L), collapse = ""), "\u03C9\u00B2p", collapes = "")
+
+    print.object[["test"]][["hf"]][1L, "et"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["hf"]][1L, "et"]) - 2L), collapse = ""), "\u03B7\u00B2", collapes = "")
+    print.object[["test"]][["hf"]][1L, "et.p"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["hf"]][1L, "et.p"]) - 2L), collapse = ""), "\u03B7\u00B2p", collapes = "")
+    print.object[["test"]][["hf"]][1L, "om"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["hf"]][1L, "om"]) - 2L), collapse = ""), "\u03C9\u00B2", collapes = "")
+    print.object[["test"]][["hf"]][1L, "om.p"] <- paste0(paste0(rep(" ", times = nchar(print.object[["test"]][["hf"]][1L, "om.p"]) - 2L), collapse = ""), "\u03C9\u00B2p", collapes = "")
+
+    # Box Index of Sphericity
+    print.object[["epsilon"]][, 1L] <- format(print.object[["epsilon"]][, 1L], justify = "left")
+    print.object[["epsilon"]][-1L, 1L] <- paste0(" ", print.object[["epsilon"]][-1L, 1L])
+    print.object[["epsilon"]][, 2L] <-format(print.object[["epsilon"]][, 2L], justify = "right")
+    print.object[["epsilon"]][, 1L] <- format(print.object[["epsilon"]][, 1L], justify = "left")
+
+    # ANOVA tables
+    print.object[["test"]][["none"]] <- apply(print.object[["test"]][["none"]], 2L, function(x) gsub("NA", "", x))
+    print.object[["test"]][["none"]][, -1L] <- apply(print.object[["test"]][["none"]][, -1L], 2L, format, justify = "right")
+    print.object[["test"]][["none"]][-1L, 1L] <- paste0(" ", print.object[["test"]][["none"]][-1L, 1L])
+    print.object[["test"]][["none"]][c(3L, 4L), 1L] <- paste0(" ", print.object[["test"]][["none"]][c(3L, 4L), 1L])
+    print.object[["test"]][["none"]][, 1L] <- format(print.object[["test"]][["none"]][, 1L], justify = "left")
+
+    print.object[["test"]][["lb"]] <- apply(print.object[["test"]][["lb"]], 2L, function(x) gsub("NA", "", x))
+    print.object[["test"]][["lb"]][, -1L] <- apply(print.object[["test"]][["lb"]][, -1L], 2L, format, justify = "right")
+    print.object[["test"]][["lb"]][-1L, 1L] <- paste0(" ", print.object[["test"]][["lb"]][-1L, 1L])
+    print.object[["test"]][["lb"]][c(3L, 4L), 1L] <- paste0(" ", print.object[["test"]][["lb"]][c(3L, 4L), 1L])
+    print.object[["test"]][["lb"]][, 1L] <- format(print.object[["test"]][["lb"]][, 1L], justify = "left")
+
+    print.object[["test"]][["gg"]] <- apply(print.object[["test"]][["gg"]], 2L, function(x) gsub("NA", "", x))
+    print.object[["test"]][["gg"]][, -1L] <- apply(print.object[["test"]][["gg"]][, -1L], 2L, format, justify = "right")
+    print.object[["test"]][["gg"]][-1L, 1L] <- paste0(" ", print.object[["test"]][["gg"]][-1L, 1L])
+    print.object[["test"]][["gg"]][c(3L, 4L), 1L] <- paste0(" ", print.object[["test"]][["gg"]][c(3L, 4L), 1L])
+    print.object[["test"]][["gg"]][, 1L] <- format(print.object[["test"]][["gg"]][, 1L], justify = "left")
+
+    print.object[["test"]][["hf"]] <- apply(print.object[["test"]][["hf"]], 2L, function(x) gsub("NA", "", x))
+    print.object[["test"]][["hf"]][, -1L] <- apply(print.object[["test"]][["hf"]][, -1L], 2L, format, justify = "right")
+    print.object[["test"]][["hf"]][-1L, 1L] <- paste0(" ", print.object[["test"]][["hf"]][-1L, 1L])
+    print.object[["test"]][["hf"]][c(3L, 4L), 1L] <- paste0(" ", print.object[["test"]][["hf"]][c(3L, 4L), 1L])
+    print.object[["test"]][["hf"]][, 1L] <- format(print.object[["test"]][["hf"]][, 1L], justify = "left")
+
+    # Post hoc tests
+    print.object[["posthoc"]][, -c(1L, 2L)] <- apply(print.object[["posthoc"]][, -c(1L, 2L)], 2L, format, justify = "right")
+    print.object[["posthoc"]][-1L, 1L] <- paste0(" ", print.object[["posthoc"]][-1L, 1L])
+    print.object[["posthoc"]][-1L, 2L] <- paste0(" ", print.object[["posthoc"]][-1L, 2L])
+    print.object[["posthoc"]][, c(1L, 2L)] <- apply(print.object[["posthoc"]][, c(1L, 2L)], 2L, format, justify = "left")
+
+    print.object[["descript"]][, 1L] <- paste(" ", print.object[["descript"]][, 1L])
+    print.object[["epsilon"]][, 1L] <- paste(" ", print.object[["epsilon"]][, 1L])
+    print.object[["test"]][["none"]][, 1L] <- paste("  ", print.object[["test"]][["none"]][, 1L])
+    print.object[["test"]][["lb"]][, 1L] <- paste("  ", print.object[["test"]][["lb"]][, 1L])
+    print.object[["test"]][["gg"]][, 1L] <- paste("  ", print.object[["test"]][["gg"]][, 1L])
+    print.object[["test"]][["hf"]][, 1L] <- paste("  ", print.object[["test"]][["hf"]][, 1L])
+    print.object[["posthoc"]][, 1L] <- paste("  ", print.object[["posthoc"]][, 1L])
+
+    # Print effects size
+    if (isTRUE(!effsize)) {
+
+      print.object[["test"]][["none"]] <- print.object[["test"]][["none"]][, -which(colnames(print.object[["test"]][["none"]]) %in% c("et", "et.p", "om", "om.p"))]
+      print.object[["test"]][["lb"]] <- print.object[["test"]][["lb"]][, -which(colnames(print.object[["test"]][["lb"]]) %in% c("et", "et.p", "om", "om.p"))]
+      print.object[["test"]][["gg"]] <- print.object[["test"]][["gg"]][, -which(colnames(print.object[["test"]][["gg"]]) %in% c("et", "et.p", "om", "om.p"))]
+      print.object[["test"]][["hf"]] <- print.object[["test"]][["hf"]][, -which(colnames(print.object[["test"]][["hf"]]) %in% c("et", "et.p", "om", "om.p"))]
+
+      print.object[["posthoc"]] <- print.object[["posthoc"]][, -which(colnames(print.object[["posthoc"]]) %in% c("d", "d.low", "d.upp"))]
+
+    }
+
+    #.....................................
+    # Print output
+
+    cat(paste0(" Repeated Measures Analysis of Variance\n\n"))
+
+    ###
+    # Print hypotheses
+    if (isTRUE(hypo)) {
+
+      # R Markdown in progress
+      if (isTRUE(getOption("knitr.in.progress"))) {
+
+        cat("  Null hypothesis        H0: mu.i = mu.j for all i and j\n",
+            " Alternative hypothesis H1: mu.i != mu.j for at least one i != j \n\n")
+
+      } else {
+
+        cat("  Null hypothesis        H0: \u03BC\u1D62 = \u03BC\u2C7C for all i and j\n",
+            " Alternative hypothesis H1: \u03BC\u1D62 \u2260 \u03BC\u2C7C for at least one i \u2260 j \n\n")
+
+       }
+
+    }
+
+    ###
+    # Print descriptive statistics
+    if (isTRUE(descript)) {
+
+      write.table(print.object[["descript"]], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+      cat("\n")
+
+    }
+
+    ###
+    # Print Box indices of sphericity
+    if (isTRUE(epsilon)) {
+
+      write.table(print.object[["epsilon"]], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+      cat("\n")
+
+    }
+
+    ###
+    # Print ANOVA tables
+
+    # Sphericity correction: none
+    if (isTRUE("none" %in% x$args$print)) {
+
+      cat(paste0("  Sphericity Correction: None\n"))
+      cat(paste(print.object[["test"]][["none"]][1L, ], collapse = " "), "\n")
+      write.table(print.object[["test"]][["none"]][-1L, , drop = FALSE], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+      if (isTRUE(any(x$args$print %in% c("LB", "GG", "HF")) ||  posthoc)) { cat("\n") }
+
+    }
+
+    # Sphericity correction: lower bound
+    if (isTRUE("LB" %in% x$args$print)) {
+
+      cat(paste0("  Sphericity Correction: Lower Bound\n"))
+      cat(paste(print.object[["test"]][["lb"]][1L, ], collapse = " "), "\n")
+      write.table(print.object[["test"]][["lb"]][-1L, , drop = FALSE], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+      if (isTRUE(any(x$args$print %in% c("GG", "HF")) ||  posthoc)) { cat("\n") }
+
+    }
+
+    # Sphericity correction: Greenhouse-Geisser
+    if (isTRUE("GG" %in% x$args$print)) {
+
+      cat(paste0("  Sphericity Correction: Greenhouse-Geisser \n"))
+      cat(paste(print.object[["test"]][["gg"]][1L, ], collapse = " "), "\n")
+      write.table(print.object[["test"]][["gg"]][-1L, , drop = FALSE], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+      if (isTRUE(any(x$args$print %in% c("HF")) ||  posthoc)) { cat("\n") }
+
+    }
+
+    # Sphericity correction: Huynh-Feldt
+    if (isTRUE("HF" %in% x$args$print)) {
+
+      cat(paste0("  Sphericity Correction: Huynh-Feldt \n"))
+      cat(paste(print.object[["test"]][["hf"]][1L, ], collapse = " "), "\n")
+      write.table(print.object[["test"]][["hf"]][-1L, , drop = FALSE], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+      if (isTRUE(posthoc)) { cat("\n") }
+
+    }
+
+    ###
+    # Print post-hoc test
+    if (isTRUE(posthoc)) {
+
+      cat(paste0("  Paired-Samples t-Tests for Multiple Comparison\n\n"))
+
+      write.table(print.object[["posthoc"]], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+      cat(paste0("\n   Adjustment for multiple testing: ", x$args$p.adj))
+
+      cat("\n")
 
     }
 
@@ -297,6 +575,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
     # Variables to round
     print.round <- switch(x$ci,
                           mean = c("m", "sd", "low", "upp"),
+                          mean.w = c("m", "sd", "se", "low", "upp"),
+                          mean.diff.o = c("m", "sd", "mu", "m.diff", "low", "upp"),
                           mean.diff.i = c("m", "sd", "m.diff", "low", "upp"),
                           mean.diff.p = c("m1", "sd1", "m2", "sd2", "m.diff", "sd.diff", "low", "upp"),
                           prop.diff.i = c("p", "p.diff", "low", "upp"),
@@ -318,6 +598,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
       # Print names
       print.names <- switch(x$ci,
                             mean = c("Variable", "n", "nNA", "pNA", "M", "SD", "Low", "Upp"),
+                            mean.w = c("Variable", "n", "nNA", "pNA", "M", "SD",  "SE", "Low", "Upp"),
+                            mean.diff.o = c("Variable", "n", "nNA", "M", "SD", "Mu", "M.Diff", "Low", "Upp"),
                             mean.diff.i = c("Variable", "Between", "n", "nNA", "M", "SD", "M.Diff", "Low", "Upp"),
                             mean.diff.p = c("Variable", "n", "nNA", "M1", "SD1", "M2", "SD2", "M.Diff", "SD.Diff", "Low", "Upp"),
                             prop.diff.i = c("Variable", "Between", "n", "nNA", "p", "p.Diff", "Low", "Upp"),
@@ -335,7 +617,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
 
       #......
       # Percentages
-      if (isTRUE(!x$ci %in% c("mean.diff.i", "mean.diff.p", "prop.diff.i", "prop.diff.p"))) {
+      if (isTRUE(!x$ci %in% c("mean.diff.o", "mean.diff.i", "mean.diff.p", "prop.diff.i", "prop.diff.p"))) {
 
         print.object[, "pNA"] <- round(print.object[, "pNA"], digits = 2L)
         print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
@@ -379,7 +661,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
         print.object <- print.object[, -1L]
 
         # First column "n"
-        if (isTRUE(x$ci %in% c("mean", "mean.diff.p", "prop.diff.p", "median", "prop", "var", "sd"))) {
+        if (isTRUE(x$ci %in% c("mean", "mean.diff.o", "mean.diff.p", "prop.diff.p", "median", "prop", "var", "sd"))) {
 
           print.object[, "n"] <- c(paste0("  ", print.object[1L, "n"]), paste0("  ", print.object[-1L, "n"]))
           print.object[, "n"] <- format(c(print.object[1L, "n"], misty::chr.trim(print.object[-1L, "n"], side = "right")), justify = "right")
@@ -399,9 +681,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
                        two.sided = " Two-Sided",
                        less = " One-Sided",
                        greater = " One-Sided"),
-                paste0(round(x$args$conf.level * 100L, digits = 2L), "%"), "Confidence Interval:",
+                paste0(round(x$args$conf.level * 100L, digits = 2L), "%"),
+                ifelse(x$ci == "mean.w", "Within-Subject Confidence Intervals:", "Confidence Interval:"),
                 switch(x$ci,
                        mean = "Arithmetic Mean\n\n",
+                       mean.w = "Arithmetic Mean\n\n",
+                       mean.diff.o = "Difference in Means from a Population Value\n\n",
                        mean.diff.i = "Difference in Means from Independent Samples\n\n",
                        mean.diff.p = "Difference in Means from Paired Samples\n\n",
                        prop.diff.i = "Difference in Proportions from Independent Samples\n\n",
@@ -422,6 +707,21 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
         if (isTRUE(!is.null(x$args$sigma))) {
 
           cat(paste0("\n  Note. Known population SD: Sigma = ", round(x$args$sigma, digits = 2L), "\n"))
+
+        }
+
+      }
+
+      # Arithmetic mean
+      if (isTRUE(x$ci == "mean.w")) {
+
+        if (isTRUE(x$args$adjust)) {
+
+          cat(paste0("\n  Note. Difference-Adjusted Cousineau-Morey Intervals."))
+
+        } else {
+
+          cat(paste0("\n  Note. Cousineau-Morey Intervals."))
 
         }
 
@@ -6156,7 +6456,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
       # Print descriptive statistics
       if (!isTRUE(descript)) {
 
-        print.object <- print.object[, -which(colnames(print.object) %in% c("group", "n", "nNA", "m", "sd", "m.diff", "m.low", "m.upp", "se"))]
+        print.object <- print.object[-2L, -which(colnames(print.object) %in% c("group", "n", "nNA", "m", "sd", "m.diff", "m.low", "m.upp", "se"))]
 
         print.object[, 1L] <- paste(" ", print.object[, 1L])
 
@@ -6377,24 +6677,26 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
       #.....................................
       # Round
 
-      print.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "df", "d", "low", "upp")] <- vapply(print.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "df", "d", "low", "upp")], formatC,
-                                                                                                             digits = digits, format = "f",
-                                                                                                             zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(2L))
+      print.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "df", "d", "d.low", "d.upp")] <- vapply(print.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "df", "d", "d.low", "d.upp")], formatC,
+                                                                                                                 digits = digits, format = "f",
+                                                                                                                 zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(2L))
 
-      print.object[, "pval"] <- formatC(print.object[, "pval"], digits = p.digits, format = "f",
-                                        zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+      print.object[, "pval"] <- formatC(print.object[, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
       #.....................................
       # Format
 
       print.object <- rbind(c("Group", "n", "nNA", "M", "SD", "M.Diff", "SE", "Low", "Upp", "t", "df", "pval", "d", "Low", "Upp"), print.object)
 
-      print.object <- apply(print.object, 2L, format, justify = "right")
+      print.object[, -1L] <- apply(print.object[, -1L], 2L, format, justify = "right")
+
+      print.object[-1L, 1L] <- paste0(" ", print.object[-1L, 1L])
+      print.object[, 1L] <- format(print.object[, 1L], justify = "left")
 
       print.object[, 1L] <- paste(" ", print.object[, 1L])
 
       # NAs
-      colnames.NA <- c("m.diff", "se", "m.low", "m.upp", "t", "df", "pval", "d", "Low", "Upp")
+      colnames.NA <- c("m.diff", "se", "m.low", "m.upp", "t", "df", "pval", "d", "d.low", "d.upp")
 
       print.object[, which(colnames(print.object) %in% colnames.NA)] <- apply(print.object[, which(colnames(print.object) %in% colnames.NA), drop = FALSE], 2L, function(y) gsub("NA", "  ", y))
 
@@ -6461,7 +6763,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri, freq =
       # Print descriptive statistics
       if (!isTRUE(descript)) {
 
-        print.object <- print.object[, -which(colnames(print.object) %in% c("n", "nNA", "m", "sd", "m.diff", "se"))]
+        print.object <- print.object[-2L, -which(colnames(print.object) %in% c("group", "n", "nNA", "m", "sd", "m.diff", "m.low", "m.upp", "se"))]
+
+        print.object[, 1L] <- paste(" ", print.object[, 1L])
 
       }
 

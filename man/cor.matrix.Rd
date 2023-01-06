@@ -16,64 +16,86 @@ cor.matrix(x, method = c("pearson", "spearman", "kendall-b", "kendall-c"),
 \arguments{
 \item{x}{a matrix or data frame.}
 
-\item{method}{a character vector indicating which correlation coefficient is to be computed, i.e.
-\code{"pearson"} for Pearson product-moment correlation coefficient (default),
-\code{"spearman"} for Spearman's rank-order correlation coefficient, \code{kendall-b} for
-Kendall's Tau-b correlation coefficient or \code{kendall-c} for Kendall-Stuart's Tau-c
-correlation coefficient.}
+\item{method}{a character vector indicating which correlation coefficient
+is to be computed, i.e. \code{"pearson"} for Pearson product-
+moment correlation coefficient (default), \code{"spearman"}
+for Spearman's rank-order correlation coefficient, \code{kendall-b}
+for Kendall's Tau-b correlation coefficient or \code{kendall-c}
+for Kendall-Stuart's Tau-c correlation coefficient.}
 
-\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-(i.e., listwise deletion); if \code{FALSE} (default), pairwise deletion is used.}
+\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before
+conducting the analysis (i.e., listwise deletion); if \code{FALSE}
+(default), pairwise deletion is used.}
 
-\item{group}{a numeric vector, character vector of factor as grouping variable to show results for
-each group separately, i.e., upper triangular for one group and lower triangular for
-another group. Note that the grouping variable is limited to two groups.}
+\item{group}{a numeric vector, character vector of factor as grouping
+variable to show results for each group separately, i.e.,
+upper triangular for one group and lower triangular for
+another group. Note that the grouping variable is limited
+to two groups.}
 
-\item{sig}{logical: if \code{TRUE}, statistically significant correlation coefficients are shown in boldface on the console.}
+\item{sig}{logical: if \code{TRUE}, statistically significant correlation
+coefficients are shown in boldface on the console.}
 
-\item{alpha}{a numeric value between 0 and 1 indicating the significance level at which correlation coefficients are printed boldface when \code{sig = TRUE}.}
+\item{alpha}{a numeric value between 0 and 1 indicating the significance
+level at which correlation coefficients are printed boldface
+when \code{sig = TRUE}.}
 
-\item{print}{a character string or character vector indicating which results to show on the console,
-i.e. \code{"all"} for all results, \code{"cor"} for correlation coefficients, \code{"n"} for the
-sample sizes, and \code{"p"} for \emph{p}-values.}
+\item{print}{a character string or character vector indicating which results
+to show on the console, i.e. \code{"all"} for all results,
+\code{"cor"} for correlation coefficients, \code{"n"} for the
+sample sizes, \code{"stat"} for the test statistic, \code{"df"}
+for the degrees of freedom, and \code{"p"} for \emph{p}-values.}
 
-\item{tri}{a character string indicating which triangular of the matrix to show on the console, i.e. \code{"all"} for all results, \code{"cor"} for correlation coefficients, \code{"n"} for the sample sizes, and \code{"p"} for \emph{p}-values.}
+\item{tri}{a character string indicating which triangular of the matrix
+to show on the console, i.e., \code{both} for upper and lower
+triangular, \code{lower} (default) for the lower triangular,
+and \code{upper} for the upper triangular.}
 
-\item{p.adj}{a character string indicating an adjustment method for multiple testing based on \code{\link{p.adjust}},
-i.e., \code{none} (default), \code{bonferroni}, \code{holm}, \code{hochberg}, \code{hommel},
-\code{BH}, \code{BY}, or \code{fdr}.}
+\item{p.adj}{a character string indicating an adjustment method for multiple
+testing based on \code{\link{p.adjust}}, i.e., \code{none} ,
+\code{bonferroni}, \code{holm} (default), \code{hochberg},
+\code{hommel}, \code{BH}, \code{BY}, or \code{fdr}.}
 
-\item{continuity}{logical: if \code{TRUE} (default), continuity correction is used for testing Spearman's rank-order
-correlation coefficient and Kendall's Tau-b correlation.}
+\item{continuity}{logical: if \code{TRUE} (default), continuity correction is
+used for testing Spearman's rank-order correlation coefficient
+and Kendall's Tau-b correlation.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used for displaying
-correlation coefficients.}
+\item{digits}{an integer value indicating the number of decimal places to be
+used for displaying correlation coefficients.}
 
-\item{p.digits}{an integer value indicating the number of decimal places to be used for displaying \emph{p}-values.}
+\item{p.digits}{an integer value indicating the number of decimal places to be
+used for displaying \emph{p}-values.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
 
-\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string for writing the results into a Excel file
+naming a file with or without file extension '.xlsx', e.g.,
+\code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-\code{x} (\code{data}), specification of function arguments (\code{args}), and
-list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, matrix or
+data frame specified in \code{x} (\code{data}), specification of function
+arguments (\code{args}), and list with results (\code{result}).
 }
 \description{
-This function computes a correlation matrix based on Pearson product-moment correlation coefficient, Spearman's rank-order correlation coefficient, Kendall's Tau-b correlation coefficient, or Kendall-Stuart's Tau-c correlation coefficient and computes significance values (\emph{p}-values) for testing the hypothesis H0: \eqn{\rho} = 0 for all pairs of variables.
+This function computes a correlation matrix based on Pearson product-moment
+correlation coefficient, Spearman's rank-order correlation coefficient,
+Kendall's Tau-b correlation coefficient, or Kendall-Stuart's Tau-c correlation
+coefficient and computes significance values (\emph{p}-values) for testing the
+hypothesis H0: \eqn{\rho} = 0 for all pairs of variables.
 }
 \details{
-Note that unlike the \code{\link[stats:cor.test]{cor.test}} function, this function
-does not compute an exact \emph{p}-value for Spearman's rank-order correlation
-coefficient or Kendall's Tau-b correlation coefficient, but uses the asymptotic
-\emph{t} approximation.
+Note that unlike the \code{\link[stats:cor.test]{cor.test}} function, this
+function does not compute an exact \emph{p}-value for Spearman's rank-order
+correlation coefficient or Kendall's Tau-b correlation coefficient, but uses
+the asymptotic \emph{t} approximation.
 
 Statistically significant correlation coefficients can be shown in boldface on
 the console when specifying \code{sig = TRUE}. However, this option is not supported
@@ -106,7 +128,7 @@ cor.matrix(dat[, c("x", "y", "z")], method = "kendall-c")
 cor.matrix(dat[, c("x", "y", "z")], sig = TRUE)
 
 # Pearson product-moment correlation coefficient matrix using pairwise deletion
-# highlight statistically significant result at alpha = 0.10
+# highlight statistically significant result at alpha = 0.05
 cor.matrix(dat[, c("x", "y", "z")], sig = TRUE, alpha = 0.10)
 
 # Pearson product-moment correlation coefficient matrix using pairwise deletion,
@@ -134,16 +156,17 @@ cor.matrix(dat[, c("x", "y", "z")], group = dat$group, print = "all")
 cor.matrix(dat[, c("x", "y", "z")], print = "all", write = "Correlation.xlsx")
 
 result <- cor.matrix(dat[, c("x", "y", "z")], print = "all", output = FALSE)
-write.result(result, "Correlation.xlsx") }
+write.result(result, "Correlation.xlsx")
+}
 }
 \references{
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. John Wiley & Sons.
 }
 \seealso{
 \code{\link{write.result}}, \code{\link{cohens.d}}, \code{\link{cor.cont}},
 \code{\link{cor.cramer}}, \code{\link{multilevel.icc}}, \code{\link{cor.phi}},
-\code{\link{multilevel.cor}}, \code{\link{na.auxiliary}}, \code{\link{size.cor}}.
+\code{\link{na.auxiliary}}, \code{\link{size.cor}}.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

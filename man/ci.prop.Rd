@@ -117,8 +117,9 @@ Wilson, E. B. (1927). Probable inference, the law of succession, and statistical
 \emph{Journal of the American Statistical Association, 22}, 209-212.
 }
 \seealso{
-\code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}}, \code{\link{ci.prop.diff}},
-\code{\link{ci.var}}, \code{\link{ci.sd}}, \code{\link{descript}}
+\code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
+\code{\link{ci.prop.diff}}, \code{\link{ci.var}}, \code{\link{ci.sd}},
+\code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

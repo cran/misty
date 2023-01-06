@@ -7,91 +7,131 @@
 test.welch(formula, data, alternative = c("two.sided", "less", "greater"),
            posthoc = TRUE, conf.level = 0.95, hypo = TRUE, descript = TRUE,
            effsize = FALSE, weighted = FALSE, ref = NULL, correct = FALSE,
-           plot = FALSE, point.size = 4, error.width = 0.1,
+           plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
            xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
-           jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.alpha = 0.1,
-           title = "",  subtitle = "Confidence Interval",
-           digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
-           output = TRUE, ...)
+           jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
+           jitter.height = 0, jitter.alpha = 0.1, title = "",
+           subtitle = "Confidence Interval", digits = 2, p.digits = 4,
+           as.na = NULL, check = TRUE, output = TRUE, ...)
 }
 \arguments{
-\item{formula}{a formula of the form \code{y ~ group} where \code{y} is a numeric variable
-giving the data values and \code{group} a numeric variable, character variable
-or factor with two or more than two values or factor levels giving the
+\item{formula}{a formula of the form \code{y ~ group} where \code{y} is
+a numeric variable giving the data values and \code{group}
+a numeric variable, character variable or factor with two
+or more than two values or factor levels giving the
 corresponding groups.}
 
-\item{data}{a matrix or data frame containing the variables in the formula \code{formula}.}
+\item{data}{a matrix or data frame containing the variables in the
+formula \code{formula}.}
 
-\item{alternative}{a character string specifying the alternative hypothesis, must be one of
-code{"two.sided"} (default), \code{"greater"} or \code{"less"}. Note that this
-argument is only used when conducting Welch's two-sample t-test.}
+\item{alternative}{a character string specifying the alternative hypothesis,
+must be one of code{"two.sided"} (default), \code{"greater"}
+or \code{"less"}. Note that this argument is only used when
+conducting Welch's two-sample t-test.}
 
-\item{posthoc}{logical: if \code{TRUE}, Games-Howell post hoc test for multiple comparison is conducted when performing Welch's ANOVA.}
+\item{posthoc}{logical: if \code{TRUE}, Games-Howell post hoc test for
+multiple comparison is conducted when performing Welch's
+ANOVA.}
 
-\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval
-for Cohen's d.
-Note that this argument is only used when conducting Welch's two-sample t-test.}
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence
+level of the interval.}
 
-\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis are shown on the console.}
+\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis
+are shown on the console.}
 
-\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown on the console.}
+\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown
+on the console.}
 
-\item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d for Welch's two-sample t-test
-(see \code{\link{cohens.d}}), \eqn{\eta^2} and \eqn{\omega^2} for Welch's ANOVA and Cohen's d for
-the post hoc tests are shown on the console.}
+\item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d for
+Welch's two-sample t-test (see \code{\link{cohens.d}}),
+\eqn{\eta^2} and \eqn{\omega^2} for Welch's ANOVA and
+Cohen's d for the post hoc tests are shown on the console.}
 
-\item{weighted}{logical: if \code{TRUE}, the weighted pooled standard deviation is used to compute Cohen's d.}
+\item{weighted}{logical: if \code{TRUE}, the weighted pooled standard
+deviation is used to compute Cohen's d.}
 
-\item{ref}{a numeric value or character string indicating the reference group. The standard
-deviation of the reference group is used to standardized the mean difference to compute Cohen's d.}
+\item{ref}{a numeric value or character string indicating the reference
+group. The standard deviation of the reference group is used
+to standardized the mean difference to compute Cohen's d.}
 
-\item{correct}{logical: if \code{TRUE}, correction factor to remove positive bias in small samples is used.}
+\item{correct}{logical: if \code{TRUE}, correction factor to remove positive
+bias in small samples is used.}
 
-\item{plot}{logical: if \code{TRUE}, a plot showing error bars for confidence intervals is drawn.}
-\item{point.size}{a numeric value indicating the \code{size} aesthetic for the point representing the mean value.}
-\item{error.width}{ a numeric value indicating the horizontal bar width of the error bar.}
+\item{plot}{logical: if \code{TRUE}, a plot showing error bars for
+confidence intervals is drawn.}
+
+\item{point.size}{a numeric value indicating the \code{size} aesthetic for
+the point representing the mean value.}
+
+\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment for the
+confidence intervals is applied.}
+
+\item{error.width}{a numeric value indicating the horizontal bar width of
+the error bar.}
+
 \item{xlab}{a character string specifying the labels for the x-axis.}
+
 \item{ylab}{a character string specifying the labels for the y-axis.}
-\item{ylim}{a numeric vector of length two specifying limits of the limits of the y-axis.}
-\item{breaks}{a numeric vector specifying the points at which tick-marks are drawn at the y-axis.}
-\item{jitter}{logical: if \code{TRUE} (default), jittered data points are drawn.}
-\item{jitter.size}{ a numeric value indicating the \code{size} aesthetic for the jittered data points.}
-\item{jitter.width}{a numeric value indicating the amount of vertical and horizontal jitter.}
-\item{jitter.alpha}{a numeric value indicating the opacity of the jittered data points.}
-\item{title}{a character string specifying the text for the title for the plot.}
-\item{subtitle}{a character string specifying the text for the subtitle for the plot.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used for displaying
-descriptive statistics and confidence interval.}
+\item{ylim}{a numeric vector of length two specifying limits of the
+limits of the y-axis.}
 
-\item{p.digits}{an integer value indicating the number of decimal places to be used for displaying
-the \emph{p}-value.}
+\item{breaks}{a numeric vector specifying the points at which tick-marks
+are drawn at the y-axis.}
+
+\item{jitter}{logical: if \code{TRUE} (default), jittered data points
+are drawn.}
+
+\item{jitter.size}{a numeric value indicating the \code{size} aesthetic
+for the jittered data points.}
+
+\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
+
+\item{jitter.height}{a numeric value indicating the amount of vertical jitter.}
+
+\item{jitter.alpha}{a numeric value indicating the opacity of the jittered
+data points.}
+
+\item{title}{a character string specifying the text for the title for
+the plot.}
+
+\item{digits}{an integer value indicating the number of decimal places
+to be used for displaying descriptive statistics and
+confidence interval.}
+
+\item{p.digits}{an integer value indicating the number of decimal places
+to be used for displaying the \emph{p}-value.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 
 \item{...}{further arguments to be passed to or from methods.}
+
+\item{subtitle}{a character string specifying the text for the subtitle for
+the plot.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x}
-(\code{data}), specification of function arguments (\code{args}), and result table(s) (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, list with
+the input specified in \code{x} (\code{data}), specification of function arguments
+(\code{args}), and result table(s) (\code{result}).
 }
 \description{
 This function performs Welch's two-sample t-test and Welch's ANOVA including
 Games-Howell post hoc test for multiple comparison and provides descriptive
-statistics, effect size measures, and a plot showing error bars for confidence
-intervals with jittered data points.
+statistics, effect size measures, and a plot showing error bars for
+difference-adjusted confidence intervals with jittered data points.
 }
 \details{
 Note that by default Welch's two-sample t-test and Games-Howell post hoc test
-reports Cohen's d based on the unweighted standard deviation (i.e., \code{weighted = FALSE})
-when requesting an effect size measure  (i.e., \code{effsize = TRUE}) following
-the recommendation by Delacre et al. (2021).
+reports Cohen's d based on the unweighted standard deviation (i.e.,
+\code{weighted = FALSE}) when requesting an effect size measure (i.e.,
+\code{effsize = TRUE}) following the recommendation by Delacre et al. (2021).
 }
 \examples{
 dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
@@ -163,10 +203,9 @@ ggplot(plotdat, aes(factor(group), y)) +
   geom_point(stat = "summary", fun = "mean", size = 4) +
   stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
   scale_x_discrete(name = NULL) +
-  labs(subtitle = "Two-Sided 95% Confidence Interval") +
+  labs(subtitle = "Two-Sided 95\% Confidence Interval") +
   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
 }
-
 #--------------------------------------
 # Multiple-Sample Design
 
@@ -205,19 +244,22 @@ ggplot(plotdat, aes(group, y)) +
   geom_point(stat = "summary", fun = "mean", size = 4) +
   stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
   scale_x_discrete(name = NULL) +
-  labs(subtitle = "Two-Sided 95% Confidence Interval") +
+  labs(subtitle = "Two-Sided 95\% Confidence Interval") +
   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
 }
 }
 \references{
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. John Wiley & Sons.
 
-Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why Hedges' g*s based on the non-pooled
-standard deviation should be reported with Welch's t-test. https://doi.org/10.31234/osf.io/tu6mp
+Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why Hedges' g*s
+based on the non-pooled standard deviation should be reported with Welch's t-test.
+https://doi.org/10.31234/osf.io/tu6mp
 }
 \seealso{
-\code{\link{test.t}}, \code{\link{test.z}}, \code{\link{test.levene}}, \code{\link{aov.b}}, \code{\link{cohens.d}}, \code{\link{ci.mean.diff}}, \code{\link{ci.mean}}
+\code{\link{test.t}}, \code{\link{test.z}}, \code{\link{test.levene}},
+\code{\link{aov.b}}, \code{\link{cohens.d}}, \code{\link{ci.mean.diff}},
+\code{\link{ci.mean}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

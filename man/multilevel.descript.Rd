@@ -11,43 +11,50 @@ multilevel.descript(x, cluster, method = c("aov", "lme4", "nlme"), REML = TRUE,
 \arguments{
 \item{x}{a vector, matrix or data frame.}
 
-\item{cluster}{a vector representing the nested grouping structure (i.e., group or
-cluster variable).}
+\item{cluster}{a vector representing the nested grouping structure (i.e.,
+group or cluster variable).}
 
-\item{method}{a character string indicating the method used to estimate intraclass correlation coefficients,
-i.e., \code{"aov"} ICC estimated using the \code{aov} function,
-\code{"lme4"} (default) ICC estimated using the \code{lmer} function in the \pkg{lme4} package,
-\code{"nlme"} ICC estimated using the \code{lme} function in the \pkg{nlme} package.}
+\item{method}{a character string indicating the method used to estimate
+intraclass correlation coefficients, i.e., \code{"aov"} ICC
+estimated using the \code{aov} function, \code{"lme4"} (default)
+ICC estimated using the \code{lmer} function in the \pkg{lme4}
+package, \code{"nlme"} ICC estimated using the \code{lme} function
+in the \pkg{nlme} package.}
 
-\item{REML}{logical: if \code{TRUE} (default), restricted maximum likelihood is used to estimate the null model
-when using the \code{lmer()} function in the \pkg{lme4} package or the \code{lme()} function in
+\item{REML}{logical: if \code{TRUE} (default), restricted maximum likelihood
+is used to estimate the null model when using the \code{lmer()}
+function in the \pkg{lme4} package or the \code{lme()} function in
 the \pkg{nlme} package.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used.}
+\item{digits}{an integer value indicating the number of decimal places to
+be used.}
 
-\item{icc.digits}{an integer indicating the number of decimal places to be used for displaying
-intraclass correlation coefficients.}
+\item{icc.digits}{an integer indicating the number of decimal places to be used
+for displaying intraclass correlation coefficients.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.
-Note that \code{as.na()} function is only applied to \code{x} but not to
-\code{cluster}.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis. Note that \code{as.na()} function is only applied
+to \code{x} but not to \code{cluster}.}
 
-\item{write}{a character string for writing the results into a Excel file naming a file with or without file extension '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string for writing the results into a Excel file
+naming a file with or without file extension '.xlsx', e.g.,
+\code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, matrix or data frame specified in
-\code{x} (\code{data}), specification of function arguments (\code{args}), and
-list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries: function call (\code{call}), type of analysis \code{type}, matrix or
+data frame specified in \code{x} (\code{data}), specification of function arguments
+(\code{args}), and list with results (\code{result}).
 }
 \description{
-This function computes descriptive statistics for multilevel data, e.g. average cluster size, variance components,
-intraclass correlation coefficient, design effect, and effective sample size.
+This function computes descriptive statistics for multilevel data, e.g. average
+cluster size, variance components, intraclass correlation coefficient,
+design effect, and effective sample size.
 }
 \details{
 Note that this function is restricted to two-level models.
@@ -82,18 +89,18 @@ multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster,
 
 result <- multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster,
                               output = FALSE)
-write.result(result, "Multilevel_Descript.xlsx") }
+write.result(result, "Multilevel_Descript.xlsx")
+}
 }
 \references{
-Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis: Techniques and applications} (3rd. ed.).
-Routledge.
+Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis:
+Techniques and applications} (3rd. ed.). Routledge.
 
-Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introduction to basic and advanced multilevel
-modeling} (2nd ed.). Sage Publishers.
+Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An
+introduction to basic and advanced multilevel modeling} (2nd ed.). Sage Publishers.
 }
 \seealso{
-\code{\link{multilevel.cor}}, \code{\link{multilevel.icc}}, \code{\link{multilevel.indirect}},
-\code{\link{multilevel.r2}}, \code{\link{write.result}},
+\code{\link{write.result}}, \code{\link{multilevel.icc}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

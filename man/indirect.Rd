@@ -107,14 +107,13 @@ by specifying the argument \code{se}:
 
 The asymptotic normal method is known to have low statistical power because
 the distribution of the product \eqn{\hat{a}\hat{b}} is not normally distributed.
-(Kisbu-Sakarya, MacKinnon, & Miocevic, 2014). In the null case, where
-both random variables have mean equal to zero, the distribution is symmetric
-with kurtosis of six. When the product of the means of the two random variables
-is nonzero, the distribution is skewed (up to a maximum value of \eqn{\pm} 1.5) and has
-a excess kurtosis (up to a maximum value of 6). However, the product approaches
-a normal distribution as one or both of the ratios of the means to standard errors
-of each random variable get large in absolute value (MacKinnon, Lockwood &
-Williams, 2004).
+(Kisbu-Sakarya, MacKinnon, & Miocevic, 2014). In the null case, where both random
+variables have mean equal to zero, the distribution is symmetric with kurtosis of
+six. When the product of the means of the two random variables is nonzero, the
+distribution is skewed (up to a maximum value of \eqn{\pm} 1.5) and has a excess
+kurtosis (up to a maximum value of 6). However, the product approaches a normal
+distribution as one or both of the ratios of the means to standard errors of each
+random variable get large in absolute value (MacKinnon, Lockwood & Williams, 2004).
 
 \strong{(2) Distribution of the product method}
 
