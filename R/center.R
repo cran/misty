@@ -20,7 +20,8 @@
 #' Note that predictors can be centered on any meaningful value using the argument
 #' \code{value}.
 #'
-#' @param x       a numeric vector.
+#' @param x       a numeric vector for centering a predictor, matrix or data
+#'                frame for centering more than one predictor.
 #' @param type    a character string indicating the type of centering, i.e.,
 #'                \code{"CGM"} for centering at the grand mean (i.e., grand mean
 #'                centering) or \code{"CWC"} for centering within cluster (i.e.,
@@ -31,6 +32,13 @@
 #'                a level-2 predictor or centering within cluster (CWC) of a
 #'                level-1 predictor.
 #' @param value   a numeric value for centering on a specific user-defined value.
+#' @param names   a character string or character vector indicating the names
+#'                of the centered variables when centering more than one variable.
+#'                By default, centered variables are named with the ending
+#'                \code{".c"} resulting in e.g. \code{"x1.c"} and \code{"x2.c"}.
+#'                Variable names can also be specified using a character vector
+#'                matching the number of variables specified in \code{x} (e.g.
+#'                \code{names = c("center.x1", "center.x2")}).
 #' @param as.na   a numeric vector indicating user-defined missing values, i.e.
 #'                these values are converted to \code{NA} before conducting the
 #'                analysis. Note that \code{as.na()} function is only applied to
@@ -69,41 +77,66 @@
 #' https://doi.org/10.1037/met0000434
 #'
 #' @return
-#' Returns a numeric vector with the same length as \code{x} containing centered
-#' values.
+#' Returns a numeric vector or data frame with the same length or same number of
+#' rows as \code{x} containing centered values or variable.
 #'
 #' @export
 #'
 #' @examples
 #' #--------------------------------------
 #' # Predictors in a single-level regression
-#' dat.sl <- data.frame(x = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
+#' dat.sl <- data.frame(x1 = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
+#'                      x2 = c(3, 1, 2, 6, 4, 8, 3, 2, 1),
 #'                      y = c(5, 3, 6, 3, 4, 5, 2, 6, 5))
 #'
 #' # Center predictor at the sample mean
-#' center(dat.sl$x)
+#' center(dat.sl$x1)
+#'
+#' # Center predictors at the sample mean and attach to 'dat.sl'
+#' dat.sl <- data.frame(dat.sl,
+#'                      center(dat.sl[, c("x1", "x2")]))
 #'
 #' # Center predictor at the value 3
-#' center(dat.sl$x, value = 3)
+#' center(dat.sl$x1, value = 3)
+#'
+#' # Center predictors at the value 3 and attach to 'dat.sl'
+#' dat.sl <- data.frame(dat.sl,
+#'                      center(dat.sl[, c("x1", "x2")], value = 3, names = ".v"))
 #'
 #' #--------------------------------------
 #' # Predictors in a multilevel regression
 #' dat.ml <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
 #'                      cluster = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
-#'                      x.l1 = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
-#'                      x.l2 = c(4, 4, 4, 1, 1, 1, 3, 3, 3),
+#'                      x1.l1 = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
+#'                      x2.l1 = c(1, 4, 2, 3, 5, 7, 8, 7, 5),
+#'                      x1.l2 = c(4, 4, 4, 1, 1, 1, 3, 3, 3),
+#'                      x2.l2 = c(5, 5, 5, 2, 2, 2, 7, 7, 7),
 #'                      y = c(5, 3, 6, 3, 4, 5, 2, 6, 5))
 #'
 #' # Center level-1 predictor at the grand mean (CGM)
-#' center(dat.ml$x.l1)
+#' center(dat.ml$x1.l1)
+#'
+#' # Center level-1 predictors at the grand mean (CGM) and attach to 'dat.ml'
+#' dat.ml<- cbind(dat.ml,
+#'               center(dat.ml[, c("x1.l1", "x2.l1")], names = ".cgm"))
 #'
 #' # Center level-1 predictor within cluster (CWC)
-#' center(dat.ml$x.l1, type = "CWC", cluster = dat.ml$cluster)
+#' center(dat.ml$x1.l1, type = "CWC", cluster = dat.ml$cluster)
+#'
+#' # Center level-1 predictors within cluster (CWC) and attach to 'dat.ml'
+#' dat.ml <- cbind(dat.ml,
+#'                 center(dat.ml[, c("x1.l1", "x2.l1")], type = "CWC",
+#'                 cluster = dat.ml$cluster, names = ".cwc"))
 #'
 #' # Center level-2 predictor at the grand mean (CGM)
-#' center(dat.ml$x.l2, type = "CGM", cluster = dat.ml$cluster)
+#' center(dat.ml$x1.l2, type = "CGM", cluster = dat.ml$cluster)
+#'
+#' # Center level-2 predictors at the grand mean (CGM) and attach to 'dat.ml'
+#' dat.ml <- cbind(dat.ml,
+#'                 center(dat.ml[, c("x1.l2", "x2.l2")], type = "CGM",
+#'                 cluster = dat.ml$cluster, names = ".cgm"))
 center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
-                   as.na = NULL, check = TRUE) {
+                   names = ".c", as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -115,11 +148,8 @@ center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  # Check if only one variable specified in the input 'x'
-  if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
-
-  # Convert 'x' into a vector
-  x <- unlist(x, use.names = FALSE)
+  # Convert 'x' into a vector when only one variable specified in 'x'
+  if (isTRUE(ncol(data.frame(x)) == 1L)) { x <- unlist(x, use.names = FALSE) }
 
   #-----------------------------------------
 
@@ -129,7 +159,7 @@ center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
     if (isTRUE(nrow(data.frame(cluster)) != nrow(data.frame(x)))) { stop("The length of the vector in 'cluster' does not match with the length of the vector in 'x'.", call. = FALSE) }
 
     # Check if only one variable specified in the input 'cluster'
-    if (isTRUE(ncol(data.frame(cluster)) != 1L)) { stop("More than one variable specified for the argument 'cluster'.",call. = FALSE) }
+    if (isTRUE(ncol(data.frame(cluster)) != 1L)) { stop("More than one variable specified for the argument 'cluster'.", call. = FALSE) }
 
     # Convert 'cluster' into a vector
     cluster <- unlist(cluster, use.names = FALSE)
@@ -138,54 +168,12 @@ center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
-
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'x'
-    if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
-
-    # Check input 'type'
-    if (isTRUE(all(!type %in% c("CGM", "CWC")))) { stop("Character string in the argument 'type' does not match with \"CGM\" or \"CWC\".", call. = FALSE) }
-
-    # Centering Within Cluster
-    if (isTRUE(all(type == "CWC") && is.null(cluster))) { stop("Please specify the argument 'cluster' to apply centering within cluster (CWC).", call. = FALSE) }
-
-    # Check input 'cluster'
-    if (isTRUE(!is.null(cluster))) {
-
-      # Group Mean Centering of a Level 1 predictor
-      if (isTRUE(all(type == "CWC"))) {
-
-        if (isTRUE(all(na.omit(as.vector(tapply(x, cluster, var, na.rm = TRUE) == 0L))))) {
-
-          stop("Vector in 'x' specified as level-1 predictor does not have any within-cluster variance.", call. = FALSE)
-
-        }
-
-      }
-
-      # Group Mean Centering of a Level 2 predictor
-      if (isTRUE(all(type == "CGM"))) {
-
-        if (isTRUE(any(na.omit(as.vector(tapply(x, cluster, var, na.rm = TRUE) != 0L))))) {
-
-          stop("Vector in 'x' specified as level-2 predictor has within-cluster variance.", call. = FALSE)
-
-        }
-
-      }
-
-    }
-
-  }
-
-  #_____________________________________________________________________________
-  #
   # Data and Arguments ---------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert matrix into data frame ####
+
+  if (is.matrix(x)) { x <- data.frame(x) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -203,49 +191,141 @@ center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Type of centering ####
 
+  # Check input 'type'
+  if (isTRUE(isTRUE(check) && all(!type %in% c("CGM", "CWC")))) { stop("Character string in the argument 'type' does not match with \"CGM\" or \"CWC\".", call. = FALSE) }
+
   type <- ifelse (all(c("CGM", "CWC") %in% type), "CGM", type)
+
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+
+  if (isTRUE(check)) {
+
+    # Check input 'x'
+    if (isTRUE(any(c(vapply(data.frame(x), mode, FUN.VALUE = character(1L)) != "numeric",
+                     vapply(data.frame(x), is.factor, FUN.VALUE = logical(1L)))))) {
+
+      if (isTRUE(is.null(dim(x)))) {
+
+        stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
+
+      } else {
+
+        stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE)
+
+      }
+
+    }
+
+    # Centering Within Cluster
+    if (isTRUE(all(type == "CWC") && is.null(cluster))) { stop("Please specify the argument 'cluster' to apply centering within cluster (CWC).", call. = FALSE) }
+
+    # Check input 'cluster'
+    if (isTRUE(!is.null(cluster))) {
+
+      # Group Mean Centering of a Level 1 predictor
+      if (isTRUE(is.null(dim(x)) && all(type == "CWC"))) {
+
+        if (isTRUE(all(na.omit(as.vector(tapply(x, cluster, var, na.rm = TRUE) == 0L))))) {
+
+          stop("Vector in 'x' specified as level-1 predictor does not have any within-cluster variance.", call. = FALSE)
+
+        }
+
+      }
+
+      # Grand Mean Centering of a Level 2 predictor
+      if (isTRUE(is.null(dim(x)) && all(type == "CGM"))) {
+
+        if (isTRUE(any(na.omit(as.vector(tapply(x, cluster, var, na.rm = TRUE) != 0L))))) {
+
+          stop("Vector in 'x' specified as level-2 predictor has within-cluster variance.", call. = FALSE)
+
+        }
+
+      }
+
+    }
+
+    # Check input 'names'
+    if (isTRUE(!is.null(dim(x)))) {
+
+      if (isTRUE(!is.character(names))) { stop("Please specify a character string or vector for the argument 'names'.", call. = FALSE) }
+
+      if (isTRUE(length(names) > 1L && length(names) != ncol(x))) {  stop("The length of the vector specified in 'names' does not match with the number of variable in 'x'.", call. = FALSE) }
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #
   # Main Function --------------------------------------------------------------
 
-  if (isTRUE(is.null(value))) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Single variable ####
+  if (isTRUE(is.null(dim(x)))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Centering at the grand mean (CGM) ####
-    if (isTRUE(type == "CGM")) {
-
-      #...................
-      ### Single-level or L1 predictor ####
-      if (isTRUE(is.null(cluster))) {
-
-        # Mean centering
-        object <- as.numeric(scale(x, scale = FALSE))
+    if (isTRUE(is.null(value))) {
 
       #...................
-      ### L2 predictor ####
-      } else {
+      ### Centering at the grand mean (CGM) ####
+      if (isTRUE(type == "CGM")) {
 
-        # Mean centering
-        object <- x - mean(x[which(!duplicated(cluster))], na.rm = TRUE)
+        ### Single-level or L1 predictor ####
+        if (isTRUE(is.null(cluster))) {
+
+          # Mean centering
+          object <- as.numeric(scale(x, scale = FALSE))
+
+        ### L2 predictor ####
+        } else {
+
+          # Mean centering
+          object <- x - mean(x[which(!duplicated(cluster))], na.rm = TRUE)
+
+        }
+
+      #...................
+      ### Centering within cluster (CWC) ####
+      } else if (isTRUE(type == "CWC")) {
+
+        object <- unname(x - misty::cluster.scores(x, cluster = cluster, fun = "mean", check = check, expand = TRUE))
 
       }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Centering within cluster (CWC) ####
-    } else if (isTRUE(type == "CWC")) {
+    #...................
+    ### Centering on a user-defined value ####
+    } else {
 
-      object <- unname(x - misty::cluster.scores(x, cluster = cluster, fun = "mean", check = check, expand = TRUE))
+      object <- x - value
 
     }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Centering on a user-defined value ####
+  ## Multiple variables ####
   } else {
 
-    object <- x - value
+    object <- data.frame(vapply(x, misty::center, type = type, cluster = cluster,
+                                value = value, as.na = as.na, check = FALSE,
+                                FUN.VALUE = double(nrow(x))))
 
-    warning(paste("Variable centered at the user-defined value", value), call. = FALSE)
+    #...................
+    ### Variable names ####
+
+    if (isTRUE(length(names) == 1L)) {
+
+      colnames(object) <- paste0(colnames(object), names)
+
+    } else {
+
+      colnames(object) <- names
+
+    }
 
   }
 

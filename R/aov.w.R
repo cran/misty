@@ -524,7 +524,7 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
 
   if (isTRUE(all(c("all", "none", "LB",  "GG", "HF") %in% print))) { print <- ifelse(gg.hf < 0.75, "GG", ifelse(gg.hf >= 0.75 && gg.hf < 0.95, "HF", "none")) }
 
-  if (isTRUE(length(print) == 1 && print == "all")) { print <- c("none", "LB", "GG", "HF") }
+  if (isTRUE(length(print) == 1L && print == "all")) { print <- c("none", "LB", "GG", "HF") }
 
   if (isTRUE(any(is.na(data.id[, var.formula])) && any(print %in% c("GG", "HF")))) {
 

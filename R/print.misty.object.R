@@ -61,7 +61,8 @@
 #' \code{\link{collin.diag}}, \code{\link{cor.cont}}, \code{\link{cor.matrix}},
 #' \code{\link{cor.cramer}}, \code{\link{crosstab}}, \code{\link{descript}},
 #' \code{\link{eta.sq}}, \code{\link{freq}}, \code{\link{test.levene}},
-#' \code{\link{multilevel.descript}}, \code{\link{multilevel.r2}}, \code{\link{na.auxiliary}},
+#' \code{\link{multilevel.descript}}, \code{\link{multilevel.r2}},
+#' \code{\link{multilevel.r2.manual}},\code{\link{na.auxiliary}},
 #' \code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.pattern}},
 #' \code{\link{item.omega}}, \code{\link{cor.phi}}, \code{\link{cor.poly}},
 #' \code{\link{size.cor}}, \code{\link{size.mean}}, \code{\link{size.prop}},
@@ -5105,7 +5106,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       print.object$rs$total <- data.frame(sapply(print.object$rs$total[, !is.na(print.object$rs$total)], formatC, digits = digits, format = "f", simplify = FALSE))
       row.names(print.object$rs$total) <- "   "
 
-      if (isTRUE(ncol(print.object$rs$decomp) != 1)) {
+      if (isTRUE(ncol(print.object$rs$decomp) != 1L)) {
 
         print.object$rs$within <- data.frame(sapply(print.object$rs$within, formatC, digits = digits, format = "f", simplify = FALSE))
         row.names(print.object$rs$within) <- "   "
@@ -5164,7 +5165,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print(print.object$rs$total, quote = FALSE, max = 99999L, right = TRUE)
 
        # Predictors are cluster-mean-centered
-       if (isTRUE(ncol(print.object$rs$decomp) != 1)) {
+       if (isTRUE(ncol(print.object$rs$decomp) != 1L)) {
 
          cat(ifelse(isTRUE(getOption("knitr.in.progress")), "\n   Within-Cluster R2\n", "\n   Within-Cluster R\u00B2\n"))
 
@@ -5175,6 +5176,51 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           print(print.object$rs$between, quote = FALSE, max = 99999L, right = TRUE)
 
       }
+
+    }
+
+  ####################################################################################
+  #-----------------------------------------------------------------------------------
+  # R-Squared Measures for Multilevel and Linear Mixed Effects Models
+  }, multilevel.r2.manual = {
+
+    ####################################################################################
+    # Main Function
+
+    print.object$rs$total <- data.frame(sapply(print.object$rs$total[, !is.na(print.object$rs$total)], formatC, digits = digits, format = "f", simplify = FALSE))
+    row.names(print.object$rs$total) <- "   "
+
+    if (isTRUE(ncol(print.object$rs$decomp) != 1L)) {
+
+      print.object$rs$within <- data.frame(sapply(print.object$rs$within, formatC, digits = digits, format = "f", simplify = FALSE))
+      row.names(print.object$rs$within) <- "   "
+
+      print.object$rs$between <- data.frame(sapply(print.object$rs$between, formatC, digits = digits, format = "f", simplify = FALSE))
+      row.names(print.object$rs$between) <- "   "
+
+    }
+
+    ####################################################################################
+    # Output
+
+    cat(" R-Squared Measures for Multilevel and Linear Mixed Effects Models\n\n")
+
+    cat("  Integrative Framework of R-Squared Measures (Rights and Sterba, 2019)\n\n")
+
+    cat(ifelse(isTRUE(getOption("knitr.in.progress")), "   Total R2\n", "   Total R\u00B2\n"))
+
+    print(print.object$rs$total, quote = FALSE, max = 99999L, right = TRUE)
+
+    # Predictors are cluster-mean-centered
+    if (isTRUE(ncol(print.object$rs$decomp) != 1L)) {
+
+      cat(ifelse(isTRUE(getOption("knitr.in.progress")), "\n   Within-Cluster R2\n", "\n   Within-Cluster R\u00B2\n"))
+
+      print(print.object$rs$within, quote = FALSE, max = 99999L, right = TRUE)
+
+      cat(ifelse(isTRUE(getOption("knitr.in.progress")), "\n   Between-Cluster R2\n", "\n   Between-Cluster R\u00B2\n"))
+
+      print(print.object$rs$between, quote = FALSE, max = 99999L, right = TRUE)
 
     }
 

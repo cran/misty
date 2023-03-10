@@ -4,37 +4,52 @@
 \alias{item.reverse}
 \title{Reverse Code Scale Item}
 \usage{
-item.reverse(x, min = NULL, max = NULL, keep = NULL, as.na = NULL, table = FALSE,
-             check = TRUE)
+item.reverse(x, min = NULL, max = NULL, keep = NULL, names = ".r",
+             as.na = NULL, table = FALSE, check = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector.}
+\item{x}{a numeric vector for reverse coding an item, matrix or data frame
+for reverse coding more than one item.}
 
-\item{min}{an integer indicating the minimum of the item (i.e., lowest possible scale value).}
+\item{min}{an integer indicating the minimum of the item (i.e., lowest possible
+scale value).}
 
-\item{max}{an integer indicating the maximum of the item (i.e., highest possible scale value).}
+\item{max}{an integer indicating the maximum of the item (i.e., highest possible
+scale value).}
 
 \item{keep}{a numeric vector indicating values not to be reverse coded.}
 
-\item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+\item{names}{a character string or character vector indicating the names
+of the reverse coded item when specifying more than one variable.
+By default, variables are named with the ending \code{".r"}
+resulting in e.g. \code{"x1.r"} and \code{"x2.r"}. Variable names
+can also be specified using a character vector matching the number
+of variables specified in \code{x} (e.g.,
+\code{names = c("reverse.x1", "reverse.x2")}).}
 
-\item{table}{logical: if \code{TRUE}, a cross table item x reverse coded item is printed
-on the console.}
+\item{as.na}{a numeric vector indicating user-defined missing values, i.e. these
+values are converted to \code{NA} before conducting the analysis.}
+
+\item{table}{logical: if \code{TRUE}, a cross table item x reverse coded item
+is printed on the console if only one variable is specified in
+\code{x}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \value{
-Returns a numeric vector with the same length as \code{x} containing the reverse coded scale item.
+Returns a numeric vector or data frame with the same length or same number of
+rows as \code{x} containing the reverse coded scale item(s).
 }
 \description{
-This function reverse codes an inverted item, i.e., item that is negatively worded.
+This function reverse codes inverted items, i.e., items that are negatively
+worded.
 }
 \details{
-If arguments \code{min} and/or \code{max} are not specified, empirical minimum and/or maximum is computed
-from the vector. Note, however, that reverse coding might fail if the lowest or highest possible scale value
-is not represented in the vector. That is, it is always preferable to specify the arguments \code{min} and
-\code{max}.
+If arguments \code{min} and/or \code{max} are not specified, empirical minimum
+and/or maximum is computed from the data Note, however, that reverse coding
+might fail if the lowest or highest possible scale value is not represented in
+the data That is, it is always preferable to specify the arguments \code{min}
+and \code{max}.
 }
 \examples{
 dat <- data.frame(item1 = c(1, 5, 3, 1, 4, 4, 1, 5),
@@ -44,21 +59,24 @@ dat <- data.frame(item1 = c(1, 5, 3, 1, 4, 4, 1, 5),
 # Reverse code item1
 dat$item1r <- item.reverse(dat$item1, min = 1, max = 5)
 
-# Reverse code item2
-dat$item2r <- item.reverse(dat$item2, min = 1, max = 5)
-
 # Reverse code item3 while keeping the value -99
 dat$item3r <- item.reverse(dat$item3, min = 1, max = 5, keep = -99)
 
 # Reverse code item3 while keeping the value -99 and check recoding
 dat$item3r <- item.reverse(dat$item3, min = 1, max = 5, keep = -99, table = TRUE)
+
+# Reverse code item1, item2, and item 3 and attach to 'dat'
+dat <- cbind(dat,
+             item.reverse(dat[, c("item1", "item2", "item3")],
+                          min = 1, max = 5, keep = -99))
 }
 \references{
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-New York: John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. New York: John Wiley & Sons.
 }
 \seealso{
-\code{\link{item.alpha}}, \code{\link{item.omega}}, \code{\link{rec}}, \code{\link{item.scores}}
+\code{\link{item.alpha}}, \code{\link{item.omega}}, \code{\link{rec}},
+\code{\link{item.scores}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -1,17 +1,17 @@
-#' Within-Subject Confidence Intervals for the Arithmetic Mean
+#' Within-Subjects Confidence Intervals for the Arithmetic Mean
 #'
-#' This function computes difference-adjusted Cousineau-Morey within-subject
+#' This function computes difference-adjusted Cousineau-Morey within-subjects
 #' confidence interval for the arithmetic mean.
 #'
-#' The Cousineau within-subject confidence interval(CI, Cousineau, 2005) is an
-#' alternative to the Loftus-Masson within-subject CI (Loftus & Masson, 1994)
+#' The Cousineau within-subjects confidence interval(CI, Cousineau, 2005) is an
+#' alternative to the Loftus-Masson within-subjects CI (Loftus & Masson, 1994)
 #' that does not assume sphericity or homogeneity of covariances. This approach
 #' removes individual differences by normalizing the raw scores using
 #' participant-mean centering and adding the grand mean back to every score:
 #'
 #' \deqn{Y_{ij}^{'} = Y_{ij} - \hat{\mu}_i + \hat{\mu}_{grand}}
 #'
-#' where \eqn{Y_^'{ij}} is the score of the \eqn{i}th participant in condition
+#' where \eqn{Y_^{ij}} is the score of the \eqn{i}th participant in condition
 #' \eqn{j} (for \eqn{i = 1} to \eqn{n}), \eqn{\hat{\mu}_i} is the mean of
 #' participant \eqn{i} across all \eqn{J} levels (for \eqn{j = 1} to \eqn{J}),
 #' and \eqn{\hat{\mu}_{grand}} is the grand mean.
@@ -45,7 +45,7 @@
 #'                     specified in wide-format (i.e., multivariate person level
 #'                     format).
 #' @param adjust       logical: if \code{TRUE} (default), difference-adjustment
-#'                     for the Cousineau-Morey within-subject confidence intervals
+#'                     for the Cousineau-Morey within-subjects confidence intervals
 #'                     is applied.
 #' @param alternative  a character string specifying the alternative hypothesis,
 #'                     must be one of \code{"two.sided"} (default), \code{"greater"}

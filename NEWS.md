@@ -1,3 +1,15 @@
+### misty 0.4.8 (2023-03-10)
+
+##### New features
+* New functions `script.close()`, `script.new()`, `script.open()`, and `script.save()` to close, open, and save R scripts in RStudio. 
+* New function `setsource()` to set the working directory to the source file location in RStudio equivalent to using the menu item `Session - Set Working Directory - To Source File Location`.
+* New function `restart()` to restart the RStudio session equivalent to using the menu item `Session - Restart R`.
+* New function `multilevel.r2.manual()` to compute R-squared measures by Rights and Sterba (2019) for
+multilevel and linear mixed effects models by manually inputting parameter estimates. 
+
+##### Minor features and improvements
+* Functions `center()`, `cluster.scores()`, `rec()`, and `item.reverse()` can be applied to more than one variable at once.
+
 ### misty 0.4.7 (2023-01-06)
 
 ##### New features
@@ -6,11 +18,11 @@
 
 ##### Minor features and improvements
 * Function `ci.mean.diff()` computes the confidence interval for the difference for an arithmetic mean in a one-sample design.
-* Functions `aov.b()`, `test.t()`, `test.welch()`, `test.z()` plot difference-adjusted confidence intervals in two-sample design by default.
+* Functions `aov.b()`, `test.t()`, `test.welch()`, and `test.z()` plot difference-adjusted confidence intervals in two-sample design by default.
 * Added the argument `jitter.height` to the functions `aov.b()`, `test.levene()`, `test.t()`, `aov.welch()`, and `test.z()`.
 * Added the argument `adjust` to the function `ci.mean()`, to apply difference-adjustment for the confidence interval.
 
-##### User-visible c hanges
+##### User-visible changes
 * Function `test.t()` displays the confidence interval for the mean difference in the one-sample t-test.
 
 ##### Bug fix

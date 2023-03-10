@@ -213,9 +213,9 @@ freq <- function(x, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
       x.na <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
       if (isTRUE(any(x.na))) {
 
-        warning(paste0(ifelse(sum(na.x) == 1L, "Variable ", "Variables "),
+        warning(paste0(ifelse(sum(x.na) == 1L, "Variable ", "Variables "),
                        "with all values missing ",
-                       ifelse(sum(na.x) == 1L, "was ", "were "),
+                       ifelse(sum(x.na) == 1L, "was ", "were "),
                        "excluded from the analysis: ",
                        paste(names(x)[x.na], collapse = ", ")), call. = FALSE)
 

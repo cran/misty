@@ -4,37 +4,54 @@
 \alias{rec}
 \title{Recode Variable}
 \usage{
-rec(x, spec, as.factor = FALSE, levels = NULL, as.na = NULL, table = FALSE,
-    check = TRUE)
+rec(x, spec, as.factor = FALSE, levels = NULL, names = ".r", as.na = NULL,
+    table = FALSE, check = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector, character vector or factor.}
+\item{x}{a numeric vector, character vector, factor, matrix or data
+frame.}
 
 \item{spec}{a character string of recode specifications (see 'Details').}
 
-\item{as.factor}{logical: if \code{TRUE}, character vector will be coerced to a factor.}
+\item{as.factor}{logical: if \code{TRUE}, character vector will be coerced to
+a factor.}
 
-\item{levels}{a character vector for specifying the levels in the returned factor.}
+\item{levels}{a character vector for specifying the levels in the returned
+factor.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.}
+i.e. these values are converted to \code{NA} before conducting
+the analysis.}
 
-\item{table}{logical: if \code{TRUE}, a cross table variable x recoded variable is printed
-on the console.}
+\item{names}{a character string or character vector indicating the names
+of the recoded variables when specifying more than one variable.
+By default, variables are named with the ending \code{".r"}
+resulting in e.g. \code{"x1.r"} and \code{"x2.r"}. Variable
+names can also be specified using a character vector matching
+the number of variables specified in \code{x} (e.g.,
+\code{names = c("recode.x1", "recode.x2")}).}
+
+\item{table}{logical: if \code{TRUE}, a cross table variable x recoded
+variable is printed on the console if only one variable is
+specified in \code{x}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \value{
-Returns a numeric vector with the same length as \code{x} containing the recoded variable.
+Returns a numeric vector or data frame with the same length or same number of
+rows as \code{x} containing the recoded coded variable(s).
 }
 \description{
-This function recodes a numeric vector, character vector, or factor according to recode specifications.
+This function recodes numeric vectors, character vectors, or factors according
+to recode specifications.
 }
 \details{
-Recode specifications appear in a character string, separated by semicolons (see the examples below),
-of the form input = output. If an input value satisfies more than one specification, then the first
-(from left to right) applies. If no specification is satisfied, then the input value is carried over
-to the result. \code{NA} is allowed in input and output. Several recode specifications are supported:
+Recode specifications appear in a character string, separated by semicolons
+(see the examples below), of the form input = output. If an input value satisfies
+more than one specification, then the first (from left to right) applies. If
+no specification is satisfied, then the input value is carried over to the
+result. \code{NA} is allowed in input and output. Several recode specifications
+are supported:
 
 - single value
 For example, 0 = NA
@@ -43,17 +60,19 @@ For example, 0 = NA
 For example, c(7, 8, 9) = 'high'
 
 - range of values
-For example, 7:9 = 'C'. The special values lo (lowest value) and hi (highest value) may appear in a range.
-For example, \code{lo:10 = 1}. Note that \code{:} is not the R sequence operator. In addition you may not
-use \code{:} with the collect operator, e.g., \code{c(1, 3, 5:7)} will cause an error.
+For example, 7:9 = 'C'. The special values lo (lowest value) and hi (highest
+value) may appear in a range. For example, \code{lo:10 = 1}. Note that \code{:}
+is not the R sequence operator. In addition you may not use \code{:} with the
+collect operator, e.g., \code{c(1, 3, 5:7)} will cause an error.
 
 - else
-For example, \code{else = NA}. Everything that does not fit a previous specification. Note that
-\code{else} matches all otherwise unspecified values on input, including \code{NA}.
+For example, \code{else = NA}. Everything that does not fit a previous specification.
+Note that \code{else} matches all otherwise unspecified values on input, including
+\code{NA}.
 }
 \note{
-This function was adapted from the \code{recode()} function in the \pkg{car} package
-by John Fox and Sanford Weisberg (2019).
+This function was adapted from the \code{recode()} function in the \pkg{car}
+package by John Fox and Sanford Weisberg (2019).
 }
 \examples{
 #--------------------------------------
@@ -87,13 +106,34 @@ rec(x.chr, "'a' = 'X'", as.factor = TRUE)
 
 #--------------------------------------
 # Factor
-x.factor <- factor(c("a", "b", "a", "c", "d", "d", "b", "b", "a"))
+x.fac <- factor(c("a", "b", "a", "c", "d", "d", "b", "b", "a"))
 
 # Recode a to x, factor levels ordered alphabetically
-rec(x.factor, "'a' = 'x'")
+rec(x.fac, "'a' = 'x'")
 
 # Recode a to x, user-defined factor levels
-rec(x.factor, "'a' = 'x'", levels = c("x", "b", "c", "d"))
+rec(x.fac, "'a' = 'x'", levels = c("x", "b", "c", "d"))
+
+#--------------------------------------
+# Multiple variables
+dat <- data.frame(x1.num = c(1, 2, 4, 5, 6),
+                  x2.num = c(5, 19, 2, 6, 3),
+                  x1.chr = c("a", "c", "f", "j", "k"),
+                  x2.chr = c("b", "c", "a", "d", "k"),
+                  x1.fac = factor(c("a", "b", "a", "c", "d")),
+                  x2.fac = factor(c("b", "a", "d", "c", "e")))
+
+# Recode numeric vector and attach to 'dat'
+dat <- cbind(dat,
+             rec(dat[, c("x1.num", "x2.num")], "5 = 50; 19 = 190"))
+
+# Recode character vector and attach to 'dat'
+dat <- cbind(dat,
+             rec(dat[, c("x1.chr", "x2.chr")], "'a' = 'X'"))
+
+# Recode factor vector and attach to 'dat'
+dat <- cbind(dat,
+             rec(dat[, c("x1.fac", "x2.fac")], "'a' = 'X'"))
 }
 \references{
 Fox, J., & Weisberg S. (2019). \emph{An {R} Companion to Applied Regression} (3rd ed.).

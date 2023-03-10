@@ -112,9 +112,11 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, list with
-#' the input specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), and result table(s) (\code{result}).
+#' entries: function call (\code{call}), type of analysis \code{type}, data frame
+#' with variables used in the current analysis (\code{data}), formula of the current
+#' analysis (\code{formula}), ggplot2 object for plotting the results (\code{plot}),
+#' specification of function arguments (\code{args}), and result table(s)
+#' (\code{result}).
 #'
 #' @export
 #'

@@ -1,8 +1,8 @@
 Package: misty
 Type: Package
 Title: Miscellaneous Functions 'T. Yanagida'
-Version: 0.4.7
-Date: 2023-01-06
+Version: 0.4.8
+Date: 2023-03-10
 Authors@R: person(given = "Takuya", family = "Yanagida", email="takuya.yanagida@univie.ac.at", role = c("aut","cre"))
 Author: Takuya Yanagida [aut, cre]
 Maintainer: Takuya Yanagida <takuya.yanagida@univie.ac.at>
@@ -10,11 +10,11 @@ Description: Miscellaneous functions for descriptive statistics (e.g., frequency
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 Imports: ggplot2, haven, lavaan, lme4, nlme, norm, r2mlm, readxl,
-        writexl
+        rstudioapi, writexl
 Suggests: mnormt, plyr
 Encoding: UTF-8
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2023-01-05 22:58:57 UTC; takuy
+Packaged: 2023-03-10 03:23:36 UTC; takuy
 Repository: CRAN
-Date/Publication: 2023-01-06 11:50:14 UTC
+Date/Publication: 2023-03-10 09:30:06 UTC

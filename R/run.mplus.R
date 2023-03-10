@@ -212,7 +212,7 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
     connections <- data.frame(showConnections(all = FALSE), stringsAsFactors = FALSE)
 
-    if (isTRUE(length(grep(splitFilePath(logFile)$filename, connections$description, ignore.case = TRUE)) > 0)) {
+    if (isTRUE(length(grep(splitFilePath(logFile)$filename, connections$description, ignore.case = TRUE)) > 0L)) {
 
       return(TRUE)
 
@@ -241,11 +241,11 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
                            function(element) {
 
-                             return(data.frame(procname = element[1], pid = element[2], stringsAsFactors = FALSE))
+                             return(data.frame(procname = element[1L], pid = element[2L], stringsAsFactors = FALSE))
 
                            })
 
-      if (isTRUE(length(grep("mplus.exe", processList$procname, ignore.case = TRUE)) > 0)) {
+      if (isTRUE(length(grep("mplus.exe", processList$procname, ignore.case = TRUE)) > 0L)) {
 
         if (isTRUE(isLogOpen())) {
 
@@ -258,7 +258,7 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
         if (isTRUE(deleteOnKill == TRUE)) {
 
-          noExtension <- substr(absFilename, length(absFilename) - 4, length(absFilename))
+          noExtension <- substr(absFilename, length(absFilename) - 4L, length(absFilename))
           outDelete <- paste(noExtension, ".out", sep = "")
           gphDelete <- paste(noExtension, ".gph", sep = "")
 
@@ -310,7 +310,7 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
   inpfiles <- filelist[grep(".*\\.inp?$", filelist, ignore.case = TRUE)]
   outfiles <- filelist[grep(".*\\.out$", filelist, ignore.case = TRUE)]
 
-  if (isTRUE(length(inpfiles) < 1)) {
+  if (isTRUE(length(inpfiles) < 1L)) {
 
     stop("No Mplus input files detected in the target directory: ", directory)
 
@@ -318,9 +318,9 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
   dropOutExtensions <- sapply(outfiles, function(x) {
 
-    if (isTRUE(nchar(x) >= 4))
+    if (isTRUE(nchar(x) >= 4L))
 
-      return(tolower(substr(x, 1, (nchar(x) - 4))))
+      return(tolower(substr(x, 1L, (nchar(x) - 4L))))
 
   })
 
@@ -334,15 +334,15 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
           inpmtime <- file.info(inpfiles[i])$mtime
 
-          matchPos <- grep(tolower(substr(inpfiles[i], 1, (nchar(inpfiles[i]) - 4))), dropOutExtensions)
+          matchPos <- grep(tolower(substr(inpfiles[i], 1, (nchar(inpfiles[i]) - 4L))), dropOutExtensions)
 
-          if (isTRUE(length(matchPos) < 1)) {
+          if (isTRUE(length(matchPos) < 1L)) {
 
             warning("Could not locate matching outfile", call. = FALSE)
 
           }
 
-          outmtime <- file.info(outfiles[matchPos[1]])$mtime
+          outmtime <- file.info(outfiles[matchPos[1L]])$mtime
 
           if (isTRUE(inpmtime <= outmtime)) {
 

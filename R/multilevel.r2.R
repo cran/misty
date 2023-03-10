@@ -278,8 +278,9 @@
 #' Sonya K. Sterba, Jessica K. Flake, and Takuya Yanagida
 #'
 #' @seealso
-#' \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}},
-#' \code{\link{multilevel.icc}}, \code{\link{multilevel.indirect}}
+#' \code{\link{multilevel.r2.manual}}, \code{\link{multilevel.cor}},
+#' \code{\link{multilevel.descript}}, \code{\link{multilevel.icc}},
+#' \code{\link{multilevel.indirect}}
 #'
 #' @references
 #' Enders, C. K., & Tofighi, D. (2007). Centering predictor variables in
@@ -311,6 +312,11 @@
 #' level‐specific effects of control variables when primary interest lies in level‐2
 #' effects. \emph{British Journal of Mathematical and Statistical Psychology, 73}(Suppl 1),
 #' 194-211. https://doi.org/10.1111/bmsp.12194
+#'
+#' Rights, J. D., & Cole, D. A. (2018). Effect size measures for multilevel models
+#' in clinical child and adolescent research: New r-squared methods and recommendations.
+#' \emph{Journal of Clinical Child and Adolescent Psychology, 47}, 863-873.
+#'  https://doi.org/10.1080/15374416.2018.1528550
 #'
 #' Rights, J. D., & Sterba, S. K. (2019). Quantifying explained variance in multilevel
 #' models: An integrative framework for defining R-squared measures. \emph{Psychological Methods, 24},

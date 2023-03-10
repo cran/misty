@@ -5,57 +5,75 @@
 \title{Cluster Scores}
 \usage{
 cluster.scores(x, cluster, fun = c("mean", "sum", "median", "var", "sd", "min", "max"),
-               expand = TRUE, as.na = NULL, check = TRUE)
+              expand = TRUE, names = ".a", as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector.}
+\item{x}{a numeric vector for computing cluster scores for a variable,
+matrix or data frame for computing cluster scores for more than
+one variable.}
 
-\item{cluster}{a vector representing the nested grouping structure (i.e., group or
-cluster variable).}
+\item{cluster}{a vector representing the nested grouping structure (i.e., group
+or cluster variable).}
 
-\item{fun}{character string indicating the function used to compute group scores,
-default: \code{"mean"}.}
+\item{fun}{character string indicating the function used to compute group
+scores, default: \code{"mean"}.}
 
-\item{expand}{logical: if \code{TRUE}, vector of cluster scores is expanded to match
-the input vector \code{x}.}
+\item{expand}{logical: if \code{TRUE}, vector of cluster scores is expanded
+to match the input vector \code{x}.}
 
-\item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the
-analysis. Note that \code{as.na()} function is only applied to the
-argument \code{x}, but not to \code{cluster}.}
+\item{names}{a character string or character vector indicating the names
+of the computed variables when specifying more than one variable.
+By default, variables are named with the ending \code{".a"}
+resulting in e.g. \code{"x1.a"} and \code{"x2.a"}. Variable names
+can also be specified using a character vector matching the number
+of variables specified in \code{x} (e.g.,
+\code{names = c("cluster.x1", "cluster.x2")}).}
+
+\item{as.na}{a numeric vector indicating user-defined missing values, i.e.
+these values are converted to \code{NA} before conducting the
+analysis. Note that \code{as.na()} function is only applied to
+the argument \code{x}, but not to \code{cluster}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \value{
-Returns a numeric vector containing cluster scores with the same length as \code{x} if \code{expand = TRUE}
-or with the length \code{length(unique(cluster))} if \code{expand = FALSE}.
+Returns a numeric vector or data frame containing cluster scores with the same
+length or same number of rows as \code{x} if \code{expand = TRUE} or with the
+length or number of rows as \code{length(unique(cluster))} if \code{expand = FALSE}.
 }
 \description{
-This function computes group means by default.
+This function is used to compute group means by default.
 }
 \examples{
 dat.ml <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
                      cluster = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
-                     x = c(4, 2, 5, 6, 3, 4, 1, 3, 4))
+                     x1 = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
+                     x2 = c(2, 5, 3, 1, 2, 7, 4, 5, 3))
 
 # Compute cluster means and expand to match the input x
-cluster.scores(dat.ml$x, cluster = dat.ml$cluster)
+cluster.scores(dat.ml$x1, cluster = dat.ml$cluster)
 
 # Compute standard deviation for each cluster and expand to match the input x
-cluster.scores(dat.ml$x, cluster = dat.ml$cluster, fun = "sd")
+cluster.scores(dat.ml$x1, cluster = dat.ml$cluster, fun = "sd")
 
 # Compute cluster means without expanding the vector
-cluster.scores(dat.ml$x, cluster = dat.ml$cluster, expand = FALSE)
+cluster.scores(dat.ml$x1, cluster = dat.ml$cluster, expand = FALSE)
+
+# Compute cluster means and attach to 'dat.ml'
+dat.ml <- cbind(dat.ml,
+                cluster.scores(dat.ml[, c("x1", "x2")], cluster = dat.ml$cluster))
 }
 \references{
-Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis: Techniques and applications} (3rd. ed.).
-Routledge.
+Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis:
+Techniques and applications} (3rd. ed.). Routledge.
 
-Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An introduction to basic and advanced multilevel
-modeling} (2nd ed.). Sage Publishers.
+Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An
+introduction to basic and advanced multilevel modeling} (2nd ed.). Sage
+Publishers.
 }
 \seealso{
-\code{\link{item.scores}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.icc}}
+\code{\link{item.scores}}, \code{\link{multilevel.descript}},
+\code{\link{multilevel.icc}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

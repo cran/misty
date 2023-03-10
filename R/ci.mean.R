@@ -460,7 +460,7 @@ ci.mean <- function(x, sigma = NULL, sigma2 = NULL, adjust = FALSE,
 
     #...................
     ### Return object ####
-    object <- switch(side, both = ci, low = ci[1], upp = ci[2])
+    object <- switch(side, both = ci, low = ci[1L], upp = ci[2L])
 
     return(object)
 

@@ -4,11 +4,12 @@
 \alias{center}
 \title{Centering at the Grand Mean and Centering Within Cluster}
 \usage{
-center(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
+center(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL, names = ".c",
        as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector.}
+\item{x}{a numeric vector for centering a predictor, matrix or data
+frame for centering more than one predictor.}
 
 \item{type}{a character string indicating the type of centering, i.e.,
 \code{"CGM"} for centering at the grand mean (i.e., grand mean
@@ -23,6 +24,14 @@ level-1 predictor.}
 
 \item{value}{a numeric value for centering on a specific user-defined value.}
 
+\item{names}{a character string or character vector indicating the names
+of the centered variables when centering more than one variable.
+By default, centered variables are named with the ending
+\code{".c"} resulting in e.g. \code{"x1.c"} and \code{"x2.c"}.
+Variable names can also be specified using a character vector
+matching the number of variables specified in \code{x} (e.g.
+\code{names = c("center.x1", "center.x2")}).}
+
 \item{as.na}{a numeric vector indicating user-defined missing values, i.e.
 these values are converted to \code{NA} before conducting the
 analysis. Note that \code{as.na()} function is only applied to
@@ -31,8 +40,8 @@ analysis. Note that \code{as.na()} function is only applied to
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \value{
-Returns a numeric vector with the same length as \code{x} containing centered
-values.
+Returns a numeric vector or data frame with the same length or same number of
+rows as \code{x} containing centered values or variable.
 }
 \description{
 This function is used to center predictors at the grand mean (CGM, i.e., grand
@@ -59,31 +68,56 @@ Note that predictors can be centered on any meaningful value using the argument
 \examples{
 #--------------------------------------
 # Predictors in a single-level regression
-dat.sl <- data.frame(x = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
+dat.sl <- data.frame(x1 = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
+                     x2 = c(3, 1, 2, 6, 4, 8, 3, 2, 1),
                      y = c(5, 3, 6, 3, 4, 5, 2, 6, 5))
 
 # Center predictor at the sample mean
-center(dat.sl$x)
+center(dat.sl$x1)
+
+# Center predictors at the sample mean and attach to 'dat.sl'
+dat.sl <- data.frame(dat.sl,
+                     center(dat.sl[, c("x1", "x2")]))
 
 # Center predictor at the value 3
-center(dat.sl$x, value = 3)
+center(dat.sl$x1, value = 3)
+
+# Center predictors at the value 3 and attach to 'dat.sl'
+dat.sl <- data.frame(dat.sl,
+                     center(dat.sl[, c("x1", "x2")], value = 3, names = ".v"))
 
 #--------------------------------------
 # Predictors in a multilevel regression
 dat.ml <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
                      cluster = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
-                     x.l1 = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
-                     x.l2 = c(4, 4, 4, 1, 1, 1, 3, 3, 3),
+                     x1.l1 = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
+                     x2.l1 = c(1, 4, 2, 3, 5, 7, 8, 7, 5),
+                     x1.l2 = c(4, 4, 4, 1, 1, 1, 3, 3, 3),
+                     x2.l2 = c(5, 5, 5, 2, 2, 2, 7, 7, 7),
                      y = c(5, 3, 6, 3, 4, 5, 2, 6, 5))
 
 # Center level-1 predictor at the grand mean (CGM)
-center(dat.ml$x.l1)
+center(dat.ml$x1.l1)
+
+# Center level-1 predictors at the grand mean (CGM) and attach to 'dat.ml'
+dat.ml<- cbind(dat.ml,
+              center(dat.ml[, c("x1.l1", "x2.l1")], names = ".cgm"))
 
 # Center level-1 predictor within cluster (CWC)
-center(dat.ml$x.l1, type = "CWC", cluster = dat.ml$cluster)
+center(dat.ml$x1.l1, type = "CWC", cluster = dat.ml$cluster)
+
+# Center level-1 predictors within cluster (CWC) and attach to 'dat.ml'
+dat.ml <- cbind(dat.ml,
+                center(dat.ml[, c("x1.l1", "x2.l1")], type = "CWC",
+                cluster = dat.ml$cluster, names = ".cwc"))
 
 # Center level-2 predictor at the grand mean (CGM)
-center(dat.ml$x.l2, type = "CGM", cluster = dat.ml$cluster)
+center(dat.ml$x1.l2, type = "CGM", cluster = dat.ml$cluster)
+
+# Center level-2 predictors at the grand mean (CGM) and attach to 'dat.ml'
+dat.ml <- cbind(dat.ml,
+                center(dat.ml[, c("x1.l2", "x2.l2")], type = "CGM",
+                cluster = dat.ml$cluster, names = ".cgm"))
 }
 \references{
 Chang, C.-N., & Kwok, O.-M. (2022) Partitioning Variance for a Within-Level

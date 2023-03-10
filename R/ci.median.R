@@ -1,35 +1,37 @@
 #' Confidence Interval for the Median
 #'
-#' This function computes a confidence interval for the median for one or more variables,
-#' optionally by a grouping and/or split variable.
+#' This function computes a confidence interval for the median for one or more
+#' variables, optionally by a grouping and/or split variable.
 #'
-#' The confidence interval for the median is computed by using the Binomial distribution
-#' to determine which values in the sample are the lower and the upper confidence limits.
-#' Note that at least six valid observations are needed to compute the confidence interval
-#' for the median.
+#' The confidence interval for the median is computed by using the Binomial
+#' distribution to determine which values in the sample are the lower and the
+#' upper confidence limits. Note that at least six valid observations are needed
+#' to compute the confidence interval for the median.
 #'
-#' @param x              a numeric vector, matrix or data frame with numeric variables,
-#'                       i.e., factors and character variables are excluded from \code{x}
-#'                       before conducting the analysis.
-#' @param alternative    a character string specifying the alternative hypothesis, must
-#'                       be one of \code{"two.sided"} (default), \code{"greater"} or
-#'                       \code{"less"}.
-#' @param conf.level     a numeric value between 0 and 1 indicating the confidence level
-#'                       of the interval.
-#' @param group          a numeric vector, character vector or factor as grouping variable.
-#' @param split          a numeric vector, character vector or factor as split variable.
-#' @param sort.var       logical: if \code{TRUE}, output table is sorted by variables
-#'                       when specifying \code{group}.
-#' @param na.omit        logical: if \code{TRUE}, incomplete cases are removed before
-#'                       conducting the analysis (i.e., listwise deletion) when specifying
-#'                       more than one outcome variable.
-#' @param digits         an integer value indicating the number of decimal places to be
-#'                       used.
-#' @param as.na          a numeric vector indicating user-defined missing values,
-#'                       i.e. these values are converted to \code{NA} before conducting
-#'                       the analysis. Note that \code{as.na()} function is only applied
-#'                       to \code{x}, but not to \code{group} or \code{split}.
-#' @param check          logical: if \code{TRUE}, argument specification is checked.
+#' @param x           a numeric vector, matrix or data frame with numeric variables,
+#'                    i.e., factors and character variables are excluded from \code{x}
+#'                    before conducting the analysis.
+#' @param alternative a character string specifying the alternative hypothesis,
+#'                     must be one of \code{"two.sided"} (default), \code{"greater"}
+#'                     or \code{"less"}.
+#' @param conf.level   a numeric value between 0 and 1 indicating the confidence
+#'                     level of the interval.
+#' @param group        a numeric vector, character vector or factor as grouping
+#'                     variable.
+#' @param split        a numeric vector, character vector or factor as split
+#'                     variable.
+#' @param sort.var     logical: if \code{TRUE}, output table is sorted by variables
+#'                     when specifying \code{group}.
+#' @param na.omit      logical: if \code{TRUE}, incomplete cases are removed before
+#'                     conducting the analysis (i.e., listwise deletion) when
+#'                     specifying more than one outcome variable.
+#' @param digits       an integer value indicating the number of decimal places
+#'                     to be used.
+#' @param as.na        a numeric vector indicating user-defined missing values,
+#'                     i.e. these values are converted to \code{NA} before conducting
+#'                     the analysis. Note that \code{as.na()} function is only
+#'                     applied to \code{x}, but not to \code{group} or \code{split}.
+#' @param check        logical: if \code{TRUE}, argument specification is checked.
 #' @param output         logical: if \code{TRUE}, output is shown on the console.
 #'
 #' @author
@@ -102,18 +104,16 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
                       group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
                       digits = 2, as.na = NULL, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check 'group'
   if (isTRUE(!is.null(group))) {
 
@@ -126,7 +126,6 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
 
   }
 
-  #......
   # Check 'split'
   if (isTRUE(!is.null(split))) {
 
@@ -139,13 +138,17 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
 
   }
 
-  #----------------------------------------
-  # Data frame
+  #_____________________________________________________________________________
+  #
+  # Data and Variables ---------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -163,10 +166,9 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
 
   }
 
-  #----------------------------------------
-  # Numeric Variables
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Numeric Variables ####
 
-  # Non-numeric variables
   non.num <- !vapply(x, is.numeric, FUN.VALUE = logical(1L))
 
   if (isTRUE(any(non.num))) {
@@ -183,8 +185,8 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
 
   }
 
-  #----------------------------------------
-  # Listwise deletion
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise deletion ####
 
   if (isTRUE(na.omit && any(is.na(x)))) {
 
@@ -272,53 +274,45 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
 
   }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'alternative'
     if (isTRUE(!all(alternative %in%  c("two.sided", "less", "greater")))) {
 
-      stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".",
-           call. = FALSE)
+      stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE)
 
     }
 
-    #......
     # Check input 'conf.level'
     if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
-    #......
     # Check input 'sort.var'
     if (isTRUE(!is.logical(sort.var))) { stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE) }
 
-    #......
     # Check input 'na.omit'
     if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input output
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #----------------------------------------
-  # Alternative hypothesis
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) {
 
@@ -326,11 +320,12 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #----------------------------------------
-  # Confidence interval for the median
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Confidence interval for the median ####
 
   med.conf <- function(x,  alternative, conf.level, side) {
 
@@ -385,8 +380,8 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
 
   }
 
-  #----------------------------------------
-  # No Grouping, No Split
+  #...................
+  ### No Grouping, No Split ####
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
@@ -403,8 +398,8 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
                          upp = vapply(x, med.conf, alternative = alternative, conf.level = conf.level, side = "upp", FUN.VALUE = double(1L)),
                          stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
 
-  #----------------------------------------
-  # Grouping, No Split
+  #...................
+  ### Grouping, No Split ####
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
@@ -416,8 +411,8 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))),
                          stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # No Grouping, Split
+  #...................
+  ### No Grouping, Split ####
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
@@ -426,22 +421,23 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
                                                     group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                     as.na = as.na, check = FALSE, output = FALSE)$result)
 
-  #----------------------------------------
-  # Grouping, Split
+  #...................
+  ### Grouping, Split ####
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split),
-                       function(y) misty::ci.median(y[, -grep("group", names(y))],
-                                                    alternative = alternative, conf.level = conf.level,
-                                                    group = y$group, split = NULL, sort.var = sort.var,
-                                                    na.omit = na.omit, as.na = as.na,
-                                                    check = FALSE, output = FALSE)$result)
+                     function(y) misty::ci.median(y[, -grep("group", names(y))],
+                                                  alternative = alternative, conf.level = conf.level,
+                                                  group = y$group, split = NULL, sort.var = sort.var,
+                                                  na.omit = na.omit, as.na = as.na,
+                                                  check = FALSE, output = FALSE)$result)
 
   }
 
-  ####################################################################################
-  # Return object and output
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "ci", ci = "median",
@@ -453,8 +449,9 @@ ci.median <- function(x, alternative = c("two.sided", "less", "greater"), conf.l
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

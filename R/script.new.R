@@ -1,0 +1,92 @@
+#' Open new R Script, R Markdown script, or SQL Script in RStudio
+#'
+#' This function is used to open a new R script, R markdown script, or SQL script
+#' in RStudio.
+#'
+#' The function \code{documentNew()} in the package \pkg{rstudioapi} is used to
+#' open an R script.
+#
+#' @param text     a character vector indicating what text should be inserted in
+#'                 the new R script. By default, an empty script is opened.
+#' @param type     a character string indicating the type of document to be
+#'                 created, i.e., \code{r} (default) for an R script, \code{rmakrdown}
+#'                 for an R Markdown file, or \code{sql} for an SQL script.
+#' @param position \code{document_position()} function in the \pkg{rstudioapi}
+#'                 package indicating the cursor position.
+#' @param run      logical: if \code{TRUE}, the code is executed after the document
+#'                 is created.
+#' @param check    logical: if \code{TRUE}, argument specification is checked.
+#'
+#' @author
+#' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
+#'
+#' @seealso
+#' \code{\link{script.close}}, \code{\link{script.open}},
+#' \code{\link{script.save}}, \code{\link{setsource}}
+#'
+#' @references
+#' Ushey, K., Allaire, J., Wickham, H., & Ritchie, G. (2022). rstudioapi: Safely
+#' access the RStudio API. R package version 0.14.
+#' https://CRAN.R-project.org/package=rstudioapi
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' # Open new R script file
+#' script.new()
+#'
+#' # Open new R script file and run some code
+#' script.new("#----------------------------
+#' # Example
+#'
+#' # Generate 100 random numbers
+#' rnorm(100)")
+#' }
+script.new <- function(text = "", type = c("r", "rmarkdown", "sql"),
+                       position = rstudioapi::document_position(0, 0),
+                       run = FALSE, check = TRUE) {
+
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+
+  if (isTRUE(check)) {
+
+    # Check input 'text'
+    if (isTRUE(!is.character(text))) { stop("Please specify a character vector for the argument 'text'.", call. = FALSE) }
+
+    # Check input 'type'
+    if (isTRUE(all(!type %in% c("r", "rmarkdown", "sql")))) { stop("Character string in the argument 'type' does not match with \"r\", \"rmarkdown\" or \"sql\".", call. = FALSE) }
+
+    # Check input 'run'
+    if (isTRUE(!is.logical(run))) { stop("Please specify TRUE or FALSE for the argument 'run'.", call. = FALSE) }
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Package --------------------------------------------------------------------
+
+  # rstudioapi package
+  if (isTRUE(!nzchar(system.file(package = "rstudioapi")))) { stop("Package \"rstudioapi\" is needed for this function, please install the package.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
+
+  type <- ifelse (all(c("r", "rmarkdon", "sql") %in% type), "r", type)
+
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
+
+  # Open new R script
+  invisible(rstudioapi::documentNew(text = text, type = type, position = position,
+                                    execute = run))
+
+}
