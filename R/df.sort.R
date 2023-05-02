@@ -44,16 +44,17 @@
 #' df.sort(dat, x, y, decreasing = TRUE)
 df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
 
   # Variables specified in ...
   var.names <- misty::chr.omit(sapply(substitute(list(...)), as.character), omit = "list")
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a data frame for the argument 'x'.", call. = FALSE) }
 
@@ -63,32 +64,31 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
   # Data frame for the argument 'x'?
   if (isTRUE(!is.data.frame(x))) { stop("Please specify a data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input '...'
   var.names.check <- !var.names %in% colnames(x)
   if (isTRUE(any(var.names.check))) {
 
-    stop(paste0("Variables specified in '...' were not all found in 'x': ",
-                paste0(var.names[var.names.check], collapse = ", ")), call. = FALSE)
+    stop(paste0("Variables specified in '...' were not all found in 'x': ", paste0(var.names[var.names.check], collapse = ", ")), call. = FALSE)
 
   }
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #......
     # Check input 'decreasing'
     if (isTRUE(!is.logical(decreasing))) { stop("Please specify TRUE or FALSE for the argument 'decreasing'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   x.order <- eval(substitute(order(..., decreasing = decreasing)), envir = x, enclos = parent.frame())
 
@@ -101,8 +101,9 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
   object <- x[x.order, , drop = FALSE]
   row.names(object) <- NULL
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(object)
 

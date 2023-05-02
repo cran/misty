@@ -28,10 +28,10 @@
 #' @return Returns an object of class \code{misty.object} with following entries:
 #'
 #' \tabular{ll}{
-#'   \code{call}      \tab function call \cr
-#'   \code{type}      \tab type of the test (i.e., correlation coefficient) \cr
-#'   \code{args}      \tab specification of function arguments \cr
-#'   \code{result}       \tab list with the result, i.e., optimal sample size \cr
+#'   \code{call}    \tab function call \cr
+#'   \code{type}    \tab type of the test (i.e., correlation coefficient) \cr
+#'   \code{args}    \tab specification of function arguments \cr
+#'   \code{result}  \tab list with the result, i.e., optimal sample size \cr
 #' }
 #'
 #' @export
@@ -54,106 +54,46 @@ size.cor <- function(rho, delta,
                      alternative = c("two.sided", "less", "greater"),
                      alpha = 0.05, beta = 0.1, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Argument
 
-  # two- or one-sided test
-  alternative <- ifelse(all(c("two.sided", "less", "greater") %in% alternative), "two.sided", alternative)
-
-  ####################################################################################
-  # Input check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
-
-  #-----------------------------------------
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
     # Check input 'delta'
-    if (isTRUE(missing(delta))) {
+    if (isTRUE(missing(delta))) { stop("Please specify a numeric value for the argument 'delta'.", call. = FALSE) }
 
-      stop("Please specify a numeric value for the argument 'delta'.", call. = FALSE)
+    if (isTRUE(delta <= 0L)) { stop("Argument delta out of bound, specify a value > 0.", call. = FALSE) }
 
-    }
+    if (isTRUE(is.null(rho))) { rho <- 0L }
 
-    if (isTRUE(delta <= 0L)) {
+    if (isTRUE(rho <= -1L || rho >= 1L)) { stop("Argument rho out of bound, specify a value between -1 and 1.", call. = FALSE) }
 
-      stop("Argument delta out of bound, specify a value > 0.", call. = FALSE)
+    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) { stop("Argument alternative should be \"two.sided\", \"less\" or \"greater\".", call. = FALSE) }
 
-    }
+    if (isTRUE(alpha <= 0L || alpha >= 1L)) { stop("Argument alpha out of bound, specify a value between 0 and 1.", call. = FALSE) }
 
-    ###
-
-    if (isTRUE(is.null(rho))) {
-
-      rho <- 0L
-
-    }
-
-    ###
-
-    if (isTRUE(rho <= -1L || rho >= 1L)) {
-
-      stop("Argument rho out of bound, specify a value between -1 and 1.", call. = FALSE)
-
-    }
-
-    ###
-
-    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) {
-
-      stop("Argument alternative should be \"two.sided\", \"less\" or \"greater\".", call. = FALSE)
-
-    }
-
-    ###
-
-    if (isTRUE(alpha <= 0L || alpha >= 1L)) {
-
-      stop("Argument alpha out of bound, specify a value between 0 and 1.", call. = FALSE)
-
-    }
-
-    ###
-
-    if (isTRUE(beta <= 0L || beta >= 1L)) {
-
-      stop("Argument beta out of bound, specify a value between 0 and 1.", call. = FALSE)
-
-    }
+    if (isTRUE(beta <= 0L || beta >= 1L)) { stop("Argument beta out of bound, specify a value between 0 and 1.", call. = FALSE) }
 
   #-----------------------------------------------------------------------------------
 
     if (isTRUE(alternative == "two.sided")) {
 
-      if (isTRUE((rho + delta) >= 1L || (rho - delta) <= -1L)) {
-
-        stop("Value (rho + delta) or (rho - delta) out of bound.", call. = FALSE)
-
-      }
+      if (isTRUE((rho + delta) >= 1L || (rho - delta) <= -1L)) { stop("Value (rho + delta) or (rho - delta) out of bound.", call. = FALSE) }
 
     } else {
 
       if (isTRUE(alternative == "less")) {
 
-        if (isTRUE((rho - delta) <= -1L)) {
-
-          stop("Value (rho - delta) out of bound.", call. = FALSE)
-
-        }
+        if (isTRUE((rho - delta) <= -1L)) { stop("Value (rho - delta) out of bound.", call. = FALSE) }
 
       } else {
 
-        if (isTRUE((rho + delta) >= 1L)) {
-
-          stop("Value (rho + delta) out of bound.", call. = FALSE)
-
-        }
+        if (isTRUE((rho + delta) >= 1L)) { stop("Value (rho + delta) out of bound.", call. = FALSE) }
 
       }
 
@@ -161,19 +101,27 @@ size.cor <- function(rho, delta,
 
   }
 
-  ####################################################################################
-  # Main function
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
+  # two- or one-sided test
   alternative <- ifelse(all(c("two.sided", "less", "greater") %in% alternative), "two.sided", alternative)
+
   side <- switch(alternative, two.sided = 2L, less = 1L, greater = 1L)
+
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   rho.0 <- rho
   rho.1 <- switch(alternative, two.sided = rho.0 + delta, less = rho.0 - delta, greater = rho.0 + delta)
 
   n <- 3L + 4L * ((qnorm(1L - alpha / side) + qnorm(1L - beta)) / (log((1L + rho.1) / (1L - rho.1)) - log((1L + rho.0) / (1L - rho.0))))^2L
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "size", size = "cor",
@@ -182,8 +130,9 @@ size.cor <- function(rho, delta,
 
   class(object) <- "misty.object"
 
-  #-----------------------------------------------------------------------------------
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object) }
 

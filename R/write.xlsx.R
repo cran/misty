@@ -80,7 +80,7 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
   # Arguments ------------------------------------------------------------------
 
   # File extension .xlsx
-  file <- ifelse(length(grep(".xlsx", file)) == 0, file <- paste0(file, ".xlsx"), file)
+  file <- ifelse(length(grep(".xlsx", file)) == 0L, file <- paste0(file, ".xlsx"), file)
 
   # Matrix
 

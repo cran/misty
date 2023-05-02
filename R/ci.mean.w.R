@@ -89,9 +89,14 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, list with
-#' the input specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), and result table (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab list with the input specified in \code{x}, \code{group}, and \code{split} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab result table \cr
+#' }
 #'
 #' @export
 #'

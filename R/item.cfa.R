@@ -322,11 +322,17 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis (\code{type}), matrix or
-#' data frame specified in \code{x} (\code{x}), specification of function arguments
-#' (\code{args}), specified model (\code{model}), fitted lavaan object (\code{mod.fit}),
-#' results of the convergence and model identification check (\code{check}), and
-#' a list with results (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab matrix or data frame specified in \code{x} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{model} \tab specified model \cr
+#' \code{model.fit} \tab fitted lavaan object (\code{mod.fit}) \cr
+#' \code{check} \tab results of the convergence and model identification check \cr
+#' \code{result} \tab list with result tables \cr
+#' }
 #'
 #' @note
 #' The function uses the functions \code{cfa}, \code{lavInspect}, \code{lavTech},
@@ -445,51 +451,41 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                      min.value = 10, digits = 3, p.digits = 3, as.na = NULL, write = NULL,
                      check = TRUE, output = TRUE) {
 
-  ##############################################################################
-  # R package
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
+  # R package lavaan
   if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
 
-  ##############################################################################
-  # Data
-
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is a matrix or a data frame
   if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or a data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'model' is a character vector or list of character vectors
   if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
 
-  #......
   # Check if variables in input 'model' are available in input 'x'
   if (isTRUE(!is.null(model) && any(!unlist(model) %in% colnames(x)))) {
 
-    stop(paste0("Items specified in the argument 'model' were not found in 'x': ",
-                paste(unique(unlist(model))[!unique(unlist(model)) %in% colnames(x)], collapse = ", ")), call. = FALSE)
+    stop(paste0("Items specified in the argument 'model' were not found in 'x': ", paste(unique(unlist(model))[!unique(unlist(model)) %in% colnames(x)], collapse = ", ")), call. = FALSE)
 
   }
 
-  ##############################################################################
-  # Input Check
-
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #......
     # Check input 'cluster'
     if (isTRUE(!is.null(cluster))) {
 
@@ -515,7 +511,6 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
     }
 
-    #......
     # Check input 'x'
     if (isTRUE(is.null(cluster) || length(cluster) != 1L)) {
 
@@ -527,7 +522,6 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
     }
 
-    #......
     # Check input 'model'
     if (isTRUE(!is.null(model))) {
 
@@ -543,15 +537,13 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
     }
 
-    #......
     # Check input 'rescov'
     if (isTRUE(!is.null(rescov))) {
 
       # Two variables for each residual covariance
       if (isTRUE(is.list(rescov)) && any(sapply(rescov, length) != 2L)) {
 
-        stop("Please specify a list of character vectors for the argument 'rescov', where each element has two variable names",
-             call. = FALSE)
+        stop("Please specify a list of character vectors for the argument 'rescov', where each element has two variable names", call. = FALSE)
 
       } else {
 
@@ -569,19 +561,17 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
         rescov.items <- !unique(unlist(rescov)) %in% colnames(x)
         if (isTRUE(any(rescov.items))) {
 
-          stop(paste0("Items specified in the argument 'rescov' were not found in 'x': ",
-                      paste(unique(unlist(rescov))[rescov.items], collapse = ", ")), call. = FALSE)
+          stop(paste0("Items specified in the argument 'rescov' were not found in 'x': ", paste(unique(unlist(rescov))[rescov.items], collapse = ", ")), call. = FALSE)
 
         }
 
-        # Model specification with 'model'
+      # Model specification with 'model'
       } else {
 
         rescov.items <- !unique(unlist(rescov)) %in% unique(unlist(model))
         if (isTRUE(any(rescov.items))) {
 
-          stop(paste0("Items specified in the argument 'rescov' were not found in 'model': ",
-                      paste(unique(unlist(rescov))[rescov.items], collapse = ", ")), call. = FALSE)
+          stop(paste0("Items specified in the argument 'rescov' were not found in 'model': ", paste(unique(unlist(rescov))[rescov.items], collapse = ", ")), call. = FALSE)
 
         }
 
@@ -589,27 +579,18 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
     }
 
-    #......
     # Check input 'hierarch'
-    if (isTRUE(!is.logical(hierarch))) { stop("Please specify TRUE or FALSE for the argument 'hierarch'.", call. = FALSE)
-    }
+    if (isTRUE(!is.logical(hierarch))) { stop("Please specify TRUE or FALSE for the argument 'hierarch'.", call. = FALSE) }
 
-    #......
     # Check input 'meanstructure'
     if (isTRUE(!is.logical(meanstructure))) { stop("Please specify TRUE or FALSE for the argument 'meanstructure'.", call. = FALSE) }
 
-    #......
     # Check input 'ident'
-    if (isTRUE(!all(ident %in% c("marker", "var", "effect")))) { stop("Character string in the argument 'ident' does not match with \"marker\", \"var\", or \"effect\".", call. = FALSE)
+    if (isTRUE(!all(ident %in% c("marker", "var", "effect")))) { stop("Character string in the argument 'ident' does not match with \"marker\", \"var\", or \"effect\".", call. = FALSE) }
 
-    }
-
-    #......
     # Check input 'parameterization'
     if (isTRUE(!all(parameterization %in% c("delta", "theta")))) { stop("Character string in the argument 'parameterization' does not match with \"delta\" or \"theta\".", call. = FALSE) }
 
-
-    #......
     # Check input 'ordered'
     if (isTRUE(!is.null(ordered) && !is.logical(ordered))) {
 
@@ -618,8 +599,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
         if (isTRUE(any(!ordered %in% colnames(x)))) {
 
-          stop(paste0("Variables specified in the argument 'ordered' were not found in 'x': ",
-                      paste(x[!ordered %in% colnames(x)], collapse = ", ")), call. = FALSE)
+          stop(paste0("Variables specified in the argument 'ordered' were not found in 'x': ", paste(x[!ordered %in% colnames(x)], collapse = ", ")), call. = FALSE)
 
         }
 
@@ -628,8 +608,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
         if (isTRUE(any(!ordered %in% unlist(model)))) {
 
-          stop(paste0("Variables specified in the argument 'ordered' were not found in 'model': ",
-                      paste(ordered[!ordered %in% unlist(model)], collapse = ", ")), call. = FALSE)
+          stop(paste0("Variables specified in the argument 'ordered' were not found in 'model': ", paste(ordered[!ordered %in% unlist(model)], collapse = ", ")), call. = FALSE)
 
         }
 
@@ -643,52 +622,44 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                                      "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
                                      "ULS", "ULSM", "ULSMV", "DLS", "PML")))) {
 
-      stop("Character string in the argument 'estimator' does not match with \"ML\", \"MLM\", \"MLMV\", \"MLMVS\", \"MLF\", \"MLR\", \"GLS\", \"WLS\", \"DWLS\", \"WLSM\", \"WLSMV\", \"ULS\", \"ULSM\", \"ULSMV\", \"DLS\", or \"PML\".",
-           call. = FALSE)
+      stop("Character string in the argument 'estimator' does not match with \"ML\", \"MLM\", \"MLMV\", \"MLMVS\", \"MLF\", \"MLR\", \"GLS\", \"WLS\", \"DWLS\", \"WLSM\", \"WLSMV\", \"ULS\", \"ULSM\", \"ULSMV\", \"DLS\", or \"PML\".", call. = FALSE)
 
     }
 
-    #......
     # Check input 'missing'
     if (isTRUE(!all(missing %in% c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust")))) {
 
-      stop("Character string in the argument 'missing' does not match with \"listwise\", \"pairwise\", \"fiml\", \"two.stage\", \"robust.two.stage\", or \"doubly.robust\".",
-           call. = FALSE)
+      stop("Character string in the argument 'missing' does not match with \"listwise\", \"pairwise\", \"fiml\", \"two.stage\", \"robust.two.stage\", or \"doubly.robust\".", call. = FALSE)
 
     }
 
-    #......
     # Check input 'print'
     if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind")))) {
 
-      stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", or \"modind\".",
-           call. = FALSE)
+      stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", or \"modind\".", call. = FALSE)
 
     }
 
-    #......
     # Check input 'min.value'
     if (isTRUE(min.value <= 0L)) { stop("Please specify a value greater than 0 for the argument 'min.value'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ##############################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
-  #----------------------------------------
-  # Manifest variables
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Manifest variables ####
 
   # Model specification with 'x'
   if (isTRUE(is.null(model))) {
@@ -720,8 +691,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  #----------------------------------------
-  # Data frame with Cluster Variable
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame with Cluster Variable ####
 
   # No cluster variable
   if (isTRUE(is.null(cluster))) {
@@ -743,8 +714,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -762,8 +733,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  #----------------------------------------
-  # Model
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Model ####
 
   # Factor labels
   if (isTRUE(!is.null(model) && is.list(model) && (is.null(names(model)) || any(names(model) == "")))) {
@@ -772,8 +743,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  #----------------------------------------
-  # Residual covariance
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Residual covariance ####
 
   if (isTRUE(!is.null(rescov) && !is.list(rescov))) {
 
@@ -781,8 +752,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  #----------------------------------------
-  # Hierarch
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Hierarch ####
 
   if (isTRUE(hierarch)) {
 
@@ -794,8 +765,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  #----------------------------------------
-  # Model identification
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Model identification ####
 
   if (isTRUE(all(c("marker", "var", "effect") %in% ident))) {
 
@@ -828,8 +799,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  #----------------------------------------
-  # Parameterization
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Parameterization ####
 
   if (isTRUE(all(c("delta", "theta") %in% parameterization))) {
 
@@ -837,11 +808,11 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  #----------------------------------------
-  # Estimator
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Estimator ####
 
-  #......
-  # Default setting
+  #...................
+  ### Default setting ####
   if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
                    "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
                    "ULS", "ULSM", "ULSMV", "DLS", "PML") %in% estimator))) {
@@ -867,8 +838,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
     }
 
-  #......
-  # User-specified
+  #...................
+  ### User-specified ####
   } else {
 
     # Continuous indicators
@@ -907,16 +878,16 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  #----------------------------------------
-  # Missing
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing ####
 
   # Any missing values
   if (isTRUE(any(is.na(x[, var])))) {
 
     complete <- FALSE
 
-    #......
-    # Default setting
+    #...................
+    ### Default setting ####
     if (isTRUE(all(c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust") %in% missing))) {
 
       if (isTRUE(estimator %in% c("ML", "MLF", "MLR")))  {
@@ -933,8 +904,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
       }
 
-    #......
-    # User-specified
+    #...................
+    ### User-specified ####
     } else {
 
       # FIML
@@ -1001,8 +972,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  #----------------------------------------
-  # Print
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print ####
 
   if (isTRUE(all(c("all", "summary", "coverage", "descript", "fit", "est", "modind") %in% print))) {
 
@@ -1016,16 +987,17 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  ##############################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #----------------------------------------
-  # Covariance coverage
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Covariance coverage ####
 
   coverage <- misty::na.coverage(x[, var], output = FALSE)$result
 
-  #----------------------------------------
-  # Sample Statistics
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Sample Statistics ####
 
   # Descriptive statistics
   itemstat <- misty::descript(x[, var], output = FALSE)$result[, c("variable", "n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")]
@@ -1033,11 +1005,11 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   # Frequency table
   itemfreq <- misty::freq(x[, var], val.col = TRUE, exclude = 9999, output = FALSE)$result
 
-  #----------------------------------------
-  # Model specification
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Model specification ####
 
   #...................
-  # Latent variable
+  ### Latent variable ####
 
   # One-factor
   if (isTRUE(is.null(model))) {
@@ -1062,7 +1034,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   }
 
   #...................
-  # Second-order factor
+  ### Second-order factor ####
   if (isTRUE(hierarch)) {
 
     mod.factor <- paste(mod.factor, "\n",
@@ -1071,8 +1043,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   }
 
   #...................
-  # Residual covariance
-
+  ### Residual covariance ####
   if (isTRUE(!is.null(rescov))) {
 
     # Paste residual covariances
@@ -1081,8 +1052,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  #----------------------------------------
-  # Model estimation
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Model estimation ####
 
   mod.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = x, ordered = ordered,
                                           parameterization = parameterization,
@@ -1091,15 +1062,16 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                                           meanstructure = meanstructure,
                                           estimator = estimator, missing = missing))
 
-  #----------------------------------------
-  # Convergence and model identification checks
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convergence and model identification checks ####
 
   if (isTRUE(check)) {
 
     check.vcov <- check.theta <- check.cov.lv <- TRUE
 
     #...................
-    # Degrees of freedom
+    ### Degrees of freedom ####
+
     if (isTRUE(lavaan::lavInspect(mod.fit, what = "fit")["df"] < 0L)) {
 
       stop("CFA model has negative degrees of freedom, model is not identified.", call. = FALSE)
@@ -1107,7 +1079,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
     }
 
     #...................
-    # Model convergence
+    ### Model convergence ####
+
     if (isTRUE(!lavaan::lavInspect(mod.fit, what = "converged"))) {
 
       stop("CFA model did not converge.", call. = FALSE)
@@ -1115,7 +1088,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
     }
 
     #...................
-    # Standard error
+    ### Standard error ####
+
     if (isTRUE(any(is.na(unlist(lavaan::lavInspect(mod.fit, what = "se")))))) {
 
       stop("Standard errors could not be computed.", call. = FALSE)
@@ -1123,25 +1097,24 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
     }
 
     #...................
-    # Variance-covariance matrix of the estimated parameters
+    ### Variance-covariance matrix of the estimated parameters ####
+
     eigvals <- eigen(lavaan::lavInspect(mod.fit, what = "vcov"), symmetric = TRUE, only.values = TRUE)$values
 
     # If effect coding method is used, correct for equality constraints
     if (isTRUE(ident == "effect")) { eigvals <- rev(eigvals)[-seq_len(sum(lavaan::parameterTable(mod.fit)$op == "=="))] }
 
+    if (isTRUE(min(eigvals) < .Machine$double.eps^(3L/4L))) {
 
-
-    if (isTRUE(min(eigvals) < .Machine$double.eps^(3/4))) {
-
-      warning("The variance-covariance matrix of the estimated parameters is not positive definite. This may be a symptom that the model is not identified.",
-              call. = FALSE)
+      warning("The variance-covariance matrix of the estimated parameters is not positive definite. This may be a symptom that the model is not identified.", call. = FALSE)
 
       check.vcov <- FALSE
 
     }
 
     #...................
-    # Negative variance of observed variables
+    ### Negative variance of observed variables ####
+
     if (isTRUE(any(diag(lavaan::lavInspect(mod.fit, what = "theta")) < 0L))) {
 
       warning("Some estimated variances of the observed variables are negative.")
@@ -1150,15 +1123,15 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
     } else if (isTRUE(any(eigen(lavaan::lavTech(mod.fit, what = "theta")[[1L]], symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
 
-      warning("The model-implied variance-covariance matrix of the residuals of the observed variables is not positive definite.",
-              call. = FALSE)
+      warning("The model-implied variance-covariance matrix of the residuals of the observed variables is not positive definite.", call. = FALSE)
 
       check.theta <- FALSE
 
     }
 
     #...................
-    # Negative variance of latent variables
+    ### Negative variance of latent variables ####
+
     if (isTRUE(any(diag(lavaan::lavTech(mod.fit, what = "cov.lv")[[1L]]) < 0L))) {
 
       warning("Some estimated variances of the latent variables are negative.", call. = FALSE)
@@ -1180,19 +1153,19 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  #----------------------------------------
-  # Model fit
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Model fit ####
 
   lav.fit <- lavaan::lavInspect(mod.fit, what = "fit")
 
-  #----------------------------------------
-  # Parameter estimates
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Parameter estimates ####
 
   model.param <- data.frame(lavaan::parameterEstimates(mod.fit),
                             stdyx = lavaan::standardizedsolution(mod.fit)[, "est.std"])[, c("lhs", "op", "rhs", "est", "se", "z", "pvalue", "stdyx")]
 
-  #----------------------------------------
-  # Modification indices
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Modification indices ####
 
   if (isTRUE(check.vcov && estimator != "PML")) {
 
@@ -1204,11 +1177,12 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  ##############################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return object --------------------------------------------------------------
 
-  #----------------------------------------
-  # lavaan summary
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## lavaan summary ####
 
   lavaan.summary <- data.frame(c(paste("lavaan", lavaan::lavInspect(mod.fit, what = "version")), "", "Estimator", "Standard errors", "Test statistic", "Missing data", "", "",
                                  "Number of observations", "Number of clusters", "", "Indicators", "Identification"),
@@ -1257,8 +1231,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                                c(rep("", times = 7L),  "Total", lavaan::lavInspect(mod.fit, what = "norig"),rep("", times = 4L)),
                                fix.empty.names = FALSE)
 
-  #----------------------------------------
-  # Model fit
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Model fit ####
 
   model.fit <- data.frame(c("Number of Free Parameters", "",
                             "Chi-Square Test of Model Fit", "Test statistic", "Degrees of freedom", "P-value", "Scaling correction factor", "",
@@ -1298,8 +1272,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                             rep(NA, times = 8L)),
                           fix.empty.names = FALSE)
 
-  #----------------------------------------
-  # Parameter estimates
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Parameter estimates ####
 
   # Latent variables
   print.latent <- model.param[which(model.param$op == "=~"), ]
@@ -1340,7 +1314,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                        if (nrow(print.resid) > 0L) { data.frame(param = "residual variance", print.resid) } else { NULL })
 
   #...................
-  # Add labels
+  ### Add labels ####
 
   # Latent mean, intercept, and threshold
   model.param[model.param$param %in% c("latent mean", "intercept"), "rhs"] <- model.param[model.param$param %in% c("latent mean", "intercept"), "lhs"]
@@ -1384,8 +1358,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   model.param <- rbind(print.lv, print.lv.cov, print.res.cov,
                        model.param[which(!model.param$param %in% c("latent variable", "latent variable covariance", "residual covariance")), ])
 
-  #----------------------------------------
-  # Modification indices
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Modification indices ####
 
   if (isTRUE(check.vcov && estimator != "PML")) {
 
@@ -1393,8 +1367,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                                    from = "sepc.all", to = "stdyx.epc")
   }
 
-  #----------------------------------------
-  # Object
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Return object ####
 
   object <- list(call = match.call(),
                  type = "item.cfa",
@@ -1409,22 +1383,24 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                              as.na = as.na, check = check,
                              output = output),
                  model = mod.factor,
-                 mod.fit = mod.fit,
+                 model.fit = mod.fit,
                  check = list(vcov = check.vcov, theta = check.theta, cov.lv = check.cov.lv),
                  result = list(summary = lavaan.summary, coverage = coverage,
-                               itemstat = itemstat, itemfreq = itemfreq,
+                               descript = itemstat, itemfreq = itemfreq,
                                fit = model.fit, param = model.param,
                                modind = model.modind))
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Write results
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
-  ##############################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Putput ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

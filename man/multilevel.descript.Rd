@@ -47,9 +47,26 @@ naming a file with or without file extension '.xlsx', e.g.,
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis \code{type}, matrix or
-data frame specified in \code{x} (\code{data}), specification of function arguments
-(\code{args}), and list with results (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{data frame specified in \code{x} including the group variable
+                     specified in \code{cluster}}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
+  \item{\code{result}}{list with result tables, i.e., \code{no.obs} for the
+                       number of observations \code{no.no.miss} for the
+                       number of missing value, \code{no.cluster} for the
+                       number of clusters, \code{m.cluster.size} for the average
+                       cluster size, \code{sd.cluster.size} for the standard
+                       deviation of the cluster size, \code{min.cluster.size} for
+                       the minimum cluster size, \code{max.cluster.size} for the
+                       maximum cluster size, \code{mean.x} for the mean values,
+                       \code{var.w} for the variance within clusters, \code{var.b}
+                       for the variance between clusters, \code{icc1} for ICC(1),
+                       \code{icc2} for ICC(2), \code{deff} for the design effect,
+                       \code{deff.sqrt} for the square root of the design effect,
+                       \code{n.effect} for the effective sample size}
 }
 \description{
 This function computes descriptive statistics for multilevel data, e.g. average

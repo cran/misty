@@ -130,10 +130,15 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis (\code{type}), matrix
-#' or data frame specified in \code{x} (\code{data}), specification of function
-#' arguments (\code{args}), fitted lavaan object (\code{mod.fit}), and list with
-#' results  (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab matrix or data frame specified in \code{x} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{model.fit} \tab fitted lavaan object (\code{mod.fit}) \cr
+#' \code{result} \tab list with result tables \cr
+#' }
 #'
 #' @note
 #' The function uses the functions \code{sem}, \code{lavInspect},
@@ -209,44 +214,39 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
                            digits = 2, p.digits = 3, as.na = NULL, write = NULL,
                            check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # R package
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
   if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
 
-  ####################################################################################
-  # Data
-
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is a matrix or a data frame
   if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'cluster' is missing
   if (isTRUE(missing(cluster))) { stop("Please specify a vector representing the nested grouping structure for the argument 'cluster'.", call. = FALSE) }
 
-  #......
   # Check if input 'cluster' is NULL
   if (isTRUE(is.null(cluster))) { stop("Input specified for the argument 'cluster is NULL.", call. = FALSE) }
 
-  #......
   # Check if only one variable specified in the input 'cluster'
   if (isTRUE(ncol(data.frame(cluster)) != 1L)) { stop("More than one variable specified for the argument 'cluster'.",call. = FALSE) }
 
-  #......
   # Convert 'cluster' into a vector
   cluster <- unlist(cluster, use.names = FALSE)
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -264,10 +264,9 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   }
 
-  #----------------------------------------
-  # Within- and Between-Group Variables
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Within- and Between-Group Variables ####
 
-  #......
   # Within variables in 'x'
   within.miss <- !within %in% colnames(x)
   if (isTRUE(any(within.miss))) {
@@ -279,7 +278,6 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   }
 
-  #......
   # Within variables
   if (isTRUE(is.null(between))) {
 
@@ -291,7 +289,6 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   }
 
-  #......
   # No within variables
   if (isTRUE(length(var.with) == 0L)) {
 
@@ -299,9 +296,6 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   }
 
-  #-----------------------------------------
-
-  #......
   # Between variables in 'x'
   between.miss <- !between %in% colnames(x)
   if (isTRUE(any(between.miss))) {
@@ -313,7 +307,6 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   }
 
-  #......
   # Variance within clusters
   x.check <- vapply(x[, between, drop = FALSE], function(y) any(tapply(y, cluster, var, na.rm = TRUE) != 0L), FUN.VALUE = logical(1L))
 
@@ -324,7 +317,6 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   }
 
-  #......
   #  Between variables
   if (isTRUE(is.null(within))) {
 
@@ -336,48 +328,38 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   }
 
-  ###
-
-  #......
   # No between variables
   if (length(var.betw) == 0L) { stop("Please specify at least two between-group variables.", call. = FALSE) }
 
-  #......
   # Variables in 'within' or 'between'
   wb.inter <- intersect(within, between)
   if (isTRUE(length(wb.inter) > 0L)) {
 
     warning(paste0("Following ", ifelse(length(wb.inter) == 1L, "variable is ", "variables are "),
-                   "specified in both arguments 'within' and 'between': ", paste(wb.inter, collapse = ", ")),
-            call. = FALSE)
+                   "specified in both arguments 'within' and 'between': ", paste(wb.inter, collapse = ", ")), call. = FALSE)
 
   }
 
-  #----------------------------------------
-  # Data frame with Cluster Variable
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame with Cluster Variable ####
 
   x <- data.frame(.cluster = cluster, x, stringsAsFactors = FALSE)
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'cluster'
     if (isTRUE(nrow(x) != length(cluster))) { stop("The cluster variable does not match with the number of rows in 'x'.",call. = FALSE) }
 
-    #......
     # Check input 'cluster'
     if (isTRUE(length(unique(na.omit(cluster))) == 1L)) { stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE) }
 
-    #......
     # Check input 'x': Zero variance?
     x.check <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
 
@@ -386,91 +368,72 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
       warning(paste0("Following ", ifelse(length(which(x.check)) == 1L, "variable ", "variables "),
                      "in the matrix or data frame specified in 'x' ",
                      ifelse(length(which(x.check)) == 1L, "has ", "have "), "zero variance: ",
-                     paste(names(which(x.check)), collapse = ", ")),
-              call. = FALSE)
+                     paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
 
     }
 
-    #......
     # Check input 'within'
     x.check <- vapply(x[, var.with, drop = FALSE], function(y) all(tapply(y, cluster, var, na.rm = TRUE) == 0L), FUN.VALUE = logical(1L))
 
     if (isTRUE(any(x.check))) {
 
             warning(paste0("Following within-group ", ifelse(length(which(x.check)) == 1L, "variable has ", "variables have "),
-                           "zero variance within all clusters: ", paste(names(which(x.check)), collapse = ", ")),
-                    call. = FALSE)
+                           "zero variance within all clusters: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
 
     }
 
-    #......
     # Check input 'estimator'
     if (isTRUE(any(!estimator %in% c("ML", "MLR")))) { stop("Character string in the argument 'estimator' does not match with \"ML\" or \"MLR\".", call. = FALSE) }
 
-    #......
     # Check input 'missing'
     if (isTRUE(any(!missing %in% c("listwise", "fiml")))) { stop("Character string in the argument 'estimator' does not match with \"listwise\" or \"fiml\".", call. = FALSE) }
 
-    #......
     # Check input 'sig'
     if (isTRUE(!is.logical(sig))) { stop("Please specify TRUE or FALSE for the argument 'sig'.", call. = FALSE) }
 
-    #......
     # Check input 'alpha'
     if (isTRUE(alpha >= 1L || alpha <= 0L)) { stop("Please specify a number between 0 and 1 for the argument 'alpha'.", call. = FALSE) }
 
-    #......
     # Check input 'print'
     if (isTRUE(any(!print %in% c("all", "cor", "se", "stat", "p")))) { stop("Character string(s) in the argument 'print' does not match with \"all\", \"cor\", \"se\", \"stat\", or \"p\".", call. = FALSE) }
 
-    #......
     # Check input 'split'
     if (isTRUE(!is.logical(split))) { stop("Please specify TRUE or FALSE for the argument 'split'.", call. = FALSE) }
 
-    #......
     # Check input 'tri'
     if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
 
-    #......
     # Check input 'tri.lower'
     if (isTRUE(!is.logical(tri.lower))) { stop("Please specify TRUE or FALSE for the argument 'tri.lower'.", call. = FALSE) }
 
-    #......
     # Check input 'p.adj'
-    if (isTRUE(any(!p.adj %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr")))) {
+    if (isTRUE(any(!p.adj %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr")))) { stop("Character string in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".", call. = FALSE) }
 
-      stop("Character string in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".",
-           call. = FALSE)
-
-    }
-
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
-  #-----------------------------------------
-  # Estimator
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Estimator ####
 
   estimator <- ifelse(all(c("ML", "MLR") %in% estimator), "ML", estimator)
 
-  #-----------------------------------------
-  # Missing data
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing data ####
 
-  #......
-  # Missing values present
+  #...................
+  ### Missing values present ####
   if (isTRUE(any(is.na(x)))) {
 
     complete <- FALSE
@@ -510,8 +473,8 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
     }
 
-  #......
-  # No missing values
+  #...................
+  ### No missing values ####
   } else {
 
     complete <- TRUE
@@ -542,28 +505,29 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   }
 
-  #-----------------------------------------
-  # Print correlation, sample size or significance values
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print correlation, sample size or significance values ####
 
   if (isTRUE(all(c("all", "cor", "se", "stat", "p") %in% print))) { print <- "cor" }
 
   if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("cor", "se", "stat", "p") }
 
-  #-----------------------------------------
-  # Print triangular
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print triangular ####
 
   tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
 
-  #-----------------------------------------
-  # Adjustment method for multiple testing
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Adjustment method for multiple testing ####
 
   p.adj <- ifelse(all(c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr") %in% p.adj), "none", p.adj)
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #-----------------------------------------
-  # Model specification
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Model specification ####
 
   mod <- paste("level: 1\n ",
                # Within model
@@ -572,9 +536,8 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
                # Between model
                paste(apply(combn(length(var.betw), 2L), 2L, function(y) paste(var.betw[y[1L]], var.betw[y[2L]], sep = " ~~ " )), collapse = "\n "))
 
-
-  #-----------------------------------------
-  # Model estimation
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Model estimation ####
 
   mod.fit <- suppressWarnings(lavaan::sem(mod, data = x, cluster = ".cluster", estimator = estimator,
                                           missing = missing, optim.method = "nlminb",
@@ -597,8 +560,8 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   }
 
-  #-----------------------------------------
-  # Extract Results
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Extract Results ####
 
   # Standardized solution
   stand <- lavaan::lavMatrixRepresentation(lavaan::standardizedSolution(mod.fit))
@@ -606,8 +569,8 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
   # Visible binding for global variable
   mat <- level <- NULL
 
-  #......................
-  # Within-Group Results
+  #...................
+  ### Within-Group Results ####
 
   # Theta
   with.stand.theta <- subset(stand[ unlist(subset(lavaan::lavMatrixRepresentation(lavaan::parameterestimates(mod.fit)), level == 1L, select = "id")), ], mat == "theta")
@@ -631,8 +594,8 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
   colnames(with.cor) <- colnames(with.se) <- colnames(with.stat) <- colnames(with.p) <-
   rownames(with.cor) <- rownames(with.se) <- rownames(with.stat) <- rownames(with.p) <- sapply(seq_len(max(stand[, "row"])), function(y) unique(stand[which(y == stand$row), "lhs"]))
 
-  #......................
-  # Between-Group Results
+  #...................
+  ### Between-Group Results ####
 
   # Standardized solution
   betw.stand.theta <- subset(stand[ unlist(subset(lavaan::lavMatrixRepresentation(lavaan::parameterestimates(mod.fit)), level == 2L, select = "id")), ], mat == "theta")
@@ -656,11 +619,11 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
   colnames(betw.cor) <- colnames(betw.se) <- colnames(betw.stat) <- colnames(betw.p) <-
   rownames(betw.cor) <- rownames(betw.se) <- rownames(betw.stat) <- rownames(betw.p) <- sapply(seq_len(max(stand[, "row"])), function(y) unique(stand[which(y == stand$row), "lhs"]))
 
-  #-----------------------------------------
-  # Combine Within-Group and Between-Group Results
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Combine Within-Group and Between-Group Results ####
 
-  #......................
-  # Within-group correlations in the lower triangular
+  #...................
+  ### Within-group correlations in the lower triangular ####
   if (isTRUE(tri.lower)) {
 
     # Within-group results
@@ -675,8 +638,8 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
     wb.stat[upper.tri(wb.stat)] <- betw.stat[upper.tri(wb.stat)]
     wb.p[upper.tri(wb.p)] <- betw.p[upper.tri(wb.p)]
 
-  #......................
-  # Within-group correlations in the upper triangular
+  #...................
+  ### Within-group correlations in the upper triangular ####
   } else {
 
     # Within-group results
@@ -693,9 +656,8 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   }
 
-  #......................
-  # Adjust p-values for multiple comparison
-
+  #...................
+  ### Adjust p-values for multiple comparison ####
   if (isTRUE(p.adj != "none")) {
 
     wb.p[lower.tri(wb.p)] <- p.adjust(wb.p[lower.tri(wb.p)], method = p.adj)
@@ -703,8 +665,8 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   }
 
-  #-----------------------------------------
-  # Split Within-Group and Between-Group Results
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Split Within-Group and Between-Group Results ####
 
   # Within-group results
   with.cor <- with.cor[which(apply(with.cor, 1L, function(y) !all(is.na(y)))), which(apply(with.cor, 2L, function(y) !all(is.na(y))))]
@@ -718,8 +680,8 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
   betw.stat <- betw.stat[which(apply(betw.stat, 1L, function(y) !all(is.na(y)))), which(apply(betw.stat, 2L, function(y) !all(is.na(y))))]
   betw.p <- betw.p[which(apply(betw.p, 1L, function(y) !all(is.na(y)))), which(apply(betw.p, 2L, function(y) !all(is.na(y))))]
 
-  #......................
-  # Adjust p-values for multiple comparison
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Adjust p-values for multiple comparison ####
 
   if (isTRUE(p.adj != "none")) {
 
@@ -731,11 +693,12 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   }
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return object --------------------------------------------------------------
 
-  #----------------------------------------
-  # lavaan summary
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## lavaan summary ####
 
   lavaan.summary <- data.frame(c(paste("lavaan", lavaan::lavInspect(mod.fit, what = "version")), "", "Estimator", "Standard errors", "Missing data", "", "",
                                  "Number of observations", "Number of clusters"),
@@ -758,8 +721,8 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
                                c(rep("", times = 6L),  "Total", lavaan::lavInspect(mod.fit, what = "norig"), ""),
                                fix.empty.names = FALSE)
 
-  #----------------------------------------
-  # Object
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Object ####
 
   object <- list(call = match.call(),
                  type = "multilevel.cor",
@@ -770,7 +733,7 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
                              split = split, tri = tri, tri.lower = tri.lower,
                              p.adj = p.adj, digits = digits, p.digits = p.digits,
                              as.na = as.na, check = check, output = output),
-                 mod.fit = mod.fit,
+                 model.fit = mod.fit,
                  result = list(summary = lavaan.summary,
                                wb.cor = wb.cor, wb.se = wb.se,
                                wb.stat = wb.stat, wb.p = wb.p,
@@ -781,13 +744,15 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Write results
+  #_____________________________________________________________________________
+  #
+  # Write Result ---------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

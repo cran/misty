@@ -41,9 +41,14 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type},  matrix or
-#' data frame specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), and list with results (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab matrix or data frame spcified in \code{x} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list with result tables \cr
+#' }
 #'
 #' @export
 #'
@@ -75,70 +80,67 @@
 na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, write = NULL,
                         check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #...............
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Matrix or data frame for the argument 'x'?
   if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #----------------------------------------
-  # Data frame
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
 
   df <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { df <- misty::as.na(df, na = as.na, check = check) }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'table'
     if (isTRUE(!is.logical(table))) { stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   # Number of cases
   no.cases <- nrow(df)
 
   # Number of complete cases
-  no.complete <- sum(apply(df, 1, function(y) all(!is.na(y))))
+  no.complete <- sum(apply(df, 1L, function(y) all(!is.na(y))))
   perc.complete <- no.complete / no.cases * 100L
 
   # Number and percentage of imcomplete cases
-  no.incomplete <- sum(apply(df, 1, function(y) any(is.na(y))))
+  no.incomplete <- sum(apply(df, 1L, function(y) any(is.na(y))))
   perc.incomplete <- no.incomplete / no.cases * 100L
-
-  ###
 
   # Number of values
   no.values <- length(unlist(df))
@@ -151,8 +153,6 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, write = NULL
   no.missing.values <- sum(is.na(unlist(df)))
   perc.missing.values <- no.missing.values / no.values * 100L
 
-  ###
-
   # Number of variables
   no.var <- ncol(df)
 
@@ -161,7 +161,7 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, write = NULL
   perc.observed.var <- no.observed.var / no.cases * 100L
 
   # Number and percentage of missing values for each variable
-  no.missing.var <- vapply(df, function(y) sum(is.na(y)), FUN.VALUE = 1)
+  no.missing.var <- vapply(df, function(y) sum(is.na(y)), FUN.VALUE = 1L)
   perc.missing.var <- no.missing.var / no.cases * 100L
 
   no.missing.mean <- mean(no.missing.var)
@@ -182,18 +182,16 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, write = NULL
   no.missing.max <- max(no.missing.var)
   perc.missing.max <- no.missing.max / no.cases * 100L
 
-  ###
-
   # Frequency table
   table.missing <- data.frame(Var = colnames(df),
                               matrix(c(no.observed.var, perc.observed.var, no.missing.var, perc.missing.var), ncol = 4L,
                                      dimnames = list(NULL, c("nObs", "pObs", "nNA", "pNA"))),
                               stringsAsFactors = FALSE)
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
-  # Return object
   object <- list(call = match.call(),
                  type = "na.descript",
                  data = x,
@@ -213,13 +211,15 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, write = NULL
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Write results
+  #_____________________________________________________________________________
+  #
+  # Write results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object) }
 

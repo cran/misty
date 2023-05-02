@@ -135,11 +135,16 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis (\code{type}), list with
-#' the input specified in \code{a}, \code{b}, \code{se.a}, \code{se.b}, \code{cov.ab},
-#' \code{cov.rand}, and \code{se.cov.rand} (\code{data}), specification of function
-#' arguments (\code{args}), and a list with the result of the Monte Carlo method
-#' and the result table (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab list with the input specified in \code{a}, \code{b},
+#'              \code{se.a}, \code{se.b}, \code{cov.ab}, \code{cov.rand}, and
+#'              \code{se.cov.rand} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list with result tables \cr
+#' }
 #'
 #' @export
 #'
@@ -160,18 +165,15 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
                                 seed = NULL, conf.level = 0.95, digits = 3, check = TRUE,
                                 output = TRUE) {
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'a', 'b', 'se.a', 'se.b', cov.ab, cov.rand, and se.cov.rand
     if (isTRUE(mode(a) != "numeric")) { stop("Please specify a numeric value for the argument 'a'.", call. = FALSE) }
 
@@ -187,45 +189,41 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
 
     if (isTRUE(mode(se.cov.rand) != "numeric" || se.cov.rand <= 0L)) { stop("Please specify a positive numeric value for the argument 'se.cov.rand'.", call. = FALSE) }
 
-    #......
     # Check input 'nrep'
     if (isTRUE(mode(nrep) != "numeric" || nrep <= 1L)) { stop("Please specify a positive numeric value greater 1 for the argument 'nrep'.", call. = FALSE) }
 
-    #......
     # Check input 'alternative'
     if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
 
-    #......
     # Check input 'seed'
     if (isTRUE(mode(seed) != "numeric" && !is.null(seed))) { stop("Please specify a numeric value greater for the argument 'seed'.", call. = FALSE) }
 
-    #......
     # Check input 'conf.level'
     if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #----------------------------------------
-  # Alternative hypothesis
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #........................
-  # Random Number Generation
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Random Number Generation ####
 
   if (isTRUE(!is.null(seed))) {
 
@@ -233,47 +231,46 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
 
   }
 
-  #........................
-  # Monte Carlo Method
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Monte Carlo Method ####
 
   dvec <- rnorm(nrep)
 
   avec <- dvec * se.a + a
 
-  sd <- suppressWarnings(sqrt(1 - (cov.ab^2) / (se.a^2 * se.b^2)))
+  sd <- suppressWarnings(sqrt(1L - (cov.ab^2L) / (se.a^2 * se.b^2L)))
 
   if (isTRUE(is.nan(sd))) {
 
     while (isTRUE(is.nan(sd))) {
 
       cov.ab <- cov.ab - 0.00001
-      sd <- suppressWarnings(sqrt(1 - (cov.ab^2) / (se.a^2 * se.b^2)))
+      sd <- suppressWarnings(sqrt(1L - (cov.ab^2L) / (se.a^2L * se.b^2L)))
 
     }
 
-    warning(paste("Argument 'cov.ab' had to be adjusted to", cov.ab, "to resolve a numerical problem."),
-            call. = FALSE)
+    warning(paste("Argument 'cov.ab' had to be adjusted to", cov.ab, "to resolve a numerical problem."), call. = FALSE)
 
   }
 
-  bvec <- dvec * cov.ab / se.a + se.b * rnorm(nrep, sd = sqrt(1 - (cov.ab^2) / (se.a^2 * se.b^2))) + b
+  bvec <- dvec * cov.ab / se.a + se.b * rnorm(nrep, sd = sqrt(1L - (cov.ab^2L) / (se.a^2L * se.b^2L))) + b
 
   cvec <- rnorm(nrep) * se.cov.rand + cov.rand
 
   ab <- avec * bvec + cvec
 
-  #........................
-  # Point estimate
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Point estimate ####
 
   mc.ab <- mean(ab)
 
-  #........................
-  # Standard error
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Standard error ####
 
   mc.se.ab <- sd(ab)
 
-  #........................
-  # Confidence interval
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Confidence interval ####
 
   mc.ci <- switch(alternative,
                   two.sided = c(low = quantile(ab, (1L - conf.level) / 2),
@@ -282,10 +279,10 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
                            upp = quantile(ab, conf.level)),
                   greater = c(low = quantile(ab, 1L - conf.level),
                               upp = Inf))
-  mc.ci
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "multilevel.indirect",
@@ -296,12 +293,13 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
                              output = output),
                  result = list(ab = ab,
                                mc = data.frame(est = mc.ab, se = mc.se.ab,
-                                               low = mc.ci[1], upp = mc.ci[2], row.names = NULL)))
+                                               low = mc.ci[1L], upp = mc.ci[2L], row.names = NULL)))
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
    if (isTRUE(output)) { print(object, check = FALSE) }
 

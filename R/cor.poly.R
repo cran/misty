@@ -43,9 +43,14 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
-#' data frame specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), and list with results (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab matrix or data frame specified in \code{x} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab result table \cr
+#' }
 #'
 #' @note
 #' This function is based on the \code{polychoric()} function in the \pkg{psych}
@@ -64,77 +69,67 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
                      na.rm = TRUE, delete = TRUE, tri = c("both", "lower", "upper"), digits = 2,
                      as.na = NULL, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Package mnormt installed?
-  if (isTRUE(!requireNamespace("mnormt", quietly = TRUE))) { stop("Package \"mnormt\" is needed for this function to work, please install it.", call. = FALSE )
+  if (isTRUE(!requireNamespace("mnormt", quietly = TRUE))) { stop("Package \"mnormt\" is needed for this function to work, please install it.", call. = FALSE ) }
 
-  }
-
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame of discrete values for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Matrix or data frame for the argument 'x'?
   if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame of discrete values for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
 
   if (isTRUE(check)) {
 
-    #......
     # Check input 'x': Discrete values
     if (isTRUE(any(apply(x, 2, function(y) any(na.omit(y) %% 1L != 0L))))) { stop("Please specify a matrix or data frame of discrete values for the argument 'x'.", call. = FALSE) }
 
-    #......
     # Check input 'smooth'
     if (isTRUE(!is.logical(smooth))) { stop("Please specify TRUE or FALSE for the argument 'smooth'.", call. = FALSE) }
 
-    #......
     # Check input 'global'
     if (isTRUE(!is.logical(global))) { stop("Please specify TRUE or FALSE for the argument 'global'.", call. = FALSE) }
 
-    #......
     # Check input 'na.rm'
     if (isTRUE(!is.logical(na.rm))) { stop("Please specify TRUE or FALSE for the argument 'na.rm'.", call. = FALSE) }
 
-    #......
     # Check input 'progress'
     if (isTRUE(!is.logical(progress))) { stop("Please specify TRUE or FALSE for the argument 'progress'.", call. = FALSE) }
 
     # Check input 'delete'
     if (isTRUE(!is.logical(delete))) { stop("Please specify TRUE or FALSE for the argument 'delete'.", call. = FALSE) }
 
-    #......
     # Check input 'tri'
     if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { warning("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -142,13 +137,14 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  #----------------------------------------
-  # Print triangular
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print triangular ####
 
   tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
 
-  ####################################################################################
-  # Functions
+  #_____________________________________________________________________________
+  #
+  # Functions ------------------------------------------------------------------
 
   #----------------------------------------
   cor.smooth <- function (x, eig.tol = 10^-12) {
@@ -157,8 +153,7 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     if (isTRUE(class(eigens) == as.character("try-error"))) {
 
-      warning("There is something wrong with the correlation matrix, i.e., cor.smooth() failed to smooth it because some of the eigenvalues are NA.",
-              call. = FALSE)
+      warning("There is something wrong with the correlation matrix, i.e., cor.smooth() failed to smooth it because some of the eigenvalues are NA.", call. = FALSE)
 
     } else {
 
@@ -167,7 +162,7 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
         warning("Matrix was not positive definite, smoothing was done.", call. = FALSE)
 
         eigens$values[eigens$values < eig.tol] <- 100L * eig.tol
-        nvar <- dim(x)[1]
+        nvar <- dim(x)[1L]
         tot <- sum(eigens$values)
         eigens$values <- eigens$values * nvar/tot
         cnames <- colnames(x)
@@ -185,7 +180,6 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  #----------------------------------------
   mcmapply <- function (FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = TRUE,
                         mc.preschedule = TRUE, mc.set.seed = TRUE, mc.silent = FALSE,
                         mc.cores = 1L, mc.cleanup = TRUE, affinity.list = NULL) {
@@ -209,7 +203,6 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  #----------------------------------------
   tableF <- function(x,y) {
 
     minx <- min(x,na.rm = TRUE)
@@ -224,7 +217,6 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     return(ans)
   }
 
-  #----------------------------------------
   tableFast <- function(x, y, minx, maxx, miny, maxy) {
 
     maxxy <- (maxx + (minx == 0L))*(maxy + (minx == 0L))
@@ -236,7 +228,6 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  #----------------------------------------
   polyBinBvn <- function(rho, rc, cc) {
 
     row.cuts <- c(-Inf, rc,Inf)
@@ -267,8 +258,7 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  #----------------------------------------
-  polyF <- function(rho,rc,cc,tab) {
+  polyF <- function(rho, rc, cc, tab) {
 
     P <- polyBinBvn(rho, rc, cc)
     P[P <= 0L] <- NA
@@ -277,7 +267,6 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
     lP[lP == Inf] <- NA
     -sum(tab * lP,na.rm=TRUE)  }
 
-  #----------------------------------------
   wtd.table <- function(x, y, weight) {
 
     tab <- tapply(weight, list(x, y), sum, na.rm = TRUE, simplify = TRUE)
@@ -287,8 +276,6 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-
-  #----------------------------------------
   polyc <- function(x, y = NULL, taux, tauy, global = TRUE, weight = NULL, correct = correct,
                     gminx, gmaxx, gminy, gmaxy) {
 
@@ -376,7 +363,6 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  #----------------------------------------
   polydi <- function(p, d, taup, taud, global = TRUE, ML = FALSE, std.err = FALSE, weight = NULL,
                      progress = TRUE, na.rm = TRUE, delete = TRUE, correct = 0.5) {
 
@@ -442,8 +428,8 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     if (isTRUE(nvalues > 8L)) stop("You have more than 8 categories for your items, polychoric is probably not needed.", call. = FALSE)
 
-    item.var <- apply(p, 2, sd, na.rm = na.rm)
-    bad <- which((item.var <= 0) | is.na(item.var))
+    item.var <- apply(p, 2L, sd, na.rm = na.rm)
+    bad <- which((item.var <= 0L) | is.na(item.var))
 
     if (isTRUE(length(bad) > 0L && delete)) {
 
@@ -517,7 +503,6 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  #----------------------------------------
   polytab <- function(tab, correct = TRUE) {
 
     tot <- sum(tab)
@@ -536,7 +521,6 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  #----------------------------------------
   myfun <- function(x, i, j, gminx, gmaxx, gminy, gmaxy) {
 
     polyc(x[, i], x[, j], tau[, i], tau[, j], global = global, weight = weight, correct = correct,
@@ -544,7 +528,6 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   }
 
-  #----------------------------------------
   matpLower <- function(x, nvar, gminx, gmaxx, gminy, gmaxy) {
 
     k <- 1
@@ -652,13 +635,13 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     }
 
-    xmin <- apply(x, 2, function(x) min(x, na.rm = TRUE))
+    xmin <- apply(x, 2L, function(x) min(x, na.rm = TRUE))
 
     xmin <- min(xmin)
     x <- t(t(x) - xmin + 1L)
 
     gminx <- gminy <- 1L
-    xmax <- apply(x, 2, function(x) max(x, na.rm = TRUE))
+    xmax <- apply(x, 2L, function(x) max(x, na.rm = TRUE))
     xmax <- max(xmax)
     gmaxx <- gmaxy <- xmax
 
@@ -699,6 +682,9 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
     colnames(mat) <- rownames(mat) <- colnames(x)
 
+    #_____________________________________________________________________________
+    #
+    # Return Object --------------------------------------------------------------
 
     object <- list(call = match.call(),
                    type = "cor.poly",
@@ -712,8 +698,9 @@ cor.poly <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

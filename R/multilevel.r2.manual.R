@@ -93,8 +93,15 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, specification
-#' of function arguments (\code{args}), and list with results (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab matrix or data frame specified in \code{data} \cr
+#' \code{plot} \tab ggplot2 object for plotting the results \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list with result tables \cr
+#' }
 #'
 #' @note
 #' This function is calls the \code{r2mlm_manual()} function in the \pkg{r2mlm}
@@ -122,7 +129,7 @@
 #'                                      cluster = Demo.twolevel$cluster)
 #'
 #' # Estimate random intercept model using the lme4 package
-#' mod2 <- lmer(y1 ~ x2.c + x2.b + w1 + (1| cluster), data = Demo.twolevel,
+#' mod1 <- lmer(y1 ~ x2.c + x2.b + w1 + (1| cluster), data = Demo.twolevel,
 #'              REML = FALSE, control = lmerControl(optimizer = "bobyqa"))
 #'
 #' # Estimate random intercept and slope model using the lme4 package
@@ -143,7 +150,7 @@
 #'                      within = "x2.c", between = c("x2.b", "w1"),
 #'                      gamma.w = 0.41127956,
 #'                      gamma.b = c(0.01123245, -0.08269374, 0.17688507),
-#'                      tau = matrix(c(0.931008649, 0.004110479, 0.004110479, 0.017068857), ncol = 2),
+#'                      tau = 0.9297401,
 #'                      sigma2 = 1.813245794)
 #'
 #' #---------------------------
@@ -198,8 +205,6 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  #-----------------------------------------
 
   if (isTRUE(check)) {
 
@@ -375,8 +380,7 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
                                               dimnames = list(rownames(r2mlm.out$Decompositions),
                                                               colnames(r2mlm.out$Decompositions))),
                               r2 = matrix(apply(r2mlm.out$R2s, 2L, as.numeric), ncol = ncol(r2mlm.out$R2s),
-                                          dimnames = list(rownames(r2mlm.out$R2s),
-                                                          colnames(r2mlm.out$R2s)))))
+                                          dimnames = list(rownames(r2mlm.out$R2s), colnames(r2mlm.out$R2s)))))
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Plot ####
@@ -442,19 +446,19 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
                              digits = digits, plot = plot, gray = gray,
                              start = start, end = end, color = color, check = check,
                              output = output),
-                 result = list(rs = list(decomp = rs$decomp,
-                                         total = data.frame(f1 = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "f1", "total"], NA),
-                                                            f2 = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "f2", "total"], NA),
-                                                            f = rs$r2[row.names(rs$r2) == "f", "total"],
-                                                            v = rs$r2[row.names(rs$r2) == "v", "total"],
-                                                            m = rs$r2[row.names(rs$r2) == "m", "total"],
-                                                            fv = rs$r2[row.names(rs$r2) == "fv", "total"],
-                                                            fvm = rs$r2[row.names(rs$r2) == "fvm", "total"]),
-                                         within = data.frame(f1 = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "f1", "within"], NA),
-                                                             v = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "v", "within"], NA),
-                                                             f1v = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "fv", "within"], NA)),
-                                         between = data.frame(f2 = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "f2", "between"], NA),
-                                                              m  = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "m", "between"], NA)))))
+                 result = list(decomp = rs$decomp,
+                               total = data.frame(f1 = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "f1", "total"], NA),
+                                                  f2 = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "f2", "total"], NA),
+                                                  f = rs$r2[row.names(rs$r2) == "f", "total"],
+                                                  v = rs$r2[row.names(rs$r2) == "v", "total"],
+                                                  m = rs$r2[row.names(rs$r2) == "m", "total"],
+                                                  fv = rs$r2[row.names(rs$r2) == "fv", "total"],
+                                                  fvm = rs$r2[row.names(rs$r2) == "fvm", "total"]),
+                               within = data.frame(f1 = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "f1", "within"], NA),
+                                                   v = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "v", "within"], NA),
+                                                   f1v = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "fv", "within"], NA)),
+                               between = data.frame(f2 = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "f2", "between"], NA),
+                                                    m  = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "m", "between"], NA))))
 
   class(object) <- "misty.object"
 

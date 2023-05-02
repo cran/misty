@@ -91,59 +91,51 @@
 #' }
 df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
   # List of data frames
   df <- lapply(list(...), as.data.frame, stringsAsFactors = FALSE)
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'by'
   if (isTRUE(missing(by))) { stop("Please specify a character string for the argument 'by'.", call. = FALSE) }
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Same matching variable in each data frame
     if (isTRUE(any(vapply(df, function(y) !by %in%  names(y), FUN.VALUE = logical(1L))))) { stop("Data frames do not have the same matching variable specified in 'by'.", call. = FALSE) }
 
-    #......
     # Same class
     if (isTRUE(length(unique(vapply(df, function(y) class(y[, by]), FUN.VALUE = character(1L)))) != 1L)) { stop("Matching variable in the data frames do not all have the same class.", call. = FALSE) }
 
-    #......
     # Duplicated values in the matching variable
     if (isTRUE(any(vapply(df, function(y) anyDuplicated(na.omit(y[, by])), FUN.VALUE = 1L) != 0L))) { stop("There are duplicated values in the matching variable specified in 'by'.", call. = FALSE) }
 
-    #......
     # Missing values in the matching variable
     if (isTRUE(any(vapply(df, function(y) any(is.na(y[, by])), FUN.VALUE = logical(1L))))) { stop("There are missing values in the matching variable specified in 'by'.", call. = FALSE) }
 
-    #......
     # Duplicated variable names across the data frames
     if (isTRUE(anyDuplicated(unlist(lapply(df, names))[unlist(lapply(df, names)) != by]) != 0L)) { stop("There are duplicated variable names across data frames.", call. = FALSE) }
 
-    #......
     # Check input 'all'
     if (isTRUE(!is.logical(all))) { stop("Please specify TRUE or FALSE for the argument 'all'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   # Number of data frames
   no.dfs <- length(df)
@@ -179,8 +171,9 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
   # Sort by matching variable
   object <- object[order(object[, by]), ]
 
-  ####################################################################################
-  # Print Output
+  #_____________________________________________________________________________
+  #
+  # Print Output ---------------------------------------------------------------
 
   if (isTRUE(output)) {
 
@@ -199,7 +192,6 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     match.info[, 1L] <- paste("  ", match.info[, 1L])
 
-    #........................................
     # Print output
 
     cat(" Merge Multiple Data Frames\n\n")
@@ -214,8 +206,9 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
   }
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(object)
 

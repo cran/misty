@@ -15,6 +15,8 @@ export(aov.b)
 export(aov.w)
 export(as.na)
 export(center)
+export(check.collin)
+export(check.outlier)
 export(chr.gsub)
 export(chr.omit)
 export(chr.trim)
@@ -28,7 +30,6 @@ export(ci.sd)
 export(ci.var)
 export(cluster.scores)
 export(cohens.d)
-export(collin.diag)
 export(cor.cont)
 export(cor.cramer)
 export(cor.matrix)
@@ -37,11 +38,11 @@ export(cor.poly)
 export(crosstab)
 export(descript)
 export(df.duplicated)
-export(df.unique)
 export(df.merge)
 export(df.rbind)
 export(df.rename)
 export(df.sort)
+export(df.unique)
 export(dummy.c)
 export(eta.sq)
 export(freq)
@@ -52,12 +53,13 @@ export(item.omega)
 export(item.reverse)
 export(item.scores)
 export(kurtosis)
+export(libraries)
 export(multilevel.cor)
 export(multilevel.descript)
 export(multilevel.icc)
 export(multilevel.indirect)
-export(multilevel.r2)
 export(multilevel.r2.manual)
+export(multilevel.r2)
 export(na.as)
 export(na.auxiliary)
 export(na.coverage)
@@ -96,11 +98,16 @@ exportMethods(default)
 exportMethods(formula)
 importFrom(utils,packageDescription)
 
+importFrom("stats", "cooks.distance", "dfbetas", "hatvalues",
+                "mahalanobis", "rstandard", "rstudent")
+
 importFrom("stats", "aov", "as.formula", "chisq.test", "coefficients",
-           "cor", "cor.test", "cov", "cov2cor", "df", "formula", "IQR",
-           "median", "model.frame", "model.matrix", "na.omit", "oneway.test", 
-           "optimize", "dnorm", "integrate", "pnorm", "rnorm", "setNames", 
-           "pchisq", "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", 
-           "reshape", "sd", "terms", "time", "t.test", "p.adjust", "pf", "pt", 
-           "uniroot", "update", "var", "vcov")
-importFrom("utils", "combn", "packageDescription", "read.table", "write.csv", "write.csv2", "write.table")
+           "cooks.distance", "cor", "cor.test", "cov", "cov2cor", "df", 
+           "dfbetas", "formula", "hatvalues", "IQR", "mahalanobis", "median",
+           "model.frame", "model.matrix", "na.omit", "oneway.test", 
+           "optimize", "dnorm", "integrate", "pnorm", "rnorm", "rstandard", 
+           "rstudent", "setNames", "pchisq", "qbinom", "qchisq", "qf", "qnorm", 
+           "qt", "quantile", "reshape", "sd", "terms", "time", "t.test", 
+           "p.adjust", "pf", "pt", "uniroot", "update", "var", "vcov")
+importFrom("utils", "available.packages", "combn", "install.packages", "installed.packages",
+           "packageDescription", "read.table", "write.csv", "write.csv2", "write.table")

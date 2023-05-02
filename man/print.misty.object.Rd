@@ -85,7 +85,7 @@ This function prints the \code{misty.object} object
 \code{\link{ci.mean.diff}}, \code{\link{ci.mean}}, \code{\link{ci.mean.w}},
 \code{\link{ci.median}}, \code{\link{ci.prop.diff}}, \code{\link{ci.prop}},
 \code{\link{ci.sd}}, \code{\link{ci.var}}, \code{\link{cohens.d}},
-\code{\link{collin.diag}}, \code{\link{cor.cont}}, \code{\link{cor.matrix}},
+\code{\link{check.collin}}, \code{\link{cor.cont}}, \code{\link{cor.matrix}},
 \code{\link{cor.cramer}}, \code{\link{crosstab}}, \code{\link{descript}},
 \code{\link{eta.sq}}, \code{\link{freq}}, \code{\link{test.levene}},
 \code{\link{multilevel.descript}}, \code{\link{multilevel.r2}}, \code{\link{na.auxiliary}},

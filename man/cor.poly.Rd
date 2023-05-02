@@ -53,9 +53,12 @@ the analysis.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis \code{type}, matrix or
-data frame specified in \code{x} (\code{data}), specification of function arguments
-(\code{args}), and list with results (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{matrix or data frame specified in \code{x}}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{result table}
 }
 \description{
 This function computes a polychoric correlation matrix, which is the estimated

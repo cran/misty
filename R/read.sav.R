@@ -53,132 +53,73 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
                      label = TRUE, labels = TRUE, missing = FALSE, widths = FALSE,
                      as.data.frame = TRUE, check = TRUE) {
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Package haven installed?
-  if (isTRUE(!requireNamespace("haven", quietly = TRUE))) {
+  if (isTRUE(!requireNamespace("haven", quietly = TRUE))) { stop("Package \"haven\" is needed for this function to work, please install it.", call. = FALSE ) }
 
-    stop("Package \"haven\" is needed for this function to work, please install it.",
-         call. = FALSE )
-
-  }
-
-  #......
   # Check input 'file'
-  if (isTRUE(missing(file))) {
+  if (isTRUE(missing(file))) { stop("Please specify a character string indicating the name of the SPSS data file for the argument 'file'", call. = FALSE) }
 
-    stop("Please specify a character string indicating the name of the SPSS data file for the argument 'file'",
-         call. = FALSE)
-
-  }
-
-  #......
   # File extension .sav
   file <- ifelse(length(grep(".sav", file)) == 0, file <- paste0(file, ".sav"), file)
 
-  #......
   # Check if 'file' exists
-  if (isTRUE(!file.exists(file))) {
+  if (isTRUE(!file.exists(file))) { stop(paste0("Unable to open SPSS data file: ", sQuote(file), " does not exist."), call. = FALSE) }
 
-    stop(paste0("Unable to open SPSS data file: ", sQuote(file), " does not exist."),
-         call. = FALSE)
-
-  }
-
-  #......
   # Check input 'check',
-  if (isTRUE(!is.logical(check))) {
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
-
-  #-----------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #......
     # Check input 'use.value.labels'
-    if (isTRUE(!is.logical(use.value.labels))) {
+    if (isTRUE(!is.logical(use.value.labels))) { stop("Please specify TRUE or FALSE for the argument 'use.value.labels'.", call. = FALSE) }
 
-      stop("Please specify TRUE or FALSE for the argument 'use.value.labels'.", call. = FALSE)
-
-    }
-
-    #......
     # Check input 'use.missings'
-    if (isTRUE(!is.logical(use.missings))) {
+    if (isTRUE(!is.logical(use.missings))) { stop("Please specify TRUE or FALSE for the argument 'use.missings'.", call. = FALSE) }
 
-      stop("Please specify TRUE or FALSE for the argument 'use.missings'.", call. = FALSE)
-
-    }
-
-    #......
     # Check input 'formats'
-    if (isTRUE(!is.logical(formats))) {
+    if (isTRUE(!is.logical(formats))) { stop("Please specify TRUE or FALSE for the argument 'formats'.", call. = FALSE) }
 
-      stop("Please specify TRUE or FALSE for the argument 'formats'.", call. = FALSE)
-
-    }
-
-    #......
     # Check input 'label'
-    if (isTRUE(!is.logical(label))) {
+    if (isTRUE(!is.logical(label))) { stop("Please specify TRUE or FALSE for the argument 'label'.", call. = FALSE) }
 
-      stop("Please specify TRUE or FALSE for the argument 'label'.", call. = FALSE)
-
-    }
-
-    #......
     # Check input 'labels'
-    if (isTRUE(!is.logical(labels))) {
+    if (isTRUE(!is.logical(labels))) { stop("Please specify TRUE or FALSE for the argument 'labels'.", call. = FALSE) }
 
-      stop("Please specify TRUE or FALSE for the argument 'labels'.", call. = FALSE)
-
-    }
-
-    #......
     # Check input 'missing'
-    if (isTRUE(!is.logical(missing))) {
+    if (isTRUE(!is.logical(missing))) { stop("Please specify TRUE or FALSE for the argument 'missing'.", call. = FALSE) }
 
-      stop("Please specify TRUE or FALSE for the argument 'missing'.", call. = FALSE)
-
-    }
-
-    #......
     # Check input 'widths'
-    if (isTRUE(!is.logical(widths))) {
+    if (isTRUE(!is.logical(widths))) { stop("Please specify TRUE or FALSE for the argument 'widths'.", call. = FALSE) }
 
-      stop("Please specify TRUE or FALSE for the argument 'widths'.", call. = FALSE)
-
-    }
-
-    #......
     # Check input 'as.data.frame'
-    if (isTRUE(!is.logical(as.data.frame))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(as.data.frame))) { stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
   # User-defined missing values
   use_na <- ifelse(isTRUE(use.missings), FALSE, TRUE)
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   # Read SPSS data
   object <- haven::read_spss(file, user_na = use_na)
 
-  #-----------------------------------------
-  # Remove format
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Remove format ####
 
   if (!isTRUE(formats)) {
 
@@ -190,8 +131,8 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   }
 
-  #-----------------------------------------
-  # Remove label
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Remove label ####
 
   if (!isTRUE(label)) {
 
@@ -203,21 +144,8 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   }
 
-  #-----------------------------------------
-  # Remove value labels
-
-  if (!isTRUE(labels)) {
-
-    for (i in names(object)) {
-
-      object[, i] <- haven::zap_labels(object[, i])
-
-    }
-
-  }
-
-  #-----------------------------------------
-  # Remove value labels for user-defined missing values
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Remove value labels for user-defined missing values ####
 
   if (!isTRUE(missing)) {
 
@@ -229,8 +157,8 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   }
 
-  #-----------------------------------------
-  # Remove widths
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Remove widths ####
 
   if (!isTRUE(widths)) {
 
@@ -242,16 +170,17 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   }
 
-  #-----------------------------------------
-  # Data as data frame
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
+
   if (isTRUE(as.data.frame)) {
 
     object <- as.data.frame(object, stringsAsFactors = FALSE)
 
     object.attributes <- lapply(object, function(y) names(attributes(y)))
 
-    #......
-    # Factors
+    #...................
+    ### Factors ####
     if (isTRUE(any(unlist(object.attributes) == "labels") && isTRUE(use.value.labels))) {
 
       var.labels.na <- NULL
@@ -289,7 +218,9 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
 
   }
 
-  ####################################################################################
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(object)
 

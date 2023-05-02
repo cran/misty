@@ -32,14 +32,13 @@ must be one of \code{"two.sided"} (default), \code{"less"} or \code{"greater"}.}
 \item{output}{logical: if \code{TRUE}, output is shown.}
 }
 \value{
-Returns an object of class \code{misty.object} with following entries:
-
-\tabular{ll}{
-  \code{call}      \tab function call \cr
-  \code{type}      \tab type of the test (i.e., proportion) \cr
-  \code{args}      \tab specification of function arguments \cr
-  \code{result}       \tab list with the result, i.e., optimal sample size \cr
-}
+Returns an object of class \code{misty.object}, which is a list with following
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{matrix or data frame spcified in \code{x}}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{list with the result, i.e., optimal sample size}
 }
 \description{
 This function performs sample size computation for the one-sample and two-sample test for proportions

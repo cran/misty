@@ -38,9 +38,14 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
-#' data frame specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), and list with results (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab matrix or data frame spcified in \code{x} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab result table \cr
+#' }
 #'
 #' @export
 #'
@@ -62,48 +67,45 @@
 na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na = NULL,
                         write = NULL, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Matrix or data frame for the argument 'x'?
   if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #.........................
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #.........................................
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #......
     # Check input 'tri'
     if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
-  #-----------------------------------------------------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -111,17 +113,19 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
 
   }
 
-  #----------------------------------------
-  # Print triangular
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print triangular ####
+
   tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
 
-  #----------------------------------------
-  # As data frame
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
 
   df <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   # Pairwise combination
   comb.pair <- data.frame(combn(ncol(df), m = 2L), stringsAsFactors = FALSE)
@@ -141,10 +145,10 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
   # Variance coverage
   diag(restab) <- vapply(df, function(y) mean(!is.na(y)), FUN.VALUE = double(1L))
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
-  # Return object
   object <- list(call = match.call(),
                  type = "na.coverage",
                  data = x,
@@ -153,13 +157,15 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Write results
+  #_____________________________________________________________________________
+  #
+  # Write results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

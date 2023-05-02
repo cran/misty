@@ -53,11 +53,16 @@ to be used for displaying}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis (\code{type}), list with
-the input specified in \code{a}, \code{b}, \code{se.a}, \code{se.b}, \code{cov.ab},
-\code{cov.rand}, and \code{se.cov.rand} (\code{data}), specification of function
-arguments (\code{args}), and a list with the result of the Monte Carlo method
-and the result table (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{list with the input specified in \code{a}, \code{b},
+                     \code{se.a}, \code{se.b}, \code{cov.ab}, \code{cov.rand},
+                     and \code{se.cov.rand}}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{list with result tables, i.e., \code{ab} for the simulated
+                       \code{ab} values and \code{mc} for the estimate of the
+                       indirect effect and the confidence interval}
 }
 \description{
 This function computes the confidence interval for the indirect effect in a

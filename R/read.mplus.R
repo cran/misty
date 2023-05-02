@@ -55,56 +55,48 @@
 read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var = FALSE,
                        fileEncoding = "UTF-8-BOM", check = TRUE) {
 
-  ####################################################################################
-  # Mplus Variable names
+  #_____________________________________________________________________________
+  #
+  # Mplus Variable names -------------------------------------------------------
 
-  #----------------------------------------
-  # Check input 'input'
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Check input 'input' ####
 
-  if (isTRUE(return.var && missing(input))) {
+  if (isTRUE(return.var && missing(input))) { stop("Please specify a character string indicating the name of the Mplus input/output file for the argument 'input'.", call. = FALSE) }
 
-    stop("Please specify a character string indicating the name of the Mplus input/output file for the argument 'input'.",
-         call. = FALSE)
-
-  }
-
-  #----------------------------------------
-  # Mplus input/output file
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Mplus input/output file ####
 
   if (isTRUE(!is.null(input))) {
 
-    #......
-    # File extension .inp or .out
+    #...................
+    ### File extension .inp or .out ####
+
     input <- ifelse(length(grep(".inp", input)) == 0L && length(grep(".out", input)) == 0L,
                     input <- paste0(input, ".inp"), input)
 
-    #......
-    # Read input text lines
-    inp.lines <- suppressWarnings(readLines(input))
+    #...................
+    ### Read input text lines ####
 
-    #......
-    # Extract VARIABLE section
+    inp.lines <- sapply(strsplit(suppressWarnings(readLines(input)), "!"), function(y) ifelse(length(y) > 1L, y[1L], y))
+
+    #...................
+    ### Extract VARIABLE section ####
+
     var.ind1 <- grep("VARIABLE:", toupper(inp.lines))
     var.ind2 <- grep(";", inp.lines)
 
     inp.variable <- inp.lines[var.ind1:var.ind2[which(var.ind2 > var.ind1)][1]]
 
-    #......
-    # Remove comments
-    if (isTRUE(length(grep("!", inp.variable)) > 0L)) {
+    #...................
+    ### Extract variable names ####
 
-      inp.comments <- inp.variable[grep("!", inp.variable)]
-
-      inp.variable[grep("!", inp.variable)] <- unlist(lapply(strsplit(inp.comments, split = " "), function(y) paste(y[1:(grep("!", y) - 1L)], collapse = " ")))
-
-    }
-
-    #......
-    # Extract variable names
     varnames <- misty::chr.omit(unlist(strsplit(misty::chr.trim(gsub("VARIABLE:|variable:|Variable:|NAMES ARE|names ARE|Names ARE|NAMES are|names are|Names are|NAMES Are|names Are|Names Are|NAMES =|names =|Names =|;|\n|\t|\r|\r\n", "",
                                                                 inp.variable)), " ")), check = FALSE)
 
-    # Consecutive variable names
+    #...................
+    ### Consecutive variable names ####
+
     if (isTRUE(length(grep("-", varnames)) > 0L)) {
 
       # Variable positive with consecutive variable names
@@ -116,12 +108,12 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
         temp <- unlist(strsplit(varnames[i], "-"))
 
         # Split consecutive variable names
-        split1.chr <- unlist(strsplit(temp[1], ""))
-        split2.chr <- unlist(strsplit(temp[2], ""))
+        split1.chr <- unlist(strsplit(temp[1L], ""))
+        split2.chr <- unlist(strsplit(temp[2L], ""))
 
         # Extract number of digits
-        rle1 <- rle(suppressWarnings(rev(!is.na(as.numeric(split1.chr)))))$lengths[1]
-        rle2 <- rle(suppressWarnings(rev(!is.na(as.numeric(split2.chr)))))$lengths[1]
+        rle1 <- rle(suppressWarnings(rev(!is.na(as.numeric(split1.chr)))))$lengths[1L]
+        rle2 <- rle(suppressWarnings(rev(!is.na(as.numeric(split2.chr)))))$lengths[1L]
 
         # Extract starting and ending number
         start.n <- as.numeric(paste(rev(rev(split1.chr)[1:rle1]), collapse = ""))
@@ -133,7 +125,7 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
       }
 
       # Combine variables names and extended consecutive variable names
-      for (i in (1:length(varnames))[!1:length(varnames) %in% convar.pos]) {
+      for (i in (1L:length(varnames))[!1L:length(varnames) %in% convar.pos]) {
 
         convar.list[[i]] <- varnames[i]
 
@@ -145,51 +137,41 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
 
   }
 
-  #----------------------------------------
-  # Return Mplus variable names only
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Return Mplus variable names only ####
+
   if (isTRUE(return.var)) {
 
     return(varnames)
 
-  ######################################################################################################################
-  # Mplus Data
+  #_____________________________________________________________________________
+  #
+  # Mplus Data -----------------------------------------------------------------
+
   } else {
 
 
-    ####################################################################################
-    # Input Check
+    #___________________________________________________________________________
+    #
+    # Input Check --------------------------------------------------------------
 
-    #......
-    # Check input 'file'
-    if (isTRUE(missing(file))) {
+    #...................
+    ### Check input 'file' ####
 
-      stop("Please specify a character string indicating the name of the Mplus data file for the argument 'file'.",
-           call. = FALSE)
+    if (isTRUE(missing(file))) { stop("Please specify a character string indicating the name of the Mplus data file for the argument 'file'.", call. = FALSE) }
 
-    }
+    #...................
+    ### File extension .dat, .txt. or .csv ####
 
-    #......
-    # File extension .dat, .txt. or .csv
     file <- ifelse(length(grep(".dat", file)) == 0L && length(grep(".txt", file)) == 0L && length(grep(".csv", file)) == 0L,
                    file <- paste0(file, ".dat"), file)
 
+    if (isTRUE(!file.exists(file))) { stop(paste0("Unable to open Mplus data file: ", sQuote(file), " does not exist."), call. = FALSE) }
 
-    #......
-    # Check if file exists
-    if (isTRUE(!file.exists(file))) {
+    #...................
+    ### Check input 'check' ####
 
-      stop(paste0("Unable to open Mplus data file: ", sQuote(file), " does not exist."),
-           call. = FALSE)
-
-    }
-
-    #......
-    # Check input 'check'
-    if (isTRUE(!is.logical(check))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
     #----------------------------------------
 
@@ -198,33 +180,24 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
       # Read data text lines
       df.lines <- suppressWarnings(readLines(file))
 
-      #......
-      # Dot (.) as decimal separator
+      #...................
+      ### Dot (.) as decimal separator ####
 
-      if (isTRUE(length(grep(",", df.lines)) > 0L)) {
+      if (isTRUE(length(grep(",", df.lines)) > 0L)) { stop(paste0("Data file ", file, " uses the wrong decimal separator, i.e., \",\" instead of \".\""), call. = FALSE) }
 
-        stop(paste0("Data file ", file, " uses the wrong decimal separator, i.e., \",\" instead of \".\""),
-             call. = FALSE)
+      #...................
+      ### Number of rows ####
 
-      }
-
-      #......
-      # Number of rows
       df.lines.nrows <- unname(vapply(vapply(df.lines, function(y) strsplit(y, " "), FUN.VALUE = list(1L)), length, FUN.VALUE = 1L))
 
-      if (isTRUE(length(unique(df.lines.nrows)) != 1L)) {
+      if (isTRUE(length(unique(df.lines.nrows)) != 1L)) { stop(paste0("Data file ", file, " does not have the same number of entries in each line."), call. = FALSE) }
 
-        stop(paste0("Data file ", file, " does not have the same number of entries in each line."), call. = FALSE)
+      #...................
+      ### Number of columns match with number of variable names ####
 
-      }
-
-
-      #......
-      # Number of columns match with number of variable names
       if (isTRUE(!is.null(input))) {
 
-        df.check <- read.table(file, fileEncoding = fileEncoding,
-                               stringsAsFactors = FALSE)
+        df.check <- read.table(file, fileEncoding = fileEncoding, stringsAsFactors = FALSE)
 
         if (isTRUE(ncol(df.check) != length(varnames))) {
 
@@ -244,13 +217,13 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
 
     }
 
-    ####################################################################################
-    # Main Function
+    #_____________________________________________________________________________
+    #
+    # Main Function --------------------------------------------------------------
 
-    #----------------------------------------
-    # Mplus data
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Mplus data ####
 
-    #......
     # Read data
     object <- read.table(file, sep = sep, stringsAsFactors = FALSE, fileEncoding = fileEncoding)
 

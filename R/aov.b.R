@@ -84,8 +84,7 @@
 #' as if it were a CI for their difference. Note that the width of these intervals
 #' is sensitive to differences in the variance and sample size of each sample,
 #' i.e., unequal population variances and unequal \eqn{n} alter the interpretation
-#' of difference-adjusted CIs.
-#' }
+#' of difference-adjusted CIs.}
 #' }
 #'
 #' @author
@@ -112,11 +111,15 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, data frame
-#' with variables used in the current analysis (\code{data}), formula of the current
-#' analysis (\code{formula}), ggplot2 object for plotting the results (\code{plot}),
-#' specification of function arguments (\code{args}), and result table(s)
-#' (\code{result}).
+#' entries:
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame with variables used in the current analysis}
+#' \item{\code{formula}}{formula of the current analysis}
+#' \item{\code{plot}}{ggplot2 object for plotting the results}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{result tables}
+#' }
 #'
 #' @export
 #'

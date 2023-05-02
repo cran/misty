@@ -38,10 +38,14 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
-#' data frame specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), list with results (\code{result}), and a vector with the number
-#' of missing data pattern for each case (\code{pattern}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab matrix or data frame spcified in \code{x} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab result table \cr
+#' }
 #'
 #' @export
 #'
@@ -69,58 +73,57 @@
 na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
                        check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
+
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #.........................................
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #......
     # Matrix or data frame for the argument 'x'?
     if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-    #......
     # Check input 'order'
     if (isTRUE(!is.logical(order))) { stop("Please specify TRUE or FALSE for the argument 'order'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- misty::as.na(x, na = as.na, check = check) }
 
-  #----------------------------------------
-  # As data.frame
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   # Missing data TRUE/FALSE matrix
   x.na <- is.na(x)
@@ -172,8 +175,9 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
 
   }
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "na.pattern",
@@ -184,13 +188,17 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Write results
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Write results ####
 
   if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
-  ####################################################################################
-  # Output
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## output ####
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

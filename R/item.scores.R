@@ -108,88 +108,69 @@ item.scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", 
                         prorated = TRUE, p.avail = NULL, n.avail = NULL, as.na = NULL,
                         check = TRUE) {
 
-  ####################################################################################
-  # Input check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #......
     # Check input 'x'
     if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-    #......
     # Check input 'x'
     if (isTRUE(any(apply(x, 2L, function(y) !is.numeric(y))))) { stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE) }
 
-    #......
     # Check input 'fun'
-    if (isTRUE(!all(fun %in%  c("mean", "sum", "median", "var", "sd", "min", "max")))) {
+    if (isTRUE(!all(fun %in%  c("mean", "sum", "median", "var", "sd", "min", "max")))) { stop("Character strings in the argument 'fun' dos not match with \"mean\", \"sum\", \"median\", \"var\", \"sd\", \"min\", or \"max\".", call. = FALSE) }
 
-      stop("Character strings in the argument 'fun' dos not match with \"mean\", \"sum\", \"median\", \"var\", \"sd\", \"min\", or \"max\".",
-           call. = FALSE)
-
-    }
-
-    #......
     # Check argument p.avail
-    if (isTRUE(!is.null(p.avail))) {
+    if (isTRUE(!is.null(p.avail))) { if (isTRUE(!p.avail > 0L || !p.avail <= 1L)) { stop("Please specify a number greater than 0 and less than or equal 1 for the argument 'p.avail'.", call. = FALSE) } }
 
-      if (isTRUE(!p.avail > 0L || !p.avail <= 1L)) { stop("Please specify a number greater than 0 and less than or equal 1 for the argument 'p.avail'.", call. = FALSE) }
-
-    }
-
-    #......
     # Check argument n.avail
-    if (isTRUE(!is.null(n.avail))) {
+    if (isTRUE(!is.null(n.avail))) { if (isTRUE(!n.avail >= 1L || !n.avail <= ncol(x))) { stop("Please specify a number greater than or equal 1 and less than or equal the number of items for the argument 'n.avail'.", call. = FALSE) } }
 
-      if (isTRUE(!n.avail >= 1L || !n.avail <= ncol(x))) { stop("Please specify a number greater than or equal 1 and less than or equal the number of items for the argument 'n.avail'.", call. = FALSE) }
-
-    }
-
-    #......
     # Check argument p.avail
     if (isTRUE(!is.null(p.avail) && !is.null(n.avail))) { stop("Please specify either argument 'p.avail' or 'n.avail', but not both arguments.", call. = FALSE) }
 
-    #......
     # Check argument p.avail and prorated
     if (isTRUE(!prorated && (!is.null(p.avail) | !is.null(n.avail)))) { warning("Argument specification 'prorated = FALSE' is equivalent to 'p.avail = 1' or 'n.avail = ncol(x).", call. = FALSE) }
 
-  }
+   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
-  #-----------------------------------------
-  # As data frame
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #-----------------------------------------
-  # Function used to compute scale scores
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Function used to compute scale scores ####
 
   fun <- ifelse(all(c("mean", "sum", "median", "var", "sd", "min", "max") %in% fun), "mean", fun)
 
-  #-----------------------------------------
-  # Number of item responses
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Number of item responses ####
 
   x.miss <- apply(x, 1, function(y) sum(!is.na(y)))
 
-  #-----------------------------------------
-  # Proration
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Proration ####
 
   if (isTRUE(prorated)) {
 
@@ -224,8 +205,8 @@ item.scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", 
 
   }
 
-  #-----------------------------------------------------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -242,74 +223,64 @@ item.scores <- function(x, fun = c("mean", "sum", "median", "var", "sd", "min", 
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #-----------------------------------------
-  # Mean
-  if (isTRUE(fun == "mean")) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Mean ####
+  switch(fun, mean = {
 
     object <- misty::as.na(rowMeans(x, na.rm = TRUE), na = "NaN", check = FALSE)
     object[which(x.miss < n.items)] <- NA
 
-  }
-
-  #-----------------------------------------
-  # Sum
-  if (isTRUE(fun == "sum")) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Sum ####
+  }, sum = {
 
     object <- misty::as.na(rowMeans(x, na.rm = TRUE)*ncol(x), na = "NaN", check = FALSE)
     object[which(x.miss < n.items)] <- NA
 
-  }
-
-  #-----------------------------------------
-  # Median
-  if (isTRUE(fun == "median")) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Median ####
+  }, median = {
 
     object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0L, median(y, na.rm = TRUE), NA))
     object[which(x.miss < n.items)] <- NA
 
-  }
-
-  #-----------------------------------------
-  # Median
-  if (isTRUE(fun == "var")) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Variance ####
+  }, var = {
 
     object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0L, var(y, na.rm = TRUE), NA))
     object[which(x.miss < n.items)] <- NA
 
-  }
-
-  #-----------------------------------------
-  # Median
-  if (isTRUE(fun == "sd")) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Standard deviation ####
+  }, sd = {
 
     object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0L, sd(y, na.rm = TRUE), NA))
     object[which(x.miss < n.items)] <- NA
 
-  }
-
-  #-----------------------------------------
-  # Minimum
-  if (isTRUE(fun == "min")) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Minimum ####
+  }, min = {
 
     object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0L, min(y, na.rm = TRUE), NA))
     object[which(x.miss < n.items)] <- NA
 
-  }
-
   #-----------------------------------------
   # Maximum
-  if (isTRUE(fun == "max")) {
+  }, max = {
 
     object <- apply(x, 1, function(y) ifelse(length(na.omit(y)) > 0L, max(y, na.rm = TRUE), NA))
     object[which(x.miss < n.items)] <- NA
 
-  }
+  })
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(object)
 

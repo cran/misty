@@ -37,48 +37,45 @@
 #' skewness(x)
 skewness <- function(x, as.na = NULL, check = TRUE) {
 
-  ####################################################################################
-  # Input check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check if only one variable specified in the input 'x'
   if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
 
-  #......
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
-
-  #-----------------------------------------
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
   if (isTRUE(check)) {
 
-    #......
     # Check if input 'x' is missing
     if (isTRUE(all(is.na(x)))) { stop("Vector specified in the argument 'x' is is completely missing.", call. = FALSE) }
 
-    #......
     # Numeric vector for the argument 'x'?
     if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
 
-    #.......
     # Check input 'x': Yero variance
     if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
 
   # Convert user-missing values into NA
   if (isTRUE(!is.null(as.na))) {
@@ -108,8 +105,9 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   n <- length(x)
 
@@ -127,8 +125,9 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
 
   }
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   return(object)
 

@@ -113,156 +113,94 @@
 rwg.lindell <- function(x, cluster, A = NULL, ranvar = NULL, z = TRUE, expand = TRUE,
                         na.omit = FALSE, as.na = NULL, check = TRUE) {
 
-  ####################################################################################
-  # Convert user-missing values into NA
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  # Check if input 'x' is missing
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE) }
+
+  # Check if input 'x' is NULL
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+
+  # Check if only one variable specified in the input 'x'
+  if (ncol(data.frame(cluster)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
+
+  # Convert 'cluster' into a vector
+  cluster <- unlist(cluster, use.names = FALSE)
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
+  if (isTRUE(check)) {
+
+    # Check input 'x'
+    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE) }
+
+    # Check input 'x'
+    if (isTRUE(ncol(x) == 1L)) { stop("Please specify a matrix or data frame with more than one column or variable for the argument 'x'.", call. = FALSE) }
+
+    # Numeric vector and cluster?
+    if (isTRUE(nrow(x) != length(cluster))) { stop("Number of rows in the matrix or data frame in 'x' does not match with the length of the vector in 'cluster'.", call. = FALSE) }
+
+    # Check input 'A'
+    if (isTRUE(!is.null(A))) {
+
+      if (isTRUE(length(na.omit(unique(unlist(x)))) > A)) { warning("There are more unique values in 'x' than the number of discrete response options specified in 'A'.", call. = FALSE) }
+
+      # Check input 'x': Integer number
+      if (isTRUE(A %% 1L != 0L || A < 0L)) { stop("Please specify a positive integer number for the argument 'A'.", call. = FALSE) }
+
+    }
+
+    # Check input 'A' and 'ranvar'
+    if (isTRUE((is.null(A) && is.null(ranvar)) || (!is.null(A) && !is.null(ranvar)))) { stop("Please specify the argument 'A' or the argument 'ranvar'.", call. = FALSE) }
+
+    # Check input 'z'
+    if (isTRUE(!is.logical(z))) { stop("Please specify TRUE or FALSE for the argument 'z'.", call. = FALSE) }
+
+    # Check input 'expand'
+    if (isTRUE(!is.logical(expand))) { stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE) }
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
   if (isTRUE(!is.null(as.na))) {
 
     x <- misty::as.na(x, na = as.na, check = check)
 
-    #......
     # Missing values only
-    if (isTRUE(all(is.na(x)))) {
-
-      stop("After converting user-missing values into NA, matrix or data frame specified in 'x' is completely missing.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(all(is.na(x)))) { stop("After converting user-missing values into NA, matrix or data frame specified in 'x' is completely missing.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Input Check
-
-  #......
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
-
-    stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE)
-
-  }
-
-  #......
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
-
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
-
-  #......
-  # Check if only one variable specified in the input 'x'
-  if (ncol(data.frame(cluster)) != 1) {
-
-    stop("More than one variable specified for the argument 'x'.",call. = FALSE)
-
-  }
-
-  #......
-  # Convert 'cluster' into a vector
-  cluster <- unlist(cluster, use.names = FALSE)
-
-  ###
-
-  #......
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
-
-  if (isTRUE(check)) {
-
-    #......
-    # Check input 'x'
-    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
-
-      stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE)
-
-    }
-
-    #......
-    # Check input 'x'
-    if (isTRUE(ncol(x) == 1L)) {
-
-      stop("Please specify a matrix or data frame with more than one column or variable for the argument 'x'.",
-           call. = FALSE)
-
-    }
-
-    #......
-    # Numeric vector and cluster?
-    if (isTRUE(nrow(x) != length(cluster))) {
-
-      stop("Number of rows in the matrix or data frame in 'x' does not match with the length of the vector in 'cluster'.",
-           call. = FALSE)
-
-    }
-
-    #......
-    # Check input 'A'
-    if (isTRUE(!is.null(A))) {
-
-      if (isTRUE(length(na.omit(unique(unlist(x)))) > A)) {
-
-        warning("There are more unique values in 'x' than the number of discrete response options specified in 'A'.",
-                call. = FALSE)
-
-      }
-
-      # Check input 'x': Integer number
-      if (isTRUE(A %% 1L != 0L || A < 0L)) {
-
-        stop("Please specify a positive integer number for the argument 'A'.", call. = FALSE)
-
-      }
-
-    }
-
-    #......
-    # Check input 'A' and 'ranvar'
-    if (isTRUE((is.null(A) && is.null(ranvar)) || (!is.null(A) && !is.null(ranvar)))) {
-
-      stop("Please specify the argument 'A' or the argument 'ranvar'.", call. = FALSE)
-
-    }
-
-    #......
-    # Check input 'z'
-    if (isTRUE(!is.logical(z))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'z'.", call. = FALSE)
-
-    }
-
-    #......
-    # Check input 'expand'
-    if (isTRUE(!is.logical(expand))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE)
-
-    }
-
-  }
-
-  ####################################################################################
-  # Data and Arguments
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame ####
 
   df <- data.frame(x, cluster = cluster, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Random variance based on A
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Random variance based on A ####
+
   if (isTRUE(!is.null(A))) {
 
     ranvar <- (A^2L - 1L) / 12L
 
   }
 
-  #----------------------------------------
-  # Listwise deletion
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise deletion ####
+
   if (isTRUE(na.omit && any(is.na(x)))) {
 
     df <- na.omit(df)
@@ -272,16 +210,18 @@ rwg.lindell <- function(x, cluster, A = NULL, ranvar = NULL, z = TRUE, expand = 
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   df.split <- split(df[, -grep("cluster", names(df))], df$cluster)
 
   rwg <- misty::as.na(vapply(df.split, function(y) 1L - (mean(vapply(y, var, na.rm = TRUE, FUN.VALUE = double(1L)), na.rm = TRUE) / ranvar), FUN.VALUE = double(1L)),
                       na = NaN, check = FALSE)
 
-  #......
-  # Expand
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Expand ####
+
   if (isTRUE(expand)) {
 
     object <- rwg[match(cluster, names(rwg))]
@@ -302,8 +242,9 @@ rwg.lindell <- function(x, cluster, A = NULL, ranvar = NULL, z = TRUE, expand = 
 
   }
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(object)
 

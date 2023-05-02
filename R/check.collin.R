@@ -19,7 +19,7 @@
 #' GVIF\eqn{^\frac{1}{2df}} is computed. Note that the adjusted GVIF (aGVIF) is
 #' actually a generalized standard error inflation factor (GSIF). Thus, the aGIF
 #' needs to be squared before applying a common cutoff threshold for the VIF (e.g.,
-#' VIF > 10). Note that the output of \code{collin.diag()} function reports either
+#' VIF > 10). Note that the output of \code{check.collin()} function reports either
 #' the variance inflation factor or the squared generalized variance inflation factor
 #' in the column \code{VIF}, while the standard error inflation factor or the adjusted
 #' generalized variance inflation factor is reported in the column \code{SIF}.
@@ -41,6 +41,9 @@
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
+#' @seealso
+#' \code{\link{check.outlier}}, \code{\link{lm}}
+#'
 #' @references
 #' Fox, J., & Monette, G. (1992). Generalized collinearity diagnostics.
 #' \emph{Journal of the American Statistical Association, 87}, 178-183.
@@ -53,9 +56,14 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, model specified
-#' in the \code{model} argument (\code{model}), specification of function arguments
-#' (\code{args}), list with results (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{model} \tab model specified in the \code{model} argument \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list with result tables \cr
+#' }
 #'
 #' @note
 #' The computation of the VIF and the GVIF is based on the \code{vif()} function
@@ -83,17 +91,17 @@
 #' mod.lm1 <- lm(y1 ~ x1 + x2 + x3, data = dat)
 #'
 #' # Tolerance, std. error, and variance inflation factor
-#' collin.diag(mod.lm1)
+#' check.collin(mod.lm1)
 #'
 #' # Tolerance, std. error, and variance inflation factor
 #' # Eigenvalue, Condition index, and variance proportions
-#' collin.diag(mod.lm1, print = "all")
+#' check.collin(mod.lm1, print = "all")
 #'
 #' # Estimate model with continuous and categorical predictors
 #' mod.lm2 <- lm(y1 ~ x1 + x2 + x3 + x4, data = dat)
 #'
 #' # Tolerance, generalized std. error, and variance inflation factor
-#' collin.diag(mod.lm2)
+#' check.collin(mod.lm2)
 #'
 #' #----------------------------
 #' # Generalized linear model
@@ -102,7 +110,7 @@
 #' mod.glm <- glm(y2 ~ x1 + x2 + x3, data = dat, family = "binomial")
 #'
 #' # Tolerance, std. error, and variance inflation factor
-#' collin.diag(mod.glm)
+#' check.collin(mod.glm)
 #'
 #' \dontrun{
 #' #----------------------------
@@ -112,19 +120,19 @@
 #' mod.lmer <- lme4::lmer(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
 #'
 #' # Tolerance, std. error, and variance inflation factor
-#' collin.diag(mod.lmer)
+#' check.collin(mod.lmer)
 #'
 #' # Estimate linear mixed-effects model with continuous predictors using nlme package
 #' mod.lme <- nlme::lme(y1 ~ x1 + x2 + x3, random = ~ 1 | group, data = dat)
 #'
 #' # Tolerance, std. error, and variance inflation factor
-#' collin.diag(mod.lme)
+#' check.collin(mod.lme)
 #'
 #' # Estimate linear mixed-effects model with continuous predictors using glmmTMB package
 #' mod.glmmTMB1 <- glmmTMB::glmmTMB(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
 #'
 #' # Tolerance, std. error, and variance inflation factor
-#' collin.diag(mod.glmmTMB1)
+#' check.collin(mod.glmmTMB1)
 #' #'
 #' #----------------------------
 #' # Generalized linear mixed-effects model
@@ -133,84 +141,80 @@
 #' mod.glmer <- lme4::glmer(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "binomial")
 #'
 #' # Tolerance, std. error, and variance inflation factor
-#' collin.diag(mod.glmer)
+#' check.collin(mod.glmer)
 #'
 #' # Estimate mixed-effects logistic regression model with continuous predictors using glmmTMB package
 #' mod.glmmTMB2 <- glmmTMB::glmmTMB(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "binomial")
 #'
 #' # Tolerance, std. error, and variance inflation factor
-#' collin.diag(mod.glmmTMB2)
+#' check.collin(mod.glmmTMB2)
 #' }
-collin.diag  <- function(model, print = c("all", "vif", "eigen"),
-                         digits = 3, p.digits = 3, check = TRUE, output = TRUE) {
+check.collin  <- function(model, print = c("all", "vif", "eigen"),
+                          digits = 3, p.digits = 3, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Input check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'model' is missing
   if (isTRUE(missing(model))) { stop("Input for the argument 'model' is missing.", call. = FALSE) }
 
-  #......
   # Check if input 'model' is NULL
   if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
 
-  #......
   # Check if input 'model' is NULL
   if (isTRUE(!all(class(model) %in% c("lm", "glm", "lmerMod", "lmerModLmerTest", "glmerMod", "lme", "glmmTMB")))) {
 
-    stop("Please specify an \"lm\", \"glm\", \"lmerMod\", \"lmerModLmerTest\", \"glmerMod\", \"lme\", or \"glmmTMB\" object for the argument 'model'.",
-         call. = FALSE)
+    stop("Please specify an \"lm\", \"glm\", \"lmerMod\", \"lmerModLmerTest\", \"glmerMod\", \"lme\", or \"glmmTMB\" object for the argument 'model'.", call. = FALSE)
 
   }
 
-  #......
   # Check if model has more than one predictor variable
   if (isTRUE(length(labels(terms(model))) < 2L)) { stop("Please specify a model with more than one predictor variable.", call. = FALSE) }
 
-  #.............
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #......
     # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "vif", "eigen")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"vif\", or \"eigen\".", call. = FALSE)
+    if (isTRUE(!all(print %in% c("all", "vif", "eigen")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"vif\", or \"eigen\".", call. = FALSE) }
 
-    }
-
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  #----------------------------------------
-  # Print variance inflation factor and/or eigenvalues
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print variance inflation factor and/or eigenvalues ####
 
   if (isTRUE(all(c("all", "vif", "eigen") %in% print))) { print <- "vif" }
 
   if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("vif", "eigen") }
 
-  ####################################################################################
-  # Main function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #----------------------------------------------------------------
-  # Variance inflation factor
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Variance inflation factor ####
 
-  #..................
-  # Class: lm or glm
+  #...................
+  ### Class: lm or glm ####
   if (isTRUE(all(class(model) %in% c("lm", "glm")))) {
 
     # Regression model with intercept
@@ -231,8 +235,8 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
     }
 
-  #..................
-  # Class: lmerMod, lmerModLmerTest or glmerMod
+  #...................
+  ### Class: lmerMod, lmerModLmerTest or glmerMod ####
   } else if (isTRUE(all(class(model) %in% c("lmerMod", "lmerModLmerTest", "glmerMod", "lme")))) {
 
     # Regression model with intercept
@@ -253,8 +257,8 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
     }
 
-  #..................
-  # Class: glmmTMB
+  #...................
+  ### Class: glmmTMB ####
   } else if (isTRUE(all(class(model) %in% "glmmTMB"))) {
 
     # Regression model with intercept
@@ -265,7 +269,7 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
       R <- cov2cor(vcov(model)$cond[-1L, -1L])
       assign <- attr(model.matrix(model), "assign")[-1L]
 
-      # Regression model without intercept
+    # Regression model without intercept
     } else {
 
       intercept <- FALSE
@@ -277,12 +281,11 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   }
 
-  #..................
-  # Warning message: Model without intercept
+  #...................
+  ### Warning message: Model without interceptB ####
   if (isTRUE(isFALSE(intercept) && "vif" %in% print)) {
 
-    warning("Variance inflation factor might not be sensible in models without an intercept.",
-            call. = FALSE)
+    warning("Variance inflation factor might not be sensible in models without an intercept.", call. = FALSE)
 
   }
 
@@ -317,8 +320,8 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   }
 
-  #----------------------------------------------------------------
-  # Eigenvalue and Condition Index
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Eigenvalue and Condition Index ####
 
   if (isTRUE(all(class(model) %in% c("lmerMod", "lmerModLmerTest", "glmerMod", "lme", "glmmTMB")))) {
 
@@ -349,13 +352,13 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
   eigenvalue <- data.frame(1:length(e), e, ci, vd, stringsAsFactors = FALSE)
   colnames(eigenvalue) <- c("dim", "eigen", "ci", attributes(z)$dimnames[[2L]])
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
-  #----------------------------------------
-  # Regression coefficients with VIF
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Regression coefficients with VIF ####
 
-  #....................
   # Regression coefficients
   if (isTRUE(all(class(model) %in% c("lm", "glm", "lmerMod", "lmerModLmerTest", "glmerMod")))) {
 
@@ -371,7 +374,6 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   }
 
-  #....................
   # Match VIF with coefficients
   vif.list <- sapply(row.names(vif), function(y) which(substr(row.names(coeff), 1L, nchar(y)) == y))
 
@@ -385,11 +387,9 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   coeff <- data.frame(cbind(coeff, coeff.vif), check.names = FALSE, stringsAsFactors = FALSE)
 
-  #----------------------------------------
   # Return object
-
   object <- list(call = match.call(),
-                 type = "collin.diag",
+                 type = "check.collin",
                  model = model,
                  args = list(print = print, digits = digits, p.digits = p.digits,
                              check = check, output = output),
@@ -397,8 +397,9 @@ collin.diag  <- function(model, print = c("all", "vif", "eigen"),
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

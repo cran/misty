@@ -29,10 +29,15 @@ results.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, model specified in the
-\code{model} argument (\code{model}), specification of function arguments (\code{args}),
-list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{model}}{model specified in \code{model} }
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{list with result tables, i.e., \code{coef} for the regression
+                       table including standardized coefficients and \code{sd}
+                       for the standard deviation of the outcome and predictor(s)}
 }
 \description{
 This function computes standardized coefficients for linear models estimated by using the \code{lm()}

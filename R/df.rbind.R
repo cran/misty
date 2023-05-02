@@ -57,11 +57,9 @@
 #' df.rbind(adat, bdat, cdat)
 df.rbind <- function(...) {
 
-  ####################################################################################
-  # Functions
-
-  #----------------------------------------
-  # make_names
+  #_____________________________________________________________________________
+  #
+  # Functions ---------------------------------------------------------------
 
   make_names <- function(x, prefix = "X") {
 
@@ -80,9 +78,6 @@ df.rbind <- function(...) {
     return(nm)
   }
 
-  #----------------------------------------
-  # quickdf
-
   quickdf <- function (list) {
 
     rows <- unique(unlist(lapply(list, NROW)))
@@ -99,9 +94,6 @@ df.rbind <- function(...) {
 
   }
 
-  #----------------------------------------
-  # make_assignment_call
-
   make_assignment_call <- function (ndims) {
 
     assignment <- quote(column[rows] <<- what)
@@ -115,9 +107,6 @@ df.rbind <- function(...) {
     return(assignment)
 
   }
-
-  #----------------------------------------
-  # allocate_column
 
   allocate_column <- function(example, nrows, dfs, var) {
 
@@ -255,9 +244,6 @@ df.rbind <- function(...) {
 
   }
 
-  #----------------------------------------
-  # output_template
-
   output_template <- function(dfs, nrows) {
 
     vars <- unique(unlist(lapply(dfs, base::names)))
@@ -285,8 +271,9 @@ df.rbind <- function(...) {
     list(setters = lapply(output, `[[`, "set"), getters = lapply(output, `[[`, "get"))
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   dfs <- list(...)
 

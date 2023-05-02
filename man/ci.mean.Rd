@@ -56,10 +56,14 @@ not to \code{group} or \code{split}.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
-\code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
-and result table (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{list with the input specified in \code{x}, \code{group},
+                     and \code{split}}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{result table}
 }
 \description{
 This function computes a confidence interval for the arithmetic mean with known or unknown population standard

@@ -198,11 +198,16 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis (\code{type}), list with
-#' the data (\code{data}) in wide-format (\code{wide}), reshaped data in long-format
-#' (\code{long}), and within-subject confidence intervals (\code{ci}), the ggplot2
-#' object (\code{plot}), and specification of function arguments (\code{args}),
-#' and result tables (\code{result}).
+#' entries:
+#'   \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{list with the data (\code{data}) in wide-format (\code{wide}),
+#'                    reshaped data in long-format (\code{long}), and within-subject
+#'                    confidence intervals (\code{ci})}
+#' \item{\code{formula}}{formula of the current analysis}
+#' \item{\code{plot}}{ggplot2 object for plotting the results}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{list with result tables}
 #'
 #' @export
 #'

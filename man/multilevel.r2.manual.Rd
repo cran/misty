@@ -90,8 +90,16 @@ colors from the colorblind-friendly palettes are used.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis \code{type}, specification
-of function arguments (\code{args}), and list with results (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{matrix or data frame specified in \code{data}}
+  \item{\code{plot}}{ggplot2 object for plotting the results}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{list with result tables, i.e., \code{decomp} for the
+                       decomposition, \code{total} for total R2 measures,
+                       \code{within} for the within-cluster R2 measures, and
+                       \code{between}} for the between-cluster R2 measures.
 }
 \description{
 This function computes R-squared measures by Rights and Sterba (2019) for
@@ -132,7 +140,7 @@ Demo.twolevel$x2.b <- cluster.scores(Demo.twolevel$x2,
                                      cluster = Demo.twolevel$cluster)
 
 # Estimate random intercept model using the lme4 package
-mod2 <- lmer(y1 ~ x2.c + x2.b + w1 + (1| cluster), data = Demo.twolevel,
+mod1 <- lmer(y1 ~ x2.c + x2.b + w1 + (1| cluster), data = Demo.twolevel,
              REML = FALSE, control = lmerControl(optimizer = "bobyqa"))
 
 # Estimate random intercept and slope model using the lme4 package
@@ -153,7 +161,7 @@ multilevel.r2.manual(data = Demo.twolevel,
                      within = "x2.c", between = c("x2.b", "w1"),
                      gamma.w = 0.41127956,
                      gamma.b = c(0.01123245, -0.08269374, 0.17688507),
-                     tau = matrix(c(0.931008649, 0.004110479, 0.004110479, 0.017068857), ncol = 2),
+                     tau = 0.9297401,
                      sigma2 = 1.813245794)
 
 #---------------------------

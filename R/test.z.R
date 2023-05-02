@@ -116,9 +116,17 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, list with
-#' the input specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), and result table (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{sample} \tab type of sample, i.e., one-, two-, or paired sample \cr
+#' \code{formula} \tab formula \cr
+#' \code{data} \tab data frame with the outcome and grouping variable \cr
+#' \code{plot} \tab ggplot2 object for plotting the results \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list of result table \cr
+#' }
 #'
 #' @export
 #'
@@ -351,8 +359,9 @@ test.z <- function(x, ...) {
 
 }
 
-####################################################################################
-# Default S3 method
+#_______________________________________________________________________________
+#
+# Default S3 method ------------------------------------------------------------
 
 test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                            paired = FALSE, alternative = c("two.sided", "less", "greater"),
@@ -366,23 +375,18 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                            digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
                            output = TRUE, ...) {
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(sigma) && is.null(sigma2))) { stop("Please specify either argument 'sigma' or argument 'sigma2'.", call. = FALSE) }
 
-  #......
   # Check if only one variable specified in the input 'x'
   if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
 
-  #......
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
 
@@ -391,18 +395,17 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
     # Check if only one variable specified in the input 'y'
     if (ncol(data.frame(y)) != 1L) { stop("More than one variable specified for the argument 'y'.",call. = FALSE) }
 
-    #......
     # Convert 'y' into a vector
     y <- unlist(y, use.names = FALSE)
 
   }
 
-  #......
   # Check input 'paired'
   if (isTRUE(!is.logical(paired))) { stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE) }
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -440,8 +443,8 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   }
 
-  #----------------------------------------
-  # Paired sample
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Paired sample ####
 
   if (isTRUE(is.null(y) && isTRUE(paired))) {
 
@@ -453,20 +456,19 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   }
 
-  #-----------------------------------------------------------------------------------
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
+
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
-    #......
     # ggplot2 package
     if (isTRUE(!nzchar(system.file(package = "ggplot2"))))  { warning("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
 
-    #......
     # Check input 'sigma' and 'sigma2'
     if (isTRUE(!is.null(sigma) && !is.null(sigma2))) {
 
@@ -474,7 +476,6 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
     }
 
-    #......
     # Check input 'sigma'
     if (isTRUE(!is.null(sigma))) {
 
@@ -503,7 +504,6 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
     }
 
-    #......
     # Check input 'sigma2'
     if (isTRUE(!is.null(sigma2))) {
 
@@ -524,75 +524,64 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
     }
 
-    #......
     # Check input 'mu'
     if (isTRUE(length(mu) > 1L)) { stop("Please specify one numeric value for the argument 'mu'.", call. = FALSE) }
 
-    #......
     # Check input 'alternative'
     if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
 
-    #......
     # Check input 'conf.level'
     if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
-    #......
     # Check input 'hypo'
     if (isTRUE(!is.logical(hypo))) { stop("Please specify TRUE or FALSE for the argument 'hypo'.", call. = FALSE) }
 
-    #......
     # Check input 'descript'
     if (isTRUE(!is.logical(descript))) { stop("Please specify TRUE or FALSE for the argument 'descript'.", call. = FALSE) }
 
-    #......
     # Check input 'effsize'
     if (isTRUE(!is.logical(effsize))) { stop("Please specify TRUE or FALSE for the argument 'effsize'.", call. = FALSE) }
 
-    #......
     # Check input 'plot'
     if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'.", call. = FALSE) }
 
-    #......
     # Check input 'adjust'
     if (isTRUE(!is.logical(adjust))) { stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE) }
 
-    #......
     # Check input 'line'
     if (isTRUE(!is.logical(line))) { stop("Please specify TRUE or FALSE for the argument 'line'.", call. = FALSE) }
 
-    #......
     # Check input 'jitter'
     if (isTRUE(!is.logical(jitter))) { stop("Please specify TRUE or FALSE for the argument 'jitter'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
   # Global variables
   m <- m.low <- m.upp <- group <- low <- upp <- m.diff <- NULL
 
-  #----------------------------------------
-  # Population standard deviation and variance
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Population standard deviation and variance ####
 
   if (isTRUE(is.null(sigma) && !is.null(sigma2))) { sigma <- sqrt(sigma2) }
 
   if (isTRUE(!is.null(sigma) && is.null(sigma2))) { sigma2 <- sigma^2 }
 
-  #....
-  # Two-sample design
+  #...................
+  ### Two-sample design ####
+
   if (isTRUE(!is.null(y) && !isTRUE(paired))) {
 
     if (isTRUE(!is.null(sigma) && length(sigma) == 1L)) { sigma <- c(sigma, sigma) }
@@ -601,16 +590,17 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   }
 
-  #----------------------------------------
-  # Alternative hypothesis
+  #...................
+  ### Alternative hypothesis ####
 
   if (all(c("two.sided", "less", "greater") %in% alternative)) { alternative <- "two.sided" }
 
-  #-----------------------------------------------------------------------------------
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #...
-  # One-sample design
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## One-sample design ####
   if (isTRUE(is.null(y))) {
 
     # Descriptive statistics
@@ -637,8 +627,8 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
     sample <- "one"
 
-  #...
-  # Two samples design
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Two samples design ####
   } else if (isTRUE(!is.null(y) && !isTRUE(paired))) {
 
     # Descriptive statistics
@@ -664,8 +654,8 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
     sample <- "two"
 
-  #...
-  # Paired samples
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Paired samples ####
   } else if (isTRUE(!is.null(y) && isTRUE(paired))) {
 
     # Descriptive statistics
@@ -696,12 +686,12 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   }
 
-  #----------------------------------------
-  # Plot
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Plot ####
 
   switch(sample,
-         #......
-         # One-sample
+         #...................
+         ### One-sample ####
          "one" = {
 
            # Plot data
@@ -711,11 +701,9 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
            if (isTRUE(subtitle == "Confidence Interval")) { subtitle <- paste0(ifelse(alternative == "two.sided", "Two-Sided ", "One-Sided "),
                                                                                round(conf.level * 100L, digits = 2L), "% Confidence Interval") }
 
-           ###
-           # Crease ggplot
+           # Create ggplot
            p <- ggplot2::ggplot(plotdat, ggplot2::aes(x = 0L, y = x))
 
-           ###
            # Add jittered points
            if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size) }
 
@@ -729,12 +717,11 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                                                        axis.text.x = ggplot2::element_blank(),
                                                        axis.ticks.x = ggplot2::element_blank())
 
-           #......................................
            # Add horizontal line
            if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = mu, linetype = line.type, size = line.size) }
 
-           #......
-           # Two-sample
+           #...................
+           ### Two-sample ####
            }, "two" = {
 
              # Plot data
@@ -748,11 +735,9 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                                    rbind(misty::ci.mean(x, sigma = sigma[1L], adjust = adjust, conf.level = conf.level, output = FALSE)$result,
                                          misty::ci.mean(y, sigma = sigma[2L], adjust = adjust, conf.level = conf.level, output = FALSE)$result))
 
-             ###
-             # Crease ggplot
+             # Create ggplot
              p <- ggplot2::ggplot(plotdat, ggplot2::aes(group, y))
 
-             ###
              # Add jittered points
              if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, size = jitter.size) }
 
@@ -764,8 +749,8 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                     ggplot2::labs(title = title, subtitle = subtitle) +
                     ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5), plot.title = ggplot2::element_text(hjust = 0.5))
 
-           #......
-           # Paired-sample
+           #...................
+           ### Paired-sample ####
            }, "paired" = {
 
              # Plot data
@@ -775,11 +760,9 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
              if (isTRUE(subtitle == "Confidence Interval")) { subtitle <- paste0(ifelse(alternative == "two.sided", "Two-Sided ", "One-Sided "),
                                                                                  round(conf.level * 100L, digits = 2L), "% Confidence Interval") }
 
-             ###
-             # Crease ggplot
+             # Create ggplot
              p <- ggplot2::ggplot(plotdat, ggplot2::aes(x = 0L, y = x))
 
-             ###
              # Add jittered points
              if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, size = jitter.size) }
 
@@ -792,22 +775,24 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                     ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
                                    plot.title = ggplot2::element_text(hjust = 0.5))
 
-             #......................................
              # Add horizontal line
              if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = 0L, linetype = line.type, size = line.size) }
 
             })
 
-  #......................................
-  # Print plot
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print plot ####
   if (isTRUE(plot)) {
 
     suppressWarnings(print(p))
 
   }
 
-  ####################################################################################
-  # Return object and output
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
+
 
   object <- list(call = match.call(),
                  type = "test.z",
@@ -828,8 +813,9 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   class(object) <- "misty.object"
 
-  #-----------------------------------------------------------------------------------
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 
@@ -837,9 +823,9 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
 }
 
-################################################################################
-################################################################################
-# S3 method for class 'formula'
+#_______________________________________________________________________________
+#
+# S3 method for class 'formula' ------------------------------------------------
 
 test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
                            alternative = c("two.sided", "less", "greater"),
@@ -851,23 +837,20 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
                            subtitle = "Confidence Interval", digits = 2, p.digits = 4,
                            as.na = NULL, check = TRUE, output = TRUE, ...) {
 
-  #......
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
 
-  #......
   # Check if input 'data' is missing
   if (isTRUE(missing(data))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'data' is NULL
   if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
-  ##############################################################################
-  # Formula
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Formula ####
 
-  #.........................................
-  # Variables
+  #...................
+  ### Variables ####
 
   var.formula <- all.vars(as.formula(formula))
 
@@ -877,10 +860,9 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
   # Outcome(s)
   y.vars <- var.formula[-grep(group.var, var.formula)]
 
-  #.........................................
-  # Check
+  #...................
+  ### Check ####
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
@@ -903,18 +885,19 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
 
   }
 
-  ##############################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
   # Global variables
   group <- m <- low <- upp <- adjust <-  NULL
 
-  #----------------------------------------
   # Alternative hypothesis
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  ##############################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   data.split <- split(unlist(data[, y.vars]), f = unlist(data[, group.var]))
 
@@ -931,19 +914,18 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
 
   object$result[, "group"] <- names(data.split)
 
-  #----------------------------------------
-  # Plot
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Plot ####
 
-  #.............
   # Label x-axis
   p <- suppressMessages(object$plot + ggplot2::scale_x_discrete(labels = names(data.split)))
 
-  #......................................
   # Print plot
   if (isTRUE(plot)) { suppressWarnings(print(p)) }
 
-  ####################################################################################
-  # Return object and output
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "test.z",
@@ -964,8 +946,9 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
 
   class(object) <- "misty.object"
 
-  #-----------------------------------------------------------------------------------
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

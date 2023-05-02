@@ -46,6 +46,16 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab matrix or data frame spcified in \code{x} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list with result tables \cr
+#' }
+#'
+#' Returns an object of class \code{misty.object}, which is a list with following
 #' entries: function call (\code{call}), type of analysis \code{type}, matrix or
 #' data frame specified in \code{x} (\code{data}), specification of function arguments
 #' (\code{args}), and list with results (\code{result}).
@@ -60,13 +70,13 @@
 #'
 #' # Auxiliary variables
 #' na.auxiliary(dat)
-na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE,
+na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = FALSE,
                          correct = FALSE, digits = 2, as.na = NULL, check = TRUE,
                          output = TRUE) {
 
-
-  ####################################################################################
-  # Function
+  #_____________________________________________________________________________
+  #
+  # Functions ------------------------------------------------------------------
 
   cohens.d.na.auxiliary <- function(formula, data, weighted = TRUE, correct = FALSE) {
 
@@ -154,28 +164,30 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE,
 
   }
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Matrix or data frame for the argument 'x'?
   if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #----------------------------------------
-  # Data frame
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #-----------------------------------------
-  # Exclude factors, character vectors and logical vectors
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Exclude factors, character vectors and logical vectors ####
 
   x.num <- vapply(x, function(y) is.numeric(y), FUN.VALUE = logical(1))
 
@@ -185,92 +197,82 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE,
     # Select numeric variables
     x <- x[, which(x.num)]
 
-    warning(paste0("Non-numeric variables excluded from the analysis: ",
-                   paste(names(x.num)[!x.num], collapse = ", ")), call. = FALSE)
+    warning(paste0("Non-numeric variables excluded from the analysis: ", paste(names(x.num)[!x.num], collapse = ", ")), call. = FALSE)
 
 
   }
 
-  #-----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
   if (isTRUE(!is.null(as.na))) {
 
     x <- misty::as.na(x, na = as.na, check = check)
 
   }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # No missing values
     if (isTRUE(all(!is.na(x)))) { stop("There are no missing values (NA) in the matrix or data frame specified in 'x'.", call. = FALSE) }
 
-    #......
     # Check input 'tri'
-    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE)
+    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
 
-    }
-
-    #......
     # Check input 'weighted'
     if (isTRUE(!is.logical(weighted))) { stop("Please specify TRUE or FALSE for the argument 'weighted'.", call. = FALSE) }
 
-    #......
     # Check input 'correct'
     if (isTRUE(!is.logical(correct))) { stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L | digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #-----------------------------------------
-  # Print triangular
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print triangular ####
+
   tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #-----------------------------------------
-  # Variables related to the incomplete variable
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Variables related to the incomplete variable ####
 
   cor.mat <- cor(x, use = "pairwise.complete.obs")
 
-  #-----------------------------------------
-  # Variables related to the probability of missingness
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Variables related to the probability of missingness ####
 
-  #......
   # Indicator matrix
   ind <- misty::na.indicator(x)
   colnames(ind) <- paste0(colnames(ind), "_ind")
 
-  #......
   # Pairwise combinations
   x.combn <- combn(ncol(x), m = 2L)
 
-  #......
   # Data
   x.ind <- data.frame(x, ind, stringsAsFactors = FALSE)
 
-  #......
-  # Cohen's d
+  #...................
+  ### Cohen's d ####
 
   result.d.upp <- numeric(ncol(x.combn))
   result.d.low <- numeric(ncol(x.combn))
@@ -304,8 +306,8 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE,
 
   }
 
-  #-----------------------------------------
-  # Cohen's d matrix
+  #...................
+  ### Cohen's d matrix ####
 
   d.mat <-  matrix(NA, ncol = ncol(x), nrow = ncol(x), dimnames = list(names(x), names(x)))
 
@@ -314,20 +316,22 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = TRUE,
 
   d.mat[lower.tri(d.mat)] <- result.d.low
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "na.auxiliary",
-                 data = list(x = x, x = x),
+                 data = x,
                  args = list(tri = tri, weighted = weighted, correct = correct, digits = digits,
                              as.na = as.na, check = check, output = output),
                  result = list(cor = cor.mat, d = d.mat))
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

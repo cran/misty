@@ -5,11 +5,6 @@
 #' statistics, effect size measures, and a plot showing error bars for
 #' difference-adjusted confidence intervals with jittered data points.
 #'
-#' Note that by default Welch's two-sample t-test and Games-Howell post hoc test
-#' reports Cohen's d based on the unweighted standard deviation (i.e.,
-#' \code{weighted = FALSE}) when requesting an effect size measure (i.e.,
-#' \code{effsize = TRUE}) following the recommendation by Delacre et al. (2021).
-#'
 #' @param formula       a formula of the form \code{y ~ group} where \code{y} is
 #'                      a numeric variable giving the data values and \code{group}
 #'                      a numeric variable, character variable or factor with two
@@ -79,6 +74,15 @@
 #' @param output        logical: if \code{TRUE}, output is shown on the console.
 #' @param ...           further arguments to be passed to or from methods.
 #'
+#' @details
+#' \describe{
+#' \item{\strong{Effect Size Measure}}{By default, Cohen's d based on the non-weighted
+#' standard deviation (i.e., \code{weighted = FALSE}) which does not assume homogeneity
+#' of variance is computed (see Delacre et al., 2021) when requesting an effect size
+#' measure (i.e., \code{effsize = TRUE}). Cohen's d based on the pooled standard
+#' deviation assuming equality of variancees between groups can be requested by
+#' specifying \code{weighted = TRUE}.}
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
@@ -97,9 +101,17 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, list with
-#' the input specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), and result table(s) (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{sample} \tab type of sample, i.e., two- or multiple sample \cr
+#' \code{formula} \tab formula \cr
+#' \code{data} \tab data frame with the outcome and grouping variable \cr
+#' \code{plot} \tab ggplot2 object for plotting the results \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list of result table \cr
+#' }
 #'
 #' @export
 #'
@@ -228,23 +240,22 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
                        digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
                        output = TRUE, ...) {
 
-  #......
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
+
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
 
-  #......
   # Check if input 'data' is missing
   if (isTRUE(missing(data))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'data' is NULL
   if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
-  ##############################################################################
-  # Formula
-
-  #.........................................
-  # Variables
+  #_____________________________________________________________________________
+  #
+  # Variables ------------------------------------------------------------------
 
   var.formula <- all.vars(as.formula(formula))
 
@@ -254,14 +265,13 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
   # Outcome variable
   y.var <- var.formula[-grep(group.var, var.formula)]
 
-  ##############################################################################
-  # Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #......
   # ggplot2 package
   if (isTRUE(!nzchar(system.file(package = "ggplot2"))))  { warning("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
 
@@ -282,50 +292,39 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
     # Check if input 'formula' has only one outcome variable
     if (isTRUE(length(y.var) != 1L)) { stop("Please specify a formula with only one outcome variable.", call. = FALSE) }
 
-    #......
     # Check input 'descript'
     if (isTRUE(!is.logical(descript))) { stop("Please specify TRUE or FALSE for the argument 'descript'.", call. = FALSE) }
 
-    #......
     # Check input 'alternative'
     if (isTRUE(!all(alternative %in%  c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
 
-    #......
     # Check input 'conf.level'
     if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
-    #......
     # Check input 'effsize'
     if (isTRUE(!is.logical(effsize))) { stop("Please specify TRUE or FALSE for the argument 'effsize'.", call. = FALSE) }
 
-    #......
     # Check input 'weighted'
     if (isTRUE(!is.logical(weighted))) { stop("Please specify TRUE or FALSE for the argument 'weighted'.", call. = FALSE) }
 
-    #......
     # Check input 'correct'
     if (isTRUE(!is.logical(correct))) { stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE) }
 
-    #......
     # Check input 'hypo'
     if (isTRUE(!is.logical(hypo))) { stop("Please specify TRUE or FALSE for the argument 'hypo'.", call. = FALSE) }
 
-    #......
     # Check input 'descript'
     if (isTRUE(!is.logical(descript))) { stop("Please specify TRUE or FALSE for the argument 'descript'.", call. = FALSE) }
 
     # Check input 'plot'
     if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'.", call. = FALSE) }
 
-    #......
     # Check input 'jitter'
     if (isTRUE(!is.logical(jitter))) { stop("Please specify TRUE or FALSE for the argument 'jitter'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
@@ -335,8 +334,8 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
 
   }
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -354,8 +353,9 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
 
   }
 
-  ##############################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
 
   # Outcome
   y <- unlist(data[, y.var])
@@ -366,22 +366,23 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
   # Sample
   sample <- ifelse(length(levels(group)) == 2L, "two", "multiple")
 
-  ##############################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
+
 
   # Global variables
   m <- low <- upp <- NULL
 
-  #----------------------------------------
   # Alternative hypothesis
-
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #----------------------------------------
-  # Two-sample Welch test
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Two-sample Welch test ####
   if (isTRUE(sample == "two")) {
 
     # Descriptive statistics
@@ -403,8 +404,9 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
                                          less = "greater"),
                     paired = FALSE, var.equal = FALSE)
 
-    #....................
-    # Result object
+    #...................
+    ### Result object ####
+
     result <- data.frame(cbind(ci[, c("group", "n", "nNA", "m", "sd", "m.diff")],
                                se = c(NA, welch$stderr), ci[, c("m.low", "m.upp")],
                                t = c(NA, welch$statistic)*-1L, df = c(NA, welch$parameter), pval = c(NA, welch$p.value),
@@ -413,16 +415,18 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
 
     sample <- "two"
 
-  #----------------------------------------
-  # Welch's test for more than two groups
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Welch's test for more than two groups ####
   } else if (isTRUE(sample == "multiple")) {
 
-    #....................
-    # Descriptive statistics
+    #...................
+    ### Descriptive statistics ####
+
     ci <- misty::ci.mean(y, group = group, adjust = adjust, output = FALSE)$result[, -c(2L, 5L)]
 
-    #....................
-    # ANOVA table
+    #...................
+    ### ANOVA table ####
+
     aov.table <- summary(aov(y ~ group))[[1L]]
 
     ss.m <- aov.table[["Sum Sq"]][1L]
@@ -431,21 +435,24 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
     ms.r <- aov.table[["Mean Sq"]][2L]
     ss.t <- sum(aov.table[["Sum Sq"]])
 
-    #....................
-    # Eta squared
+    #...................
+    ### Eta squared ####
+
     eta.sq <- ss.m / ss.t
 
-    #....................
-    # Omega squared
+    #...................
+    ### Omega squared ####
+
     omega.sq <- (ss.m - df.m*ms.r) / (ss.t + ms.r)
     omega.sq <- ifelse(omega.sq < 0L, 0L, omega.sq)
 
-    #....................
-    # Welch's ANOVA
+    #...................
+    ### Welch's ANOVA ####
+
     welch <- oneway.test(formula = formula, data = data, var.equal = FALSE)
 
-    #....................
-    # Post-Hoc test
+    #...................
+    ### Post-Hoc test ####
 
     # Generate all pairwise combinations
     combs <- combn(levels(group), m = 2L)
@@ -520,8 +527,9 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
     # Convert to numeric
     result.ph[, c(3L:ncol(result.ph))] <- as.numeric(as.matrix(result.ph[, c(3L:ncol(result.ph))]))
 
-    #....................
-    # Result object
+    #...................
+    ### Result object ####
+
     result <- list(descript = ci,
                    test = data.frame(F = welch$statistic,
                                      df1 = welch$parameter["num df"], df2 = welch$parameter["denom df"],
@@ -533,11 +541,11 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
 
   }
 
-  #----------------------------------------
-  # Plot
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Plot ####
 
-  #......................................
-  # Plot data
+  #...................
+  ### Plot data ####
 
   # Confidence interval
   plot.ci <- misty::ci.mean(data[, y.var], group = data[, group.var], adjust = adjust, conf.level = conf.level, output = FALSE)$result
@@ -547,11 +555,9 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
   # Plot Subtitle
   if (isTRUE(subtitle == "Confidence Interval")) { subtitle <- paste0("Two-Sided ", round(conf.level * 100L, digits = 2L), "% Confidence Interval") }
 
-  ###
-  # Crease ggplot
+  # Create ggplot
   p <- ggplot2::ggplot(plotdat, ggplot2::aes(group, y))
 
-  ###
   # Add jittered points
   if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size) }
 
@@ -564,12 +570,14 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
          ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
                         plot.title = ggplot2::element_text(hjust = 0.5))
 
-  #......................................
-  # Print plot
+  #...................
+  ### Print plot ####
+
   if (isTRUE(plot)) { suppressWarnings(print(p)) }
 
-  ##############################################################################
-  # Return object and output
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "test.welch",
@@ -590,8 +598,9 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
 
   class(object) <- "misty.object"
 
-  ##############################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

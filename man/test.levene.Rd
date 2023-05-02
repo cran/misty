@@ -110,11 +110,16 @@ conducting the analysis.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis \code{type}, formula
-(\code{formula}), data frame with the outcome and grouping variable, (\code{data}),
-data used to plot the results (\code{plot.data}), specification of function
-arguments (\code{args}), and a list with descriptive statistics including
-confidence interval and an object of class \code{"anova"} (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{formula}}{formula of the current analysis}
+  \item{\code{data}}{data frame specified in \code{data}}
+  \item{\code{plot}}{ggplot2 object for plotting the results}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{list with result tables, i.e., \code{descript} for
+                       descriptive statistics and \code{test} for the ANOVA
+                       table}
 }
 \description{
 This function performs Levene's test for homogeneity of variance across two
@@ -146,7 +151,7 @@ test.levene(y ~ group, data = dat, conf.level = 0.99)
 # plot results
 test.levene(y ~ group, data = dat, plot = TRUE)
 
-#' # Load ggplot2 package
+# Load ggplot2 package
 library(ggplot2)
 
 # Save plot, ggsave() from the ggplot2 package

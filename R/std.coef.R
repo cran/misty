@@ -1,49 +1,59 @@
 #' Standardized Coefficients
 #'
-#' This function computes standardized coefficients for linear models estimated by using the \code{lm()}
-#' function.
+#' This function computes standardized coefficients for linear models estimated
+#' by using the \code{lm()} function.
 #'
-#' The slope \eqn{\beta} can be standardized with respect to only \eqn{x}, only \eqn{y}, or both \eqn{y}
-#' and \eqn{x}:
+#' The slope \eqn{\beta} can be standardized with respect to only \eqn{x}, only
+#' \eqn{y}, or both \eqn{y} and \eqn{x}:
 #'
 #' \deqn{StdX(\beta_1) = \beta_1 SD(x)}
 #'
-#' \eqn{StdX(\beta_1)} standardizes with respect to \eqn{x} only and is interpreted as the change in
-#' \eqn{y} when \eqn{x} changes one standard deviation referred to as \eqn{SD(x)}.
+#' \eqn{StdX(\beta_1)} standardizes with respect to \eqn{x} only and is interpreted
+#' as the change in \eqn{y} when \eqn{x} changes one standard deviation referred
+#' to as \eqn{SD(x)}.
 #'
 #' \deqn{StdY(\beta_1) = \frac{\beta_1}{SD(x)}}
 #'
-#' \eqn{StdY(\beta_1)} standardizes with respect to \eqn{y} only and is interpreted as the change in
-#' \eqn{y} standard deviation units, referred to as \eqn{SD(y)}, when \eqn{x} changes one unit.
+#' \eqn{StdY(\beta_1)} standardizes with respect to \eqn{y} only and is interpreted
+#' as the change in \eqn{y} standard deviation units, referred to as \eqn{SD(y)},
+#' when \eqn{x} changes one unit.
 #'
 #' \deqn{StdYX(\beta_1) = \beta_1 \frac{SD(x)}{SD(y)}}
 #'
-#' \eqn{StdYX(\beta_1)} standardizes with respect to both \eqn{y} and \eqn{x} and is interpreted as the change
-#' in \eqn{y} standard deviation units when \eqn{x} changes one standard deviation.
+#' \eqn{StdYX(\beta_1)} standardizes with respect to both \eqn{y} and \eqn{x} and
+#' is interpreted as the change in \eqn{y} standard deviation units when \eqn{x}
+#' changes one standard deviation.
 #'
-#' Note that the \eqn{StdYX(\beta_1)} and the \eqn{StdY(\beta_1)} standardizations are not suitable for the
-#' slope of a binary predictor because a one standard deviation change in a binary variable is generally
-#' not of interest (Muthen, Muthen, & Asparouhov, 2016).
+#' Note that the \eqn{StdYX(\beta_1)} and the \eqn{StdY(\beta_1)} standardizations
+#' are not suitable for the slope of a binary predictor because a one standard
+#' deviation change in a binary variable is generally not of interest (Muthen,
+#' Muthen, & Asparouhov, 2016).
 #'
-#' The standardization of the slope \eqn{\beta_3} in a regression model with an interaction term uses the
-#' product of standard deviations \eqn{SD(x_1)SD(x_2)} rather than the standard deviation of the product
-#' \eqn{SD(x_1 x_2)} for the interaction variable \eqn{x_1}\eqn{x_2} (see Wen, Marsh & Hau, 2010). Likewise,
-#' the standardization of the slope \eqn{\beta_3} in a polynomial regression model with a quadratic term
-#' uses the product of standard deviations \eqn{SD(x)SD(x)} rather than the standard deviation of the
-#' product \eqn{SD(x x)} for the quadratic term \eqn{x^2}.
+#' The standardization of the slope \eqn{\beta_3} in a regression model with an
+#' interaction term uses the product of standard deviations \eqn{SD(x_1)SD(x_2)}
+#' rather than the standard deviation of the product \eqn{SD(x_1 x_2)} for the
+#' interaction variable \eqn{x_1}\eqn{x_2} (see Wen, Marsh & Hau, 2010). Likewise,
+#' the standardization of the slope \eqn{\beta_3} in a polynomial regression model
+#' with a quadratic term uses the product of standard deviations \eqn{SD(x)SD(x)}
+#' rather than the standard deviation of the product \eqn{SD(x x)} for the quadratic
+#' term \eqn{x^2}.
 #'
 #' @param model    a fitted model of class \code{"lm"}.
-#' @param print    a character vector indicating which results to show, i.e. \code{"all"}, for all results,
-#'                 \code{"stdx"} for standardizing only the predictor, \code{"stdy"} for for standardizing only
-#'                 the criterion, and \code{"stdyx"} for for standardizing both the predictor and the criterion.
-#'                 Note that the default setting is depending on the level of measurement of the predictors,
-#'                 i.e., if all predictors are continuous, the default setting is \code{print = "stdyx"};
-#'                 if all predictors are binary, the default setting is \code{print = "stdy"}; if predictors
+#' @param print    a character vector indicating which results to show, i.e.
+#'                 \code{"all"}, for all results, \code{"stdx"} for standardizing
+#'                 only the predictor, \code{"stdy"} for for standardizing only
+#'                 the criterion, and \code{"stdyx"} for for standardizing both
+#'                 the predictor and the criterion. Note that the default setting
+#'                 is depending on the level of measurement of the predictors,
+#'                 i.e., if all predictors are continuous, the default setting
+#'                 is \code{print = "stdyx"}; if all predictors are binary, the
+#'                 default setting is \code{print = "stdy"}; if predictors
 #'                 are continuous and binary, the default setting is \code{print = c("stdy", "stdyx")}.
-#' @param digits   an integer value indicating the number of decimal places to be used for displaying
+#' @param digits   an integer value indicating the number of decimal places to
+#'                 be used for displaying
 #'                 results.
-#' @param p.digits an integer value indicating the number of decimal places to be used for displaying the
-#'                 \emph{p}-value.
+#' @param p.digits an integer value indicating the number of decimal places to be
+#'                 used for displaying the \emph{p}-value.
 #' @param check    logical: if \code{TRUE}, argument specification is checked.
 #' @param output   logical: if \code{TRUE}, output is shown on the console.
 #'
@@ -51,18 +61,24 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @references
-#' Muthen, B. O., Muthen, L. K., & Asparouhov, T. (2016). \emph{Regression and mediation analysis using Mplus}.
-#' Muthen & Muthen.
+#' Muthen, B. O., Muthen, L. K., & Asparouhov, T. (2016). \emph{Regression and
+#' mediation analysis using Mplus}. Muthen & Muthen.
 #'
-#' Wen, Z., Marsh, H. W., & Hau, K.-T. (2010). Structural equation models of latent interactions:
-#' An appropriate standardized solution and its scale-free properties. \emph{Structural Equation Modeling:
-#' A Multidisciplinary Journal, 17}, 1-22. https://doi.org/10.1080/10705510903438872
+#' Wen, Z., Marsh, H. W., & Hau, K.-T. (2010). Structural equation models of latent
+#' interactions: An appropriate standardized solution and its scale-free properties.
+#' \emph{Structural Equation Modeling: A Multidisciplinary Journal, 17}, 1-22.
+#' https://doi.org/10.1080/10705510903438872
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type}, model specified in the
-#' \code{model} argument (\code{model}), specification of function arguments (\code{args}),
-#' list with results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{model} \tab model specified in \code{model} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list of result table \cr
+#' }
 #'
 #' @export
 #'
@@ -101,69 +117,72 @@
 #' # Regression model with a quadratic term
 #' mod.lm5 <- lm(y ~ x1 + I(x1^2), data = dat)
 #' std.coef(mod.lm5)
-std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
-                      digits = 3, p.digits = 4, check = TRUE, output = TRUE) {
+std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
+                     digits = 3, p.digits = 4, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Input check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'model' is missing
   if (isTRUE(missing(model))) { stop("Input for the argument 'model' is missing.", call. = FALSE) }
 
-  #......
   # Check if input 'model' is NULL
   if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
 
-  #......
-  # Check if input 'model' is NULL
+  # Check if input 'model' is not 'lm'
   if (isTRUE(!all(class(model) %in% "lm"))) { stop("Please specify an \"lm\" object for the argument 'model'.", call. = FALSE) }
 
-  #.............
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #......
     # Check input 'print'
     if (isTRUE(!all(print %in% c("all", "stdx", "stdy", "stdyx")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"stdx\", \"stdy\", or \"stdyx\".", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  #----------------------------------------
-  # Print argument
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #................
-  # Default settings
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ##  Print argument ####
+
+  #...................
+  ### Default settings ####
+
   if (isTRUE(all(c("all", "stdx", "stdy", "stdyx") %in% print))) {
 
-    # All predictors binary
-    if (isTRUE(all(sapply(model$model[, -1, drop = FALSE], function(y) length(unique(y)) == 2L)))) {
+    # All predictors binary, factor, or character
+    if (isTRUE(all(sapply(model$model[, -1L, drop = FALSE], function(y) length(unique(y)) == 2L)) ||
+               all(sapply(attr(terms(model), "dataClasses")[-1L], function(y) y == "factor")) ||
+               all(sapply(attr(terms(model), "dataClasses")[-1L], function(y) y == "character")))) {
 
       print <- "stdy"
 
-    # At least one predictor binary
+    # At least one predictor numeric
     } else if (isTRUE(any(sapply(model$model[, -1L, drop = FALSE], function(y) length(unique(y)) == 2L)) ||
-               any(attr(terms(model), "dataClasses") != "numeric"))) {
+                      any(attr(terms(model), "dataClasses") != "numeric"))) {
 
       print <- c("stdy", "stdyx")
 
-    # All predictors continuous binary
+    # All predictors continuous
     } else {
 
       print <- "stdyx"
@@ -172,15 +191,20 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
   }
 
-  #................
-  # Print = "all"
+  #...................
+  ### Print = "all" ####
+
   if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("stdx", "stdy", "stdyx") }
 
-  ####################################################################################
-  # Main function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   # Predictor variables
   pred.var <- attr(terms(model), "term.labels")
+
+  # Data classes of predictor variables
+  pred.var.class <- attr(terms(model), "dataClasses")[-1L]
 
   # Criterion variable
   crit.var <- names(model$model)[!names(model$model) %in% pred.var]
@@ -191,65 +215,48 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
   # Polynomial terms
   pred.var.poly <- pred.var[grep("^", pred.var, fixed = TRUE)]
 
-  #----------------------------------------
-  # Standard deviations and unstandardized slopes
-
-  #.................
-  # Model without interaction term(s), factors excluded
-  if (isTRUE(length(pred.var.int) == 0L && length(pred.var.poly) == 0L)) {
-
-    # Predictor standard deviations
-    sd.pred <- sapply(pred.var[which(attr(terms(model), "dataClasses")[-1] %in% c("numeric", "nmatrix.1"))], function(y) sd(model$model[, y], na.rm = TRUE))
-
-  } else {
-
-    #.................
-    # Model with interaction term(s)
-    sd.pred.var.int <- rep(NA, length(pred.var.int))
-    if (isTRUE(length(pred.var.int) != 0L)) {
-
-      for (i in seq_along(pred.var.int)) {
-
-        sd.pred.var.int[i] <- prod(sapply(model$model[unlist(strsplit(pred.var.int[i], ":"))], function(y) sd(y, na.rm = TRUE)))
-
-      }
-
-      names(sd.pred.var.int) <- pred.var.int
-
-    }
-
-    #.................
-    # Model with polynomial term(s)
-    sd.pred.var.poly <- rep(NA, length(pred.var.poly))
-    if (isTRUE(length(pred.var.poly) != 0L)) {
-
-      for (i in seq_along(pred.var.poly)) {
-
-        sd.pred.var.poly[i] <- prod(rep(sd(model$model[,sub("I\\(", "", unlist(strsplit(pred.var.poly[i], "^", fixed = TRUE))[1])], na.rm = TRUE),
-                                        times = sub(")", "", unlist(strsplit(pred.var.poly[i], "^", fixed = TRUE))[2])))
-
-      }
-
-      names(sd.pred.var.poly) <- pred.var.poly
-
-    }
-
-    # Predictor standard deviations
-    sd.pred <- c(sapply(setdiff(pred.var, c(pred.var.int, pred.var.poly)), function(y) sd(model$model[, y], na.rm = TRUE)),
-                 sd.pred.var.int, sd.pred.var.poly)
-
-  }
-
-  # Outcome standard deviation
-  sd.crit <- sapply(model$model[, crit.var, drop = FALSE], sd, na.rm = TRUE)
-
   # Unstandardized slopes
   coeff <- model$coefficients[which(names(model$coefficients) != "(Intercept)")]
 
-  #----------------------------------------
-  # Coefficient table
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Predictor standard deviations ####
 
-  sd.pred <- sd.pred[match(names(coeff), names(sd.pred))]
+  sd.pred <- setNames(rep(NA, times = length(coeff)), nm = names(coeff))
+  for (i in seq_along(coeff)) {
+
+    coeff.temp <- names(coeff)[i]
+
+    # Interaction term
+    if (isTRUE(coeff.temp %in% pred.var.int)) {
+
+      sd.pred[i] <- prod(sapply(model$model[unlist(strsplit(coeff.temp, ":"))], function(y) sd(y, na.rm = TRUE)))
+
+    # Polynomial terms
+    } else if (isTRUE(coeff.temp %in% pred.var.poly)) {
+
+      sd.pred[i] <- prod(rep(sd(model$model[, sub("I\\(", "", unlist(strsplit(coeff.temp, "^", fixed = TRUE))[1L])], na.rm = TRUE),
+                             times = sub(")", "", unlist(strsplit(coeff.temp, "^", fixed = TRUE))[2L])))
+
+    # Numeric predictor
+    } else if (isTRUE(coeff.temp %in% pred.var)) {
+
+      if (isTRUE(pred.var.class[coeff.temp] %in%  c("numeric", "nmatrix.1"))) {
+
+        sd.pred[i] <- sd(model$model[, names(coeff)[i]], na.rm = TRUE)
+
+      }
+
+    }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Outcome standard deviation ####
+
+  sd.crit <- sapply(model$model[, crit.var, drop = FALSE], sd, na.rm = TRUE)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Coefficient table ####
 
   # Model with intercept
   if (isTRUE("(Intercept)" %in% names(model$coefficients))) {
@@ -271,20 +278,22 @@ std.coef  <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
   }
 
-  #----------------------------------------
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "std.coef",
                  model = model,
                  args = list(print = print, digits = digits, p.digits = p.digits,
                              check = check, output = output),
-                 result = list(coefficients = coefficients, sd = c(sd.crit, sd.pred)))
+                 result = list(coef = coefficients, sd = c(sd.crit, sd.pred)))
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

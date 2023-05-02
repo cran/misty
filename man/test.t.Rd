@@ -11,7 +11,7 @@ test.t(x, ...)
 \method{test.t}{default}(x, y = NULL, mu = 0, paired = FALSE,
        alternative = c("two.sided", "less", "greater"),
        conf.level = 0.95,  hypo = TRUE, descript = TRUE, effsize = FALSE,
-       weighted = TRUE, cor = TRUE, ref = NULL, correct = FALSE,
+       weighted = FALSE, cor = TRUE, ref = NULL, correct = FALSE,
        plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
        xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
        line = TRUE, line.type = 3, line.size = 0.8,
@@ -22,7 +22,7 @@ test.t(x, ...)
 
 \method{test.t}{formula}(formula, data, alternative = c("two.sided", "less", "greater"),
        conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
-       weighted = TRUE, cor = TRUE, ref = NULL, correct = FALSE,
+       weighted = FALSE, cor = TRUE, ref = NULL, correct = FALSE,
        plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
        xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
        jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
@@ -56,9 +56,8 @@ on the console.}
 \item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d is
 shown on the console, see \code{\link{cohens.d}} function.}
 
-\item{weighted}{logical: if \code{TRUE} (default), the weighted pooled
-standard deviation is used
-to compute Cohen's d for a two-sample design (i.e.,
+\item{weighted}{logical: if \code{TRUE}, the weighted pooled standard deviation
+is used to compute Cohen's d for a two-sample design (i.e.,
 \code{paired = FALSE}), while standard deviation of the
 difference scores is used to compute Cohen's d for a
 paired-sample design (i.e., \code{paired = TRUE}).}
@@ -166,15 +165,30 @@ formula \code{formula}.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis \code{type}, list with
-the input specified in \code{x} and \code{y} (\code{data}), data used to plot
-the results (\code{plot.data}), specification of function arguments (\code{args}),
-and result table (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{sample}}{type of sample, i.e., one-, two-, or paired sample}
+  \item{\code{formula}}{formula of the current analysis}
+  \item{\code{data}}{data frame specified in \code{data}}
+  \item{\code{plot}}{ggplot2 object for plotting the results}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{result table}
 }
 \description{
 This function performs one-sample, two-sample, and paired-sample t-tests and
 provides descriptive statistics, effect size measure, and a plot showing error
 bars for (difference-adjusted) confidence intervals with jittered data points.
+}
+\details{
+\describe{
+\item{\strong{Effect Size Measure}}{By default, Cohen's d based on the non-weighted
+standard deviation (i.e., \code{weighted = FALSE}) which does not assume homogeneity
+of variance is computed (see Delacre et al., 2021) when requesting an effect size
+measure (i.e., \code{effsize = TRUE}). Cohen's d based on the pooled standard
+deviation assuming equality of variancees between groups can be requested by
+specifying \code{weighted = TRUE}.}
+}
 }
 \examples{
 dat1 <- data.frame(group = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
@@ -410,6 +424,10 @@ ggplot(plotdat, aes(0, diff)) +
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in
 psychology - Using R and SPSS}. John Wiley & Sons.
+
+Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why Hedges' g*s
+based on the non-pooled standard deviation should be reported with Welch's t-test.
+https://doi.org/10.31234/osf.io/tu6mp
 }
 \seealso{
 \code{\link{aov.b}}, \code{\link{aov.w}}, \code{\link{test.welch}}, \code{\link{test.z}},

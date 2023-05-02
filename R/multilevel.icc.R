@@ -72,35 +72,34 @@
 multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme"),
                            REML = TRUE, as.na = NULL, check = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Vector, matrix or data frame for the argument 'x'?
   if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) { stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
-  #......
   # Check if only one variable specified in the input 'cluster'
   if (ncol(data.frame(cluster)) != 1L) { stop("More than one variable specified for the argument 'cluster'.",call. = FALSE) }
 
-  #......
   # Convert 'cluster' into a vector
   cluster <- unlist(cluster, use.names = FALSE)
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -117,45 +116,31 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
   }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'cluster'
     if (isTRUE(length(unique(na.omit(cluster))) == 1L)) { stop("There is only one group represented in the cluster variable specified in 'cluster'.", call. = FALSE) }
 
-    #......
     # Check input 'cluster'
     if (isTRUE(is.null(dim(x)))) {
 
       # Numeric vector and cluster?
-      if (isTRUE(length(x) != length(cluster))) {
-
-        stop("Length of the vector 'x' does not match with the length of the cluster variable in 'cluster'.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(length(x) != length(cluster))) { stop("Length of the vector 'x' does not match with the length of the cluster variable in 'cluster'.", call. = FALSE) }
 
     } else {
 
       # Numeric vector and cluster?
-      if (isTRUE(nrow(x) != length(cluster))) {
-
-        stop("Number of rows in 'x' does not match with the length of the cluster variable 'cluster'.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(nrow(x) != length(cluster))) { stop("Number of rows in 'x' does not match with the length of the cluster variable 'cluster'.", call. = FALSE) }
 
     }
 
-    #......
     # Variance within cluster
     if (isTRUE(is.null(dim(x)))) {
 
@@ -175,7 +160,6 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
     }
 
-    #......
     # Check input 'x': Zero variance?
     x.check <- vapply(as.data.frame(x), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
 
@@ -183,8 +167,7 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
       if (isTRUE(length(x.check) > 1L)) {
 
-        warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
-                       paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
+        warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
 
       } else {
 
@@ -194,32 +177,29 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
     }
 
-    #......
     # Check input 'type'
     if (isTRUE(any(!type %in% c(1L, 2L)))) { stop("Please specify the numeric value 1 or 2 for the argument'type'.", call. = FALSE) }
 
-    #......
     # Check input 'method'
     if (isTRUE(any(!method %in% c("aov", "lme4", "nlme")))) { stop("Character string in the argument 'method' does not match with \"aov\", \"lme4\", or \"nlme\".", call. = FALSE) }
 
-    #......
     # Check input 'REML'
     if (isTRUE(!is.logical(REML))) { stop("Please specify TRUE or FALSE for the argument 'REML'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  if (isTRUE(length(method) == 1)) {
+  if (isTRUE(length(method) == 1L)) {
 
     # Package lme4 installed?
     if (isTRUE(method == "lme4")) {
 
       if (isTRUE(!nzchar(system.file(package = "lme4")))) {
 
-        warning("Package \"lme4\" is needed for method = \"lme4\", method \"aov\" will be used instead.",
-                call. = FALSE )
+        warning("Package \"lme4\" is needed for method = \"lme4\", method \"aov\" will be used instead.", call. = FALSE )
 
         method <- "aov"
 
@@ -260,16 +240,17 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #-----------------------------------------
-  # One dependent variable
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## One dependent variable ####
 
   if (isTRUE(is.null(dim(x)))) {
 
-    #............
-    # Variable with non-zero variance
+    #...................
+    ### Variable with non-zero variance ####
     if (isTRUE(var(x, na.rm = TRUE) != 0L)) {
 
       # ICC using aov() function
@@ -382,16 +363,16 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
       }
 
-    #............
-    # Variable with non-zero variance
+    #...................
+    ### Variable with non-zero variance ####
     } else {
 
       object <- NA
 
     }
 
-  #-----------------------------------------
-  # More than one dependent variable
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## More than one dependent variable ####
   } else {
 
     object <- apply(x, 2, function(y) misty::multilevel.icc(y, cluster, type = type, method = method,
@@ -399,8 +380,9 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
   }
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(object)
 

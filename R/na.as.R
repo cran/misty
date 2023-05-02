@@ -76,47 +76,39 @@
 #' na.as(x.df2, value = 3, as.na = 30)
 na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
-  #-----------------------------------------------------------------------------------
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #...............
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #...............
   # Check if input 'value' is missing
   if (isTRUE(missing(value))) { stop("Please specify a numeric value or character string for the argument 'value'.", call. = FALSE) }
 
-  #...............
   # Convert user-missing values into NA
   if (isTRUE(!is.null(as.na))) { x <- misty::as.na(x, na = as.na, check = check) }
 
-  #-----------------------------------------------------------------------------------
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #...............
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
-
   if (isTRUE(check)) {
 
-    #...............
     # Vector, factor, matrix or data frame for the argument 'x'?
     if (isTRUE(!is.atomic(x) && !is.factor(x) && !is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a vector, factor, matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-    #...............
     # Factor or Vector
     if (isTRUE(is.null(dim(x)))) {
 
       if (isTRUE(all(!is.na(x)))) { warning("There are no missing values (NA) in the vector or factor specified in 'x'.", call. = FALSE) }
 
-    #...............
     # Matrix or data frame
     } else {
 
@@ -124,14 +116,14 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
     }
 
-    #...............
     # Check input 'value'
     if (isTRUE(length(value) != 1L)) { stop("Please specifiy a single value or character string for the argument 'value'.", call. = FALSE) }
 
   }
 
-  #-----------------------------------------------------------------------------------
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   # Factor or Vector
   if (isTRUE(is.null(dim(x)))) {
@@ -177,8 +169,9 @@ na.as <- function(x, value, as.na = NULL, check = TRUE) {
 
   }
 
-  #-----------------------------------------------------------------------------------
-  # Return object and output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(object)
 

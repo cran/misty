@@ -43,9 +43,16 @@ naming a file with or without file extension '.xlsx', e.g.,
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), matrix or data frame specified in \code{x}
-(\code{data}), specification of function arguments (\code{args}), and list with
-results (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{matrix or data frame specified in \code{x}}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{list with result tables, i.e., \code{crosstab} for the
+                       cross tabulation, \code{freq.a} for the absolute frequencies, 
+                       \code{perc.r} for the row-wise percentages, \code{perc.c} 
+                       for the column-wise percentages, \code{perc.t} for the total 
+                       percentages}
 }
 \description{
 This function creates a two-way and three-way cross tabulation with absolute

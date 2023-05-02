@@ -1,7 +1,7 @@
 #' Write Results of a misty Object into an Excel file
 #'
 #' This function writes the results of a misty object (\code{misty.object})
-#' into a Excel file.
+#' into an Excel file.
 #'
 #' Currently the function supports result objects from the function
 #' \code{cor.matrix}, \code{crosstab}, \code{freq}, \code{item.alpha},
@@ -9,11 +9,24 @@
 #' \code{multilevel.descript}, \code{na.coverage}, \code{na.descript}, and
 #' \code{na.pattern}.
 #'
-#'
-#' @param x    misty object (\code{misty.object}) resulting from a misty function
-#'             supported by the \code{write.result} function (see 'Details').
-#' @param file a character string naming a file with or without file extension
-#'             '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.
+#' @param x          misty object (\code{misty.object}) resulting from a misty
+#'                   function supported by the \code{write.result} function (see
+#'                   'Details').
+#' @param file       a character string naming a file with or without file extension
+#'                   '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.
+#' @param tri        a character string or character vector indicating which
+#'                   triangular of the matrix to show on the console, i.e.,
+#'                   \code{both} for upper and lower triangular, \code{lower}
+#'                   for the lower triangular, and \code{upper} for the upper
+#'                   triangular.
+#' @param digits     an integer value indicating the number of decimal places digits
+#'                   to be used for displaying results.
+#' @param p.digits   an integer indicating the number of decimal places to be used
+#'                   for displaying \emph{p}-values.
+#' @param icc.digits an integer indicating the number of decimal places to be used
+#'                   for displaying intraclass correlation coefficients
+#'                   (\code{multilevel.descript()} and \code{multilevel.icc()}
+#'                   function).
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -125,11 +138,13 @@
 #' result <- na.pattern(dat, output = FALSE)
 #' write.result(result, "NA_Pattern.xlsx")
 #' }
-write.result <- function(x, file = "Results.xlsx") {
+write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
+                         digits = x$args$digits, p.digits = x$args$p.digits,
+                         icc.digits = x$args$icc.digits, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Initial Check --------------------------------------------------------------
 
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
@@ -149,6 +164,26 @@ write.result <- function(x, file = "Results.xlsx") {
 
   }
 
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
+  if (isTRUE(check)) {
+
+    # Check input 'digits'
+    if (isTRUE(!is.null(digits))) { if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'", call. = FALSE) } }
+
+    # Check input 'p.digits'
+    if (isTRUE(!is.null(p.digits))) { if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'", call. = FALSE) } }
+
+    # Check input 'icc.digits'
+    if (isTRUE(!is.null(icc.digits))) { if (isTRUE(icc.digits %% 1L != 0L || icc.digits < 0L)) { stop("Specify a positive integer number for the argument 'icc.digits'", call. = FALSE) } }
+
+  }
+
   #_____________________________________________________________________________
   #
   # Data and Arguments ---------------------------------------------------------
@@ -160,9 +195,48 @@ write.result <- function(x, file = "Results.xlsx") {
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Correlation Matrix, cor.matrix() ####
+  #_____________________________________________________________________________
+  #
+  # Correlation Matrix, cor.matrix() --------------------------------------------------------------
+
   switch(x$type, cor.matrix = {
+
+    # Round
+    write.object$cor <- round(write.object$cor, digits = digits)
+    write.object$stat <- round(write.object$stat, digits = digits)
+    write.object$p <- round(write.object$p, digits = p.digits)
+
+    # Diagonal
+    diag(write.object$cor) <- NA
+    diag(write.object$n) <- NA
+    diag(write.object$stat) <- NA
+    diag(write.object$df) <- NA
+    diag(write.object$p) <- NA
+
+    # Lower and/or upper triangular
+    if (isTRUE(!".group" %in% colnames(x$data))) {
+
+      if (isTRUE(tri == "lower")) {
+
+        write.object$cor[upper.tri(write.object$cor)] <- NA
+        write.object$n[upper.tri(write.object$n)] <- NA
+        write.object$stat[upper.tri(write.object$stat)] <- NA
+        write.object$df[upper.tri(write.object$df)] <- NA
+        write.object$p[upper.tri(write.object$p)] <- NA
+
+      }
+
+      if (isTRUE(tri == "upper")) {
+
+        write.object$cor[lower.tri(write.object$cor)] <- NA
+        write.object$n[lower.tri(write.object$n)] <- NA
+        write.object$stat[lower.tri(write.object$stat)] <- NA
+        write.object$df[lower.tri(write.object$df)] <- NA
+        write.object$p[lower.tri(write.object$p)] <- NA
+
+      }
+
+    }
 
     # Add variable names in the rows
     write.object <- lapply(write.object, function(y) data.frame(colnames(y), y,
@@ -189,403 +263,275 @@ write.result <- function(x, file = "Results.xlsx") {
 
     names(write.object) <- c("Cor", "n", "Stat", "df", "p", "Info")
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Cross Tabulation, crosstab() ####
+    # Print
+    if (isTRUE(!"cor" %in% x$args$print)) { write.object$Cor <- NULL }
+    if (isTRUE(!"n" %in% x$args$print)) { write.object$n <- NULL }
+    if (isTRUE(!"stat" %in% x$args$print)) { write.object$Stat <- NULL }
+    if (isTRUE(!"df" %in% x$args$print)) { write.object$df <- NULL }
+    if (isTRUE(!"p" %in% x$args$print)) { write.object$p <- NULL }
+
+  #_____________________________________________________________________________
+  #
+  # Cross Tabulation, crosstab() -----------------------------------------------
+
   }, crosstab = {
 
-    #.......................
-    # Two-Dimensional Matrix
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Result table ####
+
+    write.object <- x$result$crosstab
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Round ####
+
+    write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Two-Dimensional Matrix ####
+
     if (isTRUE(ncol(x$data) == 2L)) {
 
-      write.object <- data.frame(rep(ifelse(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)",
-                                                  x = names(write.object$freq.a[, 1L])), as.numeric(names(write.object$freq.a[, 1L])), names(write.object$freq.a[, 1L])), times = 4L),
-                                 rep(c("Freq", "Row %", "Col %", "Tot %"), each = nrow(write.object$freq.a)),
-                                 rbind(write.object$freq.a, write.object$perc.r, write.object$perc.c, write.object$perc.t),
-                                 Total = c(rowSums(write.object$freq.a), rep(NA, times = 3L*nrow(write.object$freq.a))),
-                                 row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
-
-      #......
-      # Sort table
-
-      # First variable is a factor
-      if (isTRUE(is.factor(x$data[, 1L]))) {
-
-        # Sort with NA
-        if (isTRUE(any(is.na(x$data)) && !isTRUE(x$args$na.omit))) {
-
-          write.object <- write.object[order(factor(write.object[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA"))), ]
-
-        # Sort without NA
-        } else {
-
-          write.object <- write.object[order(factor(write.object[, 1L], levels = levels(x$data[, 1L]), labels = levels(x$data[, 1L]))), ]
-
-        }
-
-      # First variable is not a factor
-      } else {
-
-        write.object <- write.object[order(write.object [, 1L]), ]
-
-      }
-
-      # Add column sum
-      write.object <- rbind(write.object,
-                            c(NA, NA, colSums(write.object[write.object[, 2] == "Freq", -c(1L, 2L)])))
-
-      write.object[nrow(write.object), 1L
-                   ] <- "Total"
-
-      #......
-      # Output table not split
+      #...................
+      ### Output table not split ####
       if (!isTRUE(x$args$split)) {
 
         # Remove duplicated row labels
         write.object[, 1L] <- ifelse(duplicated(write.object[, 1L]), NA, write.object[, 1L])
 
-        # Remove percentages
+        #### Frequencies only ####
         if (isTRUE(x$args$print == "no")) {
 
           write.object <- data.frame(write.object[write.object[, 2L] == "Freq" | is.na(write.object[, 2L]) , 1L],
                                      write.object[write.object[, 2L] == "Freq" | is.na(write.object[, 2L]), -c(1L, 2L)],
-                                     row.names = NULL, check.rows = FALSE,
-                                     check.names = FALSE, fix.empty.names = FALSE)
+                                     row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
 
+        #### Frequencies and Percentages ####
         } else {
 
-          if (isTRUE(!"row" %in% x$args$print)) {
+          # No row-wise percentages
+          if (isTRUE(!"row" %in% x$args$print)) { write.object <- write.object[-which(write.object[, 2L] == "Row %"), ] }
 
-            write.object <- write.object[-which(write.object[, 2L] == "Row %"), ]
+          # No col-wise percentages
+          if (isTRUE(!"col" %in% x$args$print)) { write.object <- write.object[-which(write.object[, 2L] == "Col %"), ] }
 
-          }
-
-          if (isTRUE(!"col" %in% x$args$print)) {
-
-            write.object <- write.object[-which(write.object[, 2L] == "Col %"), ]
-
-          }
-
-          if (isTRUE(!"total" %in% x$args$print)) {
-
-            write.object <- write.object[-which(write.object[, 2L] == "Tot %"), ]
-
-          }
+          # No total percentages
+          if (isTRUE(!"total" %in% x$args$print)) { write.object <- write.object[-which(write.object[, 2L] == "Tot %"), ] }
 
         }
 
         # Add variable names
-        write.object <- data.frame(c(colnames(x$data)[1L], rep(NA, times = nrow(write.object) - 1L)),
-                                   write.object,
-                                   row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
+        names(write.object)[1L:2L] <- colnames(x$data)
 
-        names(write.object)[2L] <- colnames(x$data)[2L]
-
-      #......
-      # Output table split
+      #...................
+      ### Output table split ####
       } else {
 
-        # Frequencies
+        #### Absolute Frequencies ####
         write.object.abs <- data.frame(write.object[write.object[, 2L] == "Freq" | is.na(write.object[, 2L]), 1L],
                                        write.object[write.object[, 2L] == "Freq" | is.na(write.object[, 2L]), -c(1L, 2L)],
                                        row.names = NULL, check.rows = FALSE,
                                        check.names = FALSE, fix.empty.names = FALSE)
 
-        # Row-wise percentages
+        write.object.abs <- data.frame(c(colnames(x$data)[1L], rep(NA, times = nrow(write.object.abs) - 1L)),
+                                       write.object.abs,
+                                       row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
+
+        names(write.object.abs)[2L] <- colnames(x$data)[2L]
+
+        #### Row-wise percentages ####
         write.object.row <- data.frame(write.object[which(write.object[, 2L] == "Row %"), 1L],
-                                       write.object[which(write.object[, 2L] == "Row %"), -c(1L, 2L, ncol(write.object))],
-                                       Total = rowSums(write.object[which(write.object[, 2L] == "Row %"), -c(1L, 2L, ncol(write.object))]),
+                                       write.object[which(write.object[, 2L] == "Row %"), -c(1L, 2L)],
                                        row.names = NULL, check.rows = FALSE,
                                        check.names = FALSE, fix.empty.names = FALSE)
 
-        # Column-wise percentages
+        write.object.row <- data.frame(c(colnames(x$data)[1L], rep(NA, times = nrow(write.object.row) - 1L)),
+                                       write.object.row,
+                                       row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
+
+        names(write.object.row)[2L] <- colnames(x$data)[2L]
+
+        #### Column-wise percentages ####
         write.object.col <- data.frame(write.object[which(write.object[, 2L] == "Col %"), 1L],
-                                       write.object[which(write.object[, 2L] == "Col %"), -c(1L, 2L, ncol(write.object))],
+                                       write.object[which(write.object[, 2L] == "Col %"), -c(1L, 2L)],
                                        row.names = NULL, check.rows = FALSE,
                                        check.names = FALSE, fix.empty.names = FALSE)
 
-        # Add column sum
-        write.object.col <- rbind(write.object.col,
-                                  c(NA, colSums(write.object.col[, -1L])))
+        write.object.col <- data.frame(c(colnames(x$data)[1L], rep(NA, times = nrow(write.object.col) - 1L)),
+                                       write.object.col,
+                                       row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
 
-        write.object.col[nrow(write.object.col), 1] <- "Total"
+        names(write.object.col)[2L] <- colnames(x$data)[2L]
 
-        # Total percentages
+        #### Total percentages ####
         write.object.tot <- data.frame(write.object[write.object[, 2L] == "Tot %", 1L],
                                        write.object[write.object[, 2L] == "Tot %", -c(1L, 2L)],
                                        row.names = NULL, check.rows = FALSE,
                                        check.names = FALSE, fix.empty.names = FALSE)
 
-        write.object.tot[nrow(write.object.tot), ncol(write.object.tot)] <- 100L
+        write.object.tot <- data.frame(c(colnames(x$data)[1L], rep(NA, times = nrow(write.object.tot) - 1L)),
+                                       write.object.tot,
+                                       row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
 
-        #.............
-        # Prepare list
-        write.object <- list(Absolute = write.object.abs)
+        names(write.object.tot)[2L] <- colnames(x$data)[2L]
 
-        if (isTRUE("row" %in% x$args$print)) {
+        #### Prepare list ####
+        write.object <- list()
 
-          write.object$"Row%" <- write.object.row
+        if (isTRUE(x$args$freq)) { write.object$"Freq" <- write.object.abs }
 
-        }
+        if (isTRUE("row" %in% x$args$print)) { write.object$"Row%" <- write.object.row }
 
-        if (isTRUE("col" %in% x$args$print)) {
+        if (isTRUE("col" %in% x$args$print)) { write.object$"Col%" <- write.object.col }
 
-          write.object$"Col%" <-write.object.col
-
-        }
-
-        if (isTRUE("total" %in% x$args$print)) {
-
-          write.object$"Total%" <- write.object.tot
-
-        }
+        if (isTRUE("total" %in% x$args$print)) { write.object$"Total%" <- write.object.tot }
 
       }
 
-    #.......................
-    # Three-Dimensional Matrix
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Three-Dimensional Matrix ####
     } else if (isTRUE(ncol(x$data) == 3L)) {
 
-      # Absolute frequencies
-      freq.a.write <- NULL
-      for (i in seq_len(nrow(write.object$freq.a[[1L]]))) {
-
-        freq.a.write <- cbind(freq.a.write,
-                              unlist(lapply(write.object$freq.a, function(y) y[i, ])))
-
-      }
-
-      # Row %
-      perc.r.write <- NULL
-      for (i in seq_len(nrow(write.object$perc.c[[1L]]))) {
-
-        perc.r.write <- cbind(perc.r.write,
-                              unlist(lapply(write.object$perc.c, function(y) y[i, ])))
-
-      }
-
-      # Column %
-      perc.c.write <- NULL
-      for (i in seq_len(nrow(write.object$perc.r[[1L]]))) {
-
-        perc.c.write <- cbind(perc.c.write,
-                              unlist(lapply(write.object$perc.r, function(y) y[i, ])))
-
-      }
-
-      # Total %
-      perc.t.write <- NULL
-      for (i in seq_len(nrow(write.object$perc.t[[1L]]))) {
-
-        perc.t.write <- cbind(perc.t.write,
-                              unlist(lapply(write.object$perc.t, function(y) y[i, ])))
-
-      }
-
-      #......
-      # Result table
-      write.object  <- data.frame(rep(ifelse(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)",
-                                                   x = names(write.object$freq.a)), as.numeric(names(write.object$freq.a)), names(write.object$freq.a)),
-                                      each = ncol(write.object$freq.a[[1L]]), times = 4L),
-                                  rep(ifelse(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)",
-                                             x = colnames(write.object$freq.a[[1L]])), as.numeric(colnames(write.object$freq.a[[1L]])), colnames(write.object$freq.a[[1L]])),
-                                      times = 4L*length(write.object$freq.a)),
-                                  rep(c("Freq", "Row %", "Col %", "Tot %"), each =  ncol(write.object$freq.a[[1L]])*length(write.object$freq.a)),
-                                  rbind(freq.a.write, perc.r.write, perc.c.write, perc.t.write),
-                                  Total = c(apply(freq.a.write, 1L, sum), rep(NA, times = 3L*length(write.object$freq.a)*ncol(write.object$freq.a[[1L]]))),
-                                  row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
-
-      #......
-      # Sort table
-
-      # First and second variable are a factor
-      if (isTRUE(is.factor(x$data[, 1L]) && is.factor(x$data[, 2L]))) {
-
-        # Sort with NA
-        if (isTRUE(any(is.na(x$data)) && !isTRUE(x$args$na.omit))) {
-
-          write.object <- write.object[order(factor(write.object[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA")),
-                                       factor(write.object[, 2L], levels = c(levels(x$data[, 2L]), "NA"), labels = c(levels(x$data[, 2L]), "NA"))), ]
-
-          # Sort without NA
-        } else {
-
-          write.object <- write.object[order(factor(write.object[, 1L], levels = levels(x$data[, 1L]), labels = levels(x$data[, 1L])),
-                                       factor(write.object[, 2L], levels = levels(x$data[, 2L]), labels = levels(x$data[, 2L]))), ]
-
-        }
-
-      # First variable is a factor, second variable is not a factor
-      } else if (isTRUE(is.factor(x$data[, 1L]) && !is.factor(x$data[, 2L]))) {
-
-        # Sort with NA
-        if (isTRUE(any(is.na(x$data)) && !isTRUE(x$args$na.omit))) {
-
-          write.object <- write.object[order(factor(write.object[, 1L], levels = c(levels(x$data[, 1L]), "NA"), labels = c(levels(x$data[, 1L]), "NA")),
-                                             write.object[, 2L]), ]
-
-          # Sort without NA
-        } else {
-
-          write.object <- write.object[order(factor(write.object[, 1L], levels = levels(x$data[, 1L]), labels = levels(x$data[, 1L])),
-                                             write.object[, 2L]), ]
-
-        }
-
-      # First variable is not a factor, second variable is a factor
-      } else if (isTRUE(!is.factor(x$data[, 1L]) && is.factor(x$data[, 2L]))) {
-
-        # Sort with NA
-        if (isTRUE(any(is.na(x$data)) && !isTRUE(x$args$na.omit))) {
-
-          write.object <- write.object[order(write.object[, 1L],
-                                       factor(write.object[, 2L], levels = c(levels(x$data[, 2L]), "NA"), labels = c(levels(x$data[, 2L]), "NA"))), ]
-
-        # Sort without NA
-        } else {
-
-          write.object <- write.object[order(write.object[, 1L],
-                                      factor(write.object[, 2L], levels = levels(x$data[, 2L]), labels = levels(x$data[, 2L]))), ]
-
-        }
-
-      # First and second variable are not a factor
-      } else if (isTRUE(!is.factor(x$data[, 1L]) && !is.factor(x$data[, 2L]))) {
-
-        # Sort with NA
-        if (isTRUE(any(is.na(x$data)) && !isTRUE(x$args$na.omit))) {
-
-          write.object <- write.object[order(write.object[, 1L],
-                                       factor(write.object[, 2L], levels = c(levels(x$data[, 2L]), "NA"), labels = c(levels(x$data[, 2L]), "NA"))), ]
-
-        # Sort without NA
-        } else {
-
-          write.object <- write.object[order(write.object[, 1L], write.object[, 2L]), ]
-
-        }
-
-      }
-
-      # Add column sum
-      write.object <- rbind(write.object,
-                            c(NA, NA, NA, colSums(write.object[write.object[, 3] == "Freq", -c(1L, 2L, 3L)])))
-
-      write.object[nrow(write.object), 1L] <- "Total"
-
-      #......
-      # Output table not split
+      #...................
+      ### Output table not split ####
       if (!isTRUE(x$args$split)) {
 
         # Remove duplicated row labels
-        write.object[, 2L] <- ifelse(duplicated(apply(write.object[, c(1L, 2L)], 1, paste, collapse = "")), NA, write.object[, 2L])
+        duplic <- apply(write.object[, c(1L:2L)], 1L, paste, collapse = "")
+
+        write.object[, 1L] <- ifelse(duplicated(duplic), NA, write.object[, 1L])
+        write.object[, 2L] <- ifelse(duplicated(duplic), NA, write.object[, 2L])
+
         write.object[, 1L] <- ifelse(duplicated(write.object[, 1L]), NA, write.object[, 1L])
 
-        # Remove percentages
+        #### Frequencies only ####
         if (isTRUE(x$args$print == "no")) {
 
           write.object <- data.frame(write.object[write.object[, 3L] == "Freq" | is.na(write.object[, 3L]), 1L],
-                                     write.object[write.object[, 3L] == "Freq" | is.na(write.object[, 3L]), 2L],
-                                     write.object[write.object[, 3L] == "Freq" | is.na(write.object[, 3L]), -c(1L, 2L, 3L)],
-                                     row.names = NULL, check.rows = FALSE,
-                                     check.names = FALSE, fix.empty.names = FALSE)
+                                     write.object[write.object[, 3L] == "Freq" | is.na(write.object[, 3L]), -c(1L, 3L)],
+                                     row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
 
+          # Add variable names
+          write.object <- data.frame(c(colnames(x$data)[1L], rep(NA, times = nrow(write.object) - 1L)),
+                                     write.object,
+                                     row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
+
+          names(write.object)[c(2L, 3L)] <- colnames(x$data)[c(2L, 3L)]
+
+        #### Frequencies and Percentages ####
         } else {
 
-          if (isTRUE(!"row" %in% x$args$print)) {
+          # No row-wise percentages
+          if (isTRUE(!"row" %in% x$args$print)) { write.object <- write.object[-which(write.object[, 3L] == "Row %"), ] }
 
-            write.object <- write.object[-which(write.object[, 3L] == "Row %"), ]
+          # No col-wise percentages
+          if (isTRUE(!"col" %in% x$args$print)) { write.object <- write.object[-which(write.object[, 3L] == "Col %"), ] }
 
-          }
+          # No total percentages
+          if (isTRUE(!"total" %in% x$args$print)) { write.object <- write.object[-which(write.object[, 3L] == "Tot %"), ] }
 
-          if (isTRUE(!"col" %in% x$args$print)) {
-
-            write.object <- write.object[-which(write.object[, 3L] == "Col %"), ]
-
-          }
-
-          if (isTRUE(!"total" %in% x$args$print)) {
-
-            write.object <- write.object[-which(write.object[, 3L] == "Tot %"), ]
-
-          }
+          # Add variable names
+          names(write.object)[c(1L, 2L, 3L)] <- colnames(x$data)
 
         }
 
-        # Add variable names
-        write.object <- data.frame(c(colnames(x$data)[1L], rep(NA, times = nrow(write.object) - 1L)),
-                                   write.object,
-                                   row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
-
-        names(write.object)[c(2L, 3L)] <- colnames(x$data)[c(2L, 3L)]
-
-      #......
-      # Output table split
+      #...................
+      ### Output table split ####
       } else {
 
-        # Frequencies
+        #### Absolute Frequencies ####
         write.object.abs <- data.frame(write.object[write.object[, 3L] == "Freq" | is.na(write.object[, 3L]), 1L],
-                                       write.object[write.object[, 3L] == "Freq" | is.na(write.object[, 3L]), 2L],
-                                       write.object[write.object[, 3L] == "Freq" | is.na(write.object[, 3L]), -c(1L, 2L, 3L)],
+                                       write.object[write.object[, 3L] == "Freq" | is.na(write.object[, 3L]), -c(1L, 3L)],
                                        row.names = NULL, check.rows = FALSE,
                                        check.names = FALSE, fix.empty.names = FALSE)
 
-        # Row-wise percentages
+        # Remove duplicated row labels
+        write.object.abs[, 1L] <- ifelse(duplicated(write.object.abs[, 1L]), NA, write.object.abs[, 1L])
+
+        # Add variable names
+        write.object.abs <- data.frame(c(colnames(x$data)[1L], rep(NA, times = nrow(write.object.abs) - 1L)),
+                                       write.object.abs,
+                                       row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
+
+        names(write.object.abs)[c(2L, 3L)] <- colnames(x$data)[c(2L, 3L)]
+
+        #### Row-wise percentages ####
         write.object.row <- data.frame(write.object[which(write.object[, 3L] == "Row %"), 1L],
-                                       write.object[which(write.object[, 3L] == "Row %"), 2L],
-                                       write.object[which(write.object[, 3L] == "Row %"), -c(1L, 2L, 3L, ncol(write.object))],
-                                       Total = rowSums(write.object[which(write.object[, 3L] == "Row %"), -c(1L, 2L, 3L, ncol(write.object))]),
+                                       write.object[which(write.object[, 3L] == "Row %"), -c(1L, 3L)],
                                        row.names = NULL, check.rows = FALSE,
                                        check.names = FALSE, fix.empty.names = FALSE)
 
-        # Column-wise percentages
+        # Remove duplicated row labels
+        write.object.row[, 1L] <- ifelse(duplicated(write.object.row[, 1L]), NA, write.object.row[, 1L])
+
+        # Add variable names
+        write.object.row <- data.frame(c(colnames(x$data)[1L], rep(NA, times = nrow(write.object.row) - 1L)),
+                                       write.object.row,
+                                       row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
+
+        names(write.object.row)[c(2L, 3L)] <- colnames(x$data)[c(2L, 3L)]
+
+
+        #### Column-wise percentages ####
         write.object.col <- data.frame(write.object[which(write.object[, 3L] == "Col %"), 1L],
-                                       write.object[which(write.object[, 3L] == "Col %"), 2L],
-                                       write.object[which(write.object[, 3L] == "Col %"), -c(1L, 2L, 3L, ncol(write.object))],
+                                       write.object[which(write.object[, 3L] == "Col %"), -c(1L, 3L)],
                                        row.names = NULL, check.rows = FALSE,
                                        check.names = FALSE, fix.empty.names = FALSE)
 
-        # Total percentages
+        # Remove duplicated row labels
+        write.object.col[, 1L] <- ifelse(duplicated(write.object.col[, 1L]), NA, write.object.col[, 1L])
+
+        # Add variable names
+        write.object.col <- data.frame(c(colnames(x$data)[1L], rep(NA, times = nrow(write.object.col) - 1L)),
+                                       write.object.col,
+                                       row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
+
+        names(write.object.col)[c(2L, 3L)] <- colnames(x$data)[c(2L, 3L)]
+
+        #### Total percentages ####
         write.object.tot <- data.frame(write.object[write.object[, 3L] == "Tot %", 1L],
-                                       write.object[write.object[, 3L] == "Tot %", 2L],
-                                       write.object[write.object[, 3L] == "Tot %", -c(1L, 2L, 3L)],
+                                       write.object[write.object[, 3L] == "Tot %", -c(1L, 3L)],
                                        row.names = NULL, check.rows = FALSE,
                                        check.names = FALSE, fix.empty.names = FALSE)
 
-        write.object.tot[nrow(write.object.tot), ncol(write.object.tot)] <- 100L
+        # Remove duplicated row labels
+        write.object.tot[, 1L] <- ifelse(duplicated(write.object.tot[, 1L]), NA, write.object.tot[, 1L])
 
-        #.............
-        # Prepare list
-        write.object <- list(Absolute = write.object.abs)
+        # Add variable write.object.tot
+        write.object.tot <- data.frame(c(colnames(x$data)[1L], rep(NA, times = nrow(write.object.col) - 1L)),
+                                       write.object.tot,
+                                       row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
 
-        if (isTRUE("row" %in% x$args$print)) {
+        names(write.object.tot)[c(2L, 3L)] <- colnames(x$data)[c(2L, 3L)]
 
-          write.object$"Row%" <- write.object.row
+        #### Prepare list ####
+        write.object <- list()
 
-        }
+        if (isTRUE(x$args$freq)) { write.object$"Freq" <- write.object.abs }
 
-        if (isTRUE("col" %in% x$args$print)) {
+        if (isTRUE("row" %in% x$args$print)) { write.object$"Row%" <- write.object.row }
 
-          write.object$"Col%" <-write.object.col
+        if (isTRUE("col" %in% x$args$print)) { write.object$"Col%" <- write.object.col }
 
-        }
-
-        if (isTRUE("total" %in% x$args$print)) {
-
-          write.object$"Total%" <- write.object.tot
-
-        }
+        if (isTRUE("total" %in% x$args$print)) { write.object$"Total%" <- write.object.tot }
 
       }
 
     }
+  #_____________________________________________________________________________
+  #
+  # Descriptive Statistics, descript() -----------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Descriptive Statistics, descript() ####
   }, descript = {
+
+    # Variables to round
+    write.round <- c("pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt")
 
     #...................
     ### No Grouping, No Split ####
     if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      # Round
+      write.object[, write.round] <- sapply(write.round, function(y) ifelse(!is.na(write.object[, y]), round(write.object[, y], digits = digits), NA))
 
       #...............
       # Select statistical measures
@@ -605,13 +551,16 @@ write.result <- function(x, file = "Results.xlsx") {
       } else {
 
         # Select statistical measures
-        write.object <- write.object[, c(1, print)]
+        write.object <- write.object[, c(1L, print)]
 
       }
 
     #...................
     ### Grouping, No Split ####
     } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      # Round
+      write.object[, write.round] <- sapply(write.round, function(y) ifelse(!is.na(write.object[, y]), round(write.object[, y], digits = digits), NA))
 
       #...............
       # Select statistical measures
@@ -625,23 +574,30 @@ write.result <- function(x, file = "Results.xlsx") {
       if (isTRUE(ncol(x$data$x) == 1L)) {
 
         # Select statistical measures
-        write.object <- write.object[, c(1, print)]
+        write.object <- write.object[, c(1L, print)]
 
       # More than one variable
       } else {
 
         # Select statistical measures
-        write.object <- write.object[, c(1, 2, print)]
+        write.object <- write.object[, c(1L, 2L, print)]
 
       }
 
       # Convert to numeric
       write.object$Group <- ifelse(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)",
-                                             x = write.object$Group), as.numeric(write.object$Group), write.object$Group)
+                                         x = write.object$Group), as.numeric(write.object$Group), write.object$Group)
 
     #...................
     ### Split, without or with Grouping ####
     } else if (isTRUE(!is.null(x$data$split))) {
+
+      # Round
+      for (i in names(write.object)) {
+
+        write.object[[i]][, write.round] <- sapply(write.round, function(y) ifelse(!is.na(write.object[[i]][, y]), round(write.object[[i]][, y], digits = digits), NA))
+
+      }
 
       #......
       # No grouping
@@ -703,13 +659,15 @@ write.result <- function(x, file = "Results.xlsx") {
 
     }
 
-  #...................
-  ### Frequency Table, freq() ####
+  #_____________________________________________________________________________
+  #
+  # Frequency Table, freq() ----------------------------------------------------
+
   }, freq = {
 
     #...................
     ### One variable ####
-    if (isTRUE(ncol(x$data) == 1)) {
+    if (isTRUE(ncol(x$data) == 1L)) {
 
       #......................
       # Values shown in columns, variables in the rows
@@ -743,13 +701,13 @@ write.result <- function(x, file = "Results.xlsx") {
         # Complete data
         if (isTRUE(all(!is.na(x$data)))) {
 
-          write.object <- data.frame(c("Value", rep("", times = nrow(write.object) - 2), "Total", "Missing"),
+          write.object <- data.frame(c("Value", rep("", times = nrow(write.object) - 2L), "Total", "Missing"),
                                      c(write.object[, "Value"], NA),
-                                     Freq = c(write.object[1:nrow(write.object) - 1, "Freq"],
-                                              sum(write.object[1:nrow(write.object) - 1, "Freq"]),
+                                     Freq = c(write.object[1:nrow(write.object) - 1L, "Freq"],
+                                              sum(write.object[1:nrow(write.object) - 1L, "Freq"]),
                                               write.object[nrow(write.object), "Freq"]),
-                                     Perc = c(write.object[1:nrow(write.object) - 1, "Perc"],
-                                              sum(write.object[1:nrow(write.object) - 1, "Perc"]),
+                                     Perc = c(write.object[1:nrow(write.object) - 1L, "Perc"],
+                                              sum(write.object[1:nrow(write.object) - 1L, "Perc"]),
                                               write.object[nrow(write.object), "Perc"]),
                                      fix.empty.names = FALSE, check.names = FALSE, row.names = NULL)
 
@@ -758,18 +716,18 @@ write.result <- function(x, file = "Results.xlsx") {
         # Missing data
         } else {
 
-          write.object <- data.frame(c("Value", rep("", times = nrow(write.object) - 2), "Total", "Missing", "Total"),
+          write.object <- data.frame(c("Value", rep("", times = nrow(write.object) - 2L), "Total", "Missing", "Total"),
                                      c(write.object[, "Value"], NA, NA),
-                                     Freq = c(write.object[1:nrow(write.object) - 1, "Freq"],
-                                              sum(write.object[1:nrow(write.object) - 1, "Freq"]),
+                                     Freq = c(write.object[1:nrow(write.object) - 1L, "Freq"],
+                                              sum(write.object[1:nrow(write.object) - 1L, "Freq"]),
                                               write.object[nrow(write.object), "Freq"],
                                               sum(write.object[, "Freq"])),
-                                     Perc = c(write.object[1:nrow(write.object) - 1, "Perc"],
-                                              sum(write.object[1:nrow(write.object) - 1, "Perc"]),
+                                     Perc = c(write.object[1:nrow(write.object) - 1L, "Perc"],
+                                              sum(write.object[1:nrow(write.object) - 1L, "Perc"]),
                                               write.object[nrow(write.object), "Perc"],
                                               sum(write.object[, "Perc"])),
-                                     V.Perc = c(write.object[1:nrow(write.object) - 1, "V.Perc"],
-                                                sum(write.object[1:nrow(write.object) - 1, "V.Perc"]), NA, NA),
+                                     V.Perc = c(write.object[1:nrow(write.object) - 1L, "V.Perc"],
+                                                sum(write.object[1:nrow(write.object) - 1L, "V.Perc"]), NA, NA),
                                      fix.empty.names = FALSE, check.names = FALSE, row.names = NULL)
 
           colnames(write.object) <- c("", "", "Freq", "Perc", "Valid Perc")
@@ -777,6 +735,9 @@ write.result <- function(x, file = "Results.xlsx") {
         }
 
       }
+
+      # Round digits
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
 
     #...................
     ### More than one variable ####
@@ -816,23 +777,23 @@ write.result <- function(x, file = "Results.xlsx") {
           } else {
 
             # Complete data
-            if (isTRUE(y[nrow(y), "Freq"] == 0)) {
+            if (isTRUE(y[nrow(y), "Freq"] == 0L)) {
 
-              data.frame(c("Value", rep("", times = nrow(y) - 2), "Total", "Missing"),
+              data.frame(c("Value", rep("", times = nrow(y) - 2L), "Total", "Missing"),
                          c(y[, "Value"], NA),
-                         Freq = c(y[1:nrow(y) - 1, "Freq"], sum(y[1:nrow(y) - 1, "Freq"]), y[nrow(y), "Freq"]),
-                         Perc = c(y[1:nrow(y) - 1, "Perc"], sum(y[1:nrow(y) - 1, "Perc"]), y[nrow(y), "Perc"]),
+                         Freq = c(y[1:nrow(y) - 1L, "Freq"], sum(y[1:nrow(y) - 1L, "Freq"]), y[nrow(y), "Freq"]),
+                         Perc = c(y[1:nrow(y) - 1L, "Perc"], sum(y[1:nrow(y) - 1L, "Perc"]), y[nrow(y), "Perc"]),
                          fix.empty.names = FALSE, check.names = FALSE, row.names = NULL)
 
             } else {
 
-              data.frame(c("Value", rep("", times = nrow(y) - 2), "Total", "Missing", "Total"),
+              data.frame(c("Value", rep("", times = nrow(y) - 2L), "Total", "Missing", "Total"),
                          c(y[, "Value"], NA, NA),
-                         Freq = c(y[1:nrow(y) - 1, "Freq"], sum(y[1:nrow(y) - 1, "Freq"]),
+                         Freq = c(y[1:nrow(y) - 1L, "Freq"], sum(y[1:nrow(y) - 1L, "Freq"]),
                                   y[nrow(y), "Freq"],
                                   sum(y[, "Freq"])),
-                         Perc = c(y[1:nrow(y) - 1, "Perc"], sum(y[1:nrow(y) - 1, "Perc"]), y[nrow(y), "Perc"], sum(y[, "Perc"])),
-                         V.Perc = c(y[1:nrow(y) - 1, "V.Perc"], sum(y[1:nrow(y) - 1, "V.Perc"]), NA, NA),
+                         Perc = c(y[1:nrow(y) - 1L, "Perc"], sum(y[1:nrow(y) - 1L, "Perc"]), y[nrow(y), "Perc"], sum(y[, "Perc"])),
+                         V.Perc = c(y[1:nrow(y) - 1L, "V.Perc"], sum(y[1:nrow(y) - 1L, "V.Perc"]), NA, NA),
                          fix.empty.names = FALSE, check.names = FALSE, row.names = NULL)
 
             }
@@ -854,13 +815,13 @@ write.result <- function(x, file = "Results.xlsx") {
 
             write.object$freq <- data.frame(write.object$freq[, "Var"],
                                             write.object$freq[, -c(1, ncol(write.object$freq))],
-                                            Total = rowSums(write.object$freq[, -c(1, ncol(write.object$freq))]),
+                                            Total = rowSums(write.object$freq[, -c(1L, ncol(write.object$freq))]),
                                             Missing = write.object$freq[, ncol(write.object$freq)],
                                             fix.empty.names = FALSE, check.names = FALSE, row.names = NULL)
 
             write.object$perc <- data.frame(write.object$perc[, "Var"],
-                                            write.object$perc[, -c(1, ncol(write.object$perc))],
-                                            Total = rowSums(write.object$perc[, -c(1, ncol(write.object$perc))]),
+                                            write.object$perc[, -c(1L, ncol(write.object$perc))],
+                                            Total = rowSums(write.object$perc[, -c(1L, ncol(write.object$perc))]),
                                             Missing = write.object$perc[, ncol(write.object$perc)],
                                             fix.empty.names = FALSE, check.names = FALSE, row.names = NULL)
 
@@ -871,24 +832,24 @@ write.result <- function(x, file = "Results.xlsx") {
           } else {
 
             write.object$freq <- data.frame(write.object$freq[, "Var"],
-                                            write.object$freq[, -c(1, ncol(write.object$freq))],
-                                            Total = rowSums(write.object$freq[, -c(1, ncol(write.object$freq))]),
+                                            write.object$freq[, -c(1L, ncol(write.object$freq))],
+                                            Total = rowSums(write.object$freq[, -c(1L, ncol(write.object$freq))]),
                                             Missing = write.object$freq[, ncol(write.object$freq)],
-                                            Total = rowSums(write.object$freq[, -1]),
+                                            Total = rowSums(write.object$freq[, -1L]),
                                             fix.empty.names = FALSE, check.names = FALSE, row.names = NULL)
 
             write.object$perc <- data.frame(write.object$perc[, "Var"],
-                                            write.object$perc[, -c(1, ncol(write.object$perc))],
-                                            Total = rowSums(write.object$perc[, -c(1, ncol(write.object$perc))]),
+                                            write.object$perc[, -c(1L, ncol(write.object$perc))],
+                                            Total = rowSums(write.object$perc[, -c(1L, ncol(write.object$perc))]),
                                             Missing = write.object$perc[, ncol(write.object$perc)],
-                                            Total = rowSums(write.object$perc[, -1]),
+                                            Total = rowSums(write.object$perc[, -1L]),
                                             fix.empty.names = FALSE, check.names = FALSE, row.names = NULL)
 
             write.object$v.perc <- data.frame(write.object$v.perc[, "Var"],
-                                              write.object$v.perc[, -c(1, ncol(write.object$v.perc))],
-                                              Total = rowSums(write.object$v.perc[, -c(1, ncol(write.object$v.perc))]),
+                                              write.object$v.perc[, -c(1L, ncol(write.object$v.perc))],
+                                              Total = rowSums(write.object$v.perc[, -c(1L, ncol(write.object$v.perc))]),
                                               Missing = write.object$v.perc[, ncol(write.object$v.perc)],
-                                              Total = rowSums(write.object$v.perc[, -1]),
+                                              Total = rowSums(write.object$v.perc[, -1L]),
                                               fix.empty.names = FALSE, check.names = FALSE, row.names = NULL)
 
             names(write.object) <- c("Freq", "Perc", "Valid Perc")
@@ -950,16 +911,40 @@ write.result <- function(x, file = "Results.xlsx") {
 
       }
 
+      # Round
+      for (i in names(write.object)) {
+
+        write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+      }
+
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Coefficient Alpha and Item Statistics, item.alpha() ####
+    # Print
+    if (isTRUE(x$args == "no")) {
+
+      write.object$Perc <- NULL
+      write.object$`Valid Perc` <- NULL
+
+    } else {
+
+      if (isTRUE(!"perc" %in% x$args$print)) { write.object$Perc <- NULL }
+      if (isTRUE(!"v.perc" %in% x$args$print)) { write.object$`Valid Perc` <- NULL }
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Coefficient Alpha and Item Statistics, item.alpha() ------------------------
+
   }, item.alpha = {
 
     if (is.null(write.object$itemstat)) {
 
       write.object <- write.object$alpha
       names(write.object) <- c("Items", "Alpha")
+
+      write.object$Alpha <- round(write.object$Alpha, digits = digits)
 
     } else {
 
@@ -968,10 +953,19 @@ write.result <- function(x, file = "Results.xlsx") {
       names(write.object$Alpha) <- c("n", "Items", "Alpha", "Low", "Upp")
       names(write.object$Itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "It.Cor", "Alpha")
 
+      write.object$Alpha <- round(write.object$Alpha, digits = digits)
+      write.object$Itemstat[, -1L] <- round(write.object$Itemstat[, -1L], digits = digits)
+
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Confirmatory Factor Analysis, item.cfa() ####
+    # Print
+    if (isTRUE(!"alpha" %in% x$args$print)) { write.object$Alpha <- NULL }
+    if (isTRUE(!"item" %in% x$args$print)) { write.object$Itemstat <- NULL }
+
+  #_____________________________________________________________________________
+  #
+  # Confirmatory Factor Analysis, item.cfa() -----------------------------------
+
   }, item.cfa = {
 
     #...................
@@ -985,6 +979,9 @@ write.result <- function(x, file = "Results.xlsx") {
     #...................
     ### Covariance coverage ####
 
+    # Round
+    write.object$coverage <- sapply(data.frame(write.object$coverage), round, digits = digits)
+
     # Add variable names in the rows
     coverage <- data.frame(colnames(write.object$coverage), write.object$coverage,
                            row.names = NULL, check.rows = FALSE,
@@ -994,6 +991,9 @@ write.result <- function(x, file = "Results.xlsx") {
     ### Univariate Sample Statistics ####
 
     itemstat <- write.object$itemstat
+
+    # Round
+    itemstat[, -1L] <- sapply(itemstat[, -1L], round, digits = digits)
 
     colnames(itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt")
 
@@ -1009,19 +1009,29 @@ write.result <- function(x, file = "Results.xlsx") {
 
     fit <- write.object$fit
 
+    # Round
+    fit[, -1L] <- sapply(fit[, -1L], round, digits = digits)
+
     colnames(fit) <- c("", "Standard", "Ad hoc", "Robust")
 
     #...................
     ### Parameter estimates ####
 
-    param <- write.object$param[, -c(2, 3)]
+    param <- write.object$param[, -c(2L, 3L)]
 
-    colnames(param) <- c("Param1", "Param2", "Estimate", "SE", "z", "pvalue", "StdYX")
+    # Round
+    param[, -c(1L, 2L, 6L)] <- sapply(param[, -c(1L, 2L, 6L)], round, digits = digits)
+    param[, 6L] <- sapply(param[, 6L], round, digits = p.digits)
+
+    colnames(param) <- c("Parameter", "Variable", "Estimate", "SE", "z", "pvalue", "StdYX")
 
     #...................
     ### Modification indices ####
 
     modind <- write.object$modind
+
+    # Round
+    modind[, -c(1L, 2L, 3L)] <- sapply(modind[, -c(1L, 2L, 3L)], round, digits = digits)
 
     colnames(modind) <- c("lhs", "op", "rhs", "MI", "EPC", "STDYX EPC")
 
@@ -1031,14 +1041,26 @@ write.result <- function(x, file = "Results.xlsx") {
     write.object <- list(summary = summary, coverage = coverage, itemstat = itemstat,
                          itemfreq = itemfreq, fit = fit, param = param, modind = modind)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Coefficient Omega, Hierarchical Omega, and Categorical Omega, item.omega() ####
+    # Print
+    if (isTRUE(!"summary" %in% x$args$print)) { write.object$summary <- NULL }
+    if (isTRUE(!"coverage" %in% x$args$print)) { write.object$coverage <- NULL }
+    if (isTRUE(!"descript" %in% x$args$print)) { write.object$itemstat <- NULL; write.object$itemfreq <- NULL }
+    if (isTRUE(!"fit" %in% x$args$print)) { write.object$fit <- NULL }
+    if (isTRUE(!"est" %in% x$args$print)) { write.object$param <- NULL }
+    if (isTRUE(!"modind" %in% x$args$print)) { write.object$modind <- NULL }
+
+  #_____________________________________________________________________________
+  #
+  # Coefficient Omega, item.omega() --------------------------------------------
+
   }, item.omega = {
 
     if (is.null(write.object$itemstat)) {
 
       write.object <- write.object$omega
       names(write.object) <- c("Items", "Omega")
+
+      write.object$Omega <- round(write.object$Omega, digits = digits)
 
     } else {
 
@@ -1047,14 +1069,62 @@ write.result <- function(x, file = "Results.xlsx") {
       names(write.object$Omega) <- c("n", "Items", "Omega", "Low", "Upp")
       names(write.object$Itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Std.Ld", "Omega")
 
+      write.object$Omega <- round(write.object$Omega, digits = digits)
+      write.object$Itemstat[, -1L] <- round(write.object$Itemstat[, -1L], digits = digits)
+
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Within-Group and Between-Group Correlation Matrix, multilevel.cor() ####
+    if (isTRUE(!"omega" %in% x$args$print)) { write.object$Omega <- NULL }
+    if (isTRUE(!"item" %in% x$args$print)) { write.object$Itemstat <- NULL }
+
+  #_____________________________________________________________________________
+  #
+  # Within- and Between-Group Correlation Matrix, multilevel.cor() -------------
+
   }, multilevel.cor = {
 
     # Split results
     if (isTRUE(x$args$split)) {
+
+      # Round
+      write.object$with.cor <- sapply(data.frame(write.object$with.cor), round, digits = digits)
+      write.object$with.se <- sapply(data.frame(write.object$with.se), round, digits = digits)
+      write.object$with.stat <- sapply(data.frame(write.object$with.stat), round, digits = digits)
+      write.object$with.p <- sapply(data.frame(write.object$with.p), round, digits = p.digits)
+
+      write.object$betw.cor <- sapply(data.frame(write.object$betw.cor), round, digits = digits)
+      write.object$betw.se <- sapply(data.frame(write.object$betw.se), round, digits = digits)
+      write.object$betw.stat <- sapply(data.frame(write.object$betw.stat), round, digits = digits)
+      write.object$betw.p <- sapply(data.frame(write.object$betw.p), round, digits = p.digits)
+
+      # Lower and/or upper triangular
+      if (isTRUE(tri == "lower")) {
+
+        write.object$with.cor[upper.tri(write.object$with.cor)] <- NA
+        write.object$with.se[upper.tri(write.object$with.se)] <- NA
+        write.object$with.stat[upper.tri(write.object$with.stat)] <- NA
+        write.object$with.p[upper.tri(write.object$with.p)] <- NA
+
+        write.object$betw.cor[upper.tri(write.object$betw.cor)] <- NA
+        write.object$betw.se[upper.tri(write.object$betw.se)] <- NA
+        write.object$betw.stat[upper.tri(write.object$betw.stat)] <- NA
+        write.object$betw.p[upper.tri(write.object$betw.p)] <- NA
+
+      }
+
+      if (isTRUE(tri == "upper")) {
+
+        write.object$with.cor[lower.tri(write.object$with.cor)] <- NA
+        write.object$with.se[lower.tri(write.object$with.se)] <- NA
+        write.object$with.stat[lower.tri(write.object$with.stat)] <- NA
+        write.object$with.p[lower.tri(write.object$with.p)] <- NA
+
+        write.object$betw.cor[lower.tri(write.object$betw.cor)] <- NA
+        write.object$betw.se[lower.tri(write.object$betw.se)] <- NA
+        write.object$betw.stat[lower.tri(write.object$betw.stat)] <- NA
+        write.object$betw.p[lower.tri(write.object$betw.p)] <- NA
+
+      }
 
       write.object <- list(summary = write.object$summary,
                            with.cor = write.object$with.cor, with.se = write.object$with.se,
@@ -1062,12 +1132,36 @@ write.result <- function(x, file = "Results.xlsx") {
                            betw.cor = write.object$betw.cor, betw.se = write.object$betw.se,
                            betw.stat = write.object$betw.stat, betw.p = write.object$betw.p)
 
+      # Add 'Lower triangular: Within-Group, Upper triangular: Between-Group
+      write.object$summary <- data.frame(rbind(write.object$summary,
+                                               c(NA, NA, NA),
+                                               c("Lower triangular: Within-Group, Upper triangular: Between-Group", NA, NA)),
+                                         row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
+
+      # Print
+      if (isTRUE(!"cor" %in% x$args$print)) { write.object$with.cor <- NULL; write.object$betw.cor <- NULL }
+      if (isTRUE(!"se" %in% x$args$print)) { write.object$with.se <- NULL; write.object$betw.se <- NULL }
+      if (isTRUE(!"stat" %in% x$args$print)) { write.object$with.stat <- NULL; write.object$betw.se <- NULL }
+      if (isTRUE(!"p" %in% x$args$print)) { write.object$with.p <- NULL; write.object$betw.p <- NULL }
+
     # Combined results
     } else {
+
+      # Round
+      write.object$wb.cor <- sapply(data.frame(write.object$wb.cor), round, digits = digits)
+      write.object$wb.se <- sapply(data.frame(write.object$wb.se), round, digits = digits)
+      write.object$wb.stat <- sapply(data.frame(write.object$wb.stat), round, digits = digits)
+      write.object$wb.p <- sapply(data.frame(write.object$wb.p), round, digits = p.digits)
 
       write.object <- list(summary = write.object$summary,
                            cor = write.object$wb.cor, se = write.object$wb.se,
                            stat = write.object$wb.stat, p = write.object$wb.p)
+
+      # Print
+      if (isTRUE(!"cor" %in% x$args$print)) { write.object$cor <- NULL }
+      if (isTRUE(!"se" %in% x$args$print)) { write.object$se <- NULL }
+      if (isTRUE(!"stat" %in% x$args$print)) { write.object$stat <- NULL }
+      if (isTRUE(!"p" %in% x$args$print)) { write.object$p <- NULL }
 
     }
 
@@ -1076,19 +1170,23 @@ write.result <- function(x, file = "Results.xlsx") {
                                                                           row.names = NULL, check.rows = FALSE,
                                                                           check.names = FALSE, fix.empty.names = FALSE))
 
-    # Add 'Lower triangular: Within-Group, Upper triangular: Between-Group
-    if (isTRUE(!x$args$split)) {
+  #_____________________________________________________________________________
+  #
+  # Multilevel Descriptive Statistics, multilevel.descript() -------------------
 
-      write.object$summary <- data.frame(rbind(write.object$summary,
-                                               c(NA, NA, NA),
-                                               c("Lower triangular: Within-Group, Upper triangular: Between-Group", NA, NA)),
-                                         row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
-
-    }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Multilevel Descriptive Statistics, multilevel.descript() ####
   }, multilevel.descript = {
+
+    # Round
+    x$result$m.cluster.size <- round(x$result$m.cluster.size, digits = digits)
+    x$result$sd.cluster.size <- round(x$result$sd.cluster.size, digits = digits)
+    x$result$mean.x <- round(x$result$mean.x, digits = digits)
+    x$result$var.w <- round(x$result$var.w, digits = digits)
+    x$result$var.b <- round(x$result$var.b, digits = digits)
+    x$result$icc1 <- round(x$result$icc1, digits = icc.digits)
+    x$result$icc2 <- round(x$result$icc2, digits = icc.digits)
+    x$result$deff <- round(x$result$deff, digits = digits)
+    x$result$deff.sqrt <- round(x$result$deff.sqrt, digits = digits)
+    x$result$n.effect <- round(x$result$n.effect, digits = digits)
 
     write.object <- data.frame(cbind(c("No. of cases", "No. of missing values", "",
                                        "No. of clusters", "Average cluster size", "SD cluster size", "Min cluster size", "Max cluster size", "",
@@ -1112,24 +1210,42 @@ write.result <- function(x, file = "Results.xlsx") {
     ### More than one variable ####
     } else {
 
-      write.object[, -1] <- vapply(write.object[, -1], as.numeric, FUN.VALUE = numeric(18))
+      write.object[, -1L] <- vapply(write.object[, -1L], as.numeric, FUN.VALUE = numeric(18L))
 
       names(write.object) <- c("", names(x$result$no.obs))
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Variance-Covariance Coverage, na.coverage() ####
+  #_____________________________________________________________________________
+  #
+  # Variance-Covariance Coverage, na.coverage() --------------------------------
+
   }, na.coverage = {
+
+    write.object <- sapply(data.frame(write.object), round, digits = digits)
 
     # Add variable names in the rows
     write.object <- data.frame(colnames(write.object), write.object,
                                row.names = NULL, check.rows = FALSE,
                                check.names = FALSE, fix.empty.names = FALSE)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Descriptive Statistics for Missing Data, na.descript() ####
+  #_____________________________________________________________________________
+  #
+  # Descriptive Statistics for Missing Data, na.descript() ---------------------
+
   }, na.descript = {
+
+    # Round
+    write.object$perc.complete <- round(write.object$perc.complete, digits = digits)
+    write.object$perc.incomplete <- round(write.object$perc.incomplete, digits = digits)
+    write.object$perc.observed.values <- round(write.object$perc.observed.values, digits = digits)
+    write.object$perc.missing.values <- round(write.object$perc.missing.values, digits = digits)
+    write.object$perc.missing.mean <- round(write.object$perc.missing.mean, digits = digits)
+    write.object$perc.missing.sd <- round(write.object$perc.missing.sd, digits = digits)
+    write.object$perc.missing.min <- round(write.object$perc.missing.min, digits = digits)
+    write.object$perc.missing.p25 <- round(write.object$perc.missing.p25, digits = digits)
+    write.object$perc.missing.p75 <- round(write.object$perc.missing.p75, digits = digits)
+    write.object$perc.missing.max <- round(write.object$perc.missing.max, digits = digits)
 
     write.object <- data.frame(c("No. of cases", "No. of complete cases", "No. of incomplete cases", NA,
                                  "No. Of values", "No. Of observed values", "No of missing values", NA,
@@ -1148,12 +1264,18 @@ write.result <- function(x, file = "Results.xlsx") {
                                row.names = NULL, check.rows = FALSE,
                                check.names = FALSE, fix.empty.names = FALSE)
 
-    # Frequency table fir each variable
+    # Frequency table for each variable
     write.object <- list(Summary = write.object, Table = x$result$table.miss)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Missing Data Pattern, na.pattern() ####
+  #_____________________________________________________________________________
+  #
+  # Missing Data Pattern, na.pattern() -----------------------------------------
+
   }, na.pattern = {
+
+    # Round
+    write.object$perc <- round(write.object$perc, digits = digits)
+    write.object$pNA <- round(write.object$pNA, digits = digits)
 
     names(write.object)[c(1, 3)] <- c("Pattern", "Perc")
 

@@ -45,10 +45,16 @@
 #' \emph{Computational Statistics and Data Analysis, 50}, 775-782. https://doi.org/10.1016/j.csda.2004.10.003
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
-#' \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
-#' and result table (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab list with the input specified in \code{x}, \code{group}, and
+#'                  \code{split} \cr
+#' \code{args} \tab specification of function arguments  \cr
+#' \code{result} \tab result table \cr
+#' }
 #'
 #' @export
 #'
@@ -106,18 +112,16 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
                   conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
                   digits = 2, as.na = NULL, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check 'group'
   if (isTRUE(!is.null(group))) {
 
@@ -130,7 +134,6 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
   }
 
-  #......
   # Check 'split'
   if (isTRUE(!is.null(split))) {
 
@@ -143,13 +146,13 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
   }
 
-  #----------------------------------------
-  # Data frame
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -160,15 +163,14 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
     if (isTRUE(any(x.miss))) {
 
-      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
-                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
 
     }
 
   }
 
-  #----------------------------------------
-  # Numeric Variables
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Numeric Variables ####
 
   # Non-numeric variables
   non.num <- !vapply(x, is.numeric, FUN.VALUE = logical(1))
@@ -177,34 +179,31 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
     x <- x[, -which(non.num), drop = FALSE]
 
-    #......
     # Variables left
 
     if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
 
-    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(non.num)), collapse = ", ")),
-            call. = FALSE)
+    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(non.num)), collapse = ", ")), call. = FALSE)
 
   }
 
-  #----------------------------------------
-  # Listwise deletion
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise deletion ####
 
   if (isTRUE(na.omit && any(is.na(x)))) {
 
-    #......
-    # No group and split variable
+    #...................
+    ### No group and split variable ####
     if (isTRUE(is.null(group) && is.null(split))) {
 
       x <- na.omit(as.data.frame(x, stringsAsFactors = FALSE))
 
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x)$na.action)), call. = FALSE)
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE)
 
     }
 
-    #......
-    # Group variable, no split variable
+    #...................
+    ### Group variable, no split variable ####
     if (isTRUE(!is.null(group) && is.null(split))) {
 
       x.group <- na.omit(data.frame(x, group = group, stringsAsFactors = FALSE))
@@ -212,13 +211,12 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
       x <- x.group[, -grep("group", names(x.group)), drop = FALSE]
       group <- x.group$group
 
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x.group)$na.action)), call. = FALSE)
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x.group)$na.action)), call. = FALSE)
 
     }
 
-    #......
-    # No group variable, split variable
+    #...................
+    ### No group variable, split variable ####
     if (isTRUE(is.null(group) && !is.null(split))) {
 
       x.split <- na.omit(data.frame(x, split = split, stringsAsFactors = FALSE))
@@ -226,8 +224,7 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
       x <- x.split[, -grep("split", names(x.split)), drop = FALSE]
       split <- x.split$split
 
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x.split)$na.action)), call. = FALSE)
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x.split)$na.action)), call. = FALSE)
 
     }
 
@@ -241,52 +238,39 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
       group <- x.group.split$group
       split <- x.group.split$split
 
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x.group.split)$na.action)), call. = FALSE)
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x.group.split)$na.action)), call. = FALSE)
 
     }
 
-    #......
-    # Variable with missing values only
+    #...................
+    ### Variable with missing values only ####
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
     if (isTRUE(any(x.miss))) {
 
-      stop(paste0("After listwise deletion, following variables are completely missing: ",
-                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After listwise deletion, following variables are completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
 
     }
 
   }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'method'
     if (isTRUE(!all(method %in%  c("chisq", "bonett")))) { stop("Character string in the argument 'method' does not match with \"chisq\", or \"bonett\".", call. = FALSE) }
 
-    #......
     # Check input 'alternative'
-    if (isTRUE(!all(alternative %in%  c("two.sided", "less", "greater")))) {
+    if (isTRUE(!all(alternative %in%  c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
 
-      stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".",
-           call. = FALSE)
-
-    }
-
-    #......
     # Check input 'conf.level'
     if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
-    #......
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
@@ -298,7 +282,6 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
     }
 
-    #......
     # Check input 'split'
     if (isTRUE(!is.null(split))) {
 
@@ -310,59 +293,47 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
     }
 
-    #......
     # Check input 'sort.var'
     if (isTRUE(!is.logical(sort.var))) { stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE) }
 
-    #......
     # Check input 'na.omit'
     if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #----------------------------------------
-  # Method
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Method ####
 
-  if (isTRUE(all(c("chisq", "bonett") %in% method))) {
+  if (isTRUE(all(c("chisq", "bonett") %in% method))) { method <- "bonett" }
 
-    method <- "bonett"
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Alternative hypothesis ####
 
-  }
+  if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  #----------------------------------------
-  # Alternative hypothesis
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) {
-
-    alternative <- "two.sided"
-
-  }
-
-  ####################################################################################
-  # Main Function
-
-  #----------------------------------------
-  # Confidence interval for the variance
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Confidence interval for the standard deviation ####
 
   sd.conf <- function(x, method, alternative, conf.level, side) {
 
-    #......
     # Data
     x <- na.omit(x)
     x.var <- var(x)
 
-    #......
     # Number of observations
     if (isTRUE((length(x) < 2L && method == "chisq") || (length(x) < 4L && method == "bonett"))) {
 
@@ -370,8 +341,8 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
     } else {
 
-      #--------------------------------------------------------------------
-      # Chi square method
+      #...................
+      ### Chi square method ####
       if (isTRUE(method == "chisq")) {
 
         df <- length(x) - 1L
@@ -400,8 +371,8 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
         })
 
-      #--------------------------------------------------------------------
-      # Bonett
+      #...................
+      ### Bonett ####
       } else if (isTRUE(method == "bonett")) {
 
         n <- length(x)
@@ -422,14 +393,9 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
                      less = c(low = 0, upp = sqrt(exp(log(cc * x.var) + z * se))),
                      greater = c(low = sqrt(exp(log(cc * x.var) - z * se)), upp = Inf))
 
-        #--------------------------------------------------------------------
-
       }
 
     }
-
-    #......
-    # Return object
 
     # Lower or upper limit
     object <- switch(side, both = ci, low = ci[1L], upp = ci[2L])
@@ -439,15 +405,15 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
   }
 
 
-  #----------------------------------------
-  # No Grouping, No Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, No Split ####
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
     result <- data.frame(variable = colnames(x),
                          n = vapply(x, function(y) length(na.omit(y)), FUN.VALUE = 1L),
                          nNA = vapply(x, function(y) sum(is.na(y)), FUN.VALUE = 1L),
-                         pNA = vapply(x, function(y) sum(is.na(y)) / length(y) * 100L, FUN.VALUE = double(1)),
+                         pNA = vapply(x, function(y) sum(is.na(y)) / length(y) * 100L, FUN.VALUE = double(1L)),
                          # Arithmetic mean
                          m = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, mean(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
                          # Standard deviation
@@ -457,8 +423,8 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
                          upp = vapply(x, sd.conf, method = method, alternative = alternative, conf.level = conf.level, side = "upp", FUN.VALUE = double(1L)),
                          stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
 
-  #----------------------------------------
-  # Grouping, No Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping, No Split ####
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
@@ -470,8 +436,8 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))),
                          stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # No Grouping, Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, Split ####
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
@@ -480,8 +446,8 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
                                                 group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                 as.na = as.na, check = FALSE, output = FALSE)$result)
 
-  #----------------------------------------
-  # Grouping, Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping, Split ####
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
@@ -494,8 +460,9 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
   }
 
-  ####################################################################################
-  # Return object and output
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "ci", ci = "sd",
@@ -507,8 +474,9 @@ ci.sd <- function(x, method = c("chisq", "bonett"), alternative = c("two.sided",
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

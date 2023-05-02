@@ -88,9 +88,14 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
-#' data frame specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), list with results (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab matrix or data frame spcified in \code{x} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab result table \cr
+#' }
 #'
 #' @export
 #'
@@ -99,44 +104,28 @@
 na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
                     output = TRUE) {
 
-  ####################################################################################
-  # R package
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  if (isTRUE(!nzchar(system.file(package = "norm")))) {
-
-    stop("Package \"norm\" is needed for this function, please install the package.", call. = FALSE)
-
-  }
-
-  ####################################################################################
-  # Data
-
-  #......
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) {
+  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-    stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE)
-
-  }
-
-  #......
   # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) {
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-    stop("Input specified for the argument 'x' is NULL.", call. = FALSE)
-
-  }
-
-  #......
   # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) {
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-    stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE)
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  }
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -144,76 +133,43 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
 
   }
 
-  #----------------------------------------
-  # As data matrix
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data matrix ####
 
   # Coerce to a data matrix
   x.matrix <- data.matrix(x)
 
-  ####################################################################################
-  # Input Check
-
-  #......
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
-
-  #.........................................
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #......
     # No missing values
-    if (isTRUE(all(!is.na(x.matrix)))) {
+    if (isTRUE(all(!is.na(x.matrix)))) { stop("There are no missing values (NA) in the matrix or data frame specified in 'x'.", call. = FALSE) }
 
-      stop("There are no missing values (NA) in the matrix or data frame specified in 'x'.",
-           call. = FALSE)
-
-    }
-
-    #......
     # Variables with completely missing
-    all.na <- apply(x.matrix, 2, function(y) all(is.na(y)))
-    if (isTRUE(any(all.na))) {
+    all.na <- apply(x.matrix, 2L, function(y) all(is.na(y)))
+    if (isTRUE(any(all.na))) { stop(paste("Following variables are completely missing:", paste(names(all.na)[which(all.na)], collapse = ", ")), call. = FALSE) }
 
-      stop(paste("Following variables are completely missing:", paste(names(all.na)[which(all.na)], collapse = ", ")),
-           call. = FALSE)
-
-    }
-
-    #......
     # Variables without variance
-    var.0 <- apply(x.matrix, 2, function(y) var(y, na.rm = TRUE) == 0)
-    if (isTRUE(any(var.0))) {
+    var.0 <- apply(x.matrix, 2L, function(y) var(y, na.rm = TRUE) == 0L)
+    if (isTRUE(any(var.0))) { stop(paste("Following variables have no variance:", paste(names(var.0)[which(var.0)], collapse = ", ")), call. = FALSE) }
 
-      stop(paste("Following variables have no variance:", paste(names(var.0)[which(var.0)], collapse = ", ")),
-           call. = FALSE)
+    # R package 'norm'
+    if (isTRUE(!nzchar(system.file(package = "norm")))) { stop("Package \"norm\" is needed for this function, please install the package.", call. = FALSE) }
 
-    }
-
-    #......
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) {
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-      stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE)
-
-    }
-
-    #......
     # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) {
-
-      stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE)
-
-    }
+    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   # Global variable
   pNA <- NULL
@@ -224,8 +180,8 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
   # Number of variables
   var.n <- ncol(x.matrix)
 
-  #-----------------------------------------
-  # Missing data pattern
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing data pattern ####
 
   # Missing data pattern
   pattern <- misty::na.pattern(x, output = FALSE)
@@ -234,7 +190,7 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
   na.complete <- subset(pattern$result, pNA == 100, select = pattern, drop = TRUE)
 
   # Data frame with missing data pattern
-  if (length(na.complete) == 1) {
+  if (length(na.complete) == 1L) {
 
     x.pattern <- subset(data.frame(x.matrix, pattern = pattern$pattern), pattern != na.complete)
 
@@ -244,8 +200,8 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
 
   }
 
-  #-----------------------------------------
-  # Maximum-likelihood estimation
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Maximum-likelihood estimation ####
 
    s <- tryCatch(norm::prelim.norm(x.matrix), warning = function(z) {
 
@@ -267,18 +223,18 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
   # Column and row names
   colnames(grand.cov) <- rownames(grand.cov) <- var.names
 
-  #-----------------------------------------
-  # Data for each missing data pattern
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data for each missing data pattern ####
 
   dat.pattern <- split(x.pattern[, var.names], f = x.pattern$pattern)
 
-  #-----------------------------------------
-  # Degrees of freedom
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Degrees of freedom ####
 
   df <- sum(sapply(dat.pattern, function(y) sapply(y, function(z) all(!is.na(z))))) - var.n
 
-  #-----------------------------------------
-  # Little's chi-square
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Little's chi-square ####
 
   # Likelihood ratio test statistic d2
   d2 <- 0
@@ -293,13 +249,13 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
 
   }
 
-  #-----------------------------------------
-  # Descriptive statistics
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Descriptive statistics ####
 
   x.descript <- misty::na.descript(x = x, output = FALSE)$result
 
-  #-----------------------------------------
-  # Result
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Result table ####
 
   restab <- data.frame(no.cases = nrow(x),
                        no.incomplete = x.descript$no.incomplete,
@@ -308,20 +264,22 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
                        df = df,
                        pval = pchisq(d2, df, lower.tail = FALSE), row.names = NULL)
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "na.test",
                  data = x,
-                 args = list(digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
+                 args = list(digits = digits, p.digits = p.digits, as.na = NULL, check = TRUE,
                              output = TRUE),
                  result = restab)
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

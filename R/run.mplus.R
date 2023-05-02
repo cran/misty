@@ -76,35 +76,36 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
                       replaceOutfile = c("always", "never", "modifiedDate"), logFile = NULL,
                       Mplus = "Mplus", killOnFail = TRUE, local_tmpdir = FALSE) {
 
-  ####################################################################################
-  # Additional functions
+  #_____________________________________________________________________________
+  #
+  # Additional Functions -------------------------------------------------------
 
-  #----------------------------------------
-  # Split File and Path into Separate Parts
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Split File and Path into Separate Parts ####
 
   splitFilePath <- function(abspath) {
 
     if (isTRUE(!is.character(abspath))) stop("Path not a character string", call. = FALSE)
 
-    if (isTRUE(nchar(abspath) < 1 || is.na(abspath))) stop("Path is missing or of zero length", call. = FALSE)
+    if (isTRUE(nchar(abspath) < 1L || is.na(abspath))) stop("Path is missing or of zero length", call. = FALSE)
 
     # trailing slash screws up file.exists call on Windows: https://bugs.r-project.org/bugzilla/show_bug.cgi?id=14721
     abspath <- sub("(\\\\|/)?$", "", abspath, perl = TRUE)
 
-    components <- strsplit(abspath, split = "[\\/]")[[1]]
+    components <- strsplit(abspath, split = "[\\/]")[[1L]]
     lcom <- length(components)
 
-    stopifnot(lcom > 0)
+    stopifnot(lcom > 0L)
 
     # the file is the last element in the list. In the case of length == 1, this will extract the only element.
     relFilename <- components[lcom]
     absolute <- FALSE
 
-    if (isTRUE(lcom == 1)) {
+    if (isTRUE(lcom == 1L)) {
 
       dirpart <- NA_character_
 
-    } else if (isTRUE(lcom > 1)) {
+    } else if (isTRUE(lcom > 1L)) {
 
       components <- components[-lcom]
       dirpart <- do.call("file.path", as.list(components))
@@ -118,8 +119,9 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
   }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   stopifnot(replaceOutfile %in% c("always", "never", "modifiedDate"))
 
@@ -176,15 +178,16 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
   }
 
-  #-----------------------------------------------------------------------------------
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #......
   # Argument replaceOutfile
   if (isTRUE(all(c("always", "never", "modifiedDate") %in% replaceOutfile))) { replaceOutfile <- "always" }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   normalComplete <- FALSE
 

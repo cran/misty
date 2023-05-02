@@ -58,10 +58,17 @@ to be used for displaying}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), type of analysis (\code{type}), list with the input specified in \code{a}
-\code{b}, \code{se.a}, and \code{se.b} (\code{data}), specification of function arguments (\code{args}),
-and a list with the result tables (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{list with the input specified in \code{a} \code{b}, \code{se.a},
+                     and \code{se.b}}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{list with result tables, i.e., \code{asymp} with CI based
+                       on the asymptotic normal method, \code{dop} with CI based
+                       on the distribution of the product method, and \code{mc}
+                       for CI based on the Monte Carlo method}
 }
 \description{
 This function computes confidence intervals for the indirect effect based on the

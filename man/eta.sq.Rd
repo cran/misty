@@ -24,9 +24,13 @@ Note that \code{as.na()} function is only applied to the argument \code{x}.}
 \item{output}{logical: if \code{TRUE}, output is shown on the console.}
 }
 \value{
-Returns an object of class \code{misty.object}, which is a list with following entries:
-function call (\code{call}), matrix or data frame specified in \code{x} (\code{data}), specification of
-function arguments (\code{args}), and list with results (\code{result}).
+Returns an object of class \code{misty.object}, which is a list with following
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{list with the input specified in \code{x} and \code{group}}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{numeric vector with results}
 }
 \description{
 This function computes eta squared for one or more outcome variables in combination with one or more

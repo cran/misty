@@ -7,9 +7,9 @@
 aov.b(formula, data, posthoc = TRUE, conf.level = 0.95, hypo = TRUE,
       descript = TRUE, effsize = FALSE, weighted = FALSE, correct = FALSE,
       plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
-      xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(), 
-      jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, 
-      jitter.height = 0, jitter.alpha = 0.1, title = "", 
+      xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
+      jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
+      jitter.height = 0, jitter.alpha = 0.1, title = "",
       subtitle = "Confidence Interval", digits = 2, p.digits = 4,
       as.na = NULL, check = TRUE, output = TRUE, ...)
 }
@@ -105,9 +105,17 @@ the analysis.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis \code{type}, list with
-the input specified in \code{x} (\code{data}), specification of function arguments
-(\code{args}), and result table(s) (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{data frame with variables used in the current analysis}
+  \item{\code{formula}}{formula of the current analysis}
+  \item{\code{plot}}{ggplot2 object for plotting the results}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{list with result tables, i.e., \code{descript} for descriptive
+                       statistics, \code{test} for the ANOVA table, \code{posthoc}
+                       for post hoc tests, and \code{aov} for the return object
+                       of the \code{aov} function}
 }
 \description{
 This function performs an one-way between-subject analysis of variance (ANOVA)

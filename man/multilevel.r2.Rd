@@ -50,9 +50,17 @@ colorblind-friendly palettes are used}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis \code{type}, model
-specified in \code{model} (\code{model}), specification of function arguments
-(\code{args}), and list with results (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{matrix or data frame specified in \code{data}}
+  \item{\code{plot}}{ggplot2 object for plotting the results}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{list with result tables, i.e., \code{rb} for the R2 measures
+                       by Raudenbush and Bryk (2002), \code{sb} for the R2 measures
+                       by Snijders and Bosker (1994), \code{ns} for the R2 measures
+                       by Nakagawa and Schielzeth (2013), and \code{rs} for the R2
+                       measures by Rights and Sterba (2019)}
 }
 \description{
 This function computes R-squared measures by Raudenbush and Bryk (2002),

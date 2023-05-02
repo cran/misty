@@ -81,14 +81,19 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
-#' data frame specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), fitted lavaan object (\code{mod.fit}), and list with results
-#' (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab matrix or data frame specified in \code{x} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{model.fit} \tab fitted lavaan object \cr
+#' \code{result} \tab list with result tables \cr
+#' }
 #'
 #' @note
-#' Computation of the hierarchical and categorical omega is based on
-#' the \code{ci.reliability()} function in the \pkg{MBESS} package by Ken Kelley
+#' Computation of the hierarchical and categorical omega is based on the
+#' \code{ci.reliability()} function in the \pkg{MBESS} package by Ken Kelley
 #' (2019).
 #'
 #' @export
@@ -145,9 +150,10 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
                        conf.level = 0.95, as.na = NULL, write = NULL,
                        check = TRUE, output = TRUE) {
 
-  #-----------------------------------------------------------------------------------
-  ####################################################################################
-  # Internal functions
+  #_____________________________________________________________________________
+  #
+  # Internal functions ---------------------------------------------------------------------
+  #
   # - .catOmega
   # - .getThreshold
   # - .polycorLavaan
@@ -157,8 +163,8 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
   # MBESS: The MBESS R Package
   # https://cran.r-project.org/web/packages/MBESS/index.html
 
-  #-----------------------------------------------------------------------------------
-  # .catOmega Function
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## .catOmega Function ####
 
   .catOmega <- function(dat, check = TRUE) {
 
@@ -249,8 +255,8 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   }
 
-  #-----------------------------------------------------------------------------------
-  # .getThreshold Function
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## .getThreshold Function ####
 
   .getThreshold <- function(object) {
 
@@ -291,8 +297,8 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   }
 
-  #-----------------------------------------------------------------------------------
-  # .polycorLavaan Function
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## .polycorLavaan Function ####
 
   .polycorLavaan <- function(object, data) {
 
@@ -342,8 +348,8 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   }
 
-  #-----------------------------------------------------------------------------------
-  # .refit Function
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## .refit Function ####
 
   .refit <- function(pt, data, vnames, object) {
 
@@ -356,8 +362,8 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   }
 
-  #-----------------------------------------------------------------------------------
-  # .p2 Function
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## .p2 Function ####
 
   .p2 <- function(t1, t2, r) {
 
@@ -365,75 +371,58 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   }
 
-  ####################################################################################
-  #-----------------------------------------------------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-
-  ####################################################################################
-  # Input Check
-
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Package 'lavaan' installed?
   if (isTRUE(!requireNamespace("lavaan", quietly = TRUE))) {
 
-    stop("Package \"lavaan\" is needed for this function to work, please install it.",
-         call. = FALSE)
+    stop("Package \"lavaan\" is needed for this function to work, please install it.", call. = FALSE)
 
   }
 
-  #......
   # Package 'mnormt' installed?
   if (isTRUE(ordered)) {
 
-    if (isTRUE(!requireNamespace("mnormt", quietly = TRUE))) {
-
-      stop("Package \"mnormt\" is needed for this function to work, please install it.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(!requireNamespace("mnormt", quietly = TRUE))) { stop("Package \"mnormt\" is needed for this function to work, please install it.", call. = FALSE) }
 
   }
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #----------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #......
     # Matrix or data frame for the argument 'x'?
     if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or a data frame for the argument 'x'.", call. = FALSE) }
 
-    #......
     # Check input 'x': One or two item
     if (isTRUE(ncol(x) < 3L)) { stop("Please specify at least three items to compute coefficient omega", call. = FALSE) }
 
-    #......
     # Check input 'x': Zero variance
     if (isTRUE(nrow(x) != ncol(x))) {
 
-      x.check <- vapply(as.data.frame(x, stringsAsFactors = FALSE), function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1L))
+      x.check <- vapply(as.data.frame(x, stringsAsFactors = FALSE), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
 
       if (isTRUE(any(x.check))) {
 
-        stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
-                     paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
+        stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
 
       }
 
     }
 
-    #......
     # Check input 'resid.cov'
     if (isTRUE(!is.null(resid.cov))) {
 
@@ -442,8 +431,7 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
         resid.cov.items <- unique(unlist(resid.cov))
         if (isTRUE(any(!resid.cov.items %in% colnames(x)))) {
 
-          stop(paste0("Items specified in the argument 'resid.cov' were not found in 'x': ",
-                      paste(resid.cov.items[!resid.cov.items %in% colnames(x)], collapse = ", ")), call. = FALSE)
+          stop(paste0("Items specified in the argument 'resid.cov' were not found in 'x': ", paste(resid.cov.items[!resid.cov.items %in% colnames(x)], collapse = ", ")), call. = FALSE)
 
         }
 
@@ -455,116 +443,100 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
     }
 
-    #......
     # Check input 'type'
     if (isTRUE(!all(type %in% c("omega", "hierarch", "categ")))) { stop("Character strings in the argument 'type' do not all match with \"omega\", \"hierarch\", or \"categ\".", call. = FALSE) }
 
-    #......
     # Check input 'exclude'
     check.ex <- !exclude %in% colnames(x)
     if (isTRUE(any(check.ex))) {
 
-      stop(paste0("Items to be excluded from the analysis were not found in 'x': ", paste(exclude[check.ex], collapse = ", ")),
-           call. = FALSE)
+      stop(paste0("Items to be excluded from the analysis were not found in 'x': ", paste(exclude[check.ex], collapse = ", ")), call. = FALSE)
     }
 
-    #......
     # Check input 'std'
     if (isTRUE(!is.logical(std))) { stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE) }
 
-    #......
     # Check input 'print'
     if (isTRUE(!all(print %in% c("all", "omega", "item")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"omega\", or \"item\".", call. = FALSE)
 
     }
 
-    #......
     # Check input 'na.omit'
     if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'conf.level'
     if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
-  #----------------------------------------
-  # Data frame
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Exclude items (exclude) and specify user-defined NA (as.na)
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Exclude items ####
 
   if (isTRUE(!is.null(exclude))) {
 
     x <- x[, which(!colnames(x) %in% exclude)]
 
     # One or two items left
-    if (isTRUE(ncol(x) <= 2L)) {
-
-      stop("At least three items after excluding items are needed to compute coefficient omega.",
-           call. = FALSE)
-
-    }
+    if (isTRUE(ncol(x) <= 2L)) { stop("At least three items after excluding items are needed to compute coefficient omega.", call. = FALSE) }
 
   }
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
     x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
-    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (isTRUE(any(x.miss))) {
 
-      stop(paste0("After converting user-missing values into NA, following items are completely missing: ",
-                    paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-missing values into NA, following items are completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
 
     }
 
     # Zero variance
-    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
+    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
     if (isTRUE(any(x.zero.var))) {
 
-      stop(paste0("After converting user-missing values into NA, following items have zero variance: ",
-                    paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-missing values into NA, following items have zero variance: ", paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
 
     }
 
   }
 
-  #----------------------------------------
-  # Type of omega
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Type of omega ####
 
   if (isTRUE(all(c("omega", "hierarch", "categ") %in% type))) { type <- "omega" }
 
-  #----------------------------------------
-  # Method for handling missing data
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise deletion ####
 
-  # Listwise deletion
   if (isTRUE(na.omit)) {
 
     x <- na.omit(x)
 
   }
 
-  #----------------------------------------
-  # Residual covariance
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Residual covariance ####
 
   if (isTRUE(!is.null(resid.cov))) {
 
@@ -572,8 +544,8 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   }
 
-  #----------------------------------------
-  # Standardize
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Standardize ####
 
   # Unstandardized data
   x.raw <- x
@@ -584,34 +556,33 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   }
 
-  #----------------------------------------
-  # Print coefficient omega and/or item statistic
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print coefficient omega and/or item statistic ####
 
   if (isTRUE(all(c(c("all", "omega", "item")) %in% print))) { print <- c("omega", "item") }
 
   if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("omega", "item") }
 
-  ####################################################################################
-  # Omega Function
+  #_____________________________________________________________________________
+  #
+  # Omega Function -------------------------------------------------------------
 
   omega.function <- function(y, y.resid.cov = NULL, y.type = type, y.std = std, check = TRUE) {
 
     # Variable names
     varnames <- colnames(y)
 
-    #----------------------------------------
-    # Omega for continuous items
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Omega for continuous items ####
+
     if (isTRUE(y.type != "categ")) {
 
-      #----------------------------------------
-      # Mode specification
-
       #...................
-      # Factor model
+      ### Mode specification ####
 
+      # Factor model
       mod.factor <- paste("f =~", paste(varnames, collapse = " + "))
 
-      #...................
       # Residual covariance
 
       if (isTRUE(!is.null(y.resid.cov))) {
@@ -623,47 +594,44 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
       }
 
-      #----------------------------------------
-      # Model estimation
+      #...................
+      ### Model estimation ####
 
       mod.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = y, ordered = FALSE, se = "none",
                                               std.lv = TRUE, estimator = "ML", missing = "fiml"))
 
-      #................
-      # Check for convergence and negative degrees of freedom
+      #...................
+      ### Check for convergence and negative degrees of freedom ####
+
       if (isTRUE(check)) {
 
         # Model convergence
         if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) {
 
-          warning("CFA model did not converge, results are most likely unreliable.",
-                  call. = FALSE)
+          warning("CFA model did not converge, results are most likely unreliable.", call. = FALSE)
 
         }
 
         # Degrees of freedom
         if (isTRUE(lavaan::lavInspect(mod.fit, "fit")["df"] < 0L)) {
 
-          warning("CFA model has negative degrees of freedom, results are most likely unreliable.",
-                  call. = FALSE)
+          warning("CFA model has negative degrees of freedom, results are most likely unreliable.", call. = FALSE)
 
         }
 
       }
 
-      #----------------------------------------
-      # Parameter estimates
+      #...................
+      ### Parameter estimates ####
 
       if (!isTRUE(y.std)) {
 
-        #................
         # Unstandardized parameter estimates
 
         param <- lavaan::parameterestimates(mod.fit)
 
       } else {
 
-        #................
         # Standardized parameter estimates
 
         param <- lavaan::standardizedSolution(mod.fit)
@@ -672,34 +640,32 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
       }
 
-      #................
-      # Factor loadings
+      #...................
+      ### Factor loadings ####
 
       param.load <- param[which(param$op == "=~"), ]
 
-      #................
-      # Residual covariance
+      #...................
+      ### Residual covariance ####
 
       param.rcov <- param[param$op == "~~" & param$lhs != param$rhs, ]
 
-      #................
-      # Residuals
+      #...................
+      ### Residuals ####
 
       param.resid <- param[param$op == "~~" & param$lhs == param$rhs & param$lhs != "f" & param$rhs != "f", ]
 
-      #----------------------------------------
-      # Omega
+      #...................
+      ### Omega ####
 
       # Numerator
       load.sum2 <- sum(param.load$est)^2L
 
-      #................
       # Total omega
       if (isTRUE(y.type != "hierarch"))  {
 
         resid.sum <- sum(param.resid$est)
 
-        #................
         # Residual covariances
         if (isTRUE(!is.null(y.resid.cov))) {
 
@@ -709,7 +675,6 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
         omega <- load.sum2 / (load.sum2 + resid.sum)
 
-      #................
       # Hierarchical omega
       } else {
 
@@ -732,12 +697,10 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
       }
 
-      #----------------------------------------
       # Return object
 
       object <- list(mod.fit = mod.fit, omega = omega)
 
-    #----------------------------------------
     # Omega for ordered-categorical items
     } else {
 
@@ -749,8 +712,9 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   omega.mod <- omega.function(y = x, y.resid.cov = resid.cov, y.type = type,
                               y.std = std, check = TRUE)
@@ -759,8 +723,8 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
                         items = ncol(lavaan::lavInspect(omega.mod$mod.fit, "data")),
                         omega = omega.mod$omega, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Confidence interval
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Confidence interval ####
 
   df1 <- omega.x$n - 1L
   df2 <- (omega.x$items - 1) * df1
@@ -770,8 +734,8 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   omega.x <- data.frame(omega.x, low = omega.low, upp = omega.upp, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Standardized factor loading and omega if item deleted
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Standardized factor loading and omega if item deleted ####
 
   itemstat <- matrix(rep(NA, times = ncol(x)*2L), ncol = 2L,
                      dimnames = list(NULL, c("std.ld", "omega")))
@@ -783,8 +747,9 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
     var <- colnames(x)[i]
 
-    #----------------------------------------
-    # Omega for continuous items
+    #...................
+    ### Omega for continuous item ####
+
     if (isTRUE(type != "categ")) {
 
       # Standardized factor loading
@@ -815,8 +780,9 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
       }
 
-    #----------------------------------------
-    # Omega for ordered-categorical items
+    #...................
+    ### Omega for ordered-categorical items ####
+
     } else {
 
       # Standardized factor loading
@@ -838,19 +804,17 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
   }
 
-  #........................................
-  # Descriptive statistics
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Descriptive statistics ####
 
   itemstat <- data.frame(var = colnames(x),
                          misty::descript(x.raw, output = FALSE)$result[, c("n", "nNA", "pNA", "m", "sd", "min", "max")],
                          itemstat,
                          stringsAsFactors = FALSE)
 
-  ####################################################################################
-  # Return object
-
-  #----------------------------------------
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "item.omega",
@@ -859,18 +823,20 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
                              std = std, na.omit = na.omit, print = print,
                              digits = digits, conf.level = conf.level, as.na = as.na,
                              check = check, output = output),
-                 mod.fit = omega.mod$mod.fit,
+                 model.fit  = omega.mod$mod.fit,
                  result = list(omega = omega.x, itemstat = itemstat))
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Write results
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

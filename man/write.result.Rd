@@ -4,7 +4,9 @@
 \alias{write.result}
 \title{Write Results of a misty Object into an Excel file}
 \usage{
-write.result(x, file = "Results.xlsx")
+write.result(x, file = "Results.xlsx", tri = x$args$tri,
+             digits = x$args$digits, p.digits = x$args$p.digits,
+             icc.digits = x$args$icc.digits, check = TRUE)
 }
 \arguments{
 \item{x}{misty object (\code{misty.object}) resulting from a misty function
@@ -12,6 +14,22 @@ supported by the \code{write.result} function (see 'Details').}
 
 \item{file}{a character string naming a file with or without file extension
 '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+
+\item{tri}{a character string or character vector indicating which triangular
+of the matrix to show on the console, i.e., \code{both} for upper and lower 
+triangular, \code{lower} for the lower triangular, and \code{upper} for the upper
+triangular.}
+
+\item{digits}{an integer value indicating the number of decimal places digits
+to be used for displaying results.}
+
+\item{p.digits}{an integer indicating the number of decimal places to be used
+for displaying \emph{p}-values.}
+
+\item{icc.digits}{an integer indicating the number of decimal places to be used
+for displaying intraclass correlation coefficients.}
+
+\item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \description{
 This function writes the results of a misty object (\code{misty.object})

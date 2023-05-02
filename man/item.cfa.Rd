@@ -156,11 +156,23 @@ e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis (\code{type}), matrix or
-data frame specified in \code{x} (\code{x}), specification of function arguments
-(\code{args}), specified model (\code{model}), fitted lavaan object (\code{mod.fit}),
-results of the convergence and model identification check (\code{check}), and
-a list with results (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{matrix or data frame specified in \code{x}}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{model}}{specified model}
+  \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
+  \item{\code{check}}{results of the convergence and model identification check}
+  \item{\code{result}}{list with result tables, i.e., \code{summary} for the
+                       specification of the estimation method and missing data
+                       handling in lavaan, \code{"coverage"} for the
+                       variance-covariance coverage of the data, \code{"descript"}
+                       for descriptive statistics, \code{itemfreq} for absolute
+                       frequencies (\code{freq}), percentages (\code{perc}),
+                       and  (\code{v.perc}) valid percentages, \code{"fit"} for
+                       model fit, \code{"param"} for parameter estimates, and
+                       \code{"modind"} for modification indices.}
 }
 \description{
 This function is a wrapper function for conducting confirmatory factor analysis

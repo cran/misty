@@ -4,7 +4,7 @@
 \alias{ci.mean.w}
 \title{Within-Subject Confidence Interval for the Arithmetic Mean}
 \usage{
-ci.mean.w(x, adjust = TRUE, 
+ci.mean.w(x, adjust = TRUE,
           alternative = c("two.sided", "less", "greater"),
           conf.level = 0.95, na.omit = TRUE, digits = 2,
           as.na = NULL, check = TRUE, output = TRUE)
@@ -42,9 +42,12 @@ conducting the analysis.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis \code{type}, list with
-the input specified in \code{x} (\code{data}), specification of function arguments
-(\code{args}), and result table (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{data frame with variables used in the current analysis}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{result table}
 }
 \description{
 This function computes difference-adjusted Cousineau-Morey within-subject

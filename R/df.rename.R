@@ -34,65 +34,59 @@
 #' df.rename(dat, from = c("a", "b", "c"), to = c("x", "y", "z"))
 df.rename <- function(x, from, to, check = TRUE) {
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Matrix or data frame for the argument 'x'?
   if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check input 'from'
   if (isTRUE(missing(from))) { stop("Please specify a character string or character vector for the argument 'from'.", call. = FALSE) }
 
-  #......
   # Check input 'to'
   if (isTRUE(missing(to))) { stop("Please specify a character string or character vector for the argument 'to'.", call. = FALSE) }
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #.........................
     # Character string or vector for the argument 'from'?
     if (isTRUE(!is.character(from))) { stop("Please specify a character string or character vector for the argument 'from'.", call. = FALSE) }
 
-    #.........................
     # Character string or vector for the argument 'to'?
     if (isTRUE(!is.character(to))) { stop("Please specify a character string or character vector for the argument 'to'.", call. = FALSE) }
 
-    #.........................
     # Vector in argument 'from' matching with the vector in argument 'to'?
 
     if (isTRUE(length(from) != length(to))) { stop("Length of the vector specified in 'from' does not match with the vector specified in 'to'.", call. = FALSE) }
 
-    #.........................
     # Variables specified in the argument 'from' in 'x'?
 
     if (isTRUE(any(!from %in% colnames(x)))) {
 
       var.from <- from[which(!from %in% colnames(x))]
 
-      stop("Column name(s) specified in 'from' was not found in 'x': ", paste(var.from, collapse = ", "),
-           call. = FALSE)
+      stop("Column name(s) specified in 'from' was not found in 'x': ", paste(var.from, collapse = ", "), call. = FALSE)
 
     }
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #-----------------------------------------
-  # Matrix
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Matrix ####
 
   if (isTRUE(is.matrix(x))) {
 
@@ -101,13 +95,12 @@ df.rename <- function(x, from, to, check = TRUE) {
     # Duplicated columns from
     if (isTRUE(anyDuplicated(colnames(x)))) {
 
-      warning(paste0("Duplicated column names in the matrix after renaming columns: ",
-                     paste(unique(colnames(x)[duplicated(colnames(x))]), collapse = ", ")), call. = FALSE)
+      warning(paste0("Duplicated column names in the matrix after renaming columns: ", paste(unique(colnames(x)[duplicated(colnames(x))]), collapse = ", ")), call. = FALSE)
 
     }
 
-  #-----------------------------------------
-  # Data frame
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame ####
 
   } else {
 
@@ -116,15 +109,15 @@ df.rename <- function(x, from, to, check = TRUE) {
     # Duplicated variable names
     if (isTRUE(anyDuplicated(names(x)))) {
 
-      warning(paste0("Duplicated variable names in the data frame after renaming variables: ",
-                     paste(unique(names(x)[duplicated(names(x))]), collapse = ", ")), call. = FALSE)
+      warning(paste0("Duplicated variable names in the data frame after renaming variables: ", paste(unique(names(x)[duplicated(names(x))]), collapse = ", ")), call. = FALSE)
 
     }
 
   }
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(x)
 

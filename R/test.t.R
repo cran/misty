@@ -19,12 +19,11 @@
 #'                      on the console.
 #' @param effsize       logical: if \code{TRUE}, effect size measure Cohen's d is
 #'                      shown on the console, see \code{\link{cohens.d}} function.
-#' @param weighted      logical: if \code{TRUE} (default), the weighted pooled
-#'                      standard deviation is used
-#'                      to compute Cohen's d for a two-sample design (i.e.,
-#'                      \code{paired = FALSE}), while standard deviation of the
-#'                      difference scores is used to compute Cohen's d for a
-#'                      paired-sample design (i.e., \code{paired = TRUE}).
+#' @param weighted      logical: if \code{TRUE}, the weighted pooled standard
+#'                      deviation is used to compute Cohen's d for a two-sample
+#'                      design (i.e., \code{paired = FALSE}), while standard deviation
+#'                      of the difference scores is used to compute Cohen's d for
+#'                      a paired-sample design (i.e., \code{paired = TRUE}).
 #' @param cor           logical: if \code{TRUE} (default), \code{paired = TRUE},
 #'                      and \code{weighted = FALSE}, Cohen's d for a paired-sample
 #'                      design while controlling for the correlation between the
@@ -100,6 +99,15 @@
 #'                      formula \code{formula}.
 #' @param ...           further arguments to be passed to or from methods.
 #'
+#' @details
+#' \describe{
+#' \item{\strong{Effect Size Measure}}{By default, Cohen's d based on the non-weighted
+#' standard deviation (i.e., \code{weighted = FALSE}) which does not assume homogeneity
+#' of variance is computed (see Delacre et al., 2021) when requesting an effect size
+#' measure (i.e., \code{effsize = TRUE}). Cohen's d based on the pooled standard
+#' deviation assuming equality of variancees between groups can be requested by
+#' specifying \code{weighted = TRUE}.}
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
@@ -112,12 +120,23 @@
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in
 #' psychology - Using R and SPSS}. John Wiley & Sons.
 #'
+#' Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why Hedges' g*s
+#' based on the non-pooled standard deviation should be reported with Welch's t-test.
+#' https://doi.org/10.31234/osf.io/tu6mp
+#'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, list with
-#' the input specified in \code{x} and \code{y} (\code{data}), data used to plot
-#' the results (\code{plot.data}), specification of function arguments (\code{args}),
-#' and result table (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{sample} \tab type of sample, i.e., one-, two-, or paired sample \cr
+#' \code{formula} \tab formula \cr
+#' \code{data} \tab data frame with the outcome and grouping variable \cr
+#' \code{plot} \tab ggplot2 object for plotting the results \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list of result table \cr
+#' }
 #'
 #' @export
 #'
@@ -357,13 +376,13 @@ test.t <- function(x, ...) {
 
 }
 
-################################################################################
-################################################################################
-# Default S3 method
+#_______________________________________________________________________________
+#
+# Default S3 method ------------------------------------------------------------
 
 test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                            alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
-                           hypo = TRUE, descript = TRUE, effsize = FALSE, weighted = TRUE,
+                           hypo = TRUE, descript = TRUE, effsize = FALSE, weighted = FALSE,
                            cor = TRUE, ref = NULL, correct = FALSE,
                            plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
                            xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
@@ -374,41 +393,34 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                            digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
                            output = TRUE, ...) {
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check input 'paired'
   if (isTRUE(!is.logical(paired))) { stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE) }
 
-  #......
   # Check if only one variable specified in the input 'x'
   if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
 
-  #......
   # Check 'y'
   if (!is.null(y)) {
 
     # Check if only one variable specified in the input 'y'
     if (ncol(data.frame(y)) != 1) { stop("More than one variable specified for the argument 'y'.",call. = FALSE) }
 
-    #......
     # Convert 'y' into a vector
     y <- unlist(y, use.names = FALSE)
 
   }
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -446,8 +458,8 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
   }
 
-  #----------------------------------------
-  # Paired sample
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Paired sample ####
 
   if (isTRUE(is.null(y) && isTRUE(paired))) {
 
@@ -459,105 +471,89 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
   }
 
-  ##############################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
-    #......
     # ggplot2 package
-    if (isTRUE(!nzchar(system.file(package = "ggplot2"))))  { warning("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
+    if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { warning("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
 
-    #......
     # Check input 'mu'
     if (isTRUE(length(mu) > 1L)) { stop("Please specify one numeric value for the argument 'mu'.", call. = FALSE) }
 
-    #......
     # Check input 'alternative'
     if (isTRUE(!all(alternative %in%  c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
 
-    #......
     # Check input 'conf.level'
     if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
-    #......
     # Check input 'hypo'
     if (isTRUE(!is.logical(hypo))) { stop("Please specify TRUE or FALSE for the argument 'hypo'.", call. = FALSE) }
 
-    #......
     # Check input 'descript'
     if (isTRUE(!is.logical(descript))) { stop("Please specify TRUE or FALSE for the argument 'descript'.", call. = FALSE) }
 
-    #......
     # Check input 'effsize'
     if (isTRUE(!is.logical(effsize))) { stop("Please specify TRUE or FALSE for the argument 'effsize'.", call. = FALSE) }
 
-    #......
     # Check input 'weighted'
     if (isTRUE(!is.logical(weighted))) { stop("Please specify TRUE or FALSE for the argument 'weighted'.", call. = FALSE) }
 
-    #......
     # Check input 'cor'
     if (isTRUE(!is.logical(cor))) { stop("Please specify TRUE or FALSE for the argument 'cor'.", call. = FALSE) }
 
-    #......
     # Check input 'ref'
     if (isTRUE(!is.null(ref))) { if (isTRUE(!isTRUE(ref %in% c("x", "y")))) { stop("Please specify \"x\" or \"y\" for the argument 'ref'.", call. = FALSE) } }
 
-    #......
     # Check input 'correct'
     if (isTRUE(!is.logical(correct))) { stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE) }
 
-    #......
     # Check input 'plot'
     if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'.", call. = FALSE) }
 
-    #......
     # Check input 'adjust'
     if (isTRUE(!is.logical(adjust))) { stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE) }
 
-    #......
     # Check input 'line'
     if (isTRUE(!is.logical(line))) { stop("Please specify TRUE or FALSE for the argument 'line'.", call. = FALSE) }
 
-    #......
     # Check input 'jitter'
     if (isTRUE(!is.logical(jitter))) { stop("Please specify TRUE or FALSE for the argument 'jitter'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ##############################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
   # Global variables
   m <- m.low <- m.upp <- group <- low <- upp <- m.diff <- NULL
 
-  #----------------------------------------
-  # Alternative hypothesis
+  #...................
+  ### Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  ##############################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #----------------------------------------
-  # One-sample
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## One-sample design ####
   if (isTRUE(is.null(y))) {
 
     # Confidence intervals
@@ -584,8 +580,8 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
     sample <- "one"
 
-  #----------------------------------------
-  # Two samples
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Two samples design ####
   } else if (isTRUE(!is.null(y) && !isTRUE(paired))) {
 
     # Confidence intervals
@@ -612,8 +608,8 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
     sample <- "two"
 
-  #----------------------------------------
-  # Paired samples
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Paired samples ####
   } else if (isTRUE(!is.null(y) && isTRUE(paired))) {
 
     # Confidence intervals
@@ -645,12 +641,12 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
   }
 
-  #----------------------------------------
-  # Plot
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Plot ####
 
   switch(sample,
-         #......
-         # One-sample
+         #...................
+         ### One-sample ####
          "one" = {
 
            # Plot data
@@ -660,11 +656,9 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
            if (isTRUE(subtitle == "Confidence Interval")) { subtitle <- paste0(ifelse(alternative == "two.sided", "Two-Sided ", "One-Sided "),
                                                                                round(conf.level * 100, digits = 2), "% Confidence Interval") }
 
-           ###
            # Crease ggplot
            p <- ggplot2::ggplot(plotdat, ggplot2::aes(x = 0L, y = x))
 
-           ###
            # Add jittered points
            if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size) }
 
@@ -678,12 +672,11 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                                                         axis.text.x = ggplot2::element_blank(),
                                                         axis.ticks.x = ggplot2::element_blank())
 
-           #......................................
            # Add horizontal line
            if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = mu, linetype = line.type, size = line.size) }
 
-         #......
-         # Two-sample
+          #...................
+          ### Two-sample ####
          }, "two" = {
 
            # Plot data
@@ -696,11 +689,9 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
            plot.ci <- misty::ci.mean(plotdat[, "y"], group = plotdat[, "group"], adjust = adjust,
                                      conf.level = conf.level, output = FALSE)$result
 
-           ###
            # Crease ggplot
            p <- ggplot2::ggplot(plotdat, ggplot2::aes(group, y))
 
-           ###
            # Add jittered points
            if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, size = jitter.size) }
 
@@ -712,8 +703,8 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                  ggplot2::labs(title = title, subtitle = subtitle) +
                  ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5), plot.title = ggplot2::element_text(hjust = 0.5))
 
-          #......
-          # Paired-sample
+          #...................
+          ### Paired-sample ####
           }, "paired" = {
 
             # Plot data
@@ -722,11 +713,9 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
             # Plot Subtitle
             if (isTRUE(subtitle == "Confidence Interval")) { subtitle <- paste0(ifelse(alternative == "two.sided", "Two-Sided ", "One-Sided "),
                                                                                 round(conf.level * 100L, digits = 2L), "% Confidence Interval") }
-            ###
             # Crease ggplot
             p <- ggplot2::ggplot(plotdat, ggplot2::aes(x = 0L, y = x))
 
-            ###
             # Add jittered points
             if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, size = jitter.size) }
 
@@ -741,22 +730,22 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                   ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
                                  plot.title = ggplot2::element_text(hjust = 0.5))
 
-            #......................................
             # Add horizontal line
             if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = 0, linetype = line.type, size = line.size) }
 
           })
 
-  #......................................
-  # Print plot
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print plot ####
   if (isTRUE(plot)) {
 
     suppressWarnings(print(p))
 
   }
 
-  ##############################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "test.t",
@@ -780,8 +769,9 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
   class(object) <- "misty.object"
 
-  ##############################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 
@@ -789,13 +779,13 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
 }
 
-################################################################################
-################################################################################
-# S3 method for class 'formula'
+#_______________________________________________________________________________
+#
+# S3 method for class 'formula' ------------------------------------------------
 
 test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "greater"),
                            conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
-                           weighted = TRUE, cor = TRUE, ref = NULL, correct = FALSE,
+                           weighted = FALSE, cor = TRUE, ref = NULL, correct = FALSE,
                            plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
                            xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
                            jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
@@ -804,23 +794,20 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
                            digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
                            output = TRUE, ...) {
 
-  #......
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
 
-  #......
   # Check if input 'data' is missing
   if (isTRUE(missing(data))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'data' is NULL
   if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
-  ##############################################################################
-  # Formula
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Formula ####
 
-  #.........................................
-  # Variables
+  #...................
+  ### Variables ####
 
   var.formula <- all.vars(as.formula(formula))
 
@@ -830,10 +817,9 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
   # Outcome(s)
   y.vars <- var.formula[-grep(group.var, var.formula)]
 
-  #.........................................
-  # Check
+  #...................
+  ### Check ####
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
@@ -856,8 +842,8 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
 
   }
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #...................
+  ### Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -876,22 +862,23 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
 
   }
 
-  ##############################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
   # Global variables
   group <- m <- low <- upp <- NULL
 
-  #----------------------------------------
-  # Alternative hypothesis
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Alternative hypothesis ####
+
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  #----------------------------------------
-  # Reference group
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Reference group ####
 
   ref.return <- ref
 
-  #......
   # Check if input 'data' is NULL
   if (isTRUE(!is.null(ref))) {
 
@@ -906,8 +893,9 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
 
   }
 
-  ##############################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   # Split data
   data.split <- split(unlist(data[, y.vars]), f = unlist(data[, group.var]))
@@ -925,19 +913,18 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
 
   object$result[, "group"] <- names(data.split)
 
-  #----------------------------------------
-  # Plot
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Plot ####
 
-  #.............
   # Label x-axis
   p <- suppressMessages(object$plot + ggplot2::scale_x_discrete(labels = names(data.split)))
 
-  #......................................
   # Print plot
   if (isTRUE(plot)) { suppressWarnings(print(p)) }
 
-  ##############################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "test.t",
@@ -960,8 +947,9 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
 
   class(object) <- "misty.object"
 
-  ##############################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

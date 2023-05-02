@@ -117,9 +117,15 @@ the plot.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis \code{type}, list with
-the input specified in \code{x} (\code{data}), specification of function arguments
-(\code{args}), and result table(s) (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{sample}}{type of sample, i.e., two- or multiple sample}
+  \item{\code{formula}}{formula of the current analysis}
+  \item{\code{data}}{data frame specified in \code{data}}
+  \item{\code{plot}}{ggplot2 object for plotting the results}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{result table}
 }
 \description{
 This function performs Welch's two-sample t-test and Welch's ANOVA including
@@ -128,10 +134,14 @@ statistics, effect size measures, and a plot showing error bars for
 difference-adjusted confidence intervals with jittered data points.
 }
 \details{
-Note that by default Welch's two-sample t-test and Games-Howell post hoc test
-reports Cohen's d based on the unweighted standard deviation (i.e.,
-\code{weighted = FALSE}) when requesting an effect size measure (i.e.,
-\code{effsize = TRUE}) following the recommendation by Delacre et al. (2021).
+\describe{
+\item{\strong{Effect Size Measure}}{By default, Cohen's d based on the non-weighted
+standard deviation (i.e., \code{weighted = FALSE}) which does not assume homogeneity
+of variance is computed (see Delacre et al., 2021) when requesting an effect size
+measure (i.e., \code{effsize = TRUE}). Cohen's d based on the pooled standard
+deviation assuming equality of variancees between groups can be requested by
+specifying \code{weighted = TRUE}.}
+}
 }
 \examples{
 dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),

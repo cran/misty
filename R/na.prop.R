@@ -44,53 +44,55 @@
 #' na.prop(dat)
 na.prop <- function(x, digits = 2, as.na = NULL, check = TRUE) {
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #------------------------------------------
-
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
   if (isTRUE(check)) {
 
-    #......
     # Matrix or data frame for the argument 'x'?
     if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L | digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
 
-  #------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
   if (isTRUE(!is.null(as.na))) {
 
     x <- misty::as.na(x, na = as.na)
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   object <- round(rowMeans(is.na(x)), digits = digits)
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(object)
 

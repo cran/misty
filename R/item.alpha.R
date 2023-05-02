@@ -93,9 +93,14 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
-#' data frame specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), and list with results (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab matrix or data frame specified in \code{x} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list with result tables \cr
+#' }
 #'
 #' @export
 #'
@@ -144,34 +149,31 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
                        print = c("all", "alpha", "item"), digits = 2, conf.level = 0.95,
                        as.na = NULL, write = NULL, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix, data frame, variance-covariance or correlation matrix for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #----------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #......
     # Matrix or data frame for the argument 'x'?
     if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix, a data frame, a variance-covariance or correlation matrix for the argument 'x'.", call. = FALSE) }
 
-    #......
     # Check input 'x': One item
     if (isTRUE(ncol(x) == 1L)) { stop("Please specify at least two items to compute coefficient alpha.", call. = FALSE) }
 
-    #......
     # Check input 'x': Zero variance
     if (isTRUE(nrow(x) != ncol(x))) {
 
@@ -179,57 +181,49 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
       if (isTRUE(any(x.check))) {
 
-        stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
-                     paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
+        stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
 
       }
 
     }
 
-    #......
     # Check input 'exclude'
     check.ex <- !exclude %in% colnames(x)
     if (isTRUE(any(check.ex))) {
 
-      stop(paste0("Items to be excluded from the analysis were not found in 'x': ", paste(exclude[check.ex], collapse = ", ")),
-           call. = FALSE)
+      stop(paste0("Items to be excluded from the analysis were not found in 'x': ", paste(exclude[check.ex], collapse = ", ")), call. = FALSE)
+
     }
 
-    #......
     # Check input 'std'
     if (isTRUE(!is.logical(std))) { stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE) }
 
-    #......
     # Check input 'ordered'
     if (isTRUE(!is.logical(ordered))) { stop("Please specify TRUE or FALSE for the argument 'ordered'.", call. = FALSE) }
 
-    #......
     # Check input 'na.omit'
     if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
 
-    #......
     # Check input 'print'
     if (isTRUE(!all(print %in% c("all", "alpha", "item")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"alpha\", or \"item\".", call. = FALSE) }
 
-    #......
     # Check input 'conf.level'
     if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
-  #----------------------------------------
-  # Raw data or cor/cov matrix?
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Raw data or cor/cov matrix ####
 
   if (isTRUE(nrow(x) == ncol(x))) {
 
@@ -258,17 +252,15 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
   }
 
-  #----------------------------------------
-  # Raw data or cor/cov matrix?
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Ordered ####
 
   if (isTRUE(ordered)) {
 
-    #......
     # Check if raw data is availeble
     if (!isTRUE(x.raw)) {
 
-      stop("Please submit raw data to the argument 'x' to compute ordinal coefficient alpha.",
-           call. = FALSE)
+      stop("Please submit raw data to the argument 'x' to compute ordinal coefficient alpha.", call. = FALSE)
 
     }
 
@@ -280,13 +272,13 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
   }
 
-  #----------------------------------------
-  # Data frame
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Exclude items (exclude) and specify user-defined NA (as.na)
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Exclude items (exclude) and specify user-defined NA ####
 
   # Raw data
   if (isTRUE(x.raw)) {
@@ -304,9 +296,7 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     }
 
-    #----------------------------------------
     # Convert user-missing values into NA
-
     if (isTRUE(!is.null(as.na))) {
 
       x <- misty::as.na(x, na = as.na, check = check)
@@ -350,8 +340,8 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
   }
 
-  #----------------------------------------
-  # Method for handling missing data
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Method for handling missing data ####
 
   # Listwise deletion
   if (isTRUE(na.omit)) {
@@ -360,18 +350,19 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
   }
 
-  #----------------------------------------
-  # Print coefficient alpha and/or item statistic
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print coefficient alpha and/or item statistic ####
 
   if (isTRUE(all(c("all", "alpha", "item") %in% print))) { print <- c("alpha", "item") }
 
   if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("alpha", "item") }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #----------------------------------------
-  # Correlation or variance-covariance matrix
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Correlation or variance-covariance matrix ####
 
   if (isTRUE(x.raw)) {
 
@@ -391,8 +382,8 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
   }
 
-  #----------------------------------------
-  # Coefficient Alpha
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Coefficient Alpha ####
 
   # Define Coefficient alpha function
   alpha.function <- function(mat.sigma, p) {
@@ -417,8 +408,8 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
   }
 
-  #----------------------------------------
-  # Confidence interval
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Confidence interval ####
 
   if (isTRUE(x.raw)) {
 
@@ -441,8 +432,8 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
   }
 
-  #----------------------------------------
-  # Corrected item-total correlation and alpha if item deleted
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Corrected item-total correlation and alpha if item deleted ####
 
   if (isTRUE(x.raw)) {
 
@@ -471,8 +462,8 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     }
 
-    #........................................
-    # Descriptive statistics
+    #...................
+    ### Descriptive statistics ####
 
     itemstat <- data.frame(var = colnames(x),
                            misty::descript(x, output = FALSE)$result[, c("n", "nNA", "pNA", "m", "sd", "min", "max")],
@@ -485,11 +476,9 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
   }
 
-  ####################################################################################
-  # Return object
-
-  #----------------------------------------
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "item.alpha",
@@ -501,13 +490,15 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Write results
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

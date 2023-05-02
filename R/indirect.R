@@ -161,10 +161,16 @@
 #' package by Davood Tofighi and David P. MacKinnon (2016).
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis (\code{type}), list with the input specified in \code{a}
-#' \code{b}, \code{se.a}, and \code{se.b} (\code{data}), specification of function arguments (\code{args}),
-#' and a list with the result tables (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab list with the input specified in \code{a} \code{b}, \code{se.a},
+#'                  and \code{se.b}  \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list with result tables \cr
+#' }
 #'
 #' @export
 #'
@@ -182,18 +188,15 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
                      alternative = c("two.sided", "less", "greater"), seed = NULL,
                      conf.level = 0.95, digits = 3, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'a', 'b', 'se.a', and 'se.b'
     if (isTRUE(mode(a) != "numeric")) { stop("Please specify a numeric value for the argument 'a'.", call. = FALSE) }
 
@@ -203,85 +206,79 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
     if (isTRUE(mode(se.b) != "numeric" || se.a <= 0L)) { stop("Please specify a positive numeric value for the argument 'se.b'.", call. = FALSE) }
 
-    #......
     # Check input 'print'
     if (isTRUE(any(!print %in% c("all", "asymp", "dop", "mc")))) { stop("Character string(s) in the argument 'print' does not match with \"all\", \"asymp\", \"dop\", or \"mc\".", call. = FALSE) }
 
-    #......
     # Check input 'se'
     if (isTRUE(any(!se %in% c("sobel", "aroian", "goodman")))) { stop("Character string(s) in the argument 'se' does not match with \"sobel\", \"aroian\", or \"goodman\".", call. = FALSE) }
 
-    #......
     # Check input 'nrep'
     if (isTRUE(mode(nrep) != "numeric" || nrep <= 1L)) { stop("Please specify a positive numeric value greater 1 for the argument 'nrep'.", call. = FALSE) }
 
-    #......
     # Check input 'alternative'
     if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
 
-    #......
     # Check input 'seed'
     if (isTRUE(mode(seed) != "numeric" && !is.null(seed))) { stop("Please specify a numeric value greater for the argument 'seed'.", call. = FALSE) }
 
-    #......
     # Check input 'conf.level'
     if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #---------------------------------------------
-  # Print Confidence intervals
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print Confidence intervals ####
 
   if(all(c("all", "asymp", "dop", "mc") %in% print)) { print <- "dop" }
 
   if (isTRUE(all(print == "all"))) { print <- c("asymp", "dop", "mc") }
 
-  #---------------------------------------------
-  # Method Used to Compute Standard Errors
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Method Used to Compute Standard Errors ####
 
   se <- ifelse(all(c("sobel", "aroian", "goodman") %in% se), "aroian", se)
 
-  #----------------------------------------
-  # Alternative hypothesis
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #---------------------------------------------
-  # Asymptotic Normal Confidence Interval
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Asymptotic Normal Confidence Interval ####
 
-  #........................
-  # Point estimate
+  #...................
+  ### Point estimate ####
 
   asymp.ab <- a*b
 
-  #........................
-  # Standard error
+  #...................
+  ### Standard error ####
 
   switch(se, "sobel" = {
 
-    asmyp.se.ab <- sqrt(a^2*se.b^2 + b^2*se.a^2)
+    asmyp.se.ab <- sqrt(a^2L*se.b^2L + b^2L*se.a^2L)
 
   }, "aroian" = {
 
-    asmyp.se.ab <- sqrt(a^2*se.b^2 + b^2*se.a^2 + se.a^2*se.b^2)
+    asmyp.se.ab <- sqrt(a^2L*se.b^2L + b^2L*se.a^2L + se.a^2L*se.b^2L)
 
   }, "goodman" = {
 
-    asmyp.se.ab <- sqrt(a^2*se.b^2 + b^2*se.a^2 - se.a^2*se.b^2)
+    asmyp.se.ab <- sqrt(a^2L*se.b^2L + b^2L*se.a^2L - se.a^2L*se.b^2L)
 
     # Negative standard error
     if (isTRUE(is.nan(asmyp.se.ab))) {
@@ -306,8 +303,8 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   })
 
-  #........................
-  # Confidence interval
+  #...................
+  ### Confidence interval ####
 
   # Non-negative standard error
   if (isTRUE(!is.na(asmyp.se.ab))) {
@@ -327,8 +324,8 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   }
 
-  #---------------------------------------------
-  # Distribution of Product Method
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Distribution of Product Method ####
 
   qprodnormalMeeker <- function(p, a, b, se.a, se.b, lower.tail = TRUE) {
 
@@ -337,18 +334,18 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
     mu.a <- a / se.a
     mu.b <- b / se.b
 
-    se.ab <- sqrt(1 + mu.a^2 + mu.b^2)
+    se.ab <- sqrt(1L + mu.a^2L + mu.b^2L)
 
     if (lower.tail == FALSE) {
 
-      u0 <- mu.a*mu.b + 6*se.ab
-      l0 <- mu.a*mu.b - 6*se.ab
-      alpha <- 1 - p
+      u0 <- mu.a*mu.b + 6L*se.ab
+      l0 <- mu.a*mu.b - 6L*se.ab
+      alpha <- 1L - p
 
     } else {
 
-      l0 <- mu.a*mu.b - 6*se.ab
-      u0 <- mu.a*mu.b + 6*se.ab
+      l0 <- mu.a*mu.b - 6L*se.ab
+      u0 <- mu.a*mu.b + 6L*se.ab
       alpha <- p
 
     }
@@ -370,9 +367,9 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
     p.l <- fx(l0)
     p.u <- fx(u0)
-    iter <- 0
+    iter <- 0L
 
-    while (p.l > 0) {
+    while (p.l > 0L) {
 
       iter <- iter + 1
       l0 <- l0 - 0.5*se.ab
@@ -388,9 +385,9 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
     }
 
     iter <- 0 #Reset iteration counter
-    while (p.u < 0) {
+    while (p.u < 0L) {
 
-      iter <- iter + 1
+      iter <- iter + 1L
       u0 <- u0 + 0.5*se.ab
       p.u <- fx(u0)
 
@@ -411,13 +408,13 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   }
 
-  #........................
-  # Point estimate
+  #...................
+  ### Point estimate ####
 
   dop.ab <- asymp.ab
 
-  #........................
-  # Standard error
+  #...................
+  ### Standard error ####
 
   dop.se.ab <- asmyp.se.ab
 
@@ -430,22 +427,22 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   }
 
-  #........................
-  # Confidence interval
+  #...................
+  ### Confidence interval ####
 
   dop.ci <- switch(alternative,
-                   two.sided = c(low = qprodnormalMeeker((1 - conf.level) / 2, a = a, b = b, se.a = se.a, se.b = se.b, lower.tail = TRUE),
-                                 upp = qprodnormalMeeker((1 - conf.level) / 2, a = a, b = b, se.a = se.a, se.b = se.b, lower.tail = FALSE)),
+                   two.sided = c(low = qprodnormalMeeker((1L - conf.level) / 2L, a = a, b = b, se.a = se.a, se.b = se.b, lower.tail = TRUE),
+                                 upp = qprodnormalMeeker((1L - conf.level) / 2L, a = a, b = b, se.a = se.a, se.b = se.b, lower.tail = FALSE)),
                    less = c(low = -Inf,
-                            upp = qprodnormalMeeker((1 - conf.level), a = a, b = b, se.a = se.a, se.b = se.b, lower.tail = FALSE)),
-                   greater = c(low = qprodnormalMeeker((1 - conf.level), a = a, b = b, se.a = se.a, se.b = se.b, lower.tail = TRUE),
+                            upp = qprodnormalMeeker((1L - conf.level), a = a, b = b, se.a = se.a, se.b = se.b, lower.tail = FALSE)),
+                   greater = c(low = qprodnormalMeeker((1L - conf.level), a = a, b = b, se.a = se.a, se.b = se.b, lower.tail = TRUE),
                                upp = Inf))
 
-  #---------------------------------------------
-  # Monte Carlo Method
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Monte Carlo Method ####
 
-  #........................
-  # Random Number Generation
+  #...................
+  ### Random Number Generation ####
 
   if (isTRUE(!is.null(seed))) {
 
@@ -453,38 +450,39 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
 
   }
 
-  #........................
-  # Monte Carlo
+  #...................
+  ### Monte Carlo ####
 
-  a_b <- matrix(rnorm(2*nrep), ncol = nrep)
+  a_b <- matrix(rnorm(2L*nrep), ncol = nrep)
 
-  a_b <- t(crossprod(chol(matrix(c(se.a^2, se.a*se.b*0, se.a*se.b*0, se.b^2), nrow = 2)), a_b) + c(a, b))
+  a_b <- t(crossprod(chol(matrix(c(se.a^2L, se.a*se.b*0L, se.a*se.b*0L, se.b^2L), nrow = 2L)), a_b) + c(a, b))
 
-  ab <- a_b[, 1]*a_b[, 2]
+  ab <- a_b[, 1L]*a_b[, 2L]
 
-  #........................
-  # Point estimate
+  #...................
+  ### Point estimate ####
 
   mc.ab <- mean(ab)
 
-  #........................
-  # Standard error
+  #...................
+  ### Standard error ####
 
   mc.se.ab <- sd(ab)
 
-  #........................
-  # Confidence interval
+  #...................
+  ### Confidence interval ####
 
   mc.ci <- switch(alternative,
-                  two.sided = c(low = quantile(ab, (1L - conf.level) / 2),
-                                upp = quantile(ab, 1L - (1L - conf.level) / 2)),
+                  two.sided = c(low = quantile(ab, (1L - conf.level) / 2L),
+                                upp = quantile(ab, 1L - (1L - conf.level) / 2L)),
                   less = c(low = -Inf,
                            upp = quantile(ab, conf.level)),
                   greater = c(low = quantile(ab, 1L - conf.level),
                               upp = Inf))
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "indirect",
@@ -493,16 +491,17 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
                              seed = seed, conf.level = conf.level, digits = digits,
                              check = check, output = output),
                  result = list(asymp = data.frame(est = asymp.ab, se = asmyp.se.ab,
-                                                  low = asymp.ci[1], upp = asymp.ci[2], row.names = NULL),
+                                                  low = asymp.ci[1L], upp = asymp.ci[2L], row.names = NULL),
                                dop = data.frame(est = dop.ab, se = dop.se.ab,
-                                                low = dop.ci[1], upp = dop.ci[2], row.names = NULL),
+                                                low = dop.ci[1L], upp = dop.ci[2L], row.names = NULL),
                                mc = data.frame(est = mc.ab, se = mc.se.ab,
-                                               low = mc.ci[1], upp = mc.ci[2], row.names = NULL)))
+                                               low = mc.ci[1L], upp = mc.ci[2L], row.names = NULL)))
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
    if (isTRUE(output)) { print(object, check = FALSE) }
 

@@ -119,12 +119,20 @@ as.na <- function(x, na, check = TRUE) {
 
   if (isTRUE(check)) {
 
-    #...............
-    # Check input 'na': Values in 'na'?
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## 'na': Values in 'na' ####
 
-    if (isTRUE(is.list(x))) { na.x <- !na %in% unlist(x)
+    # Data frame or list
+    if (isTRUE(is.list(x))) {
 
-    } else { na.x <- !na %in% as.vector(x) }
+      na.x <- sapply(na, function(y) all(sapply(x, function(z) all(!y %in% z))))
+
+    # Vector or matrix
+    } else {
+
+      na.x <- !na %in% as.vector(x)
+
+    }
 
     if (isTRUE(any(na.x))) {
 

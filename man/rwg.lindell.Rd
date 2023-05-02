@@ -44,13 +44,10 @@ the analysis. Note that \code{as.na()} function is only applied to
 Returns a numeric vector containing r*wg(j) agreement index for multi-item scales
 with the same length as \code{group} if \code{expand = TRUE} or a data frame with
 following entries if \code{expand = FALSE}:
-
-\tabular{ll}{
-  \code{cluster}          \tab cluster identifier \cr
-  \code{n}                \tab cluster size \code{x} \cr
-  \code{rwg.lindell}      \tab r*wg(j) estimate for each group \cr
-  \code{z.rwg.lindell}    \tab Fisher z-transformed r*wg(j) estimate for each cluster \cr
-}
+  \item{\code{cluster}}{cluster identifier}
+  \item{\code{n}}{cluster size}
+  \item{\code{rwg.lindell}}{r*wg(j) estimate for each group}
+  \item{\code{z.rwg.lindell}}{Fisher z-transformed r*wg(j) estimate for each cluster}
 }
 \description{
 This function computes r*wg(j) within-group agreement index for multi-item scales

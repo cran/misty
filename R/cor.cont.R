@@ -32,10 +32,15 @@
 #' Social Statistics Section of the American Statistical Association (Part III)}, 777-780.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type},  matrix or data frame specified in
-#' \code{x} (\code{data}), specification of function arguments (\code{args}), and
-#' list with results (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab matrix or data frame specified in \code{x}  \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab result table \cr
+#' }
 #'
 #' @export
 #'
@@ -58,39 +63,36 @@
 cor.cont <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
                      digits = 2, as.na = NULL, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Matrix or data frame for the argument 'x'?
   if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #-----------------------------------------
-  # As data frame
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #-----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
     x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
-    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (isTRUE(any(x.miss))) {
 
-      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
-                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
 
     }
 
@@ -98,79 +100,61 @@ cor.cont <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
     x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
     if (isTRUE(any(x.zero.var))) {
 
-      stop(paste0("After converting user-missing values into NA, following variables have only one unique value: ",
-                  paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-missing values into NA, following variables have only one unique value: ", paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
 
     }
 
   }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'x' for zero variance
     x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1, FUN.VALUE = logical(1L))
-    if (isTRUE(any(x.zero.var))) {
+    if (isTRUE(any(x.zero.var))) { stop(paste0("Following variables in the matrix or data frame specified in 'x' have only one unique value: ", paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE) }
 
-      stop(paste0("Following variables in the matrix or data frame specified in 'x' have only one unique value: ",
-                  paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
-
-    }
-
-    #......
     # Check input 'x' for non-integer numbers
     if (isTRUE(all(!vapply(x, is.character, FUN.VALUE = logical(1L))))) {
 
-      if (isTRUE(any(vapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1L))))) {
-
-        stop("Please specify a matrix or data frame with integer vectors, character vectors or factors for the argument 'x'.",
-             call. = FALSE)
-
-      }
+      if (isTRUE(any(vapply(x, function(y) any(as.numeric(y) %% 1 != 0, na.rm = TRUE), FUN.VALUE = logical(1L))))) { stop("Please specify a matrix or data frame with integer vectors, character vectors or factors for the argument 'x'.", call. = FALSE) }
 
     }
 
-    #......
     # Check input 'adjust'
     if (isTRUE(!is.logical(adjust))) { stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE) }
 
-    #......
     # Check input 'tri'
     if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
-
   }
 
-  ####################################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #-----------------------------------------
-  # Print triangular
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print triangular ####
 
   tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #----------------------------------------
-  # Two variables
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Two variables ####
 
   if (isTRUE(ncol(x) == 2L)) {
 
@@ -196,8 +180,8 @@ cor.cont <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
       cc <- NA
     }
 
-  #----------------------------------------
-  # More than two variables
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## More than two variables ####
 
   } else {
 
@@ -226,8 +210,9 @@ cor.cont <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
   }
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "cor.cont",
@@ -238,8 +223,9 @@ cor.cont <- function(x, adjust = FALSE, tri = c("both", "lower", "upper"),
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

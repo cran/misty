@@ -53,10 +53,16 @@
 #' \emph{Journal of the American Statistical Association, 22}, 209-212.
 #'
 #' @return
-#' Returns an object of class \code{misty.object}, which is a list with following entries:
-#' function call (\code{call}), type of analysis \code{type}, list with the input specified in \code{x},
-#' \code{group}, and \code{split} (\code{data}), specification of function arguments (\code{args}),
-#' and result table (\code{result}).
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab list with the input specified in \code{x}, \code{group}, and
+#'                  \code{split} \cr
+#' \code{args} \tab specification of function arguments  \cr
+#' \code{result} \tab result table \cr
+#' }
 #'
 #' @export
 #'
@@ -106,18 +112,16 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
                     conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
                     digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check 'group'
   if (isTRUE(!is.null(group))) {
 
@@ -130,7 +134,6 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
 
   }
 
-  #......
   # Check 'split'
   if (isTRUE(!is.null(split))) {
 
@@ -143,13 +146,13 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
 
   }
 
-  #----------------------------------------
-  # Data frame
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -160,15 +163,14 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (isTRUE(any(x.miss))) {
 
-      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
-                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
 
     }
 
   }
 
-  #----------------------------------------
-  # Numeric Variables
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Numeric Variables ####
 
   # Non-numeric variables
   non.num <- !vapply(x, is.numeric, FUN.VALUE = logical(1L))
@@ -177,34 +179,31 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
 
     x <- x[, -which(non.num), drop = FALSE]
 
-    #......
     # Variables left
 
     if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
 
-    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(non.num)), collapse = ", ")),
-            call. = FALSE)
+    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(non.num)), collapse = ", ")), call. = FALSE)
 
   }
 
-  #----------------------------------------
-  # Listwise deletion
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise deletion ####
 
   if (isTRUE(na.omit && any(is.na(x)))) {
 
-    #......
-    # No group and split variable
+    #...................
+    ### No group and split variable ####
     if (isTRUE(is.null(group) && is.null(split))) {
 
       x <- na.omit(as.data.frame(x, stringsAsFactors = FALSE))
 
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x)$na.action)), call. = FALSE)
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE)
 
     }
 
-    #......
-    # Group variable, no split variable
+    #...................
+    ### Group variable, no split variable ####
     if (isTRUE(!is.null(group) && is.null(split))) {
 
       x.group <- na.omit(data.frame(x, group = group, stringsAsFactors = FALSE))
@@ -212,13 +211,12 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
       x <- x.group[, -grep("group", names(x.group)), drop = FALSE]
       group <- x.group$group
 
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x.group)$na.action)), call. = FALSE)
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x.group)$na.action)), call. = FALSE)
 
     }
 
-    #......
-    # No group variable, split variable
+    #...................
+    ### No group variable, split variable ####
     if (isTRUE(is.null(group) && !is.null(split))) {
 
       x.split <- na.omit(data.frame(x, split = split, stringsAsFactors = FALSE))
@@ -226,13 +224,12 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
       x <- x.split[, -grep("split", names(x.split)), drop = FALSE]
       split <- x.split$split
 
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x.split)$na.action)), call. = FALSE)
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x.split)$na.action)), call. = FALSE)
 
     }
 
-    #......
-    # Group variable, split variable
+    #...................
+    ### Group variable, split variable ####
     if (isTRUE(!is.null(group) && !is.null(split))) {
 
       x.group.split <- na.omit(data.frame(x, group = group, split = split, stringsAsFactors = FALSE))
@@ -241,56 +238,46 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
       group <- x.group.split$group
       split <- x.group.split$split
 
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x.group.split)$na.action)), call. = FALSE)
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x.group.split)$na.action)), call. = FALSE)
 
     }
 
-    #......
-    # Variable with missing values only
+    #...................
+    ### Variable with missing values only ####
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
     if (isTRUE(any(x.miss))) {
 
-      stop(paste0("After listwise deletion, following variables are completely missing: ",
-                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After listwise deletion, following variables are completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
 
     }
 
   }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'prop'
     if (isTRUE(!all(unlist(x) %in% c(0L, 1L, NA)))) { stop("Please specify a numeric vector, matrix or data frame with numeric variables with 0 and 1 values for the argument 'x'.", call. = FALSE) }
 
-    #......
     # Check input 'method'
     if (isTRUE(!all(method %in%  c("wald", "wilson")))) { stop("Character string in the argument 'method' does not match with \"chisq\", or \"bonett\".", call. = FALSE) }
 
-    #......
     # Check input 'alternative'
     if (isTRUE(!all(alternative %in%  c("two.sided", "less", "greater")))) {
 
-      stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".",
-           call. = FALSE)
+      stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE)
 
     }
 
-    #......
     # Check input 'conf.level'
     if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
 
-    #......
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
@@ -302,7 +289,6 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
 
     }
 
-    #......
     # Check input 'split'
     if (isTRUE(!is.null(split))) {
 
@@ -314,52 +300,48 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
 
     }
 
-    #......
     # Check input 'sort.var'
     if (isTRUE(!is.logical(sort.var))) { stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE) }
 
-    #......
     # Check input 'na.omit'
     if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input output
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #----------------------------------------
-  # Method
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Method ####
 
   if (isTRUE(all(c("wald", "wilson") %in% method))) { method <- "wilson" }
 
-  #----------------------------------------
-  # Alternative hypothesis
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Alternative hypothesis ####
 
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #----------------------------------------
-  # Confidence interval for the proportion - Wilson method
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Confidence interval for the proportion ####
 
   prop.conf <- function(x, method, alternative, conf.level, side) {
 
-    #......
     # Data
     x <- na.omit(x)
 
     n <- length(x)
 
-    #......
     # Number of observations
     if (isTRUE(n == 0L)) {
 
@@ -377,8 +359,8 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
                   less = qnorm(1L - (1L - conf.level)),
                   greater = qnorm(1L - (1L - conf.level)))
 
-      #--------------------------------------------------------------------
-      # Wald method
+      #...................
+      ### Wald method ####
       if (isTRUE(method == "wald")) {
 
         term <- z * sqrt(p * q) / sqrt(n)
@@ -388,8 +370,8 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
                      less = c(low = 0L, upp = min(1, p + term)),
                      greater = c(low = max(0L, p - term), upp = 1L))
 
-      #--------------------------------------------------------------------
-      # Wilson method
+      #...................
+      ### Wilson method ####
       } else if (isTRUE(method == "wilson")) {
 
       term1 <- (s + z^2 / 2L) / (n + z^2L)
@@ -401,12 +383,8 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
                    greater = c(low = max(0L, term1 - term2), upp = 1L))
 
       }
-      #--------------------------------------------------------------------
 
     }
-
-    #......
-    # Return object
 
     # Lower or upper limit
     object <- switch(side, both = ci, low = ci[1], upp = ci[2])
@@ -415,9 +393,8 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
 
   }
 
-  #----------------------------------------
-  # No Grouping, No Split
-
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, No Split ####
   if (isTRUE(is.null(group) && is.null(split))) {
 
     result <- data.frame(variable = colnames(x),
@@ -431,8 +408,8 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
                          upp = vapply(x, prop.conf, method = method, alternative = alternative, conf.level = conf.level, side = "upp", FUN.VALUE = double(1L)),
                          stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
 
-  #----------------------------------------
-  # Grouping, No Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping, No Split ####
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
@@ -444,8 +421,8 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))),
                          stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # No Grouping, Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, Split ####
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
@@ -454,8 +431,8 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
                                                   group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                   digits = digits, as.na = NULL, check = FALSE, output = FALSE)$result)
 
-  #----------------------------------------
-  # Grouping, Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping, Split ####
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
@@ -468,8 +445,9 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
 
   }
 
-  ####################################################################################
-  # Return object and output
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "ci", ci = "prop",
@@ -481,8 +459,9 @@ ci.prop <- function(x, method = c("wald", "wilson"), alternative = c("two.sided"
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

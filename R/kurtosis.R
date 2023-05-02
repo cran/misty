@@ -36,54 +36,45 @@
 #' kurtosis(x)
 kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
-  ####################################################################################
-  # Input check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Check if only one variable specified in the input 'x'
   if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
 
-  #......
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
 
-
-  #----------------------------------------
-
-  #.......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
   if (isTRUE(check)) {
 
-    #.......
     # Check input 'x': Missing
     if (isTRUE(all(is.na(x)))) { stop("Vector specified in the argument 'x' is  is completely missing.", call. = FALSE) }
 
-    #.......
     # Check input 'x': Numeric vector
     if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
 
     #.......
-    # Check input 'x': Zero variance
-    if (isTRUE(length(x) > 1L)) {
-
-      if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE) }
-
-    }
+    if (isTRUE(length(x) > 1L)) { if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE) } }
 
   }
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
   # Convert user-missing values into NA
   if (isTRUE(!is.null(as.na))) {
@@ -91,18 +82,10 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
     x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
-    if (isTRUE(all(is.na(x)))) {
-
-      stop("After converting user-missing values into NA, variable 'x' is completely missing.", call. = FALSE)
-
-    }
+    if (isTRUE(all(is.na(x)))) { stop("After converting user-missing values into NA, variable 'x' is completely missing.", call. = FALSE) }
 
     # Zero variance
-    if (isTRUE(length(na.omit(unique(x))) == 1L)) {
-
-      stop("After converting user-missing values into NA, variable 'x' has zero variance.", call. = FALSE)
-
-    }
+    if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("After converting user-missing values into NA, variable 'x' has zero variance.", call. = FALSE) }
 
   }
 
@@ -113,8 +96,9 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   n <- length(x)
 
@@ -134,8 +118,9 @@ kurtosis <- function(x, as.na = NULL, check = TRUE) {
 
   }
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(object)
 

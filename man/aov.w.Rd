@@ -128,11 +128,21 @@ conducting the analysis.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis (\code{type}), list with
-the data (\code{data}) in wide-format (\code{wide}), reshaped data in long-format
-(\code{long}), and within-subject confidence intervals (\code{ci}), the ggplot2
-object (\code{plot}), and specification of function arguments (\code{args}),
-and result tables (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{list with the data (\code{data}) in wide-format (\code{wide}), reshaped data in long-format (\code{long}), and within-subject confidence intervals (\code{ci})}
+  \item{\code{formula}}{formula of the current analysis}
+  \item{\code{plot}}{ggplot2 object for plotting the results}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{result}}{list with result tables, i.e., \code{descript} for descriptive
+                       statistics, \code{epsilon} for a table with indices of sphericity,
+                       \code{test} for the ANOVA table (\code{none} for no sphericity
+                       correction, \code{lb} for lower bound correction, \code{gg}
+                       for Greenhouse and Geiser corretion, and \code{hf} for
+                       Huynh and Feldt correction), \code{posthoc} for post hoc
+                       tests, and \code{aov} for the return object of the \code{aov}
+                       function}
 }
 \description{
 This function performs an one-way repeated measures analysis of variance (within

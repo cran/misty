@@ -103,10 +103,30 @@ naming a file with or without file extension '.xlsx', e.g.,
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
-entries: function call (\code{call}), type of analysis (\code{type}), matrix
-or data frame specified in \code{x} (\code{data}), specification of function
-arguments (\code{args}), fitted lavaan object (\code{mod.fit}), and list with
-results  (\code{result}).
+entries:
+  \item{\code{call}}{function call}
+  \item{\code{type}}{type of analysis}
+  \item{\code{data}}{data frame specified in \code{x} including the group variable
+                     specified in \code{cluster}}
+  \item{\code{args}}{specification of function arguments}
+  \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
+  \item{\code{result}}{list with result tables, i.e., \code{summary} for the
+                       specification of the estimation method and missing data
+                       handling in lavaan, \code{wb.cor} for the within- and
+                       between-group correlations, \code{wb.se} for the standard
+                       error of the within- and between-group correlations,
+                       \code{wb.stat} for the test statistic of within- and between-group
+                       correlations, \code{wb.p} for the significance value of
+                       the within- and between-group correlations, \code{with.cor}
+                       for the within-group correlations, \code{with.se} for the
+                       standard error of the within-group correlations, \code{with.stat}
+                       for the test statistic of within-group correlations, \code{with.p}
+                       for the significance value of the within-group correlations,
+                       \code{betw.cor} for the between-group correlations, \code{betw.se}
+                       for the standard error of the between-group correlations,
+                       \code{betw.stat} for the test statistic of between-group
+                       correlations, \code{betw.p} for the significance value of
+                       the between-group correlations}
 }
 \description{
 This function is a wrapper function for computing the within-group and

@@ -97,77 +97,56 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
                       progress = readxl::readxl_progress(), name.repair = "unique", as.data.frame = TRUE,
                       check = TRUE) {
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check input 'file'
-  if (isTRUE(missing(file))) {
+  if (isTRUE(missing(file))) { stop("Please specify a character string indicating the name of the SPSS data file for the argument 'file'", call. = FALSE) }
 
-    stop("Please specify a character string indicating the name of the SPSS data file for the argument 'file'",
-         call. = FALSE)
-
-  }
-
-  #......
   # File extension .xlsx
   file <- ifelse(length(grep(".xlsx", file)) == 0, file <- paste0(file, ".xlsx"), file)
 
-  #......
   # Check if file exists
-  if (isTRUE(!file.exists(file))) {
+  if (isTRUE(!file.exists(file))) { stop(paste0("Unable to open Excel data file: ", sQuote(file), " does not exist."), call. = FALSE) }
 
-    stop(paste0("Unable to open Excel data file: ", sQuote(file), " does not exist."),
-         call. = FALSE)
-
-  }
-
-  #......
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
-
-  #-----------------------------------------
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   if (isTRUE(check)) {
 
-    #......
     # Check input 'trim'
-    if (isTRUE(!is.logical(trim))) {
+    if (isTRUE(!is.logical(trim))) { stop("Please specify TRUE or FALSE for the argument 'trim'.", call. = FALSE) }
 
-      stop("Please specify TRUE or FALSE for the argument 'trim'.", call. = FALSE)
-
-    }
-
-    #......
     # Check input 'as.data.frame'
-    if (isTRUE(!is.logical(as.data.frame))) {
-
-      stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE)
-
-    }
+    if (isTRUE(!is.logical(as.data.frame))) { stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
-  #-----------------------------------------
-  # Argument 'coltypes'
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Argument 'coltypes' ####
+
   if (isTRUE(all(c("skip", "guess", "logical", "numeric", "date", "text", "list") %in% coltypes))) {
 
     coltypes <- NULL
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #-----------------------------------------
-  # Data as data frame
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame ####
+
   if (isTRUE(as.data.frame)) {
 
     object <- as.data.frame(readxl::read_xlsx(path = file, sheet = sheet, range = range, col_names = header,
@@ -175,8 +154,8 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
                                               n_max = nmax, guess_max = guessmax, progress = progress,
                                              .name_repair = name.repair), stringsAsFactors = FALSE)
 
-  #-----------------------------------------
-  # Data as tibble
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Tibble ####
 
   } else {
 
@@ -187,8 +166,9 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
 
   }
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(object)
 

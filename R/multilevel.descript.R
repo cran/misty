@@ -48,6 +48,17 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab data frame specified in \code{x} including the group variable
+#'              specified in \code{cluster} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list with result tables \cr
+#' }
+#'
+#' #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries: function call (\code{call}), type of analysis \code{type}, matrix or
 #' data frame specified in \code{x} (\code{data}), specification of function arguments
 #' (\code{args}), and list with results (\code{result}).
@@ -90,44 +101,42 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
                                 REML = TRUE, digits = 2, icc.digits = 3, as.na = NULL,
                                 write = NULL, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #......
   # Vector, matrix or data frame for the argument 'x'?
   if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) { stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'cluster' is missing
   if (isTRUE(missing(cluster))) { stop("Please specify a vector representing the nested grouping structure for the argument 'cluster'.", call. = FALSE) }
 
-  #......
   # Check if input 'cluster' is NULL
   if (isTRUE(is.null(cluster))) { stop("Input specified for the argument 'cluster is NULL.", call. = FALSE) }
 
-  #......
   # Check if only one variable specified in the input 'cluster'
   if (ncol(data.frame(cluster)) != 1L) { stop("More than one variable specified for the argument 'cluster'.",call. = FALSE) }
 
-  #......
   # Convert 'cluster' into a vector
   cluster <- unlist(cluster, use.names = FALSE)
 
-  #----------------------------------------
-  # Data frame
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -144,17 +153,15 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
 
   }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'cluster'
     if (isTRUE(is.null(dim(x)))) {
 
@@ -168,11 +175,9 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
 
     }
 
-    #......
     # Check input 'cluster'
     if (isTRUE(length(unique(na.omit(cluster))) == 1L)) { stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE) }
 
-    #......
     # Check input 'x': Zero variance?
     x.check <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
 
@@ -191,23 +196,18 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
 
     }
 
-    #......
     # Check input 'method'
     if (isTRUE(any(!method %in% c("aov", "lme4", "nlme")))) { stop("Character string in the argument 'method' does not match with \"aov\", \"lme4\", or \"nlme\".", call. = FALSE) }
 
-    #......
     # Check input 'REML'
     if (isTRUE(!is.logical(REML))) { stop("Please specify TRUE or FALSE for the argument 'REML'", call. = FALSE) }
 
-    #......
     # Check digits argument
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check icc.digits argument
     if (isTRUE(icc.digits %% 1L != 0L || icc.digits < 0L)) { stop("Specify a positive integer value for the argument 'icc.digits'.", call. = FALSE) }
 
-    #......
     # Variance within clusters
     if (isTRUE(ncol(x) == 1L)) {
 
@@ -230,17 +230,18 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
 
     }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
 
-  #-----------------------------------------
-  # Argument method
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Argument method ####
+
   if (isTRUE(all(c("aov", "lme4", "nlme") %in% method))) {
 
     if (isTRUE(nzchar(system.file(package = "lme4")))) {
@@ -255,8 +256,9 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   # No. of observations
   no.obs <- vapply(x, function(y) length(na.omit(y)), FUN.VALUE = 1L)
@@ -279,8 +281,8 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
   # Maximum cluster size
   max.cluster.size <- vapply(x, function(y) max(table(na.omit(cbind(y, cluster))[, "cluster"])), FUN.VALUE = 1L)
 
-  #-----------------------------------------
-  # One dependent variable
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## One dependent variable ####
 
   if (isTRUE(ncol(x) == 1L)) {
 
@@ -301,10 +303,10 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
         mean.x <- mean(tapply(unlist(x), cluster, mean, na.rm = TRUE))
 
         # Mean Squared Error Between
-        var.b <- unname(unlist(mod.summary[[1]])["Mean Sq"])
+        var.b <- unname(unlist(mod.summary[[1L]])["Mean Sq"])
 
         # Mean Squared Error Within
-        var.w <- unname(unlist(mod.summary[[2]])["Mean Sq"])
+        var.w <- unname(unlist(mod.summary[[2L]])["Mean Sq"])
 
         # ICC(1)
         icc1 <- unname((var.b - var.w) / (var.b + ((m.cluster.size - 1L) * var.w)))
@@ -377,11 +379,11 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
 
     }
 
-  #-----------------------------------------
-  # More than one dependent variable
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## More than one dependent variable ####
   } else {
 
-    object <- apply(x, 2, function(y) misty::multilevel.descript(y, cluster, method = method,
+    object <- apply(x, 2L, function(y) misty::multilevel.descript(y, cluster, method = method,
                                                                  REML = REML, digits = digits, icc.digits = icc.digits,
                                                                  as.na = NULL, check = FALSE, output = FALSE))
 
@@ -402,8 +404,9 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
   # Effective sample size
   n.effect <- no.obs / deff
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "multilevel.descript",
@@ -419,13 +422,15 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Write results
+  #_____________________________________________________________________________
+  #
+  # Write Result ---------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

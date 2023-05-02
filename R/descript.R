@@ -50,9 +50,15 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, matrix or
-#' data frame specified in \code{x} (\code{data}), specification of function arguments
-#' (\code{args}), and list with results (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{data} \tab list with the input specified in \code{x}, \code{group}, and
+#'                  \code{split} \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list with result tables \cr
+#' }
 #'
 #' @export
 #'
@@ -109,20 +115,16 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
                      group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
                      digits = 2, as.na = NULL, write = NULL, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  #----------------------------------------
-
-  #......
   # Check 'group'
   if (isTRUE(!is.null(group))) {
 
@@ -135,9 +137,6 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
   }
 
-  #----------------------------------------
-
-  #......
   # Check 'split'
   if (isTRUE(!is.null(split))) {
 
@@ -150,8 +149,8 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
   }
 
-  #----------------------------------------
-  # Data frame
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
 
   # Is 'x' a matrix?
   is.mat <- is.matrix(x) && !is.data.frame(x)
@@ -159,8 +158,8 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
   # Coerce to a data frame
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
 
@@ -171,15 +170,14 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
     if (isTRUE(any(x.miss))) {
 
-      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
-                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
 
     }
 
   }
 
-  #----------------------------------------
-  # Numeric Variables
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Numeric Variables ####
 
   # Non-numeric variables
   non.num <- !vapply(x, is.numeric, FUN.VALUE = logical(1L))
@@ -188,38 +186,30 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
     x <- x[, -which(non.num), drop = FALSE]
 
-    #......
     # Variables left
+    if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
 
-    if (isTRUE(ncol(x) == 0L)) {
-
-      stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE)
-
-    }
-
-    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(non.num)), collapse = ", ")),
-            call. = FALSE)
+    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(non.num)), collapse = ", ")), call. = FALSE)
 
   }
 
-  #----------------------------------------
-  # Listwise deletion
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise deletion ####
 
   if (isTRUE(na.omit) && any(is.na(x))) {
 
-    #......
-    # No group and split variable
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No Grouping, No Split ####
     if (isTRUE(is.null(group) && is.null(split))) {
 
       x <- na.omit(as.data.frame(x, stringsAsFactors = FALSE))
 
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x)$na.action)), call. = FALSE)
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE)
 
     }
 
-    #......
-    # Group variable, no split variable
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping, No Split ####
     if (isTRUE(!is.null(group) && is.null(split))) {
 
       x.group <- na.omit(data.frame(x, group = group, stringsAsFactors = FALSE))
@@ -227,13 +217,12 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
       x <- x.group[, -grep("group", names(x.group)), drop = FALSE]
       group <- x.group$group
 
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x.group)$na.action)), call. = FALSE)
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x.group)$na.action)), call. = FALSE)
 
     }
 
-    #......
-    # No group variable, split variable
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No Grouping, Split ####
     if (isTRUE(is.null(group) && !is.null(split))) {
 
       x.split <- na.omit(data.frame(x, split = split, stringsAsFactors = FALSE))
@@ -246,8 +235,8 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
     }
 
-    #......
-    # Group variable, split variable
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping, Split ####
     if (isTRUE(!is.null(group) && !is.null(split))) {
 
       x.group.split <- na.omit(data.frame(x, group = group, split = split, stringsAsFactors = FALSE))
@@ -256,44 +245,37 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
       group <- x.group.split$group
       split <- x.group.split$split
 
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x.group.split)$na.action)), call. = FALSE)
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x.group.split)$na.action)), call. = FALSE)
 
     }
 
-    #......
-    # Variable with missing values only
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Variable with missing values only ####
     x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (isTRUE(any(x.miss))) {
 
-      stop(paste0("After listwise deletion, following variables are completely missing: ",
-                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After listwise deletion, following variables are completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
 
     }
 
   }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  #......
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # Check input 'print'
     if (isTRUE(!all(print %in% c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "skew", "range", "iqr", "kurt")))) {
 
-      stop("Character strings in the argument 'print' do not all match with \"all\", \"n\", \"nNA\", \"pNA\", \"m\", \"se.m\", \"var\", \"sd\", \"min\", \"p25\", \"med\", \"p75\", \"max\", \"range\", \"iqr\", \"skew\", or \"kurt\".",
-           call. = FALSE)
+      stop("Character strings in the argument 'print' do not all match with \"all\", \"n\", \"nNA\", \"pNA\", \"m\", \"se.m\", \"var\", \"sd\", \"min\", \"p25\", \"med\", \"p75\", \"max\", \"range\", \"iqr\", \"skew\", or \"kurt\".", call. = FALSE)
 
     }
 
-    #......
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
@@ -305,7 +287,6 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
     }
 
-    #......
     # Check input 'split'
     if (isTRUE(!is.null(split))) {
 
@@ -317,29 +298,26 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
     }
 
-    #......
     # Check input 'sort.var'
     if (isTRUE(!is.logical(sort.var))) { stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE) }
 
-    #......
     # Check input 'na.omit'
     if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
-  #----------------------------------------
-  # Statistical measures
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Statistical measures ####
 
   if (isTRUE(all(c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt") %in% print))) {
 
@@ -353,11 +331,12 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
   }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #----------------------------------------
-  # No Grouping, No Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, No Split ####
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
@@ -380,8 +359,8 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
                          kurt = suppressWarnings(vapply(x, misty::kurtosis, check = FALSE, FUN.VALUE = double(1L))),
                          stringsAsFactors = FALSE, row.names = NULL, check.names = FALSE)
 
-  #----------------------------------------
-  # Grouping, No Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping, No Split ####
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(x, f = group), function(y) misty::descript(y, group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
@@ -391,8 +370,8 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))),
                          stringsAsFactors = FALSE)
 
-  #----------------------------------------
-  # No Grouping, Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, Split ####
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
@@ -400,8 +379,8 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
                                                  na.omit = na.omit, as.na = as.na, check = FALSE,
                                                  output = FALSE)$result)
 
-  #----------------------------------------
-  # Grouping, Split
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping, Split ####
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split),
@@ -411,8 +390,9 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
   }
 
-  ####################################################################################
-  # Return object and output
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "descript",
@@ -423,13 +403,15 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Write results
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

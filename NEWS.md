@@ -1,3 +1,25 @@
+### misty 0.4.9 (2023-05-02)
+
+##### New features
+* New function `libraries()` to load and attach multiple add-on packages at once. 
+* New function `check.outlier()` computes statistical measures for leverage, distance, 
+and influence for linear models estimated by using the `lm()` function
+
+##### Minor features and improvements
+* When using function `write.result()`, result tables are in line with the arguments
+`print`, `tri`, `digits`, `p.digits`, and `icc.digits` specified in the object `x` (thanks to Stefan Kulakow).
+* Function `crosstab()` displays marginal row-wise, column-wise, and total percentages in the output (thanks to Joachim Fritz Punter and Lisa Bucher). Note that the function now also returns the crosstable in the list element `result$crosstab` of the return object .
+
+##### User-visible changes
+* Revised the `Value` sections in the documentation of the functions.  
+* Changed the default setting of the argument `weighted` in the `test.t` and the `na.auxiliary` function 
+to `FALSE` in line with the recommendation by Delacre et al. (2021).  
+* Renamed the function `collin.diag()` to `check.collin()`.
+
+##### Bug fix
+* Fixed a bug in the function `read.mplus()`, an error message was printed if comments in the Mplus input file contains special characters (e.g., ä, ü, ö).
+* Fixed a bug in the function `std.coef()`, the function was not applicable to predictors specified as character vector or factor.
+
 ### misty 0.4.8 (2023-03-10)
 
 ##### New features

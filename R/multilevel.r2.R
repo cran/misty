@@ -338,9 +338,15 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries: function call (\code{call}), type of analysis \code{type}, model
-#' specified in \code{model} (\code{model}), specification of function arguments
-#' (\code{args}), and list with results (\code{result}).
+#' entries:
+#' \tabular{ll}{
+#' \code{call} \tab function call \cr
+#' \code{type} \tab type of analysis \cr
+#' \code{model} \tab model specified in \code{model} \cr
+#' \code{plot} \tab ggplot2 object for plotting the results \cr
+#' \code{args} \tab specification of function arguments \cr
+#' \code{result} \tab list with result tables \cr
+#' }
 #'
 #' @note
 #' This function is based on the \code{multilevelR2()} function from the \pkg{mitml}
@@ -444,14 +450,13 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
                           color = c("#D55E00", "#0072B2", "#CC79A7", "#009E73", "#E69F00"),
                           check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Data
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  #......
   # Check if input 'model' is missing or null
   if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model of class \"lmerMod\" or \"lme\" for the argument 'x'.", call. = FALSE) }
 
-  #......
   # Check method
   if (isTRUE(inherits(model, "merMod"))) {
 
@@ -463,57 +468,48 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   } else {
 
-    stop("Calculation of multilevel R-squared measures not supported for models of class \"",
-         class(model), "\".", call. = TRUE)
+    stop("Calculation of multilevel R-squared measures not supported for models of class \"", class(model), "\".", call. = TRUE)
 
   }
 
-  ####################################################################################
-  # Input Check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  #-----------------------------------------
-
   if (isTRUE(check)) {
 
-    #......
     # ggplot2 package
     if (isTRUE(!nzchar(system.file(package = "ggplot2"))))  { warning("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
 
-    #......
     # Check input 'print'
     if (isTRUE(!all(print %in%  c("all", "RB", "SB", "NS", "RS")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"RB\", \"SB\", \"NS\", or \"RS\".", call. = FALSE) }
 
-    #......
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE) }
 
-    #......
     # Check input 'plot'
     if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'", call. = FALSE) }
 
-    #......
     # Check input 'gray'
     if (isTRUE(!is.logical(gray))) { stop("Please specify TRUE or FALSE for the argument 'gray'", call. = FALSE) }
 
-    #......
     # Check input 'start'
     if (isTRUE(start < 0L || start > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) }
 
-    #......
     # Check input 'end'
     if (isTRUE(end < 0L || end > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'end'", call. = FALSE) }
 
-    #......
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Data and Arguments
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
   if (isTRUE(all(c("all", "RB", "SB", "NS", "RS") %in% print))) { print <- "RS" }
 
@@ -521,19 +517,20 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   if (isTRUE(plot) & isTRUE(!"RS" %in% print)) { warning("Bar char is only available when \"RS\" is specified in the argument 'print'.", call. = FALSE) }
 
-  ####################################################################################
-  # Main Function
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
-  #-----------------------------------------
-  # RB, SB, or NS R-squared measures
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## RB, SB, or NS R-squared measures ####
 
   if (isTRUE(any(c("RB", "SB", "NS") %in% print))) {
 
     # Check if refit is necessary
     refit <- any(c("RB", "SB") %in% print)
 
-    #.......................................
-    # lme4
+    #...................
+    ### lme4 ####
     switch(method, lme4 = {
 
       # Model terms
@@ -581,8 +578,8 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
       t11.1 <- vc1[[cvr]][-1L, -1L, drop = FALSE]
       s1 <- attr(vc1, "sc")^2L
 
-    #.......................................
-    # nlme
+    #...................
+    ### nlme ####
     }, nlme = {
 
       # Model terms
@@ -635,8 +632,8 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
     })
 
-    #-----------------------------------------
-    # Random slope model
+    #...................
+    ### Random slope model ####
 
     if (isTRUE(random)) {
 
@@ -658,8 +655,8 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   }
 
-  #-----------------------------------------
-  # Calculate R2
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Calculate R2 ####
 
   # Raudenbush and Bryk (2002)
   if (isTRUE("RB" %in% print)) {
@@ -709,8 +706,8 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   }
 
-  #-----------------------------------------
-  # Rights and Sterba (2019) R-squared measures
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Rights and Sterba (2019) R-squared measures ####
 
   if (isTRUE("RS" %in% print)) {
 
@@ -727,8 +724,8 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
                                             dimnames = list(rownames(r2mlm.out$R2s),
                                                             colnames(r2mlm.out$R2s)))))
 
-    #.......................................
-    # Plot
+    #...................
+    ### Plot ####
 
     part <- NULL
 
@@ -777,8 +774,6 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
     # Print plot
     if (isTRUE(plot)) { suppressWarnings(print(p)) }
 
-    #.......................................
-
   } else {
 
     p <- NULL
@@ -792,8 +787,9 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   }
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "multilevel.r2",
@@ -821,8 +817,9 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

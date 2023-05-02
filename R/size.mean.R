@@ -74,69 +74,33 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
                       alternative = c("two.sided", "less", "greater"),
                       alpha = 0.05, beta = 0.1, check = TRUE, output = TRUE) {
 
-  ####################################################################################
-  # Input check
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) {
-
-    stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE)
-
-  }
-
-  #-----------------------------------------
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
     # Check input 'delta'
-    if (isTRUE(missing(delta))) {
+    if (isTRUE(missing(delta))) { stop("Please specify a numeric value for the argument 'delta'.", call. = FALSE) }
 
-      stop("Please specify a numeric value for the argument 'delta'.", call. = FALSE)
+    if (isTRUE(delta <= 0L)) { stop("Argument delta out of bound, specify a value > 0.", call. = FALSE) }
 
-    }
+    if (isTRUE(!all(sample %in% c("two.sample", "one.sample")))) { stop("Argument sample should be \"two.siample\" or \"one.sample\".", call. = FALSE) }
 
-    if (isTRUE(delta <= 0L)) {
+    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) { stop("Argument alternative should be \"two.sided\", \"less\" or \"greater\"", call. = FALSE) }
 
-      stop("Argument delta out of bound, specify a value > 0.", call. = FALSE)
+    if (isTRUE(alpha <= 0L || alpha >= 1L)) { stop("Argument alpha out of bound, specify a value between 0 and 1", call. = FALSE) }
 
-    }
-
-    ###
-
-    if (isTRUE(!all(sample %in% c("two.sample", "one.sample")))) {
-
-      stop("Argument sample should be \"two.siample\" or \"one.sample\".", call. = FALSE)
-
-    }
-
-    ###
-
-    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) {
-
-      stop("Argument alternative should be \"two.sided\", \"less\" or \"greater\"", call. = FALSE)
-
-    }
-
-    ###
-
-    if (isTRUE(alpha <= 0L || alpha >= 1L)) {
-
-      stop("Argument alpha out of bound, specify a value between 0 and 1", call. = FALSE)
-
-    }
-
-    ###
-
-    if (isTRUE(beta <= 0L || beta >= 1L)) {
-
-      stop("Argument beta out of bound, specify a value between 0 and 1", call. = FALSE)
-
-    }
+    if (isTRUE(beta <= 0L || beta >= 1L)) { stop("Argument beta out of bound, specify a value between 0 and 1", call. = FALSE) }
 
   }
 
-  ####################################################################################
-  # Main function
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
   # one or two sample
   sample <- ifelse(all(c("two.sample", "one.sample") %in% alternative), "two.sample", sample)
@@ -147,8 +111,12 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
 
   ###
 
-  #-------------------------------------------------
-  # two.sided
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Two-sided ####
 
   if (isTRUE(alternative == "two.sided")) {
 
@@ -158,8 +126,8 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
       pt(qu, nu, ncp = sqrt(n / samp) * delta, lower = FALSE) + pt(-qu, nu, ncp = sqrt(n / samp) * delta, lower = TRUE)
     })
 
-  #-------------------------------------------------
-  # one-sided
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## One-sided ####
 
   } else {
 
@@ -170,12 +138,14 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
 
   }
 
-  #-----------------------------------------------------------------------------------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Optimal sample size ####
 
   n <- uniroot(function(n) eval(p.body) - (1L - beta) , c(2L + 1e-10, 1e+07))$root
 
-  ####################################################################################
-  # Return object
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "size", size = "mean",
@@ -185,8 +155,9 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
 
   class(object) <- "misty.object"
 
-  ####################################################################################
-  # Output
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object) }
 
