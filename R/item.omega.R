@@ -114,7 +114,7 @@
 #'
 #' # Compute unstandardized coefficient omega with residual covariances
 #' # and item statistics
-#' item.omega(dat, resid.cov = list(c("item1", "item2"), c("item3", "item4")))
+#' item.omega(dat, resid.cov = list(c("item1", "item2"), c("item1", "item3")))
 #'
 #' # Compute unstandardized hierarchical omega and item statistics
 #' item.omega(dat, type = "hierarch")
@@ -135,7 +135,7 @@
 #' item.omega(dat, exclude = "item3")
 #'
 #' # Summary of the CFA model used to compute coefficient omega
-#' lavaan::summary(item.omega(dat, output = FALSE)$mod.fit,
+#' lavaan::summary(item.omega(dat, output = FALSE)$model.fit,
 #'                 fit.measures = TRUE, standardized = TRUE)
 #'
 #' # Write Results into a Excel file
@@ -382,18 +382,10 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   # Package 'lavaan' installed?
-  if (isTRUE(!requireNamespace("lavaan", quietly = TRUE))) {
-
-    stop("Package \"lavaan\" is needed for this function to work, please install it.", call. = FALSE)
-
-  }
+  if (isTRUE(!requireNamespace("lavaan", quietly = TRUE))) { stop("Package \"lavaan\" is needed for this function to work, please install it.", call. = FALSE) }
 
   # Package 'mnormt' installed?
-  if (isTRUE(ordered)) {
-
-    if (isTRUE(!requireNamespace("mnormt", quietly = TRUE))) { stop("Package \"mnormt\" is needed for this function to work, please install it.", call. = FALSE) }
-
-  }
+  if (isTRUE(ordered)) { if (isTRUE(!requireNamespace("mnormt", quietly = TRUE))) { stop("Package \"mnormt\" is needed for this function to work, please install it.", call. = FALSE) } }
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
@@ -824,7 +816,7 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
                              digits = digits, conf.level = conf.level, as.na = as.na,
                              check = check, output = output),
                  model.fit  = omega.mod$mod.fit,
-                 result = list(omega = omega.x, itemstat = itemstat))
+                 result = list(omega = omega.x, descript = itemstat))
 
   class(object) <- "misty.object"
 

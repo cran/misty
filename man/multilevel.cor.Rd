@@ -109,7 +109,7 @@ entries:
   \item{\code{data}}{data frame specified in \code{x} including the group variable
                      specified in \code{cluster}}
   \item{\code{args}}{specification of function arguments}
-  \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
+  \item{\code{model.fit}}{fitted lavaan object (\code{model.fit})}
   \item{\code{result}}{list with result tables, i.e., \code{summary} for the
                        specification of the estimation method and missing data
                        handling in lavaan, \code{wb.cor} for the within- and
@@ -226,7 +226,7 @@ multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
 # and between-group correlation matrix
 mod <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
                       cluster = Demo.twolevel$cluster, output = FALSE)
-lavaan::summary(mod$mod.fit, standardized = TRUE)
+lavaan::summary(mod$model.fit, standardized = TRUE)
 
 # Write Results into a Excel file
 multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],

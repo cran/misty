@@ -1,3 +1,8 @@
+### misty 0.4.10 (2023-05-18)
+
+##### Bug fix
+* Fixed a bug in the function `multilevel.cor()`, which caused an error message (thanks to Richard Janzen).
+
 ### misty 0.4.9 (2023-05-02)
 
 ##### New features

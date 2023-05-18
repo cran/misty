@@ -5,8 +5,7 @@
 \title{Open R Script, R Markdown script, or SQL Script in RStudio}
 \usage{
 script.open(path, line = 1, col = 1, cursor = TRUE, run = FALSE,
-            echo = TRUE, max.length = 999, spaced = TRUE, check = TRUE
-)
+            echo = TRUE, max.length = 999, spaced = TRUE, check = TRUE)
 }
 \arguments{
 \item{path}{a character string indicating the path of the script.}

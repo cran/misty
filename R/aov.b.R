@@ -172,7 +172,7 @@ aov.b <- function(formula, data, posthoc = TRUE, conf.level = 0.95,
                   error.width = 0.1, xlab = NULL, ylab = NULL, ylim = NULL,
                   breaks = ggplot2::waiver(), jitter = TRUE, jitter.size = 1.25,
                   jitter.width = 0.05, jitter.height = 0, jitter.alpha = 0.1,
-                  title = "",  subtitle = "Confidence Interval",
+                  title = "", subtitle = "Confidence Interval",
                   digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
                   output = TRUE, ...) {
 
@@ -359,19 +359,12 @@ aov.b <- function(formula, data, posthoc = TRUE, conf.level = 0.95,
 
   result.ph <- stats::TukeyHSD(aov.res, ordered = FALSE)[[1L]]
 
-  ###
   # Extract groups
-  labels <- t(sapply(rownames(result.ph), function(x) {
-
-    reg.x <- max(sapply(levels(group), function(y) regexpr(y, x)))
-
-    c(substr(x, 1, reg.x - 2), substr(x, reg.x, nchar(x)))
-
-  }))
+  labels <- t(combn(unlist(aov.res$xlevels), 2L))
 
   #...................
   ### Result table ####
-  result.ph <- data.frame(group1 = labels[, 2L], group2 = labels[, 1L], m.diff = result.ph[, "diff"],
+  result.ph <- data.frame(group1 = labels[, 1L], group2 = labels[, 2L], m.diff = result.ph[, "diff"],
                           m.low = result.ph[, "lwr"], m.upp = result.ph[, "upr"], pval = result.ph[, "p adj"],
                           row.names = NULL)
 

@@ -16,7 +16,7 @@ supported by the \code{write.result} function (see 'Details').}
 '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{tri}{a character string or character vector indicating which triangular
-of the matrix to show on the console, i.e., \code{both} for upper and lower 
+of the matrix to show on the console, i.e., \code{both} for upper and lower
 triangular, \code{lower} for the lower triangular, and \code{upper} for the upper
 triangular.}
 
@@ -128,7 +128,7 @@ dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
                   x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
                   x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
 
- result <- na.descript(dat, table = TRUE, output = FALSE)
+result <- na.descript(dat, table = TRUE, output = FALSE)
 write.result(result, "NA_Descriptives.xlsx")
 
 #--------------------------------------

@@ -125,7 +125,7 @@
 #'                   x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
 #'                   x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
 #'
-#'  result <- na.descript(dat, table = TRUE, output = FALSE)
+#' result <- na.descript(dat, table = TRUE, output = FALSE)
 #' write.result(result, "NA_Descriptives.xlsx")
 #'
 #' #--------------------------------------
@@ -990,7 +990,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     #...................
     ### Univariate Sample Statistics ####
 
-    itemstat <- write.object$itemstat
+    itemstat <- write.object$descript
 
     # Round
     itemstat[, -1L] <- sapply(itemstat[, -1L], round, digits = digits)

@@ -195,7 +195,7 @@
 #' # and between-group correlation matrix
 #' mod <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
 #'                       cluster = Demo.twolevel$cluster, output = FALSE)
-#' lavaan::summary(mod$mod.fit, standardized = TRUE)
+#' lavaan::summary(mod$model.fit, standardized = TRUE)
 #'
 #' # Write Results into a Excel file
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
@@ -733,6 +733,7 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
                              split = split, tri = tri, tri.lower = tri.lower,
                              p.adj = p.adj, digits = digits, p.digits = p.digits,
                              as.na = as.na, check = check, output = output),
+                 model = mod,
                  model.fit = mod.fit,
                  result = list(summary = lavaan.summary,
                                wb.cor = wb.cor, wb.se = wb.se,
