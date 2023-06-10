@@ -97,7 +97,7 @@
 #' crosstab(dat[, c("x1", "x2", "x3")], print = "all", split = TRUE)
 #'
 #' \dontrun{
-#' Write Results into a Excel file
+#' # Write Results into a Excel file
 #' crosstab(dat[, c("x1", "x2")], print = "all", write = "Crosstab.xlsx")
 #'
 #' result <- crosstab(dat[, c("x1", "x2")], print = "all", output = FALSE)

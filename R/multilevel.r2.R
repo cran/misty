@@ -455,7 +455,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   # Initial Check --------------------------------------------------------------
 
   # Check if input 'model' is missing or null
-  if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model of class \"lmerMod\" or \"lme\" for the argument 'x'.", call. = FALSE) }
+  if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model of class \"lmerMod\" or \"lme\" for the argument 'model'.", call. = FALSE) }
 
   # Check method
   if (isTRUE(inherits(model, "merMod"))) {

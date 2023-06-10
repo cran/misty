@@ -167,7 +167,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
     x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
-    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (isTRUE(any(x.miss))) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)

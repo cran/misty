@@ -486,7 +486,7 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
                  args = list(exclude = exclude, std = std, ordered = ordered, na.omit = na.omit,
                              print = print, digits = digits, conf.level = conf.level, as.na = as.na,
                              check = check, output = output),
-                 result = list(alpha = alpha.x, descript = itemstat))
+                 result = list(alpha = alpha.x, itemstat = itemstat))
 
   class(object) <- "misty.object"
 

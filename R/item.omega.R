@@ -816,7 +816,7 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
                              digits = digits, conf.level = conf.level, as.na = as.na,
                              check = check, output = output),
                  model.fit  = omega.mod$mod.fit,
-                 result = list(omega = omega.x, descript = itemstat))
+                 result = list(omega = omega.x, itemstat = itemstat))
 
   class(object) <- "misty.object"
 

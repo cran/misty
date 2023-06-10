@@ -54,10 +54,14 @@ export(item.reverse)
 export(item.scores)
 export(kurtosis)
 export(libraries)
+export(multilevel.cfa)
 export(multilevel.cor)
 export(multilevel.descript)
+export(multilevel.fit)
 export(multilevel.icc)
 export(multilevel.indirect)
+export(multilevel.invar)
+export(multilevel.omega)
 export(multilevel.r2.manual)
 export(multilevel.r2)
 export(na.as)
@@ -93,15 +97,7 @@ export(write.mplus)
 export(write.result)
 export(write.sav)
 export(write.xlsx)
-exportMethods(ci.prop.diff)
-exportMethods(default)
-exportMethods(formula)
-importFrom(utils,packageDescription)
-
-importFrom("stats", "cooks.distance", "dfbetas", "hatvalues",
-                "mahalanobis", "rstandard", "rstudent")
-
-importFrom("stats", "aov", "as.formula", "chisq.test", "coefficients",
+importFrom("stats", "aov", "as.formula", "chisq.test", "coefficients", 
            "cooks.distance", "cor", "cor.test", "cov", "cov2cor", "df", 
            "dfbetas", "formula", "hatvalues", "IQR", "mahalanobis", "median",
            "model.frame", "model.matrix", "na.omit", "oneway.test", 
@@ -109,5 +105,6 @@ importFrom("stats", "aov", "as.formula", "chisq.test", "coefficients",
            "rstudent", "setNames", "pchisq", "qbinom", "qchisq", "qf", "qnorm", 
            "qt", "quantile", "reshape", "sd", "terms", "time", "t.test", 
            "p.adjust", "pf", "pt", "uniroot", "update", "var", "vcov")
-importFrom("utils", "available.packages", "combn", "install.packages", "installed.packages",
-           "packageDescription", "read.table", "write.csv", "write.csv2", "write.table")
+importFrom("utils", "as.relistable", "available.packages", "combn", 
+           "install.packages", "installed.packages", "packageDescription", 
+           "read.table", "relist", "write.csv", "write.csv2", "write.table")

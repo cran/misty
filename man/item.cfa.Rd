@@ -162,7 +162,7 @@ entries:
   \item{\code{data}}{matrix or data frame specified in \code{x}}
   \item{\code{args}}{specification of function arguments}
   \item{\code{model}}{specified model}
-  \item{\code{model.fit}}{fitted lavaan object (\code{model.fit})}
+  \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
   \item{\code{check}}{results of the convergence and model identification check}
   \item{\code{result}}{list with result tables, i.e., \code{summary} for the
                        specification of the estimation method and missing data
@@ -448,7 +448,7 @@ item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
 
 mod <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
 
-lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
+lavaan::summary(mod$mod.fit, standardized = TRUE, fit.measures = TRUE)
 
 #---------------------------
 # Write Results into a Excel file

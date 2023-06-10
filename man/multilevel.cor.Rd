@@ -4,7 +4,8 @@
 \alias{multilevel.cor}
 \title{Within-Group and Between-Group Correlation Matrix}
 \usage{
-multilevel.cor(x, cluster, within = NULL, between = NULL, estimator = c("ML", "MLR"),
+multilevel.cor(x, cluster, within = NULL, between = NULL,
+               estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"),
                missing = c("listwise", "fiml"), sig = FALSE, alpha = 0.05,
                print = c("all", "cor", "se", "stat", "p"), split = FALSE,
                tri = c("both", "lower", "upper"), tri.lower = TRUE,
@@ -39,6 +40,11 @@ method is used to deal with missing data when using
 \code{"ML"} (\code{missing = "fiml"}), whereas incomplete
 cases are removed listwise (i.e., \code{missing = "listwise"})
 when using \code{"MLR"}.}
+
+\item{optim.method}{a chracter string indicating the optimizer, i.e., \code{nlminb}
+(default) for the unconstrained and bounds-constrained
+quasi-Newton method optimizer and \code{"em"} for the
+Expectation Maximization (EM) algorithm.}
 
 \item{missing}{a character string indicating how to deal with missing
 data, i.e., \code{"listwise"} for listwise deletion or
@@ -109,7 +115,7 @@ entries:
   \item{\code{data}}{data frame specified in \code{x} including the group variable
                      specified in \code{cluster}}
   \item{\code{args}}{specification of function arguments}
-  \item{\code{model.fit}}{fitted lavaan object (\code{model.fit})}
+  \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
   \item{\code{result}}{list with result tables, i.e., \code{summary} for the
                        specification of the estimation method and missing data
                        handling in lavaan, \code{wb.cor} for the within- and
@@ -226,7 +232,7 @@ multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
 # and between-group correlation matrix
 mod <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
                       cluster = Demo.twolevel$cluster, output = FALSE)
-lavaan::summary(mod$model.fit, standardized = TRUE)
+lavaan::summary(mod$mod.fit, standardized = TRUE)
 
 # Write Results into a Excel file
 multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],

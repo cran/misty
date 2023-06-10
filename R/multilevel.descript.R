@@ -7,8 +7,9 @@
 #' Note that this function is restricted to two-level models.
 #'
 #' @param x           a vector, matrix or data frame.
-#' @param cluster     a vector representing the nested grouping structure (i.e.,
-#'                    group or cluster variable).
+#' @param cluster     either a character string indicating the variable name of
+#'                    the cluster variable in 'x' or a vector representing the
+#'                    nested grouping structure (i.e., group or cluster variable).
 #' @param method      a character string indicating the method used to estimate
 #'                    intraclass correlation coefficients, i.e., \code{"aov"} ICC
 #'                    estimated using the \code{aov} function, \code{"lme4"} (default)
@@ -72,6 +73,17 @@
 #'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
 #'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
 #'
+#' #---------------------------
+#' # Cluster variable specification
+#'
+#' # Cluster variable 'cluster' in 'x'
+#' multilevel.descript(dat[, c("x1", "cluster")], cluster = "cluster")
+#'
+#' # Cluster variable 'cluster' not in 'x'
+#' multilevel.descript(dat$x1, cluster = dat$cluster)
+#'
+#' #---------------------------
+#'
 #' # Multilevel descriptive statistics for x1
 #' multilevel.descript(dat$x1, cluster = dat$cluster)
 #'
@@ -120,15 +132,28 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
   # Check if input 'cluster' is NULL
   if (isTRUE(is.null(cluster))) { stop("Input specified for the argument 'cluster is NULL.", call. = FALSE) }
 
-  # Check if only one variable specified in the input 'cluster'
-  if (ncol(data.frame(cluster)) != 1L) { stop("More than one variable specified for the argument 'cluster'.",call. = FALSE) }
-
-  # Convert 'cluster' into a vector
-  cluster <- unlist(cluster, use.names = FALSE)
-
   #_____________________________________________________________________________
   #
   # Data and Arguments ---------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Cluster variable ####
+
+  # Cluster variable 'cluster' in 'x'
+  if (isTRUE(length(cluster) == 1L)) {
+
+    if (isTRUE(!cluster %in% colnames(x))) { stop("Cluster variable specifed in the argument 'cluster' was not found in 'x'.", call. = FALSE) }
+
+    # Index of cluster in 'x'
+    cluster.col <- which(colnames(x) == cluster)
+
+    # Replace variable name with cluster variable
+    cluster <- x[, cluster.col]
+
+    # Remove cluster variable
+    x <- x[, -cluster.col, drop = FALSE]
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## As data frame ####

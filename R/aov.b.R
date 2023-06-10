@@ -119,7 +119,6 @@
 #' \item{\code{plot}}{ggplot2 object for plotting the results}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{result}}{result tables}
-#' }
 #'
 #' @export
 #'

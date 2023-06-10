@@ -107,6 +107,7 @@
 #' measure (i.e., \code{effsize = TRUE}). Cohen's d based on the pooled standard
 #' deviation assuming equality of variancees between groups can be requested by
 #' specifying \code{weighted = TRUE}.}
+#' }
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}

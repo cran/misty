@@ -3665,37 +3665,37 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     #-----------------------------------------
     # Item statistics
-    if (isTRUE("item" %in% print && !is.null(print.object$descript) && nrow(print.object$descript) > 2L)) {
+    if (isTRUE("item" %in% print && !is.null(print.object$itemstat) && nrow(print.object$itemstat) > 2L)) {
 
-      print.object$descript$pNA <- paste0(formatC(print.object$descript$pNA, digits = 2L, format = "f",
+      print.object$itemstat$pNA <- paste0(formatC(print.object$itemstat$pNA, digits = 2L, format = "f",
                                               zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = ""))), "%")
-      print.object$descript$m <- formatC(print.object$descript$m, digits = 2L, format = "f",
+      print.object$itemstat$m <- formatC(print.object$itemstat$m, digits = 2L, format = "f",
                                      zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
-      print.object$descript$sd <- formatC(print.object$descript$sd, digits = 2L, format = "f",
+      print.object$itemstat$sd <- formatC(print.object$itemstat$sd, digits = 2L, format = "f",
                                       zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
-      print.object$descript$min <- formatC(print.object$descript$min, digits = 2L, format = "f",
+      print.object$itemstat$min <- formatC(print.object$itemstat$min, digits = 2L, format = "f",
                                        zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
-      print.object$descript$max <- formatC(print.object$descript$max, digits = 2L, format = "f",
+      print.object$itemstat$max <- formatC(print.object$itemstat$max, digits = 2L, format = "f",
                                        zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
 
-      print.object$descript$it.cor <- formatC(print.object$descript$it.cor, digits = digits, format = "f",
+      print.object$itemstat$it.cor <- formatC(print.object$itemstat$it.cor, digits = digits, format = "f",
                                           zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-      print.object$descript$alpha <- formatC(print.object$descript$alpha, digits = digits, format = "f",
+      print.object$itemstat$alpha <- formatC(print.object$itemstat$alpha, digits = digits, format = "f",
                                          zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
-      print.object$descript <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "It.Cor", "Alpha"),
-                                     print.object$descript)
+      print.object$itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "It.Cor", "Alpha"),
+                                     print.object$itemstat)
 
       # Format
-      print.object$descript[, 1L] <- format(paste(" ", print.object$descript[, 1L]), justify = "left")
-      print.object$descript[, -1L] <- apply(print.object$descript[, -1L], 2L, function(y) format(y, justify = "right"))
+      print.object$itemstat[, 1L] <- format(paste(" ", print.object$itemstat[, 1L]), justify = "left")
+      print.object$itemstat[, -1L] <- apply(print.object$itemstat[, -1L], 2L, function(y) format(y, justify = "right"))
 
 
       if (isTRUE("alpha" %in% print)) { cat("\n") }
 
       cat(" Item-Total Correlation and Coefficient Alpha if Item Deleted\n\n")
 
-      write.table(print.object$descript, quote = FALSE, row.names = FALSE, col.names = FALSE)
+      write.table(print.object$itemstat, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
     }
 
@@ -3724,41 +3724,14 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       print.summary[, 1L] <- format(print.summary[, 1L], justify = "left")
 
       #........................................
+      # No cluster variable
+
+      if (isTRUE(print.summary[16L, 2L] == 1)) { print.summary <- print.summary[-16L, ] }
+
+      #........................................
       # Print
 
-      # Complete data
-      if (isTRUE(print.summary[6L, 2L] == "None")) {
-
-        print.summary <- unname(print.summary[, -3L])
-
-        # No cluster variable
-        if (isTRUE(is.null(x$args$cluster))) {
-
-          print(print.summary[-c(8L, 10L), ], col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
-
-        # With cluster variable
-        } else {
-
-          print(print.summary[-8L, -3L], col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
-
-        }
-
-      # Missing data
-      } else {
-
-        # No cluster variable
-        if (isTRUE(is.null(x$args$cluster))) {
-
-          print(print.summary[-10L, ], col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
-
-        # With cluster variable
-        } else {
-
-          print(print.summary, col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
-
-        }
-
-      }
+      print(print.summary, col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
 
     }
 
@@ -3938,44 +3911,55 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #........................................
       # Round
 
-      # digits
-      print.fit[-c(1L, 5L, 6L, 17L), -1L] <- lapply(print.fit[-c(1L, 5L, 6L, 17L), -1], function(y) ifelse(!is.na(y), formatC(y, digits = x$args$digits, format = "f",
-                                                                                                                              zero.print = ifelse(x$args$digits > 0L, paste0("0.", paste(rep(0L, times = x$args$digits), collapse = "")), "0")), NA))
+      # Round fit indices
+      print.fit[-which(print.fit[, 1L] %in% c("H0 Value, Specified Model", "Scaling Correction Factor", "H1 Value, Unrestricted Model", "Scaling Correction Factor", "Akaike (AIC)", "Bayesian (BIC)", "Sample-size adjusted BIC", "Test statistic", "Degrees of freedom", "P-value", "P-value RMSEA <= 0.05")), -1] <- sapply(print.fit[-which(print.fit[, 1L] %in% c("H0 Value, Specified Model", "Scaling Correction Factor", "H1 Value, Unrestricted Model", "Scaling Correction Factor", "Akaike (AIC)", "Bayesian (BIC)", "Sample-size adjusted BIC", "Test statistic", "Degrees of freedom", "P-value", "P-value RMSEA <= 0.05")), -1], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
 
-      # p.digits
-      print.fit[c(6L, 17L), -c(1L, 4L)] <- sapply(print.fit[c(6L, 17L), -c(1L, 4L)], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = x$args$p.digits, format = "f",
-                                                                                                                           zero.print = ifelse(x$args$p.digits > 0L, paste0("0.", paste(rep(0L, times = x$args$p.digits), collapse = "")), "0")), NA))
+      # Loglikelihood, information criteria, and test statistic
+      print.fit[which(print.fit[, 1L] %in% c("H0 Value, Specified Model", "Scaling Correction Factor", "H1 Value, Unrestricted Model", "Scaling Correction Factor", "Akaike (AIC)", "Bayesian (BIC)", "Sample-size adjusted BIC", "Test statistic")), -1L] <- sapply(print.fit[which(print.fit[, 1L] %in% c("H0 Value, Specified Model", "Scaling Correction Factor", "H1 Value, Unrestricted Model", "Scaling Correction Factor", "Akaike (AIC)", "Bayesian (BIC)", "Sample-size adjusted BIC", "Test statistic")), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = digits - 1L, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
 
-      if (isTRUE(x$args$estimator %in% c("MLMVS", "PML"))) {
+      # P-values
+      print.fit[which(print.fit[, 1L] %in% c("P-value", "P-value RMSEA <= 0.05")), -1L] <- sapply(print.fit[which(print.fit[, 1L] %in% c("P-value", "P-value RMSEA <= 0.05")), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA))
 
-        print.fit[5L, 3L] <- formatC(as.numeric(print.fit[5L, 3L]), digits = x$args$digits, format = "f", zero.print = ifelse(x$args$digits > 0L, paste0("0.", paste(rep(0L, times = x$args$digits), collapse = "")), "0"))
-
-      }
+      # MLMVS and PML estimrator
+      if (isTRUE(x$args$estimator %in% c("MLMVS", "PML"))) { print.fit[which(print.fit[, 1L] == "Degrees of freedom"), -c(1L:2L)] <- sapply(as.numeric(print.fit[which(print.fit[, 1L] == "Degrees of freedom"), -c(1L:2L)]), function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA)) }
 
       #........................................
       # Add labels
 
-      print.fit <- rbind(print.fit[1L:9L, ], c("", "Standard", "Ad hoc", "Robust"),
-                         print.fit[10L:13L, ], c("", "Standard", "Ad hoc", "Robust"), print.fit[14L:24L, ],
-                         make.row.names = FALSE)
+      if (isTRUE(ncol(print.fit) == 4L)) {
 
-      if (isTRUE(x$args$estimator == "PML")) {
+        print.fit <- rbind(if (isTRUE(which(print.fit[, 1L] == "Chi-Square Test of Model Fit") > 1L)) { print.fit[1L:((which(print.fit[, 1L] == "Chi-Square Test of Model Fit")) - 1L), ] }, c("", "Standard", "Scaled", ""),
+                           print.fit[which(print.fit[, 1L] == "Chi-Square Test of Model Fit"):((which(print.fit[, 1L] == "Incremental Fit Indices")) - 1L), ], c("", "Standard", "Scaled", "Robust"),
+                           print.fit[which(print.fit[, 1L] == "Incremental Fit Indices"):((which(print.fit[, 1L] == "Absolute Fit Indices")) - 1L), ], c("", "Standard", "Scaled", "Robust"),
+                           print.fit[which(print.fit[, 1L] == "Absolute Fit Indices"):nrow(print.fit), ],  make.row.names = FALSE)
 
-        print.fit[15L, 3L] <- ""
+      } else {
+
+        print.fit <- rbind(if (isTRUE(print.fit[1L, 1L] == "Loglikelihood")) { print.fit[1L:((which(print.fit[, 1L] == "Chi-Square Test of Model Fit")) - 1L), ]  },
+                           if (isTRUE(!x$args$estimator %in% c("PML", "MLMVS"))) { c("", "Standard") } else { c("", "Standard", "Scaled") },
+                           print.fit[which(print.fit[, 1L] == "Chi-Square Test of Model Fit"):((which(print.fit[, 1L] == "Incremental Fit Indices")) - 1L), ], if (isTRUE(!x$args$estimator %in% c("PML", "MLMVS"))) { c("", "Standard") } else { c("", "Standard", "Scaled") },
+                           print.fit[which(print.fit[, 1L] == "Incremental Fit Indices"):((which(print.fit[, 1L] == "Absolute Fit Indices")) - 1L), ],if (isTRUE(!x$args$estimator %in% c("PML", "MLMVS"))) { c("", "Standard") } else { c("", "Standard", "Scaled") },
+                           print.fit[which(print.fit[, 1L] == "Absolute Fit Indices"):nrow(print.fit), ], make.row.names = FALSE)
 
       }
 
       #........................................
       # Replace NA with ""
 
-      print.fit <- unname(misty::na.as(print.fit, ""))
+      print.fit <- unname(misty::na.as(print.fit, "", check = FALSE))
 
       #........................................
       # Add blank space
 
       print.fit[, 1L] <- paste0("  ", print.fit[, 1L])
 
-      print.fit[c(4L:7L, 11L, 12L, 16L:19L, 21L, 24L:26L), 1L] <- paste("", unlist(print.fit[c(4L:7L, 11L, 12L, 16L:19L, 21L, 24L:26L), 1L]))
+      labels <- c("H0 Value, Specified Model", "Scaling Correction Factor", "H1 Value, Unrestricted Model", "Scaling Correction Factor",
+                  "Akaike (AIC)", "Bayesian (BIC)", "Sample-size adjusted BIC", "Test statistic", "Degrees of freedom", "P-value",
+                  "Scaling correction factor", "CFI", "TLI", "RMSEA", "90 Percent CI - lower", "90 Percent CI - upper", "P-value RMSEA <= 0.05", "SRMR")
+
+      print.fit[which(misty::chr.trim(print.fit[, 1L]) %in% labels), 1L] <- paste("", unlist(print.fit[which(misty::chr.trim(print.fit[, 1L]) %in% labels), 1L]))
+
+      print.fit[which(misty::chr.trim(print.fit[, 1L]) %in% c("90 Percent CI - lower", "90 Percent CI - upper", "P-value RMSEA <= 0.05")), 1L] <- paste("", unlist(print.fit[which(misty::chr.trim(print.fit[, 1]) %in% c("90 Percent CI - lower", "90 Percent CI - upper", "P-value RMSEA <= 0.05")), 1L]))
 
       #........................................
       # Justify left and right
@@ -3985,48 +3969,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       print.fit[, -1L] <- apply(print.fit[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
 
       #........................................
-      # Exclude Chi-square p-value and scaling correction factor
-      if (isTRUE(as.numeric(print.fit[5, 2]) == 0)) {
-
-        print.fit <- print.fit[-c(6L, 7L), ]
-
-      } else if (isTRUE(!x$args$estimator %in% c("MLM", "MLMV", "MLMVS", "MLR", "WLSM", "WLSMV", "ULSM", "ULSMV", "DLS", "PML"))) {
-
-        print.fit <- print.fit[-7L, ]
-
-      }
-
-      #........................................
-      # Exclude information criteria
-
-      if (isTRUE(!x$args$estimator %in% c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR"))) {
-
-        print.fit <- print.fit[-c((nrow(print.fit) - 4L):nrow(print.fit)), ]
-
-      }
-
-      #........................................
       # Print
 
-      if (isTRUE(x$args$estimator %in% c("ML", "MLF", "GLS", "WLS", "DWLS", "ULS"))) {
-
-        print(print.fit[, c(1L, 2L)], row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
-
-      } else if (isTRUE(x$args$estimator %in% c("MLMV", "MLMVS", "WLSMV", "ULSMV"))) {
-
-        print(print.fit[, c(1L, 3L)], row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
-
-      } else if (isTRUE(x$args$estimator %in% c("MLM", "MLR", "WLSM", "ULSM", "DLS"))) {
-
-        print(print.fit[, c(1L, 3L, 4L)], row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
-
-      } else if (isTRUE(x$args$estimator %in% "PML")) {
-
-        # print.fit[c(21L, 24L, 25L, 26L), 3L] <- ""
-
-        print(print.fit[-c(22L:26L), c(1L, 2L, 3L)], row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
-
-      }
+      print(print.fit, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
 
     }
 
@@ -4043,12 +3988,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       # Round
 
       # digits
-      print.param[, -c(1L:4L, 8L)] <- lapply(print.param[, -c(1L:4L, 8L)], function(y) ifelse(!is.na(y), formatC(y, digits = x$args$digits, format = "f",
-                                                                                                                 zero.print = ifelse(x$args$digits > 0L, paste0("0.", paste(rep(0L, times = x$args$digits), collapse = "")), "0")), NA))
+      print.param[, -c(1L:4L, 8L)] <- lapply(print.param[, -c(1L:4L, 8L)], function(y) ifelse(!is.na(y), formatC(y, digits = x$args$digits, format = "f", zero.print = ifelse(x$args$digits > 0L, paste0("0.", paste(rep(0L, times = x$args$digits), collapse = "")), "0")), NA))
 
       # p.digits
-      print.param[, "pvalue"] <- formatC(as.numeric(print.param[, "pvalue"]), digits = x$args$p.digits, format = "f",
-                                         zero.print = ifelse(x$args$p.digits > 0L, paste0("0.", paste(rep(0L, times = x$args$p.digits), collapse = "")), "0"))
+      print.param[, "pvalue"] <- formatC(as.numeric(print.param[, "pvalue"]), digits = x$args$p.digits, format = "f", zero.print = ifelse(x$args$p.digits > 0L, paste0("0.", paste(rep(0L, times = x$args$p.digits), collapse = "")), "0"))
 
       #........................................
       # Convert NA into ""
@@ -4306,6 +4249,789 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         ###
         # Note
         cat(paste0("\n   Note. Minimum value for printing the index is ", round(x$args$min.value, digits = 2L), ".\n"))
+
+      }
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Multilevel Confirmatory Factor Analysis --------------------------
+  }, multilevel.cfa = {
+
+    cat(" Multilevel Confirmatory Factor Analysis\n")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## lavaan summary ####
+
+    if (isTRUE("summary" %in% x$args$print)) {
+
+      print.summary <- print.object$summary
+
+      #...................
+      ### Format ####
+
+      # Include spaces
+      print.summary[1L, 1L] <- paste0(" ", print.summary[1L, 1L])
+      print.summary[-1L, 1L] <- paste0("  ", print.summary[-1L, 1L])
+
+      print.summary[c(12L, 13L), 1L] <- paste0(" ", print.summary[c(12L, 13L), 1L])
+
+      # Justify left
+      print.summary[, 1L] <- format(print.summary[, 1L], justify = "left")
+
+      #...................
+      ### Print ####
+
+      print(print.summary, col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Covariance coverage ####
+
+    if (isTRUE("coverage" %in% x$args$print)) {
+
+      cat("\n  Covariance Coverage of Data\n\n")
+
+      print.coverage <- print.object$coverage
+
+      #...................
+      ### Lower triangular ####
+
+      print.coverage[upper.tri(print.coverage)] <- ""
+
+      #...................
+      ### Format ####
+
+      print.coverage <- apply(print.coverage, 2L, function(y) ifelse(!is.na(as.numeric(y)), formatC(as.numeric(y), digits = 2L, format = "f",
+                                                                                                    zero.print = ifelse(2L > 0L, paste0("0.", paste(rep(0L, times = 2L), collapse = "")), "0")), ""))
+
+      # Row names
+      row.names(print.coverage) <- paste0("   ", colnames(print.coverage))
+
+      #...................
+      ### Print ####
+
+      print(print.coverage, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Sample Statistics ####
+
+    if (isTRUE("descript" %in% x$args$print)) {
+
+      cat("\n  Univariate Sample Statistics\n\n")
+
+      print.itemstat <- print.object$descript
+
+      #...................
+      ### Format ####
+
+      # Variables to round
+      print.round <- c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC")
+
+      print.itemstat[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.itemstat[, y]), formatC(print.itemstat[, y], digits = digits, format = "f",
+                                                                                                                   zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+      # Percentages
+      print.itemstat[, "pNA"] <- paste0(print.itemstat[, "pNA"], "%")
+
+      # Column names
+      print.itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)"), print.itemstat)
+
+      # Justify left and right
+      print.itemstat[, 1L] <- format(print.itemstat[, 1L, drop = FALSE], justify = "left")
+      print.itemstat[, -1L] <- apply(print.itemstat[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+      # Add blank space
+      print.itemstat[, "variable"] <- c(paste0("   ", print.itemstat[1L, "variable"], collapse = ""), paste0("    ", print.itemstat[-1L, "variable"]))
+      print.itemstat[, "variable"] <- format(c(print.itemstat[1L, "variable"], misty::chr.trim(print.itemstat[-1L, "variable"], side = "right")), justify = "left")
+
+      #...................
+      ### Print ####
+
+      write.table(print.itemstat, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Model fit ####
+
+    if (isTRUE("fit" %in% x$args$print)) {
+
+      cat("\n  Model Fit Information\n\n")
+
+      print.fit <- print.object$fit
+
+      #...................
+      ### Simultaneous model fit information only ####
+      if (isTRUE(nrow(print.fit) <= 30L)) {
+
+        #...................
+        ### Round ####
+
+        #### Maximum likelihood
+        if (isTRUE(ncol(print.fit) == 2L)) {
+
+          # Fit indices
+          print.fit[-c(2L:3L, 11L:13L, 23L), -1L] <- sapply(print.fit[-c(2L:3L, 11L:13L, 23L), -1L], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+          # Information criteria
+          print.fit[c(2L:3L, 11L), -1L] <- sapply(print.fit[c(2L:3L, 11L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = digits - 1L, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits - 1L), collapse = "")), "0")), NA))
+
+          # p.digits
+          print.fit[c(13L, 23L), -1L] <- sapply(print.fit[c(13L, 23L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA))
+
+        #### Robust maximum likelihood
+        } else {
+
+          # Fit indices
+          print.fit[-c(2L:10L, 13L:15L, 26L), -1L] <- sapply(print.fit[-c(2L:10L, 13L:15L, 26L), -1L], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+          # Information criteria
+          print.fit[c(2L:10L, 13L), -1L] <- sapply(print.fit[c(2L:10L, 13L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = digits - 1L, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits - 1L), collapse = "")), "0")), NA))
+
+          # p.digits
+          print.fit[c(15L, 26L), -1L] <- sapply(print.fit[c(15L, 26L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA))
+
+        }
+
+        #...................
+        ### Add labels ####
+
+        #### Maximum likelihood
+        if (isTRUE(ncol(print.fit) == 2L)) {
+
+          print.fit <- rbind(print.fit[1L:9L, ], c("", "Standard"),
+                             print.fit[10L:14L, ], c("", "Standard"),
+                             print.fit[15L:18L, ], c("", "Standard"),
+                             print.fit[19L:27L, ],
+                             make.row.names = FALSE)
+
+        #### Robust maximum likelihood
+        } else {
+
+          print.fit <- rbind(print.fit[1L:11L, ], c("", "Standard", "Scaled", ""),
+                             print.fit[12L:17L, ], c("", "Standard", "Scaled", "Robust"),
+                             print.fit[18L:21L, ], c("", "Standard", "Scaled", "Robust"),
+                             print.fit[22L:30L, ],
+                             make.row.names = FALSE)
+
+        }
+
+        #...................
+        ### Replace NA with "" ####
+
+        print.fit <- unname(misty::na.as(print.fit, ""))
+
+        #...................
+        ### Add blank space ####
+
+        print.fit[, 1L] <- paste0("  ", print.fit[, 1L])
+
+        #### Maximum likelihood
+        if (isTRUE(ncol(print.fit) == 2L)) {
+
+          print.fit[c(2L:3L, 6L:8L, 12L:14L, 18L:19L, 23L:30L), 1L] <- paste("", unlist(print.fit[c(2L:3L, 6L:8L, 12L:14L, 18L:19L, 23L:30L), 1L]))
+
+          # Within/Between
+          print.fit[c(29L:30L), 1L] <- paste("", unlist(print.fit[c(29L:30L), 1L]))
+
+          # RMSEA 95% CI - p-values
+          print.fit[c(24L:26L), 1L] <- paste("", unlist(print.fit[c(24L:26L), 1L]))
+
+        #### Robust maximum likelihood
+        } else {
+
+          print.fit[c(2L:5L, 8L:10L, 14L:17L, 21L:22L, 26L:33L), 1L] <- paste("", unlist(print.fit[c(2L:5L, 8L:10L, 14L:17L, 21L:22L, 26L:33L), 1L]))
+
+          # Within/Between
+          print.fit[c(32L:33L), 1L] <- paste("", unlist(print.fit[c(32L:33L), 1L]))
+
+          # RMSEA 95% CI - p-values
+          print.fit[c(27L:29L), 1L] <- paste("", unlist(print.fit[c(27L:29L), 1L]))
+
+        }
+
+        #...................
+        ### Justify left and right ####
+
+        print.fit[, 1L] <- format(print.fit[, 1L, drop = FALSE], justify = "left")
+
+        print.fit[, -1L] <- apply(print.fit[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+      #...................
+      ### Simultaneous and level-specific model fit information  ####
+      } else {
+
+        #...................
+        ### Round ####
+
+        #### Maximum likelihood
+        if (isTRUE(ncol(print.fit) == 2L)) {
+
+          # digits
+          print.fit[-c(17L:19L, 41L:43L), -1L] <- sapply(print.fit[-c(17L:19L, 41L:43L), -1], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f",
+                                                                                                                                    zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+          # p.digits
+          print.fit[c(17L:19L, 41L:43L), -1L] <- sapply(print.fit[c(17L:19L, 41L:43L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = p.digits, format = "f",
+                                                                                                                                   zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA))
+          #### Robust maximum likelihood
+        } else {
+
+          # digits
+          print.fit[-c(19L:21L, 46L:48L), -1L] <- sapply(print.fit[-c(19L:21L, 46L:48L), -1L], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f",
+                                                                                                                                     zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+          # p.digits
+          print.fit[c(19L:21L, 46L:48L), -1L] <- sapply(print.fit[c(19L:21L, 46L:48L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = p.digits, format = "f",
+                                                                                                                                   zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA))
+
+        }
+
+        #...................
+        ### Add labels ####
+
+        #### Maximum likelihood
+        if (isTRUE(ncol(print.fit) == 2L)) {
+
+          print.fit <- rbind(print.fit[1L:9L, ], c("", "Standard"),
+                             print.fit[10L:20L, ], c("", "Standard"),
+                             print.fit[21L:29L, ], c("", "Standard"),
+                             print.fit[30L:47L, ],
+                             make.row.names = FALSE)
+
+          #### Robust maximum likelihood
+        } else {
+
+          print.fit <- rbind(print.fit[1L:11L, ], c("", "Standard", "Scaled", ""),
+                             print.fit[12L:25L, ], c("", "Standard", "Scaled", "Robust"),
+                             print.fit[26L:34L, ], c("", "Standard", "Scaled", "Robust"),
+                             print.fit[35L:52L, ],
+                             make.row.names = FALSE)
+
+        }
+
+        #...................
+        ### Replace NA with "" ####
+
+        print.fit <- unname(misty::na.as(print.fit, ""))
+
+        #...................
+        ### Add blank space ####
+
+        print.fit[, 1L] <- paste0("  ", print.fit[, 1L])
+
+        #### Maximum likelihood
+        if (isTRUE(ncol(print.fit) == 2L)) {
+
+          print.fit[c(2L:3L, 6L:8L, 12L:20L, 24L:30L, 34L:50L), 1L] <- paste("", unlist(print.fit[c(2L:3L, 6L:8L, 12L:20L, 24L:30L, 34L:50L), 1L]))
+
+          # Within/Between
+          print.fit[c(13L, 14L, 16L, 17L, 19L, 20L, 25L, 26L, 29L, 30L, 35L, 36L, 39L, 40L, 42L, 43L, 45L, 46L, 49L, 50L), 1L] <- paste("", unlist(print.fit[c(13L, 14L, 16L, 17L, 19L, 20L, 25L, 26L, 29L, 30L, 35L, 36L, 39L, 40L, 42L, 43L, 45L, 46L, 49L, 50L), 1L]))
+
+          # RMSEA 95% CI - p-values
+          print.fit[c(38L:46), 1L] <- paste("", unlist(print.fit[c(38L:46), 1L]))
+
+        #### Robust maximum likelihood
+        } else {
+
+          print.fit[c(2L:5L, 8L:10L, 14L:25L, 29L:35L, 39L:55L), 1L] <- paste("", unlist(print.fit[c(2L:5L, 8L:10L, 14L:25L, 29L:35L, 39L:55L), 1L]))
+
+          # Within/Between
+          print.fit[c(15L, 16L, 18L, 19L, 21L, 22L, 24L, 25L, 30L, 31L, 34L, 35L, 40L, 41L, 44L, 45L, 47L, 48L, 50L, 51L, 54L, 55L), 1L] <- paste("", unlist(print.fit[c(15L, 16L, 18L, 19L, 21L, 22L, 24L, 25L, 30L, 31L, 34L, 35L, 40L, 41L, 44L, 45L, 47L, 48L, 50L, 51L, 54L, 55L), 1L]))
+
+          # RMSEA 95% CI - p-values
+          print.fit[c(43L:51L), 1L] <- paste("", unlist(print.fit[c(43L:51L), 1L]))
+
+        }
+
+        #...................
+        ### Justify left and right ####
+
+        print.fit[, 1L] <- format(print.fit[, 1L, drop = FALSE], justify = "left")
+
+        print.fit[, -1L] <- apply(print.fit[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+      }
+
+      #...................
+      ### Print ####
+
+      write.table(print.fit, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Parameter estimates ####
+
+    if (isTRUE("est" %in% x$args$print)) {
+
+      #...................
+      ### Within Level ####
+
+      cat("\n  Model Results: Within Level\n\n")
+
+      print.param.w <- print.object$param$within
+
+      #### Round ####
+
+      # digits
+      print.param.w[, -c(1L:4L, 8L)] <- lapply(print.param.w[, -c(1L:4L, 8L)], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f",
+                                                                                                                     zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+      # p.digits
+      print.param.w[, "pvalue"] <- formatC(as.numeric(print.param.w[, "pvalue"]), digits = p.digits, format = "f",
+                                                      zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+      #### Add blank spaces ####
+      print.param.w[apply(print.param.w[, c("est", "se", "z", "stdyx")], 1L, function(y) all(is.na(y))), "rhs"] <- paste("   ", print.param.w[apply(print.param.w[, c("est", "se", "z", "stdyx")], 1L, function(y) all(is.na(y))), "rhs"])
+      print.param.w[apply(print.param.w[, c("est", "se", "z", "stdyx")], 1L, function(y) any(!is.na(y))), "rhs"] <- paste("     ", print.param.w[apply(print.param.w[, c("est", "se", "z", "stdyx")], 1L, function(y) any(!is.na(y))), "rhs"])
+
+      #### Convert NA into "" ####
+      print.param.w[apply(print.param.w[, c("est", "se", "z", "stdyx")], 1L, function(y) all(is.na(y))), c("est", "se", "z", "pvalue", "stdyx")] <- ""
+      print.param.w[apply(print.param.w[, c("se", "z")], 1L, function(y) all(is.na(y))), c("se", "z", "pvalue", "stdyx")] <- ""
+      print.param.w[which(is.na(print.param.w$stdyx)), "stdyx"] <- ""
+
+      #### Column names ####
+      print.param.w <- rbind(c("", "", "", "", "Estimate", "Std.Err", "z-value", "P(>|z|)", "StdYX"), print.param.w)
+
+      #### Justify ####
+      print.param.w[, "rhs"] <- format(print.param.w[, "rhs", drop = FALSE], justify = "left")
+      print.param.w[, -c(1L:4L)] <- apply(print.param.w[, -c(1L:4L), drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+      #...................
+      #### Print ####
+
+      ##### Factor loadings
+      if (isTRUE(any(print.param.w$param %in% "latent variable"))) {
+
+        cat("   Factor Loadings\n")
+
+        # Heading
+        write.table(print.param.w[1L, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        print.lv <- print.param.w[print.param.w$param == "latent variable", ]
+
+        for (i in unique(print.lv$lhs)) {
+
+          pos.NA <- grep("NA", print.lv[print.lv$lhs == i, "z"])
+
+          if (isTRUE(length(pos.NA) > 0L)) {
+
+            print.lv[print.lv$lhs == i, ][pos.NA, "se"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "se"])) + 1L), collapse = " ")
+            print.lv[print.lv$lhs == i, ][pos.NA, "z"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "z"])) + 1L), collapse = " ")
+            print.lv[print.lv$lhs == i, ][pos.NA, "pvalue"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "pvalue"])) + 1L), collapse = " ")
+
+          }
+
+          write.table(print.lv[print.lv$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ##### Latent variable covariances
+      if (isTRUE(any(print.param.w$param %in% "latent variable covariance"))) {
+
+        cat("\n   Latent Variable Covariances\n")
+
+        print.lv.cov <- print.param.w[print.param.w$param == "latent variable covariance", ]
+
+        for (i in unique(print.lv.cov$lhs)) {
+
+          write.table(print.lv.cov[print.lv.cov$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ##### Residual covariances
+      if (isTRUE(any(print.param.w$param %in% "residual covariance"))) {
+
+        # Heading latent variables
+        if (isTRUE(any(print.param.w$param %in% "latent variable"))) {
+
+          cat("\n   Residual Covariances\n")
+
+        # Heading no latent variables
+        } else {
+
+          cat("\n   Covariances\n")
+
+          write.table(print.param.w[1L, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+        print.res.cov <- print.param.w[print.param.w$param == "residual covariance", ]
+
+        for (i in unique(print.res.cov$lhs)) {
+
+          write.table(print.res.cov[print.res.cov$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ##### Latent variance
+      if (isTRUE(any(print.param.w$param %in% "latent variance"))) {
+
+        cat("\n   Latent Variances\n")
+
+        print.var <- print.param.w[print.param.w$param == "latent variance", ]
+
+        print.var[grep("NA", print.var[, "z"]), c("se", "z", "pvalue", "stdyx")] <- ""
+
+        write.table(print.var[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ##### Residual variance
+      if (isTRUE(any(print.param.w$param %in% "residual variance"))) {
+
+        # Heading latent variables
+        if (isTRUE(any(print.param.w$param %in% "latent variable"))) {
+
+          cat("\n   Residual Variances\n")
+
+        } else {
+
+          cat("\n   Variances\n")
+
+        }
+
+        print.resid <- print.param.w[print.param.w$param == "residual variance", ]
+
+        pos.NA <- grep("NA", print.resid[, "z"])
+
+        if (isTRUE(length(pos.NA) >  0L)) {
+
+          print.resid[pos.NA, "se"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "se"])) + 1L), collapse = " ")
+          print.resid[pos.NA, "z"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "z"])) + 1L), collapse = " ")
+          print.resid[pos.NA, "pvalue"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "pvalue"])) + 1L), collapse = " ")
+
+        }
+
+        write.table(print.resid[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      #...................
+      ### Between Level ####
+
+      cat("\n  Model Results: Between Level\n\n")
+
+      print.param.b <- print.object$param$between
+
+      #...................
+      #### Round ####
+
+      # digits
+      print.param.b[, -c(1L:4L, 8L)] <- lapply(print.param.b[, -c(1L:4L, 8L)], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f",
+                                                                                                                     zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+      # p.digits
+      print.param.b[, "pvalue"] <- formatC(as.numeric(print.param.b[, "pvalue"]), digits = p.digits, format = "f",
+                                           zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+      #...................
+      #### Add blank spaces ####
+      print.param.b[apply(print.param.b[, c("est", "se", "z", "stdyx")], 1L, function(y) all(is.na(y))), "rhs"] <- paste("   ", print.param.b[apply(print.param.b[, c("est", "se", "z", "stdyx")], 1L, function(y) all(is.na(y))), "rhs"])
+      print.param.b[apply(print.param.b[, c("est", "se", "z", "stdyx")], 1L, function(y) any(!is.na(y))), "rhs"] <- paste("     ", print.param.b[apply(print.param.b[, c("est", "se", "z", "stdyx")], 1L, function(y) any(!is.na(y))), "rhs"])
+
+      #...................
+      #### Convert NA into "" ####
+      print.param.b[apply(print.param.b[, c("est", "se", "z", "stdyx")], 1L, function(y) all(is.na(y))), c("est", "se", "z", "pvalue", "stdyx")] <- ""
+      print.param.b[apply(print.param.b[, c("se", "z")], 1L, function(y) all(is.na(y))), c("se", "z", "pvalue", "stdyx")] <- ""
+      print.param.b[which(is.na(print.param.b$stdyx)), "stdyx"] <- ""
+
+      #...................
+      #### Column names ####
+      print.param.b <- rbind(c("", "", "", "", "Estimate", "Std.Err", "z-value", "P(>|z|)", "StdYX"), print.param.b)
+
+      #...................
+      #### Justify ####
+      print.param.b[, "rhs"] <- format(print.param.b[, "rhs", drop = FALSE], justify = "left")
+      print.param.b[, -c(1L:4L)] <- apply(print.param.b[, -c(1L:4L), drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+      #...................
+      #### Print ####
+
+      ##### Factor loadings
+      if (isTRUE(any(print.param.b$param %in% "latent variable"))) {
+
+        cat("   Factor Loadings\n")
+
+        # Heading
+        write.table(print.param.b[1L, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        print.lv <- print.param.b[print.param.b$param == "latent variable", ]
+
+        for (i in unique(print.lv$lhs)) {
+
+          pos.NA <- grep("NA", print.lv[print.lv$lhs == i, "z"])
+
+          if (isTRUE(length(pos.NA) > 0L)) {
+
+            print.lv[print.lv$lhs == i, ][pos.NA, "se"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "se"])) + 1L), collapse = " ")
+            print.lv[print.lv$lhs == i, ][pos.NA, "z"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "z"])) + 1L), collapse = " ")
+            print.lv[print.lv$lhs == i, ][pos.NA, "pvalue"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "pvalue"])) + 1L), collapse = " ")
+
+          }
+
+          write.table(print.lv[print.lv$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ##### Latent variable covariances
+      if (isTRUE(any(print.param.b$param %in% "latent variable covariance"))) {
+
+        cat("\n   Latent Variable Covariances\n")
+
+        print.lv.cov <- print.param.b[print.param.b$param == "latent variable covariance", ]
+
+        for (i in unique(print.lv.cov$lhs)) {
+
+          write.table(print.lv.cov[print.lv.cov$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ##### (Residual) Covariances
+      if (isTRUE(any(print.param.b$param %in% "residual covariance"))) {
+
+        # Heading latent variables
+        if (isTRUE(any(print.param.b$param %in% "latent variable"))) {
+
+          cat("\n   Residual Covariances\n")
+
+        # Heading no latent variables
+        } else {
+
+          cat("\n   Covariances\n")
+
+          write.table(print.param.b[1L, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+        print.res.cov <- print.param.b[print.param.b$param == "residual covariance", ]
+
+        for (i in unique(print.res.cov$lhs)) {
+
+          write.table(print.res.cov[print.res.cov$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ##### Latent mean
+      if (isTRUE(any(print.param.b$param %in% "latent mean"))) {
+
+        cat("\n   Latent Means\n")
+
+        print.mean <- print.param.b[print.param.b$param == "latent mean", ]
+
+        print.mean[grep("NA", print.mean[, "z"]), c("se", "z", "pvalue", "stdyx")] <- ""
+
+        write.table(print.mean[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ##### Latent variance
+      if (isTRUE(any(print.param.b$param %in% "latent variance"))) {
+
+        cat("\n   Latent Variances\n")
+
+        print.var <- print.param.b[print.param.b$param == "latent variance", ]
+
+        print.var[grep("NA", print.var[, "z"]), c("se", "z", "pvalue", "stdyx")] <- ""
+
+        write.table(print.var[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ##### Intercepts
+      if (isTRUE(any(print.param.b$param %in% "intercept"))) {
+
+        cat("\n   Intercepts\n")
+
+        print.inter <- print.param.b[print.param.b$param == "intercept", ]
+
+        print.inter[grep("NA", print.inter[, "z"]), c("se", "z", "pvalue", "stdyx")] <- ""
+
+        write.table(print.inter[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ##### (Residual) Variance
+      if (isTRUE(any(print.param.b$param %in% "residual variance"))) {
+
+        # Heading latent variables
+        if (isTRUE(any(print.param.b$param %in% "latent variable"))) {
+
+          cat("\n   Residual Variances\n")
+
+        } else {
+
+          cat("\n   Variances\n")
+
+        }
+
+        print.resid <- print.param.b[print.param.b$param == "residual variance", ]
+
+        pos.NA <- grep("NA", print.resid[, "z"])
+
+        if (isTRUE(length(pos.NA) >  0L)) {
+
+          print.resid[pos.NA, "se"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "se"])) + 1L), collapse = " ")
+          print.resid[pos.NA, "z"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "z"])) + 1L), collapse = " ")
+          print.resid[pos.NA, "pvalue"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "pvalue"])) + 1L), collapse = " ")
+
+        }
+
+        write.table(print.resid[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Modification indices ####
+
+    if (isTRUE("modind" %in% x$args$print)) {
+
+      #...................
+      ### Within Level ####
+
+      print.modind.w <- print.object$modind$within
+      print.modind.b <- print.object$modind$between
+
+      #### Modification indices not available
+      if (isTRUE(is.null(print.modind.w) && is.null(print.modind.b))) {
+
+        cat("\n   Modification indices are not available.")
+
+      #### Modification available
+      } else {
+
+        cat("\n  Modification Indices: Within Level\n")
+
+        if (isTRUE(nrow(print.modind.w) == 0L)) {
+
+        cat("\n   No modification indices above the minimum value at the Within Level.\n")
+
+        #### Modification indices
+        } else {
+
+          # Round
+          print.modind.w[, -c(1L:3L)] <- lapply(print.modind.w[, -c(1L:3L)], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f",
+                                                                                                                   zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+          # Column names
+          print.modind.w <- rbind(c("", "", "", "MI", "EPC", "StdYX EPC"), print.modind.w)
+
+          # Add blank spaces
+          print.modind.w[, "lhs"] <- paste("   ", print.modind.w[, "lhs"])
+
+          # Justify
+          print.modind.w[ c("lhs", "op", "rhs")] <- format(print.modind.w[, c("lhs", "op", "rhs")], justify = "left")
+          print.modind.w[, -c(1L, 2L)] <- apply(print.modind.w[, -c(1L, 2L), drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+          # Factor loadings
+          print.modind.w.load <- print.modind.w[print.modind.w$op == "=~", ]
+
+          if (isTRUE(nrow(print.modind.w.load) > 0L)) {
+
+            cat("\n   Factor Loadings\n")
+
+            # Print header
+            write.table(print.modind.w[1L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+            write.table(print.modind.w.load, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+          }
+
+          # Residual covariances
+          print.modind.w.cov <- print.modind.w[print.modind.w$op == "~~", ]
+
+          if (isTRUE(nrow(print.modind.w.cov) > 0L)) {
+
+            cat("\n   Residual Covariances\n")
+
+            # Print header
+            write.table(print.modind.w[1L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+            write.table(print.modind.w.cov, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+          }
+
+        }
+
+        #...................
+        ### Between Level ####
+
+        cat("\n  Modification Indices: Between Level\n")
+
+        #### No modification indices above the minimum value
+        if (isTRUE(nrow(print.modind.b) == 0L)) {
+
+          cat("\n   No modification indices above the minimum value at the Between Level.\n")
+
+        #### Modification indices
+        } else {
+
+          # Round
+          print.modind.b[, -c(1L:3L)] <- lapply(print.modind.b[, -c(1L:3L)], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f",
+                                                                                                                   zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+          # Column names
+          print.modind.b <- rbind(c("", "", "", "MI", "EPC", "StdYX EPC"), print.modind.b)
+
+          # Add blank spaces
+          print.modind.b[, "lhs"] <- paste("   ", print.modind.b[, "lhs"])
+
+          # Justify
+          print.modind.b[ c("lhs", "op", "rhs")] <- format(print.modind.b[, c("lhs", "op", "rhs")], justify = "left")
+          print.modind.b[, -c(1L, 2L)] <- apply(print.modind.b[, -c(1L, 2L), drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+          # Factor loadings
+          print.modind.b.load <- print.modind.b[print.modind.b$op == "=~", ]
+
+          if (isTRUE(nrow(print.modind.b.load) > 0L)) {
+
+            cat("\n   Factor Loadings\n")
+
+            # Print header
+            write.table(print.modind.b[1L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+            write.table(print.modind.b.load, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+          }
+
+          # Residual covariances
+          print.modind.b.cov <- print.modind.b[print.modind.b$op == "~~", ]
+
+          if (isTRUE(nrow(print.modind.b.cov) > 0L)) {
+
+            cat("\n   Residual Covariances\n")
+
+            # Print header
+            write.table(print.modind.b[1L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+            write.table(print.modind.b.cov, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+          }
+
+        }
+
+        # Note
+        cat(paste0("\n  Note. Minimum value for printing the index is ", round(x$args$min.value, digits = 2L), ".\n"))
 
       }
 
@@ -4785,6 +5511,149 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
+  # Simultaneous and Level-Specific Multilevel Model Fit Information  -----------
+  }, multilevel.fit = {
+
+    cat(" Simultaneous and Level-Specific Multilevel Model Fit Information\n")
+
+    if (isTRUE("summary" %in% x$args$print)) {
+
+      print.summary <- print.object$summary
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## lavaan summary ####
+
+      #...................
+      ### Format ####
+
+      # Include spaces
+      print.summary[1L, 1L] <- paste0(" ", print.summary[1L, 1L])
+      print.summary[-1L, 1L] <- paste0("  ", print.summary[-1L, 1L])
+
+      # Within/Between
+      print.summary[c(11L, 12L), 1L] <- paste0(" ", print.summary[c(10L, 11L), 1L])
+
+      # Justify left
+      print.summary[, 1L] <- format(print.summary[, 1L], justify = "left")
+
+      #...................
+      ### Print ####
+
+      print(print.summary, col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Model fit ####
+
+    if (isTRUE("fit" %in% x$args$print)) {
+
+      print.fit <- print.object$fit
+
+      #...................
+      ### Round ####
+
+      #### Maximum likelihood
+      if (isTRUE(ncol(print.fit) == 2L)) {
+
+        # Fit indices
+        print.fit[-c(2L:19L, 41L:43L), -1L] <- sapply(print.fit[-c(2L:19L, 41L:43L), -1], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+        # Loglikelihoood, information criteria, and test statistic
+        print.fit[c(2L:13L), -1L] <- sapply(print.fit[c(2L:13L), -1], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = digits - 1L, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits - 1L), collapse = "")), "0")), NA))
+
+        # p.digits
+        print.fit[c(17L:19L, 41L:43L), -1L] <- sapply(print.fit[c(17L:19L, 41L:43L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA))
+
+      #### Robust maximum likelihood
+      } else {
+
+        # Fit indices
+        print.fit[-c(2L:21L, 46L:48L), -1L] <- sapply(print.fit[-c(2L:21L, 46L:48L), -1L], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+        # Loglikelihoood, information criteria, and test statistic
+        print.fit[c(2L:15), -1L] <- sapply(print.fit[c(2L:15), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = digits - 1L, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits - 1L), collapse = "")), "0")), NA))
+
+        # p.digits
+        print.fit[c(19L:21L, 46L:48L), -1L] <- sapply(print.fit[c(19L:21L, 46L:48L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA))
+
+      }
+
+      #...................
+      ### Add labels ####
+
+      #### Maximum likelihood
+      if (isTRUE(ncol(print.fit) == 2L)) {
+
+        print.fit <- rbind(print.fit[1L:9L, ], c("", "Standard"),
+                           print.fit[10L:20L, ], c("", "Standard"),
+                           print.fit[21L:29L, ], c("", "Standard"),
+                           print.fit[30L:47L, ],
+                           make.row.names = FALSE)
+
+      #### Robust maximum likelihood
+      } else {
+
+        print.fit <- rbind(print.fit[1L:11L, ], c("", "Standard", "Scaled", ""),
+                           print.fit[12L:25L, ], c("", "Standard", "Scaled", "Robust"),
+                           print.fit[26L:34L, ], c("", "Standard", "Scaled", "Robust"),
+                           print.fit[35L:52L, ],
+                           make.row.names = FALSE)
+
+      }
+
+      #...................
+      ### Replace NA with "" ####
+
+      print.fit <- unname(misty::na.as(print.fit, ""))
+
+      #...................
+      ### Add blank space ####
+
+      print.fit[, 1L] <- paste0("  ", print.fit[, 1L])
+
+      #### Maximum likelihood
+      if (isTRUE(ncol(print.fit) == 2L)) {
+
+        print.fit[c(2L:3L, 6L:8L, 12L:20L, 24L:30L, 34L:50L), 1L] <- paste("", unlist(print.fit[c(2L:3L, 6L:8L, 12L:20L, 24L:30L, 34L:50L), 1L]))
+
+        # Within/Between
+        print.fit[c(13L, 14L, 16L, 17L, 19L, 20L, 25L, 26L, 29L, 30L, 35L, 36L, 39L, 40L, 42L, 43L, 45L, 46L, 49L, 50L), 1L] <- paste("", unlist(print.fit[c(13L, 14L, 16L, 17L, 19L, 20L, 25L, 26L, 29L, 30L, 35L, 36L, 39L, 40L, 42L, 43L, 45L, 46L, 49L, 50L), 1L]))
+
+        # RMSEA 95% CI - p-values
+        print.fit[c(38L:46), 1L] <- paste("", unlist(print.fit[c(38L:46), 1L]))
+
+      #### Robust maximum likelihood
+      } else {
+
+        print.fit[c(2L:5L, 8L:10L, 14L:25L, 29L:35L, 39L:55L), 1L] <- paste("", unlist(print.fit[c(2L:5L, 8L:10L, 14L:25L, 29L:35L, 39L:55L), 1L]))
+
+        # Within/Between
+        print.fit[c(15L, 16L, 18L, 19L, 21L, 22L, 24L, 25L, 30L, 31L, 34L, 35L, 40L, 41L, 44L, 45L, 47L, 48L, 50L, 51L, 54L, 55L), 1L] <- paste("", unlist(print.fit[c(15L, 16L, 18L, 19L, 21L, 22L, 24L, 25L, 30L, 31L, 34L, 35L, 40L, 41L, 44L, 45L, 47L, 48L, 50L, 51L, 54L, 55L), 1L]))
+
+        # RMSEA 95% CI - p-values
+        print.fit[c(43L:51L), 1L] <- paste("", unlist(print.fit[c(43L:51L), 1L]))
+
+      }
+
+      #...................
+      ### Justify left and right ####
+
+      print.fit[, 1L] <- format(print.fit[, 1L, drop = FALSE], justify = "left")
+
+      print.fit[, -1L] <- apply(print.fit[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+      #...................
+      ### Print ####
+
+      cat("\n")
+
+      write.table(print.fit, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    }
+
+  #_____________________________________________________________________________
+  #
   # CI for the Indirect Effect in a 1-1-1 Multilevel Mediation Model -----------
   }, multilevel.indirect = {
 
@@ -4911,22 +5780,862 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
+  # Cross-Level Measurement Invariance -----------------------------------------
+  }, multilevel.invar = {
+
+    cat(" Cross-Level Measurement Invariance\n")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## lavaan summary ####
+
+    if (isTRUE("summary" %in% x$args$print)) {
+
+      print.summary <- print.object$summary
+
+      #...................
+      ### Format ####
+
+      # Include spaces
+      print.summary[1L, 1L] <- paste0(" ", print.summary[1L, 1L])
+      print.summary[-1L, 1L] <- paste0("  ", print.summary[-1L, 1L])
+
+      print.summary[13L:14L, 1L] <- paste0(" ", print.summary[13L:14L, 1L])
+
+      # Justify left
+      print.summary[, 1L] <- format(print.summary[, 1L], justify = "left")
+
+      #...................
+      ### Print ####
+
+      print(print.summary, col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Covariance coverage ####
+
+    if (isTRUE("coverage" %in% x$args$print)) {
+
+      cat("\n  Covariance Coverage of Data\n\n")
+
+      print.coverage <- print.object$coverage
+
+      #...................
+      ### Lower triangular ####
+
+      print.coverage[upper.tri(print.coverage)] <- ""
+
+      #...................
+      ### Format ####
+
+      print.coverage <- apply(print.coverage, 2L, function(y) ifelse(!is.na(as.numeric(y)), formatC(as.numeric(y), digits = 2L, format = "f",
+                                                                                                    zero.print = ifelse(2L > 0L, paste0("0.", paste(rep(0L, times = 2L), collapse = "")), "0")), ""))
+
+      # Row names
+      row.names(print.coverage) <- paste0("   ", colnames(print.coverage))
+
+      #...................
+      ### Print ####
+
+      print(print.coverage, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Sample Statistics ####
+
+    if (isTRUE("descript" %in% x$args$print)) {
+
+      cat("\n  Univariate Sample Statistics\n\n")
+
+      print.itemstat <- print.object$descript
+
+      #...................
+      ### Format ####
+
+      # Variables to round
+      print.round <- c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC")
+
+      print.itemstat[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.itemstat[, y]), formatC(print.itemstat[, y], digits = digits, format = "f",
+                                                                                                                   zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+      # Percentages
+      print.itemstat[, "pNA"] <- paste0(print.itemstat[, "pNA"], "%")
+
+      # Column names
+      print.itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)"), print.itemstat)
+
+      # Justify left and right
+      print.itemstat[, 1L] <- format(print.itemstat[, 1L, drop = FALSE], justify = "left")
+      print.itemstat[, -1L] <- apply(print.itemstat[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+      # Add blank space
+      print.itemstat[, "variable"] <- c(paste0("   ", print.itemstat[1L, "variable"], collapse = ""), paste0("    ", print.itemstat[-1L, "variable"]))
+      print.itemstat[, "variable"] <- format(c(print.itemstat[1L, "variable"], misty::chr.trim(print.itemstat[-1L, "variable"], side = "right")), justify = "left")
+
+      #...................
+      ### Print ####
+
+      write.table(print.itemstat, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Model fit ####
+
+    if (isTRUE("fit" %in% x$args$print)) {
+
+      if (isTRUE(x$args$invar != "config")) { cat("\n  Model Fit Information and Model Comparison\n") } else { cat("\n  Model Fit Information\n") }
+
+      print.fit <- print.object$fit
+
+      print.fit.stand <- print.fit$stand
+      print.fit.scaled <- print.fit$scaled
+      print.fit.robust <- print.fit$robust
+
+      #...................
+      ##### Round
+
+      print.fit.stand[-c(2L:4L, 14L, 21L:23L), -1L] <- sapply(print.fit.stand[-c(2L:4L, 14L, 21L:23L), -1L], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled[-c(2L:4L, 15L, 22L:24L), -1L] <- sapply(print.fit.scaled[-c(2L:4L, 15L, 22L:24L), -1L], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA)) }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust[-c(2L:4L, 15L, 22L:24L), -1L] <- sapply(print.fit.robust[-c(2L:4L, 15L, 22L:24L), -1L], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA)) }
+
+      # Information criteria
+      print.fit.stand[c(2L, 21L:23L), -1L] <- sapply(print.fit.stand[c(2L, 21L:23L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = digits - 1L, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits - 1L), collapse = "")), "0")), NA))
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled[c(2L, 22L:24L), -1L] <- sapply(print.fit.scaled[c(2L, 22L:24L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = digits - 1L, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits - 1L), collapse = "")), "0")), NA)) }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust[c(2L, 22L:24L), -1L] <- sapply(print.fit.robust[c(2L, 22L:24L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = digits - 1L, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits - 1L), collapse = "")), "0")), NA)) }
+
+      # p.digits
+      print.fit.stand[c(4L, 14L), -1L] <- sapply(print.fit.stand[c(4L, 14L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA))
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled[c(4L, 15L), -1L] <- sapply(print.fit.scaled[c(4L, 15L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA)) }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust[c(4L, 15L), -1L] <- sapply(print.fit.robust[c(4L, 15L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA)) }
+
+      #...................
+      ##### Add labels ####
+
+      print.fit.stand <- rbind(switch(x$args$invar, config = { c("", "Config") }, metric = { c("", "Config", "Metric", "DMetric") }, scalar = { c("", "Config", "Metric", "Scalar", "DMetric", "DScalar") }), print.fit.stand[1L:23L, ], make.row.names = FALSE)
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled <- rbind(switch(x$args$invar, config = { c("", "Config") }, metric = { c("", "Config", "Metric", "DMetric") }, scalar = { c("", "Config", "Metric", "Scalar", "DMetric", "DScalar") }), print.fit.scaled[1L:24L, ], make.row.names = FALSE) }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust <- rbind(switch(x$args$invar, config = { c("", "Config") }, metric = { c("", "Config", "Metric", "DMetric") }, scalar = { c("", "Config", "Metric", "Scalar", "DMetric", "DScalar") }), print.fit.robust[1L:24L, ], make.row.names = FALSE) }
+
+      #...................
+      ##### Replace NA with "" ####
+
+      print.fit.stand <- unname(misty::na.as(print.fit.stand, ""))
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled <- unname(misty::na.as(print.fit.scaled, "")) }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust <- unname(misty::na.as(print.fit.robust, "")) }
+
+      #...................
+      ##### Add blank space ####
+
+      print.fit.stand[, 1L] <- paste0("    ", print.fit.stand[, 1L])
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled[, 1L] <- paste0("    ", print.fit.scaled[, 1L]) }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust[, 1L] <- paste0("    ", print.fit.robust[, 1L]) }
+
+      print.fit.stand[c(3L:5L, 8L:9L, 12L:19L, 22L:24), 1L] <- paste("", unlist(print.fit.stand[c(3L:5L, 8L:9L, 12L:19L, 22L:24), 1L]))
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled[c(3L:6L, 9L:10L, 13L:20L, 23L:25L), 1L] <- paste("", unlist(print.fit.scaled[c(3L:6L, 9L:10L, 13L:20L, 23L:25L), 1L])) }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust[c(3L:6L, 9L:10L, 13L:20L, 23L:25L), 1L] <- paste("", unlist(print.fit.robust[c(3L:6L, 9L:10L, 13L:20L, 23L:25L), 1L])) }
+
+      # Within/Between
+      print.fit.stand[18L:19L, 1L] <- paste("", unlist(print.fit.stand[18L:19L, 1L]))
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled[19L:20L, 1L] <- paste("", unlist(print.fit.scaled[19L:20L, 1L])) }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust[19L:20L, 1L] <- paste("", unlist(print.fit.robust[19L:20L, 1L])) }
+
+      # RMSEA 95% CI - p-values
+      print.fit.stand[13L:15L, 1L] <- paste("", unlist(print.fit.stand[13L:15L, 1L]))
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled[14L:16L, 1L] <- paste("", unlist(print.fit.scaled[14L:16L, 1L])) }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust[14L:16L, 1L] <- paste("", unlist(print.fit.robust[14L:16L, 1L])) }
+
+      #...................
+      ##### Justify left and right ####
+
+      print.fit.stand[, 1L] <- format(print.fit.stand[, 1L, drop = FALSE], justify = "left")
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled[, 1L] <- format(print.fit.scaled[, 1L, drop = FALSE], justify = "left") }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust[, 1L] <- format(print.fit.robust[, 1L, drop = FALSE], justify = "left") }
+
+      print.fit.stand[, -1L] <- apply(print.fit.stand[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled[, -1L] <- apply(print.fit.scaled[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right")) }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust[, -1L] <- apply(print.fit.robust[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right")) }
+
+      #...................
+      ##### Print ####
+
+      if (isTRUE("standard" %in% x$args$print.fit)) {
+
+        cat("\n   Standard CFI, TLI, and RMSEA\n")
+
+        # R Markdown not in progress
+        if (is.null(getOption("knitr.in.progress"))) { print.fit.stand[1L, ] <- sub("D", "\u0394", print.fit.stand[1L, ]) }
+
+        write.table(print.fit.stand, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      if (isTRUE("scaled" %in% x$args$print.fit)) {
+
+        cat("\n   Scaled CFI, TLI, and RMSEA\n")
+
+        # R Markdown not in progress
+        if (is.null(getOption("knitr.in.progress"))) { print.fit.scaled[1L, ] <- sub("D", "\u0394", print.fit.scaled[1L, ]) }
+
+        write.table(print.fit.scaled, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      if (isTRUE("robust" %in% x$args$print.fit)) {
+
+        cat("\n   Robust CFI, TLI, and RMSEA\n")
+
+        # R Markdown not in progress
+        if (is.null(getOption("knitr.in.progress"))) { print.fit.robust[1L, ] <- sub("D", "\u0394", print.fit.robust[1L, ]) }
+
+        write.table(print.fit.robust, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Parameter estimates ####
+
+    if (isTRUE("est" %in% x$args$print)) {
+
+      switch(x$args$invar,
+             ### Configural invariance ####
+             config = {
+
+               cat("\n  Configural Cross-Level Measurement Invariance\n")
+
+               print.param.w <- print.object$param$config$within
+               print.param.b <- print.object$param$config$between
+
+             ### Metric invariance ####
+             }, metric = {
+
+               cat("\n  Metric Cross-Level Measurement Invariance\n")
+
+               print.param.w <- print.object$param$metric$within
+               print.param.b <- print.object$param$metric$between
+
+
+             ### Scalar invariance ####
+             }, scalar = {
+
+               cat("\n  Scalar Cross-Level Measurement Invariance\n")
+
+               print.param.w <- print.object$param$scalar$within
+               print.param.b <- print.object$param$scalar$between
+
+
+             })
+
+      cat("\n   Model Results: Within Level\n\n")
+
+      #...................
+      ### Within Level ####
+
+      #### Round ####
+
+      # digits
+      print.param.w[, -c(1L:4L, 8L)] <- lapply(print.param.w[, -c(1L:4L, 8L)], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f",
+                                                                                                                     zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+      # p.digits
+      print.param.w[, "pvalue"] <- formatC(as.numeric(print.param.w[, "pvalue"]), digits = p.digits, format = "f",
+                                             zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+      #### Add blank spaces ####
+      print.param.w[apply(print.param.w[, c("est", "se", "z", "stdyx")], 1L, function(y) all(is.na(y))), "rhs"] <- paste("    ", print.param.w[apply(print.param.w[, c("est", "se", "z", "stdyx")], 1L, function(y) all(is.na(y))), "rhs"])
+      print.param.w[apply(print.param.w[, c("est", "se", "z", "stdyx")], 1L, function(y) any(!is.na(y))), "rhs"] <- paste("      ", print.param.w[apply(print.param.w[, c("est", "se", "z", "stdyx")], 1L, function(y) any(!is.na(y))), "rhs"])
+
+      #### Convert NA into "" ####
+      print.param.w[apply(print.param.w[, c("est", "se", "z", "stdyx")], 1L, function(y) all(is.na(y))), c("est", "se", "z", "pvalue", "stdyx")] <- ""
+      print.param.w[apply(print.param.w[, c("se", "z")], 1L, function(y) all(is.na(y))), c("se", "z", "pvalue", "stdyx")] <- ""
+      print.param.w[which(is.na(print.param.w$stdyx)), "stdyx"] <- ""
+
+      #### Column names ####
+      print.param.w <- rbind(c("", "", "", "", "Estimate", "Std.Err", "z-value", "P(>|z|)", "StdYX"), print.param.w)
+
+      #### Justify ####
+      print.param.w[, "rhs"] <- format(print.param.w[, "rhs", drop = FALSE], justify = "left")
+      print.param.w[, -c(1L:4L)] <- apply(print.param.w[, -c(1L:4L), drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+      #...................
+      #### Print ####
+
+      ##### Factor loadings
+      if (isTRUE(any(print.param.w$param %in% "latent variable"))) {
+
+        cat("    Factor Loadings\n")
+
+        # Heading
+        write.table(print.param.w[1L, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        print.lv <- print.param.w[print.param.w$param == "latent variable", ]
+
+        for (i in unique(print.lv$lhs)) {
+
+          pos.NA <- grep("NA", print.lv[print.lv$lhs == i, "z"])
+
+          if (isTRUE(length(pos.NA) > 0L)) {
+
+            print.lv[print.lv$lhs == i, ][pos.NA, "se"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "se"])) + 1L), collapse = " ")
+            print.lv[print.lv$lhs == i, ][pos.NA, "z"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "z"])) + 1L), collapse = " ")
+            print.lv[print.lv$lhs == i, ][pos.NA, "pvalue"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "pvalue"])) + 1L), collapse = " ")
+
+          }
+
+          write.table(print.lv[print.lv$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ##### Latent variable covariances
+      if (isTRUE(any(print.param.w$param %in% "latent variable covariance"))) {
+
+        cat("\n    Latent Variable Covariances\n")
+
+        print.lv.cov <- print.param.w[print.param.w$param == "latent variable covariance", ]
+
+        for (i in unique(print.lv.cov$lhs)) {
+
+          write.table(print.lv.cov[print.lv.cov$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ##### Residual covariances
+      if (isTRUE(any(print.param.w$param %in% "residual covariance"))) {
+
+        # Heading latent variables
+        if (isTRUE(any(print.param.w$param %in% "latent variable"))) {
+
+          cat("\n    Residual Covariances\n")
+
+        # Heading no latent variables
+        } else {
+
+          cat("\n    Covariances\n")
+
+          write.table(print.param.w[1L, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+        print.res.cov <- print.param.w[print.param.w$param == "residual covariance", ]
+
+        for (i in unique(print.res.cov$lhs)) {
+
+          write.table(print.res.cov[print.res.cov$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+        }
+
+      ##### Latent variance
+      if (isTRUE(any(print.param.w$param %in% "latent variance"))) {
+
+        cat("\n    Latent Variances\n")
+
+        print.var <- print.param.w[print.param.w$param == "latent variance", ]
+
+        print.var[grep("NA", print.var[, "z"]), c("se", "z", "pvalue", "stdyx")] <- ""
+
+        write.table(print.var[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ##### Residual variance
+      if (isTRUE(any(print.param.w$param %in% "residual variance"))) {
+
+        # Heading latent variables
+        if (isTRUE(any(print.param.w$param %in% "latent variable"))) {
+
+          cat("\n    Residual Variances\n")
+
+        } else {
+
+          cat("\n    Variances\n")
+
+        }
+
+        print.resid <- print.param.w[print.param.w$param == "residual variance", ]
+
+        pos.NA <- grep("NA", print.resid[, "z"])
+
+        if (isTRUE(length(pos.NA) >  0L)) {
+
+          print.resid[pos.NA, "se"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "se"])) + 1L), collapse = " ")
+          print.resid[pos.NA, "z"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "z"])) + 1L), collapse = " ")
+          print.resid[pos.NA, "pvalue"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "pvalue"])) + 1L), collapse = " ")
+
+        }
+
+        write.table(print.resid[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      #...................
+      ### Between Level ####
+
+      cat("\n   Model Results: Between Level\n\n")
+
+      #...................
+      #### Round ####
+
+      # digits
+      print.param.b[, -c(1L:4L, 8L)] <- lapply(print.param.b[, -c(1L:4L, 8L)], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f",
+                                                                                                                     zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+      # p.digits
+      print.param.b[, "pvalue"] <- formatC(as.numeric(print.param.b[, "pvalue"]), digits = p.digits, format = "f",
+                                           zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+      #...................
+      #### Add blank spaces ####
+      print.param.b[apply(print.param.b[, c("est", "se", "z", "stdyx")], 1L, function(y) all(is.na(y))), "rhs"] <- paste("    ", print.param.b[apply(print.param.b[, c("est", "se", "z", "stdyx")], 1L, function(y) all(is.na(y))), "rhs"])
+      print.param.b[apply(print.param.b[, c("est", "se", "z", "stdyx")], 1L, function(y) any(!is.na(y))), "rhs"] <- paste("      ", print.param.b[apply(print.param.b[, c("est", "se", "z", "stdyx")], 1L, function(y) any(!is.na(y))), "rhs"])
+
+      #...................
+      #### Convert NA into "" ####
+      print.param.b[apply(print.param.b[, c("est", "se", "z", "stdyx")], 1L, function(y) all(is.na(y))), c("est", "se", "z", "pvalue", "stdyx")] <- ""
+      print.param.b[apply(print.param.b[, c("se", "z")], 1L, function(y) all(is.na(y))), c("se", "z", "pvalue", "stdyx")] <- ""
+      print.param.b[which(is.na(print.param.b$stdyx)), "stdyx"] <- ""
+
+      #...................
+      #### Column names ####
+      print.param.b <- rbind(c("", "", "", "", "Estimate", "Std.Err", "z-value", "P(>|z|)", "StdYX"), print.param.b)
+
+      #...................
+      #### Justify ####
+      print.param.b[, "rhs"] <- format(print.param.b[, "rhs", drop = FALSE], justify = "left")
+      print.param.b[, -c(1L:4L)] <- apply(print.param.b[, -c(1L:4L), drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+      #...................
+      #### Print ####
+
+      ##### Factor loadings
+      if (isTRUE(any(print.param.b$param %in% "latent variable"))) {
+
+        cat("    Factor Loadings\n")
+
+        # Heading
+        write.table(print.param.b[1L, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        print.lv <- print.param.b[print.param.b$param == "latent variable", ]
+
+        for (i in unique(print.lv$lhs)) {
+
+          pos.NA <- grep("NA", print.lv[print.lv$lhs == i, "z"])
+
+          if (isTRUE(length(pos.NA) > 0L)) {
+
+            print.lv[print.lv$lhs == i, ][pos.NA, "se"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "se"])) + 1L), collapse = " ")
+            print.lv[print.lv$lhs == i, ][pos.NA, "z"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "z"])) + 1L), collapse = " ")
+            print.lv[print.lv$lhs == i, ][pos.NA, "pvalue"] <- paste(rep("", times = unique(nchar(print.lv[print.lv$lhs == i, ][pos.NA, "pvalue"])) + 1L), collapse = " ")
+
+          }
+
+          write.table(print.lv[print.lv$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ##### Latent variable covariances
+      if (isTRUE(any(print.param.b$param %in% "latent variable covariance"))) {
+
+        cat("\n    Latent Variable Covariances\n")
+
+        print.lv.cov <- print.param.b[print.param.b$param == "latent variable covariance", ]
+
+        for (i in unique(print.lv.cov$lhs)) {
+
+          write.table(print.lv.cov[print.lv.cov$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ##### (Residual) Covariances
+      if (isTRUE(any(print.param.b$param %in% "residual covariance"))) {
+
+        # Heading latent variables
+        if (isTRUE(any(print.param.b$param %in% "latent variable"))) {
+
+          cat("\n    Residual Covariances\n")
+
+        # Heading no latent variables
+        } else {
+
+          cat("\n    Covariances\n")
+
+          write.table(print.param.b[1L, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+        print.res.cov <- print.param.b[print.param.b$param == "residual covariance", ]
+
+        for (i in unique(print.res.cov$lhs)) {
+
+          write.table(print.res.cov[print.res.cov$lhs == i, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      }
+
+      ##### Latent mean
+      if (isTRUE(any(print.param.b$param %in% "latent mean"))) {
+
+        cat("\n    Latent Means\n")
+
+        print.mean <- print.param.b[print.param.b$param == "latent mean", ]
+
+        print.mean[grep("NA", print.mean[, "z"]), c("se", "z", "pvalue", "stdyx")] <- ""
+
+        write.table(print.mean[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ##### Latent variance
+      if (isTRUE(any(print.param.b$param %in% "latent variance"))) {
+
+        cat("\n    Latent Variances\n")
+
+        print.var <- print.param.b[print.param.b$param == "latent variance", ]
+
+        print.var[grep("NA", print.var[, "z"]), c("se", "z", "pvalue", "stdyx")] <- ""
+
+        write.table(print.var[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ##### Intercepts
+      if (isTRUE(any(print.param.b$param %in% "intercept"))) {
+
+        cat("\n    Intercepts\n")
+
+        print.inter <- print.param.b[print.param.b$param == "intercept", ]
+
+        print.inter[grep("NA", print.inter[, "z"]), c("se", "z", "pvalue", "stdyx")] <- ""
+
+        write.table(print.inter[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+      ##### (Residual) Variance
+      if (isTRUE(any(print.param.b$param %in% "residual variance"))) {
+
+        # Heading latent variables
+        if (isTRUE(any(print.param.b$param %in% "latent variable"))) {
+
+          cat("\n    Residual Variances\n")
+
+        } else {
+
+          cat("\n    Variances\n")
+
+        }
+
+        print.resid <- print.param.b[print.param.b$param == "residual variance", ]
+
+        pos.NA <- grep("NA", print.resid[, "z"])
+
+        if (isTRUE(length(pos.NA) >  0L)) {
+
+          print.resid[pos.NA, "se"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "se"])) + 1L), collapse = " ")
+          print.resid[pos.NA, "z"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "z"])) + 1L), collapse = " ")
+          print.resid[pos.NA, "pvalue"] <- paste(rep("", times = unique(nchar(print.resid[pos.NA, "pvalue"])) + 1L), collapse = " ")
+
+        }
+
+        write.table(print.resid[, 4L:9L], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Modification indices ####
+
+    if (isTRUE("modind" %in% x$args$print)) {
+
+      switch(x$args$invar,
+             ### Configural invariance ####
+             config = {
+
+               cat("\n  Configural Cross-Level Measurement Invariance\n")
+
+               print.modind.w <- print.object$modind$config$within
+               print.modind.b <- print.object$modind$config$between
+
+             ### Metric invariance ####
+             }, metric = {
+
+               cat("\n  Metric Cross-Level Measurement Invariance\n")
+
+               print.modind.w <- print.object$modind$metric$within
+               print.modind.b <- print.object$modind$metric$between
+
+
+             ### Scalar invariance ####
+             }, scalar = {
+
+               cat("\n  Scalar Cross-Level Measurement Invariance\n")
+
+               print.modind.w <- print.object$modind$scalar$within
+               print.modind.b <- print.object$modind$scalar$between
+
+             })
+
+      #...................
+      ### Within Level ####
+
+      #### Modification indices not available
+      if (isTRUE(is.null(print.modind.w) && is.null(print.modind.b))) {
+
+        cat("\n    Modification indices are not available.")
+
+      #### Modification available
+      } else {
+
+        cat("\n   Modification Indices: Within Level\n")
+
+        if (isTRUE(nrow(print.modind.w) == 0L)) {
+
+        cat("\n    No modification indices above the minimum value at the Within Level.\n")
+
+        #### Modification indices
+        } else {
+
+          # Round
+          print.modind.w[, -c(1L:3L)] <- lapply(print.modind.w[, -c(1L:3L)], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f",
+                                                                                                                   zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+          # Column names
+          print.modind.w <- rbind(c("", "", "", "MI", "EPC", "StdYX EPC"), print.modind.w)
+
+          # Add blank spaces
+          print.modind.w[, "lhs"] <- paste("    ", print.modind.w[, "lhs"])
+
+          # Justify
+          print.modind.w[ c("lhs", "op", "rhs")] <- format(print.modind.w[, c("lhs", "op", "rhs")], justify = "left")
+          print.modind.w[, -c(1L, 2L)] <- apply(print.modind.w[, -c(1L, 2L), drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+          # Factor loadings
+          print.modind.w.load <- print.modind.w[print.modind.w$op == "=~", ]
+
+          if (isTRUE(nrow(print.modind.w.load) > 0L)) {
+
+            cat("\n   Factor Loadings\n")
+
+            # Print header
+            write.table(print.modind.w[1L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+            write.table(print.modind.w.load, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+          }
+
+          # Residual covariances
+          print.modind.w.cov <- print.modind.w[print.modind.w$op == "~~", ]
+
+          if (isTRUE(nrow(print.modind.w.cov) > 0L)) {
+
+            cat("\n   Residual Covariances\n")
+
+            # Print header
+            write.table(print.modind.w[1L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+            write.table(print.modind.w.cov, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+          }
+
+        }
+
+        #...................
+        ### Between Level ####
+
+        cat("\n   Modification Indices: Between Level\n")
+
+        #### No modification indices above the minimum value
+        if (isTRUE(nrow(print.modind.b) == 0L)) {
+
+          cat("\n    No modification indices above the minimum value at the Between Level.\n")
+
+        #### Modification indices
+        } else {
+
+          # Round
+          print.modind.b[, -c(1L:3L)] <- lapply(print.modind.b[, -c(1L:3L)], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f",
+                                                                                                                   zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+          # Column names
+          print.modind.b <- rbind(c("", "", "", "MI", "EPC", "StdYX EPC"), print.modind.b)
+
+          # Add blank spaces
+          print.modind.b[, "lhs"] <- paste("    ", print.modind.b[, "lhs"])
+
+          # Justify
+          print.modind.b[ c("lhs", "op", "rhs")] <- format(print.modind.b[, c("lhs", "op", "rhs")], justify = "left")
+          print.modind.b[, -c(1L, 2L)] <- apply(print.modind.b[, -c(1L, 2L), drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+          # Factor loadings
+          print.modind.b.load <- print.modind.b[print.modind.b$op == "=~", ]
+
+          if (isTRUE(nrow(print.modind.b.load) > 0L)) {
+
+            cat("\n   Factor Loadings\n")
+
+            # Print header
+            write.table(print.modind.b[1L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+            write.table(print.modind.b.load, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+          }
+
+          # Residual covariances
+          print.modind.b.cov <- print.modind.b[print.modind.b$op == "~~", ]
+
+          if (isTRUE(nrow(print.modind.b.cov) > 0L)) {
+
+            cat("\n   Residual Covariances\n")
+
+            # Print header
+            write.table(print.modind.b[1L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+            write.table(print.modind.b.cov, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+          }
+
+        }
+
+        # Note
+        cat(paste0("\n   Note. Minimum value for printing the index is ", round(x$args$min.value, digits = 2L), ".\n"))
+
+      }
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Multilevel Composite Reliability ----
+  }, multilevel.omega = {
+
+    switch(x$args$const,
+           within = cat(" Multilevel Composite Reliability for a Within-Cluster Construct\n"),
+           shared = cat(" Multilevel Composite Reliability for a Shared Cluster-Level Construct\n"),
+           config = cat(" Multilevel Composite Reliability for a Configural Construct\n"))
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Omega ####
+     if (isTRUE("omega" %in% x$args$print)) {
+
+        print.omega <- print.object$omega
+
+        #### Round ####
+        print.omega[, -c(1L:2L)] <- lapply(print.omega[, -c(1L:2L)], function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+        #...................
+        ### Greek letters ####
+
+        # R Markdown not in progress
+        if (isTRUE(is.null(getOption("knitr.in.progress")))) {
+
+          print.omega[, 1] <- sub("omega.w", "\U03C9\U02B7", print.omega[, 1])
+          print.omega[, 1] <- sub("omega.b", "\U03C9\U1D47", print.omega[, 1])
+          print.omega[, 1] <- sub("omega.2l", "\U03C9\U00B2\U02E1", print.omega[, 1])
+
+        }
+
+        # Include spaces
+        print.omega[, 1L] <- paste0("    ", print.omega[, 1L])
+
+        # Include labels
+        print.omega <- rbind(c("   Type", "Items", "Omega", "Low", "Upp"), print.omega)
+
+        # Justify left
+        print.omega[, 1L] <- format(print.omega[, 1L], justify = "left")
+
+        # Justify right
+        print.omega[, -1L] <- format(print.omega[, -1L], justify = "right")
+
+
+        # Print
+        x$args$conf.level*100L
+
+        cat(paste0("\n  Coefficient Omega with ", x$args$conf.level*100L, "% Confidence Interval\n\n"))
+
+        write.table(print.omega, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+     }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Item Statistics ####
+
+    if (isTRUE("item" %in% x$args$print)) {
+
+      print.item <- print.object$item
+
+      #### Round ####
+
+      # Variables to round
+      print.round <- switch(x$args$const,
+                            within = c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC", "wstd.ld"),
+                            shared = c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC", "bstd.ld"),
+                            config = c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC", "wstd.ld", "bstd.ld"))
+
+      print.item[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.item[, y]), formatC(print.item[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+      #...................
+      ### Format ####
+
+      # Percentages
+      print.item[, "pNA"] <- paste0(print.item[, "pNA"], "%")
+
+      # Column names
+      print.item <- rbind(switch(x$args$const,
+                                 within = c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)", "WStd.ld"),
+                                 shared = c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)", "BStd.ld"),
+                                 config = c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)", "WStd.ld", "BStd.ld")), print.item)
+
+      # Justify left and right
+      print.item[, 1L] <- format(print.item[, 1L, drop = FALSE], justify = "left")
+      print.item[, -1L] <- apply(print.item[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+      # Add blank space
+      print.item[, "variable"] <- c(paste0("   ", print.item[1L, "variable"], collapse = ""), paste0("    ", print.item[-1L, "variable"]))
+      print.item[, "variable"] <- format(c(print.item[1L, "variable"], misty::chr.trim(print.item[-1L, "variable"], side = "right")), justify = "left")
+
+      #...................
+      ### Print ####
+
+      switch(x$args$const,
+             within = cat("\n  Standardized Factor Loadings at the Within Level\n\n"),
+             shared = cat("\n  Standardized Factor Loadings at the Between Level\n\n"),
+             config = cat("\n  Standardized Factor Loadings at the Within and Between Level\n\n"))
+
+      write.table(print.item, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    }
+
+  #_____________________________________________________________________________
+  #
   # R-Squared Measures for Multilevel and Linear Mixed Effects Models Manual ----
   }, multilevel.r2.manual = {
 
     ####################################################################################
     # Main Function
 
-    print.object$rs$total <- data.frame(sapply(print.object$rs$total[, !is.na(print.object$rs$total)], formatC, digits = digits, format = "f", simplify = FALSE))
-    row.names(print.object$rs$total) <- "   "
+    print.object$total <- data.frame(sapply(print.object$total[, !is.na(print.object$total)], formatC, digits = digits, format = "f", simplify = FALSE))
+    row.names(print.object$total) <- "   "
 
-    if (isTRUE(ncol(print.object$rs$decomp) != 1L)) {
+    if (isTRUE(ncol(print.object$decomp) != 1L)) {
 
-      print.object$rs$within <- data.frame(sapply(print.object$rs$within, formatC, digits = digits, format = "f", simplify = FALSE))
-      row.names(print.object$rs$within) <- "   "
+      print.object$within <- data.frame(sapply(print.object$within, formatC, digits = digits, format = "f", simplify = FALSE))
+      row.names(print.object$within) <- "   "
 
-      print.object$rs$between <- data.frame(sapply(print.object$rs$between, formatC, digits = digits, format = "f", simplify = FALSE))
-      row.names(print.object$rs$between) <- "   "
+      print.object$between <- data.frame(sapply(print.object$between, formatC, digits = digits, format = "f", simplify = FALSE))
+      row.names(print.object$between) <- "   "
 
     }
 
@@ -4939,18 +6648,18 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     cat(ifelse(isTRUE(getOption("knitr.in.progress")), "   Total R2\n", "   Total R\u00B2\n"))
 
-    print(print.object$rs$total, quote = FALSE, max = 99999L, right = TRUE)
+    print(print.object$total, quote = FALSE, max = 99999L, right = TRUE)
 
     # Predictors are cluster-mean-centered
-    if (isTRUE(ncol(print.object$rs$decomp) != 1L)) {
+    if (isTRUE(ncol(print.object$decomp) != 1L)) {
 
       cat(ifelse(isTRUE(getOption("knitr.in.progress")), "\n   Within-Cluster R2\n", "\n   Within-Cluster R\u00B2\n"))
 
-      print(print.object$rs$within, quote = FALSE, max = 99999L, right = TRUE)
+      print(print.object$within, quote = FALSE, max = 99999L, right = TRUE)
 
       cat(ifelse(isTRUE(getOption("knitr.in.progress")), "\n   Between-Cluster R2\n", "\n   Between-Cluster R\u00B2\n"))
 
-      print(print.object$rs$between, quote = FALSE, max = 99999L, right = TRUE)
+      print(print.object$between, quote = FALSE, max = 99999L, right = TRUE)
 
     }
 
@@ -5181,7 +6890,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     print.object <- apply(print.object, 2L, format, justify = "right")
 
     # R Markdown in progress
-    if (is.null(getOption("knitr.in.progress"))) {
+    if (isTRUE(is.null(getOption("knitr.in.progress")))) {
 
       print.object[1L, "statistic"] <- paste0(paste0(rep(" ", times = nchar(print.object[1L, "statistic"]) - 2L), collapse = ""), "\u03C7\u00B2", collapes = "")
 
@@ -5272,28 +6981,28 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     if (isTRUE("item" %in% print)) {
 
-      print.object$descript$pNA <- paste0(formatC(print.object$descript$pNA, digits = 2L, format = "f",
+      print.object$itemstat$pNA <- paste0(formatC(print.object$itemstat$pNA, digits = 2L, format = "f",
                                                   zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%")
-      print.object$descript$m <- formatC(print.object$descript$m, digits = 2L, format = "f",
+      print.object$itemstat$m <- formatC(print.object$itemstat$m, digits = 2L, format = "f",
                                          zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
-      print.object$descript$sd <- formatC(print.object$descript$sd, digits = 2L, format = "f",
+      print.object$itemstat$sd <- formatC(print.object$itemstat$sd, digits = 2L, format = "f",
                                           zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
-      print.object$descript$min <- formatC(print.object$descript$min, digits = 2L, format = "f",
+      print.object$itemstat$min <- formatC(print.object$itemstat$min, digits = 2L, format = "f",
                                            zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
-      print.object$descript$max <- formatC(print.object$descript$max, digits = 2L, format = "f",
+      print.object$itemstat$max <- formatC(print.object$itemstat$max, digits = 2L, format = "f",
                                            zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
 
-      print.object$descript$std.ld <- formatC(print.object$descript$std.ld, digits = digits, format = "f",
+      print.object$itemstat$std.ld <- formatC(print.object$itemstat$std.ld, digits = digits, format = "f",
                                               zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-      print.object$descript$omega <- formatC(print.object$descript$omega, digits = digits, format = "f",
+      print.object$itemstat$omega <- formatC(print.object$itemstat$omega, digits = digits, format = "f",
                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
-      print.object$descript <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Std.Ld", "Omega"),
-                                 print.object$descript)
+      print.object$itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Std.Ld", "Omega"),
+                                 print.object$itemstat)
 
       # Format
-      print.object$descript[, 1L] <- format(paste(" ", print.object$descript[, 1L]), justify = "left")
-      print.object$descript[, -1L] <- apply(print.object$descript[, -1L], 2L, function(y) format(y, justify = "right"))
+      print.object$itemstat[, 1L] <- format(paste(" ", print.object$itemstat[, 1L]), justify = "left")
+      print.object$itemstat[, -1L] <- apply(print.object$itemstat[, -1L], 2L, function(y) format(y, justify = "right"))
 
       if (isTRUE("omega" %in% print)) { cat("\n") }
 
@@ -5311,7 +7020,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      write.table(print.object$descript, quote = FALSE, row.names = FALSE, col.names = FALSE)
+      write.table(print.object$itemstat, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
     }
 

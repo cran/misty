@@ -157,8 +157,9 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   # Check if input 'x' is supported by the function
   if (isTRUE(!x$type %in% c("cor.matrix", "crosstab", "descript", "freq", "item.alpha",
-                            "item.cfa", "item.omega", "multilevel.cor", "multilevel.descript",
-                            "na.coverage", "na.descript", "na.pattern"))) {
+                            "item.cfa", "item.omega", "multilevel.cfa", "multilevel.cor",
+                            "multilevel.descript", "multilevel.fit", "multilevel.invar",
+                            "multilevel.omega", "na.coverage", "na.descript", "na.pattern"))) {
 
     stop("This type of misty object is not supported by the function.", call. = FALSE)
 
@@ -1012,8 +1013,6 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     # Round
     fit[, -1L] <- sapply(fit[, -1L], round, digits = digits)
 
-    colnames(fit) <- c("", "Standard", "Ad hoc", "Robust")
-
     #...................
     ### Parameter estimates ####
 
@@ -1028,12 +1027,16 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     #...................
     ### Modification indices ####
 
-    modind <- write.object$modind
+    if (isTRUE(x$args$estimator != "PML")) {
 
-    # Round
-    modind[, -c(1L, 2L, 3L)] <- sapply(modind[, -c(1L, 2L, 3L)], round, digits = digits)
+      modind <- write.object$modind
 
-    colnames(modind) <- c("lhs", "op", "rhs", "MI", "EPC", "STDYX EPC")
+      # Round
+      modind[, -c(1L, 2L, 3L)] <- sapply(modind[, -c(1L, 2L, 3L)], round, digits = digits)
+
+      colnames(modind) <- c("lhs", "op", "rhs", "MI", "EPC", "STDYX EPC")
+
+    }
 
     #...................
     ### Write object ####
@@ -1076,6 +1079,108 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     if (isTRUE(!"omega" %in% x$args$print)) { write.object$Omega <- NULL }
     if (isTRUE(!"item" %in% x$args$print)) { write.object$Itemstat <- NULL }
+
+  #_____________________________________________________________________________
+  #
+  # Multilevel Confirmatory Factor Analysis, multilevel.cfa() ------------------
+
+  }, multilevel.cfa = {
+
+    ### lavaan summary ####
+
+    # Column names
+    colnames(write.object$summary) <- c(write.object$summary[1, 1], "", "")
+
+    summary <- write.object$summary[-1, ]
+
+    #...................
+    ### Covariance coverage ####
+
+    # Round
+    write.object$coverage <- sapply(data.frame(write.object$coverage), round, digits = digits)
+
+    # Add variable names in the rows
+    coverage <- data.frame(colnames(write.object$coverage), write.object$coverage,
+                           row.names = NULL, check.rows = FALSE,
+                           check.names = FALSE, fix.empty.names = FALSE)
+
+    #...................
+    ### Univariate Sample Statistics ####
+
+    itemstat <- write.object$descript
+
+    # Round
+    itemstat[, -1L] <- sapply(itemstat[, -1L], round, digits = digits)
+
+    colnames(itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt", "ICC(1)")
+
+    #...................
+    ### Model fit ####
+
+    fit <- write.object$fit
+
+    # Round
+    fit[, -1L] <- sapply(fit[, -1L], round, digits = digits)
+
+    # Estimator = "ML"
+    if (isTRUE(ncol(write.object$fit) == 2L)) {
+
+      colnames(fit) <- c("", "Standard")
+
+    } else {
+
+      colnames(fit) <- c("", "Standard", "Scaled", "Robust")
+
+    }
+
+    #...................
+    ### Parameter estimates ####
+
+    param <- rbind(data.frame(Level = "Within", write.object$param$within),
+                   data.frame(Level = "Between", write.object$param$between))
+
+    # Round
+    param[, -c(1L:5L, 9L)] <- sapply(param[, -c(1L:5L, 9L)], round, digits = digits)
+    param[, 9L] <- sapply(param[, 9L], round, digits = p.digits)
+
+    colnames(param) <- c("Parameter", "Variable", "lhs", "op", "rhs", "Estimate", "SE", "z", "pvalue", "StdYX")
+
+    #...................
+    ### Modification indices ####
+
+    if (isTRUE(nrow(write.object$modind$within) == 0L)) {
+
+      write.object$modind$within <- data.frame(matrix(NA, ncol = 6L, dimnames = list(NULL, names(write.object$modind$within))))
+
+    }
+
+    if (isTRUE(nrow(write.object$modind$between) == 0L)) {
+
+      write.object$modind$between <- data.frame(matrix(NA, ncol = 6L, dimnames = list(NULL, names(write.object$modind$between))))
+
+    }
+
+    modind <- rbind(data.frame(Level = "Within", write.object$modind$within),
+                    data.frame(Level = "Between", write.object$modind$between))
+
+    # Round
+    modind[, -c(1L:4L)] <- sapply(modind[, -c(1L:4L)], round, digits = digits)
+
+    colnames(modind) <- c("Level", "lhs", "op", "rhs", "MI", "EPC", "STDYX EPC")
+
+    #...................
+    ### Write object ####
+
+    write.object <- list(summary = summary, coverage = coverage, descript = itemstat,
+                         fit = fit, param = param, modind = modind)
+
+    # Print
+    if (isTRUE(!"summary" %in% x$args$print)) { write.object$summary <- NULL }
+    if (isTRUE(!"coverage" %in% x$args$print)) { write.object$coverage <- NULL }
+    if (isTRUE(!"descript" %in% x$args$print)) { write.object$itemstat <- NULL; write.object$itemfreq <- NULL }
+    if (isTRUE(!"fit" %in% x$args$print)) { write.object$fit <- NULL }
+    if (isTRUE(!"est" %in% x$args$print)) { write.object$param <- NULL }
+    if (isTRUE(!"modind" %in% x$args$print)) { write.object$modind <- NULL }
 
   #_____________________________________________________________________________
   #
@@ -1218,6 +1323,163 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
+  # Simultaneous and Level-Specific Multilevel Model Fit Information, multievel.fit() ----
+
+  }, multilevel.fit = {
+
+    #...................
+    ### lavaan summary ####
+
+    # Column names
+    colnames(write.object$summary) <- c(write.object$summary[1, 1], "", "")
+
+    summary <- write.object$summary[-1, ]
+
+    #...................
+    ### Model fit ####
+
+    fit <- write.object$fit
+
+    # Round
+    fit[, -1L] <- round(fit[, -1L], digits = digits)
+
+    # Estimator = "ML"
+    if (isTRUE(ncol(fit) == 2L)) {
+
+      colnames(fit) <- c("", "Standard")
+
+    # Estimator = "MLR"
+    } else {
+
+      colnames(fit) <- c("", "Standard", "Scaled", "Robust")
+
+    }
+
+    #...................
+    ### Write object ####
+
+    write.object <- list(summary = summary, fit = fit)
+
+    # Print
+    if (isTRUE(!"summary" %in% x$args$print)) { write.object$summary <- NULL }
+    if (isTRUE(!"fit" %in% x$args$print)) { write.object$fit <- NULL }
+
+  #_____________________________________________________________________________
+  #
+  # Cross-Level Measurement Invariance Evaluation, multievel.invar() ----
+
+  }, multilevel.invar = {
+
+    ### lavaan summary ####
+
+    # Column names
+    colnames(write.object$summary) <- c(write.object$summary[1, 1], "", "")
+
+    summary <- write.object$summary[-1, ]
+
+    #...................
+    ### Covariance coverage ####
+
+    # Round
+    write.object$coverage <- sapply(data.frame(write.object$coverage), round, digits = digits)
+
+    # Add variable names in the rows
+    coverage <- data.frame(colnames(write.object$coverage), write.object$coverage,
+                           row.names = NULL, check.rows = FALSE,
+                           check.names = FALSE, fix.empty.names = FALSE)
+    #...................
+    ### Univariate Sample Statistics ####
+
+    itemstat <- write.object$descript
+
+    # Round
+    itemstat[, -1L] <- sapply(itemstat[, -1L], round, digits = digits)
+
+    colnames(itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt", "ICC(1)")
+
+    #...................
+    ### Model fit ####
+
+    fit <- write.object$fit
+
+    #### Round
+    fit$stand[, -1L] <- sapply(fit$stand[, -1L], round, digits = digits)
+    if (isTRUE(!is.null(fit$scaled))) { fit$stand[, -1L] <- sapply(fit$stand[, -1L], round, digits = digits) }
+    if (isTRUE(!is.null(fit$robust))) { fit$stand[, -1L] <- sapply(fit$stand[, -1L], round, digits = digits) }
+
+    #### Colnames
+    col <- c("", "Config", "Metric", "Scalar", "DMetric", "DScalar")
+
+    colnames(fit$stand) <- col[seq_len(ncol(fit$stand))]
+    if (isTRUE(!is.null(fit$scaled))) { colnames(fit$scaled) <- col[seq_len(ncol(fit$scaled))] }
+    if (isTRUE(!is.null(fit$robust))) { colnames(fit$robust) <- col[seq_len(ncol(fit$robust))] }
+
+    #...................
+    ### Parameter estimates ####
+
+    config.param <- rbind(data.frame(Level = "Within", write.object$param$config$within),
+                          data.frame(Level = "Between", write.object$param$config$between))
+
+    metric.param <- scalar.param <- NULL
+
+    if (isTRUE(!is.null(write.object$param$metric))) { metric.param <- rbind(data.frame(Level = "Within", write.object$param$metric$within),
+                                                                             data.frame(Level = "Between", write.object$param$metric$between)) }
+
+    if (isTRUE(!is.null(write.object$param$scalar))) { scalar.param <- rbind(data.frame(Level = "Within", write.object$param$scalar$within),
+                                                                             data.frame(Level = "Between", write.object$param$scalar$between)) }
+
+    # Round
+    config.param[, -c(1L:5L, 9L)] <- sapply(config.param[, -c(1L:5L, 9L)], round, digits = digits)
+    config.param[, 9L] <- sapply(config.param[, 9L], round, digits = p.digits)
+
+    if (isTRUE(!is.null(metric.param))) { metric.param[, -c(1L:5L, 9L)] <- sapply(metric.param[, -c(1L:5L, 9L)], round, digits = digits)
+                                          metric.param[, 9L] <- sapply(metric.param[, 9L], round, digits = p.digits) }
+
+    if (isTRUE(!is.null(scalar.param))) { scalar.param[, -c(1L:5L, 9L)] <- sapply(scalar.param[, -c(1L:5L, 9L)], round, digits = digits)
+                                          scalar.param[, 9L] <- sapply(scalar.param[, 9L], round, digits = p.digits) }
+
+    colnames(config.param) <- c("Parameter", "Variable", "lhs", "op", "rhs", "Estimate", "SE", "z", "pvalue", "StdYX")
+    if (isTRUE(!is.null(metric.param))) { colnames(metric.param) <- c("Parameter", "Variable", "lhs", "op", "rhs", "Estimate", "SE", "z", "pvalue", "StdYX") }
+    if (isTRUE(!is.null(scalar.param))) { colnames(scalar.param) <- c("Parameter", "Variable", "lhs", "op", "rhs", "Estimate", "SE", "z", "pvalue", "StdYX") }
+
+    #...................
+    ### Modification indices ####
+
+    if (isTRUE(nrow(write.object$modind$config$within) == 0L)) { write.object$modind$config$within <- data.frame(matrix(NA, ncol = 6L, dimnames = list(NULL, names(write.object$modind$config$within)))) }
+    if (isTRUE(nrow(write.object$modind$config$between) == 0L)) { write.object$modind$config$between <- data.frame(matrix(NA, ncol = 6L, dimnames = list(NULL, names( write.object$modind$config$between)))) }
+    config.modind <- rbind(data.frame(Level = "Within", write.object$modind$config$within), data.frame(Level = "Between", write.object$modind$config$between))
+
+    metric.modind <- scalar.modind <-  NULL
+
+    if (isTRUE(!is.null(write.object$modind$metric))) { if (isTRUE(nrow(write.object$modind$metric$within) == 0L)) { write.object$modind$metric$within <- data.frame(matrix(NA, ncol = 6L, dimnames = list(NULL, names(write.object$modind$metric$within)))) }
+                                                        if (isTRUE(nrow(write.object$modind$metric$between) == 0L)) { write.object$modind$metric$between <- data.frame(matrix(NA, ncol = 6L, dimnames = list(NULL, names( write.object$modind$metric$between)))) }
+                                                        metric.modind <- rbind(data.frame(Level = "Within", write.object$modind$metric$within), data.frame(Level = "Between", write.object$modind$metric$between)) }
+
+    if (isTRUE(!is.null(write.object$modind$scalar))) { if (isTRUE(nrow(write.object$modind$scalar$within) == 0L)) { write.object$modind$scalar$within <- data.frame(matrix(NA, ncol = 6L, dimnames = list(NULL, names(write.object$modind$scalar$within)))) }
+                                                        if (isTRUE(nrow(write.object$modind$scalar$between) == 0L)) { write.object$modind$scalar$between <- data.frame(matrix(NA, ncol = 6L, dimnames = list(NULL, names( write.object$modind$scalar$between)))) }
+                                                        scalar.modind <- rbind(data.frame(Level = "Within", write.object$modind$scalar$within), data.frame(Level = "Between", write.object$modind$scalar$between)) }
+
+    #...................
+    ### Write object ####
+
+    write.object <- list(summary = summary, coverage = coverage, descript = itemstat,
+                         fit.stand = fit$stand, fit.scaled = fit$scaled, fit.robust = fit$robust,
+                         param.config = config.param, param.metric = metric.param, param.scalar = scalar.param,
+                         modind.config = config.modind, modind.metric = metric.modind, modind.scalar = scalar.modind)
+
+    # Remove NULL list elements
+    write.object <- write.object[-which(sapply(write.object, is.null))]
+
+    # Print
+    if (isTRUE(!"summary" %in% x$args$print)) { write.object$summary <- NULL }
+    if (isTRUE(!"coverage" %in% x$args$print)) { write.object$coverage <- NULL }
+    if (isTRUE(!"descript" %in% x$args$print)) { write.object$itemstat <- NULL; write.object$itemfreq <- NULL }
+    if (isTRUE(!"fit" %in% x$args$print)) { write.object[grep("fit", names(write.object))] <- NULL }
+    if (isTRUE(!"est" %in% x$args$print)) { write.object[grep("param", names(write.object))] <- NULL }
+    if (isTRUE(!"modind" %in% x$args$print)) { write.object[grep("modind", names(write.object))] <- NULL }
+
+  #_____________________________________________________________________________
+  #
   # Variance-Covariance Coverage, na.coverage() --------------------------------
 
   }, na.coverage = {
@@ -1266,6 +1528,50 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     # Frequency table for each variable
     write.object <- list(Summary = write.object, Table = x$result$table.miss)
+
+  #_____________________________________________________________________________
+  #
+  # Multilevel Composite Reliability, multilevel.omega() -----------------------
+
+  }, multilevel.omega = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Omega ####
+
+    write.omega <- write.object$omega
+
+    #### Round ####
+    write.omega[, -c(1L:2L)] <- sapply(write.omega[, -c(1L:2L)], round, digits = digits)
+
+    #### Column names ####
+    colnames(write.omega) <- c("Type", "Items", "Omega", "Low", "Upp")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Item Statistics ####
+
+    write.item <- write.object$item
+
+    #### Round ####
+
+    # Variables to round
+    write.round <- switch(x$args$const,
+                          within = c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC", "wstd.ld"),
+                          shared = c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC", "bstd.ld"),
+                          config = c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC", "wstd.ld", "bstd.ld"))
+
+    write.item[, write.round] <- sapply(write.item[, write.round], round, digits = digits)
+
+    #### Column names ####
+    colnames(write.item) <- switch(x$args$const,
+                                   within = c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)", "WStd.ld"),
+                                   shared = c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)", "BStd.ld"),
+                                   config = c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)", "WStd.ld", "BStd.ld"))
+
+    #### Write object ####
+    write.object <- list(Omega = write.omega, Itemstat = write.item)
+
+    if (isTRUE(!"omega" %in% x$args$print)) { write.object$Omega <- NULL }
+    if (isTRUE(!"item" %in% x$args$print)) { write.object$Itemstat <- NULL }
 
   #_____________________________________________________________________________
   #

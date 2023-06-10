@@ -7,8 +7,9 @@
 #' Note that this function is restricted to two-level models.
 #'
 #' @param x           a vector, matrix or data frame.
-#' @param cluster     a vector representing the nested grouping structure (i.e.,
-#'                    group or cluster variable).
+#' @param cluster     either a character string indicating the variable name of
+#'                    the cluster variable in 'x' or a vector representing the
+#'                    nested grouping structure (i.e., group or cluster variable).
 #' @param type        numeric value indicating the type of intraclass correlation
 #'                    coefficient, i.e., \code{type = 1} for ICC(1) and \code{type = 2}
 #'                    for ICC(2).
@@ -54,6 +55,16 @@
 #'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
 #'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
 #'
+#' #---------------------------
+#' # Cluster variable specification
+#'
+#' # Cluster variable 'cluster' in 'x'
+#' multilevel.icc(dat[, c("x1", "cluster")], cluster = "cluster")
+#'
+#' # Cluster variable 'cluster' not in 'x'
+#' multilevel.icc(dat$x1, cluster = dat$cluster)
+#'
+#' #---------------------------
 #' # ICC(1) for x1
 #' multilevel.icc(dat$x1, cluster = dat$cluster)
 #'
@@ -88,15 +99,28 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
-  # Check if only one variable specified in the input 'cluster'
-  if (ncol(data.frame(cluster)) != 1L) { stop("More than one variable specified for the argument 'cluster'.",call. = FALSE) }
-
-  # Convert 'cluster' into a vector
-  cluster <- unlist(cluster, use.names = FALSE)
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Cluster variable ####
+
+  # Cluster variable 'cluster' in 'x'
+  if (isTRUE(length(cluster) == 1L)) {
+
+    if (isTRUE(!cluster %in% colnames(x))) { stop("Cluster variable specifed in the argument 'cluster' was not found in 'x'.", call. = FALSE) }
+
+    # Index of cluster in 'x'
+    cluster.col <- which(colnames(x) == cluster)
+
+    # Replace variable name with cluster variable
+    cluster <- x[, cluster.col]
+
+    # Remove cluster variable
+    x <- x[, -cluster.col, drop = FALSE]
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -106,7 +130,7 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
     x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
-    x.miss <- vapply(as.data.frame(x), function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    x.miss <- vapply(as.data.frame(x), function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (isTRUE(any(x.miss))) {
 
       stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
@@ -161,7 +185,7 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
     }
 
     # Check input 'x': Zero variance?
-    x.check <- vapply(as.data.frame(x), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
+    x.check <- vapply(as.data.frame(x), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
 
     if (isTRUE(any(x.check))) {
 
@@ -309,7 +333,7 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
         var.total <- var.u + var.r
 
         # ICC(1)
-        if (isTRUE(type == 1)) {
+        if (isTRUE(type == 1L)) {
 
           # Intraclass correlation coefficient, ICC(1)
           object <- var.u / var.total
@@ -345,7 +369,7 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
         var.total <- var.u + var.r
 
         # ICC(1)
-        if (isTRUE(type == 1)) {
+        if (isTRUE(type == 1L)) {
 
           # Intraclass correlation coefficient, ICC(1)
           object <- var.u / var.total

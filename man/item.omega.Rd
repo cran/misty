@@ -110,7 +110,7 @@ item.omega(dat, resid.cov = c("item1", "item2"))
 
 # Compute unstandardized coefficient omega with residual covariances
 # and item statistics
-item.omega(dat, resid.cov = list(c("item1", "item2"), c("item1", "item3")))
+item.omega(dat, resid.cov = list(c("item1", "item2"), c("item3", "item4")))
 
 # Compute unstandardized hierarchical omega and item statistics
 item.omega(dat, type = "hierarch")
@@ -131,7 +131,7 @@ item.omega(dat, print = "item")
 item.omega(dat, exclude = "item3")
 
 # Summary of the CFA model used to compute coefficient omega
-lavaan::summary(item.omega(dat, output = FALSE)$model.fit,
+lavaan::summary(item.omega(dat, output = FALSE)$mod.fit,
                 fit.measures = TRUE, standardized = TRUE)
 
 # Write Results into a Excel file

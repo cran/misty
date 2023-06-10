@@ -109,7 +109,9 @@
 #'                         equal or higher than this minimum value. By default,
 #'                         modification indices equal or higher 10 is printed.
 #' @param digits           an integer value indicating the number of decimal places
-#'                         to be used for displaying results.
+#'                         to be used for displaying results. Note that loglikelihood,
+#'                         information criteria and chi-square test statistic is
+#'                         printed with \code{digits} minus 1 decimal places.
 #' @param p.digits         an integer value indicating the number of decimal places
 #'                         to be used for displaying the \emph{p}-value.
 #' @param as.na            a numeric vector indicating user-defined missing values,
@@ -262,19 +264,19 @@
 #' test, incremental fit indices (i.e., CFI and TLI), and absolute fit indices
 #' (i.e., RMSEA, and SRMR) to evaluate overall model fit. However, different
 #' versions of the CFI, TLI, and RMSEA are provided depending on the estimator.
-#' Unlike the R package \pkg{lavaan}, the different versions are labeled with
-#' \code{Standard}, \code{Ad hoc}, and \code{Robust} in the output:
+#' In line with the R package \pkg{lavaan}, the different versions are labeled with
+#' \code{Standard}, \code{Scaled}, and \code{Robust} in the output:
 #'   \itemize{
 #'      \item{\code{"Standard"}}: CFI, TLI, and RMSEA without any non-normality
-#'      corrections. These fit measures based on the normal theory maximum
+#'      correction. These fit measures based on the normal theory maximum
 #'      likelihood test statistic are sensitive to deviations from multivariate
 #'      normality of endogenous variables. Simulation studies by Brosseau-Liard
 #'      et al. (2012), and Brosseau-Liard and Savalei (2014) showed that the
 #'      uncorrected fit indices are affected by non-normality, especially at small
 #'      and medium sample sizes (e.g., n < 500).
-#'      \item{\code{"Ad hoc"}}: Population-corrected robust CFI, TLI, and RMSEA
+#'      \item{\code{"Scaled"}}: Population-corrected robust CFI, TLI, and RMSEA
 #'      with ad hoc non-normality corrections that simply replace the maximum
-#'      likelihood test statistic with a robust test statistic (e.g., mean-adjusted
+#'      likelihood test statistic with a robust test statistic (i.e., scaled
 #'      chi-square). These fit indices change the population value being estimated
 #'      depending on the degree of non-normality present in the data. Brosseau-Liard
 #'      et al. (2012) demonstrated that the ad hoc corrected RMSEA increasingly
@@ -290,7 +292,7 @@
 #'      normal.
 #'   }
 #'   In conclusion, the use of sample-corrected fit indices (\code{Robust})
-#'   instead of population-corrected fit indices (\code{Ad hoc}) is recommended.
+#'   instead of population-corrected fit indices (\code{Scaled}) is recommended.
 #'   Note that when sample size is very small (e.g., n < 200), non-normality
 #'   correction does not appear to adjust fit indices sufficiently to counteract
 #'   the effect of non-normality (Brosseau-Liard & Savalei, 2014).
@@ -329,15 +331,16 @@
 #' \code{data} \tab matrix or data frame specified in \code{x} \cr
 #' \code{args} \tab specification of function arguments \cr
 #' \code{model} \tab specified model \cr
-#' \code{model.fit} \tab fitted lavaan object (\code{mod.fit}) \cr
+#' \code{model.fit} \tab fitted lavaan object (\code{model.fit}) \cr
 #' \code{check} \tab results of the convergence and model identification check \cr
 #' \code{result} \tab list with result tables \cr
 #' }
 #'
 #' @note
 #' The function uses the functions \code{cfa}, \code{lavInspect}, \code{lavTech},
-#' \code{modindices}, \code{parameterEstimates}, and \code{standardizedsolution}
-#' provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
+#' \code{modindices}, \code{parameterEstimates}, \code{parTable}, and
+#' \code{standardizedsolution} provided in the R package \pkg{lavaan} by Yves
+#' Rosseel (2012).
 #'
 #' @export
 #'
@@ -410,12 +413,6 @@
 #' # Specification of the cluster variable in 'cluster'
 #' item.cfa(Demo.twolevel[, c("y4", "y5", "y6")], cluster = Demo.twolevel$cluster)
 #'
-#' # Specification using a variable in 'x'
-#' item.cfa(Demo.twolevel, model = c("y4", "y5", "y6"), cluster = "cluster")
-#'
-#' # Specification of the cluster variable in 'cluster'
-#' item.cfa(Demo.twolevel, model = c("y4", "y5", "y6"), cluster = Demo.twolevel$cluster)
-#'
 #' #---------------------------
 #' # Print argument
 #'
@@ -431,7 +428,7 @@
 #'
 #' mod <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
 #'
-#' lavaan::summary(mod$mod.fit, standardized = TRUE, fit.measures = TRUE)
+#' lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 #'
 #' #---------------------------
 #' # Write Results into a Excel file
@@ -471,11 +468,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
 
   # Check if variables in input 'model' are available in input 'x'
-  if (isTRUE(!is.null(model) && any(!unlist(model) %in% colnames(x)))) {
-
-    stop(paste0("Items specified in the argument 'model' were not found in 'x': ", paste(unique(unlist(model))[!unique(unlist(model)) %in% colnames(x)], collapse = ", ")), call. = FALSE)
-
-  }
+  if (isTRUE(!is.null(model) && any(!unlist(model) %in% colnames(x)))) { stop(paste0("Items specified in the argument 'model' were not found in 'x': ", paste(unique(unlist(model))[!unique(unlist(model)) %in% colnames(x)], collapse = ", ")), call. = FALSE) }
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
@@ -618,33 +611,19 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
     #......
     # Check input 'estimator'
-    if (isTRUE(!all(estimator %in% c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
-                                     "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
-                                     "ULS", "ULSM", "ULSMV", "DLS", "PML")))) {
-
-      stop("Character string in the argument 'estimator' does not match with \"ML\", \"MLM\", \"MLMV\", \"MLMVS\", \"MLF\", \"MLR\", \"GLS\", \"WLS\", \"DWLS\", \"WLSM\", \"WLSMV\", \"ULS\", \"ULSM\", \"ULSMV\", \"DLS\", or \"PML\".", call. = FALSE)
-
-    }
+    if (isTRUE(!all(estimator %in% c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML")))) { stop("Character string in the argument 'estimator' does not match with \"ML\", \"MLM\", \"MLMV\", \"MLMVS\", \"MLF\", \"MLR\", \"GLS\", \"WLS\", \"DWLS\", \"WLSM\", \"WLSMV\", \"ULS\", \"ULSM\", \"ULSMV\", \"DLS\", or \"PML\".", call. = FALSE) }
 
     # Check input 'missing'
-    if (isTRUE(!all(missing %in% c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust")))) {
-
-      stop("Character string in the argument 'missing' does not match with \"listwise\", \"pairwise\", \"fiml\", \"two.stage\", \"robust.two.stage\", or \"doubly.robust\".", call. = FALSE)
-
-    }
+    if (isTRUE(!all(missing %in% c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust")))) { stop("Character string in the argument 'missing' does not match with \"listwise\", \"pairwise\", \"fiml\", \"two.stage\", \"robust.two.stage\", or \"doubly.robust\".", call. = FALSE) }
 
     # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind")))) {
-
-      stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", or \"modind\".", call. = FALSE)
-
-    }
+    if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind")))) { stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", or \"modind\".", call. = FALSE) }
 
     # Check input 'min.value'
     if (isTRUE(min.value <= 0L)) { stop("Please specify a value greater than 0 for the argument 'min.value'.", call. = FALSE) }
 
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
@@ -737,33 +716,17 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   ## Model ####
 
   # Factor labels
-  if (isTRUE(!is.null(model) && is.list(model) && (is.null(names(model)) || any(names(model) == "")))) {
-
-    names(model) <- paste0("f", seq_along(model))
-
-  }
+  if (isTRUE(!is.null(model) && is.list(model) && (is.null(names(model)) || any(names(model) == "")))) { names(model) <- paste0("f", seq_along(model)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Residual covariance ####
 
-  if (isTRUE(!is.null(rescov) && !is.list(rescov))) {
-
-    rescov <- list(rescov)
-
-  }
+  if (isTRUE(!is.null(rescov) && !is.list(rescov))) { rescov <- list(rescov) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Hierarch ####
 
-  if (isTRUE(hierarch)) {
-
-    if (isTRUE(is.null(model) || !is.list(model) || length(model) < 3L)) {
-
-      stop("Please specify at least three first-order factors for the second-order factor model.", call. = FALSE)
-
-    }
-
-  }
+  if (isTRUE(hierarch)) { if (isTRUE(is.null(model) || !is.list(model) || length(model) < 3L)) { stop("Please specify at least three first-order factors for the second-order factor model.", call. = FALSE) } }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model identification ####
@@ -802,11 +765,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Parameterization ####
 
-  if (isTRUE(all(c("delta", "theta") %in% parameterization))) {
-
-    parameterization <- "delta"
-
-  }
+  if (isTRUE(all(c("delta", "theta") %in% parameterization))) { parameterization <- "delta" }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Estimator ####
@@ -932,8 +891,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
       if (isTRUE(missing %in% c("two.stage", "robust.two.stage") && !estimator %in% c("ML", "MLF", "MLR"))) {
 
         warning(paste0("Two-stage method is not available for estimator = \"", estimator, "\", argument 'missing' switched to ",
-                       ifelse(estimator %in% c("WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "PML"), "\"pairwise\"", "\"listwise\""), "."),
-                call. = FALSE)
+                       ifelse(estimator %in% c("WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "PML"), "\"pairwise\"", "\"listwise\""), "."), call. = FALSE)
 
         missing <- ifelse(estimator %in% c("WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "PML"), "pairwise", "listwise")
 
@@ -943,8 +901,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
       if (isTRUE(missing == "doubly.robust" && estimator != "PML")) {
 
         warning(paste0("Doubly-robust method is not available for estimator = \"", estimator, "\", argument 'missing' switched to ",
-                       ifelse(estimator %in% c("ML", "MLF", "MLR"), "fiml\"", ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "GLS", "WLS"), "\"listwise\"", "\"pairwise\"")), "."),
-                call. = FALSE)
+                       ifelse(estimator %in% c("ML", "MLF", "MLR"), "fiml\"", ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "GLS", "WLS"), "\"listwise\"", "\"pairwise\"")), "."), call. = FALSE)
 
         missing <- ifelse(estimator %in% c("ML", "MLF", "MLR"), "fiml", ifelse(estimator %in% c("MLM", "MLMV", "MLMVS", "GLS", "WLS"), "listwise", "pairwise"))
 
@@ -965,8 +922,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
     x.na.prop <- misty::na.prop(x[, var])
     if (any(x.na.prop == 1L)) {
 
-      warning(paste("Data set contains", sum(x.na.prop == 1L), "cases with missing on all variables which were not included in the analysis."),
-              call. = FALSE)
+      warning(paste("Data set contains", sum(x.na.prop == 1L), "cases with missing on all variables which were not included in the analysis."), call. = FALSE)
 
     }
 
@@ -1055,12 +1011,12 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model estimation ####
 
-  mod.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = x, ordered = ordered,
-                                          parameterization = parameterization,
-                                          cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
-                                          std.lv = std.lv, effect.coding = effect.coding,
-                                          meanstructure = meanstructure,
-                                          estimator = estimator, missing = missing))
+  model.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = x, ordered = ordered,
+                                            parameterization = parameterization,
+                                            cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
+                                            std.lv = std.lv, effect.coding = effect.coding,
+                                            meanstructure = meanstructure,
+                                            estimator = estimator, missing = missing))
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convergence and model identification checks ####
@@ -1072,37 +1028,25 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
     #...................
     ### Degrees of freedom ####
 
-    if (isTRUE(lavaan::lavInspect(mod.fit, what = "fit")["df"] < 0L)) {
-
-      stop("CFA model has negative degrees of freedom, model is not identified.", call. = FALSE)
-
-    }
+    if (isTRUE(lavaan::lavInspect(model.fit, what = "fit")["df"] < 0L)) { stop("CFA model has negative degrees of freedom, model is not identified.", call. = FALSE) }
 
     #...................
     ### Model convergence ####
 
-    if (isTRUE(!lavaan::lavInspect(mod.fit, what = "converged"))) {
-
-      stop("CFA model did not converge.", call. = FALSE)
-
-    }
+    if (isTRUE(!lavaan::lavInspect(model.fit, what = "converged"))) { stop("CFA model did not converge.", call. = FALSE) }
 
     #...................
     ### Standard error ####
 
-    if (isTRUE(any(is.na(unlist(lavaan::lavInspect(mod.fit, what = "se")))))) {
-
-      stop("Standard errors could not be computed.", call. = FALSE)
-
-    }
+    if (isTRUE(any(is.na(unlist(lavaan::lavInspect(model.fit, what = "se")))))) { stop("Standard errors could not be computed.", call. = FALSE) }
 
     #...................
     ### Variance-covariance matrix of the estimated parameters ####
 
-    eigvals <- eigen(lavaan::lavInspect(mod.fit, what = "vcov"), symmetric = TRUE, only.values = TRUE)$values
+    eigvals <- eigen(lavaan::lavInspect(model.fit, what = "vcov"), symmetric = TRUE, only.values = TRUE)$values
 
     # If effect coding method is used, correct for equality constraints
-    if (isTRUE(ident == "effect")) { eigvals <- rev(eigvals)[-seq_len(sum(lavaan::parameterTable(mod.fit)$op == "=="))] }
+    if (isTRUE(ident == "effect")) { eigvals <- rev(eigvals)[-seq_len(sum(lavaan::parameterTable(model.fit)$op == "=="))] }
 
     if (isTRUE(min(eigvals) < .Machine$double.eps^(3L/4L))) {
 
@@ -1115,13 +1059,13 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
     #...................
     ### Negative variance of observed variables ####
 
-    if (isTRUE(any(diag(lavaan::lavInspect(mod.fit, what = "theta")) < 0L))) {
+    if (isTRUE(any(diag(lavaan::lavInspect(model.fit, what = "theta")) < 0L))) {
 
       warning("Some estimated variances of the observed variables are negative.")
 
       check.theta <- FALSE
 
-    } else if (isTRUE(any(eigen(lavaan::lavTech(mod.fit, what = "theta")[[1L]], symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
+    } else if (isTRUE(any(eigen(lavaan::lavTech(model.fit, what = "theta")[[1L]], symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
 
       warning("The model-implied variance-covariance matrix of the residuals of the observed variables is not positive definite.", call. = FALSE)
 
@@ -1132,14 +1076,14 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
     #...................
     ### Negative variance of latent variables ####
 
-    if (isTRUE(any(diag(lavaan::lavTech(mod.fit, what = "cov.lv")[[1L]]) < 0L))) {
+    if (isTRUE(any(diag(lavaan::lavTech(model.fit, what = "cov.lv")[[1L]]) < 0L))) {
 
       warning("Some estimated variances of the latent variables are negative.", call. = FALSE)
 
       check.cov.lv <- FALSE
 
     # Model-implied variance-covariance matrix of the latent variables
-    } else if (isTRUE(any(eigen(lavaan::lavTech(mod.fit, what = "cov.lv")[[1L]], symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
+    } else if (isTRUE(any(eigen(lavaan::lavTech(model.fit, what = "cov.lv")[[1L]], symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
 
       warning("The model-implied variance-covariance matrix of the latent variables is not positive definite.", call. = FALSE)
 
@@ -1156,20 +1100,20 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model fit ####
 
-  lav.fit <- lavaan::lavInspect(mod.fit, what = "fit")
+  lav.fit <- lavaan::fitmeasures(model.fit)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Parameter estimates ####
 
-  model.param <- data.frame(lavaan::parameterEstimates(mod.fit),
-                            stdyx = lavaan::standardizedsolution(mod.fit)[, "est.std"])[, c("lhs", "op", "rhs", "est", "se", "z", "pvalue", "stdyx")]
+  model.param <- data.frame(lavaan::parameterEstimates(model.fit),
+                            stdyx = lavaan::standardizedsolution(model.fit)[, "est.std"])[, c("lhs", "op", "rhs", "est", "se", "z", "pvalue", "stdyx")]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Modification indices ####
 
   if (isTRUE(check.vcov && estimator != "PML")) {
 
-    model.modind <- lavaan::modindices(mod.fit, minimum.value = min.value)
+    model.modind <- lavaan::modindices(model.fit, minimum.value = min.value)
 
   } else {
 
@@ -1184,13 +1128,26 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## lavaan summary ####
 
-  lavaan.summary <- data.frame(c(paste("lavaan", lavaan::lavInspect(mod.fit, what = "version")), "", "Estimator", "Standard errors", "Test statistic", "Missing data", "", "",
-                                 "Number of observations", "Number of clusters", "", "Indicators", "Identification"),
-                               c("",  "",
+  lavaan.summary <- data.frame(# First column
+                               c(paste("lavaan", lavaan::lavInspect(model.fit, what = "version")), "", "Estimator", "Optimization method", "",
+                                "Test Statistic", "Standard Errors", "Missing data", "",
+                                "Number of Model Parameters", "Indicators", "Identification", "", "",
+                                "Number of Observations", "Number of Clusters"),
+                               # Second column
+                               standard = c("", "",
                                  # Estimator
                                  estimator,
+                                 # Optimization method
+                                 toupper(lavaan::lavTech(model.fit, what = "options")$optim.method), "",
+                                 # Test statistic
+                                 switch(lavaan::lavTech(model.fit, what = "options")$test,
+                                        "standard" = "Conventional",
+                                        "satorra.bentler" = "Satorra-Bentler",
+                                        "scaled.shifted" = "Scale-Shifted",
+                                        "mean.var.adjusted" = "Satterthwaite",
+                                        "yuan.bentler.mplus" = "Yuan-Bentler"),
                                  # Standard errors
-                                 switch(lavaan::lavTech(mod.fit, what = "options")$se,
+                                 switch(lavaan::lavTech(model.fit, what = "options")$se,
                                         "standard" = "Conventional",
                                         "robust.sem" = "Conventional Robust",
                                         "robust.huber.white" = "Huber-White",
@@ -1198,13 +1155,6 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                                         "robust.cluster.sem" = "Cluster-Robust Conven",
                                         "two.stage" = "Two-Stage",
                                         "robust.two.stage" = "Robust Two-Stage"),
-                                 # Test statistic
-                                 switch(lavaan::lavTech(mod.fit, what = "options")$test,
-                                        "standard" = "Conventional",
-                                        "satorra.bentler" = "Satorra-Bentler",
-                                        "scaled.shifted" = "Scale-Shifted",
-                                        "mean.var.adjusted" = "Satterthwaite",
-                                        "yuan.bentler.mplus" = "Asymtotic Yuan-Bentler"),
                                  # Missing data
                                  ifelse(isTRUE(complete), "None",
                                         switch(missing,
@@ -1213,66 +1163,95 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                                         "fiml" = "FIML",
                                         "two.stage" = "Two-Stage",
                                         "robust.two.stage" = "Robust Two-Stage",
-                                        "doubly.robust" = "Doubly-Robust")), "", "Used",
-                                 # Number of observations
-                                 lavaan::lavInspect(mod.fit, what = "nobs"),
-                                 # Number of clusters
-                                 ifelse(!is.null(cluster),
-                                        length(unique(x[lavaan::lavInspect(mod.fit, "case.idx"), ".cluster"])), 1), "",
+                                        "doubly.robust" = "Doubly-Robust")), "",
+                                 # Number of Model Parameters
+                                 max(lavaan::parTable(model.fit)$free),
                                  # Variables
                                  ifelse(is.null(ordered), "Continuous",
-                                                ifelse(isTRUE(ordered), "Ordered-Categorical",
-                                                       ifelse(all(var %in% ordered), "Ordered", "Continous and Ordered"))),
+                                        ifelse(isTRUE(ordered), "Ordered-Categorical",
+                                               ifelse(all(var %in% ordered), "Ordered", "Continous and Ordered"))),
                                  # Identification
                                  switch(ident,
                                         "marker" = "Marker Variable",
                                         "var" = "Factor Variance",
-                                        "effect" = "Effects Coding")),
-                               c(rep("", times = 7L),  "Total", lavaan::lavInspect(mod.fit, what = "norig"),rep("", times = 4L)),
+                                        "effect" = "Effects Coding"), "", "Used",
+                                 # Number of observations
+                                 lavaan::lavInspect(model.fit, what = "nobs"),
+                                 # Number of clusters
+                                 ifelse(!is.null(cluster),
+                                        length(unique(x[lavaan::lavInspect(model.fit, "case.idx"), ".cluster"])), 1L)),
+                               # Third column
+                               c(rep("", times = 13L), "Total", lavaan::lavInspect(model.fit, what = "norig"), ""),
                                fix.empty.names = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model fit ####
 
-  model.fit <- data.frame(c("Number of Free Parameters", "",
-                            "Chi-Square Test of Model Fit", "Test statistic", "Degrees of freedom", "P-value", "Scaling correction factor", "",
-                            "Incremental Fit Indices", "CFI", "TLI", "",
-                            "Absolute Fit Indices", "RMSEA", "90 Percent CI - lower", "90 Percent CI - upper", "P-value RMSEA <= 0.05", "", "SRMR", "",
-                            "Information Criteria", "Akaike (AIC)", "Bayesian (BIC)", "Sample-size adjusted BIC"),
-                          c(# Number of Free Parameters
-                            lavaan::lavInspect(mod.fit, what = "npar"), NA, NA,
-                            # Test statistic, df, and p-value
-                            lav.fit["chisq"], lav.fit["df"], lav.fit["pvalue"], NA, NA, NA,
-                            # CFI / TLI
-                            lav.fit["cfi"], lav.fit["tli"], NA, NA,
-                            # RMSEA
-                            lav.fit["rmsea"], lav.fit["rmsea.ci.lower"], lav.fit["rmsea.ci.upper"], lav.fit["rmsea.pvalue"], NA,
-                            # SRMR
-                            ifelse(isTRUE(lavaan::lavInspect(mod.fit, what = "meanstructure")), lav.fit["srmr_bentler"], lav.fit["srmr_bentler_nomean"]), NA, NA,
-                            # Information criteria
-                            lav.fit["aic"], lav.fit["bic"], lav.fit["bic2"]),
-                          c(lavaan::lavInspect(mod.fit, what = "npar"), NA, NA,
-                            # Test statistic, df, p-value, and scaling correction factor
-                            lav.fit["chisq.scaled"], lav.fit["df.scaled"], lav.fit["pvalue.scaled"], lav.fit["chisq.scaling.factor"], NA, NA,
-                            # CFI / TLI
-                            lav.fit["cfi.scaled"], lav.fit["tli.scaled"], NA, NA,
-                            # RMSEA
-                            ifelse(isTRUE(lav.fit["df"] == 0 && estimator == "PML"), NA, lav.fit["rmsea.scaled"]),
-                            lav.fit["rmsea.ci.lower.scaled"], lav.fit["rmsea.ci.upper.scaled"], lav.fit["rmsea.pvalue.scaled"], NA,
-                            # SRMR
-                            ifelse(isTRUE(lavaan::lavInspect(mod.fit, what = "meanstructure")), lav.fit["srmr_bentler"], lav.fit["srmr_bentler_nomean"]), NA, NA,
-                            # Information criteria
-                            lav.fit["aic"], lav.fit["bic"], lav.fit["bic2"]),
-                          c(rep(NA, times = 9L),
-                            # CFI / TLI
-                            ifelse(isTRUE(lav.fit["df"] == 0 && estimator %in% c("MLR", "WLSM", "ULSM")), lav.fit["cfi.scaled"], lav.fit["cfi.robust"]),
-                            ifelse(isTRUE(lav.fit["df"] == 0 && estimator %in% c("MLR", "WLSM", "ULSM")), lav.fit["tli.scaled"], lav.fit["tli.robust"]), NA, NA,
-                            # RMSEA
-                            lav.fit["rmsea.robust"], lav.fit["rmsea.ci.lower.robust"], lav.fit["rmsea.ci.upper.robust"],
-                            rep(NA, times = 8L)),
-                          fix.empty.names = FALSE)
+  model.fit.measures <- data.frame(# Fist column
+                                   c("Loglikelihood",
+                                     "H0 Value, Specified Model", "Scaling Correction Factor", "H1 Value, Unrestricted Model", "Scaling Correction Factor", "",
+                                     "Information Criteria", "Akaike (AIC)", "Bayesian (BIC)", "Sample-size adjusted BIC", "",
+                                     "Chi-Square Test of Model Fit", "Test statistic", "Degrees of freedom", "P-value", "Scaling Correction Factor", "",
+                                     "Incremental Fit Indices", "CFI", "TLI", "",
+                                     "Absolute Fit Indices", "RMSEA", "90 Percent CI - lower", "90 Percent CI - upper", "P-value RMSEA <= 0.05", "", "SRMR"),
+                                   # Second column
+                                   standard = c(# Loglikelihood
+                                                NA, lav.fit[c("logl", "scaling.factor.h0", "unrestricted.logl", "scaling.factor.h1")], NA, NA,
+                                                # Information criteria
+                                                lav.fit["aic"], lav.fit["bic"], lav.fit["bic2"], NA, NA,
+                                                # Test statistic, df, and p-value
+                                                lav.fit["chisq"], lav.fit["df"], lav.fit["pvalue"], NA, NA, NA,
+                                                # CFI / TLI
+                                                lav.fit["cfi"], lav.fit["tli"], NA, NA,
+                                                # RMSEA
+                                                lav.fit["rmsea"], lav.fit["rmsea.ci.lower"], lav.fit["rmsea.ci.upper"], lav.fit["rmsea.pvalue"], NA,
+                                                # SRMR
+                                                ifelse(isTRUE(lavaan::lavInspect(model.fit, what = "meanstructure")), lav.fit["srmr_bentler"], lav.fit["srmr_bentler_nomean"])),
+                                   # Third column
+                                   scaled = c(# Loglikelihood and Information criteria
+                                              rep(NA, times = 12L),
+                                              # Test statistic, df, p-value, and scaling correction factor
+                                              lav.fit["chisq.scaled"], lav.fit["df.scaled"], lav.fit["pvalue.scaled"], lav.fit["chisq.scaling.factor"], NA, NA,
+                                              # CFI / TLI
+                                              lav.fit["cfi.scaled"], lav.fit["tli.scaled"], NA, NA,
+                                              # RMSEA
+                                              ifelse(isTRUE(lav.fit["df"] == 0L && estimator == "PML"), NA, lav.fit["rmsea.scaled"]),
+                                              lav.fit["rmsea.ci.lower.scaled"], lav.fit["rmsea.ci.upper.scaled"], lav.fit["rmsea.pvalue.scaled"], NA,
+                                              # SRMR
+                                              NA),
+                                   # Fourth column
+                                   robust = c(rep(NA, times = 18L),
+                                              # CFI / TLI
+                                              ifelse(isTRUE(lav.fit["df"] == 0L && estimator %in% c("MLR", "WLSM", "ULSM")), NA, lav.fit["cfi.robust"]),
+                                              ifelse(isTRUE(lav.fit["df"] == 0L && estimator %in% c("MLR", "WLSM", "ULSM")), NA, lav.fit["tli.robust"]), NA, NA,
+                                              # RMSEA
+                                              lav.fit["rmsea.robust"], lav.fit["rmsea.ci.lower.robust"], lav.fit["rmsea.ci.upper.robust"],
+                                              rep(NA, times = 3L)),
+                                   fix.empty.names = FALSE)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  if (isTRUE(estimator %in% c("ML", "MLF", "GLS", "WLS", "DWLS", "ULS"))) {
+
+    model.fit.measures <- model.fit.measures[-c(1L, 3L, 5L, 16L), c(1L, 2L)]
+
+  } else if (isTRUE(estimator %in% c("MLMV", "MLMVS"))) {
+
+    model.fit.measures <- model.fit.measures[-c(1L, 3L, 5L), ]
+
+  } else if (isTRUE(estimator %in% c("MLM", "WLSM", "ULSM", "DLS", "WLSMV", "ULSMV"))) {
+
+    model.fit.measures <- model.fit.measures[-c(1L:11L), ]
+
+  } else if (isTRUE(estimator %in% "PML")) {
+
+    model.fit.measures <- model.fit.measures[-c(1L:11L), c(1L:3L)]
+
+  }
+
+  # # Zero degrees of freedom
+  if (isTRUE(lav.fit["df"] == 0)) { model.fit.measures <- model.fit.measures[-which(model.fit.measures[, 1L] %in% c("Scaling Correction Factor", "P-value", "P-value RMSEA <= 0.05")), ] }
+
+   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Parameter estimates ####
 
   # Latent variables
@@ -1383,11 +1362,11 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                              as.na = as.na, check = check,
                              output = output),
                  model = mod.factor,
-                 model.fit = mod.fit,
+                 model.fit = model.fit,
                  check = list(vcov = check.vcov, theta = check.theta, cov.lv = check.cov.lv),
                  result = list(summary = lavaan.summary, coverage = coverage,
                                descript = itemstat, itemfreq = itemfreq,
-                               fit = model.fit, param = model.param,
+                               fit = model.fit.measures, param = model.param,
                                modind = model.modind))
 
   class(object) <- "misty.object"

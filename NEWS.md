@@ -1,3 +1,21 @@
+### misty 0.4.11 (2023-06-10)
+
+##### New features
+* New function `multilevel.fit()` for computing simultaneous and level-specific model
+fit information for a fitted multilevel model containing no cross-level constraints from the R package lavaan.
+* New function `multilevel.cfa()` for conducting multilevel confirmatory factor analysis using the R package lavaan to investigate four types
+of constructs, i.e., within-cluster, shared, configural, and simultaneous shared and configural cluster constructs.
+* New function `multilevel.invar()` for evaluating configural, metric, and scalar cross-level measurement invariance using multilevel confirmatory factor
+analysis.
+* New function `multilevel.omega()` for computing point estimate and Monte Carlo confidence interval for the multilevel composite reliability defined by Lai (2021) for a within-cluster construct, shared cluster-level construct, and configural cluster construct.
+
+##### Minor features and improvements
+* Added convergence checks to the function `multilevel.cor()`, e.g., warning message is printed when absolute correlations are greater than 1.
+* Argument `cluster` in the function `multilevel.cor()`, `multilevel.descript()`, and `multilevel.icc()` can also be specified using the variable name of the cluster variable in `x`.
+
+##### User-visible changes
+* Revised the output of the `item.cfa()` function, e.g., loglikelihood and information criteria are shown above chi-square test of model fit and label `Ad Hoc` changed to `Scaled`. 
+
 ### misty 0.4.10 (2023-05-18)
 
 ##### Bug fix

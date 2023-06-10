@@ -219,7 +219,7 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
     if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
 
     # Check input 'seed'
-    if (isTRUE(mode(seed) != "numeric" && !is.null(seed))) { stop("Please specify a numeric value greater for the argument 'seed'.", call. = FALSE) }
+    if (isTRUE(mode(seed) != "numeric" && !is.null(seed))) { stop("Please specify a numeric value for the argument 'seed'.", call. = FALSE) }
 
     # Check input 'conf.level'
     if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }

@@ -1,0 +1,776 @@
+#' Multilevel Composite Reliability
+#'
+#' This function computes point estimate and Monte Carlo confidence interval for
+#' the multilevel composite reliability defined by Lai (2021) for a within-cluster
+#' construct, shared cluster-level construct, and configural cluster construct by
+#' calling the \code{cfa} function in the R package \pkg{lavaan}.
+#'
+#' @param x            a matrix or data frame. Multilevel confirmatory
+#'                     factor analysis based on a measurement model with one factor
+#'                     at the Within level and one factor at the Between level
+#'                     comprising all variables in the matrix or data frame is
+#'                     conducted. Note that the cluster variable specified in
+#'                     \code{cluster} is excluded from \code{x} when specifying
+#'                     the argument \code{cluster} using the variable name of the
+#'                     cluster variable.
+#' @param cluster      either a character string indicating the variable name of
+#'                     the cluster variable in 'x' or a vector representing the
+#'                     nested grouping structure (i.e., group or cluster variable).
+#' @param rescov       a character vector or a list of character vectors for specifying
+#'                     residual covariances at the Within level, e.g. \code{rescov = c("x1", "x2")}
+#'                     for specifying a residual covariance between indicators \code{x1}
+#'                     and \code{x2} at the Within level or \code{rescov = list(c("x1", "x2"), c("x3", "x4"))}
+#'                     for specifying residual covariances between indicators \code{x1}
+#'                     and \code{x2}, and indicators \code{x3} and \code{x4} at
+#'                     the Within level. Note that residual covariances at the
+#'                     Between level cannot be  specified using this function.
+#' @param const        a character string indicating the type of construct(s), i.e.,
+#'                     \code{"within"} for within-cluster constructs, \code{"shared"}
+#'                     for shared cluster-level constructs, and \code{"config"}
+#'                     (default) for configural cluster constructs.
+#' @param fix.resid    a charcter vector for specifying residual variances to be
+#'                     fixed at 0 at the Between level, e.g., \code{fix.resid = c("x1", "x3")}
+#'                     to fix residual variances of indicators \code{x1} and \code{x2}
+#'                     at the Between level at 0. Note that it is also possible
+#'                     to specify \code{fix.resid = "all"} which fixes all residual
+#'                     variances at the Between level at 0 in line with the strong
+#'                     factorial measurement invariance assumption across cluster.
+#' @param optim.method a chracter string indicating the optimizer, i.e., \code{"nlminb"}
+#'                     (default) for the unconstrained and bounds-constrained
+#'                     quasi-Newton method optimizer and \code{"em"} for the
+#'                     Expectation Maximization (EM) algorithm.
+#' @param missing      a character string indicating how to deal with missing data,
+#'                     i.e., \code{"listwise"} for listwise deletion or \code{"fiml"}
+#'                     (default) for full information maximum likelihood (FIML)
+#'                     method.
+#' @param nrep         an integer value indicating the number of Monte Carlo
+#'                     repetitions for computing confidence intervals.
+#' @param seed         a numeric value specifying the seed of the random number
+#'                     generator for computing the Monte Carlo confidence interval.
+#' @param conf.level   a numeric value between 0 and 1 indicating the confidence
+#'                     level of the interval.
+#' @param print        a character vector indicating which results to show, i.e.
+#'                     \code{"all"} (default), for all results \code{"omega"} for
+#'                     omega, and \code{"item"} for item statistics.
+#' @param digits       an integer value indicating the number of decimal places
+#'                     to be used for displaying results. Note that loglikelihood,
+#'                     information criteria and chi-square test statistic is
+#'                     printed with \code{digits} minus 1 decimal places.
+#' @param as.na        a numeric vector indicating user-defined missing values,
+#'                     i.e. these values are converted to \code{NA} before conducting
+#'                     the analysis. Note that \code{as.na()} function is only
+#'                     applied to \code{x} but not to \code{cluster}.
+#' @param write        a character string for writing the results into a Excel
+#'                     file naming a file with or without file extension '.xlsx',
+#'                     e.g., \code{"Results.xlsx"} or \code{"Results"}.
+#' @param check        logical: if \code{TRUE}, argument specification, convergence
+#'                     and model identification is checked.
+#' @param output       logical: if \code{TRUE}, output is shown.
+#'
+#' @author
+#' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
+#'
+#' @seealso
+#' \code{\link{item.omega}}, \code{\link{multilevel.cfa}}, \code{\link{multilevel.fit}},
+#' \code{\link{multilevel.invar}}, \code{\link{multilevel.cor}},
+#' \code{\link{multilevel.descript}}
+#'
+#' @references
+#' Lai, M. H. C. (2021). Composite reliability of multilevel data: It’s about
+#' observed scores and construct meanings. \emph{Psychological Methods, 26}(1),
+#' 90–102. https://doi.org/10.1037/met0000287
+#'
+#' Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.
+#' \emph{Journal of Statistical Software, 48}, 1-36. https://doi.org/10.18637/jss.v048.i02
+#'
+#' Venables, W. N., Ripley, B. D. (2002).\emph{Modern Applied Statistics with S} (4th ed.).
+#' Springer. https://www.stats.ox.ac.uk/pub/MASS4/.
+#'
+#' @return
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{matrix or data frame specified in \code{x}}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{model}}{specified model}
+#' \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
+#' \item{\code{check}}{results of the convergence and model identification check}
+#' \item{\code{result}}{list with result tables, i.e., \code{omega} for the coefficient
+#'                      omega including Monte Carlo confidence interval and
+#'                      \code{itemstat} for descriptive statistics}
+#'
+#' @note
+#' The function uses the functions \code{lavInspect}, \code{lavTech}, and \code{lavNames},
+#' provided in the R package \pkg{lavaan} by Yves Rosseel (2012). The internal function
+#' \code{.internal.mvrnorm} is a copy of the \code{mvrnorm} function in the package
+#' \pkg{MASS} by Venables and Ripley (2002).
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Load data set "Demo.twolevel" in the lavaan package
+#' data("Demo.twolevel", package = "lavaan")
+#'
+#' #---------------------------
+#' # Cluster variable specification
+#'
+#' # Cluster variable 'cluster' in 'x'
+#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4", "cluster")],
+#'                  cluster = "cluster")
+#'
+#' # Cluster variable 'cluster' not in 'x'
+#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#'                  cluster = Demo.twolevel$cluster)
+#'
+#' #---------------------------
+#' # Type of construct
+#'
+#' # Within-Cluster Construct
+#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#'                  cluster = Demo.twolevel$cluster, const = "within")
+#'
+#' # Shared Cluster-Level Construct
+#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#'                  cluster = Demo.twolevel$cluster, const = "shared")
+#'
+#' # Configural Construct
+#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#'                  cluster = Demo.twolevel$cluster, const = "config")
+#'
+#' #---------------------------
+#' # Residual covariance at the Within level and residual variance at the Between level
+#'
+#' # Residual covariance between "y4" and "y5" at the Within level
+#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#'                  cluster = Demo.twolevel$cluster, const = "config",
+#'                  rescov = c("y3", "y4"))
+#'
+#' # Residual variances of 'y1' at the Between level fixed at 0
+#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#'                  cluster = Demo.twolevel$cluster, const = "config",
+#'                  fix.resid = c("y1", "y2"), digits = 3)
+#'
+#' #---------------------------
+#' # Write results
+#'
+#' # Assign results into an object and write results into an Excel file
+#' mod <- multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#'                         cluster = Demo.twolevel$cluster, output = FALSE)
+#'
+#' # Write results into an Excel file
+#' write.result(mod, "Multilevel_Omega.xlsx")
+#'
+#' # Write results into an Excel file
+#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#'                  cluster = Demo.twolevel$cluster, write = "Multilevel_Omega.xlsx")
+#' }
+multilevel.omega <- function(x, cluster, rescov = NULL, const = c("within", "shared", "config"),
+                             fix.resid = NULL, optim.method = c("nlminb", "em"),
+                             missing = c("listwise", "fiml"), nrep = 100000, seed = NULL,
+                             conf.level = 0.95, print = c("all", "omega", "item"),
+                             digits = 2, as.na = NULL, write = NULL, check = TRUE,
+                             output = TRUE) {
+
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
+
+  # Check if input 'x' is missing or Null
+  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+
+  # Check if input 'x' is a matrix or a data frame
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or a data frame for the argument 'x'.", call. = FALSE) }
+
+  # Check if input 'cluster' is missing or null
+  if (isTRUE(missing(cluster) || is.null(cluster))) { stop("Please specify a character string or a vector for the argument 'cluster'.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+
+  if (isTRUE(check)) {
+
+    # Check input 'rescov'
+    if (isTRUE(!is.null(rescov))) {
+
+      # Two variables for each residual covariance
+      if (isTRUE(is.list(rescov) && any(sapply(rescov, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov', where each element has two variable names", call. = FALSE)
+
+      } else { if (isTRUE(length(rescov) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov'", call. = FALSE) } }
+
+      # Variable in 'x'
+      rescov.var <- !unique(unlist(rescov)) %in% colnames(x)
+      if (isTRUE(any(rescov.var))) { stop(paste0("Variables specified in the argument 'rescov' were not found in 'x': ", paste(unique(unlist(rescov))[rescov.var], collapse = ", ")), call. = FALSE) }
+
+    }
+
+    # Cluster specified with variable name
+    if (isTRUE(length(cluster) == 1L)) {
+
+      # Character cluster variable
+      if (isTRUE(!is.character(cluster))) { stop("Please specify a character string for the name of the cluster variable in 'x'", call. = FALSE) }
+
+      # Cluster variable in 'x'
+      if (isTRUE(!cluster %in% colnames(x))) { stop(paste0("Cluster variable \"", cluster, "\" specified in the argument 'cluster' was not found in 'x'"), call. = FALSE) }
+
+    # Cluster specified with vector
+    } else {
+
+      # Length of cluster variable
+      if (isTRUE(nrow(x) != length(cluster))) { stop("Cluster variable specified in the argument 'cluster' does not match with the number of rows in 'x'.", call. = FALSE) }
+
+    }
+
+    # Check input 'rescov'
+    if (isTRUE(!is.null(rescov))) {
+
+      # Two variables for each residual covariance
+      if (isTRUE(is.list(rescov) && any(sapply(rescov, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov', where each element has two variable names", call. = FALSE)
+
+      } else { if (isTRUE(length(rescov) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov'", call. = FALSE) } }
+
+      # Variable in 'x'
+      rescov.var <- !unique(unlist(rescov)) %in% colnames(x)
+      if (isTRUE(any(rescov.var))) { stop(paste0("Variables specified in the argument 'rescov' were not found in 'x': ", paste(unique(unlist(rescov))[rescov.var], collapse = ", ")), call. = FALSE) }
+
+    }
+
+    # Check input 'const'
+    if (isTRUE(!all(const %in% c("within", "shared", "config")))) { stop("Character string in the argument 'const' does not match with \"within\", \"shared\", or \"config\".", call. = FALSE) }
+
+    # Check input 'fix.resid'
+    fix.resid.var <- !unique(fix.resid) %in% colnames(x)
+    if (isTRUE(any(fix.resid.var) &&  all(fix.resid != "all"))) { stop(paste0("Variables specified in the argument 'fix.resid' were not found in 'x': ", paste(fix.resid[fix.resid.var], collapse = ", ")), call. = FALSE) }
+
+    # Check input 'optim.method'
+    if (isTRUE(!all(optim.method  %in% c("nlminb", "em")))) { stop("Character string in the argument 'optim.method' does not match with \"nlminb\" or \"em\".", call. = FALSE) }
+
+    # Check input 'missing'
+    if (isTRUE(!all(missing %in% c("listwise", "fiml")))) { stop("Character string in the argument 'missing' does not match with \"listwise\" or \"fiml\".", call. = FALSE) }
+
+    # Check input 'nrep'
+    if (isTRUE(mode(nrep) != "numeric" || nrep <= 1L)) { stop("Please specify a positive numeric value greater 1 for the argument 'nrep'.", call. = FALSE) }
+
+    # Check input 'seed'
+    if (isTRUE(mode(seed) != "numeric" && !is.null(seed))) { stop("Please specify a numeric value for the argument 'seed'.", call. = FALSE) }
+
+    # Check input 'conf.level'
+    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
+
+    # Check input 'print'
+    if (isTRUE(!all(print %in% c("all", "omega", "item")))) { stop("Character strings in the argument 'print' do not all match with \"omega\", or \"item\".", call. = FALSE) }
+
+    # Check input 'digits'
+    if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
+
+    # Check input 'output'
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Internal function ####
+
+  .internal.mvrnorm <- function (n = 1, mu, Sigma, tol = 1e-06, empirical = FALSE, EISPACK = FALSE) {
+
+    p <- length(mu)
+
+    if (!all(dim(Sigma) == c(p, p)))  { stop("incompatible arguments") }
+    if (EISPACK)  { stop("'EISPACK' is no longer supported by R", domain = NA) }
+
+    eS <- eigen(Sigma, symmetric = TRUE)
+    ev <- eS$values
+    if (!all(ev >= -tol * abs(ev[1L])))  { stop("'Sigma' is not positive definite") }
+
+    X <- matrix(rnorm(p * n), n)
+    if (empirical) {
+      X <- scale(X, TRUE, FALSE)
+      X <- X %*% svd(X, nu = 0)$v
+      X <- scale(X, FALSE, TRUE)
+    }
+
+    X <- drop(mu) + eS$vectors %*% diag(sqrt(pmax(ev, 0)), p) %*% t(X)
+    nm <- names(mu)
+
+    if (is.null(nm) && !is.null(dn <- dimnames(Sigma))) { nm <- dn[[1L]] }
+
+    dimnames(X) <- list(nm, NULL)
+    if (n == 1) { drop(X) } else { t(X) }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Manifest variables ####
+
+  # Cluster variable in the data
+  if (isTRUE(length(cluster) == 1L)) { var <- colnames(x)[!colnames(x) %in% cluster] } else { var <- colnames(x) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame with Cluster Variable ####
+
+  # Cluster variable in the data
+  if (isTRUE(length(cluster) == 1L)) {
+
+    x <- data.frame(x[, var], .cluster = x[, cluster], stringsAsFactors = FALSE)
+
+  # Cluster variable specified in the argument 'cluster'
+  } else {
+
+    x <- data.frame(x[, var], .cluster = cluster, stringsAsFactors = FALSE)
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
+  if (isTRUE(!is.null(as.na))) {
+
+    x[, var] <- misty::as.na(x[, var], na = as.na, check = check)
+
+    # Variable with missing values only
+    x.miss <- vapply(x[, var], function(y) all(is.na(y)), FUN.VALUE = logical(1L))
+    if (isTRUE(any(x.miss))) { stop(paste0("After converting user-missing values into NA, following ", ifelse(length(which(x.miss)) == 1L, "variable is ", "variables are "), "completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE) }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Type of construct(s) ####
+
+  if (isTRUE(all(c("within", "shared", "config") %in% const))) { const <- "config" }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Residual variances fixed at 0 ####
+
+  if (isTRUE(fix.resid == "all")) { fix.resid <- var }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Optimizer ####
+
+  if (isTRUE(all(c("nlminb", "em") %in% optim.method))) { optim.method <- "nlminb" }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing ####
+
+  # Complete data
+  if (isTRUE(all(!is.na(x[, var])))) {
+
+    missing <- "listwise"
+
+  # Data with missing values
+  } else {
+
+    if (isTRUE(all(c("listwise", "fiml") %in% missing))) {
+
+      missing <- "fiml"
+
+    }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print ####
+
+  if (isTRUE(all(c("all", "omega", "item") %in% print))) {
+
+    print  <- c("omega", "item")
+
+  }
+
+  if (isTRUE(length(print) == 1L && "all" %in% print)) {
+
+    print <- c("omega", "item")
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Model Estimation ####
+
+  model.fit <- tryCatch(suppressWarnings(misty::multilevel.cfa(x = x, cluster = ".cluster", model = NULL, rescov = rescov,
+                                         model.w = NULL, model.b = NULL, rescov.w = NULL, rescov.b = NULL,
+                                         const = const, fix.resid = fix.resid, ident = "var", ls.fit = FALSE,
+                                         estimator = "ML", optim.method = optim.method,
+                                         missing = missing, output = FALSE, check = FALSE)),
+                        error = function(y) {
+
+                          if (isTRUE(missing == "fiml")) {
+
+                            stop("There was an estimation problem in lavaan, switching to missing = \"listwise\" might solve the problem.", call. = FALSE)
+
+                          } else {
+
+                            stop("There was an estimation problem in lavaan, model could not be estimated.", call. = FALSE)
+
+                          }})
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convergence and model identification checks ####
+
+  if (isTRUE(check)) {
+
+    #...................
+    ### Model convergence ####
+
+    if (isTRUE(!lavaan::lavInspect(model.fit$model.fit, what = "converged"))) { stop("CFA model did not converge.", call. = FALSE) }
+
+    #...................
+    ### Degrees of freedom ####
+
+    if (isTRUE(suppressWarnings(lavaan::lavInspect(model.fit$model.fit, what = "fit")["df"] < 0L))) { stop("CFA model has negative degrees of freedom, model is not identified.", call. = FALSE) }
+
+    #...................
+    ### Variance-covariance matrix of the estimated parameters ####
+
+    eigvals <- eigen(lavaan::lavInspect(model.fit$model.fit, what = "vcov"), symmetric = TRUE, only.values = TRUE)$values
+
+    # Model contains equality constraints
+    model.fit.par <- lavaan::parameterTable(model.fit$model.fit)$op == "=="
+
+    if (isTRUE(any(model.fit.par))) { eigvals <- rev(eigvals)[-seq_len(sum(model.fit.par))] }
+
+    if (isTRUE(min(eigvals) < .Machine$double.eps^(3L/4L))) {
+
+      warning("The variance-covariance matrix of the estimated parameters is not positive definite. This may be a symptom that the model is not identified.", call. = FALSE)
+
+    }
+
+    #...................
+    ### Negative variance of observed variables ####
+
+    #### Within Level
+    if (isTRUE(any(diag(lavaan::lavInspect(model.fit$model.fit, what = "theta")$within) < 0L))) {
+
+      warning("Some estimated variances of the observed variables at the Within level are negative.", call. = FALSE)
+
+    } else if (isTRUE(any(eigen(lavaan::lavTech(model.fit$model.fit, what = "theta")$within, symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
+
+      warning("The model-implied variance-covariance matrix of the residuals of the observed variables is not positive definite.", call. = FALSE)
+
+    }
+
+    #### Between Level
+    if (isTRUE(any(diag(lavaan::lavInspect(model.fit$model.fit, what = "theta")$.cluster) < 0L))) {
+
+      warning("Some estimated variances of the observed variables at the Between level are negative.", call. = FALSE)
+
+    } else if (isTRUE(any(eigen(lavaan::lavTech(model.fit$model.fit, what = "theta")$.cluster, symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
+
+      warning("The model-implied variance-covariance matrix of the residuals of the observed variables at the Between level is not positive definite.", call. = FALSE)
+
+    }
+
+    #...................
+    ### Negative variance of latent variables ####
+
+    #### Within Level
+    if (isTRUE(!is.null(lavaan::lavTech(model.fit$model.fit, what = "cov.lv")$within))) {
+
+      if (isTRUE(any(diag(lavaan::lavTech(model.fit$model.fit, what = "cov.lv")$within) < 0L))) {
+
+        warning("Some estimated variances of the latent variables at the Within level are negative.", call. = FALSE)
+
+      }
+
+      # Model-implied variance-covariance matrix of the latent variables
+    } else if (any(dim(lavaan::lavTech(model.fit$model.fit, what = "cov.lv")$within) != 0L)) {
+
+      if (isTRUE(any(eigen(lavaan::lavTech(model.fit$model.fit, what = "cov.lv")$within, symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
+
+        warning("The model-implied variance-covariance matrix of the latent variables at the Within level is not positive definite.", call. = FALSE)
+
+      }
+
+    }
+
+    #### Between Level
+    if (isTRUE(!is.null(lavaan::lavTech(model.fit$model.fit, what = "cov.lv")$cluster))) {
+
+      if (isTRUE(any(diag(lavaan::lavTech(model.fit$model.fit, what = "cov.lv")$.cluster) < 0L))) {
+
+        warning("Some estimated variances of the latent variables at the Between level are negative.", call. = FALSE)
+
+        check.cov.lv.b <- FALSE
+
+      }
+
+      # Model-implied variance-covariance matrix of the latent variables
+    } else if (any(dim(lavaan::lavTech(model.fit$model.fit, what = "cov.lv")$.cluster) != 0L)) {
+
+      if (isTRUE(any(eigen(lavaan::lavTech(model.fit$model.fit, what = "cov.lv")$.cluster, symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
+
+        warning("The model-implied variance-covariance matrix of the latent variables at the Between level is not positive definite.", call. = FALSE)
+
+        check.cov.lv.b <- FALSE
+
+      }
+
+    }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Reliability ####
+
+  # Within model parameter
+  param.w <- model.fit$result$param$within
+  # Between model parameter
+  param.b <- model.fit$result$param$between
+
+  # Within factor loading
+  load.w <- na.omit(param.w[param.w$param == "latent variable", "est"])
+  # Within residual variances
+  resid.w <- param.w[param.w$param == "residual variance", "est"]
+  # Fix negative residual variances at 0
+  resid.w <- ifelse(resid.w < 0L, 0L, resid.w)
+  # Within residual covariances
+  rescov.w <- na.omit(param.w[param.w$param == "residual covariance", "est"])
+
+  # Between factor loading
+  load.b <- na.omit(param.b[param.b$param == "latent variable", "est"])
+  # Between residual variances
+  resid.b <- param.b[param.b$param == "residual variance", "est"]
+  # Fix negative residual variances at 0
+  resid.b <- ifelse(resid.b < 0L, 0L, resid.b)
+  # Between factor variance
+  var.b <- param.b[param.b$param == "latent variance", "est"]
+
+  # Harmonic mean
+  hmean <- length(unique(model.fit$data$.cluster)) / sum(1L / table(model.fit$data$.cluster))
+
+  switch(const,
+         #...................
+         ### Within-Cluster Construct ####
+         within = {
+
+           # Omega Within
+           omega.w <- sum(load.w)^2L / (sum(load.w)^2L + sum(resid.w) + 2L*sum(rescov.w))
+
+         #...................
+         ### Shared Cluster-Level Construct ####
+         }, shared = {
+
+           # Omega Between
+           omega.b <- sum(load.b)^2L  / (sum(load.b)^2L + sum(resid.b) + ((sum(resid.w) + 2L*sum(rescov.w)) / hmean))
+
+         #...................
+         ### Configural Construct ####
+         }, config = {
+
+           # Omega Within
+           omega.w <- sum(load.w)^2L / (sum(load.w)^2 + sum(resid.w) + 2L*sum(rescov.w))
+
+           # Omega Between
+           omega.b <- (sum(load.b)^2L * var.b) / (sum(load.b)^2 * (1L / hmean + var.b) + sum(resid.b) + ((sum(resid.w) + 2L*sum(rescov.w)) / hmean))
+
+           # Overall Omega
+           omega.2l <- (sum(load.b)^2L * (1L + var.b)) / (sum(load.b)^2 * (1L + var.b) + sum(resid.b) + sum(resid.w) + 2L*sum(rescov.w))
+
+         })
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Confidence Interval for the Reliability ####
+
+  omega.2l.sim <- omega.b.sim <- omega.w.sim <- NULL
+
+  #...................
+  ### Parameter names ####
+
+  # Within factor loading
+  load.w.par <- paste0("L", seq_len(length(load.w)))
+  # Within residual variances
+  resid.w.par <- apply(param.w[param.w$param == "residual variance", c("lhs", "op", "rhs")], 1L, paste, collapse = "")
+  # Within residual covariances
+  rescov.w.par <- apply(param.w[param.w$param == "residual covariance" & !is.na(param.w$est), c("lhs", "op", "rhs")], 1L, paste, collapse = "")
+
+  # Between factor loading
+  load.b.par <- paste0("L", seq_len(length(load.b)))
+  # Between residual variances
+  resid.b.par <- paste0(apply(param.b[param.b$param == "residual variance", c("lhs", "op", "rhs")], 1L, paste, collapse = ""), ".l2")
+  # Between factor variance
+  var.b.par <- paste0(apply(param.b[param.b$param == "latent variance", c("lhs", "op", "rhs")], 1L, paste, collapse = ""), ".l2")
+
+  switch(const, within = {
+
+            parname <- c(load.w.par, resid.w.par, rescov.w.par)
+
+         }, shared = {
+
+            parname <- c(load.b.par, resid.b.par, resid.w.par, rescov.w.par)
+
+         }, config = {
+
+            parname <- c(load.w.par, load.b.par, var.b.par, resid.w.par, resid.b.par, rescov.w.par)
+
+         })
+
+  # Parameter estimates
+  fit.est <- na.omit(lavaan::coef(model.fit$model.fit)[parname])
+  # Variance-covariance matrix
+  fit.vcov <- lavaan::lavInspect(model.fit$model.fit, what = "vcov")[names(fit.est), names(fit.est)]
+
+  # Set seed
+  if (isTRUE(!is.null(seed))) { set.seed(seed) }
+
+  # Simulate from a multivariate normal distribution
+  simdata <- .internal.mvrnorm(nrep, mu = fit.est, Sigma = fit.vcov)
+
+  # Adapt parameter names
+  resid.w.par <- gsub("~~", "..", resid.w.par)
+  resid.b.par <- gsub("~~", "..", resid.b.par)
+  rescov.w.par <- gsub("~~", "..", rescov.w.par)
+  var.b.par <- gsub("~~", "..", var.b.par)
+
+  # Remove fixed Between residuals
+  if (isTRUE(!is.null(fix.resid))) {
+
+    resid.b.par <- resid.b.par[which(!resid.b.par %in% sapply(fix.resid, function(y) paste0(y, "..", y, ".l2")))]
+
+    # All Between residuals fixed at 0
+    if (isTRUE(length(resid.b.par) == 0L)) {
+
+      resid.b.par <- ".resid.b"
+      simdata <- data.frame(simdata, .resid.b = 0L)
+
+    }
+
+  }
+
+  switch(const,
+         #...................
+         ### Within-Cluster Construct ####
+         within = {
+
+           # No residual covariances at the Within level
+           if (isTRUE(length(rescov.w.par) == 0L)) {
+
+             # Omega Within
+             eval(parse(text = paste0("omega.w.sim <- with(data.frame(simdata), ", paste0("(", paste0(load.w.par, collapse = " + "), ")^2"), " / (", paste0("(", paste0(load.w.par, collapse = " + "), ")^2"), " + ", paste0(resid.w.par, collapse = " + "), "))")))
+
+           } else {
+
+             # Omega Within
+             eval(parse(text = paste0("omega.w.sim <- with(data.frame(simdata), ", paste0("(", paste0(load.w.par, collapse = " + "), ")^2"), " / (", paste0("(", paste0(load.w.par, collapse = " + "), ")^2"), " + ", paste0(resid.w.par, collapse = " + "), " + 2*(", paste0(rescov.w.par, collapse = " + "), ")))")))
+
+           }
+
+           # Result table
+           omega <- data.frame(type = "omega.w", items = length(lavaan::lavNames(model.fit$model.fit)), omega = omega.w,
+                               low = quantile(omega.w.sim, probs = (1L - conf.level) / 2L),
+                               upp = quantile(omega.w.sim, probs = 1L - (1L - conf.level) / 2L), row.names = NULL)
+
+         #...................
+         ### Shared Cluster-Level Construct ####
+         }, shared = {
+
+           # Omega Between
+           eval(parse(text = paste0("omega.b.sim <- with(data.frame(simdata), ", paste0("(", paste0(load.b.par, collapse = " + "), ")^2"), " / (", paste0("(", paste0(load.b.par, collapse = " + "), ")^2"), " + ", paste0(resid.b.par, collapse = " + "), " + (", paste0(resid.w.par, collapse = " + "), " + 2*(", paste0(rescov.w.par, collapse = " + "), ")) / hmean)", ")")))
+
+           # Result table
+           omega <- data.frame(type = "omega.b", items = length(lavaan::lavNames(model.fit$model.fit)), omega = omega.b,
+                               low = quantile(omega.b.sim, probs = (1L - conf.level) / 2L),
+                               upp = quantile(omega.b.sim, probs = 1L - (1L - conf.level) / 2L), row.names = NULL)
+
+         #...................
+         ### Configural Construct ####
+         }, config = {
+
+           # No residual covariances at the Within level
+           if (isTRUE(length(rescov.w.par) == 0L)) {
+
+             # Omega Within
+             eval(parse(text = paste0("omega.w.sim <- with(data.frame(simdata), ", paste0("(", paste0(load.w.par, collapse = " + "), ")^2"), " / (", paste0("(", paste0(load.w.par, collapse = " + "), ")^2"), " + ", paste0(resid.w.par, collapse = " + "), "))")))
+
+             # Omega Between
+             eval(parse(text = paste0("omega.b.sim <- with(data.frame(simdata), ", paste0("((", paste0(load.b.par, collapse = " + "), ")^2 * ", var.b.par, ") / (", paste0("(", paste0(load.b.par, collapse = " + "), ")^2"), " * (1 / ", hmean, " + ", var.b.par, ") + ", paste0(resid.b.par, collapse = " + "), " + ((", paste0(resid.w.par, collapse = " + "), ") / hmean)", "))"))))
+
+             # Overall Omega
+             eval(parse(text = paste0("omega.2l.sim <- with(data.frame(simdata), ", paste0("((", paste0(load.b.par, collapse = " + "), ")^2L * (1L + var.b)) / ((", paste0(load.b.par, collapse = " + "), ")^2 * (1L + var.b) + ", paste0(resid.b.par, collapse = " + "), " + ",  paste0(resid.w.par, collapse = " + "), "))"))))
+
+           } else {
+
+             # Omega Within
+             eval(parse(text = paste0("omega.w.sim <- with(data.frame(simdata), ", paste0("(", paste0(load.w.par, collapse = " + "), ")^2"), " / (", paste0("(", paste0(load.w.par, collapse = " + "), ")^2"), " + ", paste0(resid.w.par, collapse = " + "), " + 2*( ", paste0(rescov.w.par, collapse = " + "), ")))")))
+
+             # Omega Between
+             eval(parse(text = paste0("omega.b.sim <- with(data.frame(simdata), ", paste0("((", paste0(load.b.par, collapse = " + "), ")^2 * ", var.b.par, ") / (", paste0("(", paste0(load.b.par, collapse = " + "), ")^2"), " * (1 / ", hmean, " + ", var.b.par, ") + ", paste0(resid.b.par, collapse = " + "), " + (", paste0(resid.w.par, collapse = " + "), " + 2*(", paste0(rescov.w.par, collapse = " + "), ")) / hmean)", ")"))))
+
+             # Overall Omega
+             eval(parse(text = paste0("omega.2l.sim <- with(data.frame(simdata), ", paste0("((", paste0(load.b.par, collapse = " + "), ")^2L * (1L + var.b)) / ((", paste0(load.b.par, collapse = " + "), ")^2 * (1L + var.b) + ", paste0(resid.b.par, collapse = " + "), " + ",  paste0(resid.w.par, collapse = " + "), " + 2L*(", paste0(rescov.w.par, collapse = " + "), ")))"))))
+
+           }
+
+           # Result table
+           omega <- data.frame(type = c("omega.w", "omega.b", "omega.2l"),
+                               items = length(lavaan::lavNames(model.fit$model.fit)),
+                               omega = c(omega.w, omega.b, omega.2l),
+                               low = c(quantile(omega.w.sim, probs = (1L - conf.level) / 2L),
+                                       quantile(omega.b.sim, probs = (1L - conf.level) / 2L),
+                                       quantile(omega.2l.sim, probs = (1L - conf.level) / 2L)),
+                               upp = c(quantile(omega.w.sim, probs = 1L - (1L - conf.level) / 2L),
+                                       quantile(omega.b.sim, probs = 1L - (1L - conf.level) / 2L),
+                                       quantile(omega.2l.sim, probs = 1L - (1L - conf.level) / 2L)), row.names = NULL)
+
+         })
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Sample Statistics ####
+
+  # Descriptive statistics and Intraclass Correlation Coefficient, ICC(1)
+  switch(const,
+         within = {
+
+           itemstat <- data.frame(model.fit$result$descript, wstd.ld = na.omit(param.w[param.w$param == "latent variable", "stdyx"]), fix.empty.names = FALSE)
+
+         }, shared = {
+
+           itemstat <- data.frame(model.fit$result$descript, bstd.ld = na.omit(param.b[param.b$param == "latent variable", "stdyx"]), fix.empty.names = FALSE)
+
+         }, config = {
+
+           itemstat <- data.frame(model.fit$result$descript, wstd.ld = na.omit(param.w[param.w$param == "latent variable", "stdyx"]), bstd.ld = na.omit(param.b[param.b$param == "latent variable", "stdyx"]), fix.empty.names = FALSE)
+
+         })
+
+  #_____________________________________________________________________________
+  #
+  # Return object --------------------------------------------------------------
+
+  object <- list(call = match.call(),
+                 type = "multilevel.omega",
+                 data = x,
+                 args = list(rescov = rescov, const = const, fix.resid = fix.resid,
+                             optim.method = optim.method, missing = missing,
+                             nrep = nrep, seed = seed, conf.level = conf.level,
+                             print = print, digits = digits, as.na = as.na,
+                             check = check, output = output),
+                 model = model.fit$model,
+                 model.fit = model.fit$model.fit,
+                 result = list(omega = omega, itemstat = itemstat))
+
+  class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
+
+  if (isTRUE(output)) { print(object, check = FALSE) }
+
+  return(invisible(object))
+
+}
