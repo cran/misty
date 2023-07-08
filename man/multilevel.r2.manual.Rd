@@ -117,8 +117,9 @@ the total outcome variance to one of five specific sources. See the help page
 of the \code{\link{multilevel.r2}} function for more details.
 }
 \note{
-This function is calls the \code{r2mlm_manual()} function in the \pkg{r2mlm}
-package by Mairead Shaw, Jason Rights, Sonya Sterba, and Jessica Flake.
+This function is based on a copy of the function \code{r2mlm_manual()} in the
+\pkg{r2mlm} package by Mairead Shaw, Jason Rights, Sonya Sterba, and Jessica
+Flake.
 }
 \examples{
 \dontrun{

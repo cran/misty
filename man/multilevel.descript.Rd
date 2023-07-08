@@ -4,7 +4,8 @@
 \alias{multilevel.descript}
 \title{Multilevel Descriptive Statistics}
 \usage{
-multilevel.descript(x, cluster, method = c("aov", "lme4", "nlme"), REML = TRUE,
+multilevel.descript(x, cluster, print = c("all", "var", "sd"),
+                    method = c("aov", "lme4", "nlme"), REML = TRUE,
                     digits = 2, icc.digits = 3, as.na = NULL, write = NULL,
                     check = TRUE, output = TRUE)
 }
@@ -13,6 +14,11 @@ multilevel.descript(x, cluster, method = c("aov", "lme4", "nlme"), REML = TRUE,
 
 \item{cluster}{a vector representing the nested grouping structure (i.e.,
 group or cluster variable).}
+
+\item{print}{a character string or character vector indicating which results to
+show on the console, i.e. \code{"all"} for variances and standard deviations,
+\code{"var"} (default) for variances, or \code{"sd"} for standard deviations
+within and between clusters.}
 
 \item{method}{a character string indicating the method used to estimate
 intraclass correlation coefficients, i.e., \code{"aov"} ICC
@@ -77,35 +83,44 @@ design effect, and effective sample size.
 Note that this function is restricted to two-level models.
 }
 \examples{
-dat <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
-                  cluster = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
-                  x1 = c(2, 3, 2, 2, 1, 2, 3, 4, 2),
-                  x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
-                  x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
-
-# Multilevel descriptive statistics for x1
-multilevel.descript(dat$x1, cluster = dat$cluster)
-
-# Multilevel descriptive statistics for x1, print ICC with 5 digits
-multilevel.descript(dat$x1, cluster = dat$cluster, icc.digits = 5)
-
-# Multilevel descriptive statistics for x1, convert value 1 to NA
-multilevel.descript(dat$x1, cluster = dat$cluster, as.na = 1)
-
-# Multilevel descriptive statistics for x1,
-# use lme() function in the nlme package to estimate ICC
-multilevel.descript(dat$x1, cluster = dat$cluster, method = "nlme")
-
-# Multilevel descriptive statistics for x1, x2, and x3
-multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster)
-
 \dontrun{
-# Write Results into a Excel file
-multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster,
-                    write = "Multilevel_Descript.xlsx")
+# Load data set "Demo.twolevel" in the lavaan package
+data("Demo.twolevel", package = "lavaan")
 
-result <- multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster,
-                              output = FALSE)
+#---------------------------
+# Cluster variable specification
+
+# Cluster variable 'cluster' in 'x'
+multilevel.descript(Demo.twolevel[, c("y1", "cluster")], cluster = "cluster")
+
+# Cluster variable 'cluster' not in 'x'
+multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
+
+#---------------------------
+
+# Multilevel descriptive statistics for y1
+multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
+
+# Multilevel descriptive statistics for y1, print variance and standard deviation
+multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, print = "all")
+
+# Multilevel descriptive statistics for y1, print ICC with 5 digits
+multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, icc.digits = 5)
+
+# Multilevel descriptive statistics for y1
+# use lme() function in the nlme package to estimate ICC
+multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, method = "nlme")
+
+# Multilevel descriptive statistics for y1, y2, y3, w1, and w2
+multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
+                    cluster = Demo.twolevel$cluster)
+
+# Write Results into a Excel file
+multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
+                    cluster = Demo.twolevel$cluster, write = "Multilevel_Descript.xlsx")
+
+result <- multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
+                              cluster = Demo.twolevel$cluster, output = FALSE)
 write.result(result, "Multilevel_Descript.xlsx")
 }
 }
@@ -117,7 +132,7 @@ Snijders, T. A. B., & Bosker, R. J. (2012). \emph{Multilevel analysis: An
 introduction to basic and advanced multilevel modeling} (2nd ed.). Sage Publishers.
 }
 \seealso{
-\code{\link{write.result}}, \code{\link{multilevel.icc}}
+\code{\link{write.result}}, \code{\link{multilevel.icc}}, \code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

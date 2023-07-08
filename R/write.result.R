@@ -1282,27 +1282,36 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   }, multilevel.descript = {
 
     # Round
-    x$result$m.cluster.size <- round(x$result$m.cluster.size, digits = digits)
-    x$result$sd.cluster.size <- round(x$result$sd.cluster.size, digits = digits)
-    x$result$mean.x <- round(x$result$mean.x, digits = digits)
-    x$result$var.w <- round(x$result$var.w, digits = digits)
-    x$result$var.b <- round(x$result$var.b, digits = digits)
-    x$result$icc1 <- round(x$result$icc1, digits = icc.digits)
-    x$result$icc2 <- round(x$result$icc2, digits = icc.digits)
-    x$result$deff <- round(x$result$deff, digits = digits)
-    x$result$deff.sqrt <- round(x$result$deff.sqrt, digits = digits)
-    x$result$n.effect <- round(x$result$n.effect, digits = digits)
+    write.object$m.cluster.size <- round(write.object$m.cluster.size, digits = digits)
+    write.object$sd.cluster.size <- round(write.object$sd.cluster.size, digits = digits)
+    write.object$mean <- round(write.object$mean, digits = digits)
+    write.object$var.w <- round(write.object$var.w, digits = digits)
+    write.object$var.b <- round(write.object$var.b, digits = digits)
+    write.object$sd.w <- round(write.object$sd.w, digits = digits)
+    write.object$sd.b <- round(write.object$sd.b, digits = digits)
+    write.object$icc1 <- round(write.object$icc1, digits = icc.digits)
+    write.object$icc2 <- round(write.object$icc2, digits = icc.digits)
+    write.object$deff <- round(write.object$deff, digits = digits)
+    write.object$deff.sqrt <- round(write.object$deff.sqrt, digits = digits)
+    write.object$n.effect <- round(write.object$n.effect, digits = digits)
 
-    write.object <- data.frame(cbind(c("No. of cases", "No. of missing values", "",
-                                       "No. of clusters", "Average cluster size", "SD cluster size", "Min cluster size", "Max cluster size", "",
-                                       "Mean", "Variance Within", "Variance Between", "ICC(1)", "ICC(2)", "",
-                                       "Design effect", "Design effect sqrt", "Effective sample size"),
-                                     rbind(x$result$no.obs, x$result$no.miss, "",
-                                           x$result$no.cluster, x$result$m.cluster.size, x$result$sd.cluster.size,
-                                           x$result$min.cluster.size, x$result$max.cluster.size, "",
-                                           x$result$mean.x, x$result$var.w, x$result$var.b, x$result$icc1, x$result$icc2, "",
-                                           x$result$deff, x$result$deff.sqrt, x$result$n.effect)),
-                               stringsAsFactors = FALSE)
+    write.object <- data.frame(cbind(c("No. of cases", "No. of missing values",
+                                       "", "No. of clusters", "Average cluster size", "SD cluster size", "Min cluster size", "Max cluster size",
+                                       "", "Mean", "Variance Within", "Variance Between", "SD Within", "SD Between", "ICC(1)", "ICC(2)",
+                                       "", "Design effect", "Design effect sqrt", "Effective sample size"),
+                                     rbind(write.object$no.obs, write.object$no.miss,
+                                           "", write.object$no.cluster, write.object$m.cluster.size, write.object$sd.cluster.size, write.object$min.cluster.size, write.object$max.cluster.size,
+                                           "", write.object$mean, write.object$var.w, write.object$var.b, write.object$sd.w, write.object$sd.b, write.object$icc1, write.object$icc2,
+                                           "", write.object$deff, write.object$deff.sqrt, write.object$n.effect)), stringsAsFactors = FALSE)
+
+    #............
+    ### select rows
+
+    if (isTRUE(!"var" %in% x$args$print)) { write.object <- write.object[-c(11L:12L), ] }
+    if (isTRUE(!"sd" %in% x$args$print)) { write.object <- write.object[-c(13L:14L), ] }
+
+    # All Between variables
+    if (isTRUE(all(is.na(x$result$var.w)))) { write.object <- write.object[-which(misty::chr.trim(write.object[, 1L]) %in% c("Variance Within", "SD Within", "ICC(1)", "ICC(2)", "Design effect", "Design effect sqrt", "Effective sample size")), ] }
 
     #...................
     ### One variable ####
@@ -1315,7 +1324,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ### More than one variable ####
     } else {
 
-      write.object[, -1L] <- vapply(write.object[, -1L], as.numeric, FUN.VALUE = numeric(18L))
+      write.object[, -1L] <- vapply(write.object[, -1L], as.numeric, FUN.VALUE = numeric(nrow(write.object)))
 
       names(write.object) <- c("", names(x$result$no.obs))
 

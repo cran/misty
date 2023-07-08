@@ -1,3 +1,12 @@
+### misty 0.4.12 (2023-07-08)
+
+##### User-visible changes
+* Removed the R package `r2mlm` from the `Imports` field in the `DESCRIPTION` due to dependencies issues.
+
+##### Minor features and improvements
+* Function `multilevel.descript()` can also deal with between-cluster variables by reporting means and standard deviations at the cluster level.
+* Added the argument `print` to the function `multilevel.descript()` to request standard deviation of the variance components. 
+
 ### misty 0.4.11 (2023-06-10)
 
 ##### New features

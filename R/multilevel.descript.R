@@ -1,8 +1,8 @@
 #' Multilevel Descriptive Statistics
 #'
 #' This function computes descriptive statistics for multilevel data, e.g. average
-#' cluster size, variance components, intraclass correlation coefficient,
-#' design effect, and effective sample size.
+#' cluster size, variance components, intraclass correlation coefficient, design
+#' effect, and effective sample size.
 #'
 #' Note that this function is restricted to two-level models.
 #'
@@ -10,6 +10,11 @@
 #' @param cluster     either a character string indicating the variable name of
 #'                    the cluster variable in 'x' or a vector representing the
 #'                    nested grouping structure (i.e., group or cluster variable).
+#' @param print       a character string or character vector indicating which
+#'                    results to show on the console, i.e. \code{"all"} for
+#'                    variances and standard deviations, \code{"var"} (default)
+#'                    for variances, or \code{"sd"} for standard deviations within
+#'                    and between clusters.
 #' @param method      a character string indicating the method used to estimate
 #'                    intraclass correlation coefficients, i.e., \code{"aov"} ICC
 #'                    estimated using the \code{aov} function, \code{"lme4"} (default)
@@ -38,7 +43,7 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{write.result}}, \code{\link{multilevel.icc}}
+#' \code{\link{write.result}}, \code{\link{multilevel.icc}}, \code{\link{descript}}
 #'
 #' @references
 #' Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis:
@@ -59,7 +64,7 @@
 #' \code{result} \tab list with result tables \cr
 #' }
 #'
-#' #' Returns an object of class \code{misty.object}, which is a list with following
+#' Returns an object of class \code{misty.object}, which is a list with following
 #' entries: function call (\code{call}), type of analysis \code{type}, matrix or
 #' data frame specified in \code{x} (\code{data}), specification of function arguments
 #' (\code{args}), and list with results (\code{result}).
@@ -67,49 +72,48 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
-#'                   cluster = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
-#'                   x1 = c(2, 3, 2, 2, 1, 2, 3, 4, 2),
-#'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
-#'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
+#' \dontrun{
+#' # Load data set "Demo.twolevel" in the lavaan package
+#' data("Demo.twolevel", package = "lavaan")
 #'
 #' #---------------------------
 #' # Cluster variable specification
 #'
 #' # Cluster variable 'cluster' in 'x'
-#' multilevel.descript(dat[, c("x1", "cluster")], cluster = "cluster")
+#' multilevel.descript(Demo.twolevel[, c("y1", "cluster")], cluster = "cluster")
 #'
 #' # Cluster variable 'cluster' not in 'x'
-#' multilevel.descript(dat$x1, cluster = dat$cluster)
+#' multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 #'
 #' #---------------------------
 #'
-#' # Multilevel descriptive statistics for x1
-#' multilevel.descript(dat$x1, cluster = dat$cluster)
+#' # Multilevel descriptive statistics for y1
+#' multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 #'
-#' # Multilevel descriptive statistics for x1, print ICC with 5 digits
-#' multilevel.descript(dat$x1, cluster = dat$cluster, icc.digits = 5)
+#' # Multilevel descriptive statistics for y1, print variance and standard deviation
+#' multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, print = "all")
 #'
-#' # Multilevel descriptive statistics for x1, convert value 1 to NA
-#' multilevel.descript(dat$x1, cluster = dat$cluster, as.na = 1)
+#' # Multilevel descriptive statistics for y1, print ICC with 5 digits
+#' multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, icc.digits = 5)
 #'
-#' # Multilevel descriptive statistics for x1,
+#' # Multilevel descriptive statistics for y1
 #' # use lme() function in the nlme package to estimate ICC
-#' multilevel.descript(dat$x1, cluster = dat$cluster, method = "nlme")
+#' multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, method = "nlme")
 #'
-#' # Multilevel descriptive statistics for x1, x2, and x3
-#' multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster)
+#' # Multilevel descriptive statistics for y1, y2, y3, w1, and w2
+#' multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
+#'                     cluster = Demo.twolevel$cluster)
 #'
-#' \dontrun{
 #' # Write Results into a Excel file
-#'  multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster,
-#'                      write = "Multilevel_Descript.xlsx")
+#' multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
+#'                     cluster = Demo.twolevel$cluster, write = "Multilevel_Descript.xlsx")
 #'
-#' result <- multilevel.descript(dat[, c("x1", "x2", "x3")], cluster = dat$cluster,
-#'                               output = FALSE)
+#' result <- multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
+#'                               cluster = Demo.twolevel$cluster, output = FALSE)
 #' write.result(result, "Multilevel_Descript.xlsx")
 #' }
-multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
+multilevel.descript <- function(x, cluster, print = c("all", "var", "sd"),
+                                method = c("aov", "lme4", "nlme"),
                                 REML = TRUE, digits = 2, icc.digits = 3, as.na = NULL,
                                 write = NULL, check = TRUE, output = TRUE) {
 
@@ -168,11 +172,10 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
     x <- misty::as.na(x, na = as.na, check = check)
 
     # Variable with missing values only
-    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1))
+    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
     if (isTRUE(any(x.miss))) {
 
-      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
-                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
+      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
 
     }
 
@@ -203,23 +206,8 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
     # Check input 'cluster'
     if (isTRUE(length(unique(na.omit(cluster))) == 1L)) { stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE) }
 
-    # Check input 'x': Zero variance?
-    x.check <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
-
-    if (isTRUE(any(x.check))) {
-
-      if (isTRUE(length(x.check) > 1L)) {
-
-        warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ",
-                       paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
-
-      } else {
-
-        stop("Variable specified in 'x' has zero variance.", call. = FALSE)
-
-      }
-
-    }
+    # Check input 'print'
+    if (isTRUE(!all(print %in% c("all", "var", "sd")))) { stop("Character strings in the argument 'print' do not all match with \"var\" or \"sd\".", call. = FALSE) }
 
     # Check input 'method'
     if (isTRUE(any(!method %in% c("aov", "lme4", "nlme")))) { stop("Character string in the argument 'method' does not match with \"aov\", \"lme4\", or \"nlme\".", call. = FALSE) }
@@ -232,28 +220,6 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
 
     # Check icc.digits argument
     if (isTRUE(icc.digits %% 1L != 0L || icc.digits < 0L)) { stop("Specify a positive integer value for the argument 'icc.digits'.", call. = FALSE) }
-
-    # Variance within clusters
-    if (isTRUE(ncol(x) == 1L)) {
-
-      if (isTRUE(all(tapply(unlist(x), cluster, function(y) length(na.omit(y))) <= 1L))) {
-
-        stop("Variable specified in 'x' does not have any within-cluster variance.", call. = FALSE)
-
-      }
-
-    } else {
-
-      x.check <- vapply(x, function(y) all(tapply(y, cluster, function(z) length(na.omit(z))) <= 1L), FUN.VALUE = logical(1))
-
-      if (isTRUE(any(x.check))) {
-
-        stop(paste0("Following variables specified in 'x' do not have any within-cluster variance: ",
-                    paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
-
-      }
-
-    }
 
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE) }
@@ -280,6 +246,13 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
     }
 
   }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print ####
+
+  if (isTRUE(all(c("all", "var", "sd") %in% print))) { print <- "var" }
+
+  if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("var", "sd") }
 
   #_____________________________________________________________________________
   #
@@ -312,95 +285,122 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
   if (isTRUE(ncol(x) == 1L)) {
 
     #............
-    # Variable with non-zero variance
-    if (isTRUE(var(x, na.rm = TRUE) != 0L)) {
+    ### Within Variable
+    if (isTRUE(any(tapply(x, cluster, var) != 0L))) {
 
-      # ICC using aov() function
-      if (isTRUE(method == "aov")) {
+      #### Variable with non-zero variance
+      if (isTRUE(var(x, na.rm = TRUE) != 0L)) {
 
-        # Estimate model
-        mod <- aov(unlist(x) ~ 1 + Error(as.factor(cluster)))
+        # ICC using aov() function
+        switch(method, aov = {
 
-        # Model summary
-        mod.summary <- summary(mod)
+          # Estimate model
+          mod <- aov(unlist(x) ~ 1 + Error(as.factor(cluster)))
 
-        # Mean
-        mean.x <- mean(tapply(unlist(x), cluster, mean, na.rm = TRUE))
+          # Model summary
+          mod.summary <- summary(mod)
 
-        # Mean Squared Error Between
-        var.b <- unname(unlist(mod.summary[[1L]])["Mean Sq"])
+          # Mean
+          mean.x <- mean(tapply(unlist(x), cluster, mean, na.rm = TRUE))
 
-        # Mean Squared Error Within
-        var.w <- unname(unlist(mod.summary[[2L]])["Mean Sq"])
+          # Mean Squared Error Between
+          var.b <- unname(unlist(mod.summary[[1L]])["Mean Sq"])
+          sd.b <- sqrt(var.b)
 
-        # ICC(1)
-        icc1 <- unname((var.b - var.w) / (var.b + ((m.cluster.size - 1L) * var.w)))
+          # Mean Squared Error Within
+          var.w <- unname(unlist(mod.summary[[2L]])["Mean Sq"])
+          sd.w <- sqrt(var.w)
 
-        if (isTRUE(icc1 < 0L)) { icc1 <- 0L }
+          # ICC(1)
+          icc1 <- unname((var.b - var.w) / (var.b + ((m.cluster.size - 1L) * var.w)))
 
-        # ICC(2)
-        icc2 <- unname((var.b - var.w) / var.b)
+          if (isTRUE(icc1 < 0L)) { icc1 <- 0L }
 
-        if (isTRUE(icc2 < 0L)) { icc2 <- 0L }
+          # ICC(2)
+          icc2 <- unname((var.b - var.w) / var.b)
 
-      # ICC using lmer() function
-      } else if (isTRUE(method == "lme4")) {
+          if (isTRUE(icc2 < 0L)) { icc2 <- 0L }
 
-        # Estimate model
-        mod <- suppressMessages(lme4::lmer(unlist(x) ~ 1 + (1|cluster), REML = REML,
-                                           control = lme4::lmerControl(optimizer = "bobyqa")))
+        # ICC using lmer() function
+        }, lme4 = {
 
-        # Mean
-        mean.x <- unname(lme4::fixef(mod))
+          # Estimate model
+          mod <- suppressMessages(lme4::lmer(unlist(x) ~ 1 + (1|cluster), REML = REML, control = lme4::lmerControl(optimizer = "bobyqa")))
 
-        # Variance components
-        vartab <- as.data.frame(suppressMessages(lme4::VarCorr(mod)))
+          # Mean
+          mean.x <- unname(lme4::fixef(mod))
 
-        # Between-cluster variance
-        var.b <- vartab[vartab$grp == "cluster", "vcov"]
+          # Variance components
+          vartab <- as.data.frame(suppressMessages(lme4::VarCorr(mod)))
 
-        # Within-cluster variance
-        var.w <- vartab[vartab$grp == "Residual", "vcov"]
+          # Between-cluster variance
+          var.b <- vartab[vartab$grp == "cluster", "vcov"]
+          # Between-cluster standard deviation
+          sd.b <- sqrt(var.b)
 
-        # ICC(1)
-        icc1 <- var.b / (var.b + var.w)
+          # Within-cluster variance
+          var.w <- vartab[vartab$grp == "Residual", "vcov"]
+          # Within-cluster standard deviation
+          sd.w <- sqrt(var.w)
 
-        # ICC(2)
-        icc2 <- var.b / (var.b + var.w / m.cluster.size)
+          # ICC(1)
+          icc1 <- var.b / (var.b + var.w)
 
-      # ICC using lme() function
-      } else if (isTRUE(method == "nlme")) {
+          # ICC(2)
+          icc2 <- unname(var.b / (var.b + var.w / m.cluster.size))
 
-        # REML or ML
-        ifelse(isTRUE(REML), REML <- "REML", REML <- "ML")
+        # ICC using lme() function
+        }, nlme = {
 
-        # Estimate model
-        mod <- nlme::lme(x ~ 1, random = ~1 | cluster, data = data.frame(x, cluster = cluster),
-                         na.action = na.omit, method = REML)
+          # REML or ML
+          ifelse(isTRUE(REML), REML <- "REML", REML <- "ML")
 
-        # Mean
-        mean.x <- unname(lme4::fixef(mod))
+          # Estimate model
+          mod <- nlme::lme(x ~ 1, random = ~1 | cluster, data = data.frame(x, cluster = cluster), na.action = na.omit, method = REML)
 
-        # Variance components
-        vartab <- nlme::VarCorr(mod)
+          # Mean
+          mean.x <- unname(lme4::fixef(mod))
 
-        var.b <- as.numeric(vartab["(Intercept)", "Variance"])
+          # Variance components
+          vartab <- nlme::VarCorr(mod)
 
-        var.w <- as.numeric(vartab["Residual", "Variance"])
+          # Between-cluster variance
+          var.b <- as.numeric(vartab["(Intercept)", "Variance"])
+          # Between-cluster standard deviation
+          sd.b <- sqrt(var.b)
 
-        # ICC(1)
-        icc1 <- var.b / (var.b + var.w)
+          # Within-cluster variance
+          var.w <- as.numeric(vartab["Residual", "Variance"])
+          # Within-cluster standard deviation
+          sd.w <- sqrt(var.w)
 
-        # ICC(2)
-        icc2 <- var.b / (var.b + var.w / m.cluster.size)
+          # ICC(1)
+          icc1 <- var.b / (var.b + var.w)
+
+          # ICC(2)
+          icc2 <- unname(var.b / (var.b + var.w / m.cluster.size))
+
+        })
+
+      #### Variable with zero variance
+      } else {
+
+        object <- NA
 
       }
 
     #............
-    # Variable with non-zero variance
+    ### Between Variable
     } else {
 
-      object <- NA
+      # Mean
+      mean.x <- mean(x[which(!duplicated(cluster)), ], na.rm = TRUE)
+      # Variance
+      var.b <- var(x[which(!duplicated(cluster)), ], na.rm = TRUE)
+      # Standard deviation
+      sd.b <- sd(x[which(!duplicated(cluster)), ], na.rm = TRUE)
+
+      var.w <- sd.w <- icc1 <- icc2 <- deff <- deff.sqrt <- n.effect <- NA
 
     }
 
@@ -408,21 +408,23 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
   ## More than one dependent variable ####
   } else {
 
-    object <- apply(x, 2L, function(y) misty::multilevel.descript(y, cluster, method = method,
-                                                                 REML = REML, digits = digits, icc.digits = icc.digits,
-                                                                 as.na = NULL, check = FALSE, output = FALSE))
+    object <- apply(x, 2L, function(y) misty::multilevel.descript(y, cluster, method = method, REML = REML,
+                                                                  digits = digits, icc.digits = icc.digits,
+                                                                  as.na = NULL, check = FALSE, output = FALSE))
 
     # Extract results
-    mean.x <- sapply(object, function(y) y$result$mean.x)
+    mean.x <- sapply(object, function(y) y$result$mean)
     var.w <- sapply(object, function(y) y$result$var.w)
+    sd.w <- sapply(object, function(y) y$result$sd.w)
     var.b <- sapply(object, function(y) y$result$var.b)
+    sd.b <- sapply(object, function(y) y$result$sd.b)
     icc1 <- sapply(object, function(y) y$result$icc1)
     icc2 <- sapply(object, function(y) y$result$icc2)
 
   }
 
   # Design effect
-  deff <- 1 + icc1*(m.cluster.size - 1L)
+  deff <- 1L + icc1*(m.cluster.size - 1L)
 
   deff.sqrt <- sqrt(deff)
 
@@ -436,14 +438,14 @@ multilevel.descript <- function(x, cluster, method = c("aov", "lme4", "nlme"),
   object <- list(call = match.call(),
                  type = "multilevel.descript",
                  data = data.frame(x = x, cluster = cluster, stringsAsFactors = FALSE),
-                 args = list(method = method, REML = REML,
+                 args = list(print = print, method = method, REML = REML,
                              digits = digits, icc.digits = icc.digits, as.na = as.na,
                              check = check, output = output),
                  result = list(no.obs = no.obs, no.miss = no.miss, no.cluster = no.cluster,
                                m.cluster.size = m.cluster.size, sd.cluster.size = sd.cluster.size,
                                min.cluster.size = min.cluster.size, max.cluster.size = max.cluster.size,
-                               mean.x = mean.x, var.w = var.w, var.b = var.b, icc1 = icc1, icc2 = icc2,
-                               deff = deff, deff.sqrt = deff.sqrt, n.effect = n.effect))
+                               mean = mean.x, var.w = var.w, var.b = var.b, sd.w = sd.w, sd.b = sd.b,
+                               icc1 = icc1, icc2 = icc2, deff = deff, deff.sqrt = deff.sqrt, n.effect = n.effect))
 
   class(object) <- "misty.object"
 

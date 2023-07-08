@@ -309,8 +309,8 @@ of interest (Hoffman & Walters, 2022).
 }
 \note{
 This function is based on the \code{multilevelR2()} function from the \pkg{mitml}
-package by Simon Grund, Alexander Robitzsch and Oliver Luedtke (2021) and
-calls the \code{r2mlm()} function in the \pkg{r2mlm} package by Mairead Shaw,
+package by Simon Grund, Alexander Robitzsch and Oliver Luedtke (2021), and a
+copy of the function \code{r2mlm} in the \pkg{r2mlm} package by Mairead Shaw,
 Jason Rights, Sonya Sterba, and Jessica Flake.
 }
 \examples{

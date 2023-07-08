@@ -5435,78 +5435,69 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
   #  Multilevel Descriptive Statistics -----------------------------------------
   }, multilevel.descript = {
 
-    ####################################################################################
-    # Main Function
-
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Main Function ####
+    
     print.object <- data.frame(cbind(c("No. of cases", "No. of missing values",
                                        "", "No. of clusters", "Average cluster size", "SD cluster size", "Min cluster size", "Max cluster size",
-                                       "", "Mean", "Variance Within", "Variance Between", "ICC(1)", "ICC(2)",
+                                       "", "Mean", "Variance Within", "Variance Between", "SD Within", "SD Between", "ICC(1)", "ICC(2)",
                                        "", "Design effect", "Design effect sqrt", "Effective sample size"),
-                                     rbind(x$result$no.obs, x$result$no.miss,
-                                           "", x$result$no.cluster, x$result$m.cluster.size, x$result$sd.cluster.size, x$result$min.cluster.size, x$result$max.cluster.size,
-                                           "", x$result$mean.x, x$result$var.w, x$result$var.b, x$result$icc1, x$result$icc2,
-                                           "", x$result$deff, x$result$deff.sqrt, x$result$n.effect)),
-                               stringsAsFactors = FALSE)
-
-    #-----------------------------------------
-    # One variable
-    if (isTRUE(length(x$result$no.obs) == 1L)) {
-
-      # Format
-      for (i in c(5L, 6L, 10L, 11L, 12L, 16L, 17L, 18L)) {
-
-        print.object[i, 2L] <- formatC(as.numeric(unlist(print.object[i, 2L])), digits = digits, format = "f",
-                                       zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-
-      }
-
-      print.object[13L, 2L] <- formatC(as.numeric(unlist(print.object[13L, 2L])), digits = icc.digits, format = "f",
-                                       zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
-      print.object[14L, 2L] <- formatC(as.numeric(unlist(print.object[14L, 2L])), digits = icc.digits, format = "f",
-                                       zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
-
-      print.object[, 1L] <- paste(" ", print.object[, 1L])
-
-
-      print.object[, 1L] <- format(print.object[, 1L, drop = FALSE])
-
-      print.object[, 1L] <- format(unlist(print.object[, 1L]), justify = "left")
-      print.object[, 2L] <- format(as.character(print.object[, 2L]), justify = "right")
-
-    #-----------------------------------------
-    # More than one variable
-    } else {
-
-      print.object <- rbind(c("", names(x$result$no.obs)), print.object)
-
-      # Format
-      for (i in c(6L, 7L, 11L, 12L, 13L, 17L, 18L, 19L)) {
-
-        print.object[i, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[i, 2L:ncol(print.object)])), digits = digits, format = "f",
-                                                          zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-
-      }
-
-      print.object[14L, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[14L, 2L:ncol(print.object)])), digits = icc.digits, format = "f",
-                                                          zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
-      print.object[15L, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[15L, 2L:ncol(print.object)])), digits = icc.digits, format = "f",
-                                                          zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
-
-      print.object[, 1L] <- paste(" ", print.object[, 1L])
-
-
-      print.object[, 1L] <- format(print.object[, 1L, drop = FALSE])
-
-      print.object[, 1L] <- format(unlist(print.object[, 1L]), justify = "left")
-      print.object[, 2L:ncol(print.object)] <- apply(print.object[, 2L:ncol(print.object)], 2L, function(y) format(as.character(y), justify = "right"))
-
+                                     rbind(print.object$no.obs, print.object$no.miss,
+                                           "", print.object$no.cluster, print.object$m.cluster.size, print.object$sd.cluster.size, print.object$min.cluster.size, print.object$max.cluster.size,
+                                           "", print.object$mean, print.object$var.w, print.object$var.b, print.object$sd.w, print.object$sd.b, print.object$icc1, print.object$icc2,
+                                           "", print.object$deff, print.object$deff.sqrt, print.object$n.effect)), stringsAsFactors = FALSE)
+    
+    #............
+    ### Format
+    
+    #### Variable names
+    print.object <- rbind(c("", names(x$result$no.obs)), print.object)
+    
+    #### Round
+    for (i in c(6L:7L, 11L:15L, 19L:21L)) { print.object[i, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[i, 2L:ncol(print.object)])), digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")) }
+    
+    # print.object[16L, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[16L, 2L:ncol(print.object)])), digits = icc.digits, format = "f", zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
+    # print.object[17L, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[17L, 2L:ncol(print.object)])), digits = icc.digits, format = "f", zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
+    
+    print.object[16L, -1L] <- formatC(as.numeric(unlist(print.object[16L, -1L])), digits = icc.digits, format = "f", zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
+    print.object[17L, -1L] <- formatC(as.numeric(unlist(print.object[17L, -1L])), digits = icc.digits, format = "f", zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
+    
+    # Blanks
+    print.object[, 1L] <- paste(" ", print.object[, 1L])
+    
+    print.object[, 1L] <- format(print.object[, 1L, drop = FALSE])
+    
+    print.object[, 1L] <- format(unlist(print.object[, 1L]), justify = "left")
+    print.object[, -1L] <- sapply(print.object[, -1L, drop = FALSE], function(y) format(as.character(y), justify = "right"))
+    
+    #............
+    ### NA
+    
+    print.object[, -1L] <- sapply(print.object[, -1L], function(y) gsub("NA", "  ", y))
+    
+    #............
+    ### select rows
+    
+    if (isTRUE(!"var" %in% x$args$print)) { print.object <- print.object[-c(12L:13L), ] }
+    if (isTRUE(!"sd" %in% x$args$print)) { print.object <- print.object[-c(14L:15L), ] }
+    
+    
+    # All Between variables
+    if (isTRUE(all(is.na(x$result$var.w)))) {
+      
+      print.object <- print.object[-which(misty::chr.trim(print.object[, 1L]) %in% c("Variance Within", "SD Within", "ICC(1)", "ICC(2)", "Design effect", "Design effect sqrt", "Effective sample size")), ]
+      print.object <- print.object[-nrow(print.object), ]
+      
     }
-
-    ####################################################################################
-    # Output
-
+    
+    # One variable
+    if (isTRUE(ncol(print.object) == 2L)) { print.object <- print.object[-1L, ] }
+    
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Output ####
+    
     cat(" Multilevel Descriptive Statistics\n\n")
-
+    
     write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
   #_____________________________________________________________________________

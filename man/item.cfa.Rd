@@ -319,7 +319,7 @@ test, incremental fit indices (i.e., CFI and TLI), and absolute fit indices
 (i.e., RMSEA, and SRMR) to evaluate overall model fit. However, different
 versions of the CFI, TLI, and RMSEA are provided depending on the estimator.
 Unlike the R package \pkg{lavaan}, the different versions are labeled with
-\code{Standard}, \code{Ad hoc}, and \code{Robust} in the output:
+\code{Standard}, \code{Scaled}, and \code{Robust} in the output:
   \itemize{
      \item{\code{"Standard"}}: CFI, TLI, and RMSEA without any non-normality
      corrections. These fit measures based on the normal theory maximum
@@ -328,7 +328,7 @@ Unlike the R package \pkg{lavaan}, the different versions are labeled with
      et al. (2012), and Brosseau-Liard and Savalei (2014) showed that the
      uncorrected fit indices are affected by non-normality, especially at small
      and medium sample sizes (e.g., n < 500).
-     \item{\code{"Ad hoc"}}: Population-corrected robust CFI, TLI, and RMSEA
+     \item{\code{"Scaled"}}: Population-corrected robust CFI, TLI, and RMSEA
      with ad hoc non-normality corrections that simply replace the maximum
      likelihood test statistic with a robust test statistic (e.g., mean-adjusted
      chi-square). These fit indices change the population value being estimated
@@ -346,7 +346,7 @@ Unlike the R package \pkg{lavaan}, the different versions are labeled with
      normal.
   }
   In conclusion, the use of sample-corrected fit indices (\code{Robust})
-  instead of population-corrected fit indices (\code{Ad hoc}) is recommended.
+  instead of population-corrected fit indices (\code{Scaled}) is recommended.
   Note that when sample size is very small (e.g., n < 200), non-normality
   correction does not appear to adjust fit indices sufficiently to counteract
   the effect of non-normality (Brosseau-Liard & Savalei, 2014).
