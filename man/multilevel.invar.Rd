@@ -9,11 +9,11 @@ multilevel.invar(x, cluster, model = NULL, rescov = NULL,
                  ident = c("marker", "var", "effect"),
                  estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"),
                  missing = c("listwise", "fiml"),
-                 print = c("all", "summary", "coverage", "descript", 
-                           "fit", "est", "modind"),
+                 print = c("all", "summary", "coverage", "descript", "fit",
+                           "est", "modind", "resid"),
                  print.fit = c("all", "standard", "scaled", "robust"),
-                 min.value = 10, digits = 3, p.digits = 3, as.na = NULL,
-                 write = NULL, check = TRUE, output = TRUE)
+                 mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3,
+                 as.na = NULL, write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame. If \code{model} is \code{NULL},
@@ -48,7 +48,7 @@ model with two latent factors labeled \code{bfactor1} and
 \code{bfactor2} at the Between level each comprising four
 indicators. Note that the name of each list element is used
 to label factors, where prefixes \code{w} and \code{b} are
-added the labels to distingish factor labels at the Within
+added the labels to distinguish factor labels at the Within
 and Between level, i.e., all list elements need to be named,
 otherwise factors are labeled with \code{"wf1", "wf2", "wf3"}
 for labels at the Within level and \code{"bf1", "bf2", "bf3"}
@@ -70,10 +70,10 @@ measurement invariance (i.e., same factor structure across
 levels), \code{metric} (default) to evaluate configural and
 metric measurement invariance (i.e., equal factor loadings
 across level), and \code{scalar} to evaluate configural,
-metric and scalar measurementinvariance (i.e., all residual
+metric and scalar measurement invariance (i.e., all residual
 variances at the Between level equal zero).}
 
-\item{fix.resid}{a charcter vector for specifying residual variances to be
+\item{fix.resid}{a character vector for specifying residual variances to be
 fixed at 0 at the Between level for the configural and metric
 invariance model, e.g., \code{fix.resid = c("x1", "x3")}
 to fix residual variances of indicators \code{x1} and \code{x2}
@@ -102,7 +102,7 @@ when using \code{"ML"} (\code{missing = "fiml"}), whereas
 incomplete cases are removed listwise (i.e., \code{missing = "listwise"})
 when using \code{"MLR"}.}
 
-\item{optim.method}{a chracter string indicating the optimizer, i.e., \code{"nlminb"}
+\item{optim.method}{a character string indicating the optimizer, i.e., \code{"nlminb"}
 (default) for the unconstrained and bounds-constrained
 quasi-Newton method optimizer and \code{"em"} for the
 Expectation Maximization (EM) algorithm.}
@@ -137,10 +137,19 @@ with ad hoc non-normality correction, and \code{robust}
 robust fit indices based on formula provided by Li and Bentler
 (2006) and Brosseau-Liard and Savalei (2014).}
 
-\item{min.value}{numeric value to filter modification indices and only show
-modifications with a modification index value equal or higher
-than this minimum value. By default, modification indices
-equal or higher 10 is printed.}
+\item{mod.minval}{numeric value to filter modification indices and only
+show modifications with a modification index value equal
+or higher than this minimum value. By default, modification
+indices equal or higher 6.63 are printed. Note that a
+modification index value of 6.63 is equivalent to a
+significance level of \eqn{\alpha = .01}.}
+
+\item{resid.minval}{numeric value indicating the minimum absolute residual
+correlation coefficients and standardized means to
+highlight in boldface. By default, absolute residual
+correlation coefficients and standardized means equal
+or higher 0.1 are highlighted. Note that highlighting
+can be disabled by setting the minimum value to 1.}
 
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying results. Note that information

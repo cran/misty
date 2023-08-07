@@ -3,7 +3,14 @@
 #' This function is a wrapper function for evaluating configural, metric, and
 #' scalar cross-level measurement invariance using multilevel confirmatory factor
 #' analysis with continuous indicators by calling the \code{cfa} function in the
-#' R package \pkg{lavaan}.
+#' R package \pkg{lavaan}. By default, the function evaluates configural and metric
+#' cross-level measurement invariance by providing a table with model fit
+#' information (i.e., chi-square test, fit indices and information criteria), and
+#' model comparison (i.e., chi-square difference test, change in fit indices, and
+#' change in information criteria). Additionally, variance-covariance coverage of
+#' the data, descriptive statistics, parameter estimates, modification indices,
+#' and residual correlation matrix can be requested by specifying the argument
+#' \code{print}.
 #'
 #' @param x            a matrix or data frame. If \code{model} is \code{NULL},
 #'                     multilevel confirmatory factor analysis based on a
@@ -35,7 +42,7 @@
 #'                     \code{bfactor2} at the Between level each comprising four
 #'                     indicators. Note that the name of each list element is used
 #'                     to label factors, where prefixes \code{w} and \code{b} are
-#'                     added the labels to distingish factor labels at the Within
+#'                     added the labels to distinguish factor labels at the Within
 #'                     and Between level, i.e., all list elements need to be named,
 #'                     otherwise factors are labeled with \code{"wf1", "wf2", "wf3"}
 #'                     for labels at the Within level and \code{"bf1", "bf2", "bf3"}
@@ -55,9 +62,9 @@
 #'                     levels), \code{metric} (default) to evaluate configural and
 #'                     metric measurement invariance (i.e., equal factor loadings
 #'                     across level), and \code{scalar} to evaluate configural,
-#'                     metric and scalar measurementinvariance (i.e., all residual
+#'                     metric and scalar measurement invariance (i.e., all residual
 #'                     variances at the Between level equal zero).
-#' @param fix.resid    a charcter vector for specifying residual variances to be
+#' @param fix.resid    a character vector for specifying residual variances to be
 #'                     fixed at 0 at the Between level for the configural and metric
 #'                     invariance model, e.g., \code{fix.resid = c("x1", "x3")}
 #'                     to fix residual variances of indicators \code{x1} and \code{x2}
@@ -83,7 +90,7 @@
 #'                     when using \code{"ML"} (\code{missing = "fiml"}), whereas
 #'                     incomplete cases are removed listwise (i.e., \code{missing = "listwise"})
 #'                     when using \code{"MLR"}.
-#' @param optim.method a chracter string indicating the optimizer, i.e., \code{"nlminb"}
+#' @param optim.method a character string indicating the optimizer, i.e., \code{"nlminb"}
 #'                     (default) for the unconstrained and bounds-constrained
 #'                     quasi-Newton method optimizer and \code{"em"} for the
 #'                     Expectation Maximization (EM) algorithm.
@@ -114,16 +121,26 @@
 #'                     (default when \code{estimator = "MLR"}) for sample-corrected
 #'                     robust fit indices based on formula provided by Li and Bentler
 #'                     (2006) and Brosseau-Liard and Savalei (2014).
-#' @param min.value    numeric value to filter modification indices and only show
+#' @param mod.minval   numeric value to filter modification indices and only show
 #'                     modifications with a modification index value equal or higher
 #'                     than this minimum value. By default, modification indices
-#'                     equal or higher 10 is printed.
+#'                     equal or higher 6.63 are printed. Note that a modification
+#'                     index value of 6.63 is equivalent to a significance level
+#'                     of \eqn{\alpha = .01}.
+#' @param resid.minval numeric value indicating the minimum absolute residual
+#'                     correlation coefficients and standardized means to highlight
+#'                     in boldface. By default, absolute residual correlation
+#'                     coefficients and standardized means equal or higher 0.1
+#'                     are highlighted. Note that highlighting can be disabled by
+#'                     setting the minimum value to 1.
 #' @param digits       an integer value indicating the number of decimal places
-#'                     to be used for displaying results. Note that information
-#'                     criteria and chi-square test statistic is printed with
-#'                     \code{digits} minus 1 decimal places.
+#'                     to be used for displaying results. Note that loglikelihood,
+#'                     information criteria and chi-square test statistic are
+#'                     printed with \code{digits} minus 1 decimal places.
 #' @param p.digits     an integer value indicating the number of decimal places
-#'                     to be used for displaying the \emph{p}-value.
+#'                     to be used for displaying \emph{p}-values, covariance
+#'                     coverage (i.e., \code{p.digits - 1}), and residual
+#'                     correlation coefficients.
 #' @param as.na        a numeric vector indicating user-defined missing values,
 #'                     i.e. these values are converted to \code{NA} before conducting
 #'                     the analysis. Note that \code{as.na()} function is only
@@ -140,7 +157,8 @@
 #'
 #' @seealso
 #' \code{\link{multilevel.cfa}}, \code{\link{multilevel.fit}}, \code{\link{multilevel.omega}},
-#' \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}}
+#' \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}}, \code{\link{item.invar}},
+#' \code{\link{write.result}}
 #'
 #' @references
 #' Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.
@@ -169,7 +187,13 @@
 #'                      \code{est} for a list with parameter estimates for the
 #'                      configural, metric, and scalar invariance model, and
 #'                      \code{modind} for the list with modification indices for
-#'                      the configural, metric, and scalar invariance model}
+#'                      the configural, metric, and scalar invariance model,
+#'                      \code{score} for the list with result of the score tests
+#'                      for constrained parameters for the configural, metric,
+#'                      and scalar invariance model, and \code{resid} for the list
+#'                      with residual correlation matrices and standardized
+#'                      residual means for the configural, metric, and scalar
+#'                      invariance model}
 #'
 #' @note
 #' The function uses the functions \code{lavTestLRT} provided in the R package
@@ -267,22 +291,22 @@
 multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c("config", "metric", "scalar"),
                              fix.resid = NULL, ident = c("marker", "var", "effect"), estimator = c("ML", "MLR"),
                              optim.method = c("nlminb", "em"), missing = c("listwise", "fiml"),
-                             print = c("all", "summary", "coverage", "descript", "fit", "est", "modind"),
-                             print.fit = c("all", "standard", "scaled", "robust"), min.value = 10,
-                             digits = 3, p.digits = 3, as.na = NULL, write = NULL,
+                             print = c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid"),
+                             print.fit = c("all", "standard", "scaled", "robust"), mod.minval = 6.63,
+                             resid.minval = 0.1, digits = 3, p.digits = 3, as.na = NULL, write = NULL,
                              check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing or Null
+  # Check if input 'x' is missing or NULL
   if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is a matrix or a data frame
   if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or a data frame for the argument 'x'.", call. = FALSE) }
 
-  # Check if input 'cluster' is missing or null
+  # Check if input 'cluster' is missing or NULL
   if (isTRUE(missing(cluster) || is.null(cluster))) { stop("Please specify a character string or a vector for the argument 'cluster'.", call. = FALSE) }
 
   #_____________________________________________________________________________
@@ -342,7 +366,6 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
     # Check input 'invar'
     if (isTRUE(!all(invar %in%c("config", "metric", "scalar")))) { stop("Character string in the argument 'invar' does not match with \"config\", \"metric\", or \"scalar\".", call. = FALSE) }
 
-
     # Check input 'ident'
     if (isTRUE(!all(ident %in% c("marker", "var", "effect")))) { stop("Character string in the argument 'ident' does not match with \"marker\", \"var\", or \"effect\".", call. = FALSE) }
 
@@ -360,13 +383,16 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
     if (isTRUE(!all(missing %in% c("listwise", "fiml")))) { stop("Character string in the argument 'missing' does not match with \"listwise\" or \"fiml\".", call. = FALSE) }
 
     # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind")))) { stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", or \"modind\".", call. = FALSE) }
+    if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid")))) { stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", \"modind\", or \"resid\".", call. = FALSE) }
 
     # Check input 'print.fit'
     if (isTRUE(!all(print.fit %in% c("all", "standard", "scaled", "robust")))) { stop("Character strings in the argument 'print.fit' do not all match with \"standard\", \"scaled\", or \"robust\".", call. = FALSE) }
 
-    # Check input 'min.value'
-    if (isTRUE(min.value <= 0L)) { stop("Please specify a value greater than 0 for the argument 'min.value'.", call. = FALSE) }
+    # Check input 'mod.minval'
+    if (isTRUE(mod.minval <= 0L)) { stop("Please specify a value greater than 0 for the argument 'mod.minval'.", call. = FALSE) }
+
+    ## Check input 'resid.minval'
+    if (isTRUE(resid.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'resid.minval'.", call. = FALSE) }
 
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
@@ -454,7 +480,15 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Level of invariance ####
 
-  if (isTRUE(all(c("config", "metric", "scalar") %in% invar))) { invar <- "metric" }
+  if (isTRUE(all(c("config", "metric", "scalar") %in% invar))) {
+
+    invar <- "metric"
+
+  } else if (isTRUE(length(invar) != 1)) {
+
+    stop("Please specify a character string for the argument 'invar'.", call. = FALSE)
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Residual variances fixed at 0 ####
@@ -464,7 +498,15 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model identification ####
 
-  if (isTRUE(all(c("marker", "var", "effect") %in% ident))) { ident <- "var" }
+  if (isTRUE(all(c("marker", "var", "effect") %in% ident))) {
+
+    ident <- "var"
+
+  } else if (isTRUE(length(ident) != 1)) {
+
+    stop("Please specify a character string for the argument 'ident'.", call. = FALSE)
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Estimator ####
@@ -504,13 +546,13 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print ####
 
-  if (isTRUE(all(c("all", "summary", "coverage", "descript", "fit", "est", "modind") %in% print))) {
+  if (isTRUE(all(c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid") %in% print))) {
 
     print  <- c("summary", "fit")
 
   } else if (isTRUE(length(print) == 1L && "all" %in% print)) {
 
-    print <- c("all", "summary", "coverage", "descript", "fit", "est", "modind")
+    print <- c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid")
 
   }
 
@@ -535,7 +577,7 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
   ## Model estimation ####
 
   #...................
-  ###  Model specification with 'x' ####
+  ### Model specification with 'x' ####
   if (isTRUE(is.null(model))) {
 
     model.fit.metric <- model.fit.scalar <- warn.config <- warn.metric <- warn.scalar <- NULL
@@ -578,7 +620,7 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
     for(i in unique(c(warn.config, warn.metric, warn.scalar))) { warning(i, call. = FALSE) }
 
   #...................
-  ###  Model specification with 'model' ####
+  ### Model specification with 'model' ####
   } else {
 
     # Configural measurement invariance
@@ -630,7 +672,7 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
 
   switch(invar,
          #...................
-         ### # Configural measurement invariance ####
+         ### Configural measurement invariance ####
          config = {
 
            lavaan.summary <- rbind(model.fit.config$result$summary[1L:10L, ], c("", "Config", ""), model.fit.config$result$summary[11L:19L, ])
@@ -931,18 +973,21 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
                              invar = invar, ident = ident,
                              estimator = estimator, optim.method = optim.method,
                              missing = missing, print = print, print.fit = print.fit,
-                             min.value = min.value, digits = digits, p.digits = p.digits,
-                             as.na = as.na, check = check, output = output),
+                             mod.minval = mod.minval, resid.minval = resid.minval,
+                             digits = digits, p.digits = p.digits, as.na = as.na,
+                             check = check, output = output),
                  model = list(config = model.fit.config$model, metric = model.fit.metric$model, scalar = model.fit.scalar$model),
                  model.fit = list(config = model.fit.config$model.fit, metric = model.fit.metric$model.fit, scalar = model.fit.scalar$model.fit),
                  check = list(config = list(vcov = model.fit.config$check$check.vcov, theta.w = model.fit.config$check$check.theta.w, theta.b = model.fit.config$check$check.theta.b, cov.lv.w = model.fit.config$check$check.cov.lv.w, cov.lv.b = model.fit.config$check$check.cov.lv.b),
                               metric = list(vcov = model.fit.metric$check$check.vcov, theta.w = model.fit.metric$check$check.theta.w, theta.b = model.fit.metric$check$check.theta.b, cov.lv.w = model.fit.metric$check$check.cov.lv.w, cov.lv.b = model.fit.metric$check$check.cov.lv.b),
-                              config = list(vcov = model.fit.scalar$check$check.vcov, theta.w = model.fit.scalar$check$check.theta.w, theta.b = model.fit.scalar$check$check.theta.b, cov.lv.w = model.fit.scalar$check$check.cov.lv.w, cov.lv.b = model.fit.scalar$check$check.cov.lv.b)),
+                              scalar = list(vcov = model.fit.scalar$check$check.vcov, theta.w = model.fit.scalar$check$check.theta.w, theta.b = model.fit.scalar$check$check.theta.b, cov.lv.w = model.fit.scalar$check$check.cov.lv.w, cov.lv.b = model.fit.scalar$check$check.cov.lv.b)),
                  result = list(summary = lavaan.summary, coverage = model.fit.config$result$coverage,
                                descript = model.fit.config$result$descript,
                                fit = list(stand = fit.stand, scaled = fit.scaled, robust = fit.robust),
                                param = list(config = model.fit.config$result$param, metric = model.fit.metric$result$param, scalar = model.fit.scalar$result$param),
-                               modind = list(config = model.fit.config$result$modind, metric = model.fit.metric$result$modind, scalar = model.fit.scalar$result$modind)))
+                               modind = list(config = model.fit.config$result$modind, metric = model.fit.metric$result$modind, scalar = model.fit.scalar$result$modind),
+                               score = list(metric = model.fit.metric$result$score, scalar = model.fit.scalar$result$score),
+                               resid = list(config = model.fit.config$result$resid, metric = model.fit.metric$result$resid, scalar = model.fit.scalar$result$resid)))
 
   class(object) <- "misty.object"
 

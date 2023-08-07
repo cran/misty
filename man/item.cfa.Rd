@@ -12,9 +12,10 @@ item.cfa(x, model = NULL, rescov = NULL, hierarch = FALSE,
                        "ULS", "ULSM", "ULSMV", "DLS", "PML"),
          missing = c("listwise", "pairwise", "fiml",
                      "two.stage", "robust.two.stage", "doubly.robust"),
-         print = c("all", "summary", "coverage", "descript", "fit", "est", "modind"),
-         min.value = 10, digits = 3, p.digits = 3, as.na = NULL,
-         write = NULL, check = TRUE, output = TRUE)
+         print = c("all", "summary", "coverage", "descript", "fit", "est",
+                   "modind", "resid"),
+         mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3,
+         as.na = NULL, write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame. If \code{model = NULL},
@@ -125,14 +126,26 @@ data handling in lavaan, \code{"coverage"} for the
 variance-covariance coverage of the data,
 \code{"descript"} for descriptive statistics,
 \code{"fit"} for model fit, \code{"est"} for parameter
-estimates, and \code{"modind"} for modification
-indices. By default, a summary of the specification,
+estimates, \code{"modind"} for modification
+indices and \code{"resid"} for the residual correlation
+matrix and standardized residual means By default, a
+summary of the specification, model fit, and parameter
+estimates are printed.. By default, a summary of the specification,
 model fit, and parameter estimates are printed.}
 
-\item{min.value}{numeric value to filter modification indices and only
-show modifications with a modification index value
-equal or higher than this minimum value. By default,
-modification indices equal or higher 10 is printed.}
+\item{mod.minval}{numeric value to filter modification indices and only
+show modifications with a modification index value equal
+or higher than this minimum value. By default, modification
+indices equal or higher 6.63 are printed. Note that a
+modification index value of 6.63 is equivalent to a
+significance level of \eqn{\alpha = .01}.}
+
+\item{resid.minval}{numeric value indicating the minimum absolute residual
+correlation coefficients and standardized means to
+highlight in boldface. By default, absolute residual
+correlation coefficients and standardized means equal
+or higher 0.1 are highlighted. Note that highlighting
+can be disabled by setting the minimum value to 1.}
 
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying results.}
@@ -360,7 +373,7 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 }
 \examples{
 \dontrun{
-Load data set "HolzingerSwineford1939" in the lavaan package
+# Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
 #---------------------------

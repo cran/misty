@@ -43,7 +43,7 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{write.result}}, \code{\link{multilevel.icc}}, \code{\link{descript}}
+#' \code{\link{multilevel.icc}}, \code{\link{descript}}, \code{\link{write.result}}
 #'
 #' @references
 #' Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis:

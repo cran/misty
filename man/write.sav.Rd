@@ -47,7 +47,7 @@ argument \code{var.attr} is checked.}
 \description{
 This function writes a data frame or matrix into a SPSS file by either using the
 \code{write_sav()} function in the \pkg{haven} package by Hadley Wickham and Evan
-Miller (2019) or the free software \emph{PSPP} (see: \url{https://www.gnu.org/software/pspp/pspp.html}).
+Miller (2019) or the free software \emph{PSPP}.
 }
 \details{
 If arguments \code{pspp.path} is not specified (i.e., \code{pspp.path = NULL}),
@@ -124,11 +124,10 @@ GNU Project (2018). \emph{GNU PSPP for GNU/Linux} (Version 1.2.0).
 Boston, MA: Free Software Foundation. url{https://www.gnu.org/software/pspp/}
 
 Wickham H., & Miller, E. (2019). \emph{haven: Import and Export 'SPSS', 'Stata'
-and 'SAS' Files}. R package version 2.2.0. \url{https://CRAN.R-project.org/package=haven}
+and 'SAS' Files}. R package version 2.2.0. 
 
 Robitzsch, A., Grund, S., & Henke, T. (2019). \emph{miceadds: Some additional
 multiple imputation functions, especially for mice}. R package version 3.4-17.
-\url{https://CRAN.R-project.org/package=miceadds}
 }
 \seealso{
 \code{\link{read.sav}}

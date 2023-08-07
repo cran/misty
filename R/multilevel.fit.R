@@ -32,7 +32,7 @@
 #' @seealso
 #' \code{\link{multilevel.cfa}}, \code{\link{multilevel.invar}},
 #' \code{\link{multilevel.omega}}, \code{\link{multilevel.cor}},
-#' \code{\link{multilevel.descript}}
+#' \code{\link{multilevel.descript}}, \code{\link{write.result}}
 #'
 #' @references
 #' Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.

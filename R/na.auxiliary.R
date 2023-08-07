@@ -50,7 +50,7 @@
 #' \tabular{ll}{
 #' \code{call} \tab function call \cr
 #' \code{type} \tab type of analysis \cr
-#' \code{data} \tab matrix or data frame spcified in \code{x} \cr
+#' \code{data} \tab matrix or data frame specified in \code{x} \cr
 #' \code{args} \tab specification of function arguments \cr
 #' \code{result} \tab list with result tables \cr
 #' }

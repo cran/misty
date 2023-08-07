@@ -29,8 +29,8 @@
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
-#' \code{\link{write.result}}, \code{\link{freq}}, \code{\link{descript}},
-#' \code{\link{multilevel.descript}}, \code{\link{na.descript}}.
+#' \code{\link{freq}}, \code{\link{descript}}, \code{\link{multilevel.descript}},
+#' \code{\link{na.descript}}, \code{\link{write.result}}
 #'
 #' @references
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology

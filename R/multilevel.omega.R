@@ -5,8 +5,8 @@
 #' construct, shared cluster-level construct, and configural cluster construct by
 #' calling the \code{cfa} function in the R package \pkg{lavaan}.
 #'
-#' @param x            a matrix or data frame. Multilevel confirmatory
-#'                     factor analysis based on a measurement model with one factor
+#' @param x            a matrix or data frame. Multilevel confirmatory factor
+#'                     analysis based on a measurement model with one factor
 #'                     at the Within level and one factor at the Between level
 #'                     comprising all variables in the matrix or data frame is
 #'                     conducted. Note that the cluster variable specified in
@@ -28,14 +28,14 @@
 #'                     \code{"within"} for within-cluster constructs, \code{"shared"}
 #'                     for shared cluster-level constructs, and \code{"config"}
 #'                     (default) for configural cluster constructs.
-#' @param fix.resid    a charcter vector for specifying residual variances to be
+#' @param fix.resid    a character vector for specifying residual variances to be
 #'                     fixed at 0 at the Between level, e.g., \code{fix.resid = c("x1", "x3")}
 #'                     to fix residual variances of indicators \code{x1} and \code{x2}
 #'                     at the Between level at 0. Note that it is also possible
 #'                     to specify \code{fix.resid = "all"} which fixes all residual
 #'                     variances at the Between level at 0 in line with the strong
 #'                     factorial measurement invariance assumption across cluster.
-#' @param optim.method a chracter string indicating the optimizer, i.e., \code{"nlminb"}
+#' @param optim.method a character string indicating the optimizer, i.e., \code{"nlminb"}
 #'                     (default) for the unconstrained and bounds-constrained
 #'                     quasi-Newton method optimizer and \code{"em"} for the
 #'                     Expectation Maximization (EM) algorithm.
@@ -73,7 +73,7 @@
 #' @seealso
 #' \code{\link{item.omega}}, \code{\link{multilevel.cfa}}, \code{\link{multilevel.fit}},
 #' \code{\link{multilevel.invar}}, \code{\link{multilevel.cor}},
-#' \code{\link{multilevel.descript}}
+#' \code{\link{multilevel.descript}}, \code{\link{write.result}}
 #'
 #' @references
 #' Lai, M. H. C. (2021). Composite reliability of multilevel data: It’s about

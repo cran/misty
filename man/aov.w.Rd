@@ -139,7 +139,7 @@ entries:
                        statistics, \code{epsilon} for a table with indices of sphericity,
                        \code{test} for the ANOVA table (\code{none} for no sphericity
                        correction, \code{lb} for lower bound correction, \code{gg}
-                       for Greenhouse and Geiser corretion, and \code{hf} for
+                       for Greenhouse and Geiser correction, and \code{hf} for
                        Huynh and Feldt correction), \code{posthoc} for post hoc
                        tests, and \code{aov} for the return object of the \code{aov}
                        function}

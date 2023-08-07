@@ -40,7 +40,7 @@ chr.trim(x, side = "right")
 \references{
 Wickham, H. (2019). \emph{stringr: Simple, consistent wrappers for common string
 operations}.
-R package version 1.4.0. \url{https://CRAN.R-project.org/package=stringr}
+R package version 1.4.0. 
 }
 \seealso{
 \code{\link{chr.gsub}}, \code{\link{chr.omit}}

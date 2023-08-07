@@ -57,8 +57,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{write.result}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
-#' \code{\link{item.reverse}}, \code{\link{item.scores}}
+#' \code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.invar}},
+#' \code{\link{item.reverse}}, \code{\link{item.scores}}, \code{\link{write.result}}
 #'
 #' @references
 #' Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for

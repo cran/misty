@@ -139,7 +139,7 @@ difference-adjusted confidence intervals with jittered data points.
 standard deviation (i.e., \code{weighted = FALSE}) which does not assume homogeneity
 of variance is computed (see Delacre et al., 2021) when requesting an effect size
 measure (i.e., \code{effsize = TRUE}). Cohen's d based on the pooled standard
-deviation assuming equality of variancees between groups can be requested by
+deviation assuming equality of variances between groups can be requested by
 specifying \code{weighted = TRUE}.}
 }
 }

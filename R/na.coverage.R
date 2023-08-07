@@ -23,9 +23,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{write.result}}, \code{\link{as.na}}, \code{\link{na.as}},
-#' \code{\link{na.auxiliary}}, \code{\link{na.descript}}, \code{\link{na.indicator}},
-#' \code{\link{na.pattern}}, \code{\link{na.prop}}, \code{\link{na.test}}
+#' \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}},
+#' \code{\link{na.descript}}, \code{\link{na.indicator}}, \code{\link{na.pattern}},
+#' \code{\link{na.prop}}, \code{\link{na.test}}, \code{\link{write.result}}
 #'
 #' @references
 #' Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
@@ -42,7 +42,7 @@
 #' \tabular{ll}{
 #' \code{call} \tab function call \cr
 #' \code{type} \tab type of analysis \cr
-#' \code{data} \tab matrix or data frame spcified in \code{x} \cr
+#' \code{data} \tab matrix or data frame specified in \code{x} \cr
 #' \code{args} \tab specification of function arguments \cr
 #' \code{result} \tab result table \cr
 #' }

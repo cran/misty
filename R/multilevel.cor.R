@@ -66,7 +66,7 @@
 #'                     \code{"ML"} (\code{missing = "fiml"}), whereas incomplete
 #'                     cases are removed listwise (i.e., \code{missing = "listwise"})
 #'                     when using \code{"MLR"}.
-#' @param optim.method a chracter string indicating the optimizer, i.e., \code{nlminb}
+#' @param optim.method a character string indicating the optimizer, i.e., \code{nlminb}
 #'                     (default) for the unconstrained and bounds-constrained
 #'                     quasi-Newton method optimizer and \code{"em"} for the
 #'                     Expectation Maximization (EM) algorithm.
@@ -91,6 +91,9 @@
 #'                     statistics, and \code{"p"} for \emph{p}-values.
 #' @param split        logical: if \code{TRUE}, output table is split in
 #'                     within-group and between-group correlation matrix.
+#' @param order        logical: if \code{TRUE}, variables in the output table are
+#'                     ordered, so that variables specified in the argument
+#'                     \code{between} are shown first.
 #' @param tri          a character string indicating which triangular of the
 #'                     matrix to show on the console when \code{split = TRUE},
 #'                     i.e., \code{both} for upper and \code{upper} for the upper
@@ -123,8 +126,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{write.result}}, \code{\link{multilevel.descript}},
-#' \code{\link{multilevel.icc}}, \code{\link{cluster.scores}}
+#' \code{\link{multilevel.descript}}, \code{\link{multilevel.icc}},
+#' \code{\link{multilevel.cfa}}, \code{\link{cluster.scores}},
+#' \code{\link{write.result}}
 #'
 #' @references
 #' Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis:
@@ -201,6 +205,11 @@
 #'                cluster = Demo.twolevel$cluster,
 #'                between = c("w1", "w2"))
 #'
+#' # Show variables specified in the argument 'between' first
+#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
+#'                cluster = Demo.twolevel$cluster,
+#'                between = c("w1", "w2"), order = TRUE)
+#'
 #' #---------------------------
 #' # Variables "y1", "y2", and "y2" modeled only on the within level
 #' # Variables "w1" and "w2" modeled on the cluster level
@@ -235,7 +244,7 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
                            estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"),
                            missing = c("listwise", "fiml"), sig = FALSE, alpha = 0.05,
                            print = c("all", "cor", "se", "stat", "p"), split = FALSE,
-                           tri = c("both", "lower", "upper"), tri.lower = TRUE,
+                           order = FALSE, tri = c("both", "lower", "upper"), tri.lower = TRUE,
                            p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
                            digits = 2, p.digits = 3, as.na = NULL, write = NULL,
                            check = TRUE, output = TRUE) {
@@ -372,6 +381,9 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
     # Check input 'split'
     if (isTRUE(!is.logical(split))) { stop("Please specify TRUE or FALSE for the argument 'split'.", call. = FALSE) }
+
+    # Check input 'order'
+    if (isTRUE(!is.logical(order))) { stop("Please specify TRUE or FALSE for the argument 'order'.", call. = FALSE) }
 
     # Check input 'tri'
     if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
@@ -744,6 +756,26 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
   rownames(betw.cor) <- rownames(betw.se) <- rownames(betw.stat) <- rownames(betw.p) <- sapply(seq_len(max(stand[, "row"])), function(y) unique(stand[which(y == stand$row), "lhs"]))
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Order Between Variables ####
+
+  if (isTRUE(order && !is.null(between))) {
+
+    pos.betw <- which(colnames(betw.cor) %in% between)
+    pos.with <- which(!colnames(betw.cor) %in% between)
+
+    with.cor <- with.cor[c(pos.betw, pos.with), c(pos.betw, pos.with)]
+    with.se <- with.se[c(pos.betw, pos.with), c(pos.betw, pos.with)]
+    with.stat <- with.stat[c(pos.betw, pos.with), c(pos.betw, pos.with)]
+    with.p <- with.p[c(pos.betw, pos.with), c(pos.betw, pos.with)]
+
+    betw.cor <- betw.cor[c(pos.betw, pos.with), c(pos.betw, pos.with)]
+    betw.se <- betw.se[c(pos.betw, pos.with), c(pos.betw, pos.with)]
+    betw.stat <- betw.stat[c(pos.betw, pos.with), c(pos.betw, pos.with)]
+    betw.p <- betw.p[c(pos.betw, pos.with), c(pos.betw, pos.with)]
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Combine Within-Group and Between-Group Results ####
 
   #...................
@@ -854,7 +886,7 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
                  args = list(within = within, between = between,
                              estimator = estimator, missing = missing,
                              sig = sig, alpha = alpha, print = print,
-                             split = split, tri = tri, tri.lower = tri.lower,
+                             split = split, order = order, tri = tri, tri.lower = tri.lower,
                              p.adj = p.adj, digits = digits, p.digits = p.digits,
                              as.na = as.na, check = check, output = output),
                  model = mod,

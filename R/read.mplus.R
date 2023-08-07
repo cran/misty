@@ -188,9 +188,8 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
       #...................
       ### Number of rows ####
 
-      df.lines.nrows <- unname(vapply(vapply(df.lines, function(y) strsplit(y, " "), FUN.VALUE = list(1L)), length, FUN.VALUE = 1L))
-
-      if (isTRUE(length(unique(df.lines.nrows)) != 1L)) { stop(paste0("Data file ", file, " does not have the same number of entries in each line."), call. = FALSE) }
+      invisible(tryCatch(read.table(file, sep = sep, stringsAsFactors = FALSE, fileEncoding = fileEncoding),
+                         error = function(y) { stop(paste0("Data file ", file, " does not have the same number of entries in each line."), call. = FALSE) }))
 
       #...................
       ### Number of columns match with number of variable names ####

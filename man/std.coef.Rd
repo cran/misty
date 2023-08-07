@@ -5,7 +5,7 @@
 \title{Standardized Coefficients}
 \usage{
 std.coef(model, print = c("all", "stdx", "stdy", "stdyx"), digits = 3, p.digits = 4,
-         check = TRUE, output = TRUE)
+         write = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{model}{a fitted model of class \code{"lm"}.}
@@ -23,6 +23,10 @@ results.}
 
 \item{p.digits}{an integer value indicating the number of decimal places to be used for displaying the
 \emph{p}-value.}
+
+\item{write}{a character string for writing the results into a Excel file
+naming a file with or without file extension '.xlsx', e.g.,
+\code{"Results.xlsx"} or \code{"Results"}.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 

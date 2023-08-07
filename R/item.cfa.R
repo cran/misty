@@ -2,7 +2,11 @@
 #'
 #' This function is a wrapper function for conducting confirmatory factor analysis
 #' with continuous and/or ordered-categorical indicators by calling the \code{cfa}
-#' function in the R package \pkg{lavaan}.
+#' function in the R package \pkg{lavaan}. By default, the function provides a
+#' table with univariate sample statistics, model fit information, and parameter
+#' estimates. Additionally, variance-covariance coverage of the data, modification
+#' indices, and residual correlation matrix can be requested by specifying the
+#' argument \code{print}.
 #'
 #' @param x                a matrix or data frame. If \code{model = NULL},
 #'                         confirmatory factor analysis based on a measurement
@@ -101,19 +105,31 @@
 #'                         variance-covariance coverage of the data,
 #'                         \code{"descript"} for descriptive statistics,
 #'                         \code{"fit"} for model fit, \code{"est"} for parameter
-#'                         estimates, and \code{"modind"} for modification
-#'                         indices. By default, a summary of the specification,
-#'                         model fit, and parameter estimates are printed.
-#' @param min.value        numeric value to filter modification indices and only
-#'                         show modifications with a modification index value
-#'                         equal or higher than this minimum value. By default,
-#'                         modification indices equal or higher 10 is printed.
+#'                         estimates, \code{"modind"} for modification indices,
+#'                         and and \code{"resid"} for the residual correlation
+#'                         matrix and standardized residual means By default, a
+#'                         summary of the specification, model fit, and parameter
+#'                         estimates are printed.
+#' @param mod.minval       numeric value to filter modification indices and only
+#'                         show modifications with a modification index value equal
+#'                         or higher than this minimum value. By default, modification
+#'                         indices equal or higher 6.63 are printed. Note that a
+#'                         modification index value of 6.63 is equivalent to a
+#'                         significance level of \eqn{\alpha = .01}.
+#' @param resid.minval     numeric value indicating the minimum absolute residual
+#'                         correlation coefficients and standardized means to
+#'                         highlight in boldface. By default, absolute residual
+#'                         correlation coefficients and standardized means equal
+#'                         or higher 0.1 are highlighted. Note that highlighting
+#'                         can be disabled by setting the minimum value to 1.
 #' @param digits           an integer value indicating the number of decimal places
 #'                         to be used for displaying results. Note that loglikelihood,
-#'                         information criteria and chi-square test statistic is
+#'                         information criteria and chi-square test statistic are
 #'                         printed with \code{digits} minus 1 decimal places.
 #' @param p.digits         an integer value indicating the number of decimal places
-#'                         to be used for displaying the \emph{p}-value.
+#'                         to be used for displaying \emph{p}-values, covariance
+#'                         coverage (i.e., \code{p.digits - 1}), and residual
+#'                         correlation coefficients.
 #' @param as.na            a numeric vector indicating user-defined missing values,
 #'                         i.e. these values are converted to \code{NA} before
 #'                         conducting the analysis. Note that \code{as.na()}
@@ -122,7 +138,9 @@
 #' @param write            a character string for writing the results into a Excel
 #'                         file naming a file with or without file extension '.xlsx',
 #'                         e.g., \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check            logical: if \code{TRUE}, argument specification is checked.
+#' @param check            logical: if \code{TRUE}, argument specification is checked
+#'                         and convergence and model identification checks are
+#'                         conducted for the estimated model.
 #' @param output           logical: if \code{TRUE}, output is shown.
 #'
 #' @details
@@ -297,13 +315,38 @@
 #'   correction does not appear to adjust fit indices sufficiently to counteract
 #'   the effect of non-normality (Brosseau-Liard & Savalei, 2014).
 #' }
+#' \item{\strong{Modification Indices and Residual Correlation Matrix}}{The \code{item.cfa}
+#' function provides modification indices and the residual correlation matrix when
+#' requested by using the \code{print} argument. Modification indices (aka score
+#' tests) are univariate Lagrange Multipliers (LM) representing a chi-square
+#' statistic with a single degree of freedom. LM approximates the amount by which
+#' the chi-square test statistic would decrease if a fixed or constrained parameter
+#' is freely estimated (Kline, 2023). However, (standardized) expected parameter
+#' change (EPC) values should also be inspected since modification indices are
+#' sensitive to sample size. EPC values are an estimate of how much the parameter
+#' would be expected to change if it were freely estimated (Brown, 2023). The residual
+#' correlation matrix is computed by separately converting the sample covariance
+#' and model-implied covariance matrices to correlation matrices before calculation
+#' differences between observed and predicted covariances (i.e., \code{type = "cor.bollen"}).
+#' As a rule of thumb, absolute correlation residuals greater than .10 indicate
+#' possible evidence for poor local fit, whereas smaller correlation residuals
+#' than 0.05 indicate negligible degree of model misfit (Maydeu-Olivares, 2017).
+#' There is no reliable connection between the size of diagnostic statistics
+#' (i.e., modification indices and residuals) and the type or amount of model
+#' misspecification since (1) diagnostic statistics are themselves affected by
+#' misspecification, (2) misspecification in one part of the model distorts estimates
+#' in other parts of the model (i.e., error propagation), and (3) equivalent models
+#' have identical residuals but contradict the pattern of causal effects (Kline, 2023).
+#' Note that according to Kline' (2023) "any report of the results without information
+#' about the residuals is deficient" (p. 172).}
 #' }
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#'\code{\link{item.alpha}}, \code{\link{item.omega}}, \code{\link{item.scores}}
+#' \code{\link{item.alpha}}, \code{\link{item.omega}}, \code{\link{item.invar}},
+#' \code{\link{item.scores}}, \code{\link{write.result}}
 #'
 #' @references
 #' Brosseau-Liard, P. E., Savalei, V., & Li. L. (2012). An investigation of the
@@ -315,9 +358,19 @@
 #' for nonnormality. \emph{Multivariate Behavioral Research, 49}, 460-470.
 #' https://doi.org/10.1080/00273171.2014.933697
 #'
+#' Brown, T. A. (2023). Confirmatory factor analysis. In R. H. Hoyle (Ed.),
+#' \emph{Handbook of structural equation modeling} (2nd ed.) (pp. 361–379). The
+#' Guilford Press.
+#'
+#' Kline, R. B. (2023). \emph{Principles and practice of structural equation modeling}
+#' (5th ed.). Guilford Press.
+#'
 #' Li, L., & Bentler, P. M. (2006). Robust statistical tests for evaluating the
 #' hypothesis of close fit of misspecified mean and covariance structural models.
 #' \emph{UCLA Statistics Preprint #506}. University of California.
+#'
+#' Maydeu-Olivares, A. (2017). Assessing the size of model misfit in structural
+#' equation models. \emph{Psychometrika, 82}(3), 533–558. https://doi.org/10.1007/s11336-016-9552-7
 #'
 #' Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.
 #' \emph{Journal of Statistical Software, 48}, 1-36. https://doi.org/10.18637/jss.v048.i02
@@ -325,16 +378,23 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{data} \tab matrix or data frame specified in \code{x} \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{model} \tab specified model \cr
-#' \code{model.fit} \tab fitted lavaan object (\code{model.fit}) \cr
-#' \code{check} \tab results of the convergence and model identification check \cr
-#' \code{result} \tab list with result tables \cr
-#' }
+#'
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame including all variables used in the analysis, i.e.,
+#'                    indicators for the factors and cluster variable}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{model}}{specified model}
+#' \item{\code{model.fit}}{fitted lavaan object}
+#' \item{\code{check}}{results of the convergence and model identification check}
+#' \item{\code{result}}{list with result tables, i.e., \code{summary} for the
+#'                      summary of the specification of the estimation method and
+#'                      missing data handling in lavaan, \code{coverage} for the
+#'                      variance-covariance coverage of the data, \code{descript}
+#'                      for descriptive statistics, \code{fit} for model fit
+#'                      \code{est} for  parameter estimates, \code{modind} for
+#'                      modification indices, and \code{resid} for the residual
+#'                      correlation matrices and standardized residual means}
 #'
 #' @note
 #' The function uses the functions \code{cfa}, \code{lavInspect}, \code{lavTech},
@@ -346,7 +406,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' Load data set "HolzingerSwineford1939" in the lavaan package
+#' # Load data set "HolzingerSwineford1939" in the lavaan package
 #' data("HolzingerSwineford1939", package = "lavaan")
 #'
 #' #---------------------------
@@ -421,7 +481,7 @@
 #'
 #' # Request modification indices with value equal or higher than 5
 #' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
-#'          print = "modind", min.value = 5)
+#'          print = "modind", mod.minval = 5)
 #'
 #' #---------------------------
 #' # lavaan summary of the estimated model
@@ -444,22 +504,16 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                                    "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
                                    "ULS", "ULSM", "ULSMV", "DLS", "PML"),
                      missing = c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust"),
-                     print = c("all", "summary", "coverage", "descript", "fit", "est", "modind"),
-                     min.value = 10, digits = 3, p.digits = 3, as.na = NULL, write = NULL,
+                     print = c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid"),
+                     mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3, as.na = NULL, write = NULL,
                      check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # R package lavaan
-  if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
-
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
-
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input 'x' is missing or NULL
+  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is a matrix or a data frame
   if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or a data frame for the argument 'x'.", call. = FALSE) }
@@ -470,14 +524,17 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   # Check if variables in input 'model' are available in input 'x'
   if (isTRUE(!is.null(model) && any(!unlist(model) %in% colnames(x)))) { stop(paste0("Items specified in the argument 'model' were not found in 'x': ", paste(unique(unlist(model))[!unique(unlist(model)) %in% colnames(x)], collapse = ", ")), call. = FALSE) }
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+
   if (isTRUE(check)) {
+
+    # R package lavaan
+    if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
 
     # Check input 'cluster'
     if (isTRUE(!is.null(cluster))) {
@@ -617,10 +674,13 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
     if (isTRUE(!all(missing %in% c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust")))) { stop("Character string in the argument 'missing' does not match with \"listwise\", \"pairwise\", \"fiml\", \"two.stage\", \"robust.two.stage\", or \"doubly.robust\".", call. = FALSE) }
 
     # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind")))) { stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", or \"modind\".", call. = FALSE) }
+    if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid")))) { stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", \"modind\", or \"resid\".", call. = FALSE) }
 
-    # Check input 'min.value'
-    if (isTRUE(min.value <= 0L)) { stop("Please specify a value greater than 0 for the argument 'min.value'.", call. = FALSE) }
+    # Check input 'mod.minval'
+    if (isTRUE(mod.minval <= 0L)) { stop("Please specify a value greater than 0 for the argument 'mod.minval'.", call. = FALSE) }
+
+    ## Check input 'resid.minval'
+    if (isTRUE(resid.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'resid.minval'.", call. = FALSE) }
 
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
@@ -743,8 +803,13 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
     }
 
+  } else if (isTRUE(length(ident) != 1)) {
+
+    stop("Please specify a character string for the argument 'ident'.", call. = FALSE)
+
   }
 
+  # Specify arguments 'std.lv' and 'effet.coding'
   if (isTRUE(ident == "marker")) {
 
     std.lv <- FALSE
@@ -772,21 +837,17 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   #...................
   ### Default setting ####
-  if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
-                   "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
-                   "ULS", "ULSM", "ULSMV", "DLS", "PML") %in% estimator))) {
+  if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML") %in% estimator))) {
 
     # Continuous indicators
-    if (isTRUE(is.null(ordered) || !isTRUE(ordered))) {
+    if (isTRUE(is.null(ordered))) {
 
-      if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
-                       "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML") %in% estimator ))) { estimator  <- "MLR" }
+      if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML") %in% estimator ))) { estimator  <- "MLR" }
 
     # Categorical indicators
     } else {
 
-      if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
-                       "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML") %in% estimator))) { estimator  <- "WLSMV" }
+      if (isTRUE(all(c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML") %in% estimator))) { estimator  <- "WLSMV" }
 
       # Cluster-robust standard errors
       if (isTRUE(!is.null(cluster))) {
@@ -931,15 +992,13 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print ####
 
-  if (isTRUE(all(c("all", "summary", "coverage", "descript", "fit", "est", "modind") %in% print))) {
+  if (isTRUE(all(c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid") %in% print))) {
 
-    print  <- c("summary", "fit", "est")
+    print  <- c("summary", "descript", "fit", "est")
 
-  }
+  } else if (isTRUE(length(print) == 1L && "all" %in% print)) {
 
-  if (isTRUE(length(print) == 1L && "all" %in% print)) {
-
-    print <- c("summary", "coverage", "descript", "fit", "est", "modind")
+    print <- c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid")
 
   }
 
@@ -1045,8 +1104,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
     eigvals <- eigen(lavaan::lavInspect(model.fit, what = "vcov"), symmetric = TRUE, only.values = TRUE)$values
 
-    # If effect coding method is used, correct for equality constraints
-    if (isTRUE(ident == "effect")) { eigvals <- rev(eigvals)[-seq_len(sum(lavaan::parameterTable(model.fit)$op == "=="))] }
+    # Correct for equality constraints
+    if (isTRUE(any(lavaan::parTable(model.fit)$op == "=="))) { eigvals <- rev(eigvals)[-seq_len(sum(lavaan::parTable(model.fit)$op == "=="))] }
 
     if (isTRUE(min(eigvals) < .Machine$double.eps^(3L/4L))) {
 
@@ -1102,6 +1161,14 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   lav.fit <- lavaan::fitmeasures(model.fit)
 
+  # Saturated model
+  if (isTRUE(lav.fit["df"] == 0L)) {
+
+    lav.fit[c("cfi.robust", "tli.robust")] <- 1
+    lav.fit[c("rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled")] <- 0
+
+  }
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Parameter estimates ####
 
@@ -1113,13 +1180,19 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   if (isTRUE(check.vcov && estimator != "PML")) {
 
-    model.modind <- lavaan::modindices(model.fit, minimum.value = min.value)
+    model.modind <- lavaan::modindices(model.fit)
 
   } else {
 
     model.modind <- NULL
 
   }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Residual Correlation Matrix ####
+
+  model.resid <- tryCatch(suppressWarnings(lavaan::lavResiduals(model.fit, type = "cor.bollen")),
+                          error = function(y) { return(NULL) })
 
   #_____________________________________________________________________________
   #
@@ -1128,13 +1201,13 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## lavaan summary ####
 
-  lavaan.summary <- data.frame(# First column
-                               c(paste("lavaan", lavaan::lavInspect(model.fit, what = "version")), "", "Estimator", "Optimization method", "",
-                                "Test Statistic", "Standard Errors", "Missing data", "",
-                                "Number of Model Parameters", "Indicators", "Identification", "", "",
+  lavaan.summary <- data.frame(### First column
+                               c(paste("lavaan", lavaan::lavInspect(model.fit, what = "version")), "", "Estimator", "Optimization Method", "",
+                                "Test Statistic", "Standard Errors", "Missing Data", "",
+                                "Indicators", "Identification", "", "Number of Model Parameters", "", "",
                                 "Number of Observations", "Number of Clusters"),
-                               # Second column
-                               standard = c("", "",
+                               ### Second column
+                               c("", "",
                                  # Estimator
                                  estimator,
                                  # Optimization method
@@ -1164,8 +1237,6 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                                         "two.stage" = "Two-Stage",
                                         "robust.two.stage" = "Robust Two-Stage",
                                         "doubly.robust" = "Doubly-Robust")), "",
-                                 # Number of Model Parameters
-                                 max(lavaan::parTable(model.fit)$free),
                                  # Variables
                                  ifelse(is.null(ordered), "Continuous",
                                         ifelse(isTRUE(ordered), "Ordered-Categorical",
@@ -1174,14 +1245,16 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                                  switch(ident,
                                         "marker" = "Marker Variable",
                                         "var" = "Factor Variance",
-                                        "effect" = "Effects Coding"), "", "Used",
+                                        "effect" = "Effects Coding"), "",
+                                 # Number of Model Parameters
+                                 max(lavaan::parTable(model.fit)$free),"", "Used",
                                  # Number of observations
                                  lavaan::lavInspect(model.fit, what = "nobs"),
                                  # Number of clusters
                                  ifelse(!is.null(cluster),
                                         length(unique(x[lavaan::lavInspect(model.fit, "case.idx"), ".cluster"])), 1L)),
-                               # Third column
-                               c(rep("", times = 13L), "Total", lavaan::lavInspect(model.fit, what = "norig"), ""),
+                               ### Third column
+                               c(rep("", times = 14L), "Total", lavaan::lavInspect(model.fit, what = "norig"), ""),
                                fix.empty.names = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1190,7 +1263,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   model.fit.measures <- data.frame(# Fist column
                                    c("Loglikelihood",
                                      "H0 Value, Specified Model", "Scaling Correction Factor", "H1 Value, Unrestricted Model", "Scaling Correction Factor", "",
-                                     "Information Criteria", "Akaike (AIC)", "Bayesian (BIC)", "Sample-size adjusted BIC", "",
+                                     "Information Criteria", "Akaike (AIC)", "Bayesian (BIC)", "Sample-Size Adjusted BIC", "",
                                      "Chi-Square Test of Model Fit", "Test statistic", "Degrees of freedom", "P-value", "Scaling Correction Factor", "",
                                      "Incremental Fit Indices", "CFI", "TLI", "",
                                      "Absolute Fit Indices", "RMSEA", "90 Percent CI - lower", "90 Percent CI - upper", "P-value RMSEA <= 0.05", "", "SRMR"),
@@ -1248,10 +1321,10 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   }
 
-  # # Zero degrees of freedom
+  # Zero degrees of freedom
   if (isTRUE(lav.fit["df"] == 0)) { model.fit.measures <- model.fit.measures[-which(model.fit.measures[, 1L] %in% c("Scaling Correction Factor", "P-value", "P-value RMSEA <= 0.05")), ] }
 
-   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Parameter estimates ####
 
   # Latent variables
@@ -1342,8 +1415,18 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   if (isTRUE(check.vcov && estimator != "PML")) {
 
-  model.modind <- misty::df.rename(model.modind[, c("lhs", "op", "rhs", "mi", "epc", "sepc.all")],
-                                   from = "sepc.all", to = "stdyx.epc")
+    model.modind <- misty::df.rename(model.modind[, c("lhs", "op", "rhs", "mi", "epc", "sepc.all")], from = "sepc.all", to = "stdyx")
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Residual Correlation Matrix ####
+
+  # Combine residual correlation matrix and standardized residual means
+  if (isTRUE(!is.null(model.resid))) {
+
+    model.resid <- do.call("rbind", model.resid[c("cov", "mean")])
+
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1352,12 +1435,11 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   object <- list(call = match.call(),
                  type = "item.cfa",
                  data = x,
-                 args = list(rescov = rescov, hierarch = hierarch,
+                 args = list(model = model, rescov = rescov, hierarch = hierarch,
                              meanstructure = meanstructure, ident = ident,
-                             parameterization  = parameterization,
-                             ordered = ordered, cluster = cluster,
-                             estimator = estimator, missing = missing,
-                             print = print, min.value = min.value,
+                             parameterization = parameterization, ordered = ordered,
+                             cluster = cluster, estimator = estimator, missing = missing,
+                             print = print, mod.minval = mod.minval, resid.minval = resid.minval,
                              digits = digits, p.digits = p.digits,
                              as.na = as.na, check = check,
                              output = output),
@@ -1367,7 +1449,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                  result = list(summary = lavaan.summary, coverage = coverage,
                                descript = itemstat, itemfreq = itemfreq,
                                fit = model.fit.measures, param = model.param,
-                               modind = model.modind))
+                               modind = model.modind, resid = model.resid))
 
   class(object) <- "misty.object"
 
@@ -1379,7 +1461,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
 
   #_____________________________________________________________________________
   #
-  # Putput ---------------------------------------------------------------------
+  # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

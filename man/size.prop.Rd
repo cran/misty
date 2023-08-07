@@ -36,7 +36,7 @@ Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{matrix or data frame spcified in \code{x}}
+  \item{\code{data}}{matrix or data frame specified in \code{x}}
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{list with the result, i.e., optimal sample size}
 }

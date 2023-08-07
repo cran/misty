@@ -80,21 +80,6 @@ of missing values (\code{na.descript()} function).}
 \description{
 This function prints the \code{misty.object} object
 }
-\seealso{
-\code{\link{aov.b}}, \code{\link{aov.w}}, \code{\link{aov.w}}, \code{\link{item.alpha}},
-\code{\link{ci.mean.diff}}, \code{\link{ci.mean}}, \code{\link{ci.mean.w}},
-\code{\link{ci.median}}, \code{\link{ci.prop.diff}}, \code{\link{ci.prop}},
-\code{\link{ci.sd}}, \code{\link{ci.var}}, \code{\link{cohens.d}},
-\code{\link{check.collin}}, \code{\link{cor.cont}}, \code{\link{cor.matrix}},
-\code{\link{cor.cramer}}, \code{\link{crosstab}}, \code{\link{descript}},
-\code{\link{eta.sq}}, \code{\link{freq}}, \code{\link{test.levene}},
-\code{\link{multilevel.descript}}, \code{\link{multilevel.r2}}, \code{\link{na.auxiliary}},
-\code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.pattern}},
-\code{\link{item.omega}}, \code{\link{cor.phi}}, \code{\link{cor.poly}},
-\code{\link{size.cor}}, \code{\link{size.mean}}, \code{\link{size.prop}},
-\code{\link{test.levene}}, \code{\link{test.t}}, \code{\link{test.welch}},
-\code{\link{test.z}}
-}
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}
 }

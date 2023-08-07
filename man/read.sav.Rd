@@ -58,7 +58,7 @@ read.sav("SPSS_Data.sav", as.data.frame = FALSE)
 }
 \references{
 Hadley Wickham and Evan Miller (2019). \emph{haven: Import and Export 'SPSS', 'Stata' and 'SAS' Files}.
-R package version 2.1.1.\url{https://CRAN.R-project.org/package=haven}
+R package version 2.1.1.
 }
 \seealso{
 \code{\link{write.sav}}, \code{\link{read.xlsx}}, \code{\link{read.mplus}}

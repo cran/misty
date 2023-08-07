@@ -69,9 +69,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{write.result}}, \code{\link{cohens.d}}, \code{\link{cor.cont}},
+#' \code{\link{cohens.d}}, \code{\link{cor.cont}},
 #' \code{\link{cor.cramer}}, \code{\link{multilevel.icc}}, \code{\link{cor.phi}},
-#' \code{\link{na.auxiliary}}, \code{\link{size.cor}}.
+#' \code{\link{na.auxiliary}}, \code{\link{size.cor}}, \code{\link{write.result}}
 #'
 #' @references
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
@@ -761,11 +761,11 @@ cor.matrix <- function(x, method = c("pearson", "spearman", "kendall-b", "kendal
     # Grouping
     x.group <- split(x, f = group)
 
-    object.g1 <- misty::cor.matrix(x.group[[1]], method = method, na.omit = na.omit, group = NULL,
+    object.g1 <- misty::cor.matrix(x.group[[1L]], method = method, na.omit = na.omit, group = NULL,
                                    digits = digits, continuity = continuity, print = print, tri = tri,
                                    p.adj = p.adj, p.digits = p.digits, check = FALSE, output = FALSE)
 
-    object.g2 <- misty::cor.matrix(x.group[[2]], method = method, na.omit = na.omit, group = NULL,
+    object.g2 <- misty::cor.matrix(x.group[[2L]], method = method, na.omit = na.omit, group = NULL,
                                    digits = digits, continuity = continuity, print = print, tri = tri,
                                    p.adj = p.adj, p.digits = p.digits, check = FALSE, output = FALSE)
 

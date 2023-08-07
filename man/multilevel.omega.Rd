@@ -40,7 +40,7 @@ Between level cannot be  specified using this function.}
 for shared cluster-level constructs, and \code{"config"}
 (default) for configural cluster constructs.}
 
-\item{fix.resid}{a charcter vector for specifying residual variances to be
+\item{fix.resid}{a character vector for specifying residual variances to be
 fixed at 0 at the Between level, e.g., \code{fix.resid = c("x1", "x3")}
 to fix residual variances of indicators \code{x1} and \code{x2}
 at the Between level at 0. Note that it is also possible
@@ -48,7 +48,7 @@ to specify \code{fix.resid = "all"} which fixes all residual
 variances at the Between level at 0 in line with the strong
 factorial measurement invariance assumption across cluster.}
 
-\item{optim.method}{a chracter string indicating the optimizer, i.e., \code{"nlminb"}
+\item{optim.method}{a character string indicating the optimizer, i.e., \code{"nlminb"}
 (default) for the unconstrained and bounds-constrained
 quasi-Newton method optimizer and \code{"em"} for the
 Expectation Maximization (EM) algorithm.}

@@ -53,8 +53,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{write.result}}, \code{\link{crosstab}}, \code{\link{descript}},
-#' \code{\link{multilevel.descript}}, \code{\link{na.descript}}.
+#' \code{\link{crosstab}}, \code{\link{descript}}, \code{\link{multilevel.descript}},
+#' \code{\link{na.descript}}, \code{\link{write.result}}
 #'
 #' @references
 #' Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New  S Language}.

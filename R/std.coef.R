@@ -3,6 +3,29 @@
 #' This function computes standardized coefficients for linear models estimated
 #' by using the \code{lm()} function.
 #'
+#' @param model    a fitted model of class \code{"lm"}.
+#' @param print    a character vector indicating which results to show, i.e.
+#'                 \code{"all"}, for all results, \code{"stdx"} for standardizing
+#'                 only the predictor, \code{"stdy"} for for standardizing only
+#'                 the criterion, and \code{"stdyx"} for for standardizing both
+#'                 the predictor and the criterion. Note that the default setting
+#'                 is depending on the level of measurement of the predictors,
+#'                 i.e., if all predictors are continuous, the default setting
+#'                 is \code{print = "stdyx"}; if all predictors are binary, the
+#'                 default setting is \code{print = "stdy"}; if predictors
+#'                 are continuous and binary, the default setting is \code{print = c("stdy", "stdyx")}.
+#' @param digits   an integer value indicating the number of decimal places to
+#'                 be used for displaying
+#'                 results.
+#' @param p.digits an integer value indicating the number of decimal places to be
+#'                 used for displaying the \emph{p}-value.
+#' @param write    a character string for writing the results into a Excel file
+#'                 naming a file with or without file extension '.xlsx', e.g.,
+#'                 \code{"Results.xlsx"} or \code{"Results"}.
+#' @param check    logical: if \code{TRUE}, argument specification is checked.
+#' @param output   logical: if \code{TRUE}, output is shown on the console.
+#'
+#' @details
 #' The slope \eqn{\beta} can be standardized with respect to only \eqn{x}, only
 #' \eqn{y}, or both \eqn{y} and \eqn{x}:
 #'
@@ -37,25 +60,6 @@
 #' with a quadratic term uses the product of standard deviations \eqn{SD(x)SD(x)}
 #' rather than the standard deviation of the product \eqn{SD(x x)} for the quadratic
 #' term \eqn{x^2}.
-#'
-#' @param model    a fitted model of class \code{"lm"}.
-#' @param print    a character vector indicating which results to show, i.e.
-#'                 \code{"all"}, for all results, \code{"stdx"} for standardizing
-#'                 only the predictor, \code{"stdy"} for for standardizing only
-#'                 the criterion, and \code{"stdyx"} for for standardizing both
-#'                 the predictor and the criterion. Note that the default setting
-#'                 is depending on the level of measurement of the predictors,
-#'                 i.e., if all predictors are continuous, the default setting
-#'                 is \code{print = "stdyx"}; if all predictors are binary, the
-#'                 default setting is \code{print = "stdy"}; if predictors
-#'                 are continuous and binary, the default setting is \code{print = c("stdy", "stdyx")}.
-#' @param digits   an integer value indicating the number of decimal places to
-#'                 be used for displaying
-#'                 results.
-#' @param p.digits an integer value indicating the number of decimal places to be
-#'                 used for displaying the \emph{p}-value.
-#' @param check    logical: if \code{TRUE}, argument specification is checked.
-#' @param output   logical: if \code{TRUE}, output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -117,8 +121,19 @@
 #' # Regression model with a quadratic term
 #' mod.lm5 <- lm(y ~ x1 + I(x1^2), data = dat)
 #' std.coef(mod.lm5)
+#'
+#' #----------------------------
+#' # Write Results into a Excel file
+#'
+#' mod.lm1 <- lm(y ~ x1 + x2, data = dat)
+#'
+#' std.coef(mod.lm1, write = "Std_Coef.xlsx", output = FALSE)
+#'
+#' result <- std.coef(mod.lm1, output = FALSE)
+#' write.result(result, "Std_Coef.xlsx")
 std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
-                     digits = 3, p.digits = 4, check = TRUE, output = TRUE) {
+                     digits = 3, p.digits = 4, write = NULL, check = TRUE,
+                     output = TRUE) {
 
   #_____________________________________________________________________________
   #

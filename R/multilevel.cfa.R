@@ -4,7 +4,12 @@
 #' analysis to investigate four types of constructs, i.e., within-cluster constructs,
 #' shared cluster-level constructs, configural cluster constructs, and simultaneous
 #' shared and configural cluster constructs by calling the \code{cfa} function in
-#' the R package \pkg{lavaan}.
+#' the R package \pkg{lavaan}. By default, the function specifies and estimates
+#' a configural cluster and provides a table with univariate sample statistics,
+#' model fit information, and parameter estimates. Additionally, variance-covariance
+#' coverage of the data, modification indices, and residual correlation matrix can
+#' be requested by specifying the argument \code{print}.
+#'
 #'
 #' @param x            a matrix or data frame. If \code{model}, \code{model.w},
 #'                     and \code{model.b} are \code{NULL}, multilevel confirmatory
@@ -17,7 +22,7 @@
 #'                     name of the cluster variable. If \code{model} or \code{mode.w}
 #'                     and \code{model.b} is specified, the matrix or data frame
 #'                     needs to contain all variables used in the \code{model}
-#'                     argumenut(s).
+#'                     argument(s).
 #' @param cluster      either a character string indicating the variable name of
 #'                     the cluster variable in 'x' or a vector representing the
 #'                     nested grouping structure (i.e., group or cluster variable).
@@ -37,7 +42,7 @@
 #'                     \code{bfactor2} at the Between level each comprising four
 #'                     indicators. Note that the name of each list element is used
 #'                     to label factors, where prefixes \code{w} and \code{b} are
-#'                     added the labels to distingish factor labels at the Within
+#'                     added the labels to distinguish factor labels at the Within
 #'                     and Between level, i.e., all list elements need to be named,
 #'                     otherwise factors are labeled with \code{"wf1", "wf2", "wf3"}
 #'                     for labels at the Within level and \code{"bf1", "bf2", "bf3"}
@@ -50,7 +55,7 @@
 #'                     and \code{x2}, and indicators \code{x3} and \code{x4} at
 #'                     the Within level. Note that residual covariances at the
 #'                     Between level can only be specified by using the arguments
-#'                     \code{model.w}, \code{model.b}, and \code{model.b}.
+#'                     \code{model.w} and \code{model.b}.
 #' @param model.w      a character vector specifying a measurement model with one
 #'                     factor at the Within level, or a list of character vectors
 #'                     for specifying a measurement model with more than one factor
@@ -61,14 +66,20 @@
 #'                     at the Between level.
 #' @param rescov.w     a character vector or a list of character vectors for
 #'                     specifying residual covariances at the Within level.
+#'                     Note that this argument applies only
+#'                     when the model is specified by using the arguments
+#'                     \code{model.w} and \code{model.b}.
 #' @param rescov.b     a character vector or a list of character vectors for
 #'                     specifying residual covariances at the Between level.
+#'                     Note that this argument applies only
+#'                     when the model is specified by using the arguments
+#'                     \code{model.w} and \code{model.b}.
 #' @param const        a character string indicating the type of construct(s), i.e.,
 #'                     \code{"within"} for within-cluster constructs, \code{"shared"}
 #'                     for shared cluster-level constructs, \code{"config"} (default)
 #'                     for configural cluster constructs, and \code{"shareconf"}
 #'                     for simultaneous shared and configural cluster constructs.
-#' @param fix.resid    a charcter vector for specifying residual variances to be
+#' @param fix.resid    a character vector for specifying residual variances to be
 #'                     fixed at 0 at the Between level, e.g., \code{fix.resid = c("x1", "x3")}
 #'                     to fix residual variances of indicators \code{x1} and \code{x2}
 #'                     at the Between level at 0. Note that it is also possible
@@ -97,7 +108,7 @@
 #'                     when using \code{"ML"} (\code{missing = "fiml"}), whereas
 #'                     incomplete cases are removed listwise (i.e., \code{missing = "listwise"})
 #'                     when using \code{"MLR"}.
-#' @param optim.method a chracter string indicating the optimizer, i.e., \code{"nlminb"}
+#' @param optim.method a character string indicating the optimizer, i.e., \code{"nlminb"}
 #'                     (default) for the unconstrained and bounds-constrained
 #'                     quasi-Newton method optimizer and \code{"em"} for the
 #'                     Expectation Maximization (EM) algorithm.
@@ -115,19 +126,31 @@
 #'                     \code{"coverage"} for the variance-covariance coverage of
 #'                     the data, \code{"descript"} for descriptive statistics,
 #'                     \code{"fit"} for model fit,  \code{"est"} for parameter
-#'                     estimates, and \code{"modind"} for modification indices.
-#'                     By default, a summary of the specification, descriptive
-#'                     statistics, model fit, and parameter estimates are printed.
-#' @param min.value    numeric value to filter modification indices and only show
+#'                     estimates, \code{"modind"} for modification indices, and
+#'                     \code{"resid"} for the residual correlation matrix and
+#'                     standardized residual means. By default, a summary of the
+#'                     specification, descriptive statistics, model fit, and
+#'                     parameter estimates are printed.
+#' @param mod.minval   numeric value to filter modification indices and only show
 #'                     modifications with a modification index value equal or higher
 #'                     than this minimum value. By default, modification indices
-#'                     equal or higher 10 is printed.
+#'                     equal or higher 6.63 are printed. Note that a modification
+#'                     index value of 6.63 is equivalent to a significance level
+#'                     of \eqn{\alpha = .01}.
+#' @param resid.minval numeric value indicating the minimum absolute residual
+#'                     correlation coefficients and standardized means to highlight
+#'                     in boldface. By default, absolute residual correlation
+#'                     coefficients and standardized means equal or higher 0.1
+#'                     are highlighted. Note that highlighting can be disabled by
+#'                     setting the minimum value to 1.
 #' @param digits       an integer value indicating the number of decimal places
 #'                     to be used for displaying results. Note that loglikelihood,
-#'                     information criteria and chi-square test statistic is
+#'                     information criteria and chi-square test statistic are
 #'                     printed with \code{digits} minus 1 decimal places.
 #' @param p.digits     an integer value indicating the number of decimal places
-#'                     to be used for displaying the \emph{p}-value.
+#'                     to be used for displaying \emph{p}-values, covariance
+#'                     coverage (i.e., \code{p.digits - 1}), and residual
+#'                     correlation coefficients.
 #' @param as.na        a numeric vector indicating user-defined missing values,
 #'                     i.e. these values are converted to \code{NA} before conducting
 #'                     the analysis. Note that \code{as.na()} function is only
@@ -144,7 +167,8 @@
 #'
 #' @seealso
 #' \code{\link{item.cfa}}, \code{\link{multilevel.fit}}, \code{\link{multilevel.invar}},
-#' \code{\link{multilevel.omega}}, \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}}
+#' \code{\link{multilevel.omega}}, \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}},
+#' \code{\link{write.result}}
 #'
 #' @references
 #' Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.
@@ -165,13 +189,18 @@
 #'                      and missing data handling in lavaan, \code{coverage} for
 #'                      the variance-covariance coverage of the data, \code{descript}
 #'                      for descriptive statistics, \code{fit} for model fit,
-#'                      \code{est} for parameter estimates, and \code{modind}
-#'                      for modification indices.}
+#'                      \code{est} for a list with parameter estimates for Within
+#'                      and Between, \code{score} fir a list with modification
+#'                      indices for parameter constraints for Within and Between,
+#'                      and \code{resid} for a list with residual correlation
+#'                      matrices and standardized residual means for the Within
+#'                      and Between level}
 #'
 #' @note
-#' The function uses the functions \code{cfa}, \code{lavInspect}, \code{lavTech},
-#' \code{modindices}, \code{parameterEstimates}, and \code{standardizedsolution}
-#' provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
+#' The function uses the functions \code{cfa}, \code{lavInspect},\code{lavResiduals},
+#' \code{lavTech}, \code{lavTestScore}, \code{modindices}, \code{parameterEstimates},
+#' and \code{standardizedsolution} provided in the R package \pkg{lavaan} by Yves
+#' Rosseel (2012).
 #'
 #' @export
 #'
@@ -239,9 +268,9 @@
 #' #..........
 #' # Print all results
 #'
-#' # Set minimum value for modification indices at 1
+#' # Set minimum value for modification indices to 1
 #' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                print = "all", min.value = 1)
+#'                print = "all", mod.minval = 1)
 #'
 #' #..........
 #' # lavaan model and summary of the estimated model
@@ -339,9 +368,9 @@ multilevel.cfa <- function(x, cluster, model = NULL, rescov = NULL,
                            const = c("within", "shared", "config", "shareconf"), fix.resid = NULL,
                            ident = c("marker", "var", "effect"), ls.fit = TRUE, estimator = c("ML", "MLR"),
                            optim.method = c("nlminb", "em"), missing = c("listwise", "fiml"),
-                           print = c("all", "summary", "coverage", "descript", "fit", "est", "modind"),
-                           min.value = 10, digits = 3, p.digits = 3, as.na = NULL, write = NULL,
-                           check = TRUE, output = TRUE) {
+                           print = c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid"),
+                           mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3, as.na = NULL,
+                           write = NULL, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -486,10 +515,13 @@ multilevel.cfa <- function(x, cluster, model = NULL, rescov = NULL,
     if (isTRUE(!all(missing %in% c("listwise", "fiml")))) { stop("Character string in the argument 'missing' does not match with \"listwise\" or \"fiml\".", call. = FALSE) }
 
     # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind")))) { stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", or \"modind\".", call. = FALSE) }
+    if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid")))) { stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", \"modind\", or \"resid\".", call. = FALSE) }
 
-    # Check input 'min.value'
-    if (isTRUE(min.value <= 0L)) { stop("Please specify a value greater than 0 for the argument 'min.value'.", call. = FALSE) }
+    # Check input 'mod.minval'
+    if (isTRUE(mod.minval <= 0L)) { stop("Please specify a value greater than 0 for the argument 'mod.minval'.", call. = FALSE) }
+
+    ## Check input 'resid.minval' ##
+    if (isTRUE(resid.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'resid.minval'.", call. = FALSE) }
 
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
@@ -690,7 +722,7 @@ multilevel.cfa <- function(x, cluster, model = NULL, rescov = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print ####
 
-  if (isTRUE(all(c("all", "summary", "coverage", "descript", "fit", "est", "modind") %in% print))) {
+  if (isTRUE(all(c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid") %in% print))) {
 
     print  <- c("summary", "descript", "fit", "est")
 
@@ -698,7 +730,7 @@ multilevel.cfa <- function(x, cluster, model = NULL, rescov = NULL,
 
   if (isTRUE(length(print) == 1L && "all" %in% print)) {
 
-    print <- c("summary", "coverage", "descript", "fit", "est", "modind")
+    print <- c("summary", "coverage", "descript", "fit", "est", "modind", "resid")
 
   }
 
@@ -1188,10 +1220,8 @@ multilevel.cfa <- function(x, cluster, model = NULL, rescov = NULL,
 
     eigvals <- eigen(lavaan::lavInspect(model.fit, what = "vcov"), symmetric = TRUE, only.values = TRUE)$values
 
-    # Model contains equality constraints
-    model.fit.par <- lavaan::parameterTable(model.fit)$op == "=="
-
-    if (isTRUE(any(model.fit.par))) { eigvals <- rev(eigvals)[-seq_len(sum(model.fit.par))] }
+    # Correct for equality constraints
+    if (isTRUE(any(lavaan::parTable(model.fit)$op == "=="))) { eigvals <- rev(eigvals)[-seq_len(sum(lavaan::parTable(model.fit)$op == "=="))] }
 
     if (isTRUE(min(eigvals) < .Machine$double.eps^(3L/4L))) {
 
@@ -1365,7 +1395,7 @@ multilevel.cfa <- function(x, cluster, model = NULL, rescov = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Modification indices ####
 
-  model.modind <- tryCatch(suppressWarnings(lavaan::modindices(model.fit, minimum.value = min.value)),
+  model.modind <- tryCatch(suppressWarnings(lavaan::modindices(model.fit)),
                            error = function(y) {
 
                              if (isTRUE("modind" %in% print)) { warning("Modification indices could not be computed.", call. = FALSE) }
@@ -1373,6 +1403,69 @@ multilevel.cfa <- function(x, cluster, model = NULL, rescov = NULL,
                              return(NULL)
 
                             })
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Score Test ####
+
+  model.score <- tryCatch(lavaan::lavTestScore(model.fit, epc = TRUE, warn = FALSE), error = function(y) {
+
+      if (isTRUE("modind" %in% print)) { warning("Modification indices for parameter constraints could not be computed.", call. = FALSE) }
+
+      return(NULL)
+
+      }, warning = function(z) {})
+
+  # Combine score tests and expected parameter changes
+  if (isTRUE(!is.null(model.score))) {
+
+    # Parameter table
+    partable <- lavaan::parTable(model.fit)
+
+    # Univariate score statistics
+    uniscore <- model.score$uni
+
+    # Effects coding
+    if (isTRUE(ident == "effect")) { uniscore <- uniscore[-grep("-", uniscore$rhs), ] }
+
+    # Expected parameter change
+    epcscore <- model.score$epc
+
+    model.score <- data.frame(label = NA, lhs = NA, op = NA, rhs = NA, mi = NA, df = NA, pvalue = NA, lhs.epc = NA, rhs.epc = NA, lhs.stdyx = NA, rhs.stdyx = NA)
+
+    for (i in seq_len(nrow(uniscore))) {
+
+      model.score[i, ] <- data.frame(label = partable[partable$plabel == uniscore[i, "lhs"], "label"],
+                                     lhs = paste0(partable[partable$plabel == uniscore[i, "lhs"], c("lhs", "op", "rhs")], collapse = " "),
+                                     op = "==",
+                                     rhs = paste0(partable[partable$plabel == uniscore[i, "rhs"], c("lhs", "op", "rhs")], collapse = " "),
+                                     mi = uniscore[i, "X2"], df = uniscore[i, "df"], pvalue = uniscore[i, "p.value"],
+                                     lhs.epc = epcscore[partable$plabel == uniscore[i, "lhs"], "epc"],
+                                     rhs.epc = epcscore[partable$plabel == uniscore[i, "rhs"], "epc"],
+                                     lhs.stdyx = epcscore[partable$plabel == uniscore[i, "lhs"], "sepc.all"],
+                                     rhs.stdyx = epcscore[partable$plabel == uniscore[i, "rhs"], "sepc.all"])
+
+     }
+
+   }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Residual Correlation Matrix ####
+
+  model.resid <- tryCatch(lavaan::lavResiduals(model.fit, type = "cor.bollen"), error = function(y) {
+
+    if (isTRUE("resid" %in% print)) { warning("Residual correlation matrix indices could not be computed.", call. = FALSE) }
+
+    return(NULL)
+
+    }, warning = function(z) {})
+
+  # Combine residual correlation matrix and standardized residual means
+  if (isTRUE(!is.null(model.resid))) {
+
+    model.resid <- list(within = do.call("rbind", model.resid$within[c("cov", "mean")]),
+                        between = do.call("rbind", model.resid$.cluster[c("cov", "mean")]))
+
+  }
 
   #_____________________________________________________________________________
   #
@@ -1397,8 +1490,8 @@ multilevel.cfa <- function(x, cluster, model = NULL, rescov = NULL,
   lavaan.summary <- data.frame(# First column
                                c(paste("lavaan", lavaan::lavInspect(model.fit, what = "version")), "", "Estimator", "Optimization Method", "",
                                  "Test Statistic", "Standard Errors", "Missing Data", "Identification","",
-                                 "Numer of Model Parameters", "Within", "Between",
-                                 "Numer of Equality Constraints", "", "",
+                                 "Number of Model Parameters", "Within", "Between",
+                                 "Number of Equality Constraints", "", "",
                                  "Number of Observations", "Number of Clusters", "Average Cluster Size"),
                                # Second column
                                unlist(c("", "",
@@ -1675,13 +1768,13 @@ multilevel.cfa <- function(x, cluster, model = NULL, rescov = NULL,
 
     if (isTRUE("level" %in% colnames(model.modind))) {
 
-      model.modind <- list(within = misty::df.rename(model.modind[which(model.modind$level == 1L), c("lhs", "op", "rhs", "mi", "epc", "sepc.all")], from = "sepc.all", to = "stdyx.epc"),
-                           between = misty::df.rename(model.modind[which(model.modind$level == 2L), c("lhs", "op", "rhs", "mi", "epc", "sepc.all")], from = "sepc.all", to = "stdyx.epc"))
+      model.modind <- list(within = misty::df.rename(model.modind[which(model.modind$level == 1L), c("lhs", "op", "rhs", "mi", "epc", "sepc.all")], from = "sepc.all", to = "stdyx"),
+                           between = misty::df.rename(model.modind[which(model.modind$level == 2L), c("lhs", "op", "rhs", "mi", "epc", "sepc.all")], from = "sepc.all", to = "stdyx"))
 
     } else {
 
-      model.modind <- list(within = misty::df.rename(model.modind[, c("lhs", "op", "rhs", "mi", "epc", "sepc.all")], from = "sepc.all", to = "stdyx.epc"),
-                          between = misty::df.rename(model.modind[-c(1L:nrow(model.modind)), c("lhs", "op", "rhs", "mi", "epc", "sepc.all")], from = "sepc.all", to = "stdyx.epc"))
+      model.modind <- list(within = misty::df.rename(model.modind[, c("lhs", "op", "rhs", "mi", "epc", "sepc.all")], from = "sepc.all", to = "stdyx"),
+                          between = misty::df.rename(model.modind[-c(1L:nrow(model.modind)), c("lhs", "op", "rhs", "mi", "epc", "sepc.all")], from = "sepc.all", to = "stdyx"))
 
     }
 
@@ -1697,16 +1790,16 @@ multilevel.cfa <- function(x, cluster, model = NULL, rescov = NULL,
                              model.w = model.w, model.b = model.b, rescov.w = rescov.w, rescov.b = rescov.b,
                              const = const, fix.resid = fix.resid, ident = ident,
                              estimator = estimator, optim.method = optim.method,
-                             missing = missing, print = print, min.value = min.value,
-                             digits = digits, p.digits = p.digits, as.na = as.na, check = check,
-                             output = output),
+                             missing = missing, print = print, mod.minval = mod.minval,
+                             resid.minval = resid.minval, digits = digits, p.digits = p.digits,
+                             as.na = as.na, check = check, output = output),
                  model = mod.l12,
                  model.fit = model.fit,
                  check = list(vcov = check.vcov, theta.w = check.theta.w, theta.b = check.theta.b,
                               cov.lv.w = check.cov.lv.w, cov.lv.b = check.cov.lv.b),
                  result = list(summary = lavaan.summary, coverage = coverage,
                                descript = descript.var, fit = model.fit.measures,
-                               param = model.param, modind = model.modind))
+                               param = model.param, modind = model.modind, score = model.score, resid = model.resid))
 
   class(object) <- "misty.object"
 

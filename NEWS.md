@@ -1,3 +1,38 @@
+### misty 0.5.0 (2023-08-08)
+
+##### New features
+* New function `item.invar()` for evaluating configural, metric, scalar, and strict
+between-group or longitudinal (partial) measurement invariance.
+* New function `robust.coef()` for computing heteroscedasticity-consistent standard 
+errors and significance values for linear models estimated by using the `lm()` 
+function and generalized linear models estimated by using the `glm()` function.
+* New function `dominance()` for linear models estimated by using the `lm()` function
+and `dominance.manual()` to conduct dominance analysis based on a (model-implied) 
+correlation matrix of the manifest or latent variables.
+* New function `check.resid()` for performing residual diagnostics to detect 
+nonlinearity (partial residual or component-plus-residual plots), nonconstant 
+error variance (predicted values vs. residuals plot), and non-normality of residuals 
+(Q-Q plot and histogram with density plot).
+* New function `mplus.lpa()` for writing Mplus input files for conducting latent
+profile analysis based on six different variance-covariance structures.
+* New function `result.lpa()` for creating a summary result table for latent profile
+analysis from multiple Mplus output files within subfolders.
+
+##### Minor features and improvements
+* Added the argument `order` to the function `multilevel.cor()` to order variables 
+in the output table so that variables specified in the argument `between` are 
+shown first (requested by Chaoping Li).
+* Added modification indices for parameter constraints to the function `multilevel.cfa()`
+and `multilevel.invar()`.
+* Added residual correlation matrix to the function `item.cfa()`, `multilevel.cfa()`,
+and `multilevel.invar()`.
+* Function `write.result()` can also write results based on the return object of
+the `std.coef` function.
+
+##### User-visible changes
+* Renamed the argument `min.value` in the function `item.cfa()`, `multilevel.cfa()`,
+and `multilevel.invar()` to `mod.minval` and changed the default setting to `6.63`.
+
 ### misty 0.4.12 (2023-07-08)
 
 ##### User-visible changes

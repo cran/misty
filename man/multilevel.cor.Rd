@@ -8,7 +8,7 @@ multilevel.cor(x, cluster, within = NULL, between = NULL,
                estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"),
                missing = c("listwise", "fiml"), sig = FALSE, alpha = 0.05,
                print = c("all", "cor", "se", "stat", "p"), split = FALSE,
-               tri = c("both", "lower", "upper"), tri.lower = TRUE,
+               order = FALSE, tri = c("both", "lower", "upper"), tri.lower = TRUE,
                p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel",
                          "BH", "BY", "fdr"), digits = 2, p.digits = 3,
                as.na = NULL, write = NULL, check = TRUE, output = TRUE)
@@ -41,7 +41,7 @@ method is used to deal with missing data when using
 cases are removed listwise (i.e., \code{missing = "listwise"})
 when using \code{"MLR"}.}
 
-\item{optim.method}{a chracter string indicating the optimizer, i.e., \code{nlminb}
+\item{optim.method}{a character string indicating the optimizer, i.e., \code{nlminb}
 (default) for the unconstrained and bounds-constrained
 quasi-Newton method optimizer and \code{"em"} for the
 Expectation Maximization (EM) algorithm.}
@@ -71,6 +71,10 @@ statistics, and \code{"p"} for \emph{p}-values.}
 
 \item{split}{logical: if \code{TRUE}, output table is split in
 within-group and between-group correlation matrix.}
+
+\item{order}{logical: if \code{TRUE}, variables in the output table are
+ordered, so that variables specified in the argument
+\code{between} are shown first.}
 
 \item{tri}{a character string indicating which triangular of the
 matrix to show on the console when \code{split = TRUE},
