@@ -58,7 +58,7 @@ export(item.reverse)
 export(item.scores)
 export(kurtosis)
 export(libraries)
-export(mplus.lpa)
+export(mplus.lca)
 export(multilevel.cfa)
 export(multilevel.cor)
 export(multilevel.descript)
@@ -82,7 +82,7 @@ export(read.sav)
 export(read.xlsx)
 export(rec)
 export(restart)
-export(result.lpa)
+export(result.lca)
 export(robust.coef)
 export(run.mplus)
 export(rwg.lindell)
@@ -113,6 +113,6 @@ importFrom("stats", "aov", "as.formula", "chisq.test", "coef", "coefficients",
            "pchisq", "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", "reshape",
            "sd", "terms", "time", "t.test", "p.adjust", "pf", "pt", "uniroot", "update",
            "var", "vcov", "weights")
-importFrom("utils", "as.relistable", "available.packages", "combn", 
+importFrom("utils", "as.relistable", "available.packages", "combn", "head",
            "install.packages", "installed.packages", "packageDescription", 
            "read.table", "relist", "write.csv", "write.csv2", "write.table")

@@ -376,8 +376,7 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL,
 
   gen.res <- data.frame(r2 = domin.res,
                         perc = domin.res / sum(domin.res)  * 100,
-                        rank = order(domin.res))
-
+                        rank = rank(-domin.res))
 
   gen.res <- rbind(gen.res, c(sum(gen.res[, "r2"]), sum(gen.res[, "perc"]), NA))
   row.names(gen.res) <- c(colnames(x)[-1L], "Total")

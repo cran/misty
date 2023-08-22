@@ -8606,16 +8606,23 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
   #_____________________________________________________________________________
   #
   # Result Table for Latent Profile Analysis Estimated in Mplus ----------------
-  }, result.lpa = {
+  }, result.lca = {
 
-    cat(" Latent Profile Analysis\n\n")
+    cat(" Latent Class Analysis\n\n")
+
+    #...................
+    ### Print object ####
+
+    print.object <- print.object$summary
 
     #...................
     ### Round ####
 
+    tests <- intersect(c("chi.pear", "chi.lrt", "lmr.lrt", "almr.lrt", "blrt", "entropy"), colnames(print.object))
+
     print.object[, c("LL", "aic", "caic", "bic", "sabic")] <- apply(print.object[, c("LL", "aic", "caic", "bic", "sabic")], 2L, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
     print.object[, "LL.scale"] <- formatC(print.object[, "LL.scale"], digits = digits + 1L, format = "f", zero.print = ifelse(digits + 1L > 0L, paste0("0.", paste(rep(0L, times = digits + 1L), collapse = "")), "0"))
-    print.object[, c("lmr.lrt", "almr.lrt", "blrt", "entropy", colnames(print.object)[substr(colnames(print.object), 1L, 1L) == "p"])] <- apply(print.object[, c("lmr.lrt", "almr.lrt", "blrt", "entropy", colnames(print.object)[substr(colnames(print.object), 1L, 1L) == "p"])], 2L, function(y) formatC(y, digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")))
+    print.object[, c(tests, colnames(print.object)[substr(colnames(print.object), 1L, 1L) == "p"])] <- apply(print.object[, c(tests, colnames(print.object)[substr(colnames(print.object), 1L, 1L) == "p"]), drop = FALSE], 2L, function(y) formatC(y, digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")))
 
     #...................
     ### Additional folder row ####
@@ -8634,13 +8641,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     #...................
     ### Column names ####
 
-    print.object <- rbind(c("Folder", "#Prof", "Conv", "#Param", "logLik", "Scale", "LL Rep", "AIC", "CAIC", "BIC", "SABIC", "LMR-LRT", "A-LRT", "BLRT", "Entropy", colnames(print.object)[substr(colnames(print.object), 1L, 1L) == "p"]),
+    tests <- misty::rec(tests, "'lmr.lrt' = 'LMR-LRT'; 'almr.lrt' = 'A-LRT'; 'blrt' = 'BLRT'; 'chi.pear' = 'Chi-Pear'; 'chi.lrt' = 'Chi-LRT'; 'entropy' = 'Entropy'")
+
+    print.object <- rbind(c("Folder", "#Prof", "Conv", "#Param", "logLik", "Scale", "LL Rep", "AIC", "CAIC", "BIC", "SABIC",
+                            misty::rec(tests, "'lmr.lrt' = 'LMR-LRT'; 'almr.lrt' = 'A-LRT'; 'blrt' = 'BLRT'; 'chi.pear' = 'Chi-Pear'; 'chi.lrt' = 'Chi-LRT'; 'entropy' = 'Entropy'"),
+                            colnames(print.object)[substr(colnames(print.object), 1L, 1L) == "p"]),
                           print.object)
-
-    #...................
-    ### Remove empty columns ####
-
-    print.object <- print.object[, which(apply(print.object[-1L, ], 2L, function(y) !all(misty::chr.trim(y) == "NA")))]
 
     #...................
     ### Remove duplicated rows ####

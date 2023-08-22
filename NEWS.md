@@ -1,3 +1,17 @@
+### misty 0.5.1 (2023-08-22)
+
+##### Minor features and improvements
+* Function `mplus.lca()` can  be used to conduct latent class analysis with
+count, unordered categorical, and ordered categorical indicator variables.
+* Function `result.lca()` can be used to save bar charts with error bars for confidence 
+intervals for each of the latent class solutions.
+
+##### Bug fix
+* Fixed a bug in the function `dominance.manual()`, function provided the wrong rank orderning.
+
+##### User-visible changes
+* Renamed the functions `mplus.lpa()` and `results.lpa()` to `mplus.lca()` and `results.lca()`.
+
 ### misty 0.5.0 (2023-08-08)
 
 ##### New features
@@ -21,7 +35,7 @@ analysis from multiple Mplus output files within subfolders.
 ##### Minor features and improvements
 * Added the argument `order` to the function `multilevel.cor()` to order variables 
 in the output table so that variables specified in the argument `between` are 
-shown first (requested by Chaoping Li).
+shown first.
 * Added modification indices for parameter constraints to the function `multilevel.cfa()`
 and `multilevel.invar()`.
 * Added residual correlation matrix to the function `item.cfa()`, `multilevel.cfa()`,
@@ -134,7 +148,6 @@ to the functions `test.welch()`.
 ### misty 0.4.5 (2022-04-29)
 
 ##### New features
-
 * New function `item.cfa()` for conducting confirmatory factor analysis using the R package lavaan.
 
 ##### Minor features and improvements

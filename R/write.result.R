@@ -6,7 +6,7 @@
 #' Currently the function supports result objects from the function
 #' \code{cor.matrix}, \code{crosstab}, \code{descript}, \code{dominance.manual},
 #' \code{dominance}, \code{freq}, \code{item.alpha}, \code{item.cfa}, \code{item.invar},
-#' \code{item.omega}, \code{result.lpa}, \code{multilevel.cfa}, \code{multilevel.cor},
+#' \code{item.omega}, \code{result.lca}, \code{multilevel.cfa}, \code{multilevel.cor},
 #' \code{multilevel.descript}, \code{multilevel.fit}, \code{multilevel.invar},
 #' \code{multilevel.omega}, \code{na.coverage}, \code{na.descript}, \code{na.pattern},
 #' \code{robust.coef}, and \code{std.coef}.
@@ -36,7 +36,7 @@
 #' @seealso
 #' \code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{freq}},
 #' \code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.invar}},
-#' \code{\link{item.omega}}, \code{\link{result.lpa}}, \code{\link{multilevel.cfa}},
+#' \code{\link{item.omega}}, \code{\link{result.lca}}, \code{\link{multilevel.cfa}},
 #' \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
 #' \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}}, \code{\link{na.coverage}},
 #' \code{\link{na.descript}}, \code{\link{na.pattern}}, \code{\link{robust.coef}}, \code{\link{std.coef}},
@@ -138,7 +138,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   # Check if input 'x' is supported by the function
   if (isTRUE(!x$type %in% c("cor.matrix", "crosstab", "descript", "dominance.manual",
                             "dominance", "freq",  "item.alpha", "item.cfa", "item.invar",
-                            "item.omega", "result.lpa", "multilevel.cfa", "multilevel.cor",
+                            "item.omega", "result.lca", "multilevel.cfa", "multilevel.cor",
                             "multilevel.descript", "multilevel.fit", "multilevel.invar",
                             "multilevel.omega", "na.coverage", "na.descript", "na.pattern",
                             "robust.coef", "std.coef"))) {
@@ -2099,63 +2099,123 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Result Table for LPA Estimated in Mplus, result.lpa() ----------------------
-  }, result.lpa = {
+  # Result Table for LCA Estimated in Mplus, result.lca() ----------------------
+  }, result.lca = {
+
+    #...................
+    ### Result tables ####
+
+    write.object.summary <- write.object$summary
+    write.object.mean.var <- write.object$mean_var
+    write.object.mean <- write.object$mean
+    write.object.var <- write.object$var
 
     #...................
     ### Round ####
 
-    write.object[, c("LL", "aic", "caic", "bic", "sabic")] <- round(write.object[, c("LL", "aic", "caic", "bic", "sabic")], digits = digits)
-    write.object[, "LL.scale"] <- round(write.object[, "LL.scale"], digits = digits + 1L)
-    write.object[, c("lmr.lrt", "almr.lrt", "blrt", "entropy", colnames(write.object)[substr(colnames(write.object), 1L, 1L) == "p"])] <- round(write.object[, c("lmr.lrt", "almr.lrt", "blrt", "entropy", colnames(write.object)[substr(colnames(write.object), 1L, 1L) == "p"])], digits = p.digits)
+    tests <- intersect(c("chi.pear", "chi.lrt", "lmr.lrt", "almr.lrt", "blrt", "entropy"), colnames(write.object.summary))
+
+    write.object.summary[, c("LL", "aic", "caic", "bic", "sabic")] <- round(write.object.summary[, c("LL", "aic", "caic", "bic", "sabic")], digits = digits)
+    write.object.summary[, "LL.scale"] <- round(write.object.summary[, "LL.scale"], digits = digits + 1L)
+    write.object.summary[, c(tests, colnames(write.object.summary)[substr(colnames(write.object.summary), 1L, 1L) == "p"])] <- round(write.object.summary[, c(tests, colnames(write.object.summary)[substr(colnames(write.object.summary), 1L, 1L) == "p"])], digits = p.digits)
 
     #...................
     ### Column names ####
 
-    colnames(write.object) <- c("Folder", "#Prof", "Conv", "#Param", "logLik", "Scale", "LL Rep", "AIC", "CAIC", "BIC", "SABIC", "LMR-LRT", "A-LRT", "BLRT", "Entropy", colnames(write.object)[substr(colnames(write.object), 1L, 1L) == "p"])
+    colnames(write.object.summary) <- c("Folder", "#Class", "Conv", "#Param", "logLik", "Scale", "LL Rep", "AIC", "CAIC", "BIC", "SABIC",
+                                        misty::rec(tests, "'lmr.lrt' = 'LMR-LRT'; 'almr.lrt' = 'A-LRT'; 'blrt' = 'BLRT'; 'chi.pear' = 'Chi-Pear'; 'chi.lrt' = 'Chi-LRT'; 'entropy' = 'Entropy'"),
+                                        colnames(write.object.summary)[substr(colnames(write.object.summary), 1L, 1L) == "p"])
 
     #...................
     ### TRUE/FALSE into Yes/NO ####
 
-    write.object$Conv <- sapply(write.object$Conv, function(y) ifelse(isTRUE(y), "Yes", "No"))
-    write.object$`LL Rep` <- sapply(write.object$`LL Rep`, function(y) ifelse(isTRUE(y), "Yes", "No"))
+    write.object.summary$Conv <- sapply(write.object.summary$Conv, function(y) ifelse(isTRUE(y), "Yes", "No"))
+    write.object.summary$`LL Rep` <- sapply(write.object.summary$`LL Rep`, function(y) ifelse(isTRUE(y), "Yes", "No"))
 
     #...................
     ### Split results ####
 
-    write.object.spit <- split(write.object, f = write.object$Folder)
+    write.object.summary.split <- split(write.object.summary, f = write.object.summary$Folder)
 
     #...................
     ### Additional folder row ####
 
     write.temp <- NULL
-    for (i in unique(write.object$Folder)) {
+    for (i in unique(write.object.summary$Folder)) {
 
       write.temp <- rbind(write.temp,
-                          setNames(do.call(data.frame, list(i, rep(list(NA), times = ncol(write.object) - 1L))), nm = colnames(write.object)),
-                          write.object[write.object$Folder == i, ])
+                          setNames(do.call(data.frame, list(i, rep(list(NA), times = ncol(write.object.summary) - 1L))), nm = colnames(write.object.summary)),
+                          write.object.summary[write.object.summary$Folder == i, ])
 
     }
 
-    write.object <- write.temp
+    write.object.summary <- write.temp
 
     # Duplicated folder entries
-    write.object[duplicated(write.object$Folder), "Folder"] <- NA
+    write.object.summary[duplicated(write.object.summary$Folder), "Folder"] <- NA
 
     #...................
     ### Remove empty columns ####
 
-    write.object <- write.object[, which(apply(write.object[-1L, ], 2L, function(y) !all(is.na(y))))]
+    # write.object.summary <- write.object.summary[, which(apply(write.object.summary[-1L, ], 2L, function(y) !all(is.na(y))))]
 
     #...................
     ### List element names ####
 
-    names(write.object.spit) <- abbreviate(names(write.object.spit), minlength = 1L)
+    names(write.object.summary.split) <- abbreviate(names(write.object.summary.split), minlength = 1L)
+
+    #...................
+    ### Mean/Variance tables ####
+
+    if (any(!is.na(write.object.mean.var))) {
+
+      #### Round
+      write.object.mean.var$n <- round(write.object.mean.var$n)
+      write.object.mean$n <- round(write.object.mean$n)
+
+      write.object.mean$low <- round(write.object.mean$low, digits = 3L)
+      write.object.mean$upp <- round(write.object.mean$upp, digits = 3L)
+
+      #### Numeric
+      write.object.mean.var$class <- as.numeric(write.object.mean.var$class)
+      write.object.mean$class <- as.numeric(write.object.mean$class)
+
+      #### Column names
+      colnames(write.object.mean.var) <- c("Folder", "#Class", "Class", "n", "Param", "Ind", "Est.", "SE", "z", "pval")
+      colnames(write.object.mean) <- c("Folder", "#Class", "Class", "n", "Param", "Ind", "Est.", "SE", "z", "pval", "Low", "Upp")
+
+      #### Variance table
+      if (any(!is.na(write.object.var))) {
+
+        # Round
+        write.object.var$n <- round(write.object.var$n)
+        # Numeric
+        write.object.var$class <- as.numeric(write.object.var$class)
+        # Column names
+        colnames(write.object.var) <- c("Folder", "#Class", "Class", "n", "Param", "Ind", "Est.", "SE", "z", "pval")
+
+      }
+
+    }
+
+    #...................
+    ### Remove result tables ####
+
+    # One subfolder
+    if (isTRUE(length(write.object.summary.split) == 1L)) { write.object.summary.split <- NA }
+
+    # Count variables
+    if (isTRUE(all(is.na(write.object.var)) & any(!is.na(write.object.mean)))) { write.object.mean.var <- NA }
 
     #...................
     ### Return object ####
 
-    write.object <- append(list(All = write.object), write.object.spit)
+    # Combine result tables
+    write.object <- Reduce(append, list(list(Summary = write.object.summary), write.object.summary.split,
+                           list(Mean_Var = write.object.mean.var), list(Mean = write.object.mean), list(Var = write.object.var)))
+
+    # Remove NA list elements
+    write.object <- write.object[sapply(write.object, function(y) any(!is.na(y)))]
 
   #_____________________________________________________________________________
   #

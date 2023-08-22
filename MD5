@@ -1,7 +1,7 @@
-5f1f32c0a1331546e37cf938040209c3 *DESCRIPTION
+bb2cc5cc56d12e44ef0cffffe770d604 *DESCRIPTION
 f988a6eca78c0879aedf94627be12320 *LICENSE
-85f62eccfd007dcb5a32e228f3c2df57 *NAMESPACE
-900ad05497a4a3575799b5b352bca982 *NEWS.md
+237ab542921e71c467def01e555fd0b7 *NAMESPACE
+a717559d99ca7c800e25b34065e1be05 *NEWS.md
 55f87281ca1d83d8a039611569bf1956 *R/aov.b.R
 f51d298c60c60b7957712cb7b5a3f09c *R/aov.w.R
 e485510273ed44aa9291c13e42c4c608 *R/as.na.R
@@ -35,7 +35,7 @@ db5b3589e20095d97bd015a55dcc36cd *R/df.rbind.R
 c3d06b93abc67bfafa834e6ac21ca49b *R/df.rename.R
 29b6cd943433b9dcced4136fa3d593f5 *R/df.sort.R
 8926f310154ec9540e146c004ac5eed8 *R/dominance.R
-4e625779ec6a7eb9e0edc00846873a18 *R/dominance.manual.R
+bb4ce223060779c2c3ddb665462e4d72 *R/dominance.manual.R
 ff9e255b7af2f67ed999704a139c03dd *R/dummy.c.R
 da8cda916c04bca7f111ca0f5981b89d *R/eta.sq.R
 9091551de0b98ab15a0faa968ec4355f *R/freq.R
@@ -49,7 +49,7 @@ ca1f020533e99e7cb9bd6432967c73a0 *R/item.reverse.R
 db3b9164bd57add3e344e0e514553e81 *R/item.scores.R
 a5d81f23ec85743280c8554c8c367a02 *R/kurtosis.R
 3c5685d4213002d5cd9b05868cc3d7b3 *R/libraries.R
-00714fb3d979ecdf0cf5f00f19e1e39b *R/mplus.lpa.R
+32d9627482a8388e9126bc9630a738d4 *R/mplus.lca.R
 0a2289c0b90786bb61eaff94b69be212 *R/multilevel.cfa.R
 9d24ed8a0e65157ce43055e4a3426174 *R/multilevel.cor.R
 9e6919917f3430325eabc8e67c9f0c69 *R/multilevel.descript.R
@@ -68,13 +68,13 @@ dd2085d99e1c8aca8fa9b814e6eaeae4 *R/na.indicator.R
 e006f10242a91d48776e896804bb74cc *R/na.pattern.R
 4d2dbad292bbff8dc8ecc1942b54c9bc *R/na.prop.R
 ccadd4b19a694e6e8bbc070fcee606ae *R/na.test.R
-bdbf664dbd8819fd4e14feab3b2bba0a *R/print.misty.object.R
+c55c6d345d1ef7a1893d997774f187b5 *R/print.misty.object.R
 7f181dc839f56a9acc194436f7b5f9ae *R/read.mplus.R
 7fb7cea66d6f29c278a9c06675de0e8a *R/read.sav.R
 b00c74636032da7c0348c2eb693776ab *R/read.xlsx.R
 cd05eb19552aeaf3f02126cb91b83170 *R/rec.R
 b095ffe3513488a5310d1f6a3e9b1dec *R/restart.R
-ed81f7901508043f1d9b6bdef3725626 *R/result.lpa.R
+c2a8eb7bf1c3d4d4587f48da60fe9a81 *R/result.lca.R
 01daa1174dd85952f35aa03376dd63ab *R/robust.coef.R
 835a9308100f145f6aabee59f77d2843 *R/run.mplus.R
 e5d78109d1a7c960d0e3393ec0cff354 *R/rwg.lindell.R
@@ -94,7 +94,7 @@ ab2ff014ccaeb5fe3dd2b19b2789af45 *R/size.mean.R
 67cf22ae7d7e25728d343868303dcc6c *R/test.welch.R
 f6d45fdd711b7ed6a00c0362e994be06 *R/test.z.R
 70454f6f9e640f046695d11bc680f03c *R/write.mplus.R
-711f2b7cefdf65946f71247c81b97c36 *R/write.result.R
+ca0bd7f5ceb3c805ca9fa11cb0ad8a6e *R/write.result.R
 e38cc58f55c1ba1994b168be086359d1 *R/write.sav.R
 09cce5edf5d944aaf5fac2291952cc8a *R/write.xlsx.R
 ebe5349fd8afda755566304bc5054cc0 *man/aov.b.Rd
@@ -143,7 +143,7 @@ d68c85b103f3834e8b44079d8f922942 *man/item.cfa.Rd
 13d88f321c43b19609a359456e752bd3 *man/item.scores.Rd
 e872d9873a4d4f21982d6589e3e7d823 *man/kurtosis.Rd
 561dda713b30b29a01e568a6781254a3 *man/libraries.Rd
-42a8f759ca5bf1c8f9e1b4ad8ea0b8ed *man/mplus.lpa.Rd
+2354cc8aa67bdb64bbd3bfb9834d835f *man/mplus.lca.Rd
 852460f6c483b8031ad270a3c9ed1654 *man/multilevel.cfa.Rd
 db27d38ae0cc7954a407aee7495970ce *man/multilevel.cor.Rd
 3e321d8bdba4d65ea9be1439abe2b974 *man/multilevel.descript.Rd
@@ -168,7 +168,7 @@ bbcb1b3c9265bdafd3a68fd84b44394e *man/na.coverage.Rd
 d12056dcf426f2990da2377fd27dec7d *man/read.xlsx.Rd
 f0a6e0b7e85ef01475a3a4a1d898ae26 *man/rec.Rd
 207b374eacf63cd5a6baa92eae16ebf4 *man/restart.Rd
-b2e63a11f4c118fab7851bc3ea636cfa *man/result.lpa.Rd
+db83562714f8d950a3597051c9c18de6 *man/result.lca.Rd
 20de1d45f567dcc4d6f895105325b5e9 *man/robust.coef.Rd
 e34dd6b4691fcbf5036d3dd8f64df91c *man/run.mplus.Rd
 d357fde4cf37f5b37bf81d4b27622c0f *man/rwg.lindell.Rd
@@ -187,6 +187,6 @@ c1c2d05c3ed2256533da873a24040a6e *man/test.t.Rd
 8d88ac44d2f69571cd4e30df98765591 *man/test.welch.Rd
 2ed463944a3afa54a833cea69e3940e6 *man/test.z.Rd
 41dd27a77631cfa718a761e9d0681c35 *man/write.mplus.Rd
-2ba691ebb0d2c332630395b07d7d270c *man/write.result.Rd
+210c9210488bf8030ceeb2853d7c5193 *man/write.result.Rd
 dcd0b880fc1c6ea8303fa287813cf9ac *man/write.sav.Rd
 440a69a4b2e27dc382e1d3520606e8a8 *man/write.xlsx.Rd

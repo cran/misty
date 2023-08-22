@@ -39,7 +39,7 @@ into a Excel file.
 Currently the function supports result objects from the function
 \code{cor.matrix}, \code{crosstab}, \code{freq},
 \code{item.alpha}, \code{item.cfa}, \code{item.invar},
-\code{item.omega}, \code{result.lpa}, \code{multilevel.cfa},
+\code{item.omega}, \code{result.lca}, \code{multilevel.cfa},
 \code{multilevel.cor}, \code{multilevel.descript}, \code{multilevel.fit},
 \code{multilevel.invar}, \code{multilevel.omega}, \code{na.coverage},
 \code{na.descript}, \code{na.pattern}, \code{robust.coef}, \code{std.coef}.
@@ -147,7 +147,7 @@ write.result(result, "NA_Pattern.xlsx")
 \seealso{
 \code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{freq}},
 \code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.invar}},
-\code{\link{item.omega}}, \code{\link{result.lpa}}, \code{\link{multilevel.cfa}},
+\code{\link{item.omega}}, \code{\link{result.lca}}, \code{\link{multilevel.cfa}},
 \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
 \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}}, \code{\link{na.coverage}},
 \code{\link{na.descript}}, \code{\link{na.pattern}}, \code{\link{robust.coef}}, \code{\link{std.coef}},
