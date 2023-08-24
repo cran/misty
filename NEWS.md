@@ -1,3 +1,9 @@
+### misty 0.5.2 (2023-08-24)
+
+##### Minor features and improvements
+* Added the argument `group.ind` to the function `result.lca()` to specify 
+latent class indicators as grouping variable in the bar charts. 
+
 ### misty 0.5.1 (2023-08-22)
 
 ##### Minor features and improvements

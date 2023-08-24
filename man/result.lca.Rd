@@ -5,7 +5,7 @@
 \title{Summary Result Table and Bar Charts for Latent Class Analysis Estimated in Mplus}
 \usage{
 result.lca(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p = TRUE,
-           plot = FALSE, ci = TRUE, conf.level = 0.95, adjust = TRUE,
+           plot = FALSE, group.ind = TRUE, ci = TRUE, conf.level = 0.95, adjust = TRUE,
            axis.title = 7, axis.text = 7, levels = NULL, labels = NULL,
            ylim = NULL, ylab = "Mean Value", breaks = ggplot2::waiver(),
            error.width = 0.1, legend.title = 7, legend.text = 7, legend.key.size = 0.4,
@@ -31,6 +31,10 @@ error bars for confidence intervals are saved
 in the  folder \code{_Plots} within subfolders. Note
 that plots are only available for LCA with continuous
 or count indicator variables.}
+
+\item{group.ind}{logical: if \code{TRUE} (default), latent class indicators
+are represented by separate bars, if \code{FALSE} latent classes
+are represented by separate bars.}
 
 \item{ci}{logical: if \code{TRUE} (default), confidence intervals
 are added to the bar charts.}

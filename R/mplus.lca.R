@@ -398,7 +398,7 @@ mplus.lca <- function(x, ind = NULL,
   # More than 8 indicator variables
   } else {
 
-    ind.cov <- paste0("            ", apply(combn(ind, m = 2L), 2L, paste0, collapse = " WITH "), collapse = ";\n")
+    ind.cov <- paste0(paste0("            ", apply(combn(ind, m = 2L), 2L, paste0, collapse = " WITH "), collapse = ";\n"), ";")
 
   }
 

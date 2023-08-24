@@ -25,6 +25,9 @@
 #'                        \code{_Plots} within subfolders. Note that plots are only
 #'                        available for LCA with continuous
 #'                        or count indicator variables.
+#' @param group.ind       logical: if \code{TRUE} (default), latent class indicators
+#'                        are represented by separate bars, if \code{FALSE} latent
+#'                        classes are represented by separate bars.
 #' @param ci              logical: if \code{TRUE} (default), confidence intervals
 #'                        are added to the bar charts.
 #' @param conf.level      a numeric value between 0 and 1 indicating the confidence
@@ -194,7 +197,7 @@
 #' ggsave("LCA_4-Class.png", dpi = 600, width = 6, height = 4)
 #' }
 result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p = TRUE,
-                       plot = FALSE, ci = TRUE, conf.level = 0.95, adjust = TRUE,
+                       plot = FALSE, group.ind = TRUE, ci = TRUE, conf.level = 0.95, adjust = TRUE,
                        axis.title = 7, axis.text = 7, levels = NULL, labels = NULL,
                        ylim = NULL, ylab = "Mean Value", breaks = ggplot2::waiver(),
                        error.width = 0.1, legend.title = 7, legend.text = 7,
@@ -216,6 +219,9 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
 
     # Check input 'plot'
     if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'.", call. = FALSE) }
+
+    # Check input 'group.ind'
+    if (isTRUE(!is.logical(group.ind))) { stop("Please specify TRUE or FALSE for the argument 'group.ind'.", call. = FALSE) }
 
     # Check input 'ci'
     if (isTRUE(!is.logical(ci))) { stop("Please specify TRUE or FALSE for the argument 'ci'.", call. = FALSE) }
@@ -508,11 +514,7 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
       #...................
       ### Message ####
 
-      if (isTRUE(length(unique(paste0(lca.mean$folder, lca.mean$nclass))) > 10L)) {
-
-        message(paste0("R is making ", length(unique(paste0(lca.mean$folder, lca.mean$nclass))), " plots, this may take a while."))
-
-      }
+      if (isTRUE(length(unique(paste0(lca.mean$folder, lca.mean$nclass))) > 10L)) { message(paste0("R is making ", length(unique(paste0(lca.mean$folder, lca.mean$nclass))), " plots, this may take a while.")) }
 
       #...................
       ### Create Folder ####
@@ -530,13 +532,16 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
         # Select data
         temp1 <- lca.mean[lca.mean$folder == i, ]
 
+        # Add label 'Class'
+        if (isTRUE(group.ind)) { temp1$class <- paste0("Class ", temp1$class)  }
+
         #### Loop across number of latent classes
         for (j in unique(temp1$nclass)) {
 
           # Select data
           temp2 <- temp1[temp1$nclass == j, ]
 
-          # Levels and Labelsl
+          # Levels and Labels
           temp2$ind <- factor(temp2$ind,
                               levels = if (isTRUE(is.null(levels))) { unique(temp2$ind) } else { levels },
                               labels = if (isTRUE(is.null(levels) && is.null(labels))) {
@@ -595,13 +600,13 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
           }
 
           ##### Plot
-          p <- ggplot2::ggplot(temp2, ggplot2::aes(ind, est, group = class, fill = class)) +
+          p <- ggplot2::ggplot(temp2, if (isTRUE(group.ind)) { ggplot2::aes(class, est, group = ind, fill = ind) } else { ggplot2::aes(ind, est, group = class, fill = class) }) +
                 ggplot2::geom_bar(stat = "identity", position = "dodge", color = "black", linewidth = 0.1) +
                 ggplot2::scale_x_discrete("") +
                 ggplot2::scale_y_continuous(ylab,
                                             limits = c(limits.low, limits.upp),
                                             breaks = breaks.j) +
-                ggplot2::labs(fill = "Latent Class") +
+                ggplot2::labs(fill = if (isTRUE(!group.ind)) { "Latent Class" } else { "" }) +
                 ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1L)) +
                 ggplot2::theme(axis.title = ggplot2::element_text(size = axis.title),
                                axis.text = ggplot2::element_text(size = axis.text),
