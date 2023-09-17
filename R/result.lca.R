@@ -1,4 +1,4 @@
-#' Summary Result Table and Bar Charts for Latent Class Analysis Estimated in Mplus
+#' Summary Result Table and Grouped Bar Charts for Latent Class Analysis Estimated in Mplus
 #'
 #' This function reads all Mplus output files from latent class analysis in
 #' subfolders to create a summary result table and bar charts for each latent
@@ -321,7 +321,7 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
   extract.result <- function(lca.out.extract) {
 
     #### Model converged ####
-    conv <- any(grepl("THE MODEL ESTIMATION TERMINATED NORMALLY", lca.out.extract, useBytes = TRUE))
+    conv <- any(grep("THE MODEL ESTIMATION TERMINATED NORMALLY", lca.out.extract, useBytes = TRUE))
 
     #### Number of classes ####
     if (isTRUE(any(grepl("CLASSES ", lca.out.extract, ignore.case = TRUE, useBytes = TRUE)))) {
@@ -403,7 +403,7 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
         model.descript <- data.frame(nclass = nclass, n = class.count[match(out.means[, "class"], class.count[, 1L]), 2L], rbind(out.means, out.var))
 
         # Numeric
-        model.descript[, c("class", "est", "se", "z", "pval")] <- sapply(model.descript[, c("class", "est", "se", "z", "pval")], as.numeric)
+        model.descript[, c("class", "est", "se", "z", "pval")] <- sapply(model.descript[, c("class", "est", "se", "z", "pval")], function(y) as.numeric(gsub("*********", NA, y, fixed = TRUE)))
 
         # Factor
         model.descript$class <- factor(model.descript$class)

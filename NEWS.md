@@ -1,3 +1,8 @@
+### misty 0.5.3 (2023-09-17)
+
+##### Bug fix
+*  Fixed a bug in the function `test.welch()`, to remove errors for r-devel from a recent change in r-devel.
+
 ### misty 0.5.2 (2023-08-24)
 
 ##### Minor features and improvements

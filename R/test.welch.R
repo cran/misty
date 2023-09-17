@@ -403,7 +403,7 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
                                          two.sided = "two.sided",
                                          greater = "less",
                                          less = "greater"),
-                    paired = FALSE, var.equal = FALSE)
+                    var.equal = FALSE)
 
     #...................
     ### Result object ####

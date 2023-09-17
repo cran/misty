@@ -550,7 +550,7 @@ mplus.lca <- function(x, ind = NULL,
       # Paste syntax
       mod.E[[i]] <- paste0(# Title
                            "TITLE:      Latent Profile Analysis (LPA)\n",
-                           "            E: Profile-Carying Theta, Profile-Invariant Unrestricted Sigma\n\n",
+                           "            E: Profile-Varying Theta, Profile-Invariant Unrestricted Sigma\n\n",
                            # Data, Variable, and Analysis
                            sub("_classes_", i, mod.dva),
                            # Model

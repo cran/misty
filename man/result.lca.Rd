@@ -2,7 +2,7 @@
 % Please edit documentation in R/result.lca.R
 \name{result.lca}
 \alias{result.lca}
-\title{Summary Result Table and Bar Charts for Latent Class Analysis Estimated in Mplus}
+\title{Summary Result Table and Grouped Bar Charts for Latent Class Analysis Estimated in Mplus}
 \usage{
 result.lca(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p = TRUE,
            plot = FALSE, group.ind = TRUE, ci = TRUE, conf.level = 0.95, adjust = TRUE,

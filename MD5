@@ -1,7 +1,7 @@
-5ea52cc45e9becb0f71ba07810465de9 *DESCRIPTION
+e15f3781206289790caa29f1e4abf646 *DESCRIPTION
 f988a6eca78c0879aedf94627be12320 *LICENSE
 237ab542921e71c467def01e555fd0b7 *NAMESPACE
-2561211f6ff6bca28f1f90761a8d1ba4 *NEWS.md
+1f8f167597ae14a3a87512b567675d4a *NEWS.md
 55f87281ca1d83d8a039611569bf1956 *R/aov.b.R
 f51d298c60c60b7957712cb7b5a3f09c *R/aov.w.R
 e485510273ed44aa9291c13e42c4c608 *R/as.na.R
@@ -49,7 +49,7 @@ ca1f020533e99e7cb9bd6432967c73a0 *R/item.reverse.R
 db3b9164bd57add3e344e0e514553e81 *R/item.scores.R
 a5d81f23ec85743280c8554c8c367a02 *R/kurtosis.R
 3c5685d4213002d5cd9b05868cc3d7b3 *R/libraries.R
-30c6bc4e80028eae0c4062934186b818 *R/mplus.lca.R
+26b69bb54ae3dc8c8aa14b976d766f89 *R/mplus.lca.R
 0a2289c0b90786bb61eaff94b69be212 *R/multilevel.cfa.R
 9d24ed8a0e65157ce43055e4a3426174 *R/multilevel.cor.R
 9e6919917f3430325eabc8e67c9f0c69 *R/multilevel.descript.R
@@ -74,7 +74,7 @@ c55c6d345d1ef7a1893d997774f187b5 *R/print.misty.object.R
 b00c74636032da7c0348c2eb693776ab *R/read.xlsx.R
 cd05eb19552aeaf3f02126cb91b83170 *R/rec.R
 b095ffe3513488a5310d1f6a3e9b1dec *R/restart.R
-42245b0f921f48a893153873a6ef66ad *R/result.lca.R
+ccd4a3bcd33b0a39519886a10150f593 *R/result.lca.R
 01daa1174dd85952f35aa03376dd63ab *R/robust.coef.R
 835a9308100f145f6aabee59f77d2843 *R/run.mplus.R
 e5d78109d1a7c960d0e3393ec0cff354 *R/rwg.lindell.R
@@ -91,7 +91,7 @@ ab2ff014ccaeb5fe3dd2b19b2789af45 *R/size.mean.R
 8a4d1034eaa1f580cf102dd88afee620 *R/std.coef.R
 7711cf31991b16374e1805c2803b8cb1 *R/test.levene.R
 926209efa4489e2751153029eba774c3 *R/test.t.R
-67cf22ae7d7e25728d343868303dcc6c *R/test.welch.R
+e53ed53713d4b1d180bc34ce359ad80c *R/test.welch.R
 f6d45fdd711b7ed6a00c0362e994be06 *R/test.z.R
 70454f6f9e640f046695d11bc680f03c *R/write.mplus.R
 ca0bd7f5ceb3c805ca9fa11cb0ad8a6e *R/write.result.R
@@ -168,7 +168,7 @@ bbcb1b3c9265bdafd3a68fd84b44394e *man/na.coverage.Rd
 d12056dcf426f2990da2377fd27dec7d *man/read.xlsx.Rd
 f0a6e0b7e85ef01475a3a4a1d898ae26 *man/rec.Rd
 207b374eacf63cd5a6baa92eae16ebf4 *man/restart.Rd
-57bb019508dbc48cc993662ca27ee689 *man/result.lca.Rd
+757dc1520135d7e1c4faac9b715044a6 *man/result.lca.Rd
 20de1d45f567dcc4d6f895105325b5e9 *man/robust.coef.Rd
 e34dd6b4691fcbf5036d3dd8f64df91c *man/run.mplus.Rd
 d357fde4cf37f5b37bf81d4b27622c0f *man/rwg.lindell.Rd
