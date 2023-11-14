@@ -347,7 +347,7 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL,
     }
 
     # Different model size k
-    R2matrix <- t(sapply(1L:(J - 1), submodel))
+    R2matrix <- t(sapply(1L:(J - 1L), submodel))
 
     R2matrix <- rbind(sapply(1L:J, R2), R2matrix)
 

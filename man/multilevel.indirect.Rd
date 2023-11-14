@@ -105,10 +105,10 @@ mediation model:
            on the cluster or between-group level. In Mplus, \code{Estimate}
            of the random slope \eqn{b} under \code{Means} at the
                   \code{Between Level}.}
-  \item{se.a}{Standard error of {a}. In Mplus, \code{S.E.}
+  \item{se.a}{Standard error of \code{a}. In Mplus, \code{S.E.}
               of the random slope \eqn{a} under \code{Means} at the
               \code{Between Level}.}
-  \item{se.a}{Standard error of {a}. In Mplus, \code{S.E.}
+  \item{se.a}{Standard error of \code{a}. In Mplus, \code{S.E.}
               of the random slope \eqn{a} under \code{Means} at the
               \code{Between Level}.}
   \item{cov.ab}{Covariance between \eqn{a} and \eqn{b}. In Mplus, the

@@ -1,8 +1,8 @@
 Package: misty
 Type: Package
 Title: Miscellaneous Functions 'T. Yanagida'
-Version: 0.5.3
-Date: 2023-09-17
+Version: 0.5.4
+Date: 2023-11-14
 Authors@R: person(given = "Takuya", family = "Yanagida", email="takuya.yanagida@univie.ac.at", role = c("aut","cre"))
 Author: Takuya Yanagida [aut, cre]
 Maintainer: Takuya Yanagida <takuya.yanagida@univie.ac.at>
@@ -15,6 +15,6 @@ Suggests: Matrix, mnormt, patchwork, plyr
 Encoding: UTF-8
 RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2023-09-17 20:07:38 UTC; takuy
+Packaged: 2023-11-14 20:10:52 UTC; takuy
 Repository: CRAN
-Date/Publication: 2023-09-17 22:50:02 UTC
+Date/Publication: 2023-11-14 23:00:02 UTC

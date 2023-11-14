@@ -13,7 +13,7 @@
 #' @param data          a matrix or data frame containing the variables in the
 #'                      formula \code{formula}.
 #' @param alternative   a character string specifying the alternative hypothesis,
-#'                      must be one of code{"two.sided"} (default), \code{"greater"}
+#'                      must be one of \code{"two.sided"} (default), \code{"greater"}
 #'                      or \code{"less"}. Note that this argument is only used when
 #'                      conducting Welch's two-sample t-test.
 #' @param posthoc       logical: if \code{TRUE}, Games-Howell post hoc test for

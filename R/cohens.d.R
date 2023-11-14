@@ -45,7 +45,7 @@
 #' paired-sample design (i.e., \code{paired = TRUE}), Cohen's \eqn{d_z} is computed when using
 #' \code{weighted = TRUE, default}, while Cohen's \eqn{d_{rm}} is computed when using
 #' \code{weighted = FALSE} and \code{cor = TRUE, default} and Cohen's \eqn{d_{av}} is computed when
-#' using \code{weighted = FALSE} and \code{cor = FALSE}. Corresponding Hedges' \eqn{g_z}, eqn{g_{rm}},
+#' using \code{weighted = FALSE} and \code{cor = FALSE}. Corresponding Hedges' \eqn{g_z}, \eqn{g_{rm}},
 #' and \eqn{g_{av}} are computed when using \code{correct = TRUE} in addition.
 #'
 #' @param x           a numeric vector or data frame.

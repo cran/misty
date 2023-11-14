@@ -574,7 +574,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
     if (isTRUE(!is.logical(sort.var))) { stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE) }
 
     # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Pleaes specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
     # Check input output
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }

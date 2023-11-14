@@ -121,10 +121,10 @@ write.sav(dat, file = "Dataframe_PSPP_Attr.sav", var.attr = attr,
 }
 \references{
 GNU Project (2018). \emph{GNU PSPP for GNU/Linux} (Version 1.2.0).
-Boston, MA: Free Software Foundation. url{https://www.gnu.org/software/pspp/}
+Boston, MA: Free Software Foundation. \url{https://www.gnu.org/software/pspp/}
 
 Wickham H., & Miller, E. (2019). \emph{haven: Import and Export 'SPSS', 'Stata'
-and 'SAS' Files}. R package version 2.2.0. 
+and 'SAS' Files}. R package version 2.2.0.
 
 Robitzsch, A., Grund, S., & Henke, T. (2019). \emph{miceadds: Some additional
 multiple imputation functions, especially for mice}. R package version 3.4-17.

@@ -364,6 +364,30 @@ Unlike the R package \pkg{lavaan}, the different versions are labeled with
   correction does not appear to adjust fit indices sufficiently to counteract
   the effect of non-normality (Brosseau-Liard & Savalei, 2014).
 }
+\item{\strong{Modification Indices and Residual Correlation Matrix}}{The \code{item.cfa}
+function provides modification indices and the residual correlation matrix when
+requested by using the \code{print} argument. Modification indices (aka score
+tests) are univariate Lagrange Multipliers (LM) representing a chi-square
+statistic with a single degree of freedom. LM approximates the amount by which
+the chi-square test statistic would decrease if a fixed or constrained parameter
+is freely estimated (Kline, 2023). However, (standardized) expected parameter
+change (EPC) values should also be inspected since modification indices are
+sensitive to sample size. EPC values are an estimate of how much the parameter
+would be expected to change if it were freely estimated (Brown, 2023). The residual
+correlation matrix is computed by separately converting the sample covariance
+and model-implied covariance matrices to correlation matrices before calculation
+differences between observed and predicted covariances (i.e., \code{type = "cor.bollen"}).
+As a rule of thumb, absolute correlation residuals greater than .10 indicate
+possible evidence for poor local fit, whereas smaller correlation residuals
+than 0.05 indicate negligible degree of model misfit (Maydeu-Olivares, 2017).
+There is no reliable connection between the size of diagnostic statistics
+(i.e., modification indices and residuals) and the type or amount of model
+misspecification since (1) diagnostic statistics are themselves affected by
+misspecification, (2) misspecification in one part of the model distorts estimates
+in other parts of the model (i.e., error propagation), and (3) equivalent models
+have identical residuals but contradict the pattern of causal effects (Kline, 2023).
+Note that according to Kline' (2023) "any report of the results without information
+about the residuals is deficient" (p. 172).}
 }
 }
 \note{
@@ -481,9 +505,19 @@ Brosseau-Liard, P. E., & Savalei, V. (2014) Adjusting incremental fit indices
 for nonnormality. \emph{Multivariate Behavioral Research, 49}, 460-470.
 https://doi.org/10.1080/00273171.2014.933697
 
+Brown, T. A. (2023). Confirmatory factor analysis. In R. H. Hoyle (Ed.),
+\emph{Handbook of structural equation modeling} (2nd ed.) (pp. 361–379). The
+Guilford Press.
+
+Kline, R. B. (2023). \emph{Principles and practice of structural equation modeling} (5th ed.).
+Guilford Press.
+
 Li, L., & Bentler, P. M. (2006). Robust statistical tests for evaluating the
 hypothesis of close fit of misspecified mean and covariance structural models.
 \emph{UCLA Statistics Preprint #506}. University of California.
+
+Maydeu-Olivares, A. (2017). Assessing the size of model misfit in structural
+equation models. \emph{Psychometrika, 82}(3), 533–558. https://doi.org/10.1007/s11336-016-9552-7
 
 Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.
 \emph{Journal of Statistical Software, 48}, 1-36. https://doi.org/10.18637/jss.v048.i02

@@ -1,7 +1,15 @@
+### misty 0.5.4 (2023-11-14)
+
+##### New features
+* New function `shift()` to compute lagged or leading values of a vector.
+
+##### Bug fix
+* Fixed a bug in the function `libraries()`, version of the packages were not correctly displayed. 
+
 ### misty 0.5.3 (2023-09-17)
 
 ##### Bug fix
-*  Fixed a bug in the function `test.welch()`, to remove errors for r-devel from a recent change in r-devel.
+* Fixed a bug in the function `test.welch()`, to remove errors for r-devel from a recent change in r-devel.
 
 ### misty 0.5.2 (2023-08-24)
 

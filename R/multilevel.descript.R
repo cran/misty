@@ -282,7 +282,7 @@ multilevel.descript <- function(x, cluster, print = c("all", "var", "sd"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## One dependent variable ####
 
-  if (isTRUE(ncol(x) == 1L)) {
+  if (isTRUE(is.null(dim(x)))) {
 
     #............
     ### Within Variable

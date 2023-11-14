@@ -25,7 +25,7 @@ corresponding groups.}
 formula \code{formula}.}
 
 \item{alternative}{a character string specifying the alternative hypothesis,
-must be one of code{"two.sided"} (default), \code{"greater"}
+must be one of \code{"two.sided"} (default), \code{"greater"}
 or \code{"less"}. Note that this argument is only used when
 conducting Welch's two-sample t-test.}
 

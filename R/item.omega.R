@@ -579,7 +579,7 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
 
       if (isTRUE(!is.null(y.resid.cov))) {
 
-        mod.resid.cov <- vapply(y.resid.cov, function(y) paste(y, collapse = " ~~ "), FUN.VALUE = character(1))
+        mod.resid.cov <- vapply(y.resid.cov, function(y) paste(y, collapse = " ~~ "), FUN.VALUE = character(1L))
 
         # Paste residual covariances
         mod.factor <- paste(mod.factor, "\n", paste(mod.resid.cov, collapse = " \n "))
@@ -619,13 +619,11 @@ item.omega <- function(x, resid.cov = NULL, type = c("omega", "hierarch", "categ
       if (!isTRUE(y.std)) {
 
         # Unstandardized parameter estimates
-
         param <- lavaan::parameterestimates(mod.fit)
 
       } else {
 
         # Standardized parameter estimates
-
         param <- lavaan::standardizedSolution(mod.fit)
 
         names(param)[grep("est.std", names(param))] <- "est"

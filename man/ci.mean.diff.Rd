@@ -29,7 +29,7 @@ ci.mean.diff(x, ...)
 
 \item{mu}{a numeric value indicating the population mean under the
 null hypothesis. Note that the argument \code{mu} is only
-used when {y = NULL}.}
+used when \code{y = NULL}.}
 
 \item{sigma}{a numeric vector indicating the population standard deviation(s)
 when computing confidence intervals for the difference in

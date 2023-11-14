@@ -9,7 +9,7 @@
 #' @param y              a numeric vector of data values.
 #' @param mu             a numeric value indicating the population mean under the
 #'                       null hypothesis. Note that the argument \code{mu} is only
-#'                       used when {y = NULL}.
+#'                       used when \code{y = NULL}.
 #' @param sigma          a numeric vector indicating the population standard deviation(s)
 #'                       when computing confidence intervals for the difference in
 #'                       arithmetic means with known standard deviation(s). In case

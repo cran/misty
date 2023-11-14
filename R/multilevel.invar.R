@@ -720,7 +720,7 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
          }, MLR = {
 
            # Standard fit indices
-           fit.config.stand <- fit.config[c(12L:30L, 6L:10L), c(1L, 2L)]
+           fit.config.stand <- fit.config[c(12L:15, 17:30L, 6L:10L), c(1L, 2L)]
 
            # Scaled fit indices
            fit.config.scaled <- fit.config[c(12L:30L, 6L:10L), c(1L, 3L)]
@@ -754,7 +754,7 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
            }, MLR = {
 
              # Standard fit indices
-             fit.metric.stand <- fit.metric[c(12L:30, 6L:10L), c(1L, 2L)]
+             fit.metric.stand <- fit.metric[c(12L:15, 17:30L, 6L:10L), c(1L, 2L)]
 
              # Scaled fit indices
              fit.metric.scaled <- fit.metric[c(12L:30, 6L:10L), c(1L, 3L)]
@@ -785,13 +785,13 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
            ML = {
 
              # Standard fit indices
-             fit.scalar.stand <- fit.scalar[c(10L:27, 4L:8L), ]
+             fit.scalar.stand <- fit.scalar[c(10L:15, 17:27, 4L:8L), ]
 
            #### Robust maximum Likelihood
            }, MLR = {
 
              # Standard fit indices
-             fit.scalar.stand <- fit.scalar[c(12L:30, 6L:10L), c(1L, 2L)]
+             fit.scalar.stand <- fit.scalar[c(12L:15, 17:30, 6L:10L), c(1L, 2L)]
 
              # Scaled fit indices
              fit.scalar.scaled <- fit.scalar[c(12L:30, 6L:10L), c(1L, 3L)]
@@ -825,11 +825,16 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
 
       ###### Scaled fit indices
 
-      fit.scaled <- fit.config.scaled
+      fit.scaled <- data.frame(fit.config.scaled[, 1L], config = fit.config.scaled[, 2L], fix.empty.names = FALSE)
 
       ###### Robust fit indices
 
-      fit.robust <- fit.config.robust[, 1L:2L]
+      fit.robust <- data.frame(fit.config.robust[, 1L], config = fit.config.robust[, 2L], fix.empty.names = FALSE)
+
+      ###### Scaling correction factor
+
+      scale.corr <- is.na(fit.scaled[5L, "config", drop = FALSE])
+      if (isTRUE(scale.corr)) { warning("Scaling correction factor could not be computed for following model(s): Configural", call. = FALSE) }
 
     }
 
@@ -842,8 +847,10 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
 
     ##### Chi-squared difference test, config vs. metric
     chidiff.confmet <- tryCatch(lavaan::lavTestLRT(model.fit.config$model.fit, model.fit.metric$model.fit),
-                                error = function(y) { data.frame(matrix(NA, ncol = 7L, dimnames = list(NULL, c("Df", "AIC", "BIC", "Chisq", "Chisq diff", "Df diff", "Pr(>Chisq)"))), check.names = FALSE) },
+                                error = function(y) { warning("test"); data.frame(matrix(NA, ncol = 7L, dimnames = list(NULL, c("Df", "AIC", "BIC", "Chisq", "Chisq diff", "Df diff", "Pr(>Chisq)"))), check.names = FALSE) },
                                 warning = function(z) { suppressWarnings(lavaan::lavTestLRT(model.fit.config$model.fit, model.fit.metric$model.fit, method = "satorra.bentler.2010")) })
+
+    if (isTRUE(all(is.na(chidiff.confmet[, "Pr(>Chisq)"])))) { warning("Chi-square difference test Configural vs. Metric could not be computed.", call. = FALSE) }
 
     # Negative chi-squared value even though model fit decreased
     if (isTRUE(chidiff.confmet[2L, "Chisq"] - chidiff.confmet[1L, "Chisq"] > 0L && chidiff.confmet[2L, "Chisq diff"] < 0L)) { chidiff.confmet <- data.frame(matrix(NA, ncol = 7L, dimnames = list(NULL, c("Df", "AIC", "BIC", "Chisq", "Chisq diff", "Df diff", "Pr(>Chisq)"))), check.names = FALSE) }
@@ -892,6 +899,16 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
       # Set difference in scaling correction factor to 0
       fit.robust[5L, "dmetric"] <- NA
 
+      ###### Scaling correction factor
+
+      scale.corr <- is.na(fit.scaled[5L, which(colnames(fit.scaled) %in% c("config", "metric"))])
+      if (isTRUE(any(scale.corr))) {
+
+        warning(paste0("Scaling correction factor could not be computed for following model(s): ",
+                       paste(c("Configural", "Metric")[match(colnames(scale.corr)[which(scale.corr)], c("config", "metric"))], collapse = ", ")), call. = FALSE)
+
+      }
+
     }
 
   #### Configural, metric and scalar measurement invariance
@@ -902,10 +919,14 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
                                 error = function(y) { data.frame(matrix(NA, ncol = 7L, dimnames = list(NULL, c("Df", "AIC", "BIC", "Chisq", "Chisq diff", "Df diff", "Pr(>Chisq)"))), check.names = FALSE) },
                                 warning = function(z) { suppressWarnings(lavaan::lavTestLRT(model.fit.config$model.fit, model.fit.metric$model.fit, method = "satorra.bentler.2010")) })
 
+    if (isTRUE(all(is.na(chidiff.confmet[, "Pr(>Chisq)"])))) { warning("Chi-square difference test Configural vs. Metric could not be computed.", call. = FALSE) }
+
     ##### Chi-squared difference test, metric vs. scalar
     chidiff.metsca <- tryCatch(lavaan::lavTestLRT(model.fit.metric$model.fit, model.fit.scalar$model.fit),
                                error = function(y) { data.frame(matrix(NA, ncol = 7L, dimnames = list(NULL, c("Df", "AIC", "BIC", "Chisq", "Chisq diff", "Df diff", "Pr(>Chisq)"))), check.names = FALSE) },
                                warning = function(z) { suppressWarnings(lavaan::lavTestLRT(model.fit.metric$model.fit, model.fit.scalar$model.fit, method = "satorra.bentler.2010")) })
+
+    if (isTRUE(all(is.na(chidiff.metsca[, "Pr(>Chisq)"])))) { warning("Chi-square difference test Metric vs. Scalar could not be computed.", call. = FALSE) }
 
     # Negative chi-squared value even though model fit decreased
     if (isTRUE(chidiff.confmet[2L, "Chisq"] - chidiff.confmet[1L, "Chisq"] > 0L && chidiff.confmet[2L, "Chisq diff"] < 0L)) { chidiff.confmet <- data.frame(matrix(NA, ncol = 7L, dimnames = list(NULL, c("Df", "AIC", "BIC", "Chisq", "Chisq diff", "Df diff", "Pr(>Chisq)"))), check.names = FALSE) }
@@ -954,6 +975,17 @@ multilevel.invar <- function(x, cluster, model = NULL, rescov = NULL, invar = c(
       fit.robust[2L:4L, "dmetric"] <- unlist(chidiff.confmet[2L, c("Chisq diff", "Df diff", "Pr(>Chisq)")])
       # Chi-squared difference test, metric vs. scalar
       fit.robust[2L:4L, "dscalar"] <- unlist(chidiff.metsca[2L, c("Chisq diff", "Df diff", "Pr(>Chisq)")])
+
+
+      ###### Scaling correction factor
+
+      scale.corr <- is.na(fit.scaled[5L, which(colnames(fit.scaled) %in% c("config", "metric", "scalar"))])
+      if (isTRUE(any(scale.corr))) {
+
+        warning(paste0("Scaling correction factor could not be computed for following model(s): ",
+                       paste(c("Configural", "Metric", "Scalar")[match(colnames(scale.corr)[which(scale.corr)], c("config", "metric", "scalar"))], collapse = ", ")), call. = FALSE)
+
+      }
 
     }
 

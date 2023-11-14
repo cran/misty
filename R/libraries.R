@@ -111,7 +111,7 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
   #...................
   ### Check package version ####
 
-  version <- ifelse(installed, pkg.installed[which(row.names(pkg.installed) %in% pkg), "Version"], "")
+  version <- sapply(pkg, function(y) ifelse(y %in% row.names(pkg.installed), pkg.installed[row.names(pkg.installed) == y, "Version"],""))
 
   #...................
   ### Check dependencies ####

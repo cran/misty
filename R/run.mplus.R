@@ -44,7 +44,7 @@
 #'                       collisions in temporary files among processes. Linux/Mac only.
 #'
 #' @author
-#' Michael Hallquist
+#' Hadley Wickham, Romain Francois, Lionel Henry, and Kirill Müller, and Davis Vaughan.
 #'
 #' @references
 #' Hallquist, M. N. & Wiley, J. F. (2018). MplusAutomation: An R package for facilitating

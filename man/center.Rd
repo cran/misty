@@ -54,7 +54,7 @@ Predictors in a single-level regression can only be centered at the grand mean
 
 Level-1 (L1) predictors in a multilevel regression can be centered at the
 grand mean (CGM) by specifying \code{type = "CGM"} (default) in conjunction
-with code{cluster = NULL} (default) or within cluster (CWC) by specifying
+with \code{cluster = NULL} (default) or within cluster (CWC) by specifying
 \code{type = "CWC"} in conjunction with specifying a cluster membership variable
 using the \code{cluster} argument.
 
@@ -145,7 +145,7 @@ https://doi.org/10.1037/met0000434
 }
 \seealso{
 \code{\link{dummy.c}}, \code{\link{cluster.scores}}, \code{\link{rec}},
-\code{\link{item.reverse}}, code{\link{rwg.lindell}}, \code{\link{item.scores}}.
+\code{\link{item.reverse}}, \code{\link{rwg.lindell}}, \code{\link{item.scores}}.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

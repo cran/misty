@@ -9,7 +9,7 @@
 #'
 #' Level-1 (L1) predictors in a multilevel regression can be centered at the
 #' grand mean (CGM) by specifying \code{type = "CGM"} (default) in conjunction
-#' with code{cluster = NULL} (default) or within cluster (CWC) by specifying
+#' with \code{cluster = NULL} (default) or within cluster (CWC) by specifying
 #' \code{type = "CWC"} in conjunction with specifying a cluster membership variable
 #' using the \code{cluster} argument.
 #'
@@ -50,7 +50,7 @@
 #'
 #' @seealso
 #' \code{\link{dummy.c}}, \code{\link{cluster.scores}}, \code{\link{rec}},
-#' \code{\link{item.reverse}}, code{\link{rwg.lindell}}, \code{\link{item.scores}}.
+#' \code{\link{item.reverse}}, \code{\link{rwg.lindell}}, \code{\link{item.scores}}.
 #'
 #' @references
 #' Chang, C.-N., & Kwok, O.-M. (2022) Partitioning Variance for a Within-Level
@@ -143,7 +143,7 @@ center <- function(x, type = c("CGM", "CWC"), cluster = NULL, value = NULL,
   # Initial Check --------------------------------------------------------------
 
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a numeric vector frame for the argument 'x'.", call. = FALSE) }
+  if (isTRUE(missing(x))) { stop("Please specify a numeric vector, matrix, or data frame for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
