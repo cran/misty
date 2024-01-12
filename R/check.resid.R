@@ -77,8 +77,9 @@
 #'                    in the \code{scale_x_continuous} function.
 #' @param ybreaks     a numeric value for specifying the argument \code{breaks }
 #'                    in the \code{scale_y_continuous} function.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
-#' @param plot        logical: if \code{TRUE}, a plot is drawn.
+#' @param check       logical: if \code{TRUE} (default), argument specification
+#'                    is checked.
+#' @param plot        logical: if \code{TRUE} (default), a plot is drawn.
 #'
 #' @details
 #' \describe{
@@ -181,20 +182,20 @@
 #'
 #' @examples
 #' \dontrun{
-#' #----------------------------
+#' #----------------------------------------------------------------------------
 #' # Residual diagnostics for a linear model
 #' mod <- lm(Ozone ~ Solar.R + Wind + Temp, data = airquality)
 #'
-#' # Partial (component-plus-residual) plots
+#' # Example 1: Partial (component-plus-residual) plots
 #' check.resid(mod, type = "linear")
 #'
-#' # Predicted values vs. residuals plot
+#' # Example 2: Predicted values vs. residuals plot
 #' check.resid(mod, type = "homo")
 #'
-#' # Q-Q plot and histogram with density plot
+#' # Example 3: Q-Q plot and histogram with density plot
 #' check.resid(mod, type = "normal")
 #'
-#' #----------------------------
+#' #----------------------------------------------------------------------------
 #' # Extract data and ggplot2 object
 #' object <- check.resid(mod, type = "linear", plot = FALSE)
 #'
@@ -257,7 +258,6 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
 
     ## Check input 'line2' ##
     if (isTRUE(!is.logical(line2))) { stop("Please specify TRUE or FALSE for the argument 'line2'.", call. = FALSE) }
-
 
     ## Check input 'plot' ##
     if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'.", call. = FALSE) }

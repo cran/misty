@@ -32,15 +32,19 @@
 #' @export
 #'
 #' @examples
+#' # Example 1
 #' string <- c("hey ho, let's go!")
 #' chr.gsub(c("hey", "ho"), c("ho", "hey"), string)
 #'
+#' # Example 2
 #' string <- "they don't understand the value of what they seek."
 #' chr.gsub(c("the", "they"), c("a", "we"), string)
 #'
+#' # Example 3
 #' string <- c("hey ho, let's go!")
 #' chr.gsub(c("hey", "ho"), "yo", string, recycle = TRUE)
 #'
+#' # Example 4
 #' string <- "Dopazamine is not the same as dopachloride or dopastriamine, yet is still fake."
 #' chr.gsub(c("[Dd]opa([^ ]*?mine)","fake"), c("Meta\\1","real"), string)
 chr.gsub <- function(pattern, replacement, x, recycle = FALSE, ...) {

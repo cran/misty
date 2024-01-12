@@ -7,7 +7,7 @@
 multilevel.r2(model, print = c("all", "RB", "SB", "NS", "RS"), digits = 3,
               plot = FALSE, gray = FALSE, start = 0.15, end = 0.85,
               color = c("#D55E00", "#0072B2", "#CC79A7", "#009E73", "#E69F00"),
-              check = TRUE, output = TRUE)
+              write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{model}{a fitted model of class \code{"lmerMod"} from the \pkg{lme4}
@@ -44,9 +44,18 @@ Fixed slopes (Between), Slope variation (Within), Intercept variation
 (Between), and Residual (Within). By default, colors from the
 colorblind-friendly palettes are used}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -324,8 +333,8 @@ library(ggplot2)
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#---------------------------
-
+#----------------------------------------------------------------------------
+#'
 # Cluster mean centering, center() from the misty package
 Demo.twolevel$x2.c <- center(Demo.twolevel$x2, type = "CWC",
                              cluster = Demo.twolevel$cluster)
@@ -338,21 +347,24 @@ Demo.twolevel$x2.b <- cluster.scores(Demo.twolevel$x2,
 mod1a <- lmer(y1 ~ x2.c + x2.b + w1 + (1 + x2.c | cluster), data = Demo.twolevel,
               REML = FALSE, control = lmerControl(optimizer = "bobyqa"))
 
-#---------------------------
-
-# R-squared measures according to Rights and Sterba (2019)
-multilevel.r2(mod1a)
-
 # Estimate multilevel model using the nlme package
 mod1b <- lme(y1 ~ x2.c + x2.b + w1, random = ~ 1 + x2.c | cluster, data = Demo.twolevel,
              method = "ML")
 
-# R-squared measures according to Rights and Sterba (2019)
+#----------------------------------------------------------------------------
+#'
+# Example 1a: R-squared measures according to Rights and Sterba (2019)
+multilevel.r2(mod1a)
+#'
+# Example 1b: R-squared measures according to Rights and Sterba (2019)
 multilevel.r2(mod1b)
+#'
+# Example 1a: Write Results into a text file
+multilevel.r2(mod1a, write = "ML-R2.txt")
 
-#-----------------------------------------
+#-------------------------------------------------------------------------------
 
-# Bar chart showing the decomposition of scaled total, within-cluster,
+# Example 2: Bar chart showing the decomposition of scaled total, within-cluster,
 # and between-cluster outcome variance
 multilevel.r2(mod1a, plot = TRUE)
 
@@ -362,9 +374,9 @@ multilevel.r2(mod1a, plot = TRUE, gray = TRUE)
 # Save bar chart, ggsave() from the ggplot2 package
 ggsave("Proportion_of_Variance.png", dpi = 600, width = 5.5, height = 5.5)
 
-#-----------------------------------------
+#-------------------------------------------------------------------------------
 
-# Estimate multilevel model without random slopes
+# Example 3: Estimate multilevel model without random slopes
 # Note. R-squared measures by Raudenbush and Bryk (2002), and  Snijders and
 # Bosker (2012) should be computed based on the random intercept model
 mod2 <- lmer(y1 ~ x2.c + x2.b + w1 + (1 | cluster), data = Demo.twolevel,
@@ -373,9 +385,9 @@ mod2 <- lmer(y1 ~ x2.c + x2.b + w1 + (1 | cluster), data = Demo.twolevel,
 # Print all available R-squared measures
 multilevel.r2(mod2, print = "all")
 
-#-----------------------------------------
+#-------------------------------------------------------------------------------
 
-# Draw bar chart manually
+# Example 4: Draw bar chart manually
 mod1a.r2 <- multilevel.r2(mod1a, output = FALSE)
 
 # Prepare data frame for ggplot()

@@ -3,13 +3,29 @@
 #' This function computes the proportion of missing data for each case in a matrix
 #' or data frame.
 #'
-#' @param x           a matrix or data frame.
-#' @param digits      an integer value indicating the number of decimal places to be
-#'                    used for displaying proportions.
-#' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting
-#'                    the analysis.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
+#' @param ...     a matrix or data frame with incomplete data, where missing
+#'                values are coded as \code{NA}. Alternatively, an expression
+#'                indicating the variable names in \code{data} e.g.,
+#'                \code{na.prop(x1, x2, x3, data = dat)}. Note that the operators
+#'                \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                and \code{!} can also be used to select variables, see 'Details'
+#'                in the \code{\link{df.subset}} function.
+#' @param data    a data frame when specifying one or more variables in the
+#'                argument \code{...}. Note that the argument is \code{NULL}
+#'                when specifying a matrix or data frame for the argument \code{...}.
+#' @param append  logical: if \code{TRUE} (default), variable with proportion of
+#'                missing data is appended to the data frame specified in the
+#'                argument \code{data}.
+#' @param name    a character string indicating the name of the variable appended
+#'                to the data frame specified in the arguement \code{data} when
+#'                \code{append = TRUE}. By default, the variable is named
+#'                \code{na.prop}.
+#' @param digits  an integer value indicating the number of decimal places to be
+#'                used for displaying proportions.
+#' @param as.na   a numeric vector indicating user-defined missing values,
+#'                i.e. these values are converted to \code{NA} before conducting
+#'                the analysis.
+#' @param check   logical: if \code{TRUE} (default), argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -36,30 +52,65 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(x = c(1, NA, NA, 6, 3),
-#'                   y = c(7, NA, 8, 9, NA),
-#'                   z = c(2, NA, 3, NA, 5))
+#' # Example 1a: Compute proportion of missing data for each case in the data frame
+#' na.prop(airquality)
 #'
-#' # Compute proportion of missing data (\code{NA}) for each case in the data frame
-#' na.prop(dat)
-na.prop <- function(x, digits = 2, as.na = NULL, check = TRUE) {
+#' # Example 1b: Alternative specification using the 'data' argument,
+#' # append proportions to the data frame 'airquality'
+#' na.prop(., data = airquality)
+na.prop <- function(..., data = NULL, digits = 2, append = TRUE, name = "na.prop",
+                    as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument 'data' ####
+
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+
+    # Extract data
+    x <- data[, var.names]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+  }
+
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
@@ -69,18 +120,8 @@ na.prop <- function(x, digits = 2, as.na = NULL, check = TRUE) {
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L | digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'", call. = FALSE) }
 
-  }
-
-  #_____________________________________________________________________________
-  #
-  # Data -----------------------------------------------------------------------
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
-
-  if (isTRUE(!is.null(as.na))) {
-
-    x <- misty::as.na(x, na = as.na)
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
   }
 
@@ -89,6 +130,15 @@ na.prop <- function(x, digits = 2, as.na = NULL, check = TRUE) {
   # Main Function --------------------------------------------------------------
 
   object <- round(rowMeans(is.na(x)), digits = digits)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Append ####
+
+  if (isTRUE(!is.null(data) && append)) {
+
+    object <- data.frame(data,  setNames(as.data.frame(object), nm = name))
+
+  }
 
   #_____________________________________________________________________________
   #

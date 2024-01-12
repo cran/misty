@@ -27,7 +27,7 @@ named according to the argument\code{file} with the extension
 \item{na}{a numeric value or character string representing missing values
 (\code{NA}) in the data set.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 None.
@@ -40,10 +40,10 @@ the data set. Missing data will be coded as a single numeric value.
 }
 \examples{
 \dontrun{
-# Write Mplus Data File and a Mplus input template
+# Example 1: Write Mplus Data File and a Mplus input template
 write.mplus(mtcars)
 
-# Write Mplus Data File "mtcars.dat" and a Mplus input template "mtcars_INPUT.inp",
+# Example 2: Write Mplus Data File "mtcars.dat" and a Mplus input template "mtcars_INPUT.inp",
 # missing values coded with -999, 4 variables in each line under "NAMES ARE"
 # write variable names in a text file called "mtcars_VARNAMES.inp"
 write.mplus(mtcars, file = "mtcars.dat", n.var = 4, var = TRUE, na = -999)
@@ -54,7 +54,8 @@ Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
 Muthen & Muthen.
 }
 \seealso{
-\code{\link{read.mplus}}, \code{\link{run.mplus}}
+\code{\link{read.mplus}}, \code{\link{run.mplus}}, \code{\link{write.sav}},
+\code{\link{write.xlsx}}, \code{\link{write.dta}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

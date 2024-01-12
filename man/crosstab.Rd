@@ -4,12 +4,24 @@
 \alias{crosstab}
 \title{Cross Tabulation}
 \usage{
-crosstab(x, print = c("no", "all", "row", "col", "total"), freq = TRUE,
-         split = FALSE, na.omit = TRUE, digits = 2, as.na = NULL,
-         write = NULL, check = TRUE, output = TRUE)
+crosstab(...,  data = NULL, print = c("no", "all", "row", "col", "total"),
+         freq = TRUE, split = FALSE, na.omit = TRUE, digits = 2, as.na = NULL,
+         write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame with two or three columns.}
+\item{...}{ a matrix or data frame with two or three columns. Alternatively,
+an expression indicating the variable names in \code{data}.
+Note, variable names are specified without quotes \code{''} or
+double quotes \code{""}, e.g., \code{crosstab(x1, x2, data = dat)}.
+Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix or data frame for the argument
+\code{...}.}
 
 \item{print}{a character string or character vector indicating which
 percentage(s) to be printed on the console, i.e., no percentages
@@ -17,13 +29,13 @@ percentage(s) to be printed on the console, i.e., no percentages
 row-wise percentages (\code{"row"}), column-wise percentages
 (\code{"col"}), and total percentages (\code{"total"}).}
 
-\item{freq}{logical: if \code{TRUE}, absolute frequencies will be included
+\item{freq}{logical: if \code{TRUE} (default), absolute frequencies will be included
 in the cross tabulation.}
 
 \item{split}{logical: if \code{TRUE}, output table is split in absolute
 frequencies and percentage(s).}
 
-\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before
+\item{na.omit}{logical: if \code{TRUE} (default), incomplete cases are removed before
 conducting the analysis (i.e., listwise deletion).}
 
 \item{digits}{an integer indicating the number of decimal places digits
@@ -33,25 +45,33 @@ to be used for displaying percentages.}
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is printed on the console.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is printed on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{matrix or data frame specified in \code{x}}
+  \item{\code{data}}{matrix or data frame specified in \code{...}}
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{list with result tables, i.e., \code{crosstab} for the
-                       cross tabulation, \code{freq.a} for the absolute frequencies, 
-                       \code{perc.r} for the row-wise percentages, \code{perc.c} 
-                       for the column-wise percentages, \code{perc.t} for the total 
+                       cross tabulation, \code{freq.a} for the absolute frequencies,
+                       \code{perc.r} for the row-wise percentages, \code{perc.c}
+                       for the column-wise percentages, \code{perc.t} for the total
                        percentages}
 }
 \description{
@@ -59,57 +79,53 @@ This function creates a two-way and three-way cross tabulation with absolute
 frequencies and row-wise, column-wise and total percentages.
 }
 \examples{
-dat <- data.frame(x1 = c(1, 2, 2, 1, 1, 2, 2, 1, 1, 2),
-                  x2 = c(1, 2, 2, 1, 2, 1, 1, 1, 2, 1),
-                  x3 = c(-99, 2, 1, 1, 1, 2, 2, 2, 2, 1))
+#----------------------------------------------------------------------------
+# Two-Dimensional Table
 
-# Cross Tabulation for x1 and x2
-crosstab(dat[, c("x1", "x2")])
+# Example 1a: Cross Tabulation for 'vs' and 'am'
+crosstab(mtcars[, c("vs", "am")])
 
-# Cross Tabulation for x1 and x2
-# print all percentages
-crosstab(dat[, c("x1", "x2")], print = "all")
+# Example 1b: Alternative specification using the 'data' argument
+crosstab(vs, am, data = mtcars)
 
-# Cross Tabulation for x1 and x2
-# print row-wise percentages
-crosstab(dat[, c("x1", "x2")], print = "row")
+# Example 2: Cross Tabulation, print all percentages
+crosstab(mtcars[, c("vs", "am")], print = "all")
 
-# Cross Tabulation for x1 and x2
-# print col-wise percentages
-crosstab(dat[, c("x1", "x2")], print = "col")
+# Example 3: Cross Tabulation, print row-wise percentages
+crosstab(mtcars[, c("vs", "am")], print = "row")
 
-# Cross Tabulation x1 and x2
-# print total percentages
-crosstab(dat[, c("x1", "x2")], print = "total")
+# Example 4: Cross Tabulation, print col-wise percentages
+crosstab(mtcars[, c("vs", "am")], print = "col")
 
-# Cross Tabulation for x1 and x2
-# print all percentages, split output table
-crosstab(dat[, c("x1", "x2")], print = "all", split = TRUE)
+# Example 5: Cross Tabulation, print total percentages
+crosstab(mtcars[, c("vs", "am")], print = "total")
 
-# Cross Tabulation for x1 and x3
-# do not apply listwise deletion, convert value -99 to NA
-crosstab(dat[, c("x1", "x3")], na.omit = FALSE, as.na = -99)
+# Example 6: Cross Tabulation, print all percentages, split output table
+crosstab(mtcars[, c("vs", "am")], print = "all", split = TRUE)
 
-# Cross Tabulation for x1 and x3
-# print all percentages, do not apply listwise deletion, convert value -99 to NA
-crosstab(dat[, c("x1", "x3")], print = "all", na.omit = FALSE, as.na = -99)
+#----------------------------------------------------------------------------
+# Three-Dimensional Table
 
-# Cross Tabulation for x1, x2, and x3
-crosstab(dat[, c("x1", "x2", "x3")])
+# Example 7a: Cross Tabulation for 'vs', 'am', ane 'gear'
+crosstab(mtcars[, c("vs", "am", "gear")])
 
-# Cross Tabulation for x1, x2, and x3
-# print all percentages
-crosstab(dat[, c("x1", "x2", "x3")], print = "all")
+# Example 7b: Alternative specification using the 'data' argument
+crosstab(vs:gear, data = mtcars)
 
-# Cross Tabulation for x1, x2, and x3
-# print all percentages, split output table
-crosstab(dat[, c("x1", "x2", "x3")], print = "all", split = TRUE)
+# Example 8: Cross Tabulation, print all percentages
+crosstab(mtcars[, c("vs", "am", "gear")], print = "all")
+
+# Example 9: Cross Tabulation, print all percentages, split output table
+crosstab(mtcars[, c("vs", "am", "gear")], print = "all", split = TRUE)
 
 \dontrun{
-Write Results into a Excel file
-crosstab(dat[, c("x1", "x2")], print = "all", write = "Crosstab.xlsx")
+# Example 10a: Write results into a text file
+crosstab(mtcars[, c("vs", "am")], print = "all", write = "Crosstab.txt")
 
-result <- crosstab(dat[, c("x1", "x2")], print = "all", output = FALSE)
+# Example 10b: Write results into an Excel file
+crosstab(mtcars[, c("vs", "am")], print = "all", write = "Crosstab.xlsx")
+
+result <- crosstab(mtcars[, c("vs", "am")], print = "all", output = FALSE)
 write.result(result, "Crosstab.xlsx")
 }
 }

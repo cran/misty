@@ -12,14 +12,14 @@
 #'                      groups.
 #' @param data          a matrix or data frame containing the variables in the
 #'                      formula \code{formula}.
-#' @param posthoc       logical: if \code{TRUE}, Tukey HSD post hoc test for
-#'                      multiple comparison is conducted.
+#' @param posthoc       logical: if \code{TRUE} (default), Tukey HSD post hoc test
+#'                      for multiple comparison is conducted.
 #' @param conf.level    a numeric value between 0 and 1 indicating the confidence
 #'                      level of the interval.
-#' @param hypo          logical: if \code{TRUE}, null and alternative hypothesis
+#' @param hypo          logical: if \code{TRUE} (default), null and alternative
+#'                      hypothesis are shown on the console.
+#' @param descript      logical: if \code{TRUE} (default), descriptive statistics
 #'                      are shown on the console.
-#' @param descript      logical: if \code{TRUE}, descriptive statistics are shown
-#'                      on the console.
 #' @param effsize       logical: if \code{TRUE}, effect size measures \eqn{\eta^2}
 #'                      and \eqn{\omega^2} for the ANOVA and Cohen's d for the post
 #'                      hoc tests are shown on the console.
@@ -61,8 +61,10 @@
 #' @param as.na         a numeric vector indicating user-defined missing values,
 #'                      i.e. these values are converted to \code{NA} before conducting
 #'                      the analysis.
-#' @param check         logical: if \code{TRUE}, argument specification is checked.
-#' @param output        logical: if \code{TRUE}, output is shown on the console.
+#' @param check         logical: if \code{TRUE} (default), argument specification
+#'                      is checked.
+#' @param output        logical: if \code{TRUE} (default), output is shown on the
+#'                      console.
 #' @param ...           further arguments to be passed to or from methods.
 #'
 #' @details
@@ -126,29 +128,32 @@
 #' dat <- data.frame(group = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3),
 #'                   y = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 6, 3, NA))
 #'
-#' # Between-subject ANOVA
+#' # Example 1: Between-subject ANOVA
 #' aov.b(y ~ group, data = dat)
 #'
-#' # Between-subject ANOVA
+#' # Example 2: Between-subject ANOVA
 #' # print effect size measures
 #' aov.b(y ~ group, data = dat, effsize = TRUE)
 #'
-#' # Between-subject ANOVA
+#' # Example 3: Between-subject ANOVA
 #' # do not print hypotheses and descriptive statistics,
 #' aov.b(y ~ group, data = dat, descript = FALSE, hypo = FALSE)
 #'
 #' \dontrun{
-#' # Between-subject ANOVA
+#' # Example 4: Write Results into a text file
+#' aov.b(y ~ group, data = dat, write = "ANOVA.txt")
+#'
+#' # Example 5: Between-subject ANOVA
 #' # plot results
 #' aov.b(y ~ group, data = dat, plot = TRUE)
 #'
 #' # Load ggplot2 package
 #' library(ggplot2)
 #'
-#' # Save plot, ggsave() from the ggplot2 package
+#' # Example 6: Save plot, ggsave() from the ggplot2 package
 #' ggsave("Between-Subject_ANOVA.png", dpi = 600, width = 4.5, height = 6)
 #'
-#' # Between-subject ANOVA
+#' # Example 7: Between-subject ANOVA
 #' # extract plot
 #' p <- aov.b(y ~ group, data = dat, output = FALSE)$plot
 #' p
@@ -172,8 +177,8 @@ aov.b <- function(formula, data, posthoc = TRUE, conf.level = 0.95,
                   breaks = ggplot2::waiver(), jitter = TRUE, jitter.size = 1.25,
                   jitter.width = 0.05, jitter.height = 0, jitter.alpha = 0.1,
                   title = "", subtitle = "Confidence Interval",
-                  digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
-                  output = TRUE, ...) {
+                  digits = 2, p.digits = 4, as.na = NULL, write = NULL,
+                  append = TRUE, check = TRUE, output = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
@@ -210,22 +215,26 @@ aov.b <- function(formula, data, posthoc = TRUE, conf.level = 0.95,
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-  # ggplot2 package
-  if (isTRUE(!nzchar(system.file(package = "ggplot2"))))  { warning("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
-
   if (isTRUE(check)) {
+
+    # ggplot2 package
+    if (isTRUE(plot && !nzchar(system.file(package = "ggplot2"))))  { stop("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
 
     # Check if variables are in the data
     var.data <- !var.formula %in% colnames(data)
-    if (isTRUE(any(var.data))) {
+    if (isTRUE(any(var.data))) { stop(paste0("Variables specified in the formula were not found in 'data': ", paste(var.formula[which(var.data)], collapse = ", ")), call. = FALSE) }
 
-      stop(paste0("Variables specified in the formula were not found in 'data': ",
-                  paste(var.formula[which(var.data)], collapse = ", ")), call. = FALSE)
+    # Check if variance in any group is zero
+    y.zero.var <- misty::na.as(c(tapply(data[, y.var], data[, group.var], var, na.rm = TRUE)), na = 0L, check = FALSE) == 0L
+    if (isTRUE(any(y.zero.var))) {
+
+      if (isTRUE(sum(y.zero.var) == 1L)) { stop(paste0("Variance in group \"", names(which(y.zero.var))), "\" is zero.", call. = FALSE) }
+
+    } else {
+
+      if (isTRUE(sum(y.zero.var) == 1L)) { stop(paste0("Variance in following groups are zero: ", paste0(names(which(y.zero.var)), collapse = ", ")), call. = FALSE) }
 
     }
-
-    # Check if input 'formula' has only one grouping variable
-    if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
 
     # Check if input 'formula' has only one outcome variable
     if (isTRUE(length(y.var) != 1L)) { stop("Please specify a formula with only one outcome variable.", call. = FALSE) }
@@ -266,6 +275,12 @@ aov.b <- function(formula, data, posthoc = TRUE, conf.level = 0.95,
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
@@ -275,6 +290,28 @@ aov.b <- function(formula, data, posthoc = TRUE, conf.level = 0.95,
   #
   # Data and Variables ---------------------------------------------------------
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
+  if (isTRUE(!is.null(as.na))) {
+
+    # Replace user-specified values with missing values
+    data[, y.var] <- .as.na(data[, y.var], na = as.na)
+
+    # Check if variance in any group is zero
+    y.zero.var <- misty::na.as(c(tapply(data[, y.var], data[, group.var], var, na.rm = TRUE)), na = 0, check = FALSE) == 0L
+    if (isTRUE(any(y.zero.var))) {
+
+      if (isTRUE(sum(y.zero.var) == 1L)) { stop(paste0("After converting user-missing values into NA, variance in group \"", names(which(y.zero.var))), "\" is zero.", call. = FALSE) }
+
+    } else {
+
+      if (isTRUE(sum(y.zero.var) == 1L)) { stop(paste0("After converting user-missing values into NA, variance in following groups are zero: ", paste0(names(which(y.zero.var)), collapse = ", ")), call. = FALSE) }
+
+    }
+
+  }
+
   # Outcome
   y <- unlist(data[, y.var])
 
@@ -283,19 +320,6 @@ aov.b <- function(formula, data, posthoc = TRUE, conf.level = 0.95,
 
   # Global variables
   m <- low <- upp <- NULL
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
-
-  if (isTRUE(!is.null(as.na))) {
-
-    # Replace user-specified values with missing values
-    data[, y.var] <- misty::as.na(data[, y.var], na = as.na, check = check)
-
-    # Dependent variable with missing values only
-    if (isTRUE(all(is.na(data[, y.var])))) { stop("After converting user-missing values into NA, the dependent variables is completely missing", call. = FALSE) }
-
-  }
 
   #_____________________________________________________________________________
   #
@@ -461,10 +485,32 @@ aov.b <- function(formula, data, posthoc = TRUE, conf.level = 0.95,
                              jitter.height = jitter.height, jitter.alpha = jitter.alpha,
                              title = title, subtitle = subtitle, digits = digits,
                              p.digits = p.digits, as.na = as.na, check = check,
-                             output = output),
+                             write = write, append = append, output = output),
                  result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

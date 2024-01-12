@@ -53,16 +53,31 @@
 #' message \code{In norm::prelim.norm(data) : NAs introduced by coercion to integer range}
 #' is printed on the console.
 #'
-#' @param x           a matrix or data frame with incomplete data, where missing
-#'                    values are coded as \code{NA}.
-#' @param digits      an integer value indicating the number of decimal places to
-#'                    be used for displaying results.
-#' @param p.digits    an integer value indicating the number of decimal places to be
-#'                    used for displaying the \emph{p}-value.
-#' @param as.na       a numeric vector indicating user-defined missing values, i.e.
-#'                    these values are converted to NA before conducting the analysis.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
-#' @param output      logical: if \code{TRUE}, output is shown.
+#' @param ...      a matrix or data frame with incomplete data, where missing
+#'                 values are coded as \code{NA}. Alternatively, an expression
+#'                 indicating the variable names in \code{data} e.g.,
+#'                 \code{na.test(x1, x2, x3, data = dat)}. Note that the operators
+#'                 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                 and \code{!} can also be used to select variables, see 'Details'
+#'                 in the \code{\link{df.subset}} function.
+#' @param data     a data frame when specifying one or more variables in the
+#'                 argument \code{...}. Note that the argument is \code{NULL}
+#'                 when specifying a atrix or data frame for the argument \code{...}.
+#' @param digits   an integer value indicating the number of decimal places to
+#'                 be used for displaying results.
+#' @param p.digits an integer value indicating the number of decimal places to be
+#'                 used for displaying the \emph{p}-value.
+#' @param as.na    a numeric vector indicating user-defined missing values, i.e.
+#'                 these values are converted to NA before conducting the analysis.
+#' @param write    a character string naming a text file with file extension
+#'                 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                 output into a text file.
+#' @param append   logical: if \code{TRUE} (default), output will be appended
+#'                 to an existing text file with extension \code{.txt} specified
+#'                 in \code{write}, if \code{FALSE} existing text file will be
+#'                 overwritten.
+#' @param check    logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output   logical: if \code{TRUE} (default), output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -100,38 +115,64 @@
 #' @export
 #'
 #' @examples
+#' # Example 1a: Conduct Little's MCAR test
 #' na.test(airquality)
-na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
-                    output = TRUE) {
+#'
+#' # Example b: Alternative specification using the 'data' argument,
+#' na.test(., data = airquality)
+#'
+#' \dontrun{
+#' # Example 2: Write results into a text file
+#' na.test(airquality, write = "NA_Test.txt")
+#' }
+na.test <- function(..., data = NULL, digits = 2, p.digits = 3, as.na = NULL,
+                    write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
-
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(as.na))) {
+  if (isTRUE(!is.null(data))) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    # Variable names
+    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+
+    # Extract data
+    x <- data[, var.names]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
 
   }
+
+  # Matrix or data frame for the argument 'x'?
+  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## As data matrix ####
@@ -142,6 +183,9 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
@@ -165,6 +209,15 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
+    # Check input 'output'
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
+
   }
 
   #_____________________________________________________________________________
@@ -187,7 +240,7 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
   pattern <- misty::na.pattern(x, output = FALSE)
 
   # Pattern with complete missingness
-  na.complete <- subset(pattern$result, pNA == 100, select = pattern, drop = TRUE)
+  na.complete <- subset(pattern$result, pNA == 100L, select = pattern, drop = TRUE)
 
   # Data frame with missing data pattern
   if (length(na.complete) == 1L) {
@@ -205,8 +258,7 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
 
    s <- tryCatch(norm::prelim.norm(x.matrix), warning = function(z) {
 
-    warning("Function run into numerical problems, i.e., results are not trustworthy.",
-            call. = FALSE)
+    warning("Function run into numerical problems, i.e., results are not trustworthy.", call. = FALSE)
 
      suppressWarnings(return(norm::prelim.norm(x.matrix)))
 
@@ -237,7 +289,7 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
   ## Little's chi-square ####
 
   # Likelihood ratio test statistic d2
-  d2 <- 0
+  d2 <- 0L
 
   for (i in unique(x.pattern$pattern)) {
 
@@ -250,15 +302,10 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Descriptive statistics ####
-
-  x.descript <- misty::na.descript(x = x, output = FALSE)$result
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Result table ####
 
   restab <- data.frame(no.cases = nrow(x),
-                       no.incomplete = x.descript$no.incomplete,
+                       no.incomplete = misty::na.descript(x, data = NULL, output = FALSE)$result$L1$no.incomplete.l1,
                        no.pattern = max(x.pattern$pattern),
                        statistic = d2,
                        df = df,
@@ -271,11 +318,33 @@ na.test <- function(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE,
   object <- list(call = match.call(),
                  type = "na.test",
                  data = x,
-                 args = list(digits = digits, p.digits = p.digits, as.na = NULL, check = TRUE,
-                             output = TRUE),
+                 args = list(digits = digits, p.digits = p.digits, as.na = NULL,
+                             write = write, append = append, check = TRUE, output = TRUE),
                  result = restab)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

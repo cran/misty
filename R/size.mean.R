@@ -1,18 +1,29 @@
 #' Sample Size Determination for Testing Arithmetic Means
 #'
-#' This function performs sample size computation for the one-sample and two-sample t-test
-#' based on precision requirements (i.e., type-I-risk, type-II-risk and an effect size).
+#' This function performs sample size computation for the one-sample and two-sample
+#' t-test based on precision requirements (i.e., type-I-risk, type-II-risk and
+#' an effect size).
 #'
-#' @param delta          a numeric value indicating the relative minimum difference
-#'                       to be detected, \eqn{\delta}.
-#' @param sample         a character string specifying one- or two-sample t-test,
-#'                       must be one of \code{"two.sample"} (default) or \code{"one.sample"}.
-#' @param alternative    a character string specifying the alternative hypothesis,
-#'                       must be one of \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.
-#' @param alpha          type-I-risk, \eqn{\alpha}.
-#' @param beta           type-II-risk, \eqn{\beta}.
-#' @param check          logical: if \code{TRUE}, argument specification is checked.
-#' @param output         logical: if \code{TRUE}, output is shown.
+#' @param delta       a numeric value indicating the relative minimum difference
+#'                    to be detected, \eqn{\delta}.
+#' @param sample      a character string specifying one- or two-sample t-test,
+#'                    must be one of \code{"two.sample"} (default) or
+#'                    \code{"one.sample"}.
+#' @param alternative a character string specifying the alternative hypothesis,
+#'                    must be one of \code{"two.sided"} (default), \code{"greater"}
+#'                    or \code{"less"}.
+#' @param alpha       type-I-risk, \eqn{\alpha}.
+#' @param beta        type-II-risk, \eqn{\beta}.
+#' @param write       a character string naming a text file with file extension
+#'                    \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                    output into a text file.
+#' @param append      logical: if \code{TRUE} (default), output will be appended
+#'                    to an existing text file with extension \code{.txt} specified
+#'                    in \code{write}, if \code{FALSE} existing text file will be
+#'                    overwritten.
+#' @param check       logical: if \code{TRUE} (default), argument specification
+#'                    is checked.
+#' @param output      logical: if \code{TRUE} (default), output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at},
@@ -21,8 +32,8 @@
 #' \code{\link{size.prop}}, \code{\link{size.cor}}
 #'
 #' @references
-#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-#' New York: John Wiley & Sons.
+#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+#' - Using R and SPSS}. New York: John Wiley & Sons.
 #'
 #' Rasch, D., Pilz, J., Verdooren, L. R., & Gebhardt, G. (2011).
 #' \emph{Optimal experimental design with R}. Boca Raton: Chapman & Hall/CRC.
@@ -39,32 +50,32 @@
 #' @export
 #'
 #' @examples
-#' #--------------------------------------
-#' # Two-sided one-sample test
+#' #----------------------------------------------------------------------------
+#' # Example 1: Two-sided one-sample test
 #' # H0: mu = mu.0, H1: mu != mu.0
 #' # alpha = 0.05, beta = 0.2, delta = 0.5
 #'
 #' size.mean(delta = 0.5, sample = "one.sample",
 #'           alternative = "two.sided", alpha = 0.05, beta = 0.2)
 #'
-#' #--------------------------------------
-#' # One-sided one-sample test
+#' #----------------------------------------------------------------------------
+#' # Example 2: One-sided one-sample test
 #' # H0: mu <= mu.0, H1: mu > mu.0
 #' # alpha = 0.05, beta = 0.2, delta = 0.5
 #'
 #' size.mean(delta = 0.5, sample = "one.sample",
 #'           alternative = "greater", alpha = 0.05, beta = 0.2)
 #'
-#' #--------------------------------------
-#' # Two-sided two-sample test
+#' #----------------------------------------------------------------------------
+#' # Example 3: Two-sided two-sample test
 #' # H0: mu.1 = mu.2, H1: mu.1 != mu.2
 #' # alpha = 0.01, beta = 0.1, delta = 1
 #'
 #' size.mean(delta = 1, sample = "two.sample",
 #'           alternative = "two.sided", alpha = 0.01, beta = 0.1)
 #'
-#' #--------------------------------------
-#' # One-sided two-sample test
+#' #----------------------------------------------------------------------------
+#' # Example 4: One-sided two-sample test
 #' # H0: mu.1 <= mu.2, H1: mu.1 > mu.2
 #' # alpha = 0.01, beta = 0.1, delta = 1
 #'
@@ -72,7 +83,8 @@
 #'           alternative = "greater", alpha = 0.01, beta = 0.1)
 size.mean <- function(delta, sample = c("two.sample", "one.sample"),
                       alternative = c("two.sided", "less", "greater"),
-                      alpha = 0.05, beta = 0.1, check = TRUE, output = TRUE) {
+                      alpha = 0.05, beta = 0.1, write = NULL, append = TRUE,
+                      check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -95,6 +107,12 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
     if (isTRUE(alpha <= 0L || alpha >= 1L)) { stop("Argument alpha out of bound, specify a value between 0 and 1", call. = FALSE) }
 
     if (isTRUE(beta <= 0L || beta >= 1L)) { stop("Argument beta out of bound, specify a value between 0 and 1", call. = FALSE) }
+
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
   }
 
@@ -150,10 +168,32 @@ size.mean <- function(delta, sample = c("two.sample", "one.sample"),
   object <- list(call = match.call(),
                  type = "size", size = "mean",
                  args = list(delta = delta, sample = sample, alternative = alternative,
-                             alpha = alpha, beta = beta),
+                             alpha = alpha, beta = beta, write = write, append = append),
                  result = list(n = n))
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

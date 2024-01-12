@@ -97,8 +97,10 @@
 #'                    of the interval.
 #' @param digits      an integer value indicating the number of decimal places
 #'                    to be used for displaying
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
-#' @param output      logical: if \code{TRUE}, output is shown on the console.
+#' @param check       logical: if \code{TRUE} (default), argument specification
+#'                    is checked.
+#' @param output      logical: if \code{TRUE} (default), output is shown on the
+#'                    console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -149,21 +151,28 @@
 #' @export
 #'
 #' @examples
-#' # Confidence Interval for the Indirect Effect
+#' \dontrun{
+#' # Example 1: Confidence Interval for the Indirect Effect
 #' multilevel.indirect(a = 0.25, b = 0.20, se.a = 0.11, se.b = 0.13,
 #'                     cov.ab = 0.01, cov.rand = 0.40, se.cov.rand = 0.02)
 #'
-#' # Save results of the Monte Carlo method
+#' # Example 2: Save results of the Monte Carlo method
 #' ab <- multilevel.indirect(a = 0.25, b = 0.20, se.a = 0.11, se.b = 0.13,
 #'                           cov.ab = 0.01, cov.rand = 0.40, se.cov.rand = 0.02,
 #'                           output = FALSE)$result$ab
 #'
 #' # Histogram of the distribution of the indirect effect
 #' hist(ab)
+#'
+#' # Example 3: Write Results into a text file
+#' multilevel.indirect(a = 0.25, b = 0.20, se.a = 0.11, se.b = 0.13,
+#'                     cov.ab = 0.01, cov.rand = 0.40, se.cov.rand = 0.02,
+#'                     write = "ML-Indirect.txt")
+#' }
 multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.rand,
                                 nrep = 100000, alternative = c("two.sided", "less", "greater"),
-                                seed = NULL, conf.level = 0.95, digits = 3, check = TRUE,
-                                output = TRUE) {
+                                seed = NULL, conf.level = 0.95, digits = 3, write = NULL,
+                                append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -203,6 +212,12 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
 
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
+
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
@@ -289,13 +304,36 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
                  data = list(a = a, b = b, se.a = se.b, se.b = se.b, cov.ab = cov.ab,
                              cov.rand = cov.rand, se.cov.rand = se.cov.rand),
                  args = list(nrep = nrep, alternative = alternative, seed = seed,
-                             conf.level = conf.level, digits = digits, check = check,
-                             output = output),
+                             conf.level = conf.level, digits = digits, write = write,
+                             append = append, check = check, output = output),
                  result = list(ab = ab,
                                mc = data.frame(est = mc.ab, se = mc.se.ab,
                                                low = mc.ci[1L], upp = mc.ci[2L], row.names = NULL)))
 
   class(object) <- "misty.object"
+
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

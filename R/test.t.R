@@ -13,17 +13,18 @@
 #' @param alternative   a character string specifying the alternative hypothesis,
 #'                      must be one of \code{"two.sided"} (default),
 #'                      \code{"greater"} or \code{"less"}.
-#' @param hypo          logical: if \code{TRUE}, null and alternative hypothesis
+#' @param hypo          logical: if \code{TRUE} (default), null and alternative
+#'                      hypothesis are shown on the console.
+#' @param descript      logical: if \code{TRUE} (default), descriptive statistics
 #'                      are shown on the console.
-#' @param descript      logical: if \code{TRUE}, descriptive statistics are shown
-#'                      on the console.
 #' @param effsize       logical: if \code{TRUE}, effect size measure Cohen's d is
 #'                      shown on the console, see \code{\link{cohens.d}} function.
 #' @param weighted      logical: if \code{TRUE}, the weighted pooled standard
 #'                      deviation is used to compute Cohen's d for a two-sample
-#'                      design (i.e., \code{paired = FALSE}), while standard deviation
-#'                      of the difference scores is used to compute Cohen's d for
-#'                      a paired-sample design (i.e., \code{paired = TRUE}).
+#'                      design (i.e., \code{paired = FALSE}), while standard
+#'                      deviation of the difference scores is used to compute
+#'                      Cohen's d for a paired-sample design (i.e.,
+#'                      \code{paired = TRUE}).
 #' @param cor           logical: if \code{TRUE} (default), \code{paired = TRUE},
 #'                      and \code{weighted = FALSE}, Cohen's d for a paired-sample
 #'                      design while controlling for the correlation between the
@@ -66,7 +67,7 @@
 #'                      type for the line representing the population mean under
 #'                      the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed,
 #'                      3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash.
-#' @param line.size     a numeric value indicating the \code{size} aesthetic
+#' @param line.size     a numeric value indicating the \code{linewidth} aesthetic
 #'                      for the line representing the population mean under the
 #'                      null hypothesis.
 #' @param jitter        logical: if \code{TRUE} (default), jittered data points
@@ -88,8 +89,17 @@
 #' @param as.na         a numeric vector indicating user-defined missing values,
 #'                      i.e. these values are converted to \code{NA} before
 #'                      conducting the analysis.
-#' @param check         logical: if \code{TRUE}, argument specification is checked.
-#' @param output        logical: if \code{TRUE}, output is shown on the console.
+#' @param write         a character string naming a text file with file extension
+#'                      \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                      output into a text file.
+#' @param append        logical: if \code{TRUE} (default), output will be appended
+#'                      to an existing text file with extension \code{.txt} specified
+#'                      in \code{write}, if \code{FALSE} existing text file will be
+#'                      overwritten.
+#' @param check         logical: if \code{TRUE} (default), argument specification
+#'                      is checked.
+#' @param output        logical: if \code{TRUE} (default), output is shown on the
+#'                      console.
 #' @param formula       in case of two sample t-test (i.e., \code{paired = FALSE}),
 #'                      a formula of the form \code{y ~ group} where \code{group}
 #'                      is a numeric variable, character variable or factor with
@@ -145,40 +155,40 @@
 #' dat1 <- data.frame(group = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
 #'                    x = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 6, 3, NA))
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # One-Sample Design
 #'
-#' # Two-sided one-sample t-test
+#' # Example 1a: Two-sided one-sample t-test
 #' # population mean = 3
 #' test.t(dat1$x, mu = 3)
 #'
-#' # One-sided one-sample t-test
+#' # Example 1b: One-sided one-sample t-test
 #' # population mean = 3, population standard deviation = 1.2
 #' test.t(dat1$x, mu = 3, alternative = "greater")
 #'
-#' # Two-sided one-sample t-test
+#' # Example 1c: Two-sided one-sample t-test
 #' # population mean = 3, convert value 3 to NA
 #' test.t(dat1$x, mu = 3, as.na = 3)
 #'
-#' # Two-sided one-sample t-test
+#' # Example 1d: Two-sided one-sample t-test
 #' # population mean = 3, print Cohen's d
 #' test.t(dat1$x, sigma = 1.2, mu = 3, effsize = TRUE)
 #'
-#' # Two-sided one-sample t-test
+#' # Example 1e: Two-sided one-sample t-test
 #' # population mean = 3, print Cohen's d with small sample correction factor
 #' test.t(dat1$x, sigma = 1.2, mu = 3, effsize = TRUE, correct = TRUE)
 #'
-#' # Two-sided one-sample t-test
+#' # Example 1f: Two-sided one-sample t-test
 #' # population mean = 3,
 #' # do not print hypotheses and descriptive statistics
 #' test.t(dat1$x, sigma = 1.2, mu = 3, hypo = FALSE, descript = FALSE)
 #'
-#' # Two-sided one-sample t-test
+#' # Example 1g: Two-sided one-sample t-test
 #' # print descriptive statistics with 3 digits and p-value with 5 digits
 #' test.t(dat1$x,  mu = 3, digits = 3, p.digits = 5)
 #'
 #' \dontrun{
-#' # Two-sided one-sample t-test
+#' # Example 1h: Two-sided one-sample t-test
 #' # population mean = 3, plot results
 #' test.t(dat1$x, mu = 3, plot = TRUE)
 #'
@@ -188,7 +198,7 @@
 #' # Save plot, ggsave() from the ggplot2 package
 #' ggsave("One-sample_t-test.png", dpi = 600, width = 3, height = 6)
 #'
-#' # Two-sided one-sample t-test
+#' # Example 1i: Two-sided one-sample t-test
 #' # population mean = 3, extract plot
 #' p <- test.t(dat1$x, mu = 3, output = FALSE)$plot
 #' p
@@ -202,55 +212,55 @@
 #'    stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
 #'    scale_x_continuous(name = NULL, limits = c(-2, 2)) +
 #'    scale_y_continuous(name = NULL) +
-#'    geom_hline(yintercept = 3, linetype = 3, size = 0.8) +
+#'    geom_hline(yintercept = 3, linetype = 3, linewidth = 0.8) +
 #'    labs(subtitle = "Two-Sided 95% Confidence Interval") +
 #'    theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
 #'                       axis.text.x = element_blank(),
 #'                       axis.ticks.x = element_blank())
 #' }
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Two-Sample Design
 #'
-#' # Two-sided two-sample t-test
+#' # Example 2a: Two-sided two-sample t-test
 #' test.t(x ~ group, data = dat1)
 #'
-#' # One-sided two-sample t-test
+#' # Example 2b: One-sided two-sample t-test
 #' test.t(x ~ group, data = dat1, alternative = "greater")
 #'
-#' # Two-sided two-sample t-test
+#' # Example 2c: Two-sided two-sample t-test
 #' # print Cohen's d with weighted pooled SD
 #' test.t(x ~ group, data = dat1, effsize = TRUE)
 #'
-#' # Two-sided two-sample t-test
+#' # Example 2d: Two-sided two-sample t-test
 #' # print Cohen's d with unweighted pooled SD
 #' test.t(x ~ group, data = dat1, effsize = TRUE, weighted = FALSE)
 #'
-#' # Two-sided two-sample t-test
+#' # Example 2e: Two-sided two-sample t-test
 #' # print Cohen's d with weighted pooled SD and
 #' # small sample correction factor
 #' test.t(x ~ group, data = dat1, effsize = TRUE, correct = TRUE)
 #'
-#' # Two-sided two-sample t-test
+#' # Example 2f: Two-sided two-sample t-test
 #' # print Cohen's d with SD of the reference group 1
 #' test.t(x ~ group, data = dat1, effsize = TRUE,
 #'        ref = 1)
 #'
-#' # Two-sided two-sample t-test
+#' # Example 2f: Two-sided two-sample t-test
 #' # print Cohen's d with weighted pooled SD and
 #' # small sample correction factor
 #' test.t(x ~ group, data = dat1, effsize = TRUE,
 #'        correct = TRUE)
 #'
-#' # Two-sided two-sample t-test
+#' # Example 2h: Two-sided two-sample t-test
 #' # do not print hypotheses and descriptive statistics,
 #' test.t(x ~ group, data = dat1, descript = FALSE, hypo = FALSE)
 #'
-#' # Two-sided two-sample t-test
+#' # Example 2i: Two-sided two-sample t-test
 #' # print descriptive statistics with 3 digits and p-value with 5 digits
 #' test.t(x ~ group, data = dat1, digits = 3, p.digits = 5)
 #'
 #' \dontrun{
-#' # Two-sided two-sample t-test
+#' # Example 2j: Two-sided two-sample t-test
 #' # Plot results
 #' test.t(x ~ group, data = dat1, plot = TRUE)
 #'
@@ -260,7 +270,7 @@
 #' # Save plot, ggsave() from the ggplot2 package
 #' ggsave("Two-sample_t-test.png", dpi = 600, width = 4, height = 6)
 #'
-#' # Two-sided two-sample t-test
+#' # Example 2k: Two-sided two-sample t-test
 #' # extract plot
 #' p <- test.t(x ~ group, data = dat1, output = FALSE)$plot
 #' p
@@ -282,64 +292,64 @@
 #' group1 <- c(3, 1, 4, 2, 5, 3, 6, 7)
 #' group2 <- c(5, 2, 4, 3, 1)
 #'
-#' # Two-sided two-sample t-test
+#' # Example 2l: Two-sided two-sample t-test
 #' test.t(group1, group2)
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Paired-Sample Design
 #'
 #' dat2 <- data.frame(pre = c(1, 3, 2, 5, 7),
 #'                    post = c(2, 2, 1, 6, 8))
 #'
-#' # Two-sided paired-sample t-test
+#' # Example 3a: Two-sided paired-sample t-test
 #' test.t(dat2$pre, dat2$post, paired = TRUE)
 #'
-#' # One-sided paired-sample t-test
+#' # Example 3b: One-sided paired-sample t-test
 #' test.t(dat2$pre, dat2$post, paired = TRUE,
 #'        alternative = "greater")
 #'
-#' # Two-sided paired-sample t-test
+#' # Example 3c: Two-sided paired-sample t-test
 #' # convert value 1 to NA
 #' test.t(dat2$pre, dat2$post, as.na = 1, paired = TRUE)
 #'
-#' # Two-sided paired-sample t-test
+#' # Example 3d: Two-sided paired-sample t-test
 #' # print Cohen's d based on the standard deviation of the difference scores
 #' test.t(dat2$pre, dat2$post, paired = TRUE, effsize = TRUE)
 #'
-#' # Two-sided paired-sample t-test
+#' # Example 3e: Two-sided paired-sample t-test
 #' # print Cohen's d based on the standard deviation of the difference scores
 #' # with small sample correction factor
 #' test.t(dat2$pre, dat2$post, paired = TRUE, effsize = TRUE,
 #'        correct = TRUE)
 #'
-#' # Two-sided paired-sample t-test
+#' # Example 3f: Two-sided paired-sample t-test
 #' # print Cohen's d controlling for the correlation between measures
 #' test.t(dat2$pre, dat2$post, paired = TRUE, effsize = TRUE,
 #'        weighted = FALSE)
 #'
-#' # Two-sided paired-sample t-test
+#' # Example 3g: Two-sided paired-sample t-test
 #' # print Cohen's d controlling for the correlation between measures
 #' # with small sample correction factor
 #' test.t(dat2$pre, dat2$post, paired = TRUE, effsize = TRUE,
 #'        weighted = FALSE, correct = TRUE)
 #'
-#' # Two-sided paired-sample t-test
+#' # Example 3h: Two-sided paired-sample t-test
 #' # print Cohen's d ignoring the correlation between measures
 #' test.t(dat2$pre, dat2$post, paired = TRUE, effsize = TRUE,
 #'        weighted = FALSE, cor = FALSE)
 #'
-#' # Two-sided paired-sample t-test
+#' # Example 3i: Two-sided paired-sample t-test
 #' # do not print hypotheses and descriptive statistics
 #' test.t(dat2$pre, dat2$post, paired = TRUE, hypo = FALSE, descript = FALSE)
 #'
-#' # Two-sided paired-sample t-test
+#' # Example 3j: Two-sided paired-sample t-test
 #' # population standard deviation of difference score = 1.2
 #' # print descriptive statistics with 3 digits and p-value with 5 digits
 #' test.t(dat2$pre, dat2$post, paired = TRUE, digits = 3,
 #'        p.digits = 5)
 #'
 #' \dontrun{
-#' # Two-sided paired-sample t-test
+#' # Example 3k: Two-sided paired-sample t-test
 #' # Plot results
 #' test.t(dat2$pre, dat2$post, paired = TRUE, plot = TRUE)
 #'
@@ -349,7 +359,7 @@
 #' # Save plot, ggsave() from the ggplot2 package
 #' ggsave("Paired-sample_t-test.png", dpi = 600, width = 3, height = 6)
 #'
-#' # Two-sided paired-sample t-test
+#' # Example 3l: Two-sided paired-sample t-test
 #' # Extract plot
 #' p <- test.t(dat2$pre, dat2$post, paired = TRUE, output = FALSE)$plot
 #' p
@@ -365,7 +375,7 @@
 #'    geom_point(stat = "summary", fun = "mean", size = 4) +
 #'    stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
 #'    scale_x_discrete(name = NULL) + scale_y_continuous(name = NULL) +
-#'    geom_hline(yintercept = 0, linetype = 3, size = 0.8) +
+#'    geom_hline(yintercept = 0, linetype = 3, linewidth = 0.8) +
 #'    labs(subtitle = "Two-Sided 95% Confidence Interval") +
 #'    theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
 #'                       axis.text.x = element_blank(),
@@ -391,8 +401,8 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                            jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
                            jitter.height = 0, jitter.alpha = 0.1,
                            title = "", subtitle = "Confidence Interval",
-                           digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
-                           output = TRUE, ...) {
+                           digits = 2, p.digits = 4, as.na = NULL, write = NULL,
+                           append = TRUE, check = TRUE, output = TRUE, ...) {
 
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
@@ -429,31 +439,14 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
     if (isTRUE(is.null(y))) {
 
       # Replace user-specified values with missing values
-      x <- misty::as.na(x, na = as.na, check = check)
-
-      if (isTRUE(all(is.na(x)))) { stop("After converting user-missing values into NA, 'x' is completely missing.", call. = FALSE) }
+      x <- .as.na(x, na = as.na)
 
     # Two or paired sample
     } else {
 
       # Replace user-specified values with missing values
-      x <- misty::as.na(x, na = as.na, check = check)
-      y <- misty::as.na(y, na = as.na, check = check)
-
-      if (isTRUE(!is.null(y))) {
-
-        # Variable with missing values only
-        xy.miss <- vapply(list(x = x, y = y), function(y) all(is.na(y)), FUN.VALUE = logical(1))
-        if (isTRUE(any(xy.miss))) {
-
-          stop(paste0("After converting user-missing values into NA, following ",
-                      ifelse(sum(xy.miss) == 1L, "variable is ", "variables are "),
-                      "completely missing: ",
-                      paste(names(which(xy.miss)), collapse = ", ")), call. = FALSE)
-
-        }
-
-      }
+      x <- .as.na(x, na = as.na)
+      y <- .as.na(y, na = as.na)
 
     }
 
@@ -531,6 +524,12 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
     # Check input 'digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
+
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
@@ -674,7 +673,7 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                                                         axis.ticks.x = ggplot2::element_blank())
 
            # Add horizontal line
-           if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = mu, linetype = line.type, size = line.size) }
+           if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = mu, linetype = line.type, linewidth = line.size) }
 
           #...................
           ### Two-sample ####
@@ -732,7 +731,7 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                                  plot.title = ggplot2::element_text(hjust = 0.5))
 
             # Add horizontal line
-            if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = 0, linetype = line.type, size = line.size) }
+            if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = 0, linetype = line.type, linewidth = line.size) }
 
           })
 
@@ -764,11 +763,33 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                              jitter = jitter, jitter.size = jitter.size, jitter.width = jitter.width,
                              jitter.height = jitter.height, jitter.alpha = jitter.alpha,
                              title = title, subtitle = subtitle, digits = digits,
-                             p.digits = p.digits, as.na = as.na, check = check,
-                             output = output),
+                             p.digits = p.digits, as.na = as.na, write = write,
+                             append = append, check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #
@@ -792,8 +813,8 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
                            jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
                            jitter.height = 0, jitter.alpha = 0.1,
                            title = "", subtitle = "Confidence Interval",
-                           digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
-                           output = TRUE, ...) {
+                           digits = 2, p.digits = 4, as.na = NULL, write = NULL, append = TRUE,
+                           check = TRUE, output = TRUE, ...) {
 
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
@@ -943,10 +964,32 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
                              jitter.size = jitter.size, jitter.width = jitter.width,
                              jitter.height = jitter.height, jitter.alpha = jitter.alpha,
                              title = title, subtitle = subtitle, digits = digits, p.digits = p.digits,
-                             as.na = as.na, check = check, output = output),
+                             write = write, append = append, as.na = as.na, check = check, output = output),
                  result = object$result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

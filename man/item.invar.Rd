@@ -4,7 +4,7 @@
 \alias{item.invar}
 \title{Between-Group and Longitudinal Measurement Invariance Evaluation}
 \usage{
-item.invar(x, model = NULL, rescov = NULL, rescov.long = TRUE,
+item.invar(..., data = NULL, model = NULL, rescov = NULL, rescov.long = TRUE,
            group = NULL, long = FALSE, cluster = NULL,
            invar = c("config", "metric", "scalar", "strict"),
            partial = NULL, ident = c("marker", "var", "effect"),
@@ -17,10 +17,10 @@ item.invar(x, model = NULL, rescov = NULL, rescov.long = TRUE,
                      "modind", "resid"),
            print.fit = c("all", "standard", "scaled", "robust"),
            mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3,
-           as.na = NULL, write = NULL, check = TRUE, output = TRUE)
+           as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame. If \code{model = NULL}, confirmatory
+\item{...}{a matrix or data frame. If \code{model = NULL}, confirmatory
 factor analysis based on a measurement model with one factor
 labeled \code{f} comprising all variables in the matrix or
 data frame specified in \code{x} for evaluating between-group
@@ -33,7 +33,17 @@ specifying \code{cluster}. If \code{model} is specified,
 the matrix or data frame needs to contain all variables
 used in the argument \code{model} and the cluster variable
 when specifying the name of the cluster variable in the
-argument \code{cluster}.}
+argument \code{cluster}. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{item.invar(x1, x2, x2, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a vector, factor, matrix, array, data frame,
+or list for the argument \code{...}.}
 
 \item{model}{a character vector specifying a measurement model with one
 factor, or a list of character vectors for specifying a
@@ -93,11 +103,13 @@ this function can only evaluate either between-group or
 longitudinal measurement invariance, but not both at the
 same time.}
 
-\item{cluster}{either a character string indicating the variable name of
-the cluster variable in the matrix or data frame specified
-in \code{x} or a vector representing the nested grouping
-structure (i.e., group or cluster variable) for computing
-a robust test statistic and cluster-robust standard errors.}
+\item{cluster}{either a character string indicating the variable name
+of the cluster variable in \code{...} or \code{data},
+or a vector representing the nested grouping structure
+(i.e., group or cluster variable) for computing
+cluster-robust standard errors. Note that cluster-robust
+standard errors are not available when treating indicators
+of the measurement model as ordered (ordinal).}
 
 \item{invar}{a character string indicating the level of measurement
 invariance to be evaluated, i.e., \code{config} to evaluate
@@ -226,15 +238,23 @@ these values are converted to \code{NA} before conducting
 the analysis. Note that \code{as.na()} function is only
 applied to \code{x} but not to \code{group} or \code{cluster}.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked
 and convergence and model identification checks are conducted
 for all estimated models.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -293,22 +313,27 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
-#------------------------------------------------
+#-------------------------------------------------------------------------------
 # Between-Group Measurement Invariance Evaluation
 
 #..................
 # Measurement model with one factor
 
-# Specification of the grouping variable in 'x'
+# Example 1a: Specification of the grouping variable in 'x'
 item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "sex")], group = "sex")
 
-# Specification of the grouping variable in 'group'
+# Example 1b: Specification of the grouping variable in 'group'
 item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
            group = HolzingerSwineford1939$sex)
 
-# Alternative specification using the argument 'model'
+# Example 1c: Alternative specification using the 'data' argument
+item.invar(x1:x4, data = HolzingerSwineford1939, group = "sex")
+
+# Example 1d: Alternative specification using the argument 'model'
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "sex")
 
+# Example 1e: Alternative specification using the 'data' and 'model' argument
+item.invar(., data = HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "sex")
 #..................
 # Measurement model with two factors
 
@@ -319,58 +344,58 @@ item.invar(HolzingerSwineford1939,
 #..................
 # Measurement model with two factors
 
-# Evaluate configural, metric, scalar, and strict measurement invariance
+# Example 2: Evaluate configural, metric, scalar, and strict measurement invariance
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", invar = "strict")
 
 #..................
 # Partial measurement invariance
 
-# Free second factor loading (L2) and third intercept (T3)
+# Example 3: Free second factor loading (L2) and third intercept (T3)
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", partial = c("L2", "T3"), print = c("fit", "est"))
 
 #..................
 # Residual covariances
 
-# One residual covariance
+# Example 4a: One residual covariance
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            rescov = c("x3", "x4"), group = "sex")
 
-# Two residual covariances
+# Example 4b: Two residual covariances
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            rescov = list(c("x1", "x2"), c("x3", "x4")), group = "sex")
 
 #..................
 # Scaled test statistic and cluster-robust standard errors
 
-# Specify cluster variable using a variable name in 'x'
+# Example 5a: Specify cluster variable using a variable name in 'x'
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", cluster = "agemo")
 
-# Specify vector of the cluster variable in the argument 'cluster'
+# Example 5b: Specify vector of the cluster variable in the argument 'cluster'
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", cluster = HolzingerSwineford1939$agemo)
 
 #..................
 # Default Null model
 
-# Specify default null model for computing incremental fit indices
+# Example 6: Specify default null model for computing incremental fit indices
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", null.model = FALSE)
 
 #..................
 # Print argument
 
-# Request all results
+# Example 7a: Request all results
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", print = "all")
 
-# Request fit indices with ad hoc non-normality correction
+# Example 7b: Request fit indices with ad hoc non-normality correction
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", print.fit = "scaled")
 
-# Request modification indices with value equal or higher than 10
+# Example 7c: Request modification indices with value equal or higher than 10
 # and highlight residual correlations equal or higher than 0.3
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", print = c("modind", "resid"),
@@ -379,6 +404,7 @@ item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #..................
 # Model syntax and lavaan summary of the estimated model
 
+# Example 8
 mod <- item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
                   group = "sex", output = FALSE)
 
@@ -388,19 +414,24 @@ cat(mod$model$scalar)
 # lavaan summary of the scalar invariance model
 lavaan::summary(mod$model.fit$scalar, standardized = TRUE, fit.measures = TRUE)
 
-#------------------------------------------------
+#-------------------------------------------------------------------------------
 # Longitudinal Measurement Invariance Evaluation
 
-# Two time points with three indicators at each time point
+# Example 9: Two time points with three indicators at each time point
 item.invar(HolzingerSwineford1939,
            model = list(c("x1", "x2", "x3"),
                         c("x5", "x6", "x7")), long = TRUE)
 
 #------------------------------------------------
-# Write Results into a Excel file
+# Write Results
 
+# Example 10a: Write results into a text file
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "sex", print = "all", write = "Invariance.xlsx", output = FALSE)
+            group = "sex", print = "all", write = "Invariance.txt", output = FALSE)
+
+# Example 10b: Write results into an Excel file
+item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
+            group = "sex", print = "all", write = "Invariance.xlsx", output = FALSE)
 
 result <- item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
                      group = "sex", print = "all", output = FALSE)

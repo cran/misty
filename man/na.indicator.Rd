@@ -4,16 +4,26 @@
 \alias{na.indicator}
 \title{Missing Data Indicator Matrix}
 \usage{
-na.indicator(x, as.na = NULL, check = TRUE)
+na.indicator(..., data = NULL, as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame.}
+\item{...}{a matrix or data frame with incomplete data, where missing
+values are coded as \code{NA}. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{na.indicator(x1, x2, x3, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 Returns a matrix or data frame with \eqn{r = 1} if a value is observed, and \eqn{r = 0}
@@ -25,12 +35,11 @@ values are observed or missing, i.e., \eqn{r = 1} if a value is observed, and
 \eqn{r = 0} if a value is missing.
 }
 \examples{
-dat <- data.frame(x = c(1, NA, NA, 6, 3),
-                  y = c(7, NA, 8, 9, NA),
-                  z = c(2, NA, 3, NA, 5))
+# Example 1a: Create missing data indicator matrix \eqn{R}
+na.indicator(airquality)
 
-# Create missing data indicator matrix \eqn{R}
-na.indicator(dat)
+# Example 1b: Alternative specification using the 'data' argument
+na.indicator(., data = airquality)
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.

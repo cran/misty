@@ -4,11 +4,21 @@
 \alias{na.test}
 \title{Little's Missing Completely at Random (MCAR) Test}
 \usage{
-na.test(x, digits = 2, p.digits = 3, as.na = NULL, check = TRUE, output = TRUE)
+na.test(..., data = NULL, digits = 2, p.digits = 3, as.na = NULL, write = NULL,
+        append = TRUE,check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame with incomplete data, where missing
-values are coded as \code{NA}.}
+\item{...}{a matrix or data frame with incomplete data, where missing
+values are coded as \code{NA}. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{na.test(x1, x2, x3, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{digits}{an integer value indicating the number of decimal places to
 be used for displaying results.}
@@ -19,9 +29,18 @@ used for displaying the \emph{p}-value.}
 \item{as.na}{a numeric vector indicating user-defined missing values, i.e.
 these values are converted to NA before conducting the analysis.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -92,7 +111,16 @@ Code is adapted from the R function by Eric Stemmler:
 tinyurl.com/r-function-for-MCAR-test
 }
 \examples{
+# Example 1a: Conduct Little's MCAR test
 na.test(airquality)
+
+# Example b: Alternative specification using the 'data' argument,
+na.test(., data = airquality)
+
+\dontrun{
+# Example 2: Write results into a text file
+na.test(airquality, write = "NA_Test.txt")
+}
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.

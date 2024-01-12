@@ -6,14 +6,14 @@
 \usage{
 write.sav(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NULL,
           digits = 2, write.csv = FALSE, sep = c(";", ","), na = "",
-          write.sps = FALSE,check = TRUE)
+          write.sps = FALSE, check = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame to be written in SPSS, vectors are
 coerced to a data frame.}
 
 \item{file}{a character string naming a file with or without file extension
-'.sav', e.g., \code{"My_SPSS_Data.sav"} or \code{"My_SPSS_Data"}.}
+'.sav', e.g., \code{"SPSS_Data.sav"} or \code{"SPSS_Data"}.}
 
 \item{var.attr}{a matrix or data frame with variable attributes used in the
 SPSS file, only 'variable labels' (column name \code{label}),
@@ -88,15 +88,15 @@ dat <- data.frame(id = 1:5,
                   status = c(1, 2, 3, 1, 4),
                   score = c(511, 506, 497, 502, 491))
 
-# Write SPSS file using the haven package
+# Example 1: Write SPSS file using the haven package
 write.sav(dat, file = "Dataframe_haven.sav")
 
-# Write SPSS file using PSPP,
+# Example 2: Write SPSS file using PSPP,
 # write CSV file and SPSS syntax along with the SPSS file
 write.sav(dat, file = "Dataframe_PSPP.sav", pspp.path = "C:/Program Files/PSPP",
           write.csv = TRUE, write.sps = TRUE)
 
-# Specify variable attributes
+# Example 3: Specify variable attributes
 # Note that it is recommended to manually specify the variables attritbues in a CSV or
 # Excel file which is subsequently read into R
 attr <- data.frame(# Variable names
@@ -111,10 +111,10 @@ attr <- data.frame(# Variable names
                    # User-missing values
                    missing = c("", "-99", "-99", "-99", "-99"), stringsAsFactors = FALSE)
 
-# Write SPSS file with variable attributes using the haven package
+# Example 4: Write SPSS file with variable attributes using the haven package
 write.sav(dat, file = "Dataframe_haven_Attr.sav", var.attr = attr)
 
-# Write SPSS with variable attributes using PSPP
+# Example 5: Write SPSS with variable attributes using PSPP
 write.sav(dat, file = "Dataframe_PSPP_Attr.sav", var.attr = attr,
           pspp.path = "C:/Program Files/PSPP")
 }
@@ -130,7 +130,8 @@ Robitzsch, A., Grund, S., & Henke, T. (2019). \emph{miceadds: Some additional
 multiple imputation functions, especially for mice}. R package version 3.4-17.
 }
 \seealso{
-\code{\link{read.sav}}
+\code{\link{read.sav}}, \code{\link{write.xlsx}}, \code{\link{write.dta}},
+\code{\link{write.mplus}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

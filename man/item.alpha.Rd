@@ -4,14 +4,25 @@
 \alias{item.alpha}
 \title{Coefficient Alpha and Item Statistics}
 \usage{
-item.alpha(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit = FALSE,
-           print = c("all", "alpha", "item"), digits = 2, conf.level = 0.95,
-           as.na = NULL, write = NULL, check = TRUE, output = TRUE)
+item.alpha(..., data = NULL, exclude = NULL, std = FALSE, ordered = FALSE,
+           na.omit = FALSE, print = c("all", "alpha", "item"), digits = 2,
+           conf.level = 0.95, as.na = NULL, write = NULL, append = TRUE,
+           check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a matrix, data frame, variance-covariance or correlation matrix.
-Note that raw data is needed to compute ordinal coefficient alpha,
-i.e., \code{ordered = TRUE}.}
+\item{...}{a matrix, data frame, variance-covariance or correlation
+matrix. Note that raw data is needed to compute ordinal
+coefficient alpha, i.e., \code{ordered = TRUE}. Alternatively,
+an expression indicating the variable names in \code{data}
+e.g., \code{item.alpha(x1, x2, x3, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix, data frame, variance-covariance
+or correlation matrix for the argument \code{...}.}
 
 \item{exclude}{a character vector indicating items to be excluded from the
 analysis.}
@@ -40,20 +51,28 @@ of the interval.}
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{matrix or data frame specified in \code{x}}
+  \item{\code{data}}{data frame used for the current analysis}
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{list with result tables, i.e., \code{alpha} for a table
                        with coefficient alpha and \code{itemstat} for a table with
@@ -90,36 +109,42 @@ dat <- data.frame(item1 = c(4, 2, 3, 4, 1, 2, 4, 2),
                   item3 = c(3, 2, 4, 2, 1, 3, 4, 1),
                   item4 = c(4, 1, 2, 3, 2, 3, 4, 2))
 
-# Compute unstandardized coefficient alpha and item statistics
+# Example 1a: Compute unstandardized coefficient alpha and item statistics
 item.alpha(dat)
 
-# Compute standardized coefficient alpha and item statistics
+# Example 1b: Alternative specification using the 'data' argument
+item.alpha(., data = dat)
+
+# Example 2: Compute standardized coefficient alpha and item statistics
 item.alpha(dat, std = TRUE)
 
-# Compute unstandardized coefficient alpha
+# Example 3: Compute unstandardized coefficient alpha
 item.alpha(dat, print = "alpha")
 
-# Compute item statistics
+# Example 4: Compute item statistics
 item.alpha(dat, print = "item")
 
-# Compute unstandardized coefficient alpha and item statistics while excluding item3
+# Example 5: Compute unstandardized coefficient alpha and item statistics while excluding item3
 item.alpha(dat, exclude = "item3")
 
-# Compute variance-covariance matrix
+# Example 6: Compute variance-covariance matrix
 dat.cov <- cov(dat)
 # Compute unstandardized coefficient alpha based on the variance-covariance matrix
 item.alpha(dat.cov)
 
 # Compute correlation matrix
 dat.cor <- cor(dat)
-# Compute standardized coefficient alpha based on the correlation matrix
+# Example 7: Compute standardized coefficient alpha based on the correlation matrix
 item.alpha(dat.cor)
 
-# Compute ordinal coefficient alpha
+# Example 8: Compute ordinal coefficient alpha
 item.alpha(dat, ordered = TRUE)
 
 \dontrun{
-# Write Results into a Excel file
+# Example 9a: Write results into a text file
+result <- item.alpha(dat, write = "Alpha.txt")
+
+# Example 9b: Write results into a Excel file
 result <- item.alpha(dat, write = "Alpha.xlsx")
 
 result <- item.alpha(dat, output = FALSE)

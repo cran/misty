@@ -13,7 +13,8 @@ aov.w(formula, data, print = c("all", "none", "LB", "GG", "HF"),
       breaks = ggplot2::waiver(), jitter = TRUE, line = TRUE,
       jitter.size = 1.25, jitter.width = 0.05, jitter.height = 0,
       jitter.alpha = 0.1, title = "", subtitle = "Confidence Interval",
-      digits = 2, p.digits = 4, as.na = NULL, check = TRUE, output = TRUE, ...)
+      digits = 2, p.digits = 4, as.na = NULL, write = NULL, append = TRUE,
+      check = TRUE, output = TRUE, ...)
 }
 \arguments{
 \item{formula}{a formula of the form \code{cbind(time1, time2, time3) ~ 1}
@@ -31,7 +32,7 @@ for no correction, \code{LB} for lower bound correction,
 \code{GG} for Greenhouse-Geisser correction, and \code{HF},
 for Huynh-Feldt correction.}
 
-\item{posthoc}{logical: if \code{TRUE}, paired-samples t-tests for multiple
+\item{posthoc}{logical: if \code{TRUE} (default), paired-samples t-tests for multiple
 comparison are conducted.}
 
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence
@@ -43,13 +44,13 @@ multiple testing based on \code{\link{p.adjust}}, i.e.,
 \code{h ochberg}, \code{hommel}, \code{BH}, \code{BY}, or
 \code{fdr}.}
 
-\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis
+\item{hypo}{logical: if \code{TRUE} (default), null and alternative hypothesis
 are shown on the console.}
 
-\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown
+\item{descript}{logical: if \code{TRUE} (default), descriptive statistics are shown
 on the console.}
 
-\item{epsilon}{logical: if \code{TRUE}, box indices of sphericity (epsilon)
+\item{epsilon}{logical: if \code{TRUE} (default), box indices of sphericity (epsilon)
 are shown on the console, i.e., lower bound, Greenhouse
 and Geiser (GG), Huynh and Feldt (HF) and average of GG
 and HF.}
@@ -120,9 +121,18 @@ to be used for displaying the \emph{p}-value.}
 i.e. these values are converted to \code{NA} before
 conducting the analysis.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 
 \item{...}{further arguments to be passed to or from methods.}
 }
@@ -161,7 +171,7 @@ However, test of assumptions addresses an irrelevant hypothesis because what
 matters is the degree of violation rather than its presence (Baguley, 2012a).
 Moreover, the test is not recommended because it lacks statistical power (Abdi,
 2010). Instead, the Box index of sphericity (\eqn{\varepsilon}) should be used to
-assess the degree of violation of the sphericity. assumption The \eqn{\varepsilon}
+assess the degree of violation of the sphericity assumption. The \eqn{\varepsilon}
 parameter indicates the degree to which the population departs from sphericity
 with \eqn{\varepsilon = 1} indicating that sphericity holds. As the departure
 becomes more extreme, \eqn{\varepsilon} approaches its lower bound
@@ -220,53 +230,56 @@ dat <- data.frame(time1 = c(3, 2, 1, 4, 5, 2, 3, 5, 6, 7),
                   time2 = c(4, 3, 6, 5, 8, 6, 7, 3, 4, 5),
                   time3 = c(1, 2, 2, 3, 6, 5, 1, 2, 4, 6))
 
-# Repeated measures ANOVA
+# Example 1: Repeated measures ANOVA
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat)
 
-# Repeated measures ANOVA
+# Example 2: Repeated measures ANOVA
 # print results based on all sphericity corrections
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat, print = "all")
 
-# Repeated measures ANOVA
+# Example 3: Repeated measures ANOVA
 # print effect size measures
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat, effsize = TRUE)
 
-# Repeated measures ANOVA
+# Example 4: Repeated measures ANOVA
 # do not print hypotheses and descriptive statistics,
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat, descript = FALSE, hypo = FALSE)
 
 \dontrun{
- # Repeated measures ANOVA
- # plot results
- aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE)
+# Example 5: Write results into a text file
+aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.txt")
 
- # Load ggplot2 package
- library(ggplot2)
+# Example 6: Repeated measures ANOVA
+# plot results
+aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE)
 
- # Save plot, ggsave() from the ggplot2 package
- ggsave("Repeated_measures_ANOVA.png", dpi = 600, width = 4.5, height = 4)
+# Load ggplot2 package
+library(ggplot2)
 
- # Repeated measures ANOVA
- # extract plot
- p <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat, output = FALSE)$plot
- p
+# Save plot, ggsave() from the ggplot2 package
+ggsave("Repeated_measures_ANOVA.png", dpi = 600, width = 4.5, height = 4)
 
- # Extract data
- plotdat <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat, output = FALSE)$data
+# Example 7: Repeated measures ANOVA
+# extract plot
+p <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat, output = FALSE)$plot
+p
 
- # Draw plot in line with the default setting of aov.w()
- ggplot(plotdat$long, aes(time, y, group = 1L)) +
-   geom_point(aes(time, y, group = id),
-              alpha = 0.1, position = position_dodge(0.05)) +
-   geom_line(aes(time, y, group = id),
-             alpha = 0.1, position = position_dodge(0.05)) +
-   geom_point(data = plotdat$ci, aes(variable, m), stat = "identity", size = 4) +
-   stat_summary(aes(time, y), fun = mean, geom = "line") +
-   geom_errorbar(data = plotdat$ci, aes(variable, m, ymin = low, ymax = upp), width = 0.1) +
-   theme_bw() + xlab(NULL) +
-   labs(subtitle = "Two-Sided 95\% Confidence Interval") +
-   theme(plot.subtitle = element_text(hjust = 0.5),
-         plot.title = element_text(hjust = 0.5))
+# Extract data
+plotdat <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat, output = FALSE)$data
+
+# Draw plot in line with the default setting of aov.w()
+ggplot(plotdat$long, aes(time, y, group = 1L)) +
+geom_point(aes(time, y, group = id),
+          alpha = 0.1, position = position_dodge(0.05)) +
+geom_line(aes(time, y, group = id),
+         alpha = 0.1, position = position_dodge(0.05)) +
+geom_point(data = plotdat$ci, aes(variable, m), stat = "identity", size = 4) +
+stat_summary(aes(time, y), fun = mean, geom = "line") +
+geom_errorbar(data = plotdat$ci, aes(variable, m, ymin = low, ymax = upp), width = 0.1) +
+theme_bw() + xlab(NULL) +
+labs(subtitle = "Two-Sided 95% Confidence Interval") +
+theme(plot.subtitle = element_text(hjust = 0.5),
+     plot.title = element_text(hjust = 0.5))
 }
 }
 \references{

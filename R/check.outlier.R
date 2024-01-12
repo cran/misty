@@ -9,7 +9,7 @@
 #' for quantifying \strong{influence}.
 #'
 #' @param model  a fitted model of class \code{"lm"}.
-#' @param check  logical: if \code{TRUE}, argument specification is checked.
+#' @param check  logical: if \code{TRUE} (default), argument specification is checked.
 #' @param ...    further arguments to be passed to or from methods.
 #'
 #' @details
@@ -48,17 +48,12 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(x1 = c(3, 2, 4, 9, 5, 3, 6, 4, 5, 6, 3, 5),
-#'                   x2 = c(1, 4, 3, 1, 2, 4, 3, 5, 1, 7, 8, 7),
-#'                   x3 = c(0, NA, 1, 0, 1, 1, NA, 1, 0, 0, 1, 1),
-#'                   y = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8))
-#'
-#' # Regression model and measures for leverage, distance, and influence
-#' mod.lm <- lm(y ~ x1 + x2 + x3, data = dat)
+#' # Example 1: Regression model and measures for leverage, distance, and influence
+#' mod.lm <- lm(mpg ~ cyl + disp + hp, data = mtcars)
 #' check.outlier(mod.lm)
 #'
 #' # Merge result table with the data
-#' dat1 <- cbind(dat, check.outlier(mod.lm))
+#' dat1 <- cbind(mtcars, check.outlier(mod.lm))
 check.outlier <- function(model, check = TRUE, ...) {
 
   #_____________________________________________________________________________
@@ -91,14 +86,6 @@ check.outlier <- function(model, check = TRUE, ...) {
   mod.pred <- misty::chr.omit(mod.int.pred, "(Intercept)")
 
   idout <- NULL
-
-  #_____________________________________________________________________________
-  #
-  # Input Check ----------------------------------------------------------------
-
-  if (isTRUE(check)) {
-
-  }
 
   #_____________________________________________________________________________
   #
@@ -137,8 +124,8 @@ check.outlier <- function(model, check = TRUE, ...) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Result table ####
 
-  result <- merge(data.frame(idout = as.numeric(row.names(mod.dat)), mahal = mod.mahal),
-                  data.frame(idout = as.numeric(row.names(mod.dfbeta)),
+  result <- merge(data.frame(idout = row.names(mod.dat), mahal = mod.mahal),
+                  data.frame(idout = row.names(mod.dfbeta),
                              hat = mod.hat, rstand = mod.rstand, rstud = mod.rstud, cook = mod.cook, mod.dfbeta),
                   by = "idout", all.x = TRUE)
 

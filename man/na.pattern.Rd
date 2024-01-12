@@ -4,12 +4,22 @@
 \alias{na.pattern}
 \title{Missing Data Pattern}
 \usage{
-na.pattern(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
-           check = TRUE, output = TRUE)
+na.pattern(..., data = NULL, order = FALSE, digits = 2, as.na = NULL, write = NULL,
+           append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame with incomplete data, where missing
-values are coded as \code{NA}.}
+\item{...}{a matrix or data frame with incomplete data, where missing
+values are coded as \code{NA}. a matrix or data frame with incomplete data, where missing
+values are coded as \code{NA}. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{na.pattern(x1, x2, x3, data = dat)}.Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{order}{logical: if \code{TRUE}, variables are ordered from left to
 right in increasing order of missing values.}
@@ -21,20 +31,28 @@ be used for displaying percentages.}
 i.e. these values are converted to NA before conducting the
 analysis.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{matrix or data frame specified in \code{x}}
+  \item{\code{data}}{data frame used for the current analysis}
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{result tables}
   \item{\code{pattern}}{group variable of missing data pattern}
@@ -44,21 +62,24 @@ This function computes a summary of missing data patterns, i.e., number (%) of
 cases with a specific missing data pattern.
 }
 \examples{
-dat <- data.frame(x = c(1, NA, NA, 6, 3),
-                  y = c(7, NA, 8, 9, NA),
-                  z = c(2, NA, 3, NA, 5))
-
-# Compute a summary of missing data patterns
-dat.pattern <- na.pattern(dat)
-
-# Vector of missing data pattern for each case
-dat.pattern$pattern
-# Data frame without cases with missing data pattern 2 and 5
-dat[!dat.pattern$pattern \%in\% c(2, 5), ]
-
 \dontrun{
-# Write Results into a Excel file
-result <- na.pattern(dat, write = "NA_Pattern.xlsx")
+# Example 1a: Compute a summary of missing data patterns
+dat.pattern <- na.pattern(airquality)
+
+# Example 1b: Alternative specification using the 'data' argument
+dat.pattern <- na.pattern(., data = airquality)
+
+# Example 2: Vector of missing data pattern for each case
+dat.pattern$pattern
+
+# Data frame without cases with missing data pattern 2 and 4
+airquality[!dat.pattern$pattern %in% c(2, 4), ]
+
+# Example 3a: Write Results into an text file
+result <- na.pattern(airquality, write = "NA_Pattern.txt")
+
+# Example 3b: Write Results into an Excel file
+result <- na.pattern(airquality, write = "NA_Pattern.xlsx")
 
 result <- na.pattern(dat, output = FALSE)
 write.result(result, "NA_Pattern.xlsx")

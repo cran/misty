@@ -161,7 +161,7 @@ and \code{"modifiedDate"} to only runs a model if the
 modified date for the input file is more recent than
 the output file modified date.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -229,15 +229,15 @@ profile-varying (i.e., unequal variances and covariances across profiles).}
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
-#--------------------------------------------------------
-# LCA with k = 1 to k = 8 profiles, continuous indicators
+#-------------------------------------------------------------------------------
+# Example 1: LCA with k = 1 to k = 8 profiles, continuous indicators
 # Input statements that contain parameter estimates
 # Vuong-Lo-Mendell-Rubin LRT and bootstrapped LRT
 mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
           classes = 8, output = c("SVALUES", "TECH11", "TECH14"))
 
-#--------------------------------------------------------
-# LCA with k = 1 to k = 6 profiles, ordered categorical indicators
+#-------------------------------------------------------------------------------
+# Example 22: LCA with k = 1 to k = 6 profiles, ordered categorical indicators
 # Select observations with ageyr <= 13
 # Estimate all models in Mplus
 mplus.lca(round(HolzingerSwineford1939[, -5]), ind = c("x1", "x2", "x3", "x4"),

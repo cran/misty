@@ -6,8 +6,8 @@
 \usage{
 multilevel.indirect(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.rand,
                     nrep = 100000, alternative = c("two.sided", "less", "greater"),
-                    seed = NULL, conf.level = 0.95, digits = 3, check = TRUE,
-                    output = TRUE)
+                    seed = NULL, conf.level = 0.95, digits = 3, write = NULL,
+                    append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{a}{a numeric value indicating the coefficient \eqn{a}, i.e.,
@@ -47,9 +47,18 @@ of the interval.}
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -143,17 +152,24 @@ The function was adapted from the interactive web tool by Preacher and
 Selig (2010).
 }
 \examples{
-# Confidence Interval for the Indirect Effect
+\dontrun{
+# Example 1: Confidence Interval for the Indirect Effect
 multilevel.indirect(a = 0.25, b = 0.20, se.a = 0.11, se.b = 0.13,
                     cov.ab = 0.01, cov.rand = 0.40, se.cov.rand = 0.02)
 
-# Save results of the Monte Carlo method
+# Example 2: Save results of the Monte Carlo method
 ab <- multilevel.indirect(a = 0.25, b = 0.20, se.a = 0.11, se.b = 0.13,
                           cov.ab = 0.01, cov.rand = 0.40, se.cov.rand = 0.02,
                           output = FALSE)$result$ab
 
 # Histogram of the distribution of the indirect effect
 hist(ab)
+
+# Example 3: Write results into a text file
+multilevel.indirect(a = 0.25, b = 0.20, se.a = 0.11, se.b = 0.13,
+                    cov.ab = 0.01, cov.rand = 0.40, se.cov.rand = 0.02,
+                    write = "ML-Indirect.txt")
+}
 }
 \references{
 Bauer, D. J., Preacher, K. J., & Gil, K. M. (2006). Conceptualizing and testing

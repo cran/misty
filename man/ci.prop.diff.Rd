@@ -11,12 +11,14 @@ ci.prop.diff(x, ...)
 \method{ci.prop.diff}{default}(x, y, method = c("wald", "newcombe"), paired = FALSE,
              alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
              group = NULL, split = NULL, sort.var = FALSE, digits = 2,
-             as.na = NULL, check = TRUE, output = TRUE, \dots)
+             as.na = NULL, write = NULL, append = TRUE,
+             check = TRUE, output = TRUE, \dots)
 
 \method{ci.prop.diff}{formula}(formula, data, method = c("wald", "newcombe"),
              alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
              group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-             digits = 2, as.na = NULL, check = TRUE, output = TRUE, \dots)
+             digits = 2, as.na = NULL, write = NULL, append = TRUE,
+             check = TRUE, output = TRUE, \dots)
 }
 \arguments{
 \item{x}{a numeric vector with 0 and 1 values.}
@@ -53,9 +55,18 @@ i.e. these values are converted to \code{NA} before conducting the analysis.
 Note that \code{as.na()} function is only applied to \code{x}, but
 not to \code{group} or \code{split}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 
 \item{formula}{a formula of the form \code{y ~ group} for one outcome variable or
 \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where
@@ -104,55 +115,55 @@ dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
                    x3 = c(1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0,
                           1, 0, 1, 1, 0, 1, 1, 1, 0, 1, NA, 1, 0, 1))
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # Two-sample design
 
-# Two-Sided 95\% CI for x1 by group1
+# Example 1: Two-Sided 95% CI for x1 by group1
 # Newcombes Hybrid Score interval
 ci.prop.diff(x1 ~ group1, data = dat1)
 
-# Two-Sided 95\% CI for x1 by group1
+# Example 2: Two-Sided 95% CI for x1 by group1
 # Wald CI
 ci.prop.diff(x1 ~ group1, data = dat1, method = "wald")
 
-# One-Sided 95\% CI for x1 by group1
+# Example 3: One-Sided 95% CI for x1 by group1
 # Newcombes Hybrid Score interval
 ci.prop.diff(x1 ~ group1, data = dat1, alternative = "less")
 
-# Two-Sided 99\% CI for x1 by group1
+# Example 4: Two-Sided 99% CI for x1 by group1
 # Newcombes Hybrid Score interval
 ci.prop.diff(x1 ~ group1, data = dat1, conf.level = 0.99)
 
-# Two-Sided 95\% CI for y1 by group1
-# # Newcombes Hybrid Score interval, print results with 3 digits
+# Example 5: Two-Sided 95% CI for y1 by group1
+# Newcombes Hybrid Score interval, print results with 3 digits
 ci.prop.diff(x1 ~ group1, data = dat1, digits = 3)
 
-# Two-Sided 95\% CI for y1 by group1
-# # Newcombes Hybrid Score interval, convert value 0 to NA
+# Example 6: Two-Sided 95% CI for y1 by group1
+# Newcombes Hybrid Score interval, convert value 0 to NA
 ci.prop.diff(x1 ~ group1, data = dat1, as.na = 0)
 
-# Two-Sided 95\% CI for y1, y2, and y3 by group1
+# Example 7: Two-Sided 95% CI for y1, y2, and y3 by group1
 # Newcombes Hybrid Score interval
 ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1)
 
-# Two-Sided 95\% CI for y1, y2, and y3 by group1
-# # Newcombes Hybrid Score interval, listwise deletion for missing data
+# Example 8: Two-Sided 95% CI for y1, y2, and y3 by group1
+# Newcombes Hybrid Score interval, listwise deletion for missing data
 ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, na.omit = TRUE)
 
-# Two-Sided 95\% CI for y1, y2, and y3 by group1
+# Example 9: Two-Sided 95% CI for y1, y2, and y3 by group1
 # Newcombes Hybrid Score interval, analysis by group2 separately
 ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
 
-# Two-Sided 95\% CI for y1, y2, and y3 by group1
+# Example 10: Two-Sided 95% CI for y1, y2, and y3 by group1
 # Newcombes Hybrid Score interval, analysis by group2 separately, sort by variables
 ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2,
              sort.var = TRUE)
 
-# Two-Sided 95\% CI for y1, y2, and y3 by group1
+# Example 11: Two-Sided 95% CI for y1, y2, and y3 by group1
 # split analysis by group2
 ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
 
-# Two-Sided 95\% CI for y1, y2, and y3 by group1
+# Example 12: Two-Sided 95% CI for y1, y2, and y3 by group1
 # Newcombes Hybrid Score interval, analysis by group2 separately, split analysis by group3
 ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1,
              group = dat1$group2, split = dat1$group3)
@@ -162,33 +173,33 @@ ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1,
 group1 <- c(0, 1, 1, 0, 0, 1, 0, 1)
 group2 <- c(1, 1, 1, 0, 0)
 
-# Two-Sided 95\% CI for the mean difference between group1 amd group2
+# Example 13: Two-Sided 95% CI for the mean difference between group1 amd group2
 # Newcombes Hybrid Score interval
 ci.prop.diff(group1, group2)
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # Paires-sample design
 
 dat2 <- data.frame(pre = c(0, 1, 1, 0, 1),
-                   post = c(1, 1, 0, 1, 1), stringsAsFactors = FALSE)
+                   post = c(1, 1, 0, 1, 1))
 
-# Two-Sided 95\% CI for the mean difference in x1 and x2
+# Example 14: Two-Sided 95% CI for the mean difference in x1 and x2
 # Newcombes Hybrid Score interval
 ci.prop.diff(dat2$pre, dat2$post, paired = TRUE)
 
-# Two-Sided 95\% CI for the mean difference in x1 and x2
+# Example 15: Two-Sided 95% CI for the mean difference in x1 and x2
 # Wald CI
 ci.prop.diff(dat2$pre, dat2$post, method = "wald", paired = TRUE)
 
-# One-Sided 95\% CI for the mean difference in x1 and x2
+# Example 16: One-Sided 95% CI for the mean difference in x1 and x2
 # Newcombes Hybrid Score interval
 ci.prop.diff(dat2$pre, dat2$post, alternative = "less", paired = TRUE)
 
-# Two-Sided 99\% CI for the mean difference in x1 and x2
+# Example 17: Two-Sided 99% CI for the mean difference in x1 and x2
 # Newcombes Hybrid Score interval
 ci.prop.diff(dat2$pre, dat2$post, conf.level = 0.99, paired = TRUE)
 
-# Two-Sided 95\% CI for for the mean difference in x1 and x2
+# Example 18: Two-Sided 95% CI for for the mean difference in x1 and x2
 # Newcombes Hybrid Score interval, print results with 3 digits
 ci.prop.diff(dat2$pre, dat2$post, paired = TRUE, digits = 3)
 }

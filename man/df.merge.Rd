@@ -12,13 +12,13 @@ df.merge(..., by, all = TRUE, check = TRUE, output = TRUE)
 \item{by}{a character string indicating the column used for merging (i.e., matching variable),
 see 'Details'.}
 
-\item{all}{logical: if \code{TRUE}, then extra rows with \code{NA}s will be added
+\item{all}{logical: if \code{TRUE} (default), then extra rows with \code{NA}s will be added
 to the output for each row in a data frame that has no matching row in
 another data frame.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns a merged data frame.
@@ -56,8 +56,26 @@ df.merge(adat, bdat, cdat, ddat, by = "id")
 # Do not show output on the console
 df.merge(adat, bdat, cdat, ddat, by = "id", output = FALSE)
 
+adat <- data.frame(id = c(1, 2, 3),
+                   x1 = c(7, 3, 8))
+
+bdat <- data.frame(id = c(1, 2),
+                   x2 = c(5, 1))
+
+cdat <- data.frame(id = c(2, 3),
+                   y3 = c(7, 9))
+
+ddat <- data.frame(id = 4,
+                   y4 = 6)
+
+# Example 1: Merge adat, bdat, cdat, and data by the variable id
+df.merge(adat, bdat, cdat, ddat, by = "id")
+
+# Example 2: Do not show output on the console
+df.merge(adat, bdat, cdat, ddat, by = "id", output = FALSE)
+
 \dontrun{
-#--------------------------------------#'
+#-------------------------------------------------------------------------------
 # Error messages
 
 adat <- data.frame(id = c(1, 2, 3),
@@ -78,25 +96,27 @@ edat <- data.frame(id = c(1, NA, 3),
 fdat <- data.frame(id = c(1, 2, 3),
                    x1 = c(5, 1, 3))
 
-# Error: Data frames do not have the same matching variable specified in 'by'.
+# Error 1: Data frames do not have the same matching variable specified in 'by'.
 df.merge(adat, bdat, by = "id")
 
-# Error: Matching variable in the data frames do not all have the same class.
+# Error 2: Matching variable in the data frames do not all have the same class.
 df.merge(adat, cdat, by = "id")
 
-# Error: There are duplicated values in the matching variable specified in 'by'.
+# Error 3: There are duplicated values in the matching variable specified in 'by'.
 df.merge(adat, ddat, by = "id")
 
-# Error: There are missing values in the matching variable specified in 'by'.
+# Error 4: There are missing values in the matching variable specified in 'by'.
 df.merge(adat, edat, by = "id")
 
-#' # Error: There are duplicated variable names across data frames.
+# Error 5: There are duplicated variable names across data frames.
 df.merge(adat, fdat, by = "id")
 }
 }
 \seealso{
-\code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.rbind}},
-\code{\link{df.rename}}, \code{\link{df.sort}}
+\code{\link{df.duplicated}},
+\code{\link{df.move}}, \code{\link{df.rbind}},
+\code{\link{df.rename}}, \code{\link{df.sort}},
+\code{\link{df.subset}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

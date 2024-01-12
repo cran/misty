@@ -33,7 +33,7 @@ names extracted from the Mplus input or output file only.}
 \item{fileEncoding}{character string declaring the encoding used on \code{file}
 so the character data can be re-encoded. See \code{\link{df.sort}}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 A data frame containing a representation of the data in the file.
@@ -44,14 +44,14 @@ a data frame with variable names extracted from the Mplus input/output file.
 }
 \examples{
 \dontrun{
-# Read Mplus data file and variable names extracted from the Mplus input file
+# Example 1: Read Mplus data file and variable names extracted from the Mplus input file
 dat <- read.mplus("Mplus_Data.dat", input = "Mplus_Input.inp")
 
-# Read Mplus data file and variable names extracted from the Mplus input file,
+# Example 2: Read Mplus data file and variable names extracted from the Mplus input file,
 # print variable names on the console
 dat <- read.mplus("Mplus_Data.dat", input = "Mplus_Input.inp", print = TRUE)
 
-# Read variable names extracted from the Mplus input file
+# Example 3: Read variable names extracted from the Mplus input file
 varnames <- read.mplus(input = "Mplus_Input.inp", return.var = TRUE)
 }
 }
@@ -60,8 +60,8 @@ Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
 Muthen & Muthen.
 }
 \seealso{
-\code{\link{run.mplus}}, \code{\link{write.mplus}}, \code{\link{read.sav}},
-\code{\link{read.xlsx}}
+\code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.sav}},
+\code{\link{write.sav}}, \code{\link{read.xlsx}}, \code{\link{write.xlsx}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

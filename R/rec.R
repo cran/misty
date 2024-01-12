@@ -3,57 +3,62 @@
 #' This function recodes numeric vectors, character vectors, or factors according
 #' to recode specifications.
 #'
+#' @param ...       a numeric vector, character vector, factor, matrix or data
+#'                  frame. Alternatively, an expression indicating the variable
+#'                  names in \code{data} e.g., \code{rec(x1, x2, x3, data = dat, spec = "1 = 0"))}.
+#'                  Note that the operators \code{.}, \code{+}, \code{-}, \code{~},
+#'                  \code{:}, \code{::}, and \code{!} can also be used to select
+#'                  variables, see 'Details' in the \code{\link{df.subset}} function.
+#' @param data      a data frame when specifying one or more variables in the
+#'                  argument \code{...}. Note that the argument is \code{NULL}
+#'                  when specifying a a numeric vector, character vector, factor,
+#'                  matrix or data frame for the argument \code{...}.
+#' @param spec      a character string of recode specifications (see 'Details').
+#' @param as.factor logical: if \code{TRUE}, character vector will be coerced to
+#'                  a factor.
+#' @param levels    a character vector for specifying the levels in the returned
+#'                  factor.
+#' @param append    logical: if \code{TRUE} (default), centered variable(s) are
+#'                  appended to the data frame specified in the argument \code{data}.
+#' @param name      a character string or character vector indicating the names
+#'                  of the recoded variables. By default, variables are named with
+#'                  the ending \code{".r"} resulting in e.g. \code{"x1.r"} and
+#'                  \code{"x2.r"}. Variable names can also be specified using a
+#'                  character vector matching the number of variables specified
+#'                  in \code{...} (e.g., \code{name = c("recode.x1", "recode.x2")}).
+#' @param as.na     a numeric vector indicating user-defined missing values,
+#'                  i.e. these values are converted to \code{NA} before conducting
+#'                  the analysis.
+#' @param table     logical: if \code{TRUE}, a cross table variable x recoded
+#'                  variable is printed on the console if only one variable is
+#'                  specified in \code{...}.
+#' @param check     logical: if \code{TRUE} (default), argument specification is checked.
+#'
+#' @details
 #' Recode specifications appear in a character string, separated by semicolons
 #' (see the examples below), of the form input = output. If an input value satisfies
 #' more than one specification, then the first (from left to right) applies. If
 #' no specification is satisfied, then the input value is carried over to the
 #' result. \code{NA} is allowed in input and output. Several recode specifications
 #' are supported:
-#'
-#' - single value
-#' For example, 0 = NA
-#'
-#' - vector of values
-#' For example, c(7, 8, 9) = 'high'
-#'
-#' - range of values
-#' For example, 7:9 = 'C'. The special values lo (lowest value) and hi (highest
-#' value) may appear in a range. For example, \code{lo:10 = 1}. Note that \code{:}
+#' \describe{
+#' \item{\strong{Single Value}}{For example, \code{spec = "0 = NA".}}
+#' \item{\strong{Vector of Values}}{For example, \code{spec = "c(7, 8, 9) = 'high'"}.}
+#' \item{\strong{Range of Values}}{For example, \code{spec = "7:9 = 'C'"}. The
+#' special values \code{lo} (lowest value) and \code{hi} (highest value) may
+#' appear in a range. For example, \code{spec = "lo:10 = 1"}. Note that \code{:}
 #' is not the R sequence operator. In addition you may not use \code{:} with the
-#' collect operator, e.g., \code{c(1, 3, 5:7)} will cause an error.
-#'
-#' - else
-#' For example, \code{else = NA}. Everything that does not fit a previous specification.
-#' Note that \code{else} matches all otherwise unspecified values on input, including
-#' \code{NA}.
-#'
-#' @param x         a numeric vector, character vector, factor, matrix or data
-#'                  frame.
-#' @param spec      a character string of recode specifications (see 'Details').
-#' @param as.factor logical: if \code{TRUE}, character vector will be coerced to
-#'                  a factor.
-#' @param levels    a character vector for specifying the levels in the returned
-#'                  factor.
-#' @param names     a character string or character vector indicating the names
-#'                  of the recoded variables when specifying more than one variable.
-#'                  By default, variables are named with the ending \code{".r"}
-#'                  resulting in e.g. \code{"x1.r"} and \code{"x2.r"}. Variable
-#'                  names can also be specified using a character vector matching
-#'                  the number of variables specified in \code{x} (e.g.,
-#'                  \code{names = c("recode.x1", "recode.x2")}).
-#' @param as.na     a numeric vector indicating user-defined missing values,
-#'                  i.e. these values are converted to \code{NA} before conducting
-#'                  the analysis.
-#' @param table     logical: if \code{TRUE}, a cross table variable x recoded
-#'                  variable is printed on the console if only one variable is
-#'                  specified in \code{x}.
-#' @param check     logical: if \code{TRUE}, argument specification is checked.
+#' collect operator, e.g., \code{spec = "c(1, 3, 5:7)"} will cause an error.}
+#' \item{\strong{else}}{For example, \code{spec = "0 = 1; else = NA"}. Everything
+#' that does not fit a previous specification. Note that \code{else} matches all
+#' otherwise unspecified values on input, including \code{NA}.}
+#' }
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{item.reverse}}
+#' \code{\link{coding}}, \code{\link{item.reverse}}
 #'
 #' @references
 #' Fox, J., & Weisberg S. (2019). \emph{An {R} Companion to Applied Regression} (3rd ed.).
@@ -61,7 +66,7 @@
 #'
 #' @return
 #' Returns a numeric vector or data frame with the same length or same number of
-#' rows as \code{x} containing the recoded coded variable(s).
+#' rows as \code{...} containing the recoded coded variable(s).
 #'
 #' @note
 #' This function was adapted from the \code{recode()} function in the \pkg{car}
@@ -70,46 +75,46 @@
 #' @export
 #'
 #' @examples
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Numeric vector
 #' x.num <- c(1, 2, 4, 5, 6, 8, 12, 15, 19, 20)
 #'
-#' # Recode 5 = 50 and 19 = 190
-#' rec(x.num, "5 = 50; 19 = 190")
+#' # Example 1a: Recode 5 = 50 and 19 = 190
+#' rec(x.num, spec = "5 = 50; 19 = 190")
 #'
-#' # Recode 1, 2, and 5 = 100 and 4, 6, and 7 = 200 and else = 300
-#' rec(x.num, "c(1, 2, 5) = 100; c(4, 6, 7) = 200; else = 300")
+#' # Example 1b: Recode 1, 2, and 5 = 100 and 4, 6, and 7 = 200 and else = 300
+#' rec(x.num, spec = "c(1, 2, 5) = 100; c(4, 6, 7) = 200; else = 300")
 #'
-#' # Recode lowest value to 10 = 100 and 11 to highest value = 200
-#' rec(x.num, "lo:10 = 100; 11:hi = 200")
+#' # Example 1c: Recode lowest value to 10 = 100 and 11 to highest value = 200
+#' rec(x.num, spec = "lo:10 = 100; 11:hi = 200")
 #'
-#' # Recode 5 = 50 and 19 = 190 and check recoding
-#' rec(x.num, "5 = 50; 19 = 190", table = TRUE)
+#' # Example 1d: Recode 5 = 50 and 19 = 190 and check recoding
+#' rec(x.num, spec = "5 = 50; 19 = 190", table = TRUE)
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Character vector
 #' x.chr <- c("a", "c", "f", "j", "k")
 #'
-#' # Recode a to x
-#' rec(x.chr, "'a' = 'X'")
+#' # Example 2a: Recode a to x
+#' rec(x.chr, spec = "'a' = 'X'")
 #'
-#' # Recode a and f to x, c and j to y, and else to z
-#' rec(x.chr, "c('a', 'f') = 'x'; c('c', 'j') = 'y'; else = 'z'")
+#' # Example 2b: Recode a and f to x, c and j to y, and else to z
+#' rec(x.chr, spec = "c('a', 'f') = 'x'; c('c', 'j') = 'y'; else = 'z'")
 #'
-#' # Recode a to x and coerce to a factor
-#' rec(x.chr, "'a' = 'X'", as.factor = TRUE)
+#' # Example 2c: Recode a to x and coerce to a factor
+#' rec(x.chr, spec = "'a' = 'X'", as.factor = TRUE)
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Factor
 #' x.fac <- factor(c("a", "b", "a", "c", "d", "d", "b", "b", "a"))
 #'
-#' # Recode a to x, factor levels ordered alphabetically
-#' rec(x.fac, "'a' = 'x'")
+#' # Example 3a: Recode a to x, factor levels ordered alphabetically
+#' rec(x.fac, spec = "'a' = 'x'")
 #'
-#' # Recode a to x, user-defined factor levels
-#' rec(x.fac, "'a' = 'x'", levels = c("x", "b", "c", "d"))
+#' # Example 3b: Recode a to x, user-defined factor levels
+#' rec(x.fac, spec = "'a' = 'x'", levels = c("x", "b", "c", "d"))
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Multiple variables
 #' dat <- data.frame(x1.num = c(1, 2, 4, 5, 6),
 #'                   x2.num = c(5, 19, 2, 6, 3),
@@ -118,38 +123,70 @@
 #'                   x1.fac = factor(c("a", "b", "a", "c", "d")),
 #'                   x2.fac = factor(c("b", "a", "d", "c", "e")))
 #'
-#' # Recode numeric vector and attach to 'dat'
-#' dat <- cbind(dat,
-#'              rec(dat[, c("x1.num", "x2.num")], "5 = 50; 19 = 190"))
+#' # Example 4a: Recode numeric vector and attach to 'dat'
+#' dat <- cbind(dat, rec(dat[, c("x1.num", "x2.num")], spec = "5 = 50; 19 = 190"))
 #'
-#' # Recode character vector and attach to 'dat'
-#' dat <- cbind(dat,
-#'              rec(dat[, c("x1.chr", "x2.chr")], "'a' = 'X'"))
+#' # Example 4b: Alternative specification using the 'data' argument,
+#' rec(x1.num, x2.num, data = dat, spec = "5 = 50; 19 = 190")
 #'
-#' # Recode factor vector and attach to 'dat'
-#' dat <- cbind(dat,
-#'              rec(dat[, c("x1.fac", "x2.fac")], "'a' = 'X'"))
-rec <- function(x, spec, as.factor = FALSE, levels = NULL, names = ".r",
-                as.na = NULL, table = FALSE, check = TRUE) {
+#' # Example 4c: Recode character vector and attach to 'dat'
+#' dat <- cbind(dat, rec(dat[, c("x1.chr", "x2.chr")], spec = "'a' = 'X'"))
+#'
+#' # Example 4d: Recode factor vector and attach to 'dat'
+#' dat <- cbind(dat, rec(dat[, c("x1.fac", "x2.fac")], spec = "'a' = 'X'"))
+rec <- function(..., data = NULL, spec, as.factor = FALSE, levels = NULL,
+                append = TRUE, name = ".e", as.na = NULL, table = FALSE,
+                check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
+
+  # Check if input 'spec' is missing
+  if (isTRUE(missing(spec))) { stop("Please specify a character string for the argument 'spec'.", call. = FALSE) }
+
+  # Check if input 'spec' is NULL
+  if (isTRUE(is.null(spec))) { stop("Input specified for the argument 'spec' is NULL.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument 'data' ####
+
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, check.chr = "a vector, factor, matrix, array, data frame, or list")
+
+    # Extract variables
+    x <- data[, var.names]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+  }
 
   # Convert 'x' into a vector when only one variable specified in 'x'
   if (isTRUE(ncol(data.frame(x)) == 1L)) { x <- unlist(x, use.names = FALSE) }
 
-  # Check if input 'spec' is missing
-  if (isTRUE(missing(spec))) { stop("Please specify a matrix or data frame for the argument 'spec'.", call. = FALSE) }
-
-  # Check if input 'spec' is NULL
-  if (isTRUE(is.null(spec))) { stop("Input specified for the argument 'spec' is NULL.", call. = FALSE) }
+  # Convert user-missing values into NA
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #_____________________________________________________________________________
   #
@@ -163,12 +200,12 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, names = ".r",
     # Check input 'as.factor'
     if (isTRUE(!is.logical(as.factor))) { stop("Please specify TRUE or FALSE for the argument 'as.factor'.", call. = FALSE) }
 
-    # Check input 'names'
+    # Check input 'name'
     if (isTRUE(!is.null(dim(x)))) {
 
-      if (isTRUE(!is.character(names))) { stop("Please specify a character string or vector for the argument 'names'.", call. = FALSE) }
+      if (isTRUE(!is.character(name))) { stop("Please specify a character string or vector for the argument 'name'.", call. = FALSE) }
 
-      if (isTRUE(length(names) > 1L && length(names) != ncol(x))) { stop("The length of the vector specified in 'names' does not match with the number of variable in 'x'.", call. = FALSE) }
+      if (isTRUE(length(name) > 1L && length(name) != ncol(x))) { stop("The length of the vector specified in 'name' does not match with the number of variable in 'x'.", call. = FALSE) }
 
     }
 
@@ -179,17 +216,9 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, names = ".r",
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Arguments ------------------------------------------------------------------
 
-  # Convert user-missing values into NA
-  if (isTRUE(!is.null(as.na))) {
 
-    x <- misty::as.na(x, na = as.na)
-
-    # Variable with missing values only
-    if (isTRUE(all(is.na(x)))) { stop("After converting user-missing values into NA, variable 'x' is completely missing.", call. = FALSE) }
-
-  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Define special values ####
@@ -374,20 +403,51 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, names = ".r",
   } else {
 
     object <- data.frame(lapply(x, misty::rec, spec = spec, as.factor = as.factor,
-                                  levels = levels, as.na = as.na, check = FALSE))
+                                levels = levels, as.na = as.na, check = FALSE))
 
     #...................
     ### Variable names ####
 
-    if (isTRUE(length(names) == 1L)) {
+    if (isTRUE(length(name) == 1L)) {
 
-      colnames(object) <- paste0(colnames(object), names)
+      colnames(object) <- paste0(colnames(object), name)
 
     } else {
 
-      colnames(object) <- names
+      colnames(object) <- name
 
     }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Print cross table ####
+
+  if (isTRUE(is.null(dim(x)) && table)) { print(table(x, object, dnn = c("item", "recoded coded"))) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Append ####
+
+  if (isTRUE(!is.null(data) && append)) {
+
+    if (isTRUE(is.null(dim(x)))) {
+
+      #...................
+      ### Variable names ####
+
+      if (isTRUE(name == ".e")) {
+
+        object <- setNames(as.data.frame(object), nm = paste0(var.names, ".e"))
+
+      } else {
+
+        object <- setNames(as.data.frame(object), nm = name)
+
+      }
+
+    }
+
+    object <- data.frame(data, object)
 
   }
 
@@ -395,19 +455,6 @@ rec <- function(x, spec, as.factor = FALSE, levels = NULL, names = ".r",
   #
   # Output ---------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Print cross table ####
-
-  if (isTRUE(is.null(dim(x)) && table)) {
-
-    print(table(x, object, dnn = c("variable", "recoded variable")))
-
-    return(invisible(object))
-
-  } else {
-
-    return(object)
-
-  }
+  if (isTRUE(is.null(dim(x)) && table)) { return(invisible(object)) } else { return(object) }
 
 }

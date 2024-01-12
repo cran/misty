@@ -4,15 +4,27 @@
 \alias{ci.prop}
 \title{Confidence Interval for Proportions}
 \usage{
-ci.prop(x, method = c("wald", "wilson"),
+ci.prop(..., data = NULL, method = c("wald", "wilson"),
         alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
         group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-        digits = 3, as.na = NULL, check = TRUE, output = TRUE)
+        digits = 3, as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+        output = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector, matrix or data frame with numeric variables with 0 and 1 values,
-i.e., factors and character variables are excluded from \code{x} before conducting
-the analysis.}
+\item{...}{a numeric vector, matrix or data frame with numeric variables
+with 0 and 1 values, i.e., factors and character variables
+are excluded from \code{x} before conducting the analysis.
+Alternatively, an expression indicating the variable
+names in \code{data} e.g., \code{ci.prop(x1, x2, x3, data = dat)}.
+Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a numeric vector, matrix or data frame
+for the argument \code{...}.}
 
 \item{method}{a character string specifying the method for computing the confidence interval,
 must be one of \code{"wald"}, or \code{"wilson"} (default).}
@@ -22,9 +34,13 @@ must be one of \code{"wald"}, or \code{"wilson"} (default).}
 
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
 
-\item{group}{a numeric vector, character vector or factor as grouping variable.}
+\item{group}{either a character string indicating the variable name of
+the grouping variable in \code{...} or \code{data}, or a vector
+representing the grouping variable.}
 
-\item{split}{a numeric vector, character vector or factor as split variable.}
+\item{split}{either a character string indicating the variable name of
+the split variable in \code{...} or \code{data}, or a vector
+representing the split variable.}
 
 \item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.}
 
@@ -38,17 +54,25 @@ i.e. these values are converted to \code{NA} before conducting the analysis.
 Note that \code{as.na()} function is only applied to \code{x}, but
 not to \code{group} or \code{split}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{list with the input specified in \code{x}, \code{group},
-                     and \code{split}}
+  \item{\code{data}}{list with the input specified in \code{...}, \code{data},                           \code{group}, and \code{split}}
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{result table}
 }
@@ -65,47 +89,54 @@ larger samples of n > 40 (Brown, Cai & DasGupta, 2001), while the Wald confidenc
 inadequate in small samples and when \emph{p} is near 0 or 1 (Agresti & Coull, 1998).
 }
 \examples{
-dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
-                  group2 = c(1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2),
-                  x1 = c(0, 1, 0, 0, 1, 1, 0, 1, NA, 0, 1, 0),
-                  x2 = c(0, NA, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1),
-                  x3 = c(1, 1, 1, 0, 1, NA, 1, NA, 0, 0, 0, 1))
+# Example 1a: Two-Sided 95% CI for 'vs'
+ci.prop(mtcars$vs)
+#
+# Example 1b: Alternative specification using the 'data' argument
+ci.prop(vs, data = mtcars)
 
-# Two-Sided 95\% CI for x1
-ci.prop(dat$x1)
+# Example 2: Two-Sided 95% CI using Wald method
+ci.prop(mtcars$vs, method = "wald")
 
-# Two-Sided 95\% CI for x1 using Wald method
-ci.prop(dat$x1, method = "wald")
+# Example 3: One-Sided 95% CI
+ci.prop(mtcars$vs, alternative = "less")
 
-# One-Sided 95\% CI for x1
-ci.prop(dat$x1, alternative = "less")
+# Example 4: Two-Sided 99% CI
+ci.prop(mtcars$vs, conf.level = 0.99)
 
-# Two-Sided 99\% CI
-ci.prop(dat$x1, conf.level = 0.99)
+# Example 5: Two-Sided 95% CI, print results with 4 digits
+ci.prop(mtcars$vs, digits = 4)
 
-# Two-Sided 95\% CI, print results with 4 digits
-ci.prop(dat$x1, digits = 4)
-
-# Two-Sided 95\% CI for x1, x2, and x3,
+# Example 6a: Two-Sided 95% CI for 'vs' and 'am',
 # listwise deletion for missing data
-ci.prop(dat[, c("x1", "x2", "x3")], na.omit = TRUE)
+ci.prop(mtcars[, c("vs", "am")], na.omit = TRUE)
 
-# Two-Sided 95\% CI for x1, x2, and x3,
-# analysis by group1 separately
-ci.prop(dat[, c("x1", "x2", "x3")], group = dat$group1)
+# Example 6b: Alternative specification using the 'data' argument
+# listwise deletion for missing data
+ci.prop(vs, am, data = mtcars, na.omit = TRUE)
 
-# Two-Sided 95\% CI for x1, x2, and x3,
-# analysis by group1 separately, sort by variables
-ci.prop(dat[, c("x1", "x2", "x3")], group = dat$group1, sort.var = TRUE)
+# Example 7a: Two-Sided 95% CI, analysis by 'gear' separately
+ci.prop(mtcars[, c("vs", "am")], group = mtcars$gear)
 
-# Two-Sided 95\% CI for x1, x2, and x3,
-# split analysis by group1
-ci.prop(dat[, c("x1", "x2", "x3")], split = dat$group1)
+# Example 7b: Alternative specification using the 'data' argument
+ci.prop(vs, am, data = mtcars, group = "gear")
 
-# Two-Sided 95\% CI for x1, x2, and x3,
-# analysis by group1 separately, split analysis by group2
-ci.prop(dat[, c("x1", "x2", "x3")],
-        group = dat$group1, split = dat$group2)
+# Example 8: Two-Sided 95% CI, analysis by 'gear' separately, sort by variables
+ci.prop(mtcars[, c("vs", "am")], group = mtcars$gear, sort.var = TRUE)
+
+# Example 9: Two-Sided 95% CI, split analysis by 'cyl'
+ci.prop(mtcars[, c("vs", "am")], split = mtcars$cyl)
+
+# Example 10a: Two-Sided 95% CI, analysis by 'gear' separately, split by 'cyl'
+ci.prop(mtcars[, c("vs", "am")], group = mtcars$gear, split = mtcars$cyl)
+
+# Example 10b: Alternative specification using the 'data' argument
+ci.prop(vs, am, data = mtcars, group = "gear", split = "cyl")
+
+\dontrun{
+# Example 11: Write results into a text file
+ci.prop(vs, am, data = mtcars, group = "gear", split = "cyl", write = "Prop.txt")
+}
 }
 \references{
 Agresti, A. & Coull, B.A. (1998). Approximate is better than "exact" for interval estimation of binomial

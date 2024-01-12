@@ -4,11 +4,22 @@
 \alias{na.coverage}
 \title{Variance-Covariance Coverage}
 \usage{
-na.coverage(x, tri = c("both", "lower", "upper"), digits = 2, as.na = NULL,
-            write = NULL, check = TRUE, output = TRUE)
+na.coverage(..., data = NULL, tri = c("both", "lower", "upper"), digits = 2,
+            as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+            output = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame.}
+\item{...}{a matrix or data frame with incomplete data, where missing
+values are coded as \code{NA}. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{na.coverage(x1, x2, x3, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{tri}{a character string or character vector indicating which triangular
 of the matrix to show on the console, i.e., \code{both} for
@@ -22,20 +33,28 @@ be used for displaying proportions.}
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{matrix or data frame specified in \code{x}}
+  \item{\code{data}}{data frame used for the current analysis}
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{result table}
 }
@@ -44,18 +63,20 @@ This function computes the proportion of cases that contributes for the calculat
 of each variance and covariance.
 }
 \examples{
-dat <- data.frame(x = c(1, NA, NA, 6, 3),
-                  y = c(7, NA, 8, 9, NA),
-                  z = c(2, NA, 3, NA, 5))
+# Example 1a: Compute variance-covariance coverage
+na.coverage(airquality)
 
-# Compute variance-covariance coverage
-na.coverage(dat)
+# Example 1b: Alternative specification using the 'data' argument
+na.coverage(., data = airquality)
 
 \dontrun{
-# Write Results into a Excel file
-na.coverage(dat, write = "Coverage.xlsx")
+# Example 2a: Write Results into a text file
+na.coverage(airquality, write = "Coverage.txt")
 
-result <- na.coverage(dat, output = FALSE)
+# Example 2b: Write Results into an Excel file
+na.coverage(airquality, write = "Coverage.xlsx")
+
+result <- na.coverage(airquality, output = FALSE)
 write.result(result, "Coverage.xlsx")
 }
 }

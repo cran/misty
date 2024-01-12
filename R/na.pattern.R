@@ -1,10 +1,18 @@
 #' Missing Data Pattern
 #'
-#' This function computes a summary of missing data patterns, i.e., number (%) of
-#' cases with a specific missing data pattern.
+#' This function computes a summary of missing data patterns, i.e., number (%)
+#' of cases with a specific missing data pattern.
 #'
-#' @param x       a matrix or data frame with incomplete data, where missing
-#'                values are coded as \code{NA}.
+#' @param ...     a matrix or data frame with incomplete data, where missing
+#'                values are coded as \code{NA}. Alternatively, an expression
+#'                indicating the variable names in \code{data} e.g.,
+#'                \code{na.pattern(x1, x2, x3, data = dat)}. Note that the operators
+#'                \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                and \code{!} can also be used to select variables, see 'Details'
+#'                in the \code{\link{df.subset}} function.
+#' @param data    a data frame when specifying one or more variables in the
+#'                argument \code{...}. Note that the argument is \code{NULL}
+#'                when specifying a matrix or data frame for the argument \code{...}.
 #' @param order   logical: if \code{TRUE}, variables are ordered from left to
 #'                right in increasing order of missing values.
 #' @param digits  an integer value indicating the number of decimal places to
@@ -12,11 +20,18 @@
 #' @param as.na   a numeric vector indicating user-defined missing values,
 #'                i.e. these values are converted to NA before conducting the
 #'                analysis.
-#' @param write   a character string for writing the results into a Excel file
-#'                naming a file with or without file extension '.xlsx', e.g.,
-#'                \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check   logical: if \code{TRUE}, argument specification is checked.
-#' @param output  logical: if \code{TRUE}, output is shown.
+#' @param write   a character string naming a file for writing the output into
+#'                either a text file with file extension \code{".txt"} (e.g.,
+#'                \code{"Output.txt"}) or Excel file with file extention
+#'                \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'                name does not contain any file extension, an Excel file will
+#'                be written.
+#' @param append  logical: if \code{TRUE} (default), output will be appended
+#'                to an existing text file with extension \code{.txt} specified
+#'                in \code{write}, if \code{FALSE} existing text file will be
+#'                overwritten.
+#' @param check   logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output  logical: if \code{TRUE} (default), output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -42,7 +57,7 @@
 #' \tabular{ll}{
 #' \code{call} \tab function call \cr
 #' \code{type} \tab type of analysis \cr
-#' \code{data} \tab matrix or data frame specified in \code{x} \cr
+#' \code{data} \tab data frame used for the current analysis \cr
 #' \code{args} \tab specification of function arguments \cr
 #' \code{result} \tab result table \cr
 #' }
@@ -50,51 +65,87 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(x = c(1, NA, NA, 6, 3),
-#'                   y = c(7, NA, 8, 9, NA),
-#'                   z = c(2, NA, 3, NA, 5))
+#' # Example 1a: Compute a summary of missing data patterns
+#' dat.pattern <- na.pattern(airquality)
 #'
-#' # Compute a summary of missing data patterns
-#' dat.pattern <- na.pattern(dat)
+#' # Example 1b: Alternative specification using the 'data' argument
+#' dat.pattern <- na.pattern(., data = airquality)
 #'
-#' # Vector of missing data pattern for each case
+#' # Example 2: Vector of missing data pattern for each case
 #' dat.pattern$pattern
 #
-#' # Data frame without cases with missing data pattern 2 and 5
-#' dat[!dat.pattern$pattern %in% c(2, 5), ]
+#' # Data frame without cases with missing data pattern 2 and 4
+#' airquality[!dat.pattern$pattern %in% c(2, 4), ]
 #'
 #' \dontrun{
-#' # Write Results into a Excel file
-#' result <- na.pattern(dat, write = "NA_Pattern.xlsx")
+#' # Example 3a: Write Results into a text file
+#' result <- na.pattern(airquality, write = "NA_Pattern.xlsx")
+#'
+#' # Example 3b: Write Results into a Excel file
+#' result <- na.pattern(airquality, write = "NA_Pattern.xlsx")
 #'
 #' result <- na.pattern(dat, output = FALSE)
 #' write.result(result, "NA_Pattern.xlsx")
 #' }
-na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
-                       check = TRUE, output = TRUE) {
+na.pattern <- function(..., data = NULL, order = FALSE, digits = 2, as.na = NULL,
+                       write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument 'data' ####
+
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+
+    # Extract data
+    x <- data[, var.names]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
+
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
-  if (isTRUE(check)) {
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
-    # Matrix or data frame for the argument 'x'?
-    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  if (isTRUE(check)) {
 
     # Check input 'order'
     if (isTRUE(!is.logical(order))) { stop("Please specify TRUE or FALSE for the argument 'order'.", call. = FALSE) }
@@ -102,24 +153,13 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE) }
 
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
-
-  #_____________________________________________________________________________
-  #
-  # Data and Arguments ---------------------------------------------------------
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
-
-  if (isTRUE(!is.null(as.na))) { x <- misty::as.na(x, na = as.na, check = check) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
-
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #_____________________________________________________________________________
   #
@@ -138,7 +178,7 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
   }
 
   # Missing data pattern
-  patt <- apply(x.na, 1, function(y) paste(as.numeric(y), collapse = ""))
+  patt <- apply(x.na, 1L, function(y) paste(as.numeric(y), collapse = ""))
 
   # Order NA matrix
   x.na.order <- x.na[order(patt), ]
@@ -151,14 +191,14 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
     restab <- rbind(data.frame(pattern = seq_len(nrow(x.na.order.dupl)),
                                n = as.vector(table(patt)),
                                perc = as.vector(table(patt) / nrow(x.na) * 100L),
-                               abs(x.na.order.dupl - 1),
+                               abs(x.na.order.dupl - 1L),
                                nNA = rowSums(x.na.order.dupl),
                                pNA = rowSums(x.na.order.dupl) / ncol(x.na) * 100L,
                                row.names = NULL, stringsAsFactors = FALSE),
                     c(NA, sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(x.na) * 100L)), colSums(x.na), NA, NA))
 
     # Number of missing data pattern
-    pattern <- unname(vapply(apply(x.na[, colnames(x.na.order.dupl)], 1,  paste, collapse = " "), function(y) match(y, apply(x.na.order.dupl, 1, paste, collapse = " ")), FUN.VALUE = 1L))
+    pattern <- unname(vapply(apply(x.na[, colnames(x.na.order.dupl)], 1L,  paste, collapse = " "), function(y) match(y, apply(x.na.order.dupl, 1L, paste, collapse = " ")), FUN.VALUE = 1L))
 
   } else {
 
@@ -182,7 +222,8 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
   object <- list(call = match.call(),
                  type = "na.pattern",
                  data = x,
-                 args = list(order = order, digits = digits, as.na = as.na, check = check, output = output),
+                 args = list(order = order, digits = digits, as.na = as.na,
+                             write = write, append = append, check = check, output = output),
                  result = restab,
                  pattern = pattern)
 
@@ -195,7 +236,34 @@ na.pattern <- function(x, order = FALSE, digits = 2, as.na = NULL, write = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Write results ####
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## output ####

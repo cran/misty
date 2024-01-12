@@ -22,7 +22,7 @@
 #' @examples
 #' \dontrun{
 #'
-#' # Restart the R Session
+#' # Example 1: Restart the R Session
 #' restart()
 #' }
 restart <- function() {

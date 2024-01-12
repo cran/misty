@@ -16,15 +16,15 @@
 #'                      must be one of \code{"two.sided"} (default), \code{"greater"}
 #'                      or \code{"less"}. Note that this argument is only used when
 #'                      conducting Welch's two-sample t-test.
-#' @param posthoc       logical: if \code{TRUE}, Games-Howell post hoc test for
-#'                      multiple comparison is conducted when performing Welch's
-#'                      ANOVA.
+#' @param posthoc       logical: if \code{TRUE} (default), Games-Howell post hoc
+#'                      test for multiple comparison is conducted when performing
+#'                      Welch's ANOVA.
 #' @param conf.level    a numeric value between 0 and 1 indicating the confidence
 #'                      level of the interval.
-#' @param hypo          logical: if \code{TRUE}, null and alternative hypothesis
+#' @param hypo          logical: if \code{TRUE} (default), null and alternative
+#'                      hypothesis are shown on the console.
+#' @param descript      logical: if \code{TRUE} (default), descriptive statistics
 #'                      are shown on the console.
-#' @param descript      logical: if \code{TRUE}, descriptive statistics are shown
-#'                      on the console.
 #' @param effsize       logical: if \code{TRUE}, effect size measure Cohen's d for
 #'                      Welch's two-sample t-test (see \code{\link{cohens.d}}),
 #'                      \eqn{\eta^2} and \eqn{\omega^2} for Welch's ANOVA and
@@ -32,10 +32,11 @@
 #' @param weighted      logical: if \code{TRUE}, the weighted pooled standard
 #'                      deviation is used to compute Cohen's d.
 #' @param ref           a numeric value or character string indicating the reference
-#'                      group. The standard deviation of the reference group is used
-#'                      to standardized the mean difference to compute Cohen's d.
-#' @param correct       logical: if \code{TRUE}, correction factor to remove positive
-#'                      bias in small samples is used.
+#'                      group. The standard deviation of the reference group is
+#'                      used to standardized the mean difference to compute
+#'                      Cohen's d.
+#' @param correct       logical: if \code{TRUE}, correction factor to remove
+#'                      positive bias in small samples is used.
 #' @param plot          logical: if \code{TRUE}, a plot showing error bars for
 #'                      confidence intervals is drawn.
 #' @param point.size    a numeric value indicating the \code{size} aesthetic for
@@ -70,8 +71,17 @@
 #' @param as.na         a numeric vector indicating user-defined missing values,
 #'                      i.e. these values are converted to \code{NA} before conducting
 #'                      the analysis.
-#' @param check         logical: if \code{TRUE}, argument specification is checked.
-#' @param output        logical: if \code{TRUE}, output is shown on the console.
+#' @param write         a character string naming a text file with file extension
+#'                      \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                      output into a text file.
+#' @param append        logical: if \code{TRUE} (default), output will be appended
+#'                      to an existing text file with extension \code{.txt} specified
+#'                      in \code{write}, if \code{FALSE} existing text file will be
+#'                      overwritten.
+#' @param check         logical: if \code{TRUE} (default), argument specification
+#'                      is checked.
+#' @param output        logical: if \code{TRUE} (default), output is shown on the
+#'                      console.
 #' @param ...           further arguments to be passed to or from methods.
 #'
 #' @details
@@ -97,8 +107,8 @@
 #' - Using R and SPSS}. John Wiley & Sons.
 #'
 #' Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why Hedges' g*s
-#' based on the non-pooled standard deviation should be reported with Welch's t-test.
-#' https://doi.org/10.31234/osf.io/tu6mp
+#' based on the non-pooled standard deviation should be reported with Welch's
+#' t-test. https://doi.org/10.31234/osf.io/tu6mp
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
@@ -121,49 +131,49 @@
 #'                    group2 = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3),
 #'                    y = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 6, 3, NA))
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Two-Sample Design
 #'
-#' # Two-sided two-sample Welch-test
+#' # Example 1a: Two-sided two-sample Welch-test
 #' test.welch(y ~ group1, data = dat1)
 #'
-#' # One-sided two-sample Welch-test
+#' # Example 1b: One-sided two-sample Welch-test
 #' test.welch(y ~ group1, data = dat1, alternative = "greater")
 #'
-#' # Two-sided two-sample Welch-test
+#' # Example 1c: Two-sided two-sample Welch-test
 #' # print Cohen's d with weighted pooled SD
 #' test.welch(y ~ group1, data = dat1, effsize = TRUE)
 #'
-#' # Two-sided two-sample Welch-test
+#' # Example 1d: Two-sided two-sample Welch-test
 #' # print Cohen's d with unweighted pooled SD
 #' test.welch(y ~ group1, data = dat1, effsize = TRUE, weighted = FALSE)
 #'
-#' # Two-sided two-sample Welch-test
+#' # Example 1e: Two-sided two-sample Welch-test
 #' # print Cohen's d with weighted pooled SD and
 #' # small sample correction factor
 #' test.welch(y ~ group1, data = dat1, effsize = TRUE, correct = TRUE)
 #'
-#' # Two-sided two-sample Welch-test
+#' # Example 1f: Two-sided two-sample Welch-test
 #' # print Cohen's d with SD of the reference group 1
 #' test.welch(y ~ group1, data = dat1, effsize = TRUE,
 #'            ref = 1)
 #'
-#' # Two-sided two-sample Welch-test
+#' # Example 1g: Two-sided two-sample Welch-test
 #' # print Cohen's d with weighted pooled SD and
 #' # small sample correction factor
 #' test.welch(y ~ group1, data = dat1, effsize = TRUE,
 #'            correct = TRUE)
 #'
-#' # Two-sided two-sample Welch-test
+#' # Example 1h: Two-sided two-sample Welch-test
 #' # do not print hypotheses and descriptive statistics,
 #' test.welch(y ~ group1, data = dat1, descript = FALSE, hypo = FALSE)
 #'
-#' # Two-sided two-sample Welch-test
+#' # Example 1i: Two-sided two-sample Welch-test
 #' # print descriptive statistics with 3 digits and p-value with 5 digits
 #' test.welch(y ~ group1, data = dat1, digits = 3, p.digits = 5)
 #'
 #' \dontrun{
-#' # Two-sided two-sample Welch-test
+#' # Example 1j: Two-sided two-sample Welch-test
 #' # plot results
 #' test.welch(y ~ group1, data = dat1, plot = TRUE)
 #'
@@ -173,7 +183,7 @@
 #' # Save plot, ggsave() from the ggplot2 package
 #' ggsave("Two-sample_Welch-test.png", dpi = 600, width = 4, height = 6)
 #'
-#' # Two-sided two-sample Welch-test
+#' # Example 1k: Two-sided two-sample Welch-test
 #' # extract plot
 #' p <- test.welch(y ~ group1, data = dat1, output = FALSE)$plot
 #' p
@@ -189,22 +199,22 @@
 #'   labs(subtitle = "Two-Sided 95% Confidence Interval") +
 #'   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
 #' }
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Multiple-Sample Design
 #'
-#' # Welch's ANOVA
+#' # Example 2a: Welch's ANOVA
 #' test.welch(y ~ group2, data = dat1)
 #'
-#' # Welch's ANOVA
+#' # Example 2b: Welch's ANOVA
 #' # print eta-squared and omega-squared
 #' test.welch(y ~ group2, data = dat1, effsize = TRUE)
 #'
-#' # Welch's ANOVA
+#' # Example 2c: Welch's ANOVA
 #' # do not print hypotheses and descriptive statistics,
 #' test.welch(y ~ group2, data = dat1, descript = FALSE, hypo = FALSE)
 #'
 #' \dontrun{
-#' # Welch's ANOVA
+#' # Example 2d: Welch's ANOVA
 #' # plot results
 #' test.welch(y ~ group2, data = dat1, plot = TRUE)
 #'
@@ -214,7 +224,7 @@
 #' # Save plot, ggsave() from the ggplot2 package
 #' ggsave("Multiple-sample_Welch-test.png", dpi = 600, width = 4.5, height = 6)
 #'
-#' # Welch's ANOVA
+#' # Example 2e: Welch's ANOVA
 #' # extract plot
 #' p <- test.welch(y ~ group2, data = dat1, output = FALSE)$plot
 #' p
@@ -238,8 +248,8 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
                        jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
                        jitter.height = 0, jitter.alpha = 0.1,
                        title = "",  subtitle = "Confidence Interval",
-                       digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
-                       output = TRUE, ...) {
+                       digits = 2, p.digits = 4, as.na = NULL, write = NULL, append = TRUE,
+                       check = TRUE, output = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
@@ -329,7 +339,12 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
-    #......
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
@@ -338,21 +353,7 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    # Replace user-specified values with missing values
-    data[, y.var] <- misty::as.na(data[, y.var], na = as.na, check = check)
-
-    # Variable with missing values only
-    data.miss <- vapply(data[, y.var, drop = FALSE], function(y) all(is.na(y)), FUN.VALUE = logical(1))
-    if (any(data.miss)) {
-
-      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
-                  paste(names(which(data.miss)), collapse = ", ")), call. = FALSE)
-
-    }
-
-  }
+  if (isTRUE(!is.null(as.na))) { data[, y.var] <- .as.na(data[, y.var], na = as.na) }
 
   #_____________________________________________________________________________
   #
@@ -598,6 +599,28 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
                  result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

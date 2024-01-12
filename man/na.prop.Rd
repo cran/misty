@@ -4,10 +4,29 @@
 \alias{na.prop}
 \title{Proportion of Missing Data for Each Case}
 \usage{
-na.prop(x, digits = 2, as.na = NULL, check = TRUE)
+na.prop(..., data = NULL, digits = 2, append = TRUE, name = "na.prop",
+        as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame.}
+\item{...}{a matrix or data frame with incomplete data, where missing
+values are coded as \code{NA}. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{na.prop(x1, x2, x3, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix or data frame for the argument \code{...}.}
+
+\item{name}{a character string indicating the name of the variable appended
+to the data frame specified in the arguement \code{data} when
+\code{append = TRUE}.}.
+
+\item{append}{logical: if \code{TRUE} (default), variable with proportion of
+missing data is appended to the data frame specified in the
+argument \code{data}}
 
 \item{digits}{an integer value indicating the number of decimal places to be
 used for displaying proportions.}
@@ -27,12 +46,12 @@ This function computes the proportion of missing data for each case in a matrix
 or data frame.
 }
 \examples{
-dat <- data.frame(x = c(1, NA, NA, 6, 3),
-                  y = c(7, NA, 8, 9, NA),
-                  z = c(2, NA, 3, NA, 5))
+# Example 1a: Compute proportion of missing data for each case in the data frame
+na.prop(airquality)
 
-# Compute proportion of missing data (\code{NA}) for each case in the data frame
-na.prop(dat)
+# Example 1b: Alternative specification using the 'data' argument,
+# append proportions to the data frame 'airquality'
+na.prop(., data = airquality)
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.

@@ -14,7 +14,7 @@ quotes \code{''} or double quotes \code{""}.}
 
 \item{decreasing}{logical: if \code{TRUE}, the sort is decreasing.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 Returns data frame \code{x} sorted according to the variables specified in \code{...}, a matrix will
@@ -28,16 +28,16 @@ dat <- data.frame(x = c(5, 2, 5, 5, 7, 2),
                   y = c(1, 6, 2, 3, 2, 3),
                   z = c(2, 1, 6, 3, 7, 4))
 
-# Sort data frame 'dat' by "x" in increasing order
+# Example 1: Sort data frame 'dat' by "x" in increasing order
 df.sort(dat, x)
 
-# Sort data frame 'dat' by "x" in decreasing order
+# Example 2: Sort data frame 'dat' by "x" in decreasing order
 df.sort(dat, x, decreasing = TRUE)
 
-# Sort data frame 'dat' by "x" and "y" in increasing order
+# Example 3: Sort data frame 'dat' by "x" and "y" in increasing order
 df.sort(dat, x, y)
 
-# Sort data frame 'dat' by "x" and "y" in decreasing order
+# Example 4: Sort data frame 'dat' by "x" and "y" in decreasing order
 df.sort(dat, x, y, decreasing = TRUE)
 }
 \references{
@@ -46,8 +46,10 @@ Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}
 Knuth, D. E. (1998) \emph{The Art of Computer Programming, Volume 3: Sorting and Searching} (2nd ed.). Addison-Wesley.
 }
 \seealso{
-\code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
-\code{\link{df.rename}}
+\code{\link{df.duplicated}}, \code{\link{df.merge}},
+\code{\link{df.move}}, \code{\link{df.rbind}},
+\code{\link{df.rename}},
+\code{\link{df.subset}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

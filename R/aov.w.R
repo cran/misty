@@ -18,8 +18,8 @@
 #'                      for no correction, \code{LB} for lower bound correction,
 #'                      \code{GG} for Greenhouse-Geisser correction, and \code{HF},
 #'                      for Huynh-Feldt correction.
-#' @param posthoc       logical: if \code{TRUE}, paired-samples t-tests for multiple
-#'                      comparison are conducted.
+#' @param posthoc       logical: if \code{TRUE} (default), paired-samples t-tests
+#'                      for multiple comparison are conducted.
 #' @param conf.level    a numeric value between 0 and 1 indicating the confidence
 #'                      level of the interval.
 #' @param p.adj         a character string indicating an adjustment method for
@@ -27,22 +27,23 @@
 #'                      \code{none}, \code{bonferroni}, \code{holm} (default),
 #'                      \code{h ochberg}, \code{hommel}, \code{BH}, \code{BY}, or
 #'                      \code{fdr}.
-#' @param hypo          logical: if \code{TRUE}, null and alternative hypothesis
+#' @param hypo          logical: if \code{TRUE} (default), null and alternative
+#'                      hypothesis are shown on the console.
+#' @param descript      logical: if \code{TRUE} (default), descriptive statistics
 #'                      are shown on the console.
-#' @param descript      logical: if \code{TRUE}, descriptive statistics are shown
-#'                      on the console.
-#' @param epsilon       logical: if \code{TRUE}, box indices of sphericity (epsilon)
-#'                      are shown on the console, i.e., lower bound, Greenhouse
-#'                      and Geiser (GG), Huynh and Feldt (HF) and average of GG
-#'                      and HF.
+#' @param epsilon       logical: if \code{TRUE} (default), box indices of sphericity
+#'                      (epsilon) are shown on the console, i.e., lower bound,
+#'                      Greenhouse and Geiser (GG), Huynh and Feldt (HF) and average
+#'                      of GG and HF.
 #' @param effsize       logical: if \code{TRUE}, effect size measures eta-squared
 #'                      (\eqn{\eta^2}), partial eta-squared (\eqn{\eta^2_p}),
 #'                      omega-squared (\eqn{\omega^2}), and partial omega-squared
 #'                      (\eqn{\omega^2_p}) for the repeated measures ANOVA and
 #'                      Cohen's \emph{d} for the post hoc tests are shown on
 #'                      the console.
-#' @param na.omit       logical: if \code{TRUE}, incomplete cases are removed
-#'                      before conducting the analysis (i.e., listwise deletion).
+#' @param na.omit       logical: if \code{TRUE} (default), incomplete cases are
+#'                      removed before conducting the analysis (i.e., listwise
+#'                      deletion).
 #' @param plot          logical: if \code{TRUE}, a plot showing error bars for
 #'                      confidence intervals is drawn.
 #' @param point.size    a numeric value indicating the \code{size} aesthetic for
@@ -80,8 +81,17 @@
 #' @param as.na         a numeric vector indicating user-defined missing values,
 #'                      i.e. these values are converted to \code{NA} before
 #'                      conducting the analysis.
-#' @param check         logical: if \code{TRUE}, argument specification is checked.
-#' @param output        logical: if \code{TRUE}, output is shown on the console.
+#' @param write         a character string naming a text file with file extension
+#'                      \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                      output into a text file.
+#' @param append        logical: if \code{TRUE} (default), output will be appended
+#'                      to an existing text file with extension \code{.txt} specified
+#'                      in \code{write}, if \code{FALSE} existing text file will be
+#'                      overwritten.
+#' @param check         logical: if \code{TRUE} (default), argument specification
+#'                      is checked.
+#' @param output        logical: if \code{TRUE} (default), output is shown on the
+#'                      console.
 #' @param ...           further arguments to be passed to or from methods.
 #'
 #' @details
@@ -94,7 +104,7 @@
 #' matters is the degree of violation rather than its presence (Baguley, 2012a).
 #' Moreover, the test is not recommended because it lacks statistical power (Abdi,
 #' 2010). Instead, the Box index of sphericity (\eqn{\varepsilon}) should be used to
-#' assess the degree of violation of the sphericity. assumption The \eqn{\varepsilon}
+#' assess the degree of violation of the sphericity assumption. The \eqn{\varepsilon}
 #' parameter indicates the degree to which the population departs from sphericity
 #' with \eqn{\varepsilon = 1} indicating that sphericity holds. As the departure
 #' becomes more extreme, \eqn{\varepsilon} approaches its lower bound
@@ -216,53 +226,56 @@
 #'                   time2 = c(4, 3, 6, 5, 8, 6, 7, 3, 4, 5),
 #'                   time3 = c(1, 2, 2, 3, 6, 5, 1, 2, 4, 6))
 #'
-#' # Repeated measures ANOVA
+#' # Example 1: Repeated measures ANOVA
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat)
 #'
-#' # Repeated measures ANOVA
+#' # Example 2: Repeated measures ANOVA
 #' # print results based on all sphericity corrections
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, print = "all")
 #'
-#' # Repeated measures ANOVA
+#' # Example 3: Repeated measures ANOVA
 #' # print effect size measures
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, effsize = TRUE)
 #'
-#' # Repeated measures ANOVA
+#' # Example 4: Repeated measures ANOVA
 #' # do not print hypotheses and descriptive statistics,
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, descript = FALSE, hypo = FALSE)
 #'
 #' \dontrun{
-#'  # Repeated measures ANOVA
-#'  # plot results
-#'  aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE)
+#' # Example 5: Write Results into a text file
+#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.txt")
 #'
-#'  # Load ggplot2 package
-#'  library(ggplot2)
+#' # Example 6: Repeated measures ANOVA
+#' # plot results
+#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE)
 #'
-#'  # Save plot, ggsave() from the ggplot2 package
-#'  ggsave("Repeated_measures_ANOVA.png", dpi = 600, width = 4.5, height = 4)
+#' # Load ggplot2 package
+#' library(ggplot2)
 #'
-#'  # Repeated measures ANOVA
-#'  # extract plot
-#'  p <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat, output = FALSE)$plot
-#'  p
+#' # Save plot, ggsave() from the ggplot2 package
+#' ggsave("Repeated_measures_ANOVA.png", dpi = 600, width = 4.5, height = 4)
 #'
-#'  # Extract data
-#'  plotdat <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat, output = FALSE)$data
+#' # Example 7: Repeated measures ANOVA
+#' # extract plot
+#' p <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat, output = FALSE)$plot
+#' p
 #'
-#'  # Draw plot in line with the default setting of aov.w()
-#'  ggplot(plotdat$long, aes(time, y, group = 1L)) +
-#'    geom_point(aes(time, y, group = id),
-#'               alpha = 0.1, position = position_dodge(0.05)) +
-#'    geom_line(aes(time, y, group = id),
+#' # Extract data
+#' plotdat <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat, output = FALSE)$data
+#'
+#' # Draw plot in line with the default setting of aov.w()
+#' ggplot(plotdat$long, aes(time, y, group = 1L)) +
+#'   geom_point(aes(time, y, group = id),
 #'              alpha = 0.1, position = position_dodge(0.05)) +
-#'    geom_point(data = plotdat$ci, aes(variable, m), stat = "identity", size = 4) +
-#'    stat_summary(aes(time, y), fun = mean, geom = "line") +
-#'    geom_errorbar(data = plotdat$ci, aes(variable, m, ymin = low, ymax = upp), width = 0.1) +
-#'    theme_bw() + xlab(NULL) +
-#'    labs(subtitle = "Two-Sided 95% Confidence Interval") +
-#'    theme(plot.subtitle = element_text(hjust = 0.5),
-#'          plot.title = element_text(hjust = 0.5))
+#'   geom_line(aes(time, y, group = id),
+#'             alpha = 0.1, position = position_dodge(0.05)) +
+#'   geom_point(data = plotdat$ci, aes(variable, m), stat = "identity", size = 4) +
+#'   stat_summary(aes(time, y), fun = mean, geom = "line") +
+#'   geom_errorbar(data = plotdat$ci, aes(variable, m, ymin = low, ymax = upp), width = 0.1) +
+#'   theme_bw() + xlab(NULL) +
+#'   labs(subtitle = "Two-Sided 95% Confidence Interval") +
+#'   theme(plot.subtitle = element_text(hjust = 0.5),
+#'         plot.title = element_text(hjust = 0.5))
 #' }
 aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
                   posthoc = TRUE, conf.level = 0.95,
@@ -273,7 +286,8 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
                   jitter = TRUE, line = TRUE, jitter.size = 1.25, jitter.width = 0.05,
                   jitter.height = 0, jitter.alpha = 0.1, title = "",
                   subtitle = "Confidence Interval", digits = 2, p.digits = 4,
-                  as.na = NULL, check = TRUE, output = TRUE, ...) {
+                  as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+                  output = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
@@ -358,6 +372,12 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
@@ -383,15 +403,7 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    # Replace user-specified values with missing values
-    data.id[, var.formula] <- misty::as.na(data.id[, var.formula], na = as.na, check = check)
-
-    # Dependent variable with missing values only
-    if (isTRUE(any(sapply(data.id[, var.formula], function(y) all(is.na(y)))))) { stop("After converting user-missing values into NA, a dependent variables is completely missing.", call. = FALSE) }
-
-  }
+  if (isTRUE(!is.null(as.na))) { .as.na(data.id[, var.formula], na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Missing data ####
@@ -753,10 +765,32 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
                              jitter.height = jitter.height, jitter.alpha = jitter.alpha,
                              title = title, subtitle = subtitle, digits = digits,
                              p.digits = p.digits, as.na = as.na, check = check,
-                             output = output),
+                             write = write, append = append, output = output),
                  result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

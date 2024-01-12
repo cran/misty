@@ -7,7 +7,7 @@
 size.prop(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
           alternative = c("two.sided", "less", "greater"),
           alpha = 0.05, beta = 0.1, correct = FALSE,
-          check = TRUE, output = TRUE)
+          write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{pi}{a number indicating the true value of the probability under the null hypothesis (one-sample test), \eqn{\pi}.0
@@ -16,7 +16,7 @@ or a number indicating the true value of the probability in group 1 (two-sample 
 \item{delta}{minimum difference to be detected, \eqn{\delta}.}
 
 \item{sample}{a character string specifying one- or two-sample proportion test,
-must be one of "two.sample" (default) or "one.sample".}
+must be one of \code{"two.sample"} (default) or \code{"one.sample"}.}
 
 \item{alternative}{a character string specifying the alternative hypothesis,
 must be one of \code{"two.sided"} (default), \code{"less"} or \code{"greater"}.}
@@ -27,9 +27,18 @@ must be one of \code{"two.sided"} (default), \code{"less"} or \code{"greater"}.}
 
 \item{correct}{a logical indicating whether continuity correction should be applied.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -45,16 +54,16 @@ This function performs sample size computation for the one-sample and two-sample
 based on precision requirements (i.e., type-I-risk, type-II-risk and an effect size).
 }
 \examples{
-#--------------------------------------
-# Two-sided one-sample test
+#-------------------------------------------------------------------------------
+# Example 1: Two-sided one-sample test
 # H0: pi = 0.5, H1: pi != 0.5
 # alpha = 0.05, beta = 0.2, delta = 0.2
 
 size.prop(pi = 0.5, delta = 0.2, sample = "one.sample",
           alternative = "two.sided", alpha = 0.05, beta = 0.2)
 
-#--------------------------------------
-# Two-sided one-sample test
+#-------------------------------------------------------------------------------
+# Example 2: Two-sided one-sample test
 # H0: pi = 0.5, H1: pi != 0.5
 # alpha = 0.05, beta = 0.2, delta = 0.2
 # with continuity correction
@@ -63,24 +72,24 @@ size.prop(pi = 0.5, delta = 0.2, sample = "one.sample",
           alternative = "two.sided", alpha = 0.05, beta = 0.2,
           correct = TRUE)
 
-#--------------------------------------
-# One-sided one-sample test
+#-------------------------------------------------------------------------------
+# Example 3: One-sided one-sample test
 # H0: pi <= 0.5, H1: pi > 0.5
 # alpha = 0.05, beta = 0.2, delta = 0.2
 
 size.prop(pi = 0.5, delta = 0.2, sample = "one.sample",
           alternative = "less", alpha = 0.05, beta = 0.2)
 
-#--------------------------------------
-# Two-sided two-sample test
+#-------------------------------------------------------------------------------
+# Example 4: Two-sided two-sample test
 # H0: pi.1 = pi.2 = 0.5, H1: pi.1 != pi.2
 # alpha = 0.01, beta = 0.1, delta = 0.2
 
 size.prop(pi = 0.5, delta = 0.2, sample = "two.sample",
           alternative = "two.sided", alpha = 0.01, beta = 0.1)
 
-#--------------------------------------
-# One-sided two-sample test
+#-------------------------------------------------------------------------------
+# Example 5: One-sided two-sample test
 # H0: pi.1 <=  pi.1 = 0.5, H1: pi.1 > pi.2
 # alpha = 0.01, beta = 0.1, delta = 0.2
 

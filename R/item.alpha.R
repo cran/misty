@@ -23,9 +23,18 @@
 #' Pornprasertmanit, 2016), which are implemented in the \code{ci.reliability()}
 #' function in the \pkg{MBESSS} package by Ken Kelley (2019).
 #'
-#' @param x          a matrix, data frame, variance-covariance or correlation matrix.
-#'                   Note that raw data is needed to compute ordinal coefficient alpha,
-#'                   i.e., \code{ordered = TRUE}.
+#' @param ...        a matrix, data frame, variance-covariance or correlation
+#'                   matrix. Note that raw data is needed to compute ordinal
+#'                   coefficient alpha, i.e., \code{ordered = TRUE}. Alternatively,
+#'                   an expression indicating the variable names in \code{data}
+#'                   e.g., \code{item.alpha(x1, x2, x3, data = dat)}. Note that
+#'                   the operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+#'                   \code{::}, and \code{!} can also be used to select variables,
+#'                   see 'Details' in the \code{\link{df.subset}} function.
+#' @param data       a data frame when specifying one or more variables in the
+#'                   argument \code{...}. Note that the argument is \code{NULL}
+#'                   when specifying a matrix, data frame, variance-covariance
+#'                   or correlation matrix for the argument \code{...}.
 #' @param exclude    a character vector indicating items to be excluded from the
 #'                   analysis.
 #' @param std        logical: if \code{TRUE}, the standardized coefficient alpha
@@ -48,8 +57,9 @@
 #' @param write      a character string for writing the results into a Excel file
 #'                   naming a file with or without file extension '.xlsx', e.g.,
 #'                   \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check      logical: if \code{TRUE}, argument specification is checked.
-#' @param output     logical: if \code{TRUE}, output is shown.
+#' @param check      logical: if \code{TRUE} (default), argument specification
+#'                   is checked.
+#' @param output     logical: if \code{TRUE} (default), output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -97,7 +107,7 @@
 #' \tabular{ll}{
 #' \code{call} \tab function call \cr
 #' \code{type} \tab type of analysis \cr
-#' \code{data} \tab matrix or data frame specified in \code{x} \cr
+#' \code{data} \tab data frame used for the current analysis \cr
 #' \code{args} \tab specification of function arguments \cr
 #' \code{result} \tab list with result tables \cr
 #' }
@@ -110,117 +120,89 @@
 #'                   item3 = c(3, 2, 4, 2, 1, 3, 4, 1),
 #'                   item4 = c(4, 1, 2, 3, 2, 3, 4, 2))
 #'
-#' # Compute unstandardized coefficient alpha and item statistics
+#' # Example 1a: Compute unstandardized coefficient alpha and item statistics
 #' item.alpha(dat)
 #'
-#' # Compute standardized coefficient alpha and item statistics
+#' # Example 1b: Alternative specification using the 'data' argument
+#' item.alpha(., data = dat)
+#'
+#' # Example 2: Compute standardized coefficient alpha and item statistics
 #' item.alpha(dat, std = TRUE)
 #'
-#' # Compute unstandardized coefficient alpha
+#' # Example 3: Compute unstandardized coefficient alpha
 #' item.alpha(dat, print = "alpha")
 #'
-#' # Compute item statistics
+#' # Example 4: Compute item statistics
 #' item.alpha(dat, print = "item")
 #'
-#' # Compute unstandardized coefficient alpha and item statistics while excluding item3
+#' # Example 5: Compute unstandardized coefficient alpha and item statistics while excluding item3
 #' item.alpha(dat, exclude = "item3")
 #'
-#' # Compute variance-covariance matrix
+#' # Example 6: Compute variance-covariance matrix
 #' dat.cov <- cov(dat)
 #' # Compute unstandardized coefficient alpha based on the variance-covariance matrix
 #' item.alpha(dat.cov)
 #'
 #' # Compute correlation matrix
 #' dat.cor <- cor(dat)
-#' # Compute standardized coefficient alpha based on the correlation matrix
+#' # Example 7: Compute standardized coefficient alpha based on the correlation matrix
 #' item.alpha(dat.cor)
 #'
-#' # Compute ordinal coefficient alpha
+#' # Example 8: Compute ordinal coefficient alpha
 #' item.alpha(dat, ordered = TRUE)
 #'
 #' \dontrun{
-#' # Write Results into a Excel file
+#' # Example 9a: Write Results into a text file
+#' result <- item.alpha(dat, write = "Alpha.xlsx")
+#'
+#' # Example 9b: Write Results into a Excel file
 #' result <- item.alpha(dat, write = "Alpha.xlsx")
 #'
 #' result <- item.alpha(dat, output = FALSE)
 #' write.result(result, "Alpha.xlsx")
 #' }
-item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit = FALSE,
-                       print = c("all", "alpha", "item"), digits = 2, conf.level = 0.95,
-                       as.na = NULL, write = NULL, check = TRUE, output = TRUE) {
+item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = FALSE,
+                       na.omit = FALSE, print = c("all", "alpha", "item"), digits = 2,
+                       conf.level = 0.95, as.na = NULL, write = NULL, append = TRUE,
+                       check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix, data frame, variance-covariance or correlation matrix for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Data -----------------------------------------------------------------------
 
-  if (isTRUE(check)) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument 'data' ####
 
-    # Matrix or data frame for the argument 'x'?
-    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix, a data frame, a variance-covariance or correlation matrix for the argument 'x'.", call. = FALSE) }
+  if (isTRUE(!is.null(data))) {
 
-    # Check input 'x': One item
-    if (isTRUE(ncol(x) == 1L)) { stop("Please specify at least two items to compute coefficient alpha.", call. = FALSE) }
+    # Variable names
+    var.names <- .var.names(..., data = data, check.chr = "a matrix, data frame, variance-covariance or correlation matrix")
 
-    # Check input 'x': Zero variance
-    if (isTRUE(nrow(x) != ncol(x))) {
+    # Extract variables
+    x <- data[, var.names]
 
-      x.check <- vapply(as.data.frame(x, stringsAsFactors = FALSE), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
 
-      if (isTRUE(any(x.check))) {
+  } else {
 
-        stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
-
-      }
-
-    }
-
-    # Check input 'exclude'
-    check.ex <- !exclude %in% colnames(x)
-    if (isTRUE(any(check.ex))) {
-
-      stop(paste0("Items to be excluded from the analysis were not found in 'x': ", paste(exclude[check.ex], collapse = ", ")), call. = FALSE)
-
-    }
-
-    # Check input 'std'
-    if (isTRUE(!is.logical(std))) { stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE) }
-
-    # Check input 'ordered'
-    if (isTRUE(!is.logical(ordered))) { stop("Please specify TRUE or FALSE for the argument 'ordered'.", call. = FALSE) }
-
-    # Check input 'na.omit'
-    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "alpha", "item")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"alpha\", or \"item\".", call. = FALSE) }
-
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
 
   }
-
-  #_____________________________________________________________________________
-  #
-  # Data and Arguments ---------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Raw data or cor/cov matrix ####
@@ -265,7 +247,7 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
     }
 
     # Compute polychoric correlation matrix
-    x <- misty::cor.poly(x, output = FALSE)$result$cor
+    x <- misty::cor.matrix(x, method = "poly", output = FALSE)$result$cor
 
     x.raw <- FALSE
     std <- TRUE
@@ -285,6 +267,10 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     if (isTRUE(!is.null(exclude))) {
 
+      # Check input 'exclude'
+      check.ex <- !exclude %in% colnames(x)
+      if (isTRUE(any(check.ex))) { stop(paste0("Items to be excluded from the analysis were not found in 'x': ", paste(exclude[check.ex], collapse = ", ")), call. = FALSE) }
+
       x <- x[, which(!colnames(x) %in% exclude)]
 
       # One item left
@@ -297,29 +283,7 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
     }
 
     # Convert user-missing values into NA
-    if (isTRUE(!is.null(as.na))) {
-
-      x <- misty::as.na(x, na = as.na, check = check)
-
-      # Variable with missing values only
-      x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-      if (isTRUE(any(x.miss))) {
-
-        stop(paste0("After converting user-missing values into NA, following items are completely missing: ",
-                    paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
-
-      }
-
-      # Zero variance
-      x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
-      if (isTRUE(any(x.zero.var))) {
-
-        stop(paste0("After converting user-missing values into NA, following items have zero variance: ",
-                    paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
-
-      }
-
-    }
+    if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   # Covariance or correlation matrix
   } else {
@@ -349,6 +313,64 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
     x <- na.omit(x)
 
   }
+
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+
+  if (isTRUE(check)) {
+
+    # Matrix or data frame for the argument 'x'?
+    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix, a data frame, a variance-covariance or correlation matrix for the argument 'x'.", call. = FALSE) }
+
+    # Check input 'x': One item
+    if (isTRUE(ncol(x) == 1L)) { stop("Please specify at least two items to compute coefficient alpha.", call. = FALSE) }
+
+    # Check input 'x': Zero variance
+    if (isTRUE(nrow(x) != ncol(x))) {
+
+      x.check <- vapply(as.data.frame(x, stringsAsFactors = FALSE), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
+
+      if (isTRUE(any(x.check))) {
+
+        stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
+
+      }
+
+    }
+
+    # Check input 'std'
+    if (isTRUE(!is.logical(std))) { stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE) }
+
+    # Check input 'ordered'
+    if (isTRUE(!is.logical(ordered))) { stop("Please specify TRUE or FALSE for the argument 'ordered'.", call. = FALSE) }
+
+    # Check input 'na.omit'
+    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
+
+    # Check input 'print'
+    if (isTRUE(!all(print %in% c("all", "alpha", "item")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"alpha\", or \"item\".", call. = FALSE) }
+
+    # Check input 'conf.level'
+    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
+
+    # Check input 'digits'
+    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
+    # Check input 'output'
+    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print coefficient alpha and/or item statistic ####
@@ -415,7 +437,7 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
 
     if (isTRUE(any(is.na(x)) && !isTRUE(na.omit))) {
 
-      df1 <- mean(apply(combn(ncol(x), 2L), 2, function(y) nrow(na.omit(cbind(x[, y[1L]], x[, y[2L]]))))) - 1L
+      df1 <- mean(apply(combn(ncol(x), 2L), 2L, function(y) nrow(na.omit(cbind(x[, y[1L]], x[, y[2L]]))))) - 1L
 
     } else {
 
@@ -485,7 +507,7 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
                  data = x,
                  args = list(exclude = exclude, std = std, ordered = ordered, na.omit = na.omit,
                              print = print, digits = digits, conf.level = conf.level, as.na = as.na,
-                             check = check, output = output),
+                             write = write, append = append, check = check, output = output),
                  result = list(alpha = alpha.x, itemstat = itemstat))
 
   class(object) <- "misty.object"
@@ -494,7 +516,34 @@ item.alpha <- function(x, exclude = NULL, std = FALSE, ordered = FALSE, na.omit 
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #

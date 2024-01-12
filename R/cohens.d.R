@@ -1,127 +1,158 @@
 #' Cohen's d
 #'
-#' This function computes Cohen's d for one-sample, two-sample (i.e., between-subject design),
-#' and paired-sample designs (i.e., within-subject design) for one or more variables, optionally
-#' by a grouping and/or split variable. In a two-sample design, the function computes the
-#' standardized mean difference by dividing the difference between  means of the two groups
-#' of observations by the weighted pooled standard deviation (i.e., Cohen's \eqn{d_s}
-#' according to Lakens, 2013) by default. In a paired-sample design, the function computes the
-#' standardized mean difference by dividing the mean of the difference scores by the standard
-#' deviation of the difference scores (i.e., Cohen's \eqn{d_z} according to Lakens, 2013) by
-#' default. Note that by default Cohen's d is computed without applying the correction factor
+#' This function computes Cohen's d for one-sample, two-sample (i.e., between-subject
+#' design), and paired-sample designs (i.e., within-subject design) for one or more
+#' variables, optionally by a grouping and/or split variable. In a two-sample design,
+#' the function computes the standardized mean difference by dividing the difference
+#' between  means of the two groups of observations by the weighted pooled standard
+#' deviation (i.e., Cohen's \eqn{d_s} according to Lakens, 2013) by default. In
+#' a paired-sample design, the function computes the standardized mean difference
+#' by dividing the mean of the difference scores by the standard deviation of the
+#' difference scores (i.e., Cohen's \eqn{d_z} according to Lakens, 2013) by default.
+#' Note that by default Cohen's d is computed without applying the correction factor
 #' for removing the small sample bias (i.e., Hedges' g).
 #'
-#' Cohen (1988, p.67) proposed to compute the standardized mean difference in a two-sample design
-#' by dividing the mean difference by the unweighted pooled standard deviation (i.e.,
-#' \code{weighted = FALSE}).
+#' Cohen (1988, p.67) proposed to compute the standardized mean difference in a
+#' two-sample design by dividing the mean difference by the unweighted pooled
+#' standard deviation (i.e., \code{weighted = FALSE}).
 #'
-#' Glass et al. (1981, p. 29) suggested to use the standard deviation of the control group
-#' (e.g., \code{ref = 0} if the control group is coded with 0) to compute the standardized
-#' mean difference in a two-sample design (i.e., Glass's \eqn{\Delta}) since the standard deviation of the control group
-#' is unaffected by the treatment and will therefore more closely reflect the population
+#' Glass et al. (1981, p. 29) suggested to use the standard deviation of the
+#' control group (e.g., \code{ref = 0} if the control group is coded with 0) to
+#' compute the standardized mean difference in a two-sample design (i.e., Glass's
+#' \eqn{\Delta}) since the standard deviation of the control group is unaffected
+#' by the treatment and will therefore more closely reflect the population
 #' standard deviation.
 #'
-#' Hedges (1981, p. 110) recommended to weight each group's standard deviation by its sample
-#' size resulting in a weighted and pooled standard deviation (i.e., \code{weighted = TRUE},
-#' default). According to Hedges and Olkin (1985, p. 81), the standardized mean difference
-#' based on the weighted and pooled standard deviation has a positive small sample bias,
-#' i.e., standardized mean difference is overestimated in small samples (i.e., sample size
-#' less than 20 or less than 10 in each group). However, a correction factor can be applied
-#' to remove the small sample bias (i.e., \code{correct = TRUE}). Note that the function uses
-#' a gamma function for computing the correction factor, while a approximation method is
-#' used if computation based on the gamma function fails.
+#' Hedges (1981, p. 110) recommended to weight each group's standard deviation by
+#' its sample size resulting in a weighted and pooled standard deviation (i.e.,
+#' \code{weighted = TRUE}, default). According to Hedges and Olkin (1985, p. 81),
+#' the standardized mean difference based on the weighted and pooled standard
+#' deviation has a positive small sample bias, i.e., standardized mean difference
+#' is overestimated in small samples (i.e., sample size less than 20 or less than
+#' 10 in each group). However, a correction factor can be applied to remove the
+#' small sample bias (i.e., \code{correct = TRUE}). Note that the function uses
+#' a gamma function for computing the correction factor, while a approximation
+#' method is used if computation based on the gamma function fails.
 #'
-#' Note that the terminology is inconsistent because the standardized mean difference based
-#' on the weighted and pooled standard deviation is usually called Cohen's d, but sometimes
-#' called Hedges' g. Oftentimes, Cohen's d is called Hedges' d as soon as the small sample
-#' correction factor is applied. Cumming and Calin-Jageman (2017, p.171) recommended to avoid
-#' the term Hedges' g , but to report which standard deviation was used to standardized the
-#' mean difference (e.g., unweighted/weighted pooled standard deviation, or the standard
-#' deviation of the control group) and whether a small sample correction factor was applied.
+#' Note that the terminology is inconsistent because the standardized mean
+#' difference based on the weighted and pooled standard deviation is usually called
+#' Cohen's d, but sometimes called Hedges' g. Oftentimes, Cohen's d is called
+#' Hedges' d as soon as the small sample correction factor is applied. Cumming
+#' and Calin-Jageman (2017, p.171) recommended to avoid the term Hedges' g , but
+#' to report which standard deviation was used to standardized the mean difference
+#' (e.g., unweighted/weighted pooled standard deviation, or the standard deviation
+#' of the control group) and whether a small sample correction factor was applied.
 #'
 #' As for the terminology according to Lakens (2013), in a two-sample design (i.e.,
-#' \code{paired = FALSE}) Cohen's \eqn{d_s} is computed when using \code{weighted = TRUE} (default)
-#' and Hedges's \eqn{g_s} is computed when using \code{correct = TRUE} in addition. In a
-#' paired-sample design (i.e., \code{paired = TRUE}), Cohen's \eqn{d_z} is computed when using
-#' \code{weighted = TRUE, default}, while Cohen's \eqn{d_{rm}} is computed when using
-#' \code{weighted = FALSE} and \code{cor = TRUE, default} and Cohen's \eqn{d_{av}} is computed when
-#' using \code{weighted = FALSE} and \code{cor = FALSE}. Corresponding Hedges' \eqn{g_z}, \eqn{g_{rm}},
-#' and \eqn{g_{av}} are computed when using \code{correct = TRUE} in addition.
+#' \code{paired = FALSE}) Cohen's \eqn{d_s} is computed when using \code{weighted = TRUE}
+#' (default) and Hedges's \eqn{g_s} is computed when using \code{correct = TRUE}
+#' in addition. In a paired-sample design (i.e., \code{paired = TRUE}), Cohen's
+#' \eqn{d_z} is computed when using \code{weighted = TRUE, default}, while Cohen's
+#' \eqn{d_{rm}} is computed when using \code{weighted = FALSE} and
+#' \code{cor = TRUE, default} and Cohen's \eqn{d_{av}} is computed when using
+#' \code{weighted = FALSE} and \code{cor = FALSE}. Corresponding Hedges' \eqn{g_z},
+#' \eqn{g_{rm}}, and \eqn{g_{av}} are computed when using \code{correct = TRUE} in addition.
 #'
 #' @param x           a numeric vector or data frame.
 #' @param y           a numeric vector.
 #' @param mu          a numeric value indicating the reference mean.
-#' @param paired      logical: if \code{TRUE}, Cohen's d for a paired-sample design is computed.
-#' @param weighted    logical: if \code{TRUE} (default), the weighted pooled standard deviation is used
-#'                    to compute the standardized mean difference between two groups of a two-sample
-#'                    design (i.e., \code{paired = FALSE}), while standard deviation of the difference
-#'                    scores is used to compute the standardized mean difference in a paired-sample
-#'                    design (i.e., \code{paired = TRUE}).
-#' @param cor         logical: if \code{TRUE} (default), \code{paired = TRUE}, and \code{weighted = FALSE},
-#'                    Cohen's d for a paired-sample design while controlling for the correlation between
-#'                    the two sets of measurement is computed. Note that this argument is only used in
-#'                    a paired-sample design (i.e., \code{paired = TRUE}) when specifying \code{weighted = FALSE}.
-#' @param ref         character string \code{"x"} or \code{"y"} for specifying the reference reference
-#'                    group when using the default \code{cohens.d()} function or a numeric value or
-#'                    character string indicating the reference group in a two-sample design when using
-#'                    the formula \code{cohens.d()} function. The standard deviation of the reference variable
-#'                    or reference group is used to standardized the mean difference.
-#'                    Note that this argument is only used in a two-sample design (i.e., \code{paired = FALSE}).
-#' @param correct     logical: if \code{TRUE}, correction factor to remove positive bias in small samples is
-#'                    used.
-#' @param alternative a character string specifying the alternative hypothesis, must be one of
-#'                    \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.
-#' @param conf.level  a numeric value between 0 and 1 indicating the confidence level of the interval.
-#' @param group       a numeric vector, character vector or factor as grouping variable.
+#' @param paired      logical: if \code{TRUE}, Cohen's d for a paired-sample design
+#'                    is computed.
+#' @param weighted    logical: if \code{TRUE} (default), the weighted pooled
+#'                    standard deviation is used to compute the standardized mean
+#'                    difference between two groups of a two-sample design (i.e.,
+#'                    \code{paired = FALSE}), while standard deviation of the
+#'                    difference scores is used to compute the standardized mean
+#'                    difference in a paired-sample design (i.e., \code{paired = TRUE}).
+#' @param cor         logical: if \code{TRUE} (default), \code{paired = TRUE},
+#'                    and \code{weighted = FALSE}, Cohen's d for a paired-sample
+#'                    design while controlling for the correlation between the
+#'                    two sets of measurement is computed. Note that this argument
+#'                    is only used in a paired-sample design (i.e., \code{paired = TRUE})
+#'                    when specifying \code{weighted = FALSE}.
+#' @param ref         character string \code{"x"} or \code{"y"} for specifying
+#'                    the reference reference group when using the default
+#'                    \code{cohens.d()} function or a numeric value or character
+#'                    string indicating the reference group in a two-sample design
+#'                    when using the formula \code{cohens.d()} function. The standard
+#'                    deviation of the reference variable or reference group is
+#'                    used to standardized the mean difference. Note that this
+#'                    argument is only used in a two-sample design
+#'                    (i.e., \code{paired = FALSE}).
+#' @param correct     logical: if \code{TRUE}, correction factor to remove positive
+#'                    bias in small samples is used.
+#' @param alternative a character string specifying the alternative hypothesis,
+#'                    must be one of \code{"two.sided"} (default), \code{"greater"}
+#'                    or \code{"less"}.
+#' @param conf.level  a numeric value between 0 and 1 indicating the confidence
+#'                    level of the interval.
+#' @param group       a numeric vector, character vector or factor as grouping
+#'                    variable.
 #' @param split       a numeric vector, character vector or factor as split variable.
-#' @param sort.var    logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.
-#' @param digits      an integer value indicating the number of decimal places to be used for
-#'                    displaying results.
+#' @param sort.var    logical: if \code{TRUE}, output table is sorted by variables
+#'                    when specifying \code{group}.
+#' @param digits      an integer value indicating the number of decimal places to
+#'                    be used for displaying results.
 #' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting the analysis.
-#'                    Note that \code{as.na()} function is only applied to \code{y} but not to \code{group}
-#'                    in a two-sample design, while \code{as.na()} function is applied to \code{pre}
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis. Note that \code{as.na()} function is only
+#'                    applied to \code{y} but not to \code{group} in a two-sample
+#'                    design, while \code{as.na()} function is applied to \code{pre}
 #'                    and \code{post} in a paired-sample design.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
-#' @param output      logical: if \code{TRUE}, output is shown on the console.
-#' @param formula     a formula of the form \code{y ~ group} for one outcome variable or
-#'                    \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where \code{y}
-#'                    is a numeric variable giving the data values and \code{group} a numeric variable,
-#'                    character variable or factor with two values or factor levels giving the
-#'                    corresponding groups.
-#' @param data        a matrix or data frame containing the variables in the formula \code{formula}.
-#' @param na.omit     logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-#'                    (i.e., listwise deletion) when specifying more than one outcome variable.
+#' @param write       a character string naming a text file with file extension
+#'                    \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                    output into a text file.
+#' @param append      logical: if \code{TRUE} (default), output will be appended
+#'                    to an existing text file with extension \code{.txt} specified
+#'                    in \code{write}, if \code{FALSE} existing text file will be
+#'                    overwritten.
+#' @param check       logical: if \code{TRUE} (default), argument specification is
+#'                    checked.
+#' @param output      logical: if \code{TRUE} (default), output is shown on the
+#'                    console.
+#' @param formula     a formula of the form \code{y ~ group} for one outcome variable
+#'                    or \code{cbind(y1, y2, y3) ~ group} for more than one outcome
+#'                    variable where \code{y} is a numeric variable giving the
+#'                    data values and \code{group} a numeric variable, character
+#'                    variable or factor with two values or factor levels giving
+#'                    the corresponding groups.
+#' @param data        a matrix or data frame containing the variables in the formula
+#'                    \code{formula}.
+#' @param na.omit     logical: if \code{TRUE}, incomplete cases are removed before
+#'                    conducting the analysis (i.e., listwise deletion) when
+#'                    specifying more than one outcome variable.
 #' @param ...         further arguments to be passed to or from methods.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{test.t}}, \code{\link{test.z}}, \code{\link{eta.sq}}, \code{\link{cor.cont}},
-#' \code{\link{cor.cramer}},\code{\link{cor.matrix}}, \code{\link{na.auxiliary}}
+#' \code{\link{test.t}}, \code{\link{test.z}}, \code{\link{effsize}},
+#' \code{\link{cor.matrix}}
 #'
 #' @references
-#' Cohen, J. (1988). \emph{Statistical power analysis for the behavioral sciences} (2nd ed.).
+#' Cohen, J. (1988). \emph{Statistical power analysis for the behavioral sciences}
+#' (2nd ed.). Academic Press.
+#'
+#' Cumming, G., & Calin-Jageman, R. (2017). \emph{Introduction to the new statistics:
+#' Estimation, open science, & beyond}. Routledge.
+#'
+#' Glass. G. V., McGaw, B., & Smith, M. L. (1981). \emph{Meta-analysis in social
+#' research}. Sage Publication.
+#'
+#' Goulet-Pelletier, J.-C., & Cousineau, D. (2018) A review of effect sizes and
+#' their confidence intervals, Part I: The Cohen's d family. \emph{The Quantitative
+#' Methods for Psychology, 14}, 242-265. https://doi.org/10.20982/tqmp.14.4.p242
+#'
+#' Hedges, L. V. (1981). Distribution theory for Glass's estimator of effect size
+#' and related estimators. \emph{Journal of Educational Statistics, 6}(3), 106-128.
+#'
+#' Hedges, L. V. & Olkin, I. (1985). \emph{Statistical methods for meta-analysis}.
 #' Academic Press.
 #'
-#' Cumming, G., & Calin-Jageman, R. (2017). \emph{Introduction to the new statistics: Estimation, open science,
-#' & beyond}. Routledge.
-#'
-#' Glass. G. V., McGaw, B., & Smith, M. L. (1981). \emph{Meta-analysis in social research}. Sage Publication.
-#'
-#' Goulet-Pelletier, J.-C., & Cousineau, D. (2018) A review of effect sizes and their confidence intervals,
-#' Part I: The Cohen's d family. \emph{The Quantitative Methods for Psychology, 14}, 242-265.
-#' https://doi.org/10.20982/tqmp.14.4.p242
-#'
-#' Hedges, L. V. (1981). Distribution theory for Glass's estimator of effect size and related estimators.
-#' \emph{Journal of Educational Statistics, 6}(3), 106-128.
-#'
-#' Hedges, L. V. & Olkin, I. (1985). \emph{Statistical methods for meta-analysis}. Academic Press.
-#'
-#' Lakens, D. (2013). Calculating and reporting effect sizes to facilitate cumulative science:
-#' A practical primer for t-tests and ANOVAs. \emph{Frontiers in Psychology, 4}, 1-12.
-#' https://doi.org/10.3389/fpsyg.2013.00863
+#' Lakens, D. (2013). Calculating and reporting effect sizes to facilitate cumulative
+#' science: A practical primer for t-tests and ANOVAs. \emph{Frontiers in Psychology, 4},
+#' 1-12. https://doi.org/10.3389/fpsyg.2013.00863
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
@@ -149,163 +180,162 @@
 #'                    x2 = c(4, 4, 3, 6, 4, 7, 3, 5, 3, 3, 4, 2, 3, 6,
 #'                           3, 5, 2, 6, 8, 3, 2, 5, 4, 5, 3, 2, 2, 4),
 #'                    x3 = c(7, 6, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
-#'                           2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4),
-#'                    stringsAsFactors = FALSE)
+#'                           2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # One-sample design
 #'
-#' # Cohen's d.z with two-sided 95% CI
+#' # Example 1: Cohen's d.z with two-sided 95% CI
 #' # population mean = 3
 #' cohens.d(dat1$x1, mu = 3)
 #'
-#' # Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
+#' # Example 2: Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
 #' # population mean = 3, with small sample correction factor
 #' cohens.d(dat1$x1, mu = 3, correct = TRUE)
 #'
-#' # Cohen's d.z for more than one variable with two-sided 95% CI
+#' # Example 3: Cohen's d.z for more than one variable with two-sided 95% CI
 #' # population mean = 3
 #' cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3)
 #'
-#' # Cohen's d.z with two-sided 95% CI
+#' # Example 4: Cohen's d.z with two-sided 95% CI
 #' # population mean = 3, by group1 separately
 #' cohens.d(dat1$x1, mu = 3, group = dat1$group1)
 #'
-#' # Cohen's d.z for more than one variable with two-sided 95% CI
+#' # Example 5: Cohen's d.z for more than one variable with two-sided 95% CI
 #' # population mean = 3, by group1 separately
 #' cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, group = dat1$group1)
 #'
-#' # Cohen's d.z with two-sided 95% CI
+#' # Example 6: Cohen's d.z with two-sided 95% CI
 #' # population mean = 3, split analysis by group1
 #' cohens.d(dat1$x1, mu = 3, split = dat1$group1)
 #'
-#' # Cohen's d.z for more than one variable with two-sided 95% CI
+#' # Example 7: Cohen's d.z for more than one variable with two-sided 95% CI
 #' # population mean = 3, split analysis by group1
 #' cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, split = dat1$group1)
 #'
-#' # Cohen's d.z with two-sided 95% CI
+#' # Example 8: Cohen's d.z with two-sided 95% CI
 #' # population mean = 3, by group1 separately1, split by group2
 #' cohens.d(dat1$x1, mu = 3, group = dat1$group1, split = dat1$group2)
 #'
-#' # Cohen's d.z for more than one variable with two-sided 95% CI
+#' # Example 9: Cohen's d.z for more than one variable with two-sided 95% CI
 #' # population mean = 3, by group1 separately1, split by group2
 #' cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, group = dat1$group1,
 #'          split = dat1$group2)
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Two-sample design
 #'
-#' # Cohen's d.s with two-sided 95% CI
+#' # Example 10: Cohen's d.s with two-sided 95% CI
 #' # weighted pooled SD
 #' cohens.d(x1 ~ group1, data = dat1)
 #'
-#' # Cohen's d.s with two-sided 99% CI
+#' # Example 11: Cohen's d.s with two-sided 99% CI
 #' # weighted pooled SD
 #' cohens.d(x1 ~ group1, data = dat1, conf.level = 0.99)
 #'
-#' # Cohen's d.s with one-sided 99% CI
+#' # Example 12: Cohen's d.s with one-sided 99% CI
 #' # weighted pooled SD
 #' cohens.d(x1 ~ group1, data = dat1, alternative = "greater")
 #'
-#' # Cohen's d.s with two-sided 99% CI
+#' # Example 13: Cohen's d.s with two-sided 99% CI
 #' # weighted pooled SD
 #' cohens.d(x1 ~ group1, data = dat1, conf.level = 0.99)
 #'
-#' # Cohen's d.s with one-sided 95%% CI
+#' # Example 14: Cohen's d.s with one-sided 95%% CI
 #' # weighted pooled SD
 #' cohens.d(x1 ~ group1, data = dat1, alternative = "greater")
 #'
-#' # Cohen's d.s for more than one variable with two-sided 95% CI
+#' # Example 15: Cohen's d.s for more than one variable with two-sided 95% CI
 #' # weighted pooled SD
 #' cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1)
 #'
-#' # Cohen's d with two-sided 95% CI
+#' # Example 16: Cohen's d with two-sided 95% CI
 #' # unweighted SD
 #' cohens.d(x1 ~ group1, data = dat1, weighted = FALSE)
 #'
-#' # Cohen's d.s (aka Hedges' g.s) with two-sided 95% CI
+#' # Example 17: Cohen's d.s (aka Hedges' g.s) with two-sided 95% CI
 #' # weighted pooled SD, with small sample correction factor
 #' cohens.d(x1 ~ group1, data = dat1, correct = TRUE)
 #'
-#' # Cohen's d (aka Hedges' g) with two-sided 95% CI
+#' # Example 18: Cohen's d (aka Hedges' g) with two-sided 95% CI
 #' # Unweighted SD, with small sample correction factor
 #' cohens.d(x1 ~ group1, data = dat1, weighted = FALSE, correct = TRUE)
 #'
-#' # Cohen's d (aka Glass's delta) with two-sided 95% CI
+#' # Example 19: Cohen's d (aka Glass's delta) with two-sided 95% CI
 #' # SD of reference group 1
 #' cohens.d(x1 ~ group1, data = dat1, ref = 1)
 #'
-#' # Cohen's d.s with two-sided 95% CI
+#' # Example 20: Cohen's d.s with two-sided 95% CI
 #' # weighted pooled SD, by group2 separately
 #' cohens.d(x1 ~ group1, data = dat1, group = dat1$group2)
 #'
-#' # Cohen's d.s for more than one variable with two-sided 95% CI
+#' # Example 21: Cohen's d.s for more than one variable with two-sided 95% CI
 #' # weighted pooled SD, by group2 separately
 #' cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
 #'
-#' # Cohen's d.s with two-sided 95% CI
+#' # Example 22: Cohen's d.s with two-sided 95% CI
 #' # weighted pooled SD, split analysis by group2
 #' cohens.d(x1 ~ group1, data = dat1, split = dat1$group2)
 #'
-#' # Cohen's d.s for more than one variable with two-sided 95% CI
+#' # Example 23: Cohen's d.s for more than one variable with two-sided 95% CI
 #' # weighted pooled SD, split analysis by group2
 #' cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
 #'
-#' # Cohen's d.s with two-sided 95% CI
+#' # Example 24: Cohen's d.s with two-sided 95% CI
 #' # weighted pooled SD, by group2 separately, split analysis by group3
 #' cohens.d(x1 ~ group1, data = dat1,
 #'          group = dat1$group2, split = dat1$group3)
 #'
-#' # Cohen's d.s for more than one variable with two-sided 95% CI
+#' # Example 25: Cohen's d.s for more than one variable with two-sided 95% CI
 #' # weighted pooled SD, by group2 separately, split analysis by group3
 #' cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1,
 #'          group = dat1$group2, split = dat1$group3)
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Paired-sample design
 #'
-#' # Cohen's d.z with two-sided 95% CI
+#' # Example 26: Cohen's d.z with two-sided 95% CI
 #' # SD of the difference scores
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE)
 #'
-#' # Cohen's d.z with two-sided 99% CI
+#' # Example 27: Cohen's d.z with two-sided 99% CI
 #' # SD of the difference scores
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE, conf.level = 0.99)
 #'
-#' # Cohen's d.z with one-sided 95% CI
+#' # Example 28: Cohen's d.z with one-sided 95% CI
 #' # SD of the difference scores
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE, alternative = "greater")
 #'
-#' # Cohen's d.rm with two-sided 95% CI
+#' # Example 29: Cohen's d.rm with two-sided 95% CI
 #' # controlling for the correlation between measures
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE)
 #'
-#' # Cohen's d.av with two-sided 95% CI
+#' # Example 30: Cohen's d.av with two-sided 95% CI
 #' # without controlling for the correlation between measures
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE, cor = FALSE)
 #'
-#' # Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
+#' # Example 31: Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
 #' # SD of the differnece scores
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE, correct = TRUE)
 #'
-#' # Cohen's d.rm (aka Hedges' g.rm) with two-sided 95% CI
+#' # Example 32: Cohen's d.rm (aka Hedges' g.rm) with two-sided 95% CI
 #' # controlling for the correlation between measures
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE, correct = TRUE)
 #'
-#' # Cohen's d.av (aka Hedges' g.av) with two-sided 95% CI
+#' # Example 33: Cohen's d.av (aka Hedges' g.av) with two-sided 95% CI
 #' # without controlling for the correlation between measures
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE, cor = FALSE,
 #'          correct = TRUE)
 #'
-#' # Cohen's d.z with two-sided 95% CI
+#' # Example 34: Cohen's d.z with two-sided 95% CI
 #' # SD of the difference scores, by group1 separately
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE, group = dat1$group1)
 #'
-#' # Cohen's d.z with two-sided 95% CI
+#' # Example 35:  Cohen's d.z with two-sided 95% CI
 #' # SD of the difference scores, split analysis by group1
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE, split = dat1$group1)
 #'
-#' # Cohen's d.z with two-sided 95% CI
+#' # Example 36: Cohen's d.z with two-sided 95% CI
 #' # SD of the difference scores, by group1 separately, split analysis by group2
 #' cohens.d(dat1$x1, dat1$x2, paired = TRUE,
 #'          group = dat1$group1, split = dat1$group2)
@@ -721,7 +751,8 @@ cohens.d <- function(x, ...) {
 cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRUE, cor = TRUE,
                              ref = NULL, correct = FALSE, alternative = c("two.sided", "less", "greater"),
                              conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
-                             digits = 2, as.na = NULL, check = TRUE, output = TRUE, ...) {
+                             digits = 2, as.na = NULL, write = NULL, append = TRUE,
+                             check = TRUE, output = TRUE, ...) {
 
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
@@ -819,20 +850,7 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    # Replace user-specified values with missing values
-    xy <- misty::as.na(xy, na = as.na, check = check)
-
-    # Variable with missing values only
-    xy.miss <- vapply(xy, function(y) all(is.na(y)), FUN.VALUE = logical(1))
-    if (isTRUE(any(xy.miss))) {
-
-      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ", paste(names(which(xy.miss)), collapse = ", ")), call. = FALSE)
-
-    }
-
-  }
+  if (isTRUE(!is.null(as.na))) { xy <- .as.na(xy, na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
@@ -905,6 +923,12 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
+
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input output
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
@@ -1122,10 +1146,32 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
                              correct = correct, mu = mu, alternative = alternative,
                              conf.level = conf.level, sort.var = sort.var,
                              na.omit = na.omit, digits = digits, as.na = as.na,
-                             check = check, output = output),
+                             write = NULL, append = TRUE, check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #
@@ -1137,7 +1183,7 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
 }
 
-#_______________________________--______________________________________________
+#_______________________________________________________________________________
 #
 # S3 method for class 'formula' ------------------------------------------------
 
@@ -1146,7 +1192,8 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
                              alternative = c("two.sided", "less", "greater"),
                              conf.level = 0.95, group = NULL, split = NULL,
                              sort.var = FALSE, na.omit = FALSE, digits = 2,
-                             as.na = NULL, check = TRUE, output = TRUE, ...) {
+                             as.na = NULL, write = NULL, append = TRUE,
+                             check = TRUE, output = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
@@ -1415,10 +1462,33 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
                              ref = ref.return, correct = correct, alternative = alternative,
                              conf.level = conf.level, sort.var = sort.var,
                              na.omit = na.omit, digits = digits, as.na = as.na,
-                             check = check, output = output),
+                             write = write, append = append, check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"
+
+
+  #_____________________________________________________________________________
+  #
+  # Write results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

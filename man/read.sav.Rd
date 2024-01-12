@@ -5,13 +5,13 @@
 \title{Read SPSS File}
 \usage{
 read.sav(file, use.value.labels = FALSE, use.missings = TRUE, formats = FALSE,
-         label = TRUE, labels = TRUE, missing = FALSE, widths = FALSE,
+         label = FALSE, labels = FALSE, missing = FALSE, widths = FALSE,
          as.data.frame = TRUE, check = TRUE)
 }
 \arguments{
 \item{file}{a character string indicating the name of the SPSS data file
-with or without file extension '.sav', e.g., \code{"My_SPSS_Data.sav"}
-or \code{"My_SPSS_Data"}.}
+with or without file extension '.sav', e.g., \code{"SPSS_Data.sav"}
+or \code{"SPSS_Data"}.}
 
 \item{use.value.labels}{logical: if \code{TRUE}, variables with value labels are converted into factors.}
 
@@ -19,50 +19,49 @@ or \code{"My_SPSS_Data"}.}
 
 \item{formats}{logical: if \code{TRUE}, variable formats are shown in an attribute for all variables.}
 
-\item{label}{logical: if \code{TRUE} (default), variable labels are shown in an attribute for all variables.}
+\item{label}{logical: if \code{TRUE}, variable labels are shown in an attribute for all variables.}
 
-\item{labels}{logical: if \code{TRUE} (default), value labels are shown in an attribute for all variables.}
+\item{labels}{logical: if \code{TRUE}, value labels are shown in an attribute for all variables.}
 
-\item{missing}{logical: if \code{TRUE}, value labels for user-defined missings are shown in an attribute.
-for all variables.}
+\item{missing}{logical: if \code{TRUE}, value labels for user-defined missings are shown in an attribute for all variables.}
 
 \item{widths}{logical: if \code{TRUE}, widths are shown in an attribute for all variables.}
 
-\item{as.data.frame}{logical: if \code{TRUE} (default), function returns a regular data frame (default);
-if \code{FALSE} function returns a tibble.}
+\item{as.data.frame}{logical: if \code{TRUE} (default), function returns a regular data frame; if \code{FALSE} function returns a tibble.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 Returns a data frame or tibble.
 }
 \description{
 This function calls the \code{read_spss} function in the \pkg{haven} package
-by Hadley Wickham and Evan Miller (2019) to read an SPSS file.
+by Hadley Wickham, Evan Miller and Danny Smith (2023) to read an SPSS file.
 }
 \examples{
 \dontrun{
-# Read SPSS data
+# Example 1: Read SPSS data file
 read.sav("SPSS_Data.sav")
 read.sav("SPSS_Data")
 
-# Read SPSS data, convert variables with value labels into factors
+# Example 2: Read SPSS data file, convert variables with value labels into factors
 read.sav("SPSS_Data.sav", use.value.labels = TRUE)
 
-# Read SPSS data, user-defined missing values are not converted into NAs
+# Example 3: Read SPSS data file, user-defined missing values are not converted into NAs
 read.sav("SPSS_Data.sav", use.missing = FALSE)
 
-# Read SPSS data as tibble
+# Example 4: Read SPSS data file as tibble
 read.sav("SPSS_Data.sav", as.data.frame = FALSE)
 }
 }
 \references{
-Hadley Wickham and Evan Miller (2019). \emph{haven: Import and Export 'SPSS', 'Stata' and 'SAS' Files}.
-R package version 2.1.1.
+Wickham H, Miller E, Smith D (2023). \emph{haven: Import and Export 'SPSS', 'Stata' and 'SAS' Files}.
+R package version 2.5.3. \url{https://CRAN.R-project.org/package=haven}
 }
 \seealso{
-\code{\link{write.sav}}, \code{\link{read.xlsx}}, \code{\link{read.mplus}}
+\code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.xlsx}},
+\code{\link{write.xlsx}}, \code{\link{read.mplus}}, \code{\link{write.mplus}}
 }
 \author{
-Hadley Wickham and Evan Miller
+Hadley Wickham, Evan Miller and Danny Smith
 }

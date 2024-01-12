@@ -23,31 +23,30 @@ package are disabled.}
 \item{output}{logical: logical: if \code{TRUE}, output is shown on the console.}
 }
 \description{
-This function is used to load and attach multiple add-on packages at once.
+This function loads and attaches multiple add-on packages at once.
 }
 \examples{
 \dontrun{
-
-# Load packages using the names of the packages
+# Example 1: Load packages using the names of the packages
 misty::libraries(misty, lme4, lmerTest)
 
-# Load packages using literal character strings
+# Example 2: Load packages using literal character strings
 misty::libraries("misty", "lme4", "lmerTest")
 
-# Load packages using a character vector
+# Example 3: Load packages using a character vector
 misty::libraries(c("misty", "lme4", "lmerTest"))
 
-# Check packages, TRUE = all depends/imports/suggests installed
+# Example 4: Check packages, i.e., TRUE = all depends/imports/suggests installed
 misty::libraries(misty, lme4, lmerTest, output = FALSE)$result$restab
 
-# Depends, FALSE = not installed, TRUE = installed
+# Example 5: Depends, FALSE = not installed, TRUE = installed
 misty::libraries(misty, lme4, lmerTest, output = FALSE)$result$depends
 
-# Imports, FALSE = not installed, TRUE = installed
+# Example 6: Imports, FALSE = not installed, TRUE = installed
 misty::libraries(misty, lme4, lmerTest, output = FALSE)$result$imports
 
-# Suggests, FALSE = not installed, TRUE = installed
-misty::libraries(misty, lme4, lmerTestm output = FALSE)$result$suggests
+# Example 6: Suggests, FALSE = not installed, TRUE = installed
+misty::libraries(misty, lme4, lmerTest, output = FALSE)$result$suggests
 }
 }
 \references{

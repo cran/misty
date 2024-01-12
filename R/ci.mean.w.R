@@ -40,10 +40,19 @@
 #' The adjusted Cousineau-Morey interval is informative about the pattern of
 #' differences between means and is computed by default (i.e., \code{adjust = TRUE}).
 #'
-#' @param x            a matrix or data frame with numeric variables representing
+#' @param ...          a matrix or data frame with numeric variables representing
 #'                     the levels of the within-subject factor, i.e., data are
 #'                     specified in wide-format (i.e., multivariate person level
-#'                     format).
+#'                     format). Alternatively, an expression indicating the variable
+#'                     names in \code{data} e.g., \code{ci.mean.w(x1, x2, x3, data = dat)}.
+#'                     Note that the operators \code{.}, \code{+}, \code{-}, \code{~},
+#'                     \code{:}, \code{::}, and \code{!} can also be used to select
+#'                     variables, see 'Details' in the \code{\link{df.subset}}
+#'                     function.
+#' @param data         a data frame when specifying one or more variables in the
+#'                     argument \code{...}. Note that the argument is \code{NULL}
+#'                     when specifying a matrix or data frame for the argument
+#'                     \code{...}.
 #' @param adjust       logical: if \code{TRUE} (default), difference-adjustment
 #'                     for the Cousineau-Morey within-subjects confidence intervals
 #'                     is applied.
@@ -52,15 +61,22 @@
 #'                     or \code{"less"}.
 #' @param conf.level   a numeric value between 0 and 1 indicating the confidence
 #'                     level of the interval.
-#' @param na.omit       logical: if \code{TRUE}, incomplete cases are removed
-#'                      before conducting the analysis (i.e., listwise deletion).
+#' @param na.omit      logical: if \code{TRUE} (default), incomplete cases are removed
+#'                     before conducting the analysis (i.e., listwise deletion).
 #' @param digits       an integer value indicating the number of decimal places
 #'                     to be used.
-#' @param as.na         a numeric vector indicating user-defined missing values,
-#'                      i.e. these values are converted to \code{NA} before
-#'                      conducting the analysis.
-#' @param check        logical: if \code{TRUE}, argument specification is checked.
-#' @param output       logical: if \code{TRUE}, output is shown on the console.
+#' @param as.na        a numeric vector indicating user-defined missing values,
+#'                     i.e. these values are converted to \code{NA} before
+#'                     conducting the analysis.
+#' @param write        a character string naming a text file with file extension
+#'                     \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                     output into a text file.
+#' @param append       logical: if \code{TRUE} (default), output will be appended
+#'                     to an existing text file with extension \code{.txt} specified
+#'                     in \code{write}, if \code{FALSE} existing text file will be
+#'                     overwritten.
+#' @param check        logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output       logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -93,7 +109,7 @@
 #' \tabular{ll}{
 #' \code{call} \tab function call \cr
 #' \code{type} \tab type of analysis \cr
-#' \code{data} \tab list with the input specified in \code{x}, \code{group}, and \code{split} \cr
+#' \code{data} \tab data frame used for the current analysis \cr
 #' \code{args} \tab specification of function arguments \cr
 #' \code{result} \tab result table \cr
 #' }
@@ -105,25 +121,106 @@
 #'                   time2 = c(4, 3, 6, 5, 8, 6, 7, 3, 4, 5),
 #'                   time3 = c(1, 2, 2, 3, 6, 5, 1, 2, 4, 6))
 #'
-#' # Difference-adjusted Cousineau-Morey confidence intervals
+#' # Example 1: Difference-adjusted Cousineau-Morey confidence intervals
 #' ci.mean.w(dat)
 #'
-#' # Cousineau-Morey confidence intervals
+#' # Example 1: Alternative specification using the 'data' argument
+#' ci.mean.w(., data = dat)
+#'
+#' # Example 2: Cousineau-Morey confidence intervals
 #' ci.mean.w(dat, adjust = FALSE)
-ci.mean.w <- function(x, adjust = TRUE, alternative = c("two.sided", "less", "greater"),
+#'
+#' \dontrun{
+#' # Example 3: Write Results into a text file
+#' ci.mean.w(dat, write = "WS_Confidence_Interval.txt")
+#' }
+ci.mean.w <- function(..., data = NULL, adjust = TRUE,
+                      alternative = c("two.sided", "less", "greater"),
                       conf.level = 0.95, na.omit = TRUE, digits = 2, as.na = NULL,
-                      check = TRUE, output = TRUE) {
+                      write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  # Global variable
+  data.id <- var.formula <- variable <- NULL
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument 'data' ####
+
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+
+    # Extract variables
+    x <- data[, var.names]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame ####
+
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
+  if (isTRUE(!is.null(as.na))) { x[, var.formula] <- .as.na(x[, var.formula], na = as.na) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise deletion ####
+
+  if (isTRUE(any(is.na(x)))) {
+
+    if (isTRUE(na.omit)) {
+
+      # Listwise deletion
+      x <- na.omit(x)
+
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE, immediate. = FALSE)
+
+      # Check if at least 2 cases are available
+      if (isTRUE(nrow(x) < 2L)) { stop("After listwise deletion, there are not enough cases for conducting the analysis.", call. = FALSE) }
+
+    } else {
+
+      # Remove cases with NA on all variables
+      x <- data.id[which(apply(x, 1L, function(y) !all(is.na(y)))), ]
+
+      if (nrow(x) < 2L) { stop("After removing cases with NA on all variables, there are not enough cases for conducting the analysis.", call. = FALSE) }
+
+      if (isTRUE(any(is.na(x)))) {
+
+        warning("Confidence intervals might not be reliable due to the presence of missing data.", call. = FALSE)
+
+      }
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #
@@ -149,6 +246,12 @@ ci.mean.w <- function(x, adjust = TRUE, alternative = c("two.sided", "less", "gr
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
@@ -156,61 +259,7 @@ ci.mean.w <- function(x, adjust = TRUE, alternative = c("two.sided", "less", "gr
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
-
-  # Global variable
-  data.id <- var.formula <- variable <- NULL
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data frame ####
-
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
-
-  if (isTRUE(!is.null(as.na))) {
-
-    # Replace user-specified values with missing values
-    x[, var.formula] <- misty::as.na(x[, var.formula], na = as.na, check = check)
-
-    # Dependent variable with missing values only
-    if (isTRUE(any(sapply(x, function(y) all(is.na(y)))))) { stop("After converting user-missing values into NA, a variable is completely missing.", call. = FALSE) }
-
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Listwise deletion ####
-
-  if (isTRUE(any(is.na(x)))) {
-
-    if (isTRUE(na.omit)) {
-
-      # Listwise deletion
-      x <- na.omit(x)
-
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x)$na.action)), call. = FALSE, immediate. = FALSE)
-
-      # Check if at least 2 cases are available
-      if (isTRUE(nrow(x) < 2L)) { stop("After listwise deletion, there are not enough cases for conducting the analysis.", call. = FALSE) }
-
-    } else {
-
-      # Remove cases with NA on all variables
-      x <- data.id[which(apply(x, 1L, function(y) !all(is.na(y)))), ]
-
-      if (nrow(x) < 2L) { stop("After removing cases with NA on all variables, there are not enough cases for conducting the analysis.", call. = FALSE) }
-
-      if (isTRUE(any(is.na(x)))) {
-
-        warning("Confidence intervals might not be reliable due to the presence of missing data.", call. = FALSE)
-
-      }
-
-    }
-
-  }
+  # Arguments ------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Alternative hypothesis ####
@@ -288,10 +337,33 @@ ci.mean.w <- function(x, adjust = TRUE, alternative = c("two.sided", "less", "gr
                  args = list(adjust = adjust, alternative = alternative,
                              conf.level = conf.level, na.omit = na.omit,
                              digits = digits, as.na = as.na,
-                             check = check, output = output),
+                             write = write, append = append, check = check,
+                             output = output),
                  result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

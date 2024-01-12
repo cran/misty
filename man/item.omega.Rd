@@ -4,20 +4,30 @@
 \alias{item.omega}
 \title{Coefficient Omega, Hierarchical Omega, and Categorical Omega}
 \usage{
-item.omega(x, resid.cov = NULL, type = c("omega", "hierarch", "categ"),
+item.omega(..., data = NULL, rescov = NULL, type = c("omega", "hierarch", "categ"),
            exclude = NULL, std = FALSE, na.omit = FALSE,
            print = c("all", "omega", "item"), digits = 2, conf.level = 0.95,
-           as.na = NULL, write = NULL, check = TRUE, output = TRUE)
+           as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame. Note that at least three items are needed
-for computing omega.}
+\item{...}{a matrix or data frame. Note that at least three items are
+needed for computing omega. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{item.omega(x1, x2, x3, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
 
-\item{resid.cov}{a character vector or a list of character vectors for specifying
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix or data frame for the argument
+\code{...}.}
+
+\item{rescov}{a character vector or a list of character vectors for specifying
 residual covariances when computing coefficient omega, e.g.
-\code{resid.cov = c("x1", "x2")} for specifying a residual
+\code{rescov = c("x1", "x2")} for specifying a residual
 covariance between items \code{x1} and \code{x2} or
-\code{resid.cov = list(c("x1", "x2"), c("x3", "x4"))} for specifying
+\code{rescov = list(c("x1", "x2"), c("x3", "x4"))} for specifying
 residual covariances between items \code{x1} and \code{x2},
 and items \code{x3} and \code{x4}.}
 
@@ -51,20 +61,28 @@ of the interval.}
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{matrix or data frame specified in \code{x}}
+  \item{\code{data}}{data frame used for the current analysis}
   \item{\code{args}}{specification of function arguments}
   \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
   \item{\code{result}}{list with result tables, i.e., \code{alpha} for a table
@@ -101,40 +119,46 @@ dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
                   item3 = c(4, 2, 4, 5, 1, 3, 5, 1),
                   item4 = c(5, 1, 2, 5, 2, 3, 4, 2))
 
-# Compute unstandardized coefficient omega and item statistics
+# Example 1a: Compute unstandardized coefficient omega and item statistics
 item.omega(dat)
 
-# Compute unstandardized coefficient omega with a residual covariance
-# and item statistics
-item.omega(dat, resid.cov = c("item1", "item2"))
+# Example 1b: Alternative specification using the 'data' argument
+item.omega(., data = dat)
 
-# Compute unstandardized coefficient omega with residual covariances
+# Example 2: Compute unstandardized coefficient omega with a residual covariance
 # and item statistics
-item.omega(dat, resid.cov = list(c("item1", "item2"), c("item3", "item4")))
+item.omega(dat, rescov = c("item1", "item2"))
 
-# Compute unstandardized hierarchical omega and item statistics
+# Example 3: Compute unstandardized coefficient omega with residual covariances
+# and item statistics
+item.omega(dat, rescov = list(c("item1", "item2"), c("item1", "item3")))
+
+# Example 4: Compute unstandardized hierarchical omega and item statistics
 item.omega(dat, type = "hierarch")
 
-# Compute categorical omega and item statistics
+# Example 5: Compute categorical omega and item statistics
 item.omega(dat, type = "categ")
 
-# Compute standardized coefficient omega and item statistics
+# Example 6: Compute standardized coefficient omega and item statistics
 item.omega(dat, std = TRUE)
 
-# Compute unstandardized coefficient omega
+# Example 7: Compute unstandardized coefficient omega
 item.omega(dat, print = "omega")
 
-# Compute item statistics
+# Example 8: Compute item statistics
 item.omega(dat, print = "item")
 
-# Compute unstandardized coefficient omega and item statistics while excluding item3
+# Example 9: Compute unstandardized coefficient omega and item statistics while excluding item3
 item.omega(dat, exclude = "item3")
 
-# Summary of the CFA model used to compute coefficient omega
-lavaan::summary(item.omega(dat, output = FALSE)$mod.fit,
+# Example 10: Summary of the CFA model used to compute coefficient omega
+lavaan::summary(item.omega(dat, output = FALSE)$model.fit,
                 fit.measures = TRUE, standardized = TRUE)
 
-# Write Results into a Excel file
+# Example 11a: Write results into a text file
+item.omega(dat, write = "Omega.txt")
+
+# Example 11b: Write results into a Excel file
 item.omega(dat, write = "Omega.xlsx")
 
 result <- item.omega(dat, output = FALSE)

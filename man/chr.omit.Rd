@@ -17,7 +17,7 @@ strings \code{""}.}
 \item{na.omit}{logical: if \code{TRUE}, missing values (\code{NA}) are also
 omitted from the vector.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 Returns a numeric vector, character vector or factor with values or strings
@@ -28,37 +28,37 @@ This function omits user-specified values or strings from a numeric vector,
 character vector or factor.
 }
 \examples{
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # Charater vector
 x.chr <- c("a", "", "c", NA, "", "d", "e", NA)
 
-# Omit character string ""
+# Example 1: Omit character string ""
 chr.omit(x.chr)
 
-# Omit character string "" and missing values (NA)
+# Example 2: Omit character string "" and missing values (NA)
 chr.omit(x.chr, na.omit = TRUE)
 
-# Omit character string "c" and "e"
+# Example 3: Omit character string "c" and "e"
 chr.omit(x.chr, omit = c("c", "e"))
 
-# Omit character string "c", "e", and missing values (NA)
+# Example 4: Omit character string "c", "e", and missing values (NA)
 chr.omit(x.chr, omit = c("c", "e"), na.omit = TRUE)
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # Numeric vector
 x.num <- c(1, 2, NA, 3, 4, 5, NA)
 
-# Omit values 2 and 4
+# Example 5: Omit values 2 and 4
 chr.omit(x.num, omit = c(2, 4))
 
-# Omit values 2, 4, and missing values (NA)
+# Example 6: Omit values 2, 4, and missing values (NA)
 chr.omit(x.num, omit = c(2, 4), na.omit = TRUE)
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # Factor
 x.factor <- factor(letters[1:10])
 
-# Omit factor levels "a", "c", "e", and "g"
+# Example 7: Omit factor levels "a", "c", "e", and "g"
 chr.omit(x.factor, omit = c("a", "c", "e", "g"))
 }
 \seealso{

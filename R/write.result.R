@@ -5,11 +5,11 @@
 #'
 #' Currently the function supports result objects from the function
 #' \code{cor.matrix}, \code{crosstab}, \code{descript}, \code{dominance.manual},
-#' \code{dominance}, \code{freq}, \code{item.alpha}, \code{item.cfa}, \code{item.invar},
-#' \code{item.omega}, \code{result.lca}, \code{multilevel.cfa}, \code{multilevel.cor},
-#' \code{multilevel.descript}, \code{multilevel.fit}, \code{multilevel.invar},
-#' \code{multilevel.omega}, \code{na.coverage}, \code{na.descript}, \code{na.pattern},
-#' \code{robust.coef}, and \code{std.coef}.
+#' \code{dominance}, \code{effsize}, \code{freq}, \code{item.alpha}, \code{item.cfa},
+#' \code{item.invar}, \code{item.omega}, \code{result.lca}, \code{multilevel.cfa},
+#' \code{multilevel.cor}, \code{multilevel.descript}, \code{multilevel.fit},
+#' \code{multilevel.invar}, \code{multilevel.omega}, \code{na.coverage},
+#' \code{na.descript}, \code{na.pattern}, \code{robust.coef}, and \code{std.coef}.
 #'
 #' @param x          misty object (\code{misty.object}) resulting from a misty
 #'                   function supported by the \code{write.result} function (see
@@ -21,101 +21,52 @@
 #'                   \code{both} for upper and lower triangular, \code{lower}
 #'                   for the lower triangular, and \code{upper} for the upper
 #'                   triangular.
-#' @param digits     an integer value indicating the number of decimal places digits
-#'                   to be used for displaying results.
-#' @param p.digits   an integer indicating the number of decimal places to be used
-#'                   for displaying \emph{p}-values.
-#' @param icc.digits an integer indicating the number of decimal places to be used
-#'                   for displaying intraclass correlation coefficients
+#' @param digits     an integer value indicating the number of decimal places
+#'                   digits to be used for displaying results.
+#' @param p.digits   an integer indicating the number of decimal places to be
+#'                   used for displaying \emph{p}-values.
+#' @param icc.digits an integer indicating the number of decimal places to be
+#'                   used for displaying intraclass correlation coefficients
 #'                   (\code{multilevel.descript()} and \code{multilevel.icc()}
 #'                   function).
+#' @param check     logical: if \code{TRUE} (default), argument specification is
+#'                  checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{freq}},
-#' \code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.invar}},
-#' \code{\link{item.omega}}, \code{\link{result.lca}}, \code{\link{multilevel.cfa}},
-#' \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
-#' \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}}, \code{\link{na.coverage}},
-#' \code{\link{na.descript}}, \code{\link{na.pattern}}, \code{\link{robust.coef}}, \code{\link{std.coef}},
+#' \code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{descript}},
+#' \code{\link{dominance.manual}}, \code{\link{dominance}}, \code{\link{effsize}},
+#' \code{\link{freq}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
+#' \code{\link{item.invar}}, \code{\link{item.omega}}, \code{\link{result.lca}},
+#' \code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
+#' \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
+#' \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}},
+#' \code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.pattern}},
+#' \code{\link{robust.coef}}, \code{\link{std.coef}}
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' #--------------------------------------
-#' # cor.matrix() function
-#'
-#' result <- cor.matrix(mtcars, print = "all", output = FALSE)
-#' write.result(result, "Correlation.xlsx")
-#'
-#' #--------------------------------------
-#' # crosstab() function
-#'
-#' result <- crosstab(mtcars[, c("carb", "gear")], print = "all", output = FALSE)
-#' write.result(result, "Crosstab.xlsx")
-#'
-#' #--------------------------------------
-#' # descript() function
-#'
-#' result <- descript(mtcars, output = FALSE)
-#' write.result(result, "Descript.xlsx")
-#'
-#' #--------------------------------------
-#' # freq() function
-#'
-#' result <- freq(mtcars, exclude = 99, output = FALSE)
-#' write.result(result, "Freq.xlsx")
-#'
-#' #--------------------------------------
-#' # item.alpha() function
-#'
-#' result <- item.alpha(attitude, output = FALSE)
-#' write.result(result, "Alpha.xlsx")
-#'
-#' #--------------------------------------
-#' # item.cfa() function
+#' #----------------------------------------------------------------------------
+#' # Example 1: item.cfa() function
 #'
 #' # Load data set "HolzingerSwineford1939" in the lavaan package
 #' data("HolzingerSwineford1939", package = "lavaan")
 #'
-#' result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")],
-#'                    output = FALSE)
+#' result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
 #' write.result(result, "CFA.xlsx")
 #'
-#' #--------------------------------------
-#' # item.invar() function
-#'
-#' result <- item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'                      group = "sex", output = FALSE)
-#' write.result(result, "Invariance.xlsx")
-#'
-#' #--------------------------------------
-#' # item.omega() function
-#'
-#' result <- item.omega(attitude, output = FALSE)
-#' write.result(result, "Omega.xlsx")
-#'
-#' #--------------------------------------
-#' # multilevel.cor() function
+#' #----------------------------------------------------------------------------
+#' # Example 2: multilevel.descript() function
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' result <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-#'                          cluster = Demo.twolevel$cluster, output = FALSE)
-#' write.result(result, "Multilevel_Correlation.xlsx")
-#'
-#' #--------------------------------------
-#' # multilevel.descript() function
-#'
-#' # Load data set "Demo.twolevel" in the lavaan package
-#' data("Demo.twolevel", package = "lavaan")
-#'
-#' result <- multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3")],
-#'                               cluster = Demo.twolevel$cluster, output = FALSE)
+#' result <- multilevel.descript(y1:y3, data = Demo.twolevel, cluster = "cluster",
+#'                               output = FALSE)
 #' write.result(result, "Multilevel_Descript.xlsx")
 #' }
 write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
@@ -137,11 +88,11 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   # Check if input 'x' is supported by the function
   if (isTRUE(!x$type %in% c("cor.matrix", "crosstab", "descript", "dominance.manual",
-                            "dominance", "freq",  "item.alpha", "item.cfa", "item.invar",
-                            "item.omega", "result.lca", "multilevel.cfa", "multilevel.cor",
-                            "multilevel.descript", "multilevel.fit", "multilevel.invar",
-                            "multilevel.omega", "na.coverage", "na.descript", "na.pattern",
-                            "robust.coef", "std.coef"))) {
+                            "dominance", "effsize", "freq", "item.alpha", "item.cfa",
+                            "item.invar", "item.omega", "result.lca", "multilevel.cfa",
+                            "multilevel.cor", "multilevel.descript", "multilevel.fit",
+                            "multilevel.invar", "multilevel.omega", "na.coverage",
+                            "na.descript", "na.pattern", "robust.coef", "std.coef"))) {
 
     stop("This type of misty object is not supported by the function.", call. = FALSE)
 
@@ -185,15 +136,25 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     # Round
     write.object$cor <- round(write.object$cor, digits = digits)
-    write.object$stat <- round(write.object$stat, digits = digits)
-    write.object$p <- round(write.object$p, digits = p.digits)
+
+    if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
+
+      write.object$stat <- round(write.object$stat, digits = digits)
+      write.object$p <- round(write.object$p, digits = p.digits)
+
+    }
 
     # Diagonal
     diag(write.object$cor) <- NA
     diag(write.object$n) <- NA
-    diag(write.object$stat) <- NA
-    diag(write.object$df) <- NA
-    diag(write.object$p) <- NA
+
+    if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
+
+      diag(write.object$stat) <- NA
+      diag(write.object$df) <- NA
+      diag(write.object$p) <- NA
+
+    }
 
     # Lower and/or upper triangular
     if (isTRUE(!".group" %in% colnames(x$data))) {
@@ -202,9 +163,14 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
         write.object$cor[upper.tri(write.object$cor)] <- NA
         write.object$n[upper.tri(write.object$n)] <- NA
-        write.object$stat[upper.tri(write.object$stat)] <- NA
-        write.object$df[upper.tri(write.object$df)] <- NA
-        write.object$p[upper.tri(write.object$p)] <- NA
+
+        if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
+
+          write.object$stat[upper.tri(write.object$stat)] <- NA
+          write.object$df[upper.tri(write.object$df)] <- NA
+          write.object$p[upper.tri(write.object$p)] <- NA
+
+        }
 
       }
 
@@ -212,9 +178,14 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
         write.object$cor[lower.tri(write.object$cor)] <- NA
         write.object$n[lower.tri(write.object$n)] <- NA
-        write.object$stat[lower.tri(write.object$stat)] <- NA
-        write.object$df[lower.tri(write.object$df)] <- NA
-        write.object$p[lower.tri(write.object$p)] <- NA
+
+        if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
+
+          write.object$stat[lower.tri(write.object$stat)] <- NA
+          write.object$df[lower.tri(write.object$df)] <- NA
+          write.object$p[lower.tri(write.object$p)] <- NA
+
+        }
 
       }
 
@@ -230,27 +201,39 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
                                     c(switch(x$args$method, "pearson" = "Pearson Product-Moment",
                                                             "spearman" = "Spearman's Rank-Order",
                                                             "kendall-b" = "Kendall's Tau-b",
-                                                            "kendall-c" = "Kendall-Stuart's Tau-c"),
-                                      ifelse(isTRUE(attr(x$data, "missing")),
-                                             ifelse(isTRUE(x$args$na.omit), "Listwise deletion", "Pairwise deletion"), "No missing data"),
+                                                            "kendall-c" = "Kendall-Stuart's Tau-c",
+                                                            "tetra" = "Tetrachoric",
+                                                            "poly" = "Polychoric"),
+                                      ifelse(isTRUE(attr(x$data, "missing")), ifelse(isTRUE(x$args$na.omit), "Listwise deletion", "Pairwise deletion"), "No missing data"),
                                       ifelse(x$args$p.adj == "none", "None", x$args$p.adj)),
                                       row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
 
-    if (isTRUE(".group" %in% colnames(x$data))) {
+    if (isTRUE(x$args$method %in% c("tetra", "poly"))) { write.object$Info <- write.object$Info[-3L, ] }
 
-      write.object$Info <- rbind(write.object$Info,
-                                 c(paste0("Lower triangular: ", sort(unique(x$data$.group))[1L], ", Upper triangular: ", sort(unique(x$data$.group))[2L]), NA))
+    # Grouping
+    if (isTRUE(".group" %in% colnames(x$data))) { write.object$Info <- rbind(write.object$Info, c(paste0("Lower triangular: ", sort(unique(x$data$.group))[1L], ", Upper triangular: ", sort(unique(x$data$.group))[2L]), NA)) }
+
+    if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
+
+      names(write.object) <- c("Cor", "n", "Stat", "df", "p", "Info")
+
+    } else {
+
+      names(write.object) <- c("Cor", "n", "Info")
 
     }
-
-    names(write.object) <- c("Cor", "n", "Stat", "df", "p", "Info")
 
     # Print
     if (isTRUE(!"cor" %in% x$args$print)) { write.object$Cor <- NULL }
     if (isTRUE(!"n" %in% x$args$print)) { write.object$n <- NULL }
-    if (isTRUE(!"stat" %in% x$args$print)) { write.object$Stat <- NULL }
-    if (isTRUE(!"df" %in% x$args$print)) { write.object$df <- NULL }
-    if (isTRUE(!"p" %in% x$args$print)) { write.object$p <- NULL }
+
+    if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
+
+      if (isTRUE(!"stat" %in% x$args$print)) { write.object$Stat <- NULL }
+      if (isTRUE(!"df" %in% x$args$print)) { write.object$df <- NULL }
+      if (isTRUE(!"p" %in% x$args$print)) { write.object$p <- NULL }
+
+    }
 
   #_____________________________________________________________________________
   #
@@ -732,6 +715,49 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     write.object <- list(general = write.gen, conditional = write.cond, complete = write.comp)
 
     write.object <- write.object[unlist(lapply(write.object, function(y) !is.null(y)))]
+
+  #_____________________________________________________________________________
+  #
+  # Effect Sizes for Categorical Variables, effsize() --------------------------
+
+  }, effsize = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Round ####
+
+    write.object[, colnames(write.object)[!colnames(write.object) %in% c("n", "var")]] <- round(write.object[, colnames(write.object)[!colnames(write.object) %in% c("n", "var")]], digits = digits)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Label ####
+
+    note <- paste0(switch(x$args$type,
+                   phi = {
+
+                      if (isTRUE(x$args$adjust)) { "Adjusted Phi Coefficient: " } else { "Phi Coefficient: " }
+
+                   }, cramer = {
+
+                      if (isTRUE(x$args$adjust)) { "Bias-Corrected Cramer's V: " } else { "Cramer's V: " }
+
+                    }, tschuprow = {
+
+                      if (isTRUE(x$args$adjust)) { "Bias-Corrected Tschuprow's T: " } else { "Tschuprow's T: " }
+
+                    }, cont = {
+
+                      if (isTRUE(x$args$adjust)) { "Adjusted Pearson's Contingency Coefficient: " } else { "Pearson's Contingency Coefficient: " }
+
+                    }, w = { cat(" Cohen's w: ")
+                    }, fei = { " Fei: "}),
+               switch(x$args$alternative,
+                      two.sided = "Two-Sided ",
+                      less = "One-Sided ",
+                      greater = "One-Sided "),
+               paste0(round(x$args$conf.level * 100L, digits = 2L), "% "), "Confidence Interval")
+
+    if (isTRUE(x$args$indep && ncol(x$data) > 2L)) { note <- c(note, paste0("The focal variable is ", colnames(x$data)[1L])) }
+
+    write.object <- list(Effsize = write.object, Note = data.frame(Note = note, row.names = NULL))
 
   #_____________________________________________________________________________
   #
@@ -1695,54 +1721,63 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   }, multilevel.descript = {
 
-    # Round
-    write.object$m.cluster.size <- round(write.object$m.cluster.size, digits = digits)
-    write.object$sd.cluster.size <- round(write.object$sd.cluster.size, digits = digits)
-    write.object$mean <- round(write.object$mean, digits = digits)
-    write.object$var.w <- round(write.object$var.w, digits = digits)
-    write.object$var.b <- round(write.object$var.b, digits = digits)
-    write.object$sd.w <- round(write.object$sd.w, digits = digits)
-    write.object$sd.b <- round(write.object$sd.b, digits = digits)
-    write.object$icc1 <- round(write.object$icc1, digits = icc.digits)
-    write.object$icc2 <- round(write.object$icc2, digits = icc.digits)
-    write.object$deff <- round(write.object$deff, digits = digits)
-    write.object$deff.sqrt <- round(write.object$deff.sqrt, digits = digits)
-    write.object$n.effect <- round(write.object$n.effect, digits = digits)
+    write.object <- data.frame(c("Level 1", "No. of cases", "No. of missing values", "", "Variance Within", "SD Within", "",
+                                 "Level 2", "No. of clusters", "Average cluster size", "SD cluster size", "Min cluster size", "Max cluster size", "", "Mean", "Variance Between", "SD Between", "ICC(1)", "ICC(2)", "",
+                                 "Level 3", "No. of clusters", "Average cluster size", "SD cluster size", "Min cluster size", "Max cluster size", "", "Mean", "Variance Between", "SD Between", "ICC(1)", "ICC(2)", "",
+                                 "Design effect", "Design effect sqrt", "Effective sample size"),
+                               rbind(NA, write.object$no.obs, write.object$no.miss, NA, write.object$var.r, write.object$sd.r, NA,
+                                     NA, write.object$no.cluster.l2, write.object$m.cluster.size.l2, write.object$sd.cluster.size.l2, write.object$min.cluster.size.l2, write.object$max.cluster.size.l2, NA, write.object$mean.x, write.object$var.u, write.object$sd.u, write.object$icc1.l2, write.object$icc2.l2, NA,
+                                     NA, write.object$no.cluster.l3, write.object$m.cluster.size.l3, write.object$sd.cluster.size.l3, write.object$min.cluster.size.l3, write.object$max.cluster.size.l3, NA, write.object$mean.x, write.object$var.v, write.object$sd.v, write.object$icc1.l3, write.object$icc2.l3, NA,
+                                     write.object$deff, write.object$deff.sqrt, write.object$n.effect), fix.empty.names = FALSE, stringsAsFactors = FALSE)
 
-    write.object <- data.frame(cbind(c("No. of cases", "No. of missing values",
-                                       "", "No. of clusters", "Average cluster size", "SD cluster size", "Min cluster size", "Max cluster size",
-                                       "", "Mean", "Variance Within", "Variance Between", "SD Within", "SD Between", "ICC(1)", "ICC(2)",
-                                       "", "Design effect", "Design effect sqrt", "Effective sample size"),
-                                     rbind(write.object$no.obs, write.object$no.miss,
-                                           "", write.object$no.cluster, write.object$m.cluster.size, write.object$sd.cluster.size, write.object$min.cluster.size, write.object$max.cluster.size,
-                                           "", write.object$mean, write.object$var.w, write.object$var.b, write.object$sd.w, write.object$sd.b, write.object$icc1, write.object$icc2,
-                                           "", write.object$deff, write.object$deff.sqrt, write.object$n.effect)), stringsAsFactors = FALSE)
+
+    #### Round
+    for (i in c(5L:6L, 10L:11L, 15L:17L, 23L:24L, 28L:30L, 34L:36L)) { write.object[i, 2L:ncol(write.object)] <- round(write.object[i, 2L:ncol(write.object)], digits = digits) }
+
+    for (i in c(18L:19L, 31L:32L)) { write.object[i, 2L:ncol(write.object)] <- round(write.object[i, 2L:ncol(write.object)], digits = icc.digits) }
 
     #............
-    ### select rows
+    ### Select rows
 
-    if (isTRUE(!"var" %in% x$args$print)) { write.object <- write.object[-c(11L:12L), ] }
-    if (isTRUE(!"sd" %in% x$args$print)) { write.object <- write.object[-c(13L:14L), ] }
+    # One cluster
+    if (isTRUE(x$no.clust == "one")) {
 
-    # All Between variables
-    if (isTRUE(all(is.na(x$result$var.w)))) { write.object <- write.object[-which(misty::chr.trim(write.object[, 1L]) %in% c("Variance Within", "SD Within", "ICC(1)", "ICC(2)", "Design effect", "Design effect sqrt", "Effective sample size")), ] }
+      write.object <- write.object[-c(20L:32L), ]
 
-    #...................
-    ### One variable ####
-    if (isTRUE(length(x$result$no.obs) == 1L)) {
+      # All Between variables
+      if (isTRUE(all(is.na(write.object[18L, -1])))) {
 
-      write.object[, -1L] <- as.numeric(write.object[, -1])
-      names(write.object)[1L] <- ""
+        write.object <- write.object[c(8L:9L, 14L, 15L:17L), ]
 
-    #...................
-    ### More than one variable ####
+      }
+
+    # Two clusters
     } else {
 
-      write.object[, -1L] <- vapply(write.object[, -1L], as.numeric, FUN.VALUE = numeric(nrow(write.object)))
+      write.object <- write.object[-15L, ]
 
-      names(write.object) <- c("", names(x$result$no.obs))
+      # All Between variables
+      if (isTRUE(all(is.na(write.object[5L, -1])))) {
+
+        # Only Level 3 Variables
+        if (isTRUE(all(is.na(write.object[16L, -1])))) {
+
+          write.object <- write.object[c(20L:21L, 26L:29L), ]
+
+        # Level 2 Variables
+        } else {
+
+          write.object <- write.object[c(8L:9L, 14L:16L, 19L:35L), ]
+
+        }
+
+      }
 
     }
+
+    # Variance and/or SD
+    if (isTRUE(!"var" %in% x$args$print)) { write.object <- write.object[-grep("Variance", write.object[, 1L]), ] }
+    if (isTRUE(!"sd" %in% x$args$print)) { write.object <- write.object[-grep("SD", write.object[, 1L]), ] }
 
   #_____________________________________________________________________________
   #
@@ -1987,37 +2022,151 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   }, na.descript = {
 
-    # Round
-    write.object$perc.complete <- round(write.object$perc.complete, digits = digits)
-    write.object$perc.incomplete <- round(write.object$perc.incomplete, digits = digits)
-    write.object$perc.observed.values <- round(write.object$perc.observed.values, digits = digits)
-    write.object$perc.missing.values <- round(write.object$perc.missing.values, digits = digits)
-    write.object$perc.missing.mean <- round(write.object$perc.missing.mean, digits = digits)
-    write.object$perc.missing.sd <- round(write.object$perc.missing.sd, digits = digits)
-    write.object$perc.missing.min <- round(write.object$perc.missing.min, digits = digits)
-    write.object$perc.missing.p25 <- round(write.object$perc.missing.p25, digits = digits)
-    write.object$perc.missing.p75 <- round(write.object$perc.missing.p75, digits = digits)
-    write.object$perc.missing.max <- round(write.object$perc.missing.max, digits = digits)
+    #...................
+    ### Level-1 Variables ####
 
-    write.object <- data.frame(c("No. of cases", "No. of complete cases", "No. of incomplete cases", NA,
-                                 "No. Of values", "No. Of observed values", "No of missing values", NA,
-                                 "No. Of variables", "No. Of missing values across all variables",
-                                 "   Mean", "   SD", "   Minimum", "   P25", "   P75", "   Maximum"),
-                               Freq = c(write.object$no.cases, write.object$no.complete, write.object$no.incomplete, NA,
-                                        write.object$no.values, write.object$no.observed.values, write.object$no.missing.values, NA,
-                                        write.object$no.var, NA,
-                                        write.object$no.missing.mean, write.object$no.missing.sd, write.object$no.missing.min,
-                                        write.object$no.missing.p25, write.object$no.missing.p75, write.object$no.missing.max),
-                               Perc = c(NA, write.object$perc.complete, write.object$perc.incomplete, NA,
-                                        NA, write.object$perc.observed.values, write.object$perc.missing.values, NA,
-                                        NA, NA,
-                                        write.object$perc.missing.mean, write.object$perc.missing.sd, write.object$perc.missing.min,
-                                        write.object$perc.missing.p25, write.object$perc.missing.p75, write.object$perc.missing.max),
-                               row.names = NULL, check.rows = FALSE,
-                               check.names = FALSE, fix.empty.names = FALSE)
+    # At least one Level-1 variable
+    if (isTRUE(any(!is.na(unlist(write.object$L1[-1L]))))) {
 
-    # Frequency table for each variable
-    write.object <- list(Summary = write.object, Table = x$result$table.miss)
+      # Round
+      write.object$L1$no.missing.mean <- round(write.object$L1$no.missing.mean, digits = digits)
+      write.object$L1$no.missing.sd <- round(write.object$L1$no.missing.sd, digits = digits)
+
+      write.object$L1$perc.complete <- round(write.object$L1$perc.complete, digits = digits)
+      write.object$L1$perc.incomplete <- round(write.object$L1$perc.incomplete, digits = digits)
+      write.object$L1$perc.observed.values <- round(write.object$L1$perc.observed.values, digits = digits)
+      write.object$L1$perc.missing.values <- round(write.object$L1$perc.missing.values, digits = digits)
+      write.object$L1$perc.missing.mean <- round(write.object$L1$perc.missing.mean, digits = digits)
+      write.object$L1$perc.missing.sd <- round(write.object$L1$perc.missing.sd, digits = digits)
+      write.object$L1$perc.missing.min <- round(write.object$L1$perc.missing.min, digits = digits)
+      write.object$L1$perc.missing.max <- round(write.object$L1$perc.missing.max, digits = digits)
+
+      write.object$L1$table.miss.l1$pObs <- round(write.object$L1$table.miss.l1$pObs, digits = digits)
+      write.object$L1$table.miss.l1$pNA <- round(write.object$L1$table.miss.l1$pNA, digits = digits)
+
+      write.object.L1 <- data.frame(c("No. of cases", "No. of complete cases", "No. of incomplete cases", NA,
+                                      "No. Of values", "No. Of observed values", "No of missing values", NA,
+                                      "No. Of variables", "No. Of missing values across all variables",
+                                      "   Mean", "   SD", "   Minimum", "   Maximum"),
+                                    Freq = c(write.object$L1$no.cases, write.object$L1$no.complete, write.object$L1$no.incomplete, NA,
+                                             write.object$L1$no.values, write.object$L1$no.observed.values, write.object$L1$no.missing.values, NA,
+                                             write.object$L1$no.var, NA,
+                                             write.object$L1$no.missing.mean, write.object$L1$no.missing.sd,
+                                             write.object$L1$no.missing.min, write.object$L1$no.missing.max),
+                                    Perc = c(NA, write.object$L1$perc.complete, write.object$L1$perc.incomplete, NA,
+                                             NA, write.object$L1$perc.observed.values, write.object$L1$perc.missing.values, NA,
+                                             NA, NA,
+                                             write.object$L1$perc.missing.mean, write.object$L1$perc.missing.sd,
+                                             write.object$L1$perc.missing.min, write.object$L1$perc.missing.max),
+                                    row.names = NULL, check.rows = FALSE,
+                                  check.names = FALSE, fix.empty.names = FALSE)
+
+    # No Level-1 variable
+    } else {
+
+      write.object.L1 <- NULL
+
+    }
+
+    #...................
+    ### Level-2 Variables ####
+
+    # At least one Level-2 variable
+    if (isTRUE(any(!is.na(unlist(write.object$L2[-1L]))))) {
+
+      # Round
+      write.object$L2$no.missing.mean <- round(write.object$L2$no.missing.mean, digits = digits)
+      write.object$L2$no.missing.sd <- round(write.object$L2$no.missing.sd, digits = digits)
+
+      write.object$L2$perc.complete <- round(write.object$L2$perc.complete, digits = digits)
+      write.object$L2$perc.incomplete <- round(write.object$L2$perc.incomplete, digits = digits)
+      write.object$L2$perc.observed.values <- round(write.object$L2$perc.observed.values, digits = digits)
+      write.object$L2$perc.missing.values <- round(write.object$L2$perc.missing.values, digits = digits)
+      write.object$L2$perc.missing.mean <- round(write.object$L2$perc.missing.mean, digits = digits)
+      write.object$L2$perc.missing.sd <- round(write.object$L2$perc.missing.sd, digits = digits)
+      write.object$L2$perc.missing.min <- round(write.object$L2$perc.missing.min, digits = digits)
+      write.object$L2$perc.missing.max <- round(write.object$L2$perc.missing.max, digits = digits)
+
+      write.object$L2$table.miss.l2$pObs <- round(write.object$L2$table.miss.l2$pObs, digits = digits)
+      write.object$L2$table.miss.l2$pNA <- round(write.object$L2$table.miss.l2$pNA, digits = digits)
+
+      write.object.L2 <- data.frame(c("No. of cases", "No. of complete cases", "No. of incomplete cases", NA,
+                                      "No. Of values", "No. Of observed values", "No of missing values", NA,
+                                      "No. Of variables", "No. Of missing values across all variables",
+                                      "   Mean", "   SD", "   Minimum", "   Maximum"),
+                                    Freq = c(write.object$L2$no.cluster.l2, write.object$L2$no.complete, write.object$L2$no.incomplete, NA,
+                                             write.object$L2$no.values, write.object$L2$no.observed.values, write.object$L2$no.missing.values, NA,
+                                             write.object$L2$no.var, NA,
+                                             write.object$L2$no.missing.mean, write.object$L2$no.missing.sd,
+                                             write.object$L2$no.missing.min, write.object$L2$no.missing.max),
+                                    Perc = c(NA, write.object$L2$perc.complete, write.object$L2$perc.incomplete, NA,
+                                             NA, write.object$L2$perc.observed.values, write.object$L2$perc.missing.values, NA,
+                                             NA, NA,
+                                             write.object$L2$perc.missing.mean, write.object$L2$perc.missing.sd,
+                                             write.object$L2$perc.missing.min, write.object$L2$perc.missing.max),
+                                    row.names = NULL, check.rows = FALSE,
+                                    check.names = FALSE, fix.empty.names = FALSE)
+
+    # No Level-2 variable
+    } else {
+
+      write.object.L2 <- NULL
+
+    }
+
+    #...................
+    ### Level-3 Variables ####
+
+    # At least one Level-3 variable
+    if (isTRUE(any(!is.na(unlist(write.object$L3[-1L]))))) {
+
+      # Round
+      write.object$L3$no.missing.mean <- round(write.object$L3$no.missing.mean, digits = digits)
+      write.object$L3$no.missing.sd <- round(write.object$L3$no.missing.sd, digits = digits)
+
+      write.object$L3$perc.complete <- round(write.object$L3$perc.complete, digits = digits)
+      write.object$L3$perc.incomplete <- round(write.object$L3$perc.incomplete, digits = digits)
+      write.object$L3$perc.observed.values <- round(write.object$L3$perc.observed.values, digits = digits)
+      write.object$L3$perc.missing.values <- round(write.object$L3$perc.missing.values, digits = digits)
+      write.object$L3$perc.missing.mean <- round(write.object$L3$perc.missing.mean, digits = digits)
+      write.object$L3$perc.missing.sd <- round(write.object$L3$perc.missing.sd, digits = digits)
+      write.object$L3$perc.missing.min <- round(write.object$L3$perc.missing.min, digits = digits)
+      write.object$L3$perc.missing.max <- round(write.object$L3$perc.missing.max, digits = digits)
+
+      write.object$L3$table.miss.l3$pObs <- round(write.object$L3$table.miss.l3$pObs, digits = digits)
+      write.object$L3$table.miss.l3$pNA <- round(write.object$L3$table.miss.l3$pNA, digits = digits)
+
+      write.object.L3 <- data.frame(c("No. of cases", "No. of complete cases", "No. of incomplete cases", NA,
+                                      "No. Of values", "No. Of observed values", "No of missing values", NA,
+                                      "No. Of variables", "No. Of missing values across all variables",
+                                      "   Mean", "   SD", "   Minimum", "   Maximum"),
+                                    Freq = c(write.object$L3$no.cluster.l3, write.object$L3$no.complete, write.object$L3$no.incomplete, NA,
+                                             write.object$L3$no.values, write.object$L3$no.observed.values, write.object$L3$no.missing.values, NA,
+                                             write.object$L3$no.var, NA,
+                                             write.object$L3$no.missing.mean, write.object$L3$no.missing.sd,
+                                             write.object$L3$no.missing.min, write.object$L3$no.missing.max),
+                                    Perc = c(NA, write.object$L3$perc.complete, write.object$L3$perc.incomplete, NA,
+                                             NA, write.object$L3$perc.observed.values, write.object$L3$perc.missing.values, NA,
+                                             NA, NA,
+                                             write.object$L3$perc.missing.mean, write.object$L3$perc.missing.sd,
+                                             write.object$L3$perc.missing.min, write.object$L3$perc.missing.max),
+                                    row.names = NULL, check.rows = FALSE,
+                                    check.names = FALSE, fix.empty.names = FALSE)
+
+    # No Level-3 variable
+    } else {
+
+      write.object.L3 <- NULL
+
+    }
+
+    #...................
+    ### Write object ####
+
+    write.object <- list(L1.Summary = write.object.L1, L2.Summary = write.object.L2, L3.Summary = write.object.L3,
+                         L1.Table = write.object$L1$table.miss.l1, L2.Table = write.object$L2$table.miss.l2, L3.Table = write.object$L3$table.miss.l3)
+
+    write.object <- write.object[sapply(write.object, function(y) !is.null(y))]
 
   #_____________________________________________________________________________
   #
@@ -2077,18 +2226,6 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   #_____________________________________________________________________________
   #
   # Missing Data Pattern, na.pattern() -----------------------------------------
-
-  }, na.pattern = {
-
-    # Round
-    write.object$perc <- round(write.object$perc, digits = digits)
-    write.object$pNA <- round(write.object$pNA, digits = digits)
-
-    names(write.object)[c(1, 3)] <- c("Pattern", "Perc")
-
-  #_____________________________________________________________________________
-  #
-  # Missing Data Pattern, na.pattern() -----------------------------------------
   }, na.pattern = {
 
     # Round
@@ -2123,7 +2260,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ### Column names ####
 
     colnames(write.object.summary) <- c("Folder", "#Class", "Conv", "#Param", "logLik", "Scale", "LL Rep", "AIC", "CAIC", "BIC", "SABIC",
-                                        misty::rec(tests, "'lmr.lrt' = 'LMR-LRT'; 'almr.lrt' = 'A-LRT'; 'blrt' = 'BLRT'; 'chi.pear' = 'Chi-Pear'; 'chi.lrt' = 'Chi-LRT'; 'entropy' = 'Entropy'"),
+                                        misty::rec(tests, spec = "'lmr.lrt' = 'LMR-LRT'; 'almr.lrt' = 'A-LRT'; 'blrt' = 'BLRT'; 'chi.pear' = 'Chi-Pear'; 'chi.lrt' = 'Chi-LRT'; 'entropy' = 'Entropy'"),
                                         colnames(write.object.summary)[substr(colnames(write.object.summary), 1L, 1L) == "p"])
 
     #...................
@@ -2219,7 +2356,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Heteroscedasticity-Consistent Standard Errors, coef.robust() ---------------
+  # Heteroscedasticity-Consistent Standard Errors, robust.coef() ---------------
   }, robust.coef = {
 
     #...................
@@ -2266,7 +2403,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Standardized Coefficients, coef.std() --------------------------------------
+  # Standardized Coefficients, std.coef() --------------------------------------
   }, std.coef = {
 
     #...................

@@ -4,12 +4,22 @@
 \alias{item.scores}
 \title{Compute Scale Scores}
 \usage{
-item.scores(x, fun = c("mean", "sum", "median", "var", "sd", "min", "max"),
-            prorated = TRUE, p.avail = NULL, n.avail = NULL, as.na = NULL,
-            check = TRUE)
+item.scores(..., data = NULL, fun = c("mean", "sum", "median", "var", "sd", "min", "max"),
+            prorated = TRUE, p.avail = NULL, n.avail = NULL, append = TRUE,
+            name = "scores", as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame with numeric vectors.}
+\item{...}{a matrix or data frame with numeric vectors. Alternatively, an
+expression indicating the variable names in \code{data} e.g.,
+\code{item.scores(x1, x2, x3, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix or data frame for the argument
+\code{...}.}
 
 \item{fun}{a character string indicating the function used to compute
 scale scores, default: \code{"mean"}.}
@@ -36,11 +46,18 @@ with at least one item response. Note that either argument
 \code{p.avail} or \code{n.avail} is used to specify the proration
 criterion.}
 
+\item{append}{logical: if \code{TRUE} (default), a variable with scale scores
+is appended to the data frame specified in the argument \code{data}.}
+
+\item{name}{a character string indicating the names of the variable appended
+to the data frame specified in the arguement \code{data} when
+\code{append = TRUE}. By default, the variable is named \code{scores}.}
+
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 Returns a numeric vector with the same length as \code{nrow(x)} containing (prorated)
@@ -73,20 +90,23 @@ dat <- data.frame(item1 = c(3,  2,  4, 1,  5, 1,  3, NA),
                   item4 = c(4,  2,  4, 4, NA, 2, NA, NA),
                   item5 = c(3, NA, NA, 2,  4, 3, NA,  3))
 
-# Prorated mean scale scores
+# Example 1a: Prorated mean scale scores
 item.scores(dat)
 
-# Prorated standard deviation scale scores
+# Example 1b: Alternative specification using the 'data' argument
+item.scores(., data = dat)
+
+# Example 2: Prorated standard deviation scale scores
 item.scores(dat, fun = "sd")
 
-# Sum scale scores without proration
+# Example 3: Sum scale scores without proration
 item.scores(dat, fun = "sum", prorated = FALSE)
 
-# Prorated mean scale scores,
+# Example 4: Prorated mean scale scores,
 # minimum proportion of available item responses = 0.8
 item.scores(dat, p.avail = 0.8)
 
-# Prorated mean scale scores,
+# Example 5: Prorated mean scale scores,
 # minimum number of available item responses = 3
 item.scores(dat, n.avail = 3)
 }

@@ -4,7 +4,7 @@
 \alias{multilevel.cfa}
 \title{Multilevel Confirmatory Factor Analysis}
 \usage{
-multilevel.cfa(x, cluster, model = NULL, rescov = NULL,
+multilevel.cfa(..., data = NULL, cluster, model = NULL, rescov = NULL,
                model.w = NULL, model.b = NULL, rescov.w = NULL, rescov.b = NULL,
                const = c("within", "shared", "config", "shareconf"),
                fix.resid = NULL, ident = c("marker", "var", "effect"),
@@ -13,25 +13,35 @@ multilevel.cfa(x, cluster, model = NULL, rescov = NULL,
                print = c("all", "summary", "coverage", "descript", "fit", "est",
                          "modind", "resid"),
                mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3,
-               as.na = NULL, write = NULL, check = TRUE, output = TRUE)
+               as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame. If \code{model}, \code{model.w},
+\item{...}{a matrix or data frame. If \code{model}, \code{model.w},
 and \code{model.b} are \code{NULL}, multilevel confirmatory
 factor analysis based on a measurement model with one factor
 labeled \code{wf} at the Within level and one factor labeled
 \code{bf} at the Between level comprising all variables in
 the matrix or data frame is conducted. Note that the cluster
-variable specified in \code{cluster} is excluded from \code{x}
+variable specified in \code{cluster} is excluded from \code{...}
 when specifying the argument \code{cluster} using the variable
 name of the cluster variable. If \code{model} or \code{mode.w}
 and \code{model.b} is specified, the matrix or data frame
 needs to contain all variables used in the \code{model}
-argument(s).}
+argument(s). Alternatively, an expression indicating
+the variable names in \code{data}.
+Note that the operators \code{.}, \code{+}, \code{-},
+\code{~}, \code{:}, \code{::}, and \code{!} can also be
+used to select variables, see 'Details' in the
+\code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{cluster}{either a character string indicating the variable name of
-the cluster variable in 'x' or a vector representing the
-nested grouping structure (i.e., group or cluster variable).}
+the cluster variable in \code{...} or \code{data}, or a
+vector representing the nested grouping structure (i.e.,
+group or cluster variable).}
 
 \item{model}{a character vector for specifying the same factor structure
 with one factor at the Within and Between Level, or a list
@@ -171,21 +181,29 @@ i.e. these values are converted to \code{NA} before conducting
 the analysis. Note that \code{as.na()} function is only
 applied to \code{x} but not to \code{cluster}.}
 
-\item{write}{a character string for writing the results into a Excel
-file naming a file with or without file extension '.xlsx',
-e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification, convergence
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification, convergence
 and model identification is checked.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
-\item{\code{data}}{matrix or data frame specified in \code{x}}
+\item{\code{data}}{data frame used for the current analysis}
 \item{\code{args}}{specification of function arguments}
 \item{\code{model}}{specified model}
 \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
@@ -215,58 +233,61 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#---------------------------
+#----------------------------------------------------------------------------
 # Model specification using 'x' for a one-factor model
 # with the same factor structure with one factor at the Within and Between Level
 
 #..........
 # Cluster variable specification
 
-# Cluster variable 'cluster' in 'x'
+# Example 1a: Cluster variable 'cluster' in 'x'
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4", "cluster")], cluster = "cluster")
 
-# Cluster variable 'cluster' not in 'x'
+# Example 1b: Cluster variable 'cluster' not in 'x'
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
+
+# Example 1c: Alternative specification using the 'data' argument
+multilevel.cfa(y1:y4, data = Demo.twolevel, cluster = "cluster")
 
 #..........
 # Type of construct
 
-# Within-cluster constructs
+# Example 2a: Within-cluster constructs
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
                const = "within")
 
-# Shared cluster-level construct
+# Example 2b: Shared cluster-level construct
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
                const = "shared")
 
-# Configural cluster construct (default)
+# Example 2c: Configural cluster construct (default)
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
                const = "config")
 
-# Simultaneous shared and configural cluster construct
+# Example 2d: Simultaneous shared and configural cluster construct
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
                const = "shareconf")
 
 #..........
 # Residual covariances at the Within level
 
-# Residual covariance between 'y1' and 'y3'
+# Example 3a: Residual covariance between 'y1' and 'y3'
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
                rescov = c("y1", "y3"))
 
-# Residual covariance between 'y1' and 'y3', and 'y2' and 'y4'
+# Example 3b: Residual covariance between 'y1' and 'y3', and 'y2' and 'y4'
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
                rescov = list(c("y1", "y3"), c("y2", "y4")))
 
 #..........
 # Residual variances at the Between level fixed at 0
 
-# All residual variances fixed at 0
+# Example 4a: All residual variances fixed at 0
 # i.e., strong factorial invariance across clusters
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
                fix.resid = "all")
 
-# Fesidual variances of 'y1', 'y2', and 'y4' fixed at 0
+# Example 4b: Fesidual variances of 'y1', 'y2', and 'y4' fixed at 0
 # i.e., partial strong factorial invariance across clusters
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
                fix.resid = c("y1", "y2", "y4"))
@@ -274,12 +295,12 @@ multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolev
 #..........
 # Print all results
 
-# Set minimum value for modification indices at 1
+# Example 5: Set minimum value for modification indices to 1
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-               print = "all", min.value = 1)
+               print = "all", mod.minval = 1)
 
 #..........
-# lavaan model and summary of the estimated model
+# Example 6: lavaan model and summary of the estimated model
 
 mod <- multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
                       output = FALSE)
@@ -293,7 +314,11 @@ lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 #..........
 # Write results
 
-# Assign results into an object and write results into an Excel file
+# Example 7a: Assign results into an object and write results into an Excel file
+mod <- multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
+                      print = "all", write = "Multilevel_CFA.txt", output = FALSE)
+
+# Example 7b: Assign results into an object and write results into an Excel file
 mod <- multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
                       print = "all", output = FALSE)
 
@@ -304,64 +329,64 @@ write.result(mod, "Multilevel_CFA.xlsx")
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
                print = "all", write = "Multilevel_CFA.xlsx")
 
-#---------------------------
+#----------------------------------------------------------------------------
 # Model specification using 'model' for one or multiple factor model
 # with the same factor structure at the Within and Between Level
 
-# One-factor model
+# Example 8a: One-factor model
 multilevel.cfa(Demo.twolevel, cluster = "cluster", model = c("y1", "y2", "y3", "y4"))
 
-# Two-factor model
+# Example 8b: Two-factor model
 multilevel.cfa(Demo.twolevel, cluster = "cluster",
                model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
 
-# Two-factor model with user-specified labels for the factors
+# Example 8c: Two-factor model with user-specified labels for the factors
 multilevel.cfa(Demo.twolevel, cluster = "cluster",
                model = list(factor1 = c("y1", "y2", "y3"), factor2 = c("y4", "y5", "y6")))
 
 #..........
 # Type of construct
 
-# Within-cluster constructs
+# Example 9a: Within-cluster constructs
 multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "within",
                model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
 
-# Shared cluster-level construct
+# Example 9b: Shared cluster-level construct
 multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "shared",
                model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
 
-# Configural cluster construct (default)
+# Example 9c: Configural cluster construct (default)
 multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "config",
                model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
 
-# Simultaneous shared and configural cluster construct
+# Example 9d: Simultaneous shared and configural cluster construct
 multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "shareconf",
                model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
 
 #..........
 # Residual covariances at the Within level
 
-# Residual covariance between 'y1' and 'y4' at the Within level
+# Example 10a: Residual covariance between 'y1' and 'y4' at the Within level
 multilevel.cfa(Demo.twolevel, cluster = "cluster",
                model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
                rescov = c("y1", "y4"))
 
-# Fix all residual variances at 0
+# Example 10b: Fix all residual variances at 0
 # i.e., strong factorial invariance across clusters
 multilevel.cfa(Demo.twolevel, cluster = "cluster",
                model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
                fix.resid = "all")
 
-#---------------------------
+#----------------------------------------------------------------------------
 # Model specification using 'model.w' and 'model.b' for one or multiple factor model
 # with different factor structure at the Within and Between Level
 
-# Two-factor model at the Within level and one-factor model at the Between level
+# Example 11a: Two-factor model at the Within level and one-factor model at the Between level
 multilevel.cfa(Demo.twolevel, cluster = "cluster",
                model.w = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
                model.b = c("y1", "y2", "y3", "y4", "y5", "y6"))
 
-# Residual covariance between 'y1' and 'y4' at the Within level
+# Example 11b: Residual covariance between 'y1' and 'y4' at the Within level
 # Residual covariance between 'y5' and 'y6' at the Between level
 multilevel.cfa(Demo.twolevel, cluster = "cluster",
                model.w = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),

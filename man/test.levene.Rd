@@ -5,14 +5,14 @@
 \title{Levene's Test for Homogeneity of Variance}
 \usage{
 test.levene(formula, data, method = c("median", "mean"), conf.level = 0.95,
-            hypo = TRUE, descript = TRUE, plot = TRUE, violin.alpha = 0.3,
+            hypo = TRUE, descript = TRUE, plot = FALSE, violin.alpha = 0.3,
             violin.trim = FALSE, box = TRUE, box.alpha = 0.2, box.width = 0.2,
             jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
             jitter.height = 0, jitter.alpha = 0.2, gray = FALSE,
             start = 0.9, end = 0.4, color = NULL, xlab = NULL, ylab = NULL,
             ylim = NULL, breaks = ggplot2::waiver(), title = "",
             subtitle = "", digits = 2, p.digits = 3, as.na = NULL,
-            check = TRUE, output = TRUE)
+            write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{formula}{a formula of the form \code{y ~ group} where \code{y} is
@@ -33,10 +33,10 @@ the Levene's test based on the arithmetic mean.}
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence
 level of the interval.}
 
-\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis
+\item{hypo}{logical: if \code{TRUE} (default), null and alternative hypothesis
 are shown on the console.}
 
-\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown
+\item{descript}{logical: if \code{TRUE} (default), descriptive statistics are shown
 on the console.}
 
 \item{plot}{logical: if \code{TRUE}, a plot showing violin plots with
@@ -104,9 +104,18 @@ to be used for displaying the \emph{p}-value.}
 i.e. these values are converted to \code{NA} before
 conducting the analysis.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -137,17 +146,20 @@ deviations of observations from the median.
 dat <- data.frame(y = c(2, 3, 4, 5, 5, 7, 8, 4, 5, 2, 4, 3),
                   group = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3))
 
-# Levene's test based on the median with 95\% confidence interval
+# Example 1: Levene's test based on the median with 95% confidence interval
 test.levene(y ~ group, data = dat)
 
-# Levene's test based on the arithmetic mean  with 95\% confidence interval
+# Example 2: Levene's test based on the arithmetic mean  with 95% confidence interval
 test.levene(y ~ group, data = dat, method = "mean")
 
-# Levene's test based on the median with 99\% confidence interval
+# Example 3: Levene's test based on the median with 99% confidence interval
 test.levene(y ~ group, data = dat, conf.level = 0.99)
 
 \dontrun{
-# Levene's test based on the median with 95\% confidence interval
+# Example 4: Write results into a text file
+test.levene(y ~ group, data = dat, write = "Levene.txt")
+
+# Example 5: Levene's test based on the median with 95% confidence interval
 # plot results
 test.levene(y ~ group, data = dat, plot = TRUE)
 
@@ -157,12 +169,12 @@ library(ggplot2)
 # Save plot, ggsave() from the ggplot2 package
 ggsave("Levene-test.png", dpi = 600, width = 5, height = 6)
 
-# Levene's test based on the median with 95\% confidence interval
+# Levene's test based on the median with 95% confidence interval
 # extract plot
 p <- test.levene(y ~ group, data = dat, output = FALSE)$plot
 p
 
-# Extract data
+# Example 6: Extract data
 plotdat <- test.levene(y ~ group, data = dat, output = FALSE)$data
 
 # Draw violin and boxplots in line with the default setting of test.levene()

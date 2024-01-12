@@ -22,7 +22,7 @@
 #'                      names extracted from the Mplus input or output file only.
 #' @param fileEncoding  character string declaring the encoding used on \code{file}
 #'                      so the character data can be re-encoded. See \code{\link{df.sort}}.
-#' @param check         logical: if \code{TRUE}, argument specification is checked.
+#' @param check         logical: if \code{TRUE} (default), argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -32,8 +32,8 @@
 #' Muthen & Muthen.
 #'
 #' @seealso
-#' \code{\link{run.mplus}}, \code{\link{write.mplus}}, \code{\link{read.sav}},
-#' \code{\link{read.xlsx}}
+#' \code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.sav}},
+#' \code{\link{write.sav}}, \code{\link{read.xlsx}}, \code{\link{write.xlsx}}
 #'
 #' @return
 #' A data frame containing a representation of the data in the file.
@@ -42,14 +42,14 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Read Mplus data file and variable names extracted from the Mplus input file
+#' # Example 1: Read Mplus data file and variable names extracted from the Mplus input file
 #' dat <- read.mplus("Mplus_Data.dat", input = "Mplus_Input.inp")
 #'
-#' # Read Mplus data file and variable names extracted from the Mplus input file,
+#' # Example 2: Read Mplus data file and variable names extracted from the Mplus input file,
 #' # print variable names on the console
 #' dat <- read.mplus("Mplus_Data.dat", input = "Mplus_Input.inp", print = TRUE)
 #'
-#' # Read variable names extracted from the Mplus input file
+#' # Example 3: Read variable names extracted from the Mplus input file
 #' varnames <- read.mplus(input = "Mplus_Input.inp", return.var = TRUE)
 #' }
 read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var = FALSE,

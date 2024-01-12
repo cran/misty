@@ -3,9 +3,18 @@
 #' This function computes summary statistics for one or more variables, optionally
 #' by a grouping and/or split variable.
 #'
-#' @param x        a numeric vector, matrix or data frame with numeric variables,
-#'                 i.e., factors and character variables are excluded from \code{x}
-#'                 before conducting the analysis.
+#' @param ...      a numeric vector, matrix or data frame with numeric variables,
+#'                 i.e., factors and character variables are excluded from \code{...}
+#'                 before conducting the analysis. Alternatively, an expression
+#'                 indicating the variable names in \code{data} e.g.,
+#'                 \code{descript(x1, x2, x3, data = dat)}. Note that the operators
+#'                 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                 and \code{!} can also be used to select variables, see 'Details'
+#'                 in the \code{\link{df.subset}} function.
+#' @param data     a data frame when specifying one or more variables in the
+#'                 argument \code{...}. Note that the argument is \code{NULL}
+#'                 when specifying a numeric vector, matrix, or data frame for
+#'                 the argument \code{...}.
 #' @param print    a character vector indicating which statistical measures to be
 #'                 printed on the console, i.e. \code{n} (number of observations),
 #'                 \code{nNA} (number of missing values), \code{pNA} (percentage of
@@ -18,7 +27,11 @@
 #'                 and \code{kurt} (excess kurtosis). The default setting is
 #'                 \code{print = ("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")}.
 #' @param group    a numeric vector, character vector or factor as grouping variable.
+#'                 Alternatively, a character string indicating the variable name
+#'                 of the grouping variable in \code{data} can be specified.
 #' @param split    a numeric vector, character vector or factor as split variable.
+#'                 Alternatively, a character string indicating the variable name
+#'                 of the split variable in \code{data} can be specified.
 #' @param sort.var logical: if \code{TRUE}, output table is sorted by variables when
 #'                 specifying \code{group}.
 #' @param na.omit  logical: if \code{TRUE}, incomplete cases are removed before
@@ -28,12 +41,19 @@
 #' @param as.na    a numeric vector indicating user-defined missing values,
 #'                 i.e. these values are converted to \code{NA} before conducting
 #'                 the analysis. Note that \code{as.na()} function is only applied
-#'                 to \code{x}, but not to \code{group} or \code{split}.
-#' @param write     a character string for writing the results into a Excel file
-#'                  naming a file with or without file extension '.xlsx', e.g.,
-#'                  \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check    logical: if \code{TRUE}, argument specification is checked.
-#' @param output   logical: if \code{TRUE}, output is shown on the console.
+#'                 to \code{...}, but not to \code{group} or \code{split}.
+#' @param write    a character string naming a file for writing the output into
+#'                 either a text file with file extension \code{".txt"} (e.g.,
+#'                 \code{"Output.txt"}) or Excel file with file extention
+#'                 \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'                 name does not contain any file extension, an Excel file will
+#'                 be written.
+#' @param append   logical: if \code{TRUE} (default), output will be appended
+#'                 to an existing text file with extension \code{.txt} specified
+#'                 in \code{write}, if \code{FALSE} existing text file will be
+#'                 overwritten.
+#' @param check    logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output   logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -54,7 +74,7 @@
 #' \tabular{ll}{
 #' \code{call} \tab function call \cr
 #' \code{type} \tab type of analysis \cr
-#' \code{data} \tab list with the input specified in \code{x}, \code{group}, and
+#' \code{data} \tab list with the input specified in \code{...}, \code{group}, and
 #'                  \code{split} \cr
 #' \code{args} \tab specification of function arguments \cr
 #' \code{result} \tab list with result tables \cr
@@ -63,72 +83,114 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
-#'                   group2 = c(1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2),
-#'                   x1 = c(3, 1, 4, 2, 5, 3, 2, 4, NA, 4, 5, 3),
-#'                   x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 5, 1, 3, 6),
-#'                   x3 = c(7, 8, 5, 6, 4, NA, 8, NA, 6, 5, 8, 6))
+#' # Example 1a: Descriptive statistics for 'mpg'
+#' descript(mtcars$mpg)
 #'
-#' # Descriptive statistics for x1
-#' descript(dat$x1)
+#' # Example 1b: Alternative specification using the 'data' argument
+#' descript(mpg, data = mtcars)
 #'
-#' # Descriptive statistics for x1, print results with 3 digits
-#' descript(dat$x1, digits = 3)
+#' # Example 2: Descriptive statistics, print results with 3 digits
+#' descript(mtcars$mpg, digits = 3)
 #'
-#' # Descriptive statistics for x1, convert value 4 to NA
-#' descript(dat$x1, as.na = 4)
+#' # Example 3: Descriptive statistics for x1, print all available statistical measures
+#' descript(mtcars$mpg, print = "all")
 #'
-#' # Descriptive statistics for x1, print all available statistical measures
-#' descript(dat$x1, print = "all")
+#' # Example 4a: Descriptive statistics for 'mpg', 'cyl', and 'disp'
+#' descript(mtcars[, c("mpg", "cyl", "disp")])
 #'
-#' # Descriptive statistics for x1, x2, and x3
-#' descript(dat[, c("x1", "x2", "x3")])
+#' # Example 4b: Alternative specification using the 'data' argument
+#' descript(mpg:disp, data = mtcars)
 #'
-#' # Descriptive statistics for x1, x2, and x3,
-#' # listwise deletion for missing data
-#' descript(dat[, c("x1", "x2", "x3")], na.omit = TRUE)
+#' # Example 5a: Descriptive statistics, analysis by 'vs' separately
+#' descript(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 #'
-#' # Descriptive statistics for x1, x2, and x3,
-#' # analysis by group1 separately
-#' descript(dat[, c("x1", "x2", "x3")], group = dat$group1)
+#' # Example 5b: Alternative specification using the 'data' argument
+#' descript(mpg:disp, data = mtcars, group = "vs")
 #'
-#' # Descriptive statistics for x1, x2, and x3,
-#' # analysis by group1 separately, sort by variables
-#' descript(dat[, c("x1", "x2", "x3")], group = dat$group1, sort.var = TRUE)
+#' # Example 6: Descriptive statistics, analysis by 'vs' separately, sort by variables
+#' descript(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, sort.var = TRUE)
 #'
-#' # Descriptive statistics for x1, x2, and x3,
-#' # split analysis by group1
-#' descript(dat[, c("x1", "x2", "x3")], split = dat$group1)
+#' # Example 7: Descriptive statistics, split analysis by 'am'
+#' descript(mtcars[, c("mpg", "cyl", "disp")], split = mtcars$am)
 #'
-#' # Descriptive statistics for x1, x2, and x3,
-#' # analysis by group1 separately, split analysis by group2
-#' descript(dat[, c("x1", "x2", "x3")], group = dat$group1, split = dat$group2)
+#' # Example 8a: Descriptive statistics,analysis by 'vs' separately, split analysis by 'am'
+#' descript(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, split = mtcars$am)
+#'
+#' # Example 8b: Alternative specification using the 'data' argument
+#' descript(mpg:disp, data = mtcars, group = "vs", split = "am")
 #'
 #' \dontrun{
-#' # Write Results into a Excel file
-#' descript(dat[, c("x1", "x2", "x3")], write = "Descript.xlsx")
+#' # Example 11a: Write Results into a text file
+#' descript(mtcars[, c("mpg", "cyl", "disp")], write = "Descript.txt")
 #'
-#' result <- descript(dat[, c("x1", "x2", "x3")], output = FALSE)
+#' # Example 11b: Write Results into a Excel file
+#' descript(mtcars[, c("mpg", "cyl", "disp")], write = "Descript.xlsx")
+#'
+#' result <- descript(mtcars[, c("mpg", "cyl", "disp")], output = FALSE)
 #' write.result(result, "Descript.xlsx")
 #' }
-descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
+descript <- function(..., data = NULL,
+                     print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
                      group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-                     digits = 2, as.na = NULL, write = NULL, check = TRUE, output = TRUE) {
+                     digits = 2, as.na = NULL, write = NULL, append = TRUE,
+                     check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument 'data' ####
+
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, group = group, split = split, check.chr = "a numeric vector, matrix or data frame")
+
+    # Extract data
+    x <- data[, var.names]
+
+    # Grouping variable
+    if (isTRUE(!is.null(group))) { group <- data[, group] }
+
+    # Splitting variable
+    if (isTRUE(!is.null(split))) { split <- data[, split] }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+    # Data and cluster
+    var.group <- .var.group(data = x, group = group, split = split)
+
+    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+    if (isTRUE(!is.null(var.group$group))) { group <- var.group$group }
+    if (isTRUE(!is.null(var.group$split))) { group <- var.group$split }
+
+  }
+
+  # Convert 'x' into a vector when only one variable specified in 'x'
+  if (isTRUE(ncol(data.frame(x)) == 1L)) { x <- unlist(x, use.names = FALSE) }
 
   # Check 'group'
   if (isTRUE(!is.null(group))) {
-
-    if (ncol(data.frame(group)) != 1L) { stop("More than one grouping variable specified for the argument 'group'.",call. = FALSE) }
 
     if (nrow(data.frame(group)) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'group' does not match with 'x'.", call. = FALSE) }
 
@@ -139,8 +201,6 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
 
   # Check 'split'
   if (isTRUE(!is.null(split))) {
-
-    if (ncol(data.frame(split)) != 1L) { stop("More than one split variable specified for the argument 'split'.",call. = FALSE) }
 
     if (nrow(data.frame(split)) != nrow(data.frame(x))) { stop("Length of the vector or factor specified in the argument 'split' does not match with 'x'.", call. = FALSE) }
 
@@ -161,20 +221,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    # Replace user-specified values with missing values
-    x <- misty::as.na(x, na = as.na, check = check)
-
-    # Variable with missing values only
-    x.miss <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-    if (isTRUE(any(x.miss))) {
-
-      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
-
-    }
-
-  }
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
@@ -230,8 +277,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
       x <- x.split[, -grep("split", names(x.split)), drop = FALSE]
       split <- x.split$split
 
-      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ",
-                     length(attributes(x.split)$na.action)), call. = FALSE)
+      warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x.split)$na.action)), call. = FALSE)
 
     }
 
@@ -307,6 +353,9 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
 
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
@@ -363,7 +412,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
   ## Grouping, No Split ####
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    object.group <- lapply(split(x, f = group), function(y) misty::descript(y, group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
+    object.group <- lapply(split(x, f = group), function(y) misty::descript(y, data = NULL, group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
                                                                             as.na = as.na, check = FALSE, output = FALSE)$result)
 
     result <- data.frame(group = rep(names(object.group), each = ncol(x)),
@@ -375,7 +424,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
-                     function(y) misty::descript(y, group = NULL, split = NULL, sort.var = sort.var,
+                     function(y) misty::descript(y, data = NULL, group = NULL, split = NULL, sort.var = sort.var,
                                                  na.omit = na.omit, as.na = as.na, check = FALSE,
                                                  output = FALSE)$result)
 
@@ -384,7 +433,7 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split),
-                     function(y) misty::descript(y[, -grep("group", names(y))], group = y$group, split = NULL,
+                     function(y) misty::descript(y[, -grep("group", names(y))], data = NULL, group = y$group, split = NULL,
                                                  sort.var = sort.var, na.omit = na.omit, as.na = as.na,
                                                  check = FALSE, output = FALSE)$result)
 
@@ -398,7 +447,8 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
                  type = "descript",
                  data = list(x = x, group = group, split = split),
                  args = list(print = print, sort.var = sort.var, na.omit = na.omit,
-                             digits = digits, as.na = as.na, check = check, output = output),
+                             digits = digits, as.na = as.na, write = write, append = append,
+                             check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"
@@ -407,7 +457,34 @@ descript <- function(x, print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", 
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #

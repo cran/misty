@@ -36,10 +36,10 @@
 #' @param alternative   a character string specifying the alternative hypothesis,
 #'                      must be one of \code{"two.sided"} (default), \code{"greater"}
 #'                      or \code{"less"}.
-#' @param hypo          logical: if \code{TRUE}, null and alternative hypothesis are
-#'                      shown on the console.
-#' @param descript      logical: if \code{TRUE}, descriptive statistics are shown
-#'                      on the console.
+#' @param hypo          logical: if \code{TRUE} (default), null and alternative
+#'                      hypothesis are shown on the console.
+#' @param descript      logical: if \code{TRUE} (default), descriptive statistics
+#'                      are shown on the console.
 #' @param effsize       logical: if \code{TRUE}, effect size measure Cohen's d is
 #'                      shown on the console.
 #' @param conf.level    a numeric value between 0 and 1 indicating the confidence
@@ -78,25 +78,34 @@
 #'                      data points.
 #' @param title         a character string specifying the text for the title for
 #'                      the plot.
-#' @param subtitle      a character string specifying the text for the subtitle for
-#'                      the plot.
-#' @param digits        an integer value indicating the number of decimal places to
-#'                      be used for displaying descriptive statistics and confidence
-#'                      interval.
-#' @param p.digits      an integer value indicating the number of decimal places to
-#'                      be used for displaying the \emph{p}-value.
+#' @param subtitle      a character string specifying the text for the subtitle
+#'                      for the plot.
+#' @param digits        an integer value indicating the number of decimal places
+#'                      to be used for displaying descriptive statistics and
+#'                      confidence interval.
+#' @param p.digits      an integer value indicating the number of decimal places
+#'                      to be used for displaying the \emph{p}-value.
 #' @param as.na         a numeric vector indicating user-defined missing values,
-#'                      i.e. these values are converted to \code{NA} before conducting
-#'                      the analysis.
-#' @param check         logical: if \code{TRUE}, argument specification is checked.
-#' @param output        logical: if \code{TRUE}, output is shown on the console.
+#'                      i.e. these values are converted to \code{NA} before
+#'                      conducting the analysis.
+#' @param write         a character string naming a text file with file extension
+#'                      \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                      output into a text file.
+#' @param append        logical: if \code{TRUE} (default), output will be appended
+#'                      to an existing text file with extension \code{.txt} specified
+#'                      in \code{write}, if \code{FALSE} existing text file will be
+#'                       overwritten.
+#' @param check         logical: if \code{TRUE} (default), argument specification
+#'                      is checked.
+#' @param output        logical: if \code{TRUE} (default), output is shown on the
+#'                      console.
 #' @param formula       in case of two sample z-test (i.e., \code{paired = FALSE}),
 #'                      a formula of the form \code{y ~ group} where \code{group}
 #'                      is a numeric variable, character variable
 #'                      or factor with two values or factor levels giving the
 #'                      corresponding groups.
-#' @param data          a matrix or data frame containing the variables in the formula
-#'                      \code{formula}.
+#' @param data          a matrix or data frame containing the variables in the
+#'                      formula \code{formula}.
 #' @param ...           further arguments to be passed to or from methods.
 #'
 #' @author
@@ -134,43 +143,43 @@
 #' dat1 <- data.frame(group = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
 #'                    x = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 4, 3, NA))
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # One-Sample Design
 #'
-#' # Two-sided one-sample z-test
+#' # Example 1a: Two-sided one-sample z-test
 #' # population mean = 3, population standard deviation = 1.2
 #' test.z(dat1$x, sigma = 1.2, mu = 3)
 #'
-#' # Two-sided one-sample z-test
+#' # Example 1b: Two-sided one-sample z-test
 #' # population mean = 3, population variance = 1.44
 #' test.z(dat1$x, sigma2 = 1.44, mu = 3)
 #'
-#' # One-sided one-sample z-test
+#' # Example 1c: One-sided one-sample z-test
 #' # population mean = 3, population standard deviation = 1.2
 #' test.z(dat1$x, sigma = 1.2, mu = 3, alternative = "greater")
 #'
-#' # Two-sided one-sample z-test
+#' # Example 1d: Two-sided one-sample z-test
 #' # population mean = 3, population standard deviation = 1.2
 #' # convert value 3 to NA
 #' test.z(dat1$x, sigma = 1.2, mu = 3, as.na = 3)
 #'
-#' # Two-sided one-sample z-test
+#' # Example 1e: Two-sided one-sample z-test
 #' # population mean = 3, population standard deviation = 1.2
 #' # print Cohen's d
 #' test.z(dat1$x, sigma = 1.2, mu = 3, effsize = TRUE)
 #'
-#' # Two-sided one-sample z-test
+#' # Example 1f: Two-sided one-sample z-test
 #' # population mean = 3, population standard deviation = 1.2
 #' # do not print hypotheses and descriptive statistics
 #' test.z(dat1$x, sigma = 1.2, mu = 3, hypo = FALSE, descript = FALSE)
 #'
-#' # Two-sided one-sample z-test
+#' # Example 1g: Two-sided one-sample z-test
 #' # population mean = 3, population standard deviation = 1.2
 #' # print descriptive statistics with 3 digits and p-value with 5 digits
 #' test.z(dat1$x, sigma = 1.2, mu = 3, digits = 3, p.digits = 5)
 #'
 #' \dontrun{
-#' # Two-sided one-sample z-test
+#' # Example 1h: Two-sided one-sample z-test
 #' # population mean = 3, population standard deviation = 1.2
 #' # plot results
 #' test.z(dat1$x, sigma = 1.2, mu = 3, plot = TRUE)
@@ -181,7 +190,7 @@
 #' # Save plot, ggsave() from the ggplot2 package
 #' ggsave("One-sample_z-test.png", dpi = 600, width = 3, height = 6)
 #'
-#' # Two-sided one-sample z-test
+#' # Example 1i: Two-sided one-sample z-test
 #' # population mean = 3, population standard deviation = 1.2
 #' # extract plot
 #' p <- test.z(dat1$x, sigma = 1.2, mu = 3, output = FALSE)$plot
@@ -195,55 +204,55 @@
 #'
 #' # Draw plot in line with the default setting of test.z()
 #' ggplot(plotdat, aes(0, x)) +
-#'   geom_point(data = result, aes(x = 0L, m), size = 4) +
+#'   geom_point(data = result, aes(x = 0L, m), linewidth = 4) +
 #'   geom_errorbar(data = result, aes(x = 0L, y = m, ymin = m.low, ymax = m.upp),
 #'                 width = 0.2) +
 #'   scale_x_continuous(name = NULL, limits = c(-2, 2)) +
 #'   scale_y_continuous(name = NULL) +
-#'   geom_hline(yintercept = 3, linetype = 3, size = 0.8) +
+#'   geom_hline(yintercept = 3, linetype = 3, linewidth = 0.8) +
 #'   labs(subtitle = "Two-Sided 95% Confidence Interval") +
 #'   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
 #'                      axis.text.x = element_blank(),
 #'                      axis.ticks.x = element_blank())
 #' }
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Two-Sample Design
 #'
-#' # Two-sided two-sample z-test
+#' # Example 2a: Two-sided two-sample z-test
 #' # population standard deviation (SD) = 1.2, equal SD assumption
 #' test.z(x ~ group, sigma = 1.2, data = dat1)
 #'
-#' # Two-sided two-sample z-test
+#' # Example 2b: Two-sided two-sample z-test
 #' # population standard deviation (SD) = 1.2 and 1.5, unequal SD assumption
 #' test.z(x ~ group, sigma = c(1.2, 1.5), data = dat1)
 #'
-#' # Two-sided two-sample z-test
+#' # Example 2c: Two-sided two-sample z-test
 #' # population variance (Var) = 1.44 and 2.25, unequal Var assumption
 #' test.z(x ~ group, sigma2 = c(1.44, 2.25), data = dat1)
 #'
-#' # One-sided two-sample z-test
+#' # Example 2d: One-sided two-sample z-test
 #' # population standard deviation (SD) = 1.2, equal SD assumption
 #' test.z(x ~ group, sigma = 1.2, data = dat1, alternative = "greater")
 #'
-#' # Two-sided two-sample z-test
+#' # Example 2e: Two-sided two-sample z-test
 #' # population standard deviation (SD) = 1.2, equal SD assumption
 #' # print Cohen's d
 #' test.z(x ~ group, sigma = 1.2, data = dat1, effsize = TRUE)
 #'
-#' # Two-sided two-sample z-test
+#' # Example 2f: Two-sided two-sample z-test
 #' # population standard deviation (SD) = 1.2, equal SD assumption
 #' # do not print hypotheses and descriptive statistics,
 #' # print Cohen's d
 #' test.z(x ~ group, sigma = 1.2, data = dat1, descript = FALSE, hypo = FALSE)
 #'
-#' # Two-sided two-sample z-test
+#' # Example 2g: Two-sided two-sample z-test
 #' # population mean = 3, population standard deviation = 1.2
 #' # print descriptive statistics with 3 digits and p-value with 5 digits
 #' test.z(x ~ group, sigma = 1.2, data = dat1, digits = 3, p.digits = 5)
 #'
 #' \dontrun{
-#' # Two-sided two-sample z-test
+#' # Example 2h: Two-sided two-sample z-test
 #' # population standard deviation (SD) = 1.2, equal SD assumption
 #' # plot results
 #' test.z(x ~ group, sigma = 1.2, data = dat1, plot = TRUE)
@@ -254,7 +263,7 @@
 #' # Save plot, ggsave() from the ggplot2 package
 #' ggsave("Two-sample_z-test.png", dpi = 600, width = 4, height = 6)
 #'
-#' # Two-sided two-sample z-test
+#' # Example 2i: Two-sided two-sample z-test
 #' # population standard deviation (SD) = 1.2, equal SD assumption
 #' # extract plot
 #' p <- test.z(x ~ group, sigma = 1.2, data = dat1, output = FALSE)$plot
@@ -266,53 +275,53 @@
 #' group1 <- c(3, 1, 4, 2, 5, 3, 6, 7)
 #' group2 <- c(5, 2, 4, 3, 1)
 #'
-#' # Two-sided two-sample z-test
+#' # Example 2j: Two-sided two-sample z-test
 #' # population standard deviation (SD) = 1.2, equal SD assumption
 #' test.z(group1, group2, sigma = 1.2)
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Paired-Sample Design
 #'
 #' dat2 <- data.frame(pre = c(1, 3, 2, 5, 7),
 #'                    post = c(2, 2, 1, 6, 8), stringsAsFactors = FALSE)
 #'
-#' # Two-sided paired-sample z-test
+#' # Example 3a: Two-sided paired-sample z-test
 #' # population standard deviation of difference score = 1.2
 #' test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE)
 #'
-#' # Two-sided paired-sample z-test
+#' # Example 3b: Two-sided paired-sample z-test
 #' # population variance of difference score = 1.44
 #' test.z(dat2$pre, dat2$post, sigma2 = 1.44, paired = TRUE)
 #'
-#' # One-sided paired-sample z-test
+#' # Example 3c: One-sided paired-sample z-test
 #' # population standard deviation of difference score = 1.2
 #' test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE,
 #'        alternative = "greater")
 #'
-#' # Two-sided paired-sample z-test
+#' # Example 3d: Two-sided paired-sample z-test
 #' # population standard deviation of difference score = 1.2
 #' # convert value 1 to NA
 #' test.z(dat2$pre, dat2$post, sigma = 1.2, as.na = 1, paired = TRUE)
 #'
-#' # Two-sided paired-sample z-test
+#' # Example 3e: Two-sided paired-sample z-test
 #' # population standard deviation of difference score = 1.2
 #' # print Cohen's d
 #' test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE, effsize = TRUE)
 #'
-#' # Two-sided paired-sample z-test
+#' # Example 3f: Two-sided paired-sample z-test
 #' # population standard deviation of difference score = 1.2
 #' # do not print hypotheses and descriptive statistics
 #' test.z(dat2$pre, dat2$post, sigma = 1.2, mu = 3, paired = TRUE,
 #'        hypo = FALSE, descript = FALSE)
 #'
-#' # Two-sided paired-sample z-test
+#' # Example 3g: Two-sided paired-sample z-test
 #' # population standard deviation of difference score = 1.2
 #' # print descriptive statistics with 3 digits and p-value with 5 digits
 #' test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE,
 #'        digits = 3, p.digits = 5)
 #'
 #' \dontrun{
-#' # Two-sided paired-sample z-test
+#' # Example 3h: Two-sided paired-sample z-test
 #' # population standard deviation of difference score = 1.2
 #' # plot results
 #' test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE, plot = TRUE)
@@ -323,7 +332,7 @@
 #' # Save plot, ggsave() from the ggplot2 package
 #' ggsave("Paired-sample_z-test.png", dpi = 600, width = 3, height = 6)
 #'
-#' # Two-sided paired-sample z-test
+#' # Example 3i: Two-sided paired-sample z-test
 #' # population standard deviation of difference score = 1.2
 #' # extract plot
 #' p <- test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE, output = FALSE)$plot
@@ -347,7 +356,7 @@
 #'                 aes(x = 0L, y = m.diff, ymin = m.low, ymax = m.upp), width = 0.2) +
 #'    scale_x_continuous(name = NULL, limits = c(-2, 2)) +
 #'    scale_y_continuous(name = "y") +
-#'    geom_hline(yintercept = 0, linetype = 3, size = 0.8) +
+#'    geom_hline(yintercept = 0, linetype = 3, linewidth = 0.8) +
 #'    labs(subtitle = "Two-Sided 95% Confidence Interval") +
 #'    theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
 #'                       axis.text.x = element_blank(),
@@ -372,8 +381,8 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                            jitter.size = 1.25, jitter.width = 0.05,
                            jitter.height = 0, jitter.alpha = 0.1,
                            title = "", subtitle = "Confidence Interval",
-                           digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
-                           output = TRUE, ...) {
+                           digits = 2, p.digits = 4, as.na = NULL,  write = NULL, append = TRUE,
+                           check = TRUE, output = TRUE, ...) {
 
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
@@ -413,31 +422,13 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
     if (isTRUE(is.null(y))) {
 
       # Replace user-specified values with missing values
-      x <- misty::as.na(x, na = as.na, check = check)
-
-      if (isTRUE(all(is.na(x)))) { stop("After converting user-missing values into NA, 'x' is completely missing.", call. = FALSE) }
-
+      x <- .as.na(x, na = as.na)
     # Two or paired sample
     } else {
 
       # Replace user-specified values with missing values
-      x <- misty::as.na(x, na = as.na, check = check)
-      y <- misty::as.na(y, na = as.na, check = check)
-
-      if (isTRUE(!is.null(y))) {
-
-        # Variable with missing values only
-        xy.miss <- vapply(list(x = x, y = y), function(y) all(is.na(y)), FUN.VALUE = logical(1))
-        if (isTRUE(any(xy.miss))) {
-
-          stop(paste0("After converting user-missing values into NA, following ",
-                      ifelse(sum(xy.miss) == 1L, "variable is ", "variables are "),
-                      "completely missing: ",
-                      paste(names(which(xy.miss)), collapse = ", ")), call. = FALSE)
-
-        }
-
-      }
+      x <- .as.na(x, na = as.na)
+      y <- .as.na(y, na = as.na)
 
     }
 
@@ -560,6 +551,12 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
@@ -604,7 +601,7 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
   if (isTRUE(is.null(y))) {
 
     # Descriptive statistics
-    x.ci <- misty::ci.mean(x = x, sigma = sigma, alternative = alternative, output = FALSE)$result
+    x.ci <- misty::ci.mean(x, sigma = sigma, alternative = alternative, output = FALSE)$result
 
     # Standard error of the mean
     se <- (sigma / sqrt(x.ci[["n"]]))
@@ -718,7 +715,7 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                                                        axis.ticks.x = ggplot2::element_blank())
 
            # Add horizontal line
-           if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = mu, linetype = line.type, size = line.size) }
+           if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = mu, linetype = line.type, linewidth = line.size) }
 
            #...................
            ### Two-sample ####
@@ -808,10 +805,33 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                              jitter = jitter, jitter.size = jitter.size, jitter.width = jitter.width,
                              jitter.height = jitter.height, jitter.alpha = jitter.alpha,
                              title = title, subtitle = subtitle, digits = digits, p.digits = p.digits,
-                             as.na = as.na, check = check, output = output),
+                             as.na = as.na, write = write, append = append,
+                             check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #
@@ -835,7 +855,7 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
                            jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
                            jitter.height = 0, jitter.alpha = 0.1, title = "",
                            subtitle = "Confidence Interval", digits = 2, p.digits = 4,
-                           as.na = NULL, check = TRUE, output = TRUE, ...) {
+                           as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE, ...) {
 
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
@@ -941,10 +961,33 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
                              jitter = jitter, jitter.size = jitter.size, jitter.width = jitter.width,
                              jitter.height = jitter.height, jitter.alpha = jitter.alpha,
                              title = title, subtitle = subtitle, digits = digits, p.digits = p.digits,
-                             as.na = as.na, check = check, output = object$args$output),
+                             as.na = as.na, write = write, append = append, check = check, output = object$args$output),
                  result = object$result)
 
   class(object) <- "misty.object"
+
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

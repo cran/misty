@@ -1,30 +1,37 @@
 #' Extract Duplicated or Unique Rows
 #'
-#' This function extracts duplicated or unique rows from a matrix or data frame.
+#' The function \code{df.duplicated} extracts duplicated rows and the function
+#' \code{df.unique} extracts unique rows from a matrix or data frame.
 #'
 #' Note that \code{df.unique(x)} is equivalent to \code{unique(x)}. That is, the
-#' main difference between the \code{df.unique()} and the \code{unique()} function is
-#' that the \code{df.unique()} function provides the \code{...} argument to
-#' specify a variable or multiple variables which are used to determine unique rows.
+#' main difference between the \code{df.unique()} and the \code{unique()} function
+#' is that the \code{df.unique()} function provides the \code{...} argument to
+#' specify a variable or multiple variables which are used to determine unique
+#' rows.
 #'
-#' @param x              a matrix or data frame.
-#' @param ...            a variable or multiple variables which are specified without
-#'                       quotes \code{''} or double quotes \code{""} used to determine
-#'                       duplicated or unique rows. By default, all variables in \code{x}
-#'                       are used.
-#' @param first          logical: if \code{TRUE}, the \code{df.duplicated()} function
-#'                       will return duplicated rows including the first of identical
-#'                       rows.
-#' @param keep.all       logical: if \code{TRUE}, the function will return all variables
-#'                       in \code{x} after extracting duplicated or unique rows based
-#'                       on the variables specified in the argument \code{...}.
+#' @param ...            an expression indicating the variable names in \code{data}
+#'                       used to determine duplicated or unique rows.e.g.,
+#'                       \code{df.duplicated(x1, x2, data = dat)}. Note that the
+#'                       operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+#'                       \code{::}, and \code{!} can also be used to select
+#'                       variables, see Details in the \code{\link{df.subset}}
+#'                       function.
+#' @param data           a data frame.
+#' @param first          logical: if \code{TRUE} (default), the \code{df.duplicated()}
+#'                       function will return duplicated rows including the first
+#'                       of identical rows.
+#' @param keep.all       logical: if \code{TRUE} (default), the function will
+#'                       return all variables in \code{x} after extracting
+#'                       duplicated or unique rows based on the variables specified
+#'                       in the argument \code{...}.
 #' @param from.last      logical: if \code{TRUE}, duplication will be considered
 #'                       from the reversed side, i.e., the last of identical rows
 #'                       would correspond to \code{duplicated = FALSE}.
 #'                       Note that this argument is only used when \code{first = FALSE}.
-#' @param keep.row.names logical: if \code{TRUE}, the row names from \code{x} are kept,
-#'                       otherwise they are set to \code{NULL}.
-#' @param check          logical: if \code{TRUE}, argument specification is checked.
+#' @param keep.row.names logical: if \code{TRUE} (default), the row names from \code{x}
+#'                       are kept, otherwise they are set to \code{NULL}.
+#' @param check          logical: if \code{TRUE} (default), argument specification
+#'                       is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -32,15 +39,15 @@
 #' @name df.duplicated
 #'
 #' @seealso
-#' \code{\link{df.unique}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
-#' \code{\link{df.rename}}, \code{\link{df.sort}}
+#' \code{\link{df.merge}}, \code{\link{df.move}}, \code{\link{df.rbind}},
+#' \code{\link{df.rename}}, \code{\link{df.sort}}, \code{\link{df.subset}}
 #'
 #' @references
 #' Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}.
 #' Wadsworth & Brooks/Cole.
 #'
 #' @return
-#' Returns duplicated or unique rows of the matrix or data frame in \code{x}.
+#' Returns duplicated or unique rows of the data frame in \code{...} or \code{data}.
 #'
 #' @export
 #'
@@ -51,87 +58,80 @@
 #'                   x4 = c(1, 1, 2, 2, 4),
 #'                   x5 = c(1, 1, 4, 4, 3))
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # df.duplicated() function
 #'
-#' # Extract duplicated rows based on all variables
-#' df.duplicated(dat)
+#' # Example 1: Extract duplicated rows based on all variables
+#' df.duplicated(., data = dat)
 #'
-#' # Extract duplicated rows based on x4
-#' df.duplicated(dat, x4)
+#' # Example 2: Extract duplicated rows based on x4
+#' df.duplicated(x4, data = dat)
 #'
-#' # Extract duplicated rows based on x2 and x3
-#' df.duplicated(dat, x2, x3)
+#' # Example 3: Extract duplicated rows based on x2 and x3
+#' df.duplicated(x2, x3, data = dat)
 #'
-#' # Extract duplicated rows based on all variables
+#' # Example 4: Extract duplicated rows based on all variables
 #' # exclude first of identical rows
-#' df.duplicated(dat, first = FALSE)
+#' df.duplicated(., data = dat, first = FALSE)
 #'
-#' # Extract duplicated rows based on x2 and x3
+#' # Example 5: Extract duplicated rows based on x2 and x3
 #' # do not return all variables
-#' df.duplicated(dat, x2, x3, keep.all = FALSE)
+#' df.duplicated(x2, x3, data = dat, keep.all = FALSE)
 #'
-#' # Extract duplicated rows based on x4
+#' # Example 6: Extract duplicated rows based on x4
 #' # consider duplication from the reversed side
-#' df.duplicated(dat, x4, first = FALSE, from.last = TRUE)
+#' df.duplicated(x4, data = dat, first = FALSE, from.last = TRUE)
 #'
-#' # Extract duplicated rows based on x2 and x3
+#' # Example 7: Extract duplicated rows based on x2 and x3
 #' # set row names to NULL
-#' df.duplicated(dat, x2, x3, keep.row.names = FALSE)
+#' df.duplicated(x2, x3, data = dat, keep.row.names = FALSE)
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # df.unique() function
 #'
-#' # Extract unique rows based on all variables
-#' unique(dat)
+#' # Example 8: Extract unique rows based on all variables
+#' df.unique(., data = dat)
 #'
-#' # Extract unique rows based on x4
-#' df.unique(dat, x4)
+#' # Example 9: Extract unique rows based on x4
+#' df.unique(x4, data = dat)
 #'
-#' # Extract unique rows based on x1, x2, and x3
-#' df.unique(dat, x1, x2, x3)
+#' # Example 10: Extract unique rows based on x1, x2, and x3
+#' df.unique(x1, x2, x3, data = dat)
 #'
-#' # Extract unique rows based on x2 and x3
+#' # Example 11: Extract unique rows based on x2 and x3
 #' # do not return all variables
-#' df.unique(dat, x2, x3, keep.all = FALSE)
+#' df.unique(x2, x3, data = dat, keep.all = FALSE)
 #'
-#' # Extract unique rows based on x4
+#' # Example 12: Extract unique rows based on x4
 #' # consider duplication from the reversed side
-#' df.unique(dat, x4, from.last = TRUE)
+#' df.unique(x4, data = dat, from.last = TRUE)
 #'
-#' # Extract unique rows based on x2 and x3
+#' # Example 13: Extract unique rows based on x2 and x3
 #' # set row names to NULL
-#' df.unique(dat, x2, x3, keep.row.names = FALSE)
-df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FALSE,
-                          keep.row.names = TRUE, check = TRUE) {
+#' df.unique(x2, x3, data = dat, keep.row.names = FALSE)
+df.duplicated <- function(..., data , first = TRUE, keep.all = TRUE,
+                          from.last = FALSE, keep.row.names = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Variables specified in ...
-  var.names <- misty::chr.omit(sapply(substitute(list(...)), as.character), omit = "list")
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  # Variable names
+  var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
-
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE) }
-
-  # No variables specified in ..., i.e., use all variables in x
-  if (isTRUE(length(var.names) == 0L)) { var.names <- colnames(x) }
-
-  # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
-
-  # Check if input '...'
-  var.names.check <- !var.names %in% colnames(x)
-  if (isTRUE(any(var.names.check))) {
-
-    stop(paste0("Variables specified in '...' were not all found in 'x': ", paste0(var.names[var.names.check], collapse = ", ")), call. = FALSE)
-
-  }
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
@@ -159,43 +159,39 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
   # Duplicated rows including the first of identical rows
   if (isTRUE(first)) {
 
-    # Return all variables in x
+    # Return all variables in data
     if (isTRUE(keep.all)) {
 
-      object <- x[duplicated(x[, var.names], fromLast = FALSE) |
-                  duplicated(x[, var.names], fromLast = TRUE), , drop = FALSE]
+      object <- data[duplicated(data[, var.names], fromLast = FALSE) |
+                     duplicated(data[, var.names], fromLast = TRUE), , drop = FALSE]
 
     # Return variables in ...
     } else {
 
-      object <- x[duplicated(x[, var.names], fromLast = FALSE) |
-                  duplicated(x[, var.names], fromLast = TRUE), var.names, drop = FALSE]
+      object <- data[duplicated(data[, var.names], fromLast = FALSE) |
+                     duplicated(data[, var.names], fromLast = TRUE), var.names, drop = FALSE]
 
     }
 
   # Duplicated rows excluding the first of identical rows
   } else {
 
-    # Return all variables in x
+    # Return all variables in data
     if (isTRUE(keep.all)) {
 
-      object <- x[duplicated(x[, var.names], fromLast = from.last), , drop = FALSE]
+      object <- data[duplicated(data[, var.names], fromLast = from.last), , drop = FALSE]
 
-      # Return variables in ...
+    # Return variables in ...
     } else {
 
-      object <- x[duplicated(x[, var.names], fromLast = from.last), var.names, drop = FALSE]
+      object <- data[duplicated(data[, var.names], fromLast = from.last), var.names, drop = FALSE]
 
     }
 
   }
 
   # Remove row names
-  if (!isTRUE(keep.row.names)) {
-
-    row.names(object) <- NULL
-
-  }
+  if (!isTRUE(keep.row.names)) { row.names(object) <- NULL }
 
   #_____________________________________________________________________________
   #
@@ -203,7 +199,7 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
 
   if (isTRUE(nrow(object) == 0L)) {
 
-    warning("No duplicated rows found in the matrix or data frame specified in 'x'.", call. = FALSE)
+    warning("No duplicated rows found in the data frame specified in 'data'.", call. = FALSE)
 
   }
 
@@ -211,33 +207,33 @@ df.duplicated <- function(x, ..., first = TRUE, keep.all = TRUE, from.last = FAL
 
 }
 
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
 #' @rdname df.duplicated
-df.unique <- function(x, ..., keep.all = TRUE, from.last = FALSE, keep.row.names = TRUE,
-                      check = TRUE) {
+df.unique <- function(..., data = NULL, keep.all = TRUE, from.last = FALSE,
+                      keep.row.names = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Variables specified in ...
-  var.names <- misty::chr.omit(sapply(substitute(list(...)), as.character), omit = "list")
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  # Variable names
+  var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
-
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE) }
-
-  # No variables specified in  ..., i.e., use all variables in x
-  if (isTRUE(length(var.names) == 0L)) { var.names <- colnames(x) }
-
-  # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
-
-  # Check if input '...'
-  var.names.check <- !var.names %in% colnames(x)
-  if (isTRUE(any(var.names.check))) { stop(paste0("Variables specified in ... were not all found in 'x': ", paste0(var.names[var.names.check], collapse = ", ")), call. = FALSE) }
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
@@ -259,21 +255,17 @@ df.unique <- function(x, ..., keep.all = TRUE, from.last = FALSE, keep.row.names
   # Return all variables in x
   if (isTRUE(keep.all)) {
 
-    object <- x[!duplicated(x[, var.names], fromLast = from.last), , drop = FALSE]
+    object <- data[!duplicated(data[, var.names], fromLast = from.last), , drop = FALSE]
 
   # Return variables in ...
   } else {
 
-    object <- x[!duplicated(x[, var.names], fromLast = from.last), var.names, drop = FALSE]
+    object <- data[!duplicated(data[, var.names], fromLast = from.last), var.names, drop = FALSE]
 
   }
 
   # Remove row names
-  if (!isTRUE(keep.row.names)) {
-
-    row.names(object) <- NULL
-
-  }
+  if (!isTRUE(keep.row.names)) { row.names(object) <- NULL }
 
   #_____________________________________________________________________________
   #

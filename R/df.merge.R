@@ -2,31 +2,33 @@
 #'
 #' This function merges data frames by a common column (i.e., matching variable).
 #'
-#' There are following requirements for merging multiple data frames: First, each data frame
-#' has the same matching variable specified in the \code{by} argument. Second, matching variable
-#' in the data frames have all the same class. Third, there are no duplicated values in the
-#' matching variable in each data frame. Fourth, there are no missing values in the matching
-#' variables. Last, there are no duplicated variable names across the data frames except for
-#' the matching variable.
+#' There are following requirements for merging multiple data frames: First, each
+#' data frame has the same matching variable specified in the \code{by} argument.
+#' Second, matching variable in the data frames have all the same class. Third,
+#' there are no duplicated values in the matching variable in each data frame.
+#' Fourth, there are no missing values in the matching variables. Last, there
+#' are no duplicated variable names across the data frames except for the matching
+#' variable.
 #'
-#' Note that it is possible to specify data frames matrices and/or in the argument \code{...}.
-#' However, the function always returns a data frame.
+#' Note that it is possible to specify data frames matrices and/or in the argument
+#' \code{...}. However, the function always returns a data frame.
 #'
-#' @param ...       a sequence of matrices or data frames and/or matrices to be merged to one.
-#' @param by        a character string indicating the column used for merging (i.e., matching variable),
-#'                  see 'Details'.
-#' @param all       logical: if \code{TRUE}, then extra rows with \code{NA}s will be added
-#'                  to the output for each row in a data frame that has no matching row in
-#'                  another data frame.
-#' @param check     logical: if \code{TRUE}, argument specification is checked.
-#' @param output    logical: if \code{TRUE}, output is shown on the console.
+#' @param ...    a sequence of matrices or data frames and/or matrices to be
+#'               merged to one.
+#' @param by     a character string indicating the column used for merging
+#'               (i.e., matching variable), see 'Details'.
+#' @param all    logical: if \code{TRUE} (default), then extra rows with \code{NA}s
+#'               will be added to the output for each row in a data frame that
+#'               has no matching row in another data frame.
+#' @param check  logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.rbind}},
-#' \code{\link{df.rename}}, \code{\link{df.sort}}
+#' \code{\link{df.duplicated}}, \code{\link{df.move}}, \code{\link{df.rbind}},
+#' \code{\link{df.rename}}, \code{\link{df.sort}}, \code{\link{df.subset}}
 #'
 #' @return
 #' Returns a merged data frame.
@@ -46,14 +48,14 @@
 #' ddat <- data.frame(id = 4,
 #'                    y4 = 6)
 #'
-#' # Merge adat, bdat, cdat, and data by the variable id
+#' # Example 1: Merge adat, bdat, cdat, and data by the variable id
 #' df.merge(adat, bdat, cdat, ddat, by = "id")
 #'
-#' # Do not show output on the console
+#' # Example 2: Do not show output on the console
 #' df.merge(adat, bdat, cdat, ddat, by = "id", output = FALSE)
 #'
 #' \dontrun{
-#' #--------------------------------------#'
+#' #----------------------------------------------------------------------------
 #' # Error messages
 #'
 #' adat <- data.frame(id = c(1, 2, 3),
@@ -74,19 +76,19 @@
 #' fdat <- data.frame(id = c(1, 2, 3),
 #'                    x1 = c(5, 1, 3))
 #'
-#' # Error: Data frames do not have the same matching variable specified in 'by'.
+#' # Error 1: Data frames do not have the same matching variable specified in 'by'.
 #' df.merge(adat, bdat, by = "id")
 #'
-#' # Error: Matching variable in the data frames do not all have the same class.
+#' # Error 2: Matching variable in the data frames do not all have the same class.
 #' df.merge(adat, cdat, by = "id")
 #'
-#' # Error: There are duplicated values in the matching variable specified in 'by'.
+#' # Error 3: There are duplicated values in the matching variable specified in 'by'.
 #' df.merge(adat, ddat, by = "id")
 #'
-#' # Error: There are missing values in the matching variable specified in 'by'.
+#' # Error 4: There are missing values in the matching variable specified in 'by'.
 #' df.merge(adat, edat, by = "id")
 #'
-#' #' # Error: There are duplicated variable names across data frames.
+#' # Error 5: There are duplicated variable names across data frames.
 #' df.merge(adat, fdat, by = "id")
 #' }
 df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
@@ -156,7 +158,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
   match.cases <- Reduce(function(xx, yy) misty::df.rbind(xx, yy), x = lapply(var.match, function(xx) data.frame(matrix(xx, ncol = length(xx), dimnames = list(NULL, xx)), stringsAsFactors = FALSE)))
 
   # Number of pattern
-  match.cases.table <- table(apply(ifelse(is.na(match.cases), 0L, 1L), 2, paste, collapse = " "))
+  match.cases.table <- table(apply(ifelse(is.na(match.cases), 0L, 1L), 2L, paste, collapse = " "))
 
   match.cases.table <- match.cases.table[rev(order(as.numeric(gsub(" ", "", names(match.cases.table)))))]
 

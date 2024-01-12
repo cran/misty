@@ -43,10 +43,21 @@
 #' Adjustment method for multiple testing when specifying the argument \code{p.adj}
 #' is applied to the within-group and between-group correlation matrix separately.
 #'
-#' @param x            a matrix or data frame.
+#' @param ...          a matrix or data frame. Alternatively, an expression
+#'                     indicating the variable names in \code{data} e.g.,
+#'                     \code{multilevel.cor(x1, x2, x3, data = dat)}. Note that
+#'                     the operators \code{.}, \code{+}, \code{-}, \code{~},
+#'                     \code{:}, \code{::}, and \code{!} can also be used to
+#'                     select variables, see 'Details' in the \code{\link{df.subset}}
+#'                     function.
+#' @param data         a data frame when specifying one or more variables in the
+#'                     argument \code{...}. Note that the argument is \code{NULL}
+#'                     when specifying a matrix or data frameme for the argument
+#'                     \code{...}.
 #' @param cluster      either a character string indicating the variable name of
-#'                     the cluster variable in 'x' or a vector representing the
-#'                     nested grouping structure (i.e., group or cluster variable).
+#'                     the cluster variable in \code{...} or \code{data}, or a
+#'                     vector representing the nested grouping structure (i.e.,
+#'                     group or cluster variable).
 #' @param within       a character vector representing variables that are measured
 #'                     on the within level and modeled only on the within level.
 #'                     Variables not mentioned in \code{within} or \code{between}
@@ -115,12 +126,20 @@
 #'                     i.e. these values are converted to \code{NA} before
 #'                     conducting the analysis. Note that \code{as.na()} function
 #'                     is only applied to \code{x} but not to \code{cluster}.
-#' @param write        a character string for writing the results into a Excel file
-#'                     naming a file with or without file extension '.xlsx', e.g.,
-#'                     \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check        logical: if \code{TRUE}, argument specification, convergence
-#'                     and model identification is checked.
-#' @param output       logical: if \code{TRUE}, output is shown on the console.
+#' @param write        a character string naming a file for writing the output into
+#'                     either a text file with file extension \code{".txt"} (e.g.,
+#'                     \code{"Output.txt"}) or Excel file with file extention
+#'                     \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'                     name does not contain any file extension, an Excel file will
+#'                     be written.
+#' @param append       logical: if \code{TRUE} (default), output will be appended
+#'                     to an existing text file with extension \code{.txt} specified
+#'                     in \code{write}, if \code{FALSE} existing text file will be
+#'                     overwritten.
+#' @param check        logical: if \code{TRUE} (default), argument specification,
+#'                     convergence and model identification is checked.
+#' @param output       logical: if \code{TRUE} (default), output is shown on the
+#'                     console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -144,7 +163,8 @@
 #' \tabular{ll}{
 #' \code{call} \tab function call \cr
 #' \code{type} \tab type of analysis \cr
-#' \code{data} \tab matrix or data frame specified in \code{x} \cr
+#' \code{data} \tab data frame specified in \code{x} including the group variable
+#'                  specified in \code{cluster} \cr
 #' \code{args} \tab specification of function arguments \cr
 #' \code{model} \tab specified model \cr
 #' \code{model.fit} \tab fitted lavaan object (\code{model.fit}) \cr
@@ -165,60 +185,60 @@
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' #---------------------------
+#' #----------------------------------------------------------------------------
 #' # Cluster variable specification
 #'
-#' # Cluster variable 'cluster' in 'x'
+#' # Example 1a: Cluster variable 'cluster' in 'x'
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "cluster")], cluster = "cluster")
 #'
-#' #' # Cluster variable 'cluster' not in 'x'
+#' # Example 1b: Cluster variable 'cluster' not in 'x'
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
 #'
-#' #---------------------------
-#' # All variables modeled on both the within and between level
-#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-#'                cluster = Demo.twolevel$cluster)
+#' # Example 1c: Alternative specification using the 'data' argument
+#' multilevel.cor(x1:x3, data = Demo.twolevel, cluster = "cluster")
 #'
+#' #----------------------------------------------------------------------------
+#' # Example 2: All variables modeled on both the within and between level
 #' # Highlight statistically significant result at alpha = 0.05
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], sig = TRUE,
 #'               cluster = Demo.twolevel$cluster)
 #'
-#' # Split output table in within-group and between-group correlation matrix.
+#' # Example 3: Split output table in within-group and between-group correlation matrix.
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
 #'                cluster = Demo.twolevel$cluster, split = TRUE)
 #'
-#' # Print correlation coefficients, standard errors, z test statistics,
+#' # Example 4: Print correlation coefficients, standard errors, z test statistics,
 #' # and p-values
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
 #'                cluster = Demo.twolevel$cluster, print = "all")
 #'
-#' # Print correlation coefficients and p-values
+#' # Example 5: Print correlation coefficients and p-values
 #' # significance values with Bonferroni correction
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
 #'                cluster = Demo.twolevel$cluster, print = c("cor", "p"),
 #'                p.adj = "bonferroni")
 #'
-#' #---------------------------
-#' # Variables "y1", "y2", and "y2" modeled on both the within and between level
+#' #----------------------------------------------------------------------------
+#' # Example 6: Variables "y1", "y2", and "y2" modeled on both the within and between level
 #' # Variables "w1" and "w2" modeled on the cluster level
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
 #'                cluster = Demo.twolevel$cluster,
 #'                between = c("w1", "w2"))
 #'
-#' # Show variables specified in the argument 'between' first
+#' # Example 7: Show variables specified in the argument 'between' first
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
 #'                cluster = Demo.twolevel$cluster,
 #'                between = c("w1", "w2"), order = TRUE)
 #'
-#' #---------------------------
-#' # Variables "y1", "y2", and "y2" modeled only on the within level
+#' #----------------------------------------------------------------------------
+#' # Example 8: Variables "y1", "y2", and "y2" modeled only on the within level
 #' # Variables "w1" and "w2" modeled on the cluster level
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
 #'                cluster = Demo.twolevel$cluster,
 #'                within = c("y1", "y2", "y3"), between = c("w1", "w2"))
 #'
-#' #---------------------------
-#' # lavaan model and summary of the multilevel model used to compute the
+#' #----------------------------------------------------------------------------
+#' # Example 9: lavaan model and summary of the multilevel model used to compute the
 #' # within-group and between-group correlation matrix
 #'
 #' mod <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
@@ -230,8 +250,15 @@
 #' # Fitted lavaan object
 #' lavaan::summary(mod$model.fit, standardized = TRUE)
 #'
-#' #---------------------------
-#' # Write Results into a Excel file
+#' #----------------------------------------------------------------------------
+#' # Write Results
+#'
+#' # Example 10a: Write Results into a text file
+#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
+#'                cluster = Demo.twolevel$cluster,
+#'                write = "Multilevel_Correlation.txt")
+#'
+#' # Example 10b: Write Results into a Excel file
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
 #'                cluster = Demo.twolevel$cluster,
 #'                write = "Multilevel_Correlation.xlsx")
@@ -240,48 +267,68 @@
 #'                          cluster = Demo.twolevel$cluster, output = FALSE)
 #' write.result(result, "Multilevel_Correlation.xlsx")
 #' }
-multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
+multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = NULL,
                            estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"),
                            missing = c("listwise", "fiml"), sig = FALSE, alpha = 0.05,
                            print = c("all", "cor", "se", "stat", "p"), split = FALSE,
                            order = FALSE, tri = c("both", "lower", "upper"), tri.lower = TRUE,
                            p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
                            digits = 2, p.digits = 3, as.na = NULL, write = NULL,
-                           check = TRUE, output = TRUE) {
+                           append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing or Null
-  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is a matrix or a data frame
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'cluster' is missing or null
-  if (isTRUE(missing(cluster) || is.null(cluster))) { stop("Please specify a character string or a vector for the argument 'cluster'.", call. = FALSE) }
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
+
+  # Check input 'cluster'
+  if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
+
+  # Check if input 'cluster' is NULL
+  if (isTRUE(is.null(cluster))) { stop("Input specified for the argument 'cluster' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Cluster variable ####
+  ## Data using the argument 'data' ####
 
-  # Cluster variable 'cluster' in 'x'
-  if (isTRUE(length(cluster) == 1L)) {
+  if (isTRUE(!is.null(data))) {
 
-    if (isTRUE(!cluster %in% colnames(x))) { stop("Cluster variable specifed in the argument 'cluster' was not found in 'x'.", call. = FALSE) }
+    # Variable names
+    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
 
-    # Index of cluster in 'x'
-    cluster.col <- which(colnames(x) == cluster)
+    # Extract data
+    x <- data[, var.names]
 
-    # Replace variable name with cluster variable
-    cluster <- x[, cluster.col]
+    # Cluster variable
+    cluster <- data[, cluster]
 
-    # Remove cluster variable
-    x <- x[, -cluster.col]
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+    # Data and cluster
+    var.group <- .var.group(data = x, cluster = cluster)
+
+    # Data
+    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+
+    # Cluster variable
+    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
 
@@ -327,15 +374,7 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    x[, var] <- misty::as.na(x[, var], na = as.na, check = check)
-
-    # Variable with missing values only
-    x.miss <- vapply(x[, var], function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-    if (isTRUE(any(x.miss))) { stop(paste0("After converting user-missing values into NA, following ", ifelse(length(which(x.miss)) == 1L, "variable is ", "variables are "), "completely missing: ", paste(names(which(x.miss)), collapse = ", ")), call. = FALSE) }
-
-  }
+  if (isTRUE(!is.null(as.na))) { x[, var] <- .as.na(x[, var], na = as.na) }
 
   #_____________________________________________________________________________
   #
@@ -347,9 +386,6 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
   if (isTRUE(check)) {
 
     if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
-
-    # Check input 'cluster'
-    if (isTRUE(unique(na.omit(x$.cluster)) == 1L)) { stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE) }
 
     # Check input 'x': Zero variance?
     x.check <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
@@ -400,6 +436,9 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
@@ -407,7 +446,7 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Arguments ------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Estimator ####
@@ -888,7 +927,7 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
                              sig = sig, alpha = alpha, print = print,
                              split = split, order = order, tri = tri, tri.lower = tri.lower,
                              p.adj = p.adj, digits = digits, p.digits = p.digits,
-                             as.na = as.na, check = check, output = output),
+                             as.na = as.na, write = write, append = append, check = check, output = output),
                  model = mod,
                  model.fit = model.fit,
                  check = list(vcov = check.vcov, theta.w = check.theta.w, theta.b = check.theta.b,
@@ -907,7 +946,34 @@ multilevel.cor <- function(x, cluster, within = NULL, between = NULL,
   #
   # Write Result ---------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #

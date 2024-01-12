@@ -5,28 +5,29 @@
 \alias{df.unique}
 \title{Extract Duplicated or Unique Rows}
 \usage{
-df.duplicated(x, ..., first = TRUE, keep.all = TRUE,
-              from.last = FALSE, keep.row.names = TRUE,
-              check = TRUE)
+df.duplicated(..., data, first = TRUE, keep.all = TRUE, from.last = FALSE,
+              keep.row.names = TRUE, check = TRUE)
 
-df.unique(x, ..., keep.all = TRUE,
-          from.last = FALSE, keep.row.names = TRUE,
-          check = TRUE)
+df.unique(..., data, keep.all = TRUE, from.last = FALSE,
+          keep.row.names = TRUE, check = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame.}
+\item{...}{an expression indicating the variable names in \code{data}
+used to determine duplicated or unique rows.e.g.,
+\code{df.duplicated(x1, x2, data = dat)}. Note that the
+operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+\code{::}, and \code{!} can also be used to select
+variables, see Details in the \code{\link{df.subset}}
+function.}
 
-\item{...}{a variable or multiple variables which are specified without
-quotes \code{''} or double quotes \code{""} used to determine
-duplicated or unique rows. By default, all variables in \code{x}
-are used.}
+\item{data}{a data frame.}
 
-\item{first}{logical: if \code{TRUE}, the \code{df.duplicated()} function
-will return duplicated rows including the first of identical
+\item{first}{logical: if \code{TRUE} (default), the \code{df.duplicated()}
+function will return duplicated rows including the first of identical
 rows.}
 
-\item{keep.all}{logical: if \code{TRUE}, the function will return all variables
-in \code{x} after extracting duplicated or unique rows based
+\item{keep.all}{logical: if \code{TRUE} (default), the function will return all
+variables in \code{x} after extracting duplicated or unique rows based
 on the variables specified in the argument \code{...}.}
 
 \item{from.last}{logical: if \code{TRUE}, duplication will be considered
@@ -34,16 +35,17 @@ from the reversed side, i.e., the last of identical rows
 would correspond to \code{duplicated = FALSE}.
 Note that this argument is only used when \code{first = FALSE}.}
 
-\item{keep.row.names}{logical: if \code{TRUE}, the row names from \code{x} are kept,
+\item{keep.row.names}{logical: if \code{TRUE} (default), the row names from \code{x} are kept,
 otherwise they are set to \code{NULL}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
-Returns duplicated or unique rows of the matrix or data frame in \code{x}.
+Returns duplicated or unique rows of the data frame in \code{...} or \code{data}.
 }
 \description{
-This function extracts duplicated or unique rows from a matrix or data frame.
+The function \code{df.duplicated} extracts duplicated rows and the function
+\code{df.unique} extracts unique rows from a matrix or data frame.
 }
 \details{
 Note that \code{df.unique(x)} is equivalent to \code{unique(x)}. That is, the
@@ -58,65 +60,67 @@ dat <- data.frame(x1 = c(1, 1, 2, 1, 4),
                   x4 = c(1, 1, 2, 2, 4),
                   x5 = c(1, 1, 4, 4, 3))
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # df.duplicated() function
 
-# Extract duplicated rows based on all variables
-df.duplicated(dat)
+# Example 1: Extract duplicated rows based on all variables
+df.duplicated(., data = dat)
 
-# Extract duplicated rows based on x4
-df.duplicated(dat, x4)
+# Example 2: Extract duplicated rows based on x4
+df.duplicated(x4, data = dat)
 
-# Extract duplicated rows based on x2 and x3
-df.duplicated(dat, x2, x3)
+# Example 3: Extract duplicated rows based on x2 and x3
+df.duplicated(x2, x3, data = dat)
 
-# Extract duplicated rows based on all variables
+# Example 4: Extract duplicated rows based on all variables
 # exclude first of identical rows
-df.duplicated(dat, first = FALSE)
+df.duplicated(., data = dat, first = FALSE)
 
-# Extract duplicated rows based on x2 and x3
+# Example 5: Extract duplicated rows based on x2 and x3
 # do not return all variables
-df.duplicated(dat, x2, x3, keep.all = FALSE)
+df.duplicated(x2, x3, data = dat, keep.all = FALSE)
 
-# Extract duplicated rows based on x4
+# Example 6: Extract duplicated rows based on x4
 # consider duplication from the reversed side
-df.duplicated(dat, x4, first = FALSE, from.last = TRUE)
+df.duplicated(x4, data = dat, first = FALSE, from.last = TRUE)
 
-# Extract duplicated rows based on x2 and x3
+# Example 7: Extract duplicated rows based on x2 and x3
 # set row names to NULL
-df.duplicated(dat, x2, x3, keep.row.names = FALSE)
+df.duplicated(x2, x3, data = dat, keep.row.names = FALSE)
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # df.unique() function
 
-# Extract unique rows based on all variables
-unique(dat)
+# Example 8: Extract unique rows based on all variables
+df.unique(., data = dat)
 
-# Extract unique rows based on x4
-df.unique(dat, x4)
+# Example 9: Extract unique rows based on x4
+df.unique(x4, data = dat)
 
-# Extract unique rows based on x1, x2, and x3
-df.unique(dat, x1, x2, x3)
+# Example 10: Extract unique rows based on x1, x2, and x3
+df.unique(x1, x2, x3, data = dat)
 
-# Extract unique rows based on x2 and x3
+# Example 11: Extract unique rows based on x2 and x3
 # do not return all variables
-df.unique(dat, x2, x3, keep.all = FALSE)
+df.unique(x2, x3, data = dat, keep.all = FALSE)
 
-# Extract unique rows based on x4
+# Example 12: Extract unique rows based on x4
 # consider duplication from the reversed side
-df.unique(dat, x4, from.last = TRUE)
+df.unique(x4, data = dat, from.last = TRUE)
 
-# Extract unique rows based on x2 and x3
+# Example 13: Extract unique rows based on x2 and x3
 # set row names to NULL
-df.unique(dat, x2, x3, keep.row.names = FALSE)
+df.unique(x2, x3, data = dat, keep.row.names = FALSE)
 }
 \references{
 Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}.
 Wadsworth & Brooks/Cole.
 }
 \seealso{
-\code{\link{df.unique}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
-\code{\link{df.rename}}, \code{\link{df.sort}}
+\code{\link{df.merge}},
+\code{\link{df.move}}, \code{\link{df.rbind}},
+\code{\link{df.rename}}, \code{\link{df.sort}},
+\code{\link{df.subset}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

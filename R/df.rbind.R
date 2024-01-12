@@ -1,36 +1,39 @@
 #' Combine Data Frames by Rows, Filling in Missing Columns
 #'
-#' This function takes a sequence of data frames and combines them by rows, while filling in missing
-#' columns with \code{NA}s.
+#' This function takes a sequence of data frames and combines them by rows, while
+#' filling in missing columns with \code{NA}s.
 #'
-#' This is an enhancement to \code{\link{rbind}} that adds in columns that are not present in all inputs,
-#' accepts a sequence of data frames, and operates substantially faster.
+#' This is an enhancement to \code{\link{rbind}} that adds in columns that are
+#' not present in all inputs, accepts a sequence of data frames, and operates
+#' substantially faster.
 #'
-#' Column names and types in the output will appear in the order in which they were encountered.
+#' Column names and types in the output will appear in the order in which they
+#' were encountered.
 #'
-#' Unordered factor columns will have their levels unified and character data bound with factors will
-#' be converted to character. POSIXct data will be converted to be in the same time zone.
-#' Array and matrix columns must have identical dimensions after the row count. Aside from these there
-#' are no general checks that each column is of consistent data type.
+#' Unordered factor columns will have their levels unified and character data
+#' bound with factors will be converted to character. POSIXct data will be converted
+#' to be in the same time zone. Array and matrix columns must have identical
+#' dimensions after the row count. Aside from these there are no general checks
+#' that each column is of consistent data type.
 #'
-#' @param ...         a sequence of data frame to be row bind together. This argument can be a
-#'                    list of data frames, in which case all other arguments are ignored.
-#'                    Any \code{NULL} inputs are silently dropped. If all inputs are \code{NULL},
-#'                    the output is also \code{NULL}.
+#' @param ...      a sequence of data frame to be row bind together. This argument
+#'                 can be a list of data frames, in which case all other arguments
+#'                 are ignored. Any \code{NULL} inputs are silently dropped. If
+#'                 all inputs are \code{NULL}, the output is also \code{NULL}.
 #'
 #' @author
 #' Hadley Wickham
 #'
 #' @seealso
-#' \code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.merge}},
-#' \code{\link{df.rename}}, \code{\link{df.sort}}
+#' \code{\link{df.duplicated}}, \code{\link{df.merge}},  \code{\link{df.move}},
+#' \code{\link{df.rename}}, \code{\link{df.sort}}, \code{\link{df.subset}}
 #'
 #' @references
 #' Wickham, H. (2011). The split-apply-combine strategy for data analysis.
 #' \emph{Journal of Statistical Software, 40}, 1-29. https://doi.org/10.18637/jss.v040.i01
 #'
-#' Wickham, H. (2019). plyr: Tools for Splitting, Applying and Combining Data. R package
-#' version 1.8.5.
+#' Wickham, H. (2019). plyr: Tools for Splitting, Applying and Combining Data.
+#' R package version 1.8.5.
 #'
 #' @return
 #' Returns a single data frame
@@ -54,6 +57,7 @@
 #'                    a = c(1, 4, 6),
 #'                    d = c(9, 5, 4))
 #'
+#' # Example 1
 #' df.rbind(adat, bdat, cdat)
 df.rbind <- function(...) {
 

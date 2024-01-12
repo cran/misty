@@ -11,15 +11,22 @@
 #'               to show on the console, i.e. \code{"all"} for all results, \code{"gen"}
 #'               for general dominance, \code{"cond"} for conditional dominance,
 #'               and \code{"comp"} for complete dominance.
-#' @param write  a character string for writing the results into a Excel file
-#'               naming a file with or without file extension '.xlsx', e.g.,
-#'               \code{"Results.xlsx"} or \code{"Results"}.
 #' @param digits an integer value indicating the number of decimal places to be
 #'               used for displaying results. Note that the percentage relative
 #'               importance of predictors are printed with \code{digits} minus 1
 #'               decimal places.
-#' @param check  logical: if \code{TRUE}, argument specification is checked.
-#' @param output logical: if \code{TRUE}, output is shown.
+#' @param write  a character string naming a file for writing the output into
+#'               either a text file with file extension \code{".txt"} (e.g.,
+#'               \code{"Output.txt"}) or Excel file with file extention
+#'               \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'               name does not contain any file extension, an Excel file will
+#'               be written.
+#' @param append logical: if \code{TRUE} (default), output will be appended
+#'               to an existing text file with extension \code{.txt} specified
+#'               in \code{write}, if \code{FALSE} existing text file will be
+#'               overwritten.
+#' @param check  logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output logical: if \code{TRUE} (default), output is shown.
 #'
 #' @details
 #' Dominance analysis (Budescu, 1993; Azen & Budescu, 2003) is used to determine
@@ -100,25 +107,23 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(x1 = c(3, 2, 4, 9, 5, 3, 6, 4, 5, 6, 3, 5),
-#'                   x2 = c(1, 4, 3, 1, 2, 4, 3, 5, 1, 7, 8, 7),
-#'                   x3 = c(0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1),
-#'                   y  = c(0, 1, 0, 2, 0, 1, 0, 0, 1, 2, 1, 0))
+#' #----------------------------------------------------------------------------
+#' # Example 1: Dominance analysis for a linear model
 #'
-#' #----------------------------
-#' # Dominance analysis for a linear model
-#'
-#' mod <- lm(y ~ x1 + x2 + x3, data = dat)
+#' mod <- lm(mpg ~ cyl + disp + hp, data = mtcars)
 #' dominance(mod)
 #'
 #' # Print all results
 #' dominance(mod, print = "all")
 #'
 #' \dontrun{
-#' #----------------------------
-#' # Write Results into a Excel file
+#' #----------------------------------------------------------------------------
+#' # Example 2: Write Results into a text file
 #'
-#' mod <- lm(y ~ x1 + x2 + x3, data = dat)
+#' dominance(mod, write = "Dominance.txt", output = FALSE)
+#'
+#' #----------------------------------------------------------------------------
+#' # Example 3: Write Results into a Excel file
 #'
 #' dominance(mod, write = "Dominance.xlsx", output = FALSE)
 #'
@@ -126,7 +131,7 @@
 #' write.result(result, "Dominance.xlsx")
 #' }
 dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3,
-                      write = NULL, check = TRUE, output = TRUE) {
+                      write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -156,6 +161,9 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
 
     ## Check input 'digits' ##
     if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     ## Check input 'output' ##
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
@@ -463,7 +471,7 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
                  type = "dominance",
                  model = model,
                  args = list(print = print, digits = digits, write = write,
-                             check = check, output = output),
+                             append = append, check = check, output = output),
                  result = list(gen = gen.res, cond = cond.res, comp = comp.res, condstat = cond))
 
   class(object) <- "misty.object"
@@ -472,7 +480,34 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #

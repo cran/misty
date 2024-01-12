@@ -12,7 +12,7 @@ chr.trim(x, side = c("both", "left", "right"), check = TRUE)
 \item{side}{a character string indicating the side on which to remove whitespace,
 i.e., \code{"both"} (default), \code{"left"} or \code{"right"}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 Returns a character vector with whitespaces removed from the vector specified
@@ -28,19 +28,19 @@ package by Hadley Wickham.
 \examples{
 x <- "  string  "
 
-# Remove whitespace at both sides
+# Example 1: Remove whitespace at both sides
 chr.trim(x)
 
-# Remove whitespace at the left side
+# Example 2: Remove whitespace at the left side
 chr.trim(x, side = "left")
 
-# Remove whitespace at the right side
+# Example 3: Remove whitespace at the right side
 chr.trim(x, side = "right")
 }
 \references{
 Wickham, H. (2019). \emph{stringr: Simple, consistent wrappers for common string
 operations}.
-R package version 1.4.0. 
+R package version 1.4.0.
 }
 \seealso{
 \code{\link{chr.gsub}}, \code{\link{chr.omit}}

@@ -14,7 +14,7 @@ df.rename(x, from, to, check = TRUE)
 \item{to}{a character string or character vector indicating the corresponding replacement values for
 the column(s) or variable(s) specified in the argument \code{name}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 Returns a matrix or data frame with renamed columns or variables.
@@ -29,15 +29,17 @@ dat <- data.frame(a = c(3, 1, 6),
                   b = c(4, 2, 5),
                   c = c(7, 3, 1))
 
-# Rename variable b in the data frame 'dat' to y
+# Example 1: Rename variable b in the data frame 'dat' to y
 df.rename(dat, from = "b", to = "y")
 
-# Rename variable a, b, and c in the data frame 'dat' to x, y, and z
+# Example 2: Rename variable a, b, and c in the data frame 'dat' to x, y, and z
 df.rename(dat, from = c("a", "b", "c"), to = c("x", "y", "z"))
 }
 \seealso{
-\code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
-\code{\link{df.sort}}
+\code{\link{df.duplicated}}, \code{\link{df.merge}},
+\code{\link{df.move}}, \code{\link{df.rbind}},
+\code{\link{df.sort}},
+\code{\link{df.subset}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

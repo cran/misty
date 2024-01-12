@@ -22,23 +22,23 @@ package indicating the cursor position.}
 \item{run}{logical: if \code{TRUE}, the code is executed after the document
 is created.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \description{
-This function is used to open a new R script, R markdown script, or SQL script
+This function opens a new R script, R markdown script, or SQL script
 in RStudio.
 }
-\details{
-The function \code{documentNew()} in the package \pkg{rstudioapi} is used to
-open an R script.
+\note{
+This function uses the \code{documentNew()} function in the \pkg{rstudioapi}
+package by Kevin Ushey, JJ Allaire, Hadley Wickham, and Gary Ritchie (2023).
 }
 \examples{
 \dontrun{
 
-# Open new R script file
+# Example 1: Open new R script file
 script.new()
 
-# Open new R script file and run some code
+# Example 2: Open new R script file and run some code
 script.new("#----------------------------
 # Example
 
@@ -47,13 +47,13 @@ rnorm(100)")
 }
 }
 \references{
-Ushey, K., Allaire, J., Wickham, H., & Ritchie, G. (2022). rstudioapi: Safely
-access the RStudio API. R package version 0.14.
+Ushey, K., Allaire, J., Wickham, H., & Ritchie, G. (2023). \emph{rstudioapi:
+Safely access the RStudio API}. R package version 0.15.0
 https://CRAN.R-project.org/package=rstudioapi
 }
 \seealso{
 \code{\link{script.close}}, \code{\link{script.open}},
-\code{\link{script.save}}, \code{\link{setsource}}
+\code{\link{script.save}}, \code{\link{script.copy}}, \code{\link{setsource}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

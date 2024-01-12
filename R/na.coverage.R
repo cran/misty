@@ -3,21 +3,37 @@
 #' This function computes the proportion of cases that contributes for the calculation
 #' of each variance and covariance.
 #'
-#' @param x       a matrix or data frame.
-#' @param tri     a character string or character vector indicating which triangular
-#'                of the matrix to show on the console, i.e., \code{both} for
-#'                upper and lower triangular, \code{lower} (default) for the
-#'                lower triangular, and \code{upper} for the upper triangular.
-#' @param digits  an integer value indicating the number of decimal places to
-#'                be used for displaying proportions.
-#' @param as.na   a numeric vector indicating user-defined missing values,
-#'                i.e. these values are converted to \code{NA} before conducting
-#'                the analysis.
-#' @param write   a character string for writing the results into a Excel file
-#'                naming a file with or without file extension '.xlsx', e.g.,
-#'                \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check   logical: if \code{TRUE}, argument specification is checked.
-#' @param output  logical: if \code{TRUE}, output is shown on the console.
+#' @param ...    a matrix or data frame with incomplete data, where missing
+#'               values are coded as \code{NA}. Alternatively, an expression
+#'               indicating the variable names in \code{data} e.g.,
+#'               \code{na.coverage(x1, x2, x3, data = dat)}. Note that the operators
+#'               \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'               and \code{!} can also be used to select variables, see 'Details'
+#'               in the \code{\link{df.subset}} function.
+#' @param data   a data frame when specifying one or more variables in the
+#'               argument \code{...}. Note that the argument is \code{NULL}
+#'               when specifying a matrix or data frame for the argument \code{...}.
+#' @param tri    a character string or character vector indicating which triangular
+#'               of the matrix to show on the console, i.e., \code{both} for
+#'               upper and lower triangular, \code{lower} (default) for the
+#'               lower triangular, and \code{upper} for the upper triangular.
+#' @param digits an integer value indicating the number of decimal places to
+#'               be used for displaying proportions.
+#' @param as.na  a numeric vector indicating user-defined missing values,
+#'               i.e. these values are converted to \code{NA} before conducting
+#'               the analysis.
+#' @param write  a character string naming a file for writing the output into
+#'               either a text file with file extension \code{".txt"} (e.g.,
+#'               \code{"Output.txt"}) or Excel file with file extention
+#'               \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'               name does not contain any file extension, an Excel file will
+#'               be written.
+#' @param append logical: if \code{TRUE} (default), output will be appended
+#'               to an existing text file with extension \code{.txt} specified
+#'               in \code{write}, if \code{FALSE} existing text file will be
+#'               overwritten.
+#' @param check  logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -42,7 +58,7 @@
 #' \tabular{ll}{
 #' \code{call} \tab function call \cr
 #' \code{type} \tab type of analysis \cr
-#' \code{data} \tab matrix or data frame specified in \code{x} \cr
+#' \code{data} \tab data frame used for the current analysis \cr
 #' \code{args} \tab specification of function arguments \cr
 #' \code{result} \tab result table \cr
 #' }
@@ -50,42 +66,80 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(x = c(1, NA, NA, 6, 3),
-#'                   y = c(7, NA, 8, 9, NA),
-#'                   z = c(2, NA, 3, NA, 5))
+#' # Example 1a: Compute variance-covariance coverage
+#' na.coverage(airquality)
 #'
-#' # Compute variance-covariance coverage
-#' na.coverage(dat)
+#' # Example 1b: Alternative specification using the 'data' argument
+#' na.coverage(., data = airquality)
 #'
 #' \dontrun{
-#' # Write Results into a Excel file
-#' na.coverage(dat, write = "Coverage.xlsx")
+#' # Example 2a: Write Results into a text file
+#' na.coverage(airquality, write = "Coverage.txt")
 #'
-#' result <- na.coverage(dat, output = FALSE)
+#' # Example 2b: Write Results into a Excel file
+#' na.coverage(airquality, write = "Coverage.xlsx")
+#'
+#' result <- na.coverage(airquality, output = FALSE)
 #' write.result(result, "Coverage.xlsx")
 #' }
-na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na = NULL,
-                        write = NULL, check = TRUE, output = TRUE) {
+na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), digits = 2,
+                        as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+                        output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument 'data' ####
+
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+
+    # Extract data
+    x <- data[, var.names]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
+
+  df <- as.data.frame(x, stringsAsFactors = FALSE)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
@@ -95,6 +149,9 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE) }
 
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
@@ -102,26 +159,12 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
-
-  if (isTRUE(!is.null(as.na))) {
-
-    x <- misty::as.na(x, na = as.na, check = check)
-
-  }
+  # Arguments ------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print triangular ####
 
   tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
-
-  df <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #_____________________________________________________________________________
   #
@@ -152,7 +195,8 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
   object <- list(call = match.call(),
                  type = "na.coverage",
                  data = x,
-                 args = list(tri = tri, digits = digits, as.na = as.na, check = TRUE, output = output),
+                 args = list(tri = tri, digits = digits, as.na = as.na,
+                             write = write, append = append, check = TRUE, output = output),
                  result = restab)
 
   class(object) <- "misty.object"
@@ -161,7 +205,34 @@ na.coverage <- function(x, tri = c("both", "lower", "upper"), digits = 2, as.na 
   #
   # Write results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #

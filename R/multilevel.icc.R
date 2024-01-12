@@ -1,40 +1,140 @@
 #' Intraclass Correlation Coefficient, ICC(1) and ICC(2)
 #'
 #' This function computes the intraclass correlation coefficient ICC(1), i.e.,
-#' proportion of the total variance explained by the grouping structure, and ICC(2),
-#' i.e., reliability of aggregated variables.
+#' proportion of the total variance explained by the grouping structure, and
+#' ICC(2), i.e., reliability of aggregated variables in a two-level and
+#' three-level model.
 #'
-#' Note that this function is restricted to two-level models.
+#' @param ...     a numeric vector, matrix, or data frame. Alternatively, an
+#'                expression indicating the variable names in \code{data}. Note
+#'                that the operators \code{.}, \code{+}, \code{-}, \code{~},
+#'                \code{:}, \code{::}, and \code{!} can also be used to select
+#'                variables, see 'Details' in the \code{\link{df.subset}}
+#'                function.
+#' @param data    a data frame when specifying one or more variables in the
+#'                argument \code{...}. Note that the argument is \code{NULL}
+#'                when specifying a numeric vector, matrix, or data frame for
+#'                the argument \code{...}.
+#' @param cluster a character string indicating the name of the cluster
+#'                variable in \code{...} or \code{data} for two-level data,
+#'                a character vector indicating the names of the cluster
+#'                variables in \code{...} for three-level data, or a vector
+#'                or data frame representing the nested grouping structure
+#'                (i.e., group or cluster variables). Alternatively, a
+#'                character string or character vector indicating the variable
+#'                name(s) of the cluster variable(s) in \code{data}. Note that
+#'                the cluster variable at Level 3 come first in a three-level
+#'                model, i.e., \code{cluster = c("level3", "level2")}.
+#' @param type    a character string indicating the type of intraclass correlation
+#'                coefficient, i.e., \code{type = "1a"} (default) for ICC(1) and
+#'                \code{type = "2"} for ICC(2) when specifying a two-level model
+#'                (i.e., one cluster variable), and \code{type = "1a"} (default)
+#'                for ICC(1) representing the propotion of variance at Level 2
+#'                and Level 3, \code{type = "1b"} representing an estimate
+#'                of the expected correlation between two randomly chosen elements
+#'                in the same group, and \code{type = "2"} for ICC(2) when
+#'                specifying a three-level model (i.e., two cluster variables).
+#'                See 'Details' for the formula used in this function.
+#' @param method  a character string indicating the method used to estimate
+#'                intraclass correlation coefficients, i.e., \code{method = "aov"}
+#'                ICC estimated using the \code{aov} function, \code{method = "lme4"}
+#'                (default) ICC estimated using the \code{lmer} function in the
+#'                \pkg{lme4} package, \code{method = "nlme"} ICC estimated using
+#'                the \code{lme} function in the \pkg{nlme} package. Note that
+#'                if the lme4 or nlme package is needed when estimating ICCs in
+#'                a three-level model.
+#' @param REML    logical: if \code{TRUE} (default), restricted maximum likelihood
+#'                is used to estimate the null model when using the \code{lmer}
+#'                function in the \pkg{lme4} package or the \code{lme} function
+#'                in the \pkg{nlme} package.
+#' @param as.na   a numeric vector indicating user-defined missing values,
+#'                i.e. these values are converted to \code{NA} before conducting
+#'                the analysis. Note that \code{as.na()} function is only applied
+#'                to \code{...} but not to \code{cluster}.
+#' @param check   logical: if \code{TRUE} (default), argument specification is
+#'                checked.
 #'
-#' @param x           a vector, matrix or data frame.
-#' @param cluster     either a character string indicating the variable name of
-#'                    the cluster variable in 'x' or a vector representing the
-#'                    nested grouping structure (i.e., group or cluster variable).
-#' @param type        numeric value indicating the type of intraclass correlation
-#'                    coefficient, i.e., \code{type = 1} for ICC(1) and \code{type = 2}
-#'                    for ICC(2).
-#' @param method      a character string indicating the method used to estimate
-#'                    intraclass correlation coefficients, i.e., \code{method = "aov"}
-#'                    ICC estimated using the \code{aov} function, \code{method = "lme4"}
-#'                    (default) ICC estimated using the \code{lmer} function in the
-#'                    \pkg{lme4} package, \code{method = "nlme"} ICC estimated using
-#'                    the \code{lme} function in the \pkg{nlme} package. Note that
-#'                    if the lme4 package is not installed, method = "aov" will be used.
-#' @param REML        logical: if \code{TRUE} (default), restricted maximum likelihood
-#'                    is used to estimate the null model when using the \code{lmer}
-#'                    function in the \pkg{lme4} package or the \code{lme} function
-#'                    in the \pkg{nlme} package.
-#' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting
-#'                    the analysis. Note that \code{as.na()} function is only applied
-#'                    to \code{x} but not to \code{cluster}.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
+#' @details
+#' \describe{
+#' \item{\strong{Two-Level Model}}{In a two-level model, the intraclass
+#' correlation coefficients are computed in the random intercept-only model:
 #'
+#' \deqn{Y_{ij} = \gamma_{00} + u_{0j} + r_{ij}}
+#'
+#' where the variance in \eqn{Y} is decomposed into two independent components:
+#' \eqn{\sigma^2_{u_{0}}}, which represents the variance at Level 2, and
+#' \eqn{\sigma^2_{r}}, which represents the variance at Level 1 (Hox et al.,
+#' 2018). These two variances sum up to the total variance and are referred to
+#' as variance components. The intraclass correlation coefficient, ICC(1)
+#' \eqn{\rho} requested by \code{type = "1a"} represents the proportion of the
+#' total variance explained by the grouping structure and is defined by the equation
+#'
+#' \deqn{\rho = \frac{\sigma^2_{u_{0}}}{\sigma^2_{u_{0}} + \sigma^2_{r}}}
+#'
+#' The intraclass correlation coefficient, ICC(2) \eqn{\lambda_j} requested by
+#' \code{type = "2"} represents the reliability of aggregated variables and is
+#' defined by the equation
+#'
+#' \deqn{\lambda_j = \frac{\sigma^2_{u_{0}}}{\sigma^2_{u_{0}} + \frac{\sigma^2_{r}}{n_j}} = \frac{n_j\rho}{1 + (n_j - 1)\rho}}
+#'
+#' where \eqn{n_j} is the average group size (Snijders & Bosker, 2012).
+#' }
+#'
+#' \item{\strong{Three-Level Model}}{In a three-level model, the intraclass
+#' correlation coefficients are computed in the random intercept-only model:
+#'
+#' \deqn{Y_{ijk} = \gamma_{000} + v_{0k} + u_{0jk} + r_{ijk}}
+#'
+#' where the variance in \eqn{Y} is decomposed into three independent components:
+#' \eqn{\sigma^2_{v_{0}}}, which represents the variance at Level 3,
+#' \eqn{\sigma^2_{u_{0}}}, which represents the variance at Level 2, and
+#' \eqn{\sigma^2_{r}}, which represents the variance at Level 1 (Hox et al.,
+#' 2018). There are two ways to compute intraclass correlation coefficients
+#' in a three-level model. The first method requested by \code{type = "1a"}
+#' represents the proportion of variance at Level 2 and Level 3 and should be
+#' used if we are interestd in a decomposition of the variance across levels.
+#' The intraclass correlation coefficient, ICC(1) \eqn{\rho_{L2}} at Level 2 is
+#' defined as:
+#'
+#' \deqn{\rho_{L2} = \frac{\sigma^2_{u_{0}}}{\sigma^2_{v_{0}} + \sigma^2_{u_{0}} + \sigma^2_{r}}}
+#'
+#' The ICC(1) \eqn{\rho_{L3}} at Level 3 is defined as:
+#'
+#' \deqn{\rho_{L3} = \frac{\sigma^2_{v_{0}}}{\sigma^2_{v_{0}} + \sigma^2_{u_{0}} + \sigma^2_{r}}}
+#'
+#' The second method requested by \code{type = "1b"} represents the expected
+#' correlation between two randomly chosen elements in the same group. The
+#' intraclass correlation coefficient, ICC(1) \eqn{\rho_{L2}} at Level 2 is
+#' defined as:
+#'
+#' \deqn{\rho_{L2} = \frac{\sigma^2_{v_{0}} + \sigma^2_{u_{0}}}{\sigma^2_{v_{0}} + \sigma^2_{u_{0}} + \sigma^2_{r}}}
+#'
+#' The ICC(1) \eqn{\rho_L3} at Level 3 is defined as:
+#'
+#' \deqn{\rho_{L3} = \frac{\sigma^2_{v_{0}}}{\sigma^2_{v_{0}} + \sigma^2_{u_{0}} + \sigma^2_{r}}}
+#'
+#' Note that both formula are correct, but express different aspects of the data,
+#' which happen to coincide when there are only two levels (Hox et al., 2018).
+#'
+#' The intraclass correlation coefficients, ICC(2) requested by \code{type = "2"}
+#' represent the reliability of aggregated variables at Level 2 and Level 3.
+#' The ICC(2) \eqn{\lambda_j} at Level 2 is defined as:
+#'
+#' \deqn{\lambda_j = \frac{\sigma^2_{u_{0}}}{\sigma^2_{u_{0}} + \frac{\sigma^2_{r}}{n_j}}}
+#'
+#' The ICC(2) \eqn{\lambda_k} at Level 3 is defined as:
+#'
+#' \deqn{\lambda_k = \frac{\sigma^2_{v_{0}}}{\frac{{\sigma^2_{v_{0}} + \sigma^2_{u_{0}}}}{n_{j}} + \frac{\sigma^2_{r}}{n_k \cdot n_j}}}
+#'
+#' where \eqn{n_j} is the average group size at Level 2 and \eqn{n_j} is the average
+#' group size at Level 3 (Hox et al., 2018).}
+#' }
+#' }
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{multilevel.descript}}
+#' \code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}}
 #'
 #' @references
 #' Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis:
@@ -44,101 +144,156 @@
 #' to basic and advanced multilevel modeling} (2nd ed.). Sage Publishers.
 #'
 #' @return
-#' Returns a numeric vector with intraclass correlation coefficient(s).
+#' Returns a numeric vector or matrix with intraclass correlation coefficient(s).
+#' In a three level model, the label \code{L2} is used for ICCs at Level 2
+#' and \code{L3} for ICCs at Level 3.
 #'
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
-#'                   cluster = c(1, 1, 1, 1, 2, 2, 3, 3, 3),
-#'                   x1 = c(2, 3, 2, 2, 1, 2, 3, 4, 2),
-#'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
-#'                   x3 = c(2, 1, 2, 2, 3, 3, 5, 2, 4))
+#' # Load data set "Demo.twolevel" in the lavaan package
+#' data("Demo.twolevel", package = "lavaan")
 #'
-#' #---------------------------
+#' #----------------------------------------------------------------------------
+#' # Two-Level Models
+#'
+#' #..........
 #' # Cluster variable specification
 #'
-#' # Cluster variable 'cluster' in 'x'
-#' multilevel.icc(dat[, c("x1", "cluster")], cluster = "cluster")
+#' # Example 1a: Cluster variable 'cluster' in '...'
+#' multilevel.icc(Demo.twolevel[, c("y1", "cluster")], cluster = "cluster")
 #'
-#' # Cluster variable 'cluster' not in 'x'
-#' multilevel.icc(dat$x1, cluster = dat$cluster)
+#' # Example 1b: Cluster variable 'cluster' not in '...'
+#' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 #'
-#' #---------------------------
-#' # ICC(1) for x1
-#' multilevel.icc(dat$x1, cluster = dat$cluster)
+#' # Example 1c: Alternative specification using the 'data' argument
+#' multilevel.icc(y1, data = Demo.twolevel, cluster = "cluster")
 #'
-#' # ICC(1) for x1, convert value 1 to NA
-#' multilevel.icc(dat$x1, cluster = dat$cluster, as.na = 1)
+#' #..........
 #'
-#' # ICC(2) for x1
-#' multilevel.icc(dat$x1, cluster = dat$cluster, type = 2)
+#' # Example 2: ICC(1) for 'y1'
+#' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 #'
-#' # ICC(1) for x1,
-#' # use lmer() function in the lme4 package to estimate ICC
-#' multilevel.icc(dat$x1, cluster = dat$cluster, method = "lme4")
+#' # Example 3: ICC(2)
+#' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, type = 2)
 #'
-#' # ICC(1) for x1, x2, and x3
-#' multilevel.icc(dat[, c("x1", "x2", "x3")], cluster = dat$cluster)
-multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme"),
-                           REML = TRUE, as.na = NULL, check = TRUE) {
+#' # Example 4: ICC(1)
+#' # use lme() function in the lme4 package to estimate ICC
+#' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, method = "nlme")
+#'
+#' # Example 5a: ICC(1) for 'y1', 'y2', and 'y3'
+#' multilevel.icc(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
+#'
+#' # Example 5b: Alternative specification using the 'data' argument
+#' multilevel.icc(y1:y3, data = Demo.twolevel, cluster = "cluster")
+#'
+#' #----------------------------------------------------------------------------
+#' # Three-Level Models
+#'
+#' # Create arbitrary three-level data
+#' Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
+#'                                              cluster3 = rep(1:10, each = 250))
+#'
+#' #..........
+#' # Cluster variable specification
+#'
+#' # Example 6a: Cluster variables 'cluster' in '...'
+#' multilevel.icc(Demo.threelevel[, c("y1", "cluster3", "cluster2")],
+#'                cluster = c("cluster3", "cluster2"))
+#'
+#' # Example 6b: Cluster variables 'cluster' not in '...'
+#' multilevel.icc(Demo.threelevel$y1, cluster = Demo.threelevel[, c("cluster3", "cluster2")])
+#'
+#' # Example 6c: Alternative specification using the 'data' argument
+#' multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
+#'
+#' #----------------------------------------------------------------------------
+#'
+#' # Example 7a: ICC(1), propotion of variance at Level 2 and Level 3
+#' multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
+#'
+#' # Example 7b: ICC(1), expected correlation between two randomly chosen elements
+#' # in the same group
+#' multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"),
+#'                type = "1b")
+#'
+#' # Example 7c: ICC(2)
+#' multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"),
+#'                type = "2")
+multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
+                           method = c("aov", "lme4", "nlme"), REML = TRUE,
+                           as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a vector, matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Vector, matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.atomic(x) && !is.matrix(x) && !is.data.frame(x))) { stop("Please specify a numeric vector, matrix or data frame with numeric variables for the argument 'x'.", call. = FALSE) }
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   # Check input 'cluster'
-  if (isTRUE(missing(cluster))) { stop("Please specify a vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
+  if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
+
+  # Check if input 'cluster' is NULL
+  if (isTRUE(is.null(cluster))) { stop("Input specified for the argument 'cluster' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Cluster variable ####
+  ## Data using the argument 'data' ####
 
-  # Cluster variable 'cluster' in 'x'
-  if (isTRUE(length(cluster) == 1L)) {
+  if (isTRUE(!is.null(data))) {
 
-    if (isTRUE(!cluster %in% colnames(x))) { stop("Cluster variable specifed in the argument 'cluster' was not found in 'x'.", call. = FALSE) }
+    # Variable names
+    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
 
-    # Index of cluster in 'x'
-    cluster.col <- which(colnames(x) == cluster)
+    # Extract data
+    x <- data[, var.names]
 
-    # Replace variable name with cluster variable
-    cluster <- x[, cluster.col]
+    # Cluster variable
+    cluster <- data[, cluster]
 
-    # Remove cluster variable
-    x <- x[, -cluster.col, drop = FALSE]
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+    # Data and cluster
+    var.group <- .var.group(data = x, cluster = cluster)
+
+    # Data
+    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
+
+    # Cluster variable
+    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Cluster variables ####
+
+  if (isTRUE(ncol(as.data.frame(cluster)) == 2L)) {
+
+    l3.cluster <- cluster[, 1L]
+    l2.cluster <- cluster[, 2L]
 
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    x <- misty::as.na(x, na = as.na, check = check)
-
-    # Variable with missing values only
-    x.miss <- vapply(as.data.frame(x), function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-    if (isTRUE(any(x.miss))) {
-
-      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
-                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
-
-    }
-
-  }
+  if (isTRUE(!is.null(as.na))) { x <- misty::as.na(x, na = as.na, check = check) }
 
   #_____________________________________________________________________________
   #
@@ -149,60 +304,8 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
 
   if (isTRUE(check)) {
 
-    # Check input 'cluster'
-    if (isTRUE(length(unique(na.omit(cluster))) == 1L)) { stop("There is only one group represented in the cluster variable specified in 'cluster'.", call. = FALSE) }
-
-    # Check input 'cluster'
-    if (isTRUE(is.null(dim(x)))) {
-
-      # Numeric vector and cluster?
-      if (isTRUE(length(x) != length(cluster))) { stop("Length of the vector 'x' does not match with the length of the cluster variable in 'cluster'.", call. = FALSE) }
-
-    } else {
-
-      # Numeric vector and cluster?
-      if (isTRUE(nrow(x) != length(cluster))) { stop("Number of rows in 'x' does not match with the length of the cluster variable 'cluster'.", call. = FALSE) }
-
-    }
-
-    # Variance within cluster
-    if (isTRUE(is.null(dim(x)))) {
-
-      if (isTRUE(all(tapply(unlist(x), cluster, function(y) length(na.omit(y))) <= 1L))) {
-
-        stop("Varialbe specified in 'x' does not have any within-cluster variance.", call. = FALSE)
-
-      }
-
-    } else {
-
-      if (isTRUE(any(apply(x, 2, function(y) all(tapply(y, cluster, function(z) length(na.omit(z))) <= 1L))))) {
-
-        stop("There are variables in 'x' without any within-cluster variance.", call. = FALSE)
-
-      }
-
-    }
-
-    # Check input 'x': Zero variance?
-    x.check <- vapply(as.data.frame(x), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
-
-    if (isTRUE(any(x.check))) {
-
-      if (isTRUE(length(x.check) > 1L)) {
-
-        warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
-
-      } else {
-
-        stop("Vector specified in 'x' has zero variance.", call. = FALSE)
-
-      }
-
-    }
-
     # Check input 'type'
-    if (isTRUE(any(!type %in% c(1L, 2L)))) { stop("Please specify the numeric value 1 or 2 for the argument'type'.", call. = FALSE) }
+    if (isTRUE(any(!type %in% c(c("1a", "1b", "2"))))) { stop("Please specify \"1a\", \"1b\", or \"2\" for the argument'type'.", call. = FALSE) }
 
     # Check input 'method'
     if (isTRUE(any(!method %in% c("aov", "lme4", "nlme")))) { stop("Character string in the argument 'method' does not match with \"aov\", \"lme4\", or \"nlme\".", call. = FALSE) }
@@ -216,53 +319,29 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
   #
   # Arguments ------------------------------------------------------------------
 
-  if (isTRUE(length(method) == 1L)) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Type default option ####
 
-    # Package lme4 installed?
-    if (isTRUE(method == "lme4")) {
+  if (isTRUE(all(c("1a", "1b", "2") %in% type))) { type <- "1a" }
 
-      if (isTRUE(!nzchar(system.file(package = "lme4")))) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Method default option ####
 
-        warning("Package \"lme4\" is needed for method = \"lme4\", method \"aov\" will be used instead.", call. = FALSE )
+  if (isTRUE(all(c("aov", "lme4", "nlme") %in% method))) { method <- "lme4" }
 
-        method <- "aov"
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Check if packages are installed ####
 
-      }
+  # Package lme4 installed?
+  if (isTRUE(method == "lme4")) { if (isTRUE(!nzchar(system.file(package = "lme4")))) { stop("Package \"lme4\" is needed for method = \"lme4\", please install the package or switch to a different method.", call. = FALSE) } }
 
-    }
+  # Package nlme installed?
+  if (isTRUE(method == "nlme")) { if (isTRUE(!nzchar(system.file(package = "nlme")))) { stop("Package \"nlme\" is needed for method = \"nlme\", please install the package or switch to a different method.", call. = FALSE) } }
 
-    # Package nlme installed?
-    if (isTRUE(method == "nlme")) {
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Two cluster variables ####
 
-      if (isTRUE(!nzchar(system.file(package = "nlme")))) {
-
-        warning("Package \"nlme\" is needed for method = \"nlme\", method \"aov\" will be used instead.",
-                call. = FALSE )
-
-        method <- "aov"
-
-      }
-
-    }
-
-  } else {
-
-    # Method default option
-    if (isTRUE(all(c("aov", "lme4", "nlme") %in% method))) {
-
-      if (isTRUE(nzchar(system.file(package = "lme4")))) {
-
-        method <- "lme4"
-
-      } else {
-
-        method <- "aov"
-
-      }
-
-    }
-
-  }
+  if (isTRUE(ncol(as.data.frame(cluster)) == 2L && method == "aov")) { stop("Please specify \"lme4\" or \"nlme\" for the argument 'method' when specifying two cluster variables.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -277,113 +356,168 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
     ### Variable with non-zero variance ####
     if (isTRUE(var(x, na.rm = TRUE) != 0L)) {
 
-      # ICC using aov() function
-      if (isTRUE(method == "aov")) {
+      #-----------------
+      ##### One cluster variable
+      if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) {
 
-        # Estimate model
-        mod <- aov(x ~ 1 + Error(as.factor(cluster)))
+        ###### ICC using aov() function
+        if (isTRUE(method == "aov")) {
 
-        # Model summary
-        mod.summary <- summary(mod)
+          # Estimate model
+          mod <- aov(x ~ 1 + Error(as.factor(cluster)))
 
-        # Mean Squared Error Between
-        MSQ.B <- unlist(mod.summary[[1]])["Mean Sq"]
+          # Model summary
+          mod.summary <- summary(mod)
 
-        # Mean Squared Error Within
-        MSQ.W <- unlist(mod.summary[[2]])["Mean Sq"]
+          # Between-cluster variance
+          var.u <- unname(unlist(mod.summary[[1L]])["Mean Sq"])
 
-        # ICC(1)
-        if (isTRUE(type == 1L)) {
+          # Within-cluster variance
+          var.r <- unname(unlist(mod.summary[[2L]])["Mean Sq"])
 
-          # Average cluster size
-          cluster.size <- mean(tapply(x, cluster, function(y) sum(!is.na(y))))
+          # Total variance
+          var.total <- var.u + var.r
 
-          # Intraclass correlation coefficient, ICC(1)
-          object <- unname((MSQ.B - MSQ.W) / (MSQ.B + ((cluster.size - 1L) * MSQ.W)))
+        ###### Variance components lmer() function
+        } else if (isTRUE(method == "lme4")) {
 
-          if (isTRUE(object < 0L)) { object <- 0L }
+          # Estimate model
+          mod <- suppressMessages(lme4::lmer(x ~ 1 + (1|cluster), REML = REML, control = lme4::lmerControl(optimizer = "bobyqa")))
 
-        # ICC(2)
-        } else {
+          # Variance components
+          vartab <- as.data.frame(suppressMessages(lme4::VarCorr(mod)))
 
-          # Intraclass correlation coefficient, ICC(2)
-          object <- unname((MSQ.B - MSQ.W) / MSQ.B)
+          # Between-cluster variance
+          var.u <- vartab[vartab$grp == "cluster", "vcov"]
 
-          if (isTRUE(object < 0L)) { object <- 0L }
+          # Within-cluster variance
+          var.r <- vartab[vartab$grp == "Residual", "vcov"]
 
-        }
+          # Total variance
+          var.total <- var.u + var.r
 
-      # ICC using lmer() function
-      } else if (isTRUE(method == "lme4")) {
+        ###### Variance components lme() function
+        } else if (isTRUE(method == "nlme")) {
 
-        # Estimate model
-        mod <- suppressMessages(lme4::lmer(x ~ 1 + (1|cluster), REML = REML,
-                                control = lme4::lmerControl(optimizer = "bobyqa")))
+          # REML or ML
+          ifelse(isTRUE(REML), REML <- "REML", REML <- "ML")
 
-        # Variance components
-        vartab <- as.data.frame(suppressMessages(lme4::VarCorr(mod)))
+          # Estimate model
+          mod <- suppressMessages(nlme::lme(x ~ 1, random = ~1 | cluster, na.action = na.omit, method = REML))
 
-        # Between-cluster variance
-        var.u <- vartab[vartab$grp == "cluster", "vcov"]
+          # Variance components
+          vartab <- nlme::VarCorr(mod)
 
-        # Within-cluster variance
-        var.r <- vartab[vartab$grp == "Residual", "vcov"]
+          # Between-cluster variance
+          var.u <- as.numeric(vartab["(Intercept)", "Variance"])
 
-        # Total variance
-        var.total <- var.u + var.r
+          # Within-cluster variance
+          var.r <- as.numeric(vartab["Residual", "Variance"])
 
-        # ICC(1)
-        if (isTRUE(type == 1L)) {
-
-          # Intraclass correlation coefficient, ICC(1)
-          object <- var.u / var.total
-
-        # ICC(2)
-        } else {
-
-          # Average cluster size
-          cluster.size <- mean(tapply(x, cluster, function(y) sum(!is.na(y))))
-
-          # Intraclass correlation coefficient, ICC(2)
-          object <- var.u / (var.u + var.r / cluster.size)
+          # Total variance
+          var.total <- var.u + var.r
 
         }
 
-      # ICC using lme() function
-      } else if (isTRUE(method == "nlme")) {
+        ###### ICC
+        if (isTRUE(method %in% c("lme4", "nlme"))) {
 
-        # REML or ML
-        ifelse(isTRUE(REML), REML <- "REML", REML <- "ML")
+          # ICC(1)
+          if (isTRUE(type == "1a")) {
 
-        # Estimate model
-        mod <- nlme::lme(x ~ 1, random = ~1 | cluster, na.action = na.omit, method = REML)
-
-        # Variance components
-        vartab <- nlme::VarCorr(mod)
-
-        var.u  <- as.numeric(vartab["(Intercept)", "Variance"])
-
-        var.r <- as.numeric(vartab["Residual", "Variance"])
-
-        # Total variance
-        var.total <- var.u + var.r
-
-        # ICC(1)
-        if (isTRUE(type == 1L)) {
-
-          # Intraclass correlation coefficient, ICC(1)
-          object <- var.u / var.total
+            object <- var.u / var.total
 
           # ICC(2)
-        } else {
+          } else if (isTRUE(type == "2")) {
 
-          # Average cluster size
-          cluster.size <- mean(tapply(x, cluster, function(y) sum(!is.na(y))))
+            # Intraclass correlation coefficient, ICC(2)
+            object <- var.u / (var.u + var.r / mean(table(cluster)))
 
-          # Intraclass correlation coefficient, ICC(2)
-          object <- var.u / (var.u + var.r / cluster.size)
+          }
+
+          if (isTRUE(object < 0L)) { object <- 0L }
 
         }
+
+      #-----------------
+      ##### Two cluster variables
+      } else if (isTRUE(ncol(as.data.frame(cluster)) == 2L)) {
+
+        ###### ICC using lmer() function
+        if (isTRUE(method == "lme4")) {
+
+          # Estimate model
+          mod <- suppressMessages(lme4::lmer(x ~ 1 + (1|l3.cluster/l2.cluster), REML = REML, control = lme4::lmerControl(optimizer = "bobyqa")))
+
+          # Variance components
+          vartab <- as.data.frame(suppressMessages(lme4::VarCorr(mod)))
+
+          # Level 3 Between-cluster variance
+          var.v <- vartab[vartab$grp == "l3.cluster", "vcov"]
+
+          # Level 2 Between-cluster variance
+          var.u <- vartab[vartab$grp == "l2.cluster:l3.cluster", "vcov"]
+
+          # Level 1 Within-cluster variance
+          var.r <- vartab[vartab$grp == "Residual", "vcov"]
+
+          # Total variance
+          var.total <- var.v + var.u + var.r
+
+        ###### ICC using lme() function
+        } else if (isTRUE(method == "nlme")) {
+
+          # REML or ML
+          ifelse(isTRUE(REML), REML <- "REML", REML <- "ML")
+
+          # Estimate model
+          mod <- suppressMessages(nlme::lme(x ~ 1, random = ~1 | l3.cluster/l2.cluster, na.action = na.omit, method = REML))
+
+          # Variance components
+          vartab <- nlme::VarCorr(mod)
+
+          # Level 3 Between-cluster variance
+          var.v <- as.numeric(vartab[2L, "Variance"])
+
+          # Level 2 Between-cluster variance
+          var.u <- as.numeric(vartab[4L, "Variance"])
+
+          # Level 1 Within-cluster variance
+          var.r <- as.numeric(vartab["Residual", "Variance"])
+
+          # Total variance
+          var.total <- var.v + var.u + var.r
+
+        }
+
+        # ICC(1), proportion of variance
+        if (isTRUE(type == "1a")) {
+
+          icc.l3 <- var.v / var.total
+          icc.l2 <- var.u / var.total
+
+        # ICC(1), estimate of the expected correlation
+        } else if (isTRUE(type == "1b")) {
+
+          icc.l3 <- var.v / var.total
+          icc.l2 <- var.v + var.u / var.total
+
+        # ICC(2)
+        } else if (isTRUE(type == "2")) {
+
+          # Average cluster size
+          cluster.size.l2 <- mean(table(l2.cluster))
+          cluster.size.l3 <- mean(table(cluster[which(!duplicated(cluster[, 2])), 1L]))
+
+          # Formula 10.25, Hox et al. (2018, p. 185) and Formula 8.8, Raudenbush and Bryk (2002, p. 230)
+          icc.l3 <- var.v / (var.v + var.u / cluster.size.l3 + var.r / (cluster.size.l2 * cluster.size.l3))
+
+          # Formula 10.27, Hox et al. (2018, p. 186)
+          icc.l2 <- var.u / (var.u + var.r / cluster.size.l2)
+
+        }
+
+        object <- c(L3 = icc.l3, L2 = icc.l2)
 
       }
 
@@ -391,7 +525,19 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
     ### Variable with non-zero variance ####
     } else {
 
-      object <- NA
+      #-----------------
+      ##### One cluster variable
+      if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) {
+
+        object <- NA
+
+      #-----------------
+      ##### Two cluster variables
+      } else {
+
+        object <- c(L3 = NA, L2 = NA)
+
+      }
 
     }
 
@@ -399,8 +545,8 @@ multilevel.icc <- function(x, cluster, type = 1, method = c("aov", "lme4", "nlme
   ## More than one dependent variable ####
   } else {
 
-    object <- apply(x, 2, function(y) misty::multilevel.icc(y, cluster, type = type, method = method,
-                                                            REML = REML, as.na = NULL, check = FALSE))
+    object <- sapply(x, function(y) misty::multilevel.icc(y, data = NULL, cluster = cluster, type = type, method = method,
+                                                          REML = REML, as.na = NULL, check = FALSE))
 
   }
 

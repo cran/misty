@@ -4,8 +4,8 @@
 \alias{dominance.manual}
 \title{Dominance Analysis, Manually Inputting a Correlation Matrix}
 \usage{
-dominance.manual(x, out = NULL, digits = 3, write = NULL, check = TRUE,
-                 output = TRUE)
+dominance.manual(x, out = NULL, digits = 3, write = NULL, append = TRUE,
+                 check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame with the (model-implied) correlation matrix
@@ -20,13 +20,21 @@ used for displaying results. Note that the percentage relative
 importance of predictors are printed with \code{digits} minus 1
 decimal places.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -49,26 +57,25 @@ copied the function \code{combinations()} from the \code{gtools} package
 }
 \examples{
 \dontrun{
-#----------------------------
+#----------------------------------------------------------------------------
 # Linear model
 
-dat <- data.frame(x1 = c(3, 2, 4, 9, 5, 3, 6, 4, 5, 6, 3, 5),
-                  x2 = c(1, 4, 3, 1, 2, 4, 3, 5, 1, 7, 8, 7),
-                  x3 = c(0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1),
-                  y  = c(0, 1, 0, 2, 0, 1, 0, 0, 1, 2, 1, 0))
+# Example 1a: Dominance analysis, 'mpg' predicted by 'cyl', 'disp', and 'hp'
+dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]))
 
-# Dominance analysis
-dominance.manual(cor(dat[, c("y", "x1", "x2", "x3")]))
-
-# Equivalent results using the dominance() function
-mod <- lm(y ~ x1 + x2 + x3, data = dat)
+# Example 1b: Equivalent results using the dominance() function
+mod <- lm(mpg ~ cyl + disp + hp, data = mtcars)
 dominance(mod)
 
-# Outcome 'x3' predicted by 'y', 'x1', and 'x2'
-dominance.manual(cor(dat[, c("y", "x1", "x2", "x3")]), out = "x3")
+# Example 1c: Dominance analysis, 'hp' predicted by 'mpg', 'cyl', and 'disp'
+dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]), out = "hp")
 
-#----------------------------
-# Structural equation modeling
+# Example 1d: Write results into a text file
+dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]),
+                 write = "Dominance_Manual.txt")
+
+#----------------------------------------------------------------------------
+# Example 2: Structural equation modeling
 
 library(lavaan)
 
@@ -93,7 +100,7 @@ fit.cor <- lavInspect(fit, what = "cor.lv")
 dominance.manual(fit.cor)
 
 #.............
-# Latent and manifest variables
+# Example 3: Latent and manifest variables
 
 # Model specification, convert manifest to latent variable
 model <- '# Measurement model
@@ -114,8 +121,8 @@ fit.cor <- lavInspect(fit, what = "cor.lv")
 # Dominance analysis
 dominance.manual(fit.cor)
 
-#----------------------------
-# Multilevel modeling
+#----------------------------------------------------------------------------
+# Example 4: Multilevel modeling
 
 # Model specification
 model <- 'level: 1
@@ -149,8 +156,8 @@ dominance.manual(fit.cor$within)
 # Dominance analysis Between
 dominance.manual(fit.cor$cluster)
 
-#----------------------------
-# Mplus
+#----------------------------------------------------------------------------
+# Example 5: Mplus
 #
 # In Mplus, the model-impied correlation matrix  of the latent variables
 # can be requested by OUTPUT: TECH4 and imported into R by using the

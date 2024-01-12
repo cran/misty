@@ -2,29 +2,39 @@
 % Please edit documentation in R/skewness.R
 \name{skewness}
 \alias{skewness}
-\title{Skewness}
+\alias{kurtosis}
+\title{Skewness and Kurtosis}
 \usage{
-skewness(x, as.na = NULL, check = TRUE)
+skewness(..., data = NULL, as.na = NULL, check = TRUE)
+
+kurtosis(..., data = NULL, as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector.}
+\item{...}{a numeric vector. Alternatively, an expression indicating the
+variable names in \code{data} e.g., \code{skewness(x1, data = dat)}. }
+
+\item{data}{a data frame when specifying the variable in the argument
+\code{...}. Note that the argument is \code{NULL} when specifying
+a numeric vector for the argument \code{...}.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
-Returns the estimated skewness of \code{x}.
+Returns the estimated skewness or kurtosis of \code{x}.
 }
 \description{
-This function computes the skewness.
+The function \code{skewness} computes the skewness, the function \code{kurtosis}
+computes the kurtosis.
 }
 \details{
-The same method for estimating skewness is used in SAS and SPSS. Missing values
-(\code{NA}) are stripped before the computation. Note that at least 3 observations
-are needed to compute skewness.
+The same method for estimating skewness and kurtosis is used in SAS and SPSS.
+Missing values (\code{NA}) are stripped before the computation. Note that at
+least 3 observations are needed to compute skewness and at least 4 observations
+are needed to compute excess kurtosis.
 }
 \examples{
 # Set seed of the random number generation
@@ -32,15 +42,18 @@ set.seed(123)
 # Generate random numbers according to N(0, 1)
 x <- rnorm(100)
 
-# Compute skewness
+# Example 1: Compute skewness
 skewness(x)
+
+# Example 2: Compute excess kurtosis
+kurtosis(x)
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
 - Using R and SPSS}. New York: John Wiley & Sons.
 }
 \seealso{
-\code{\link{kurtosis}}
+\code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

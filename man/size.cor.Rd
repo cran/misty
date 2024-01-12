@@ -5,7 +5,8 @@
 \title{Sample Size Determination for Testing Pearson's Correlation Coefficient}
 \usage{
 size.cor(rho, delta, alternative = c("two.sided", "less", "greater"),
-         alpha = 0.05, beta = 0.1, check = TRUE, output = TRUE)
+         alpha = 0.05, beta = 0.1, write = NULL, append = TRUE,
+         check = TRUE, output = TRUE)
 }
 \arguments{
 \item{rho}{a number indicating the correlation coefficient under the null hypothesis, \eqn{\rho}.0.}
@@ -19,9 +20,18 @@ must be one of \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
 
 \item{beta}{type-II-risk, \eqn{\beta}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -37,18 +47,19 @@ This function performs sample size computation for testing Pearson's product-mom
 based on precision requirements (i.e., type-I-risk, type-II-risk and an effect size).
 }
 \examples{
-#--------------------------------------
+#-------------------------------------------------------------------------------
+# Example 1: Two-sided test
 # H0: rho = 0.3, H1: rho != 0.3
 # alpha = 0.05, beta = 0.2, delta = 0.2
 
 size.cor(rho = 0.3, delta = 0.2, alpha = 0.05, beta = 0.2)
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
+# Example 2: One-sided test
 # H0: rho <= 0.3, H1: rho > 0.3
 # alpha = 0.05, beta = 0.2, delta = 0.2
 
-size.cor(rho = 0.3, delta = 0.2, alternative = "greater", alpha = 0.05, beta = 0.2)
-}
+size.cor(rho = 0.3, delta = 0.2, alternative = "greater", alpha = 0.05, beta = 0.2)}
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
 New York: John Wiley & Sons.

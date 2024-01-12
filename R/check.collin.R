@@ -35,8 +35,15 @@
 #'                 used for displaying results.
 #' @param p.digits an integer value indicating the number of decimal places to be
 #'                 used for displaying the \emph{p}-value.
-#' @param check    logical: if \code{TRUE}, argument specification is checked.
-#' @param output   logical: if \code{TRUE}, output is shown on the console.
+#' @param write    a character string naming a text file with file extension
+#'                 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                 output into a text file.
+#' @param append   logical: if \code{TRUE} (default), output will be appended
+#'                 to an existing text file with extension \code{.txt} specified
+#'                 in \code{write}, if \code{FALSE} existing text file will be
+#'                 overwritten.
+#' @param check    logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output   logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -84,73 +91,80 @@
 #'                   y2 = c(0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1),
 #'                   stringsAsFactors = TRUE)
 #'
-#' #----------------------------
+#' #----------------------------------------------------------------------------
 #' # Linear model
 #'
 #' # Estimate linear model with continuous predictors
 #' mod.lm1 <- lm(y1 ~ x1 + x2 + x3, data = dat)
 #'
-#' # Tolerance, std. error, and variance inflation factor
+#' # Example 1: Tolerance, std. error, and variance inflation factor
 #' check.collin(mod.lm1)
 #'
-#' # Tolerance, std. error, and variance inflation factor
+#' # Example 2: Tolerance, std. error, and variance inflation factor
 #' # Eigenvalue, Condition index, and variance proportions
 #' check.collin(mod.lm1, print = "all")
 #'
 #' # Estimate model with continuous and categorical predictors
 #' mod.lm2 <- lm(y1 ~ x1 + x2 + x3 + x4, data = dat)
 #'
-#' # Tolerance, generalized std. error, and variance inflation factor
+#' # Example 3: Tolerance, generalized std. error, and variance inflation factor
 #' check.collin(mod.lm2)
 #'
-#' #----------------------------
+#' #----------------------------------------------------------------------------
 #' # Generalized linear model
 #'
 #' # Estimate logistic regression model with continuous predictors
 #' mod.glm <- glm(y2 ~ x1 + x2 + x3, data = dat, family = "binomial")
 #'
-#' # Tolerance, std. error, and variance inflation factor
+#' # Example 4: Tolerance, std. error, and variance inflation factor
 #' check.collin(mod.glm)
 #'
 #' \dontrun{
-#' #----------------------------
+#' #----------------------------------------------------------------------------
 #' # Linear mixed-effects model
 #'
 #' # Estimate linear mixed-effects model with continuous predictors using lme4 package
 #' mod.lmer <- lme4::lmer(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
 #'
-#' # Tolerance, std. error, and variance inflation factor
+#' # Example 5: Tolerance, std. error, and variance inflation factor
 #' check.collin(mod.lmer)
 #'
 #' # Estimate linear mixed-effects model with continuous predictors using nlme package
 #' mod.lme <- nlme::lme(y1 ~ x1 + x2 + x3, random = ~ 1 | group, data = dat)
 #'
-#' # Tolerance, std. error, and variance inflation factor
+#' # Example 6: Tolerance, std. error, and variance inflation factor
 #' check.collin(mod.lme)
 #'
 #' # Estimate linear mixed-effects model with continuous predictors using glmmTMB package
 #' mod.glmmTMB1 <- glmmTMB::glmmTMB(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
 #'
-#' # Tolerance, std. error, and variance inflation factor
+#' # Example 7: Tolerance, std. error, and variance inflation factor
 #' check.collin(mod.glmmTMB1)
-#' #'
-#' #----------------------------
+#'
+#' #----------------------------------------------------------------------------
 #' # Generalized linear mixed-effects model
 #'
 #' # Estimate mixed-effects logistic regression model with continuous predictors using lme4 package
 #' mod.glmer <- lme4::glmer(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "binomial")
 #'
-#' # Tolerance, std. error, and variance inflation factor
+#' # Example 8: Tolerance, std. error, and variance inflation factor
 #' check.collin(mod.glmer)
 #'
 #' # Estimate mixed-effects logistic regression model with continuous predictors using glmmTMB package
 #' mod.glmmTMB2 <- glmmTMB::glmmTMB(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "binomial")
 #'
-#' # Tolerance, std. error, and variance inflation factor
+#' # Example 9: Tolerance, std. error, and variance inflation factor
 #' check.collin(mod.glmmTMB2)
+#'
+#' #----------------------------------------------------------------------------
+#' # Write Results
+#'
+#' # Example 10: Write Results into a text file
+#' check.collin(mod.lm1, write = "Diagnostics.txt")
 #' }
 check.collin  <- function(model, print = c("all", "vif", "eigen"),
-                          digits = 3, p.digits = 3, check = TRUE, output = TRUE) {
+                          digits = 3, p.digits = 3, write = NULL, append = TRUE,
+                          check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -162,7 +176,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
   # Check if input 'model' is NULL
   if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
 
-  # Check if input 'model' is NULL
+  # Check if input 'model' is "lm", "glm", "lmerMod", "lmerModLmerTest", "glmerMod", "lme", or "glmmTMB"
   if (isTRUE(!all(class(model) %in% c("lm", "glm", "lmerMod", "lmerModLmerTest", "glmerMod", "lme", "glmmTMB")))) {
 
     stop("Please specify an \"lm\", \"glm\", \"lmerMod\", \"lmerModLmerTest\", \"glmerMod\", \"lme\", or \"glmmTMB\" object for the argument 'model'.", call. = FALSE)
@@ -189,6 +203,12 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
 
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
+
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
@@ -392,10 +412,32 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
                  type = "check.collin",
                  model = model,
                  args = list(print = print, digits = digits, p.digits = p.digits,
-                             check = check, output = output),
+                             write = write, append = append, check = check, output = output),
                  result = list(coef = coeff, vif = vif, eigen = eigenvalue))
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

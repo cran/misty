@@ -517,9 +517,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                           var = c("m", "var", "low", "upp"),
                           sd = c("m", "sd", "low", "upp"))
 
-    ####################################################################################
-    # Main Function
-
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## No grouping ####
 
@@ -868,10 +865,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           print.object[[i]][, "variable"] <- c(paste0("   ", print.object[[i]][1L, "variable"]), paste0("    ", print.object[[i]][-1L, "variable"]))
           print.object[[i]][, "variable"] <- format(c(print.object[[i]][1L, "variable"], misty::chr.trim(print.object[[i]][-1L, "variable"], side = "right")), justify = "left")
 
-          print.object[[i]][, "between"] <- c(paste0("   ", print.object[[i]][1L, "between"]), paste0("    ", print.object[[i]][-1L, "between"]))
-          print.object[[i]][, "between"] <- format(c(print.object[[i]][1L, "between"], misty::chr.trim(print.object[[i]][-1L, "between"], side = "right")), justify = "left")
-
           if (isTRUE(x$ci %in% c("mean.diff.i", "prop.diff.i"))) {
+
+            print.object[[i]][, "between"] <- c(paste0("   ", print.object[[i]][1L, "between"]), paste0("    ", print.object[[i]][-1L, "between"]))
+            print.object[[i]][, "between"] <- format(c(print.object[[i]][1L, "between"], misty::chr.trim(print.object[[i]][-1L, "between"], side = "right")), justify = "left")
 
             print.object[[i]][, "between"] <- c(print.object[[i]][1L, "between"], paste0("", print.object[[i]][-1L, "between"]))
             print.object[[i]][, "between"] <- format(c(print.object[[i]][1L, "between"], misty::chr.trim(print.object[[i]][-1L, "between"], side = "right")), justify = "left")
@@ -1061,9 +1058,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     # Print = "all"
     if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("stdx", "stdy", "stdyx") }
 
-    #-----------------------------------------------------------------------------------
-    # Main Function
-
     #-----------------------------------------
     # Exclude columns
     if (isTRUE(!"stdx" %in% print)) {
@@ -1127,9 +1121,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                           one = c("m", "m.diff", "sd", "d", "se", "low", "upp"),
                           two = c("m", "m.diff", "sd", "d", "se", "low", "upp"),
                           paired = c("m1", "m2", "m.diff", "sd", "d", "se", "low", "upp"))
-
-    ####################################################################################
-    # Main Function
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## No grouping ####
@@ -1600,9 +1591,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     # Print variance inflation factor and/or eigenvalue
     if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("vif", "eigen") }
 
-    #-----------------------------------------------------------------------------------
-    # Main Function
-
     cat(" Collinearity Diagnostics\n")
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1689,93 +1677,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Pearson's Contingency Coefficient ------------------------------------------
-  }, cor.cont = {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Data and Arguments ####
-
-    # Print triangular
-    tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
-
-    ####################################################################################
-    # Main Function
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Two variables ####
-    if (isTRUE(is.null(dim(print.object)))) {
-
-      print.object <- cbind("  Estimate: ", ifelse(!is.na(print.object), formatC(print.object, digits = digits, format = "f",
-                                                                                 zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), print.object))
-
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## More than two variables ####
-    } else {
-
-      # Format contingency coefficients
-      print.object <- formatC(print.object, digits = digits, format = "f",
-                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-
-      # Lower and/or upper triangular
-      switch(tri, "lower" = {
-
-        print.object[upper.tri(print.object)] <- ""
-
-      }, "upper" = {
-
-        print.object[lower.tri(print.object)] <- ""
-
-      })
-
-      # Set diagonal to "
-      diag(print.object) <- ""
-
-      # Format
-      row.names(print.object) <- paste(" ", row.names(print.object))
-
-    }
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Output ####
-
-    if (isTRUE(is.null(dim(x$result)))) {
-
-      if (isTRUE(x$args$adjust)) {
-
-        cat(" Adjusted Contingency Coefficient\n\n")
-
-      } else {
-
-        cat(" Contingency Coefficient\n\n")
-
-      }
-
-    } else {
-
-      if (isTRUE(x$args$adjust)) {
-
-        cat(" Adjusted Contingency Coefficient Matrix\n\n")
-
-      } else {
-
-        cat(" Contingency Coefficient Matrix\n\n")
-
-      }
-
-    }
-
-    if (isTRUE(is.null(dim(x$result)))) {
-
-      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
-
-    } else {
-
-      print(print.object, quote = FALSE, right = TRUE)
-
-    }
-
-  #_____________________________________________________________________________
-  #
   # Correlation Matrix with Statistical Significance Testing -------------------
   }, cor.matrix = {
 
@@ -1783,30 +1684,21 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       #......
       # Check input 'print'
-      if (isTRUE(any(!print %in% c("all", "cor", "stat", "ddf", "n", "p")))) {
-
-        stop("Character string(s) in the argument 'print' does not match with \"all\", \"cor\",  \"stat\",  \"df\", \"n\", or \"p\".",
-             call. = FALSE)
-
-      }
+      if (isTRUE(any(!print %in% c("all", "cor", "stat", "df", "n", "p")))) { stop("Character string(s) in the argument 'print' does not match with \"all\", \"cor\",  \"stat\",  \"df\", \"n\", or \"p\".", call. = FALSE) }
 
     }
 
     # R Markdown in progress
-    if (isTRUE(getOption("knitr.in.progress"))) {
+    if (isTRUE(getOption("knitr.in.progress"))) { x$args$sig <- FALSE }
 
-      x$args$sig <- FALSE
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Two variables ####
 
-    }
-
-    ####################################################################################
-    # Main Function
-
-    #--------------------------------------------------
-    # Two variables
     if (isTRUE(ncol(x$data[, grep(".group", colnames(x$data), invert = TRUE)]) == 2L)) {
 
-      # Grouping variable
+      #...................
+      ### Grouping variable ####
+
       if (isTRUE(".group" %in% colnames(x$data))) {
 
         switch (x$args$method,
@@ -1815,8 +1707,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                   print.object <- data.frame(Group = c(sort(unique(x$data$.group))[1L], sort(unique(x$data$.group))[2L]),
                                              x = colnames(print.object$cor)[1L],
                                              y = colnames(print.object$cor)[2L],
-                                             r = c(print.object$cor[2L, 1L], print.object$cor[1L, 2L]),
                                              n = c(print.object$n[2L, 1L], print.object$n[1L, 2L]),
+                                             r = c(print.object$cor[2L, 1L], print.object$cor[1L, 2L]),
                                              t = c(print.object$stat[2L, 1L], print.object$stat[1L, 2L]),
                                              df = c(print.object$df[2L, 1L], print.object$df[1L, 2L]),
                                              pval = c(print.object$p[2L, 1L], print.object$p[1L, 2L]))
@@ -1826,8 +1718,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                   print.object <- data.frame(Group = c(sort(unique(x$data$.group))[1L], sort(unique(x$data$.group))[2L]),
                                              x = colnames(print.object$cor)[1L],
                                              y = colnames(print.object$cor)[2L],
-                                             r = c(print.object$cor[2L, 1L], print.object$cor[1L, 2L]),
                                              n = c(print.object$n[2L, 1L], print.object$n[1L, 2L]),
+                                             r = c(print.object$cor[2L, 1L], print.object$cor[1L, 2L]),
                                              S = c(print.object$stat[2L, 1L], print.object$stat[1L, 2L]),
                                              pval = c(print.object$p[2L, 1L], print.object$p[1L, 2L]))
 
@@ -1836,8 +1728,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                   print.object <- data.frame(Group = c(sort(unique(x$data$.group))[1L], sort(unique(x$data$.group))[2L]),
                                              x = colnames(print.object$cor)[1L],
                                              y = colnames(print.object$cor)[2L],
-                                             tau = c(print.object$cor[2L, 1L], print.object$cor[1L, 2L]),
                                              n = c(print.object$n[2L, 1L], print.object$n[1L, 2L]),
+                                             tau = c(print.object$cor[2L, 1L], print.object$cor[1L, 2L]),
                                              z = c(print.object$stat[2L, 1L], print.object$stat[1L, 2L]),
                                              pval = c(print.object$p[2L, 1L], print.object$p[1L, 2L]))
 
@@ -1847,71 +1739,94 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                   print.object <- data.frame(Group = c(sort(unique(x$data$.group))[1L], sort(unique(x$data$.group))[2L]),
                                              x = colnames(print.object$cor)[1L],
                                              y = colnames(print.object$cor)[2L],
-                                             tau = c(print.object$cor[2L, 1L], print.object$cor[1L, 2L]),
                                              n = c(print.object$n[2L, 1L], print.object$n[1L, 2L]),
+                                             tau = c(print.object$cor[2L, 1L], print.object$cor[1L, 2L]),
                                              z = c(print.object$stat[2L, 1L], print.object$stat[1L, 2L]),
                                              pval = c(print.object$p[2L, 1L], print.object$p[1L, 2L]))
 
-                  # No grouping variable
-                })} else {
+                }, 'tetra' = {
 
-                  switch (x$args$method,
-                          'pearson' = {
+                  print.object <- data.frame(Group = c(sort(unique(x$data$.group))[1L], sort(unique(x$data$.group))[2L]),
+                                             x = colnames(print.object$cor)[1L],
+                                             y = colnames(print.object$cor)[2L],
+                                             n = c(print.object$n[2L, 1L], print.object$n[1L, 2L]),
+                                             r = c(print.object$cor[2L, 1L], print.object$cor[1L, 2L]))
 
-                            print.object <- data.frame(x = colnames(print.object$cor)[1L],
-                                                       y = colnames(print.object$cor)[2L],
-                                                       r = print.object$cor[2L, 1L],
-                                                       n = print.object$n[2L, 1L],
-                                                       t = print.object$stat[2L, 1L],
-                                                       df = print.object$df[2L, 1L],
-                                                       pval = print.object$p[2L, 1L])
+                }, 'poly' = {
 
-                          }, 'spearman' = {
-
-                            print.object <- data.frame(x = colnames(print.object$cor)[1L],
-                                                       y = colnames(print.object$cor)[2L],
-                                                       r = print.object$cor[2L, 1L],
-                                                       n = print.object$n[2L, 1L],
-                                                       S = print.object$stat[2L, 1L],
-                                                       pval = print.object$p[2L, 1L])
-
-                          }, 'kendall-b' = {
-
-                            print.object <- data.frame(x = colnames(print.object$cor)[1L],
-                                                       y = colnames(print.object$cor)[2L],
-                                                       tau = print.object$cor[2L, 1L],
-                                                       z = print.object$stat[2L, 1L],
-                                                       pval = print.object$p[2L, 1L])
-
-
-                          }, 'kendall-c' = {
-
-                            print.object <- data.frame(x = colnames(print.object$cor)[1L],
-                                                       y = colnames(print.object$cor)[2L],
-                                                       tau = print.object$cor[2L, 1L],
-                                                       n = print.object$n[2L, 1L],
-                                                       z = print.object$stat[2L, 1L],
-                                                       pval = print.object$p[2L, 1L])
-
-                          })
-                }
-
-      #.....................................
-      # Grouping variable
-      if (isTRUE(".group" %in% colnames(x$data))) {
+                  print.object <- data.frame(Group = c(sort(unique(x$data$.group))[1L], sort(unique(x$data$.group))[2L]),
+                                             x = colnames(print.object$cor)[1L],
+                                             y = colnames(print.object$cor)[2L],
+                                             n = c(print.object$n[2L, 1L], print.object$n[1L, 2L]),
+                                             r = c(print.object$cor[2L, 1L], print.object$cor[1L, 2L]))
+                })
 
         # Round
-        print.object[, !colnames(print.object) %in% c("Group", "n", "df", "pval")] <- vapply(print.object[, !colnames(print.object) %in% c("Group", "n", "df", "pval")],
-                                                                                             formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(2L))
+        print.object[, !colnames(print.object) %in% c("Group", "n", "df", "pval")] <- vapply(print.object[, !colnames(print.object) %in% c("Group", "n", "df", "pval")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(2L))
 
         # Add blank
         print.object[, 1L] <- sapply(format(c("Group", as.character(print.object[, 1L])), justify = "right"), function(y) paste("", y, collapse = ""))[-1L]
 
+      #...................
+      ### No grouping variable ####
+
       } else {
 
+        switch(x$args$method, 'pearson' = {
+
+                  print.object <- data.frame(x = colnames(print.object$cor)[1L],
+                                             y = colnames(print.object$cor)[2L],
+                                             n = print.object$n[2L, 1L],
+                                             r = print.object$cor[2L, 1L],
+                                             t = print.object$stat[2L, 1L],
+                                             df = print.object$df[2L, 1L],
+                                             pval = print.object$p[2L, 1L])
+
+                }, 'spearman' = {
+
+                  print.object <- data.frame(x = colnames(print.object$cor)[1L],
+                                             y = colnames(print.object$cor)[2L],
+                                             n = print.object$n[2L, 1L],
+                                             r = print.object$cor[2L, 1L],
+                                             S = print.object$stat[2L, 1L],
+                                             pval = print.object$p[2L, 1L])
+
+                }, 'kendall-b' = {
+
+                  print.object <- data.frame(x = colnames(print.object$cor)[1L],
+                                             y = colnames(print.object$cor)[2L],
+                                             n = print.object$n[2L, 1L],
+                                             tau = print.object$cor[2L, 1L],
+                                             z = print.object$stat[2L, 1L],
+                                             pval = print.object$p[2L, 1L])
+
+
+                }, 'kendall-c' = {
+
+                  print.object <- data.frame(x = colnames(print.object$cor)[1L],
+                                             y = colnames(print.object$cor)[2L],
+                                             n = print.object$n[2L, 1L],
+                                             tau = print.object$cor[2L, 1L],
+                                             z = print.object$stat[2L, 1L],
+                                             pval = print.object$p[2L, 1L])
+
+                }, 'tetra' = {
+
+                  print.object <- data.frame(x = colnames(print.object$cor)[1L],
+                                             y = colnames(print.object$cor)[2L],
+                                             n = print.object$n[2L, 1L],
+                                             r = print.object$cor[2L, 1L])
+
+                }, 'poly' = {
+
+                  print.object <- data.frame(x = colnames(print.object$cor)[1L],
+                                             y = colnames(print.object$cor)[2L],
+                                             n = print.object$n[2L, 1L],
+                                             r = print.object$cor[2L, 1L])
+                })
+
         # Round
-        print.object[, !colnames(print.object) %in% c("n", "df", "pval")] <- vapply(print.object[, !colnames(print.object) %in% c("n", "df", "pval")],
-                                                                                    formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(1L))
+        print.object[, !colnames(print.object) %in% c("n", "df", "pval")] <- vapply(print.object[, !colnames(print.object) %in% c("n", "df", "pval")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(1L))
 
         # Add blank
         print.object[, 1L] <- paste("", format(as.character(print.object[, 1L]), justify = "right"), collapse = "")
@@ -1919,8 +1834,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       }
 
       # Round p-values
-      print.object[, "pval"] <- formatC(print.object[, "pval"], digits = p.digits, format = "f",
-                                        zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+      if (isTRUE(!x$args$method %in% c("tetra", "poly"))) { print.object[, "pval"] <- formatC(print.object[, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")) }
 
       #-----------------------------------------
       # Print
@@ -1941,40 +1855,47 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat(" Kendall-Stuart's Tau-c Correlation Coefficient\n\n")
 
+      }, 'tetra' = {
+
+        cat(" Tetrachoric Correlation Coefficient\n\n")
+
+      }, 'poly' = {
+
+        cat(" Polychoric Correlation Coefficient\n\n")
+
       })
 
       # Print object
       print(print.object, quote = FALSE, right = TRUE, row.names = FALSE)
 
-    #--------------------------------------------------
-    # More than two variables
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## More than two variables ####
+
     } else {
 
       #........................................
       # Round and format
 
-      print.object$cor <- formatC(print.object$cor, digits = digits, format = "f",
-                                  zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$cor <- formatC(print.object$cor, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
       print.object$n <- formatC(print.object$n, zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
-      print.object$stat <- formatC(print.object$stat, digits = digits, format = "f",
-                                   zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$stat <- formatC(print.object$stat, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
-      if (isTRUE(x$args$method == "pearson")) {
+      if (isTRUE(x$args$method == "pearson")) { print.object$df <- formatC(print.object$df, digits = 0L, format = "f") }
 
-        print.object$df <- formatC(print.object$df, digits = 0L, format = "f")
-
-      }
-
-      print.object$p <- formatC(print.object$p, digits = p.digits, format = "f",
-                                zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+      print.object$p <- formatC(print.object$p, digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
       diag(print.object$cor) <- ""
       diag(print.object$n) <- ""
-      diag(print.object$stat) <- ""
-      diag(print.object$df) <- ""
-      diag(print.object$p) <- ""
+
+      if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
+
+        diag(print.object$stat) <- ""
+        diag(print.object$df) <- ""
+        diag(print.object$p) <- ""
+
+      }
 
       #........................................
       # Lower and/or upper triangular
@@ -1983,9 +1904,14 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         print.object$cor[upper.tri(print.object$cor)] <- ""
         print.object$n[upper.tri(print.object$n)] <- ""
-        print.object$stat[upper.tri(print.object$stat)] <- ""
-        print.object$df[upper.tri(print.object$df)] <- ""
-        print.object$p[upper.tri(print.object$p)] <- ""
+
+        if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
+
+          print.object$stat[upper.tri(print.object$stat)] <- ""
+          print.object$df[upper.tri(print.object$df)] <- ""
+          print.object$p[upper.tri(print.object$p)] <- ""
+
+        }
 
       }
 
@@ -1993,9 +1919,14 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         print.object$cor[lower.tri(print.object$cor)] <- ""
         print.object$n[lower.tri(print.object$n)] <- ""
-        print.object$stat[lower.tri(print.object$stat)] <- ""
-        print.object$df[lower.tri(print.object$df)] <- ""
-        print.object$p[lower.tri(print.object$p)] <- ""
+
+        if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
+
+          print.object$stat[lower.tri(print.object$stat)] <- ""
+          print.object$df[lower.tri(print.object$df)] <- ""
+          print.object$p[lower.tri(print.object$p)] <- ""
+
+        }
 
       }
 
@@ -2006,28 +1937,46 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         row.names(print.object$cor) <- paste0("  ", row.names(print.object$cor))
         row.names(print.object$n) <- paste0("  ", row.names(print.object$n))
-        row.names(print.object$stat) <- paste0("  ", row.names(print.object$stat))
-        row.names(print.object$df) <- paste0("  ", row.names(print.object$df))
-        row.names(print.object$p) <- paste0("  ", row.names(print.object$p))
+
+        if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
+
+          row.names(print.object$stat) <- paste0("  ", row.names(print.object$stat))
+          row.names(print.object$df) <- paste0("  ", row.names(print.object$df))
+          row.names(print.object$p) <- paste0("  ", row.names(print.object$p))
+
+        }
 
       }
 
       print.object$cor <- apply(print.object$cor, 2L, function(y) format(y, justify = "right"))
       print.object$n <- apply(print.object$n, 2L, function(y) format(y, justify = "right"))
-      print.object$stat <- apply(print.object$stat, 2L, function(y) format(y, justify = "right"))
-      print.object$df <- apply(print.object$df, 2L, function(y) format(y, justify = "right"))
-      print.object$p <- apply(print.object$p, 2L, function(y) format(y, justify = "right"))
+
+      if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
+
+        print.object$stat <- apply(print.object$stat, 2L, function(y) format(y, justify = "right"))
+        print.object$df <- apply(print.object$df, 2L, function(y) format(y, justify = "right"))
+        print.object$p <- apply(print.object$p, 2L, function(y) format(y, justify = "right"))
+
+      }
 
       #........................................
       # Statistically significant correlation coefficients in boldface
 
       if (isTRUE(x$args$sig)) {
 
-        numbers <- c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
-        unicode <- c("\U1D7CE", "\U1D7CF", "\U1D7D0", "\U1D7EF", "\U1D7F0", "\U1D7F1", "\U1D7F2", "\U1D7F3", "\U1D7F4", "\U1D7F5")
+        if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
 
-        print.object$cor[lower.tri(print.object$cor)][which(x$result$p[lower.tri(x$result$p)] <= x$args$alpha)] <- na.omit(misty::chr.gsub(numbers, unicode, print.object$cor[lower.tri(print.object$cor)][which(x$result$p[lower.tri(x$result$p)] <= x$args$alpha)]))
-        print.object$cor[upper.tri(print.object$cor)][which(x$result$p[upper.tri(x$result$p)] <= x$args$alpha)] <- misty::chr.gsub(numbers, unicode, print.object$cor[upper.tri(print.object$cor)][which(x$result$p[upper.tri(x$result$p)] <= x$args$alpha)])
+          numbers <- c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+          unicode <- c("\U1D7CE", "\U1D7CF", "\U1D7D0", "\U1D7EF", "\U1D7F0", "\U1D7F1", "\U1D7F2", "\U1D7F3", "\U1D7F4", "\U1D7F5")
+
+          print.object$cor[lower.tri(print.object$cor)][which(x$result$p[lower.tri(x$result$p)] <= x$args$alpha)] <- na.omit(misty::chr.gsub(numbers, unicode, print.object$cor[lower.tri(print.object$cor)][which(x$result$p[lower.tri(x$result$p)] <= x$args$alpha)]))
+          print.object$cor[upper.tri(print.object$cor)][which(x$result$p[upper.tri(x$result$p)] <= x$args$alpha)] <- misty::chr.gsub(numbers, unicode, print.object$cor[upper.tri(print.object$cor)][which(x$result$p[upper.tri(x$result$p)] <= x$args$alpha)])
+
+        } else {
+
+          warning("This function does not provide statistical significance testing for tetrachoric or polychoric correlation coefficients.", call. = FALSE)
+
+        }
 
       }
 
@@ -2055,6 +2004,14 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat(" Kendall-Stuart's Tau-c Correlation Coefficient\n\n")
 
+        }, 'tetra' = {
+
+          cat(" Tetrachoric Correlation Coefficient\n\n")
+
+        }, 'poly' = {
+
+          cat(" Polychoric Correlation Coefficient\n\n")
+
         })
 
         print(print.object$cor, quote = FALSE, right = TRUE, max = 99999L)
@@ -2064,7 +2021,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #........................
       # Sample size
 
-      if (isTRUE("n" %in% print & attr(x$data, "missing") & isTRUE(!x$args$na.omit))) {
+      if (isTRUE("n" %in% print & attr(x$data, "missing") && isTRUE(!x$args$na.omit))) {
 
         if (isTRUE("cor" %in% print)) { cat("\n") }
 
@@ -2076,7 +2033,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #........................
       # Test statistic
 
-      if (isTRUE("stat" %in% print)) {
+      if (isTRUE("stat" %in% print && !x$args$method %in% c("tetra", "poly"))) {
 
         if (isTRUE(any(c("cor", "n") %in% print))) { cat("\n") }
 
@@ -2101,7 +2058,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #........................
       # Degrees of freedom
 
-      if (isTRUE("df" %in% print & x$args$method == "pearson")) {
+      if (isTRUE("df" %in% print && x$args$method == "pearson")) {
 
         if (isTRUE(any(c("cor", "n", "stat") %in% print))) { cat("\n") }
 
@@ -2114,7 +2071,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #........................
       # p.values
 
-      if (isTRUE("p" %in% print)) {
+      if (isTRUE("p" %in% print && !x$args$method %in% c("tetra", "poly"))) {
 
         if (x$args$method == "kendall-c") {
 
@@ -2151,97 +2108,11 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
 
       # Statistical significance
-      if (isTRUE(x$args$sig)) {
+      if (isTRUE(x$args$sig && !x$args$method %in% c("tetra", "poly"))) {
 
         cat(paste0("       Statistically significant coefficients at \U03B1 = ", signif(x$args$alpha, digits = 2L), " are boldface\n"))
 
       }
-
-    }
-
-  #_____________________________________________________________________________
-  #
-  # Cramer's V -----------------------------------------------------------------
-  }, cor.cramer = {
-
-    #-----------------------------------------------------------------------------------
-    # Data and Arguments
-
-    # Print triangular
-    tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
-
-    #-----------------------------------------------------------------------------------
-    # Main Function
-
-    #........................................
-    # Two variables
-    if (isTRUE(is.null(dim(print.object)))) {
-
-      print.object <- cbind("  Estimate: ", formatC(print.object, digits = digits, format = "f",
-                                                    zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
-
-      #........................................
-      # More than two variables
-    } else {
-
-      # Format contingency coefficients
-      print.object <- formatC(print.object, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-
-      # Lower and/or upper triangular
-      switch(tri, "lower" = {
-
-        print.object[upper.tri(print.object)] <- ""
-
-      }, "upper" = {
-
-        print.object[lower.tri(print.object)] <- ""
-
-      })
-
-      # Diagonal
-      diag(print.object) <- ""
-
-      # Format
-      row.names(print.object) <- paste(" ", row.names(print.object))
-
-    }
-
-    #-----------------------------------------------------------------------------------
-    # Output
-
-    if (isTRUE(is.null(dim(x$result)))) {
-
-      if (isTRUE(x$args$correct)) {
-
-        cat(" Bias-Corrected Cramer's V\n\n")
-
-      } else {
-
-        cat(" Cramer's V\n\n")
-
-      }
-
-    } else {
-
-      if (isTRUE(x$args$correct)) {
-
-        cat(" Bias-Corrected Cramer's V Matrix\n\n")
-
-      } else {
-
-        cat(" Cramer's V Matrix\n\n")
-
-      }
-
-    }
-
-    if (isTRUE(is.null(dim(x$result)))) {
-
-      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
-
-    } else {
-
-      print(print.object, quote = FALSE, right = TRUE)
 
     }
 
@@ -2744,17 +2615,11 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     }
 
-    ####################################################################################
-    # Arguments
-
     if (isTRUE(length(print) == 1L && print == "all")) {
 
       print <- c("n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt")
 
     }
-
-    ####################################################################################
-    # Main Function
 
     #......
     # Variables to round
@@ -2767,8 +2632,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       #......
       # Round
-      print.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f",
-                                                                                                               zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+      print.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
 
       #......
       # Percentages
@@ -2780,8 +2644,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       #......
       # Select statistical measures and add variable names
-      print.object <- data.frame(variable = print.object[, "variable"], print.object[, print, drop = FALSE], stringsAsFactors = FALSE,
-                                 check.names = FALSE)
+      print.object <- data.frame(variable = print.object[, "variable"], print.object[, print, drop = FALSE], stringsAsFactors = FALSE, check.names = FALSE)
 
       #......
       # Format
@@ -3144,95 +3007,64 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Eta Squared ----------------------------------------------------------------
-  }, eta.sq = {
+  # Effect Sizes for Categorical Variablese ------------------------------------
+  }, effsize = {
 
-    ####################################################################################
-    # Data and Arguments
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Round ####
 
-    #-----------------------------------------
-    # Number of dependent variables, number of independent variables
+    print.object[, colnames(print.object)[!colnames(print.object) %in% c("n", "var")]] <- apply(print.object[, colnames(print.object)[!colnames(print.object) %in% c("n", "var")]], 2L, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
 
-    ncol.x <- ncol(x$data$x)
-    ncol.group <- ncol(data.frame(x$data$group))
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Format ####
 
-    ####################################################################################
-    # Main Function
+    if (isTRUE("var" %in% colnames(print.object))) {
 
-    #-----------------------------------------
-    # One dependent variable, one independent variable
+      print.object <- rbind(c("Variable", "n", switch(x$args$type, phi = "Phi", cramer = "V", tschuprow = "T", cont = "C", w = "w", fei = "Feo"), "Low", "Upp"), print.object)
 
-    if (isTRUE(ncol.x == 1L && ncol.group == 1L)) {
-
-      # Print object
-      print.object <- cbind("  Estimate  ", formatC(print.object, digits = digits, format = "f",
-                                                    zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
-
-    #-----------------------------------------
-    # More than one dependent variable, more than one independent variable
-
-    } else if (isTRUE(ncol.x > 1L && ncol.group > 1L)) {
-
-      # Variable names and format digits
-      print.object <- rbind(c("", "Outcome", rep("", times = ncol(print.object) - 1L)),
-                            c("Group", colnames(print.object)),
-                            cbind(rownames(print.object),
-                                  formatC(print.object, digits = digits, format = "f",
-                                          zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))))
-
-      # Format
-      print.object[-c(1L, 2L), 1L] <- paste("", print.object[-c(1L, 2L), 1L])
       print.object[, 1L] <- format(print.object[, 1L], justify = "left")
-
-      print.object[-1L, 2L] <- paste("", print.object[-1L, 2L])
-
-      print.object[1L, 2L] <- format(print.object[1L, 2L], justify = "left", width = max(nchar(print.object[, 2L])) )
-      print.object[-1L, 2L] <- format(print.object[-1L, 2L], justify = "right")
-
-      print.object[-1L, -1L] <- apply(print.object[-1L, -1L], 2L, function(y) format(y, justify = "right"))
-
-      #-----------------------------------------
-      # More than one dependent variable, one independent variable
-
-    } else if (isTRUE(ncol.x > 1 && ncol.group == 1L)) {
-
-      # Variable names and format digis
-      print.object <- rbind(colnames(print.object),
-                            formatC(print.object, digits = digits, format = "f",
-                                    zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
-
-      # Format
-      print.object <- format(print.object, justify = "right")
-
-    } else if (isTRUE(ncol.x == 1 && ncol.group > 1L)) {
-
-      #-----------------------------------------
-      # One dependent variable, more than one independent variable
-
-      # Variable names and format digits
-      print.object <- cbind(rownames(print.object),
-                            formatC(print.object, digits = digits, format = "f",
-                                    zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
-
-      # Format
-      print.object <- format(print.object, justify = "right")
-
-    }
-
-    ####################################################################################
-    # Output
-
-    if (isTRUE(ncol.x == 1L && ncol.group == 1L)) {
-
-      cat(" Eta Squared\n\n")
 
     } else {
 
-      cat(" Eta Squared Matrix\n\n")
+      print.object <- rbind(c("n", switch(x$args$type, phi = "Phi", cramer = "V", tschuprow = "T", cont = "C", w = "w", fei = "Feo"), "Low", "Upp"), print.object)
 
     }
 
-    write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+    print.object <- apply(print.object, 2L, format, justify = "right")
+    print.object[, 1L] <- paste(" ", print.object[, 1L])
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Output ####
+
+    cat(paste0(switch(x$args$type,
+              phi = {
+
+                if (isTRUE(x$args$adjust)) { " Adjusted Phi Coefficient: " } else { " Phi Coefficient: " }
+
+              }, cramer = {
+
+                if (isTRUE(x$args$adjust)) { " Bias-Corrected Cramer's V: " } else { " Cramer's V: " }
+
+              }, tschuprow = {
+
+                 if (isTRUE(x$args$adjust)) { " Bias-Corrected Tschuprow's T: " } else { " Tschuprow's T: " }
+
+              }, cont = {
+
+                 if (isTRUE(x$args$adjust)) { " Adjusted Pearson's Contingency Coefficient: " } else { " Pearson's Contingency Coefficient: " }
+
+              }, w = { cat(" Cohen's w: ")
+              }, fei = { " Fei: "}),
+              switch(x$args$alternative,
+                     two.sided = "Two-Sided ",
+                     less = "One-Sided ",
+                     greater = "One-Sided "),
+              paste0(round(x$args$conf.level * 100L, digits = 2L), "% "), "Confidence Interval\n\n"))
+
+    write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+    # Note
+    if (isTRUE(x$args$indep && ncol(x$data) > 2L)) { cat(paste0("\n Note. The focal variable is ", colnames(x$data)[1L])) }
 
   #_____________________________________________________________________________
   #
@@ -3245,15 +3077,11 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       # Check input 'print'
       if (isTRUE(any(!print %in% c("no", "all", "perc", "v.perc")))) {
 
-        stop("Character string in the argument 'print' does not match with \"no\", \"all\", \"perc\", or \"v.perc\".",
-             call. = FALSE)
+        stop("Character string in the argument 'print' does not match with \"no\", \"all\", \"perc\", or \"v.perc\".", call. = FALSE)
 
       }
 
     }
-
-    ####################################################################################
-    # Main function
 
     #-----------------------------------------
     # One variable
@@ -3836,11 +3664,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       #......
       # Check input 'print'
-      if (isTRUE(!all(print %in% c("all", "alpha", "item")))) {
-
-        stop("Character strings in the argument 'print' do not all match with \"all\", \"alpha\", or \"item\".", call. = FALSE)
-
-      }
+      if (isTRUE(!all(print %in% c("all", "alpha", "item")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"alpha\", or \"item\".", call. = FALSE) }
 
     }
 
@@ -3849,9 +3673,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     # Print coefficient alpha and/or item statistic
     if (length(print) == 1L && "all" %in% print) { print <- c("alpha", "item") }
-
-    #---------------------------------------------------------------------------
-    # Main Function
 
     #-----------------------------------------
     # Alpha
@@ -3863,27 +3684,23 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         print.object$alpha$items <- format(print.object$alpha$items, justify = "right")
 
-        print.object$alpha$alpha <- formatC(print.object$alpha$alpha, digits = digits, format = "f",
-                                            zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+        print.object$alpha$alpha <- formatC(print.object$alpha$alpha, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
-        print.object$alpha$low <- formatC(print.object$alpha$low, digits = digits, format = "f",
-                                          zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-        print.object$alpha$upp <- formatC(print.object$alpha$upp, digits = digits, format = "f",
-                                          zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+        print.object$alpha$low <- formatC(print.object$alpha$low, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+
+        print.object$alpha$upp <- formatC(print.object$alpha$upp, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
         print.object$alpha <- rbind(c("n", "Items", "Alpha", "Low", "Upp"), print.object$alpha)
 
         print.object$alpha <- apply(print.object$alpha, 2L, function(y) format(y, justify = "right"))
 
-        cat(paste0(ifelse(isTRUE(x$args$std), " Standardized ", " Unstandardized "), "Coefficient Alpha with ",
-                   x$args$conf.level*100L, "% Confidence Interval\n\n"))
+        cat(paste0(ifelse(isTRUE(x$args$std), " Standardized ", " Unstandardized "), "Coefficient Alpha with ", x$args$conf.level*100L, "% Confidence Interval\n\n"))
 
         write.table(print.object$alpha, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
       } else {
 
-        print.object$alpha$alpha <- formatC(print.object$alpha$alpha, digits = digits, format = "f",
-                                            zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+        print.object$alpha$alpha <- formatC(print.object$alpha$alpha, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
         print.object$alpha <- rbind(c("  Items", "Alpha"), print.object$alpha)
 
@@ -3909,29 +3726,25 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     # Item statistics
     if (isTRUE("item" %in% print && !is.null(print.object$itemstat) && nrow(print.object$itemstat) > 2L)) {
 
-      print.object$itemstat$pNA <- paste0(formatC(print.object$itemstat$pNA, digits = 2L, format = "f",
-                                                  zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = ""))), "%")
-      print.object$itemstat$m <- formatC(print.object$itemstat$m, digits = 2L, format = "f",
-                                         zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
-      print.object$itemstat$sd <- formatC(print.object$itemstat$sd, digits = 2L, format = "f",
-                                          zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
-      print.object$itemstat$min <- formatC(print.object$itemstat$min, digits = 2L, format = "f",
-                                           zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
-      print.object$itemstat$max <- formatC(print.object$itemstat$max, digits = 2L, format = "f",
-                                           zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
+      print.object$itemstat$pNA <- paste0(formatC(print.object$itemstat$pNA, digits = 2L, format = "f", zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = ""))), "%")
 
-      print.object$itemstat$it.cor <- formatC(print.object$itemstat$it.cor, digits = digits, format = "f",
-                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-      print.object$itemstat$alpha <- formatC(print.object$itemstat$alpha, digits = digits, format = "f",
-                                             zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$itemstat$m <- formatC(print.object$itemstat$m, digits = 2L, format = "f", zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
 
-      print.object$itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "It.Cor", "Alpha"),
-                                     print.object$itemstat)
+      print.object$itemstat$sd <- formatC(print.object$itemstat$sd, digits = 2L, format = "f", zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
+
+      print.object$itemstat$min <- formatC(print.object$itemstat$min, digits = 2L, format = "f", zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
+
+      print.object$itemstat$max <- formatC(print.object$itemstat$max, digits = 2L, format = "f", zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
+
+      print.object$itemstat$it.cor <- formatC(print.object$itemstat$it.cor, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+
+      print.object$itemstat$alpha <- formatC(print.object$itemstat$alpha, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+
+      print.object$itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "It.Cor", "Alpha"), print.object$itemstat)
 
       # Format
       print.object$itemstat[, 1L] <- format(paste(" ", print.object$itemstat[, 1L]), justify = "left")
       print.object$itemstat[, -1L] <- apply(print.object$itemstat[, -1L], 2L, function(y) format(y, justify = "right"))
-
 
       if (isTRUE("alpha" %in% print)) { cat("\n") }
 
@@ -4198,7 +4011,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #...................
       ### Replace NA with "" ####
 
-      print.fit <- unname(misty::na.as(print.fit, "", check = FALSE))
+      print.fit <- unname(misty::na.as(print.fit, na = "", check = FALSE))
 
       #...................
       ### Add blank space ####
@@ -4801,9 +4614,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #...................
       ##### Replace NA with "" ####
 
-      print.fit.stand <- unname(misty::na.as(print.fit.stand, ""))
-      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled <- unname(misty::na.as(print.fit.scaled, "")) }
-      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust <- unname(misty::na.as(print.fit.robust, "")) }
+      print.fit.stand <- unname(misty::na.as(print.fit.stand, na = ""))
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled <- unname(misty::na.as(print.fit.scaled, na = "")) }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust <- unname(misty::na.as(print.fit.robust, na = "")) }
 
       #...................
       ##### Add blank space ####
@@ -5562,9 +5375,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     # Print coefficient omega and/or item statistic
     if (isTRUE(length(print) == 1L && "all" %in% print)) { print <- c("omega", "item") }
 
-    #-----------------------------------------------------------------------------------
-    # Main Function
-
     #-----------------------------------------
     # Omega
     if (isTRUE("omega" %in% print)) {
@@ -5840,7 +5650,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         #...................
         ### Replace NA with "" ####
 
-        print.fit <- unname(misty::na.as(print.fit, ""))
+        print.fit <- unname(misty::na.as(print.fit, na = ""))
 
         #...................
         ### Add blank space ####
@@ -5934,7 +5744,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         #...................
         ### Replace NA with "" ####
 
-        print.fit <- unname(misty::na.as(print.fit, ""))
+        print.fit <- unname(misty::na.as(print.fit, na = ""))
 
         #...................
         ### Add blank space ####
@@ -6586,9 +6396,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     # R Markdown in progress
     if (isTRUE(getOption("knitr.in.progress"))) { x$args$sig <- FALSE }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Main Function ####
-
     #............
     ### Split results
     if (isTRUE(x$args$split)) {
@@ -6928,17 +6735,15 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
   #  Multilevel Descriptive Statistics -----------------------------------------
   }, multilevel.descript = {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Main Function ####
+    print.object <- data.frame(c("Level 1", "No. of cases", "No. of missing values", "", "Variance Within", "SD Within", "",
+                                 "Level 2", "No. of clusters", "Average cluster size", "SD cluster size", "Min cluster size", "Max cluster size", "", "Mean", "Variance Between", "SD Between", "ICC(1)", "ICC(2)", "",
+                                 "Level 3", "No. of clusters", "Average cluster size", "SD cluster size", "Min cluster size", "Max cluster size", "", "Mean", "Variance Between", "SD Between", "ICC(1)", "ICC(2)", "",
+                                 "Design effect", "Design effect sqrt", "Effective sample size"),
+                               rbind(NA, print.object$no.obs, print.object$no.miss, NA, print.object$var.r, print.object$sd.r, NA,
+                                     NA, print.object$no.cluster.l2, print.object$m.cluster.size.l2, print.object$sd.cluster.size.l2, print.object$min.cluster.size.l2, print.object$max.cluster.size.l2, NA, print.object$mean.x, print.object$var.u, print.object$sd.u, print.object$icc1.l2, print.object$icc2.l2, NA,
 
-    print.object <- data.frame(cbind(c("No. of cases", "No. of missing values",
-                                       "", "No. of clusters", "Average cluster size", "SD cluster size", "Min cluster size", "Max cluster size",
-                                       "", "Mean", "Variance Within", "Variance Between", "SD Within", "SD Between", "ICC(1)", "ICC(2)",
-                                       "", "Design effect", "Design effect sqrt", "Effective sample size"),
-                                     rbind(print.object$no.obs, print.object$no.miss,
-                                           "", print.object$no.cluster, print.object$m.cluster.size, print.object$sd.cluster.size, print.object$min.cluster.size, print.object$max.cluster.size,
-                                           "", print.object$mean, print.object$var.w, print.object$var.b, print.object$sd.w, print.object$sd.b, print.object$icc1, print.object$icc2,
-                                           "", print.object$deff, print.object$deff.sqrt, print.object$n.effect)), stringsAsFactors = FALSE)
+                                                           NA, print.object$no.cluster.l3, print.object$m.cluster.size.l3, print.object$sd.cluster.size.l3, print.object$min.cluster.size.l3, print.object$max.cluster.size.l3, NA, print.object$mean.x, print.object$var.v, print.object$sd.v, print.object$icc1.l3, print.object$icc2.l3, NA,
+                                     print.object$deff, print.object$deff.sqrt, print.object$n.effect), fix.empty.names = FALSE, stringsAsFactors = FALSE)
 
     #............
     ### Format
@@ -6947,16 +6752,14 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     print.object <- rbind(c("", names(x$result$no.obs)), print.object)
 
     #### Round
-    for (i in c(6L:7L, 11L:15L, 19L:21L)) { print.object[i, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[i, 2L:ncol(print.object)])), digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")) }
+    for (i in c(6L:7L, 11L:12L, 16L:18L, 24L:25L, 29L:31L, 35L:37L)) { print.object[i, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[i, 2L:ncol(print.object)])), digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")) }
 
-    # print.object[16L, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[16L, 2L:ncol(print.object)])), digits = icc.digits, format = "f", zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
-    # print.object[17L, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[17L, 2L:ncol(print.object)])), digits = icc.digits, format = "f", zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
-
-    print.object[16L, -1L] <- formatC(as.numeric(unlist(print.object[16L, -1L])), digits = icc.digits, format = "f", zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
-    print.object[17L, -1L] <- formatC(as.numeric(unlist(print.object[17L, -1L])), digits = icc.digits, format = "f", zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0"))
+    for (i in c(19L:20L, 32L:33L)) { print.object[i, 2L:ncol(print.object)] <- formatC(as.numeric(unlist(print.object[i, 2L:ncol(print.object)])), digits = icc.digits, format = "f", zero.print = ifelse(icc.digits > 0L, paste0("0.", paste(rep(0L, times = icc.digits), collapse = "")), "0")) }
 
     # Blanks
     print.object[, 1L] <- paste(" ", print.object[, 1L])
+
+    print.object[c(3L:8, 10L:21L, 23L:34L), 1L] <- paste("", print.object[c(3L:8, 10L:21L, 23L:34L), 1L])
 
     print.object[, 1L] <- format(print.object[, 1L, drop = FALSE])
 
@@ -6969,19 +6772,52 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     print.object[, -1L] <- sapply(print.object[, -1L], function(y) gsub("NA", "  ", y))
 
     #............
-    ### select rows
+    ### Number of clusters
 
-    if (isTRUE(!"var" %in% x$args$print)) { print.object <- print.object[-c(12L:13L), ] }
-    if (isTRUE(!"sd" %in% x$args$print)) { print.object <- print.object[-c(14L:15L), ] }
+    # One cluster
+    if (isTRUE(x$no.cluster == "one")) {
 
+      print.object <- print.object[-c(21L:33L), ]
 
-    # All Between variables
-    if (isTRUE(all(is.na(x$result$var.w)))) {
+      # All Between variables
+      if (isTRUE(all(misty::chr.trim(print.object[19L, -1]) == ""))) {
 
-      print.object <- print.object[-which(misty::chr.trim(print.object[, 1L]) %in% c("Variance Within", "SD Within", "ICC(1)", "ICC(2)", "Design effect", "Design effect sqrt", "Effective sample size")), ]
-      print.object <- print.object[-nrow(print.object), ]
+        print.object <- print.object[c(1L, 9L:10L, 15L, 16L:18L), ]
+
+      }
+
+    # Two clusters
+    } else {
+
+      print.object <- print.object[-16L, ]
+
+      # All Between variables
+      if (isTRUE(all(misty::chr.trim(print.object[6L, -1]) == ""))) {
+
+        # Only Level 3 Variables
+        if (isTRUE(all(misty::chr.trim(print.object[17L, -1]) == ""))) {
+
+          print.object <- print.object[c(1L, 21L:22L, 27L:30L), ]
+
+        # Level 2 Variables
+        } else {
+
+          print.object <- print.object[c(1L, 9L:10L, 15L:17L, 20L:36L), ]
+
+        }
+
+      }
 
     }
+
+    #............
+    ### Select rows
+
+    # Variance and/or SD
+
+    # Variance and/or SD
+    if (isTRUE(!"var" %in% x$args$print)) { print.object <- print.object[-grep("Variance", print.object[, 1L]), ] }
+    if (isTRUE(!"sd" %in% x$args$print)) { print.object <- print.object[-grep("SD", print.object[, 1L]), ] }
 
     # One variable
     if (isTRUE(ncol(print.object) == 2L)) { print.object <- print.object[-1L, ] }
@@ -7089,7 +6925,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #...................
       ### Replace NA with "" ####
 
-      print.fit <- unname(misty::na.as(print.fit, ""))
+      print.fit <- unname(misty::na.as(print.fit, na = ""))
 
       #...................
       ### Add blank space ####
@@ -7180,9 +7016,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
   #
   # R-Squared Measures for Multilevel and Linear Mixed Effects Models ----------
   }, multilevel.r2 = {
-
-    ####################################################################################
-    # Main Function
 
     if (isTRUE("RS" %in% x$args$print)) {
 
@@ -7403,9 +7236,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #...................
       ##### Replace NA with "" ####
 
-      print.fit.stand <- unname(misty::na.as(print.fit.stand, ""))
-      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled <- unname(misty::na.as(print.fit.scaled, "")) }
-      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust <- unname(misty::na.as(print.fit.robust, "")) }
+      print.fit.stand <- unname(misty::na.as(print.fit.stand, na = ""))
+      if (isTRUE(!is.null(print.fit.scaled))) { print.fit.scaled <- unname(misty::na.as(print.fit.scaled, na = "")) }
+      if (isTRUE(!is.null(print.fit.robust))) { print.fit.robust <- unname(misty::na.as(print.fit.robust, na = "")) }
 
       #...................
       ##### Add blank space ####
@@ -8260,9 +8093,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
   # R-Squared Measures for Multilevel and Linear Mixed Effects Models Manual ----
   }, multilevel.r2.manual = {
 
-    ####################################################################################
-    # Main Function
-
     print.object$total <- data.frame(sapply(print.object$total[, !is.na(print.object$total)], formatC, digits = digits, format = "f", simplify = FALSE))
     row.names(print.object$total) <- "   "
 
@@ -8304,9 +8134,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
   #
   # Auxiliary variables analysis -----------------------------------------------
   }, na.auxiliary = {
-
-    ####################################################################################
-    # Main Function
 
     #-----------------------------------------
     # Format correlation matrix
@@ -8369,9 +8196,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
   # Variance-Covariance Coverage -----------------------------------------------
   }, na.coverage = {
 
-    #-----------------------------------------------------------------------------------
-    # Main Function
-
     #........................................
     # Lower and/or upper triangular
 
@@ -8384,9 +8208,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       print.object[lower.tri(print.object)] <- ""
 
     })
-
-    #-----------------------------------------------------------------------------------
-    # Main Function
 
     # Format proportions
     print.object <- apply(print.object, 2L, function(y) ifelse(!is.na(as.numeric(y)), formatC(as.numeric(y), digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), ""))
@@ -8406,71 +8227,272 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
   # Descriptive Statistics for Missing Data ------------------------------------
   }, na.descript = {
 
-    ####################################################################################
-    # Main Function
-
     #----------------------------------------
     # Result table
-    restab <- data.frame(statistic = c("No. of cases", "No. of complete cases", "No. of incomplete cases", "No. of values",
-                                       "No. of observed values", "No. of missing values", "No. of variables",
-                                       "Mean", "SD", "Minimum", "P25", "P75", "Maximum"),
-                         no = c(print.object$no.cases, print.object$no.complete, print.object$no.incomplete,
-                                print.object$no.values, print.object$no.observed.values, print.object$no.missing.values,
-                                print.object$no.var, print.object$no.missing.mean, print.object$no.missing.sd,
-                                print.object$no.missing.min, print.object$no.missing.p25, print.object$no.missing.p75, print.object$no.missing.max),
-                         perc = c("", print.object$perc.complete, print.object$perc.incomplete, "", print.object$perc.observed.values,
-                                  print.object$perc.missing.values, "", print.object$perc.missing.mean, print.object$perc.missing.sd,
-                                  print.object$perc.missing.min, print.object$perc.missing.p25, print.object$perc.missing.p75, print.object$perc.missing.max),
-                         stringsAsFactors = FALSE)
+
+    #...................
+    ### Level-1 Variables ####
+
+    # At least one Level-1 variable
+    if (isTRUE(any(!is.na(unlist(print.object$L1[-1L]))))) {
+
+    restab.l1 <- data.frame(statistic = c("No. of cases", "No. of complete cases", "No. of incomplete cases", "No. of values",
+                                          "No. of observed values", "No. of missing values", "No. of variables",
+                                          "Mean", "SD", "Minimum", "Maximum"),
+                            no = c(print.object$L1$no.cases.l1, print.object$L1$no.complete.l1, print.object$L1$no.incomplete.l1,
+                                   print.object$L1$no.values.l1, print.object$L1$no.observed.values.l1, print.object$L1$no.missing.values.l1,
+                                   print.object$L1$no.var.l1, print.object$L1$no.missing.mean.l1, print.object$L1$no.missing.sd.l1,
+                                   print.object$L1$no.missing.min.l1, print.object$L1$no.missing.max.l1),
+                            perc = c("", print.object$L1$perc.complete.l1, print.object$L1$perc.incomplete.l1, "", print.object$L1$perc.observed.values.l1,
+                                     print.object$L1$perc.missing.values.l1, "", print.object$L1$perc.missing.mean.l1, print.object$L1$perc.missing.sd.l1,
+                                     print.object$L1$perc.missing.min.l1, print.object$L1$perc.missing.max.l1),
+                            stringsAsFactors = FALSE)
+
+    ##### Format
+    restab.l1$statistic <- paste0(ifelse(x$no.cluster == "none", "  ",  "   "), restab.l1$statistic)
+
+    restab.l1$statistic[8L:11L] <- paste0("  ", restab.l1$statistic[8L:11L] )
+    restab.l1$statistic <- format(restab.l1$statistic, justify = "left", width = max(nchar(restab.l1$statistic)) + 1L)
+
+    restab.l1$no[8L:11L] <- format(formatC(as.numeric(restab.l1$no[8L:11L]), digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), justify = "right")
+    restab.l1$no[1L:7L] <- format(formatC(as.numeric(restab.l1$no[1L:7L]), digits = 0L, format = "f"), justify = "right")
+    restab.l1$no <- format(restab.l1$no, justify = "right")
+
+    restab.l1$perc[restab.l1$perc != ""] <- paste0("(", formatC(as.numeric(restab.l1$perc[restab.l1$perc != ""]), digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%)")
+
+    restab.l1$perc <- format(restab.l1$perc, width = max(nchar(restab.l1$perc)), justify = "right")
+
+    # No Level-1 variable
+    } else {
+
+      restab.l1 <- NULL
+
+    }
+
+    #...................
+    ### Level-2 Variables ####
+
+    if (isTRUE(x$no.cluster != "none")) {
+
+      # At least one Level-2 variable
+      if (isTRUE(any(!is.na(unlist(print.object$L2[-1L]))))) {
+
+        restab.l2 <- data.frame(statistic = c("No. of clusters", "No. of complete cases", "No. of incomplete cases", "No. of values",
+                                              "No. of observed values", "No. of missing values", "No. of variables",
+                                              "Mean", "SD", "Minimum", "Maximum"),
+                                no = c(print.object$L2$no.cluster.l2, print.object$L2$no.complete.l2, print.object$L2$no.incomplete.l2,
+                                       print.object$L2$no.values.l2, print.object$L2$no.observed.values.l2, print.object$L2$no.missing.values.l2,
+                                       print.object$L2$no.var.l2, print.object$L2$no.missing.mean.l2, print.object$L2$no.missing.sd.l2,
+                                       print.object$L2$no.missing.min.l2, print.object$L2$no.missing.max.l2),
+                                perc = c("", print.object$L2$perc.complete.l2, print.object$L2$perc.incomplete.l2, "", print.object$L2$perc.observed.values.l2,
+                                         print.object$L2$perc.missing.values.l2, "", print.object$L2$perc.missing.mean.l2, print.object$L2$perc.missing.sd.l2,
+                                         print.object$L2$perc.missing.min.l2, print.object$L2$perc.missing.max.l2),
+                                stringsAsFactors = FALSE)
+
+        ##### Format
+        restab.l2$statistic <- paste0("   ", restab.l2$statistic)
+
+        restab.l2$statistic[8L:11L] <- paste0("  ", restab.l2$statistic[8L:11L] )
+        restab.l2$statistic <- format(restab.l2$statistic, justify = "left", width = max(nchar(restab.l2$statistic)) + 1L)
+
+        restab.l2$no[8L:11L] <- format(formatC(as.numeric(restab.l2$no[8L:11L]), digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), justify = "right")
+        restab.l2$no[1L:7L] <- format(formatC(as.numeric(restab.l2$no[1L:7L]), digits = 0L, format = "f"), justify = "right")
+        restab.l2$no <- format(restab.l2$no, justify = "right")
+
+        restab.l2$perc[restab.l2$perc != ""] <- paste0("(", formatC(as.numeric(restab.l2$perc[restab.l2$perc != ""]), digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%)")
+
+        restab.l2$perc <- format(restab.l2$perc, width = max(nchar(restab.l2$perc)), justify = "right")
+
+      # No Level-2 variable
+      } else {
+
+        restab.l2 <- NULL
+
+      }
+
+    }
+
+    #...................
+    ### Level-3 Variables ####
+
+    if (isTRUE(x$no.cluster == "two")) {
+
+      # At least one Level-3 variable
+      if (isTRUE(all(!is.na(unlist(print.object$L3))))) {
+
+        restab.l3 <- data.frame(statistic = c("No. of clusters", "No. of complete cases", "No. of incomplete cases", "No. of values",
+                                              "No. of observed values", "No. of missing values", "No. of variables",
+                                              "Mean", "SD", "Minimum", "Maximum"),
+                                no = c(print.object$L3$no.cluster.l3, print.object$L3$no.complete.l3, print.object$L3$no.incomplete.l3,
+                                       print.object$L3$no.values.l3, print.object$L3$no.observed.values.l3, print.object$L3$no.missing.values.l3,
+                                       print.object$L3$no.var.l3, print.object$L3$no.missing.mean.l3, print.object$L3$no.missing.sd.l3,
+                                       print.object$L3$no.missing.min.l3, print.object$L3$no.missing.max.l3),
+                                perc = c("", print.object$L3$perc.complete.l3, print.object$L3$perc.incomplete.l3, "", print.object$L3$perc.observed.values.l3,
+                                         print.object$L3$perc.missing.values.l3, "", print.object$L3$perc.missing.mean.l3, print.object$L3$perc.missing.sd.l3,
+                                         print.object$L3$perc.missing.min.l3, print.object$L3$perc.missing.max.l3),
+                                stringsAsFactors = FALSE)
+
+        ##### Format
+        restab.l3$statistic <- paste0("   ", restab.l3$statistic)
+
+        restab.l3$statistic[8L:11L] <- paste0("   ", restab.l3$statistic[8L:11L] )
+        restab.l3$statistic <- format(restab.l3$statistic, justify = "left", width = max(nchar(restab.l3$statistic)) + 1L)
+
+        restab.l3$no[8L:11L] <- format(formatC(as.numeric(restab.l3$no[8L:11L]), digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), justify = "right")
+        restab.l3$no[1L:7L] <- format(formatC(as.numeric(restab.l3$no[1L:7L]), digits = 0L, format = "f"), justify = "right")
+        restab.l3$no <- format(restab.l3$no, justify = "right")
+
+        restab.l3$perc[restab.l3$perc != ""] <- paste0("(", formatC(as.numeric(restab.l3$perc[restab.l3$perc != ""]), digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%)")
+
+        restab.l3$perc <- format(restab.l3$perc, width = max(nchar(restab.l3$perc)), justify = "right")
+
+      # No Level-3 variable
+      } else {
+
+        restab.l3 <- NULL
+
+      }
+
+    }
 
     #----------------------------------------
-    # Format
-    restab$statistic <- paste0("  ", restab$statistic)
-
-    restab$statistic[8L:13L] <- paste0("  ", restab$statistic[8L:13L] )
-    restab$statistic <- format(restab$statistic, justify = "left", width = max(nchar(restab$statistic)) + 1L)
-
-    restab$no[8L:13L] <- format(formatC(as.numeric(restab$no[8L:13L]), digits = digits, format = "f",
-                                        zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), justify = "right")
-    restab$no[1L:7L] <- format(formatC(as.numeric(restab$no[1L:7L]), digits = 0L, format = "f"), justify = "right")
-    restab$no <- format(restab$no, justify = "right")
-
-    restab$perc[restab$perc != ""] <- paste0("(", formatC(as.numeric(restab$perc[restab$perc != ""]), digits = digits, format = "f",
-                                                          zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%)")
-
-    restab$perc <- format(restab$perc, width = max(nchar(restab$perc)), justify = "right")
-
-    ####################################################################################
     # Output
 
     cat(" Descriptive Statistics for Missing Data\n\n")
 
-    write.table(restab[1L:3L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+    #...................
+    ### Level-1 Variables ####
 
-    cat("\n")
-    write.table(restab[4L:6L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+    if (isTRUE(x$no.cluster != "none")) { cat("  Level 1\n") }
 
-    cat("\n")
-    write.table(restab[7L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
-    cat("  No. of missing values across all variables\n")
-    write.table(restab[8L:13L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+    # At least one Level-1 variable
+    if (isTRUE(!is.null(restab.l1))) {
 
-    #----------------------------------------
-    # Frequency table
-    if (isTRUE(table)) {
-
-      freqtab <- x$result$table.miss
-
-      freqtab[, c("pObs", "pNA")] <- apply(freqtab[, c("pObs", "pNA")], 2L, function(y) paste0(formatC(y, digits = digits, format = "f",
-                                                                                                       zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%"))
-      freqtab <- rbind(colnames(freqtab), freqtab)
-
-      freqtab[, -1L] <- apply(freqtab[ -1L], 2L, format, justify = "right")
-
-      freqtab[, 1L] <- paste0("    ", format(freqtab[, 1L], justify = "left"))
+      write.table(restab.l1[1L:3L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
 
       cat("\n")
-      write.table(freqtab, quote = FALSE, row.names = FALSE, col.names = FALSE)
+      write.table(restab.l1[4L:6L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      cat("\n")
+      write.table(restab.l1[7L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+      if (isTRUE(x$no.cluster != "none")) { cat("   No. of missing values across all variables\n") } else { cat("  No. of missing values across all variables\n") }
+      write.table(restab.l1[8L:11L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      #----------------------------------------
+      # Frequency table
+      if (isTRUE(table)) {
+
+        freqtab <- x$result$L1$table.miss
+
+        freqtab[, c("pObs", "pNA")] <- apply(freqtab[, c("pObs", "pNA")], 2L, function(y) paste0(formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%"))
+        freqtab <- rbind(colnames(freqtab), freqtab)
+
+        freqtab[, -1L] <- apply(freqtab[ -1L], 2L, format, justify = "right")
+
+        freqtab[, 1L] <- paste0(ifelse(x$no.cluster == "none", "    ", "     "), format(freqtab[, 1L], justify = "left"))
+
+        cat("\n")
+        write.table(freqtab, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      }
+
+    } else {
+
+      cat("   There are no Level-1 variables\n")
+
+    }
+
+    #...................
+    ### Level-2 Variables ####
+
+    if (isTRUE(x$no.cluster != "none")) {
+
+      # Cluster variable
+      cat("\n  Level 2\n")
+
+      # At least one Level-2 variable
+      if (isTRUE(!is.null(restab.l2))) {
+
+        write.table(restab.l2[1L:3L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        cat("\n")
+        write.table(restab.l2[4L:6L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        cat("\n")
+        write.table(restab.l2[7L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+        cat("   No. of missing values across all variables\n")
+        write.table(restab.l2[8L:11L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        #----------------------------------------
+        # Frequency table
+        if (isTRUE(table)) {
+
+          freqtab <- x$result$L2$table.miss
+
+          freqtab[, c("pObs", "pNA")] <- apply(freqtab[, c("pObs", "pNA")], 2L, function(y) paste0(formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%"))
+          freqtab <- rbind(colnames(freqtab), freqtab)
+
+          freqtab[, -1L] <- apply(freqtab[ -1L], 2L, format, justify = "right")
+
+          freqtab[, 1L] <- paste0("     ", format(freqtab[, 1L], justify = "left"))
+
+          cat("\n")
+          write.table(freqtab, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      } else {
+
+        cat("   There are no Level-2 variables\n")
+
+      }
+
+    }
+
+    #...................
+    ### Level-3 Variables ####
+
+    if (isTRUE(x$no.cluster == "two")) {
+
+      # Cluster variable
+      cat("\n  Level 3\n")
+
+      # At least one Level-3 variable
+      if (isTRUE(!is.null(restab.l3))) {
+
+        write.table(restab.l3[1L:3L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        cat("\n")
+        write.table(restab.l3[4L:6L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        cat("\n")
+        write.table(restab.l3[7L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+        cat("   No. of missing values across all variables\n")
+        write.table(restab.l3[8L:11L, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        #----------------------------------------
+        # Frequency table
+        if (isTRUE(table)) {
+
+          freqtab <- x$result$L3$table.miss
+
+          freqtab[, c("pObs", "pNA")] <- apply(freqtab[, c("pObs", "pNA")], 2L, function(y) paste0(formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%"))
+          freqtab <- rbind(colnames(freqtab), freqtab)
+
+          freqtab[, -1L] <- apply(freqtab[ -1L], 2L, format, justify = "right")
+
+          freqtab[, 1L] <- paste0("     ", format(freqtab[, 1L], justify = "left"))
+
+          cat("\n")
+          write.table(freqtab, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        }
+
+      } else {
+
+        cat("   There are no Level-3 variables")
+
+      }
 
     }
 
@@ -8478,9 +8500,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
   #
   # Missing Data Pattern -------------------------------------------------------
   }, na.pattern = {
-
-    #---------------------------------------------------------------------------------
-    # Main Function
 
     # NA
     print.object[, "pattern"][is.na(print.object[, "pattern"])] <- ""
@@ -8641,10 +8660,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     #...................
     ### Column names ####
 
-    tests <- misty::rec(tests, "'lmr.lrt' = 'LMR-LRT'; 'almr.lrt' = 'A-LRT'; 'blrt' = 'BLRT'; 'chi.pear' = 'Chi-Pear'; 'chi.lrt' = 'Chi-LRT'; 'entropy' = 'Entropy'")
+    tests <- misty::rec(tests, spec = "'lmr.lrt' = 'LMR-LRT'; 'almr.lrt' = 'A-LRT'; 'blrt' = 'BLRT'; 'chi.pear' = 'Chi-Pear'; 'chi.lrt' = 'Chi-LRT'; 'entropy' = 'Entropy'")
 
     print.object <- rbind(c("Folder", "#Prof", "Conv", "#Param", "logLik", "Scale", "LL Rep", "AIC", "CAIC", "BIC", "SABIC",
-                            misty::rec(tests, "'lmr.lrt' = 'LMR-LRT'; 'almr.lrt' = 'A-LRT'; 'blrt' = 'BLRT'; 'chi.pear' = 'Chi-Pear'; 'chi.lrt' = 'Chi-LRT'; 'entropy' = 'Entropy'"),
+                            misty::rec(tests, spec = "'lmr.lrt' = 'LMR-LRT'; 'almr.lrt' = 'A-LRT'; 'blrt' = 'BLRT'; 'chi.pear' = 'Chi-Pear'; 'chi.lrt' = 'Chi-LRT'; 'entropy' = 'Entropy'"),
                             colnames(print.object)[substr(colnames(print.object), 1L, 1L) == "p"]),
                           print.object)
 
@@ -8657,7 +8676,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     ### Replace NA with "" ####
 
     print.object <- apply(print.object, 2L, function(y) gsub("NA", "", y))
-    print.object <- misty::na.as(print.object, "", check = FALSE)
+    print.object <- misty::na.as(print.object, na = "", check = FALSE)
 
     #...................
     ### Add blank space ####
@@ -8680,93 +8699,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Phi Coefficient ------------------------------------------------------------
-  }, cor.phi = {
-
-    ####################################################################################
-    # Data and Arguments
-
-    # Print triangular
-    tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
-
-    ####################################################################################
-    # Main Function
-
-    #----------------------------------------
-    # Two variables
-    if (isTRUE(is.null(dim(print.object)))) {
-
-      print.object <- cbind("  Estimate: ", formatC(print.object, digits = digits, format = "f",
-                                                    zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
-
-      #----------------------------------------
-      # More than two variables
-    } else {
-
-      # Format contingency coefficients
-      print.object <- formatC(print.object, digits = digits, format = "f",
-                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-
-      # Lower and/or upper triangular
-      switch(tri, "lower" = {
-
-        print.object[upper.tri(print.object)] <- ""
-
-      }, "upper" = {
-
-        print.object[lower.tri(print.object)] <- ""
-
-      })
-
-      # Set diagonal to "
-      diag(print.object) <- ""
-
-      # Format
-      row.names(print.object) <- paste(" ", row.names(print.object))
-
-    }
-
-    ####################################################################################
-    # Output
-
-    if (isTRUE(is.null(dim(x$result)))) {
-
-      if (isTRUE(x$args$adjust)) {
-
-        cat(" Adjusted Phi Coefficient\n\n")
-
-      } else {
-
-        cat(" Phi Coefficient\n\n")
-
-      }
-
-    } else {
-
-      if (isTRUE(x$args$adjust)) {
-
-        cat(" Adjusted Phi Coefficient Matrix\n\n")
-
-      } else {
-
-        cat(" Phi Coefficient Matrix\n\n")
-
-      }
-
-    }
-
-    if (isTRUE(is.null(dim(x$result)))) {
-
-      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
-
-    } else {
-
-      print(print.object, quote = FALSE, right = TRUE)
-
-    }
-
-  #_____________________________________________________________________________
-  #
   # Polychoric Correlation Matrix ----------------------------------------------------------
   }, cor.poly = {
 
@@ -8782,9 +8714,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     # Print triangular
 
     tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
-
-    ####################################################################################
-    # Main Function
 
     #----------------------------------------
     # Print object
@@ -8830,9 +8759,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
   #
   # Sample Size Determination --------------------------------------------------
   }, size = {
-
-    ####################################################################################
-    # Main function
 
     #----------------------------------------
     # Arithmetic mean

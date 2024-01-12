@@ -16,8 +16,19 @@
 #'               used for displaying results. Note that the percentage relative
 #'               importance of predictors are printed with \code{digits} minus 1
 #'               decimal places.
-#' @param check  logical: if \code{TRUE}, argument specification is checked.
-#' @param output logical: if \code{TRUE}, output is shown.
+#' @param write  a character string naming a file for writing the output into
+#'               either a text file with file extension \code{".txt"} (e.g.,
+#'               \code{"Output.txt"}) or Excel file with file extention
+#'               \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'               name does not contain any file extension, an Excel file will
+#'               be written.
+#' @param append logical: if \code{TRUE} (default), output will be appended
+#'               to an existing text file with extension \code{.txt} specified
+#'               in \code{write}, if \code{FALSE} existing text file will be
+#'               overwritten.
+#' @param check  logical: if \code{TRUE} (default), argument specification
+#'               is checked.
+#' @param output logical: if \code{TRUE} (default), output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -59,26 +70,25 @@
 #'
 #' @examples
 #' \dontrun{
-#' #----------------------------
+#' #----------------------------------------------------------------------------
 #' # Linear model
 #'
-#' dat <- data.frame(x1 = c(3, 2, 4, 9, 5, 3, 6, 4, 5, 6, 3, 5),
-#'                   x2 = c(1, 4, 3, 1, 2, 4, 3, 5, 1, 7, 8, 7),
-#'                   x3 = c(0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1),
-#'                   y  = c(0, 1, 0, 2, 0, 1, 0, 0, 1, 2, 1, 0))
+#' # Example 1a: Dominance analysis, 'mpg' predicted by 'cyl', 'disp', and 'hp'
+#' dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]))
 #'
-#' # Dominance analysis
-#' dominance.manual(cor(dat[, c("y", "x1", "x2", "x3")]))
-#'
-#' # Equivalent results using the dominance() function
-#' mod <- lm(y ~ x1 + x2 + x3, data = dat)
+#' # Example 1b: Equivalent results using the dominance() function
+#' mod <- lm(mpg ~ cyl + disp + hp, data = mtcars)
 #' dominance(mod)
 #'
-#' # Outcome 'x3' predicted by 'y', 'x1', and 'x2'
-#' dominance.manual(cor(dat[, c("y", "x1", "x2", "x3")]), out = "x3")
+#' # Example 1c: Dominance analysis, 'hp' predicted by 'mpg', 'cyl', and 'disp'
+#' dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]), out = "hp")
 #'
-#' #----------------------------
-#' # Structural equation modeling
+#' # Example 1d: Write Results into a text file
+#' dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]),
+#'                  write = "Dominance_Manual.txt")
+#'
+#' #----------------------------------------------------------------------------
+#' # Example 2: Structural equation modeling
 #'
 #' library(lavaan)
 #'
@@ -103,7 +113,7 @@
 #' dominance.manual(fit.cor)
 #'
 #' #.............
-#' # Latent and manifest variables
+#' # Example 3: Latent and manifest variables
 #'
 #' # Model specification, convert manifest to latent variable
 #' model <- '# Measurement model
@@ -124,8 +134,8 @@
 #' # Dominance analysis
 #' dominance.manual(fit.cor)
 #'
-#' #----------------------------
-#' # Multilevel modeling
+#' #----------------------------------------------------------------------------
+#' # Example 4: Multilevel modeling
 #'
 #' # Model specification
 #' model <- 'level: 1
@@ -159,8 +169,8 @@
 #' # Dominance analysis Between
 #' dominance.manual(fit.cor$cluster)
 #'
-#' #----------------------------
-#' # Mplus
+#' #----------------------------------------------------------------------------
+#' # Example 5: Mplus
 #' #
 #' # In Mplus, the model-impied correlation matrix  of the latent variables
 #' # can be requested by OUTPUT: TECH4 and imported into R by using the
@@ -174,7 +184,7 @@
 #' # Extract model-implied correlation matrix of the latent variables
 #' fit.cor <- output$tech4$latCorEst
 #' }
-dominance.manual <- function(x, out = NULL, digits = 3, write = NULL,
+dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = TRUE,
                              check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
@@ -213,6 +223,9 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL,
 
     ## Check input 'digits' ##
     if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     ## Check input 'output' ##
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
@@ -388,7 +401,7 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL,
                  type = "dominance.manual",
                  x = x,
                  args = list(out = out, digits = digits, write = write,
-                             check = check, output = output),
+                             append = append, check = check, output = output),
                  result = gen.res)
 
   class(object) <- "misty.object"
@@ -397,7 +410,35 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL,
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #

@@ -23,7 +23,7 @@ centered and bold.}
 \item{use.zip64}{logical: if \code{TRUE}, zip64 to enable support for 4GB+ Excel
 files is used.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \description{
 This function calls the \code{write_xlsx()} function in the \pkg{writexl} package
@@ -38,7 +38,7 @@ package by Jeroen Ooms (2021).
 }
 \examples{
 \dontrun{
-# Write Excel file (.xlsx)
+# Example 1: Write Excel file (.xlsx)
 dat <- data.frame(id = 1:5,
                   gender = c(NA, 0, 1, 1, 0),
                   age = c(16, 19, 17, NA, 16),
@@ -47,7 +47,7 @@ dat <- data.frame(id = 1:5,
 
 write.xlsx(dat, file = "Excel.xlsx")
 
-# Write Excel file with multiple sheets (.xlsx)
+# Example 2: Write Excel file with multiple sheets (.xlsx)
 write.xlsx(list(cars = cars, mtcars = mtcars), file = "Excel_Sheets.xlsx")
 }
 }
@@ -56,7 +56,8 @@ Jeroen O. (2021). \emph{writexl: Export Data Frames to Excel 'xlsx' Format}.
 R package version 1.4.0. https://CRAN.R-project.org/package=writexl
 }
 \seealso{
-\code{\link{read.xlsx}}
+\code{\link{read.xlsx}}, \code{\link{write.sav}}, \code{\link{write.dta}},
+\code{\link{write.mplus}}
 }
 \author{
 Jeroen Ooms

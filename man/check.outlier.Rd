@@ -9,7 +9,7 @@ check.outlier(model, check = TRUE, ...)
 \arguments{
 \item{model}{a fitted model of class \code{"lm"}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 
 \item{...}{further arguments to be passed to or from methods.}
 }
@@ -41,20 +41,15 @@ has a atypical pattern of values on the predictors, (2) an observation has high
 \strong{distance} if its observed outcome value \eqn{Y_i} has a large deviation
 from the predicted value \eqn{\hat{Y}_i}, and (3) an observation has high
 \strong{influence} if its inclusion substantially changes the estimates for the
-intercept and/or slopes. 
+intercept and/or slopes.
 }
 \examples{
-dat <- data.frame(x1 = c(3, 2, 4, 9, 5, 3, 6, 4, 5, 6, 3, 5),
-                  x2 = c(1, 4, 3, 1, 2, 4, 3, 5, 1, 7, 8, 7),
-                  x3 = c(0, NA, 1, 0, 1, 1, NA, 1, 0, 0, 1, 1),
-                  y = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8))
-
-# Regression model and measures for leverage, distance, and influence
-mod.lm <- lm(y ~ x1 + x2, data = dat)
+# Example 1: Regression model and measures for leverage, distance, and influence
+mod.lm <- lm(mpg ~ cyl + disp + hp, data = mtcars)
 check.outlier(mod.lm)
 
 # Merge result table with the data
-dat1 <- cbind(dat, check.outlier(mod.lm))
+dat1 <- cbind(mtcars, check.outlier(mod.lm))
 }
 \references{
 Darlington, R. B., &, Hayes, A. F. (2017). \emph{Regression analysis and linear

@@ -131,7 +131,8 @@
 #'                        and \code{"modifiedDate"} to only runs a model if the
 #'                        modified date for the input file is more recent than
 #'                        the output file modified date.
-#' @param check           logical: if \code{TRUE}, argument specification is checked.
+#' @param check           logical: if \code{TRUE} (default), argument specification
+#'                        is checked.
 #'
 #' @details
 #' Latent class analysis (LCA) is a model-based clustering and classification
@@ -208,15 +209,15 @@
 #' # Load data set "HolzingerSwineford1939" in the lavaan package
 #' data("HolzingerSwineford1939", package = "lavaan")
 #'
-#' #--------------------------------------------------------
-#' # LCA with k = 1 to k = 8 profiles, continuous indicators
+#' #----------------------------------------------------------------------------
+#' # Example 1: LCA with k = 1 to k = 8 profiles, continuous indicators
 #' # Input statements that contain parameter estimates
 #' # Vuong-Lo-Mendell-Rubin LRT and bootstrapped LRT
 #' mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
 #'           classes = 8, output = c("SVALUES", "TECH11", "TECH14"))
 #'
-#' #--------------------------------------------------------
-#' # LCA with k = 1 to k = 6 profiles, ordered categorical indicators
+#' #----------------------------------------------------------------------------
+#' # Example 2: LCA with k = 1 to k = 6 profiles, ordered categorical indicators
 #' # Select observations with ageyr <= 13
 #' # Estimate all models in Mplus
 #' mplus.lca(round(HolzingerSwineford1939[, -5]), ind = c("x1", "x2", "x3", "x4"),
@@ -322,9 +323,6 @@ mplus.lca <- function(x, ind = NULL,
     ## Check input 'replace.out' ##
     if (isTRUE(!all(replace.out %in% c("always", "never", "modifiedDate")))) { stop("Character string in the argument 'replace.out ' does not match with \"always\", \"never\",  or \"modifiedDate\".", call. = FALSE) }
 
-    ## Check input 'check' ##
-    if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
   }
 
   #_____________________________________________________________________________
@@ -374,6 +372,26 @@ mplus.lca <- function(x, ind = NULL,
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variabla Names ####
+
+  # Variable names with .
+  names. <- grep("\\.", names(x))
+
+  if (isTRUE(length(names.) > 0L)) {
+
+    names(x) <- gsub("\\.", "_", names(x))
+
+    warning("Special character \".\" (dot) in the variable names were replaced with  \"_\" (underscore).", call. = FALSE)
+
+  }
+
+  # Variable names with .
+  names. <- grep("\\.", ind)
+
+  if (isTRUE(length(names.) > 0L)) {
+
+    ind <- gsub("\\.", "_", ind)
+
+  }
 
   # Split variables names in chucks of 8
   var.x <- split(colnames(x), ceiling(seq_along(colnames(x)) / 8L))

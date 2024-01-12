@@ -5,7 +5,7 @@
 #' @param x     a character vector.
 #' @param side  a character string indicating the side on which to remove whitespace,
 #'              i.e., \code{"both"} (default), \code{"left"} or \code{"right"}.
-#' @param check logical: if \code{TRUE}, argument specification is checked.
+#' @param check logical: if \code{TRUE} (default), argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -31,13 +31,13 @@
 #' @examples
 #' x <- "  string  "
 #'
-#' # Remove whitespace at both sides
+#' # Example 1: Remove whitespace at both sides
 #' chr.trim(x)
 #'
-#' # Remove whitespace at the left side
+#' # Example 2: Remove whitespace at the left side
 #' chr.trim(x, side = "left")
 #'
-#' # Remove whitespace at the right side
+#' # Example 3: Remove whitespace at the right side
 #' chr.trim(x, side = "right")
 chr.trim <- function(x, side = c("both", "left", "right"), check = TRUE) {
 

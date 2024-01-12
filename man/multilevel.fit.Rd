@@ -5,7 +5,7 @@
 \title{Simultaneous and Level-Specific Multilevel Model Fit Information}
 \usage{
 multilevel.fit(x, print = c("all", "summary", "fit"), digits = 3, p.digits = 3,
-               write = NULL, check = TRUE, output = TRUE)
+               write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{x}{a fitted model of class \code{"lavaan"} from the \pkg{lavaan}
@@ -25,13 +25,21 @@ printed with \code{digits} minus 1 decimal places.}
 \item{p.digits}{an integer value indicating the number of decimal places to be
 used for displaying the \emph{p}-value.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -86,23 +94,26 @@ model <- 'level: 1
               fb =~ y1 + y2 + y3
               fb ~ w1 + w2'
 
-#---------------------------
-# Model estimation with estimator = "ML"
+#-------------------------------------------------------------------------------
+
+# Example 1: Model estimation with estimator = "ML"
 fit1 <- lavaan::sem(model = model, data = Demo.twolevel, cluster = "cluster",
                     estimator = "ML")
 
-# Simultaneous and kevel-specific multilevel model fit information
+# Simultaneous and level-specific multilevel model fit information
 ls.fit1 <- multilevel.fit(fit1)
+
+# Write results into a text file
+multilevel.fit(fit1, write = "LS-Fit1.txt")
 
 # Write results into an Excel file
 write.result(ls.fit1, "LS-Fit1.xlsx")
 
-#---------------------------
-# Model estimation with estimator = "MLR"
+# Example 2: Model estimation with estimator = "MLR"
 fit2 <- lavaan::sem(model = model, data = Demo.twolevel, cluster = "cluster",
                     estimator = "MLR")
 
-# Simultaneous and kevel-specific multilevel model fit information
+# Simultaneous and level-specific multilevel model fit information
 # Write results into an Excel file
 multilevel.fit(fit2, write = "LS-Fit2.xlsx")
 }

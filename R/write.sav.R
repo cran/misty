@@ -1,14 +1,16 @@
 #' Write SPSS File
 #'
-#' This function writes a data frame or matrix into a SPSS file by either using the
-#' \code{write_sav()} function in the \pkg{haven} package by Hadley Wickham and Evan
-#' Miller (2019) or the free software \emph{PSPP} (see: \url{https://www.gnu.org/software/pspp/pspp.html}).
+#' This function writes a data frame or matrix into a SPSS file by either using
+#' the \code{write_sav()} function in the \pkg{haven} package by Hadley Wickham
+#' and Evan Miller (2019) or the free software \emph{PSPP} (see:
+#' \url{https://www.gnu.org/software/pspp/pspp.html}).
 #'
 #' If arguments \code{pspp.path} is not specified (i.e., \code{pspp.path = NULL}),
-#' \code{write_sav()} function in the \pkg{haven} is used. Otherwise the object \code{x}
-#' is written as CSV file, which is subsequently imported into SPSS using the free
-#' software \emph{PSPP} by executing a SPSS syntax written in R. Note that \emph{PSPP}
-#' needs to be installed on your computer when using the \code{pspp.path} argument.
+#' \code{write_sav()} function in the \pkg{haven} is used. Otherwise the object
+#' \code{x} is written as CSV file, which is subsequently imported into SPSS using
+#' the free software \emph{PSPP} by executing a SPSS syntax written in R. Note that
+#' \emph{PSPP} needs to be installed on your computer when using the \code{pspp.path}
+#' argument.
 #'
 #' A SPSS file with 'variable labels', 'value labels', and 'user-missing values' is
 #' written by specifying the \code{var.attr} argument. Note that the number of rows
@@ -29,37 +31,39 @@
 #' \code{-99}) or more than one but up to three user-missing values separated
 #' by a semicolon (e.g., \code{-77; -99}.
 #'
-#' @param x           a matrix or data frame to be written in SPSS, vectors are
-#'                    coerced to a data frame.
-#' @param file        a character string naming a file with or without file extension
-#'                    '.sav', e.g., \code{"My_SPSS_Data.sav"} or \code{"My_SPSS_Data"}.
-#' @param var.attr    a matrix or data frame with variable attributes used in the
-#'                    SPSS file, only 'variable labels' (column name \code{label}),
-#'                    'value labels' column name \code{values}, and 'user-missing values'
-#'                    column name \code{missing} are supported (see 'Details').
-#' @param pspp.path   a character string indicating the path where the PSPP folder
-#'                    is located on the computer, e.g.\code{C:/Program Files/PSPP/}.
-#' @param digits      an integer value indicating the number of decimal places shown
-#'                    in the SPSS file for non-integer variables.
-#' @param write.csv   logical: if \code{TRUE}, CSV file is written along with the
-#'                    SPSS file.
-#' @param sep         a character string for specifying the CSV file, either \code{";"}
-#'                    for the separator and \code{"."}
-#'                    for the decimal point (default, i.e. equivalent to \code{write.csv2})
-#'                    or \code{"."} for the decimal point and \code{","} for the
-#'                    separator (i.e. equivalent to \code{write.csv}), must be one
-#'                    of both \code{";"} (default) or \code{","}.
-#' @param na          a character string for specifying missing values in the CSV file.
-#' @param write.sps   logical: if \code{TRUE}, SPSS syntax is written along with
-#'                    the SPSS file when using PSPP.
-#' @param check       logical: if \code{TRUE}, variable attributes specified in the
-#'                    argument \code{var.attr} is checked.
+#' @param x         a matrix or data frame to be written in SPSS, vectors are
+#'                  coerced to a data frame.
+#' @param file      a character string naming a file with or without file extension
+#'                  '.sav', e.g., \code{"My_SPSS_Data.sav"} or \code{"My_SPSS_Data"}.
+#' @param var.attr  a matrix or data frame with variable attributes used in the
+#'                  SPSS file, only 'variable labels' (column name \code{label}),
+#'                  'value labels' column name \code{values}, and 'user-missing values'
+#'                  column name \code{missing} are supported (see 'Details').
+#' @param pspp.path a character string indicating the path where the PSPP folder
+#'                  is located on the computer, e.g.\code{C:/Program Files/PSPP/}.
+#' @param digits    an integer value indicating the number of decimal places shown
+#'                  in the SPSS file for non-integer variables.
+#' @param write.csv logical: if \code{TRUE}, CSV file is written along with the
+#'                  SPSS file.
+#' @param sep       a character string for specifying the CSV file, either \code{";"}
+#'                  for the separator and \code{"."}
+#'                  for the decimal point (default, i.e. equivalent to
+#'                  \code{write.csv2}) or \code{"."} for the decimal point and
+#'                  \code{","} for the separator (i.e. equivalent to
+#'                  \code{write.csv}), must be one of both \code{";"} (default)
+#'                  or \code{","}.
+#' @param na        a character string for specifying missing values in the CSV file.
+#' @param write.sps logical: if \code{TRUE}, SPSS syntax is written along with
+#'                  the SPSS file when using PSPP.
+#' @param check     logical: if \code{TRUE} (default), variable attributes
+#'                  specified in the argument \code{var.attr} is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{read.sav}}
+#' \code{\link{read.sav}}, \code{\link{write.xlsx}}, \code{\link{write.dta}},
+#' \code{\link{write.mplus}}
 #'
 #' @references
 #' GNU Project (2018). \emph{GNU PSPP for GNU/Linux} (Version 1.2.0).
@@ -87,15 +91,15 @@
 #'                   status = c(1, 2, 3, 1, 4),
 #'                   score = c(511, 506, 497, 502, 491))
 #'
-#' # Write SPSS file using the haven package
+#' # Example 1: Write SPSS file using the haven package
 #' write.sav(dat, file = "Dataframe_haven.sav")
 #'
-#' # Write SPSS file using PSPP,
+#' # Example 2: Write SPSS file using PSPP,
 #' # write CSV file and SPSS syntax along with the SPSS file
 #' write.sav(dat, file = "Dataframe_PSPP.sav", pspp.path = "C:/Program Files/PSPP",
 #'           write.csv = TRUE, write.sps = TRUE)
 #'
-#' # Specify variable attributes
+#' # Example 3: Specify variable attributes
 #' # Note that it is recommended to manually specify the variables attritbues in a CSV or
 #' # Excel file which is subsequently read into R
 #' attr <- data.frame(# Variable names
@@ -110,10 +114,10 @@
 #'                    # User-missing values
 #'                    missing = c("", "-99", "-99", "-99", "-99"), stringsAsFactors = FALSE)
 #'
-#' # Write SPSS file with variable attributes using the haven package
+#' # Example 4: Write SPSS file with variable attributes using the haven package
 #' write.sav(dat, file = "Dataframe_haven_Attr.sav", var.attr = attr)
 #'
-#' # Write SPSS with variable attributes using PSPP
+#' # Example 5: Write SPSS with variable attributes using PSPP
 #' write.sav(dat, file = "Dataframe_PSPP_Attr.sav", var.attr = attr,
 #'           pspp.path = "C:/Program Files/PSPP")
 #' }
@@ -146,7 +150,6 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Number of variables ####
-
 
   var.length <- length(varnames)
 
@@ -383,7 +386,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
         # Digits for numeric = 2, digits for integer = 0
         decimals[i] <- ifelse(is.integer(xf[, i]), 0L, digits)
-        decimals[i] <- ifelse(all(xf[, i] %% 1 == 0L), 0, digits)
+        decimals[i] <- ifelse(all(xf[, i] %% 1L == 0L), 0, digits)
 
       } else {
 

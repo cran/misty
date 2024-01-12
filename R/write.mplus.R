@@ -1,16 +1,17 @@
 #' Write Mplus Data File
 #'
-#' This function writes a matrix or data frame to a tab-delimited file without variable
-#' names, a Mplus input template, and a text file with variable names. Note that only
-#' numeric variables are allowed, i.e., non-numeric variables will be removed from
-#' the data set. Missing data will be coded as a single numeric value.
+#' This function writes a matrix or data frame to a tab-delimited file without
+#' variable names, a Mplus input template, and a text file with variable names.
+#' Note that only numeric variables are allowed, i.e., non-numeric variables will
+#' be removed from the data set. Missing data will be coded as a single numeric
+#' value.
 #'
 #' @param x      a matrix or data frame to be written to a tab-delimited file.
 #' @param file   a character string naming a file with or without the file extension
 #'               '.dat', e.g., \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.
 #' @param input  logical: if \code{TRUE} (default), Mplus input template is written
-#'               in a text file named according to the argument\code{file} with the
-#'               extension \code{_INPUT.inp}.
+#'               in a text file named according to the argument\code{file} with
+#'               the extension \code{_INPUT.inp}.
 #' @param n.var  a numeric value indicating the number of variables in each line
 #'               under \code{NAMES ARE} in the the Mplus input template.
 #' @param var    logical: if \code{TRUE}, variable names are written in a text file
@@ -18,7 +19,8 @@
 #'               \code{_VARNAMES.txt}.
 #' @param na     a numeric value or character string representing missing values
 #'               (\code{NA}) in the data set.
-#' @param check  logical: if \code{TRUE}, argument specification is checked.
+#' @param check  logical: if \code{TRUE} (default), argument specification is
+#'               checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -28,7 +30,8 @@
 #' Muthen & Muthen.
 #'
 #' @seealso
-#' \code{\link{read.mplus}}, \code{\link{run.mplus}}
+#' \code{\link{read.mplus}}, \code{\link{run.mplus}}, \code{\link{write.sav}},
+#' \code{\link{write.xlsx}}, \code{\link{write.dta}}
 #'
 #' @return
 #' None.
@@ -37,10 +40,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Write Mplus Data File and a Mplus input template
+#' # Example 1: Write Mplus Data File and a Mplus input template
 #' write.mplus(mtcars)
 #'
-#' # Write Mplus Data File "mtcars.dat" and a Mplus input template "mtcars_INPUT.inp",
+#' # Example 2: Write Mplus Data File "mtcars.dat" and a Mplus input template "mtcars_INPUT.inp",
 #' # missing values coded with -999, 4 variables in each line under "NAMES ARE"
 #' # write variable names in a text file called "mtcars_VARNAMES.inp"
 #' write.mplus(mtcars, file = "mtcars.dat", n.var = 4, var = TRUE, na = -999)
@@ -76,8 +79,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
 
     x <- x[, x.numeric]
 
-    warning(paste0("Non-numeric variables were excluded from the data set: ",
-                   paste(names(which(!x.numeric)), collapse = ", ")), call. = FALSE)
+    warning(paste0("Non-numeric variables were excluded from the data set: ", paste(names(which(!x.numeric)), collapse = ", ")), call. = FALSE)
 
     if (isTRUE(ncol(x) == 0L)) { stop("No variables left for the data set after excluding non-numeric variables.", call. = FALSE)
 
@@ -153,15 +155,14 @@ write.mplus <- function(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8, var
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Save .dat file ####
 
-  write.table(x, file = file, quote = FALSE, na = as.character(na),
-              row.names = FALSE, col.names = FALSE)
+  write.table(x, file = file, quote = FALSE, na = as.character(na), row.names = FALSE, col.names = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Save variable names ####
 
   if (isTRUE(var)) {
 
-    file.var <- sub(names(which(vapply(sapply(c(".dat", ".txt", ".csv"), grep, file), length, FUN.VALUE = integer(1)) != 0L)),
+    file.var <- sub(names(which(vapply(sapply(c(".dat", ".txt", ".csv"), grep, file), length, FUN.VALUE = integer(1L)) != 0L)),
                     "_VARNAMES.txt", file, fixed = TRUE)
 
     writeLines(paste(names(x), collapse = " "), con = file.var)

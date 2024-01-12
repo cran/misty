@@ -11,7 +11,8 @@ aov.b(formula, data, posthoc = TRUE, conf.level = 0.95, hypo = TRUE,
       jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
       jitter.height = 0, jitter.alpha = 0.1, title = "",
       subtitle = "Confidence Interval", digits = 2, p.digits = 4,
-      as.na = NULL, check = TRUE, output = TRUE, ...)
+      as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+      output = TRUE, ...)
 }
 \arguments{
 \item{formula}{a formula of the form \code{y ~ group} where \code{y} is
@@ -23,16 +24,16 @@ groups.}
 \item{data}{a matrix or data frame containing the variables in the
 formula \code{formula}.}
 
-\item{posthoc}{logical: if \code{TRUE}, Tukey HSD post hoc test for
+\item{posthoc}{logical: if \code{TRUE} (default), Tukey HSD post hoc test for
 multiple comparison is conducted.}
 
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence
 level of the interval.}
 
-\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis
+\item{hypo}{logical: if \code{TRUE} (default), null and alternative hypothesis
 are shown on the console.}
 
-\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown
+\item{descript}{logical: if \code{TRUE} (default), descriptive statistics are shown
 on the console.}
 
 \item{effsize}{logical: if \code{TRUE}, effect size measures \eqn{\eta^2}
@@ -97,9 +98,18 @@ to be used for displaying the \emph{p}-value.}
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 
 \item{...}{further arguments to be passed to or from methods.}
 }
@@ -149,29 +159,32 @@ of difference-adjusted CIs.
 dat <- data.frame(group = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3),
                   y = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 6, 3, NA))
 
-# Between-subject ANOVA
+# Example 1: Between-subject ANOVA
 aov.b(y ~ group, data = dat)
 
-# Between-subject ANOVA
+# Example 2: Between-subject ANOVA
 # print effect size measures
 aov.b(y ~ group, data = dat, effsize = TRUE)
 
-# Between-subject ANOVA
+# Example 3: Between-subject ANOVA
 # do not print hypotheses and descriptive statistics,
 aov.b(y ~ group, data = dat, descript = FALSE, hypo = FALSE)
 
 \dontrun{
-# Between-subject ANOVA
+# Example 4: Write results into a text file
+aov.b(y ~ group, data = dat, write = "ANOVA.txt")
+
+# Example 5: Between-subject ANOVA
 # plot results
 aov.b(y ~ group, data = dat, plot = TRUE)
 
 # Load ggplot2 package
 library(ggplot2)
 
-# Save plot, ggsave() from the ggplot2 package
+# Example 6: Save plot, ggsave() from the ggplot2 package
 ggsave("Between-Subject_ANOVA.png", dpi = 600, width = 4.5, height = 6)
 
-# Between-subject ANOVA
+# Example 7: Between-subject ANOVA
 # extract plot
 p <- aov.b(y ~ group, data = dat, output = FALSE)$plot
 p
@@ -185,7 +198,7 @@ ggplot(plotdat, aes(group, y)) +
   geom_point(stat = "summary", fun = "mean", size = 4) +
   stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
   scale_x_discrete(name = NULL) +
-  labs(subtitle = "Two-Sided 95\% Confidence Interval") +
+  labs(subtitle = "Two-Sided 95% Confidence Interval") +
   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
 }
 }

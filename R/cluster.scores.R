@@ -1,28 +1,39 @@
 #' Cluster Scores
 #'
-#' This function is used to compute group means by default.
+#' This function computes group means by default.
 #'
-#' @param x       a numeric vector for computing cluster scores for a variable,
+#' @param ...     a numeric vector for computing cluster scores for a variable,
 #'                matrix or data frame for computing cluster scores for more than
-#'                one variable.
-#' @param cluster a vector representing the nested grouping structure (i.e., group
-#'                or cluster variable).
+#'                one variable. Alternatively, an expression indicating the variable
+#'                names in \code{data} e.g., \code{ci.mean(x1, x2, data = dat)}.
+#'                Note that the operators \code{.}, \code{+}, \code{-}, \code{~},
+#'                \code{:}, \code{::}, and \code{!} can also be used to select
+#'                variables, see 'Details' in the \code{\link{df.subset}} function.
+#' @param data    a data frame when specifying one or more variables in the
+#'                argument \code{...}. Note that the argument is \code{NULL}
+#'                when specifying a numeric vector, matrix, or data frame for
+#'                the argument \code{...}.
+#' @param cluster either a character string indicating the variable name of
+#'                the cluster variable in \code{...} or \code{data}, or a
+#'                vector representing the nested grouping structure (i.e.,
+#'                group or cluster variable).
 #' @param fun     character string indicating the function used to compute group
 #'                scores, default: \code{"mean"}.
-#' @param expand  logical: if \code{TRUE}, vector of cluster scores is expanded
+#' @param expand  logical: if \code{TRUE} (default), vector of cluster scores is expanded
 #'                to match the input vector \code{x}.
-#' @param names   a character string or character vector indicating the names
-#'                of the computed variables when specifying more than one variable.
-#'                By default, variables are named with the ending \code{".a"}
-#'                resulting in e.g. \code{"x1.a"} and \code{"x2.a"}. Variable names
-#'                can also be specified using a character vector matching the number
-#'                of variables specified in \code{x} (e.g.,
-#'                \code{names = c("cluster.x1", "cluster.x2")}).
+#' @param append  logical: if \code{TRUE} (default), cluster scores are appended
+#'                to the data frame specified in the argument \code{data}.
+#' @param name    a character string or character vector indicating the names
+#'                of the computed variables. By default, variables are named with
+#'                the ending \code{".a"} resulting in e.g. \code{"x1.a"} and
+#'                \code{"x2.a"}. Variable names can also be specified using a
+#'                character vector matching the number of variables specified in
+#'                \code{x} (e.g., \code{name = c("cluster.x1", "cluster.x2")}).
 #' @param as.na   a numeric vector indicating user-defined missing values, i.e.
 #'                these values are converted to \code{NA} before conducting the
 #'                analysis. Note that \code{as.na()} function is only applied to
 #'                the argument \code{x}, but not to \code{cluster}.
-#' @param check   logical: if \code{TRUE}, argument specification is checked.
+#' @param check   logical: if \code{TRUE} (default), argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -47,50 +58,100 @@
 #' @export
 #'
 #' @examples
-#' dat.ml <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
-#'                      cluster = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
-#'                      x1 = c(4, 2, 5, 6, 3, 4, 1, 3, 4),
-#'                      x2 = c(2, 5, 3, 1, 2, 7, 4, 5, 3))
+#' # Load data set "Demo.twolevel" in the lavaan package
+#' data("Demo.twolevel", package = "lavaan")
 #'
-#' # Compute cluster means and expand to match the input x
-#' cluster.scores(dat.ml$x1, cluster = dat.ml$cluster)
+#' # Example 1a: Compute cluster means for 'y1' and expand to match the input 'y1'
+#' cluster.scores(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 #'
-#' # Compute standard deviation for each cluster and expand to match the input x
-#' cluster.scores(dat.ml$x1, cluster = dat.ml$cluster, fun = "sd")
+#' # Example 1b: Alternative specification using the 'data' argument
+#' cluster.scores(y1, data = Demo.twolevel, cluster = "cluster")
 #'
-#' # Compute cluster means without expanding the vector
-#' cluster.scores(dat.ml$x1, cluster = dat.ml$cluster, expand = FALSE)
+#' # Example 2: Compute standard deviation for each cluster
+#' # and expand to match the input x
+#' cluster.scores(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, fun = "sd")
 #'
-#' # Compute cluster means and attach to 'dat.ml'
-#' dat.ml <- cbind(dat.ml,
-#'                 cluster.scores(dat.ml[, c("x1", "x2")], cluster = dat.ml$cluster))
-cluster.scores <- function(x, cluster, fun = c("mean", "sum", "median", "var", "sd", "min", "max"),
-                           expand = TRUE, names = ".a", as.na = NULL, check = TRUE) {
+#' # Example 3: Compute cluster means without expanding the vector
+#' cluster.scores(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, expand = FALSE)
+#'
+#' # Example 4a: Compute cluster means for 'y1' and 'y2' and append to 'Demo.twolevel'
+#' cbind(Demo.twolevel,
+#'       cluster.scores(Demo.twolevel[, c("y1", "y2")], cluster = Demo.twolevel$cluster))
+#'
+#' # Example 4b: Alternative specification using the 'data' argument
+#' cluster.scores(y1, y2, data = Demo.twolevel, cluster = "cluster")
+cluster.scores <- function(..., data = NULL, cluster,
+                           fun = c("mean", "sum", "median", "var", "sd", "min", "max"),
+                           expand = TRUE, append = TRUE, name = ".a", as.na = NULL,
+                           check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Convert 'x' into a vector when only one variable specified in 'x'
-  if (isTRUE(ncol(data.frame(x)) == 1L)) { x <- unlist(x, use.names = FALSE) }
-
-  #----------------------------------------
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   # Check input 'cluster'
-  if (isTRUE(missing(cluster))) { stop("Please specify a vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
+  if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
   # Check if input 'cluster' is NULL
   if (isTRUE(is.null(cluster))) { stop("Input specified for the argument 'cluster' is NULL.", call. = FALSE) }
 
-  if (ncol(data.frame(cluster)) != 1L) { stop("More than one cluster variable specified for the argument 'cluster'.", call. = FALSE) }
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
 
-  if (nrow(data.frame(cluster)) != nrow(data.frame(x))) { stop("Length of the cluster variable specified in the argument 'cluster' does not match with 'x'.", call. = FALSE) }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument 'data' ####
+
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, check.chr = "a numeric vector, matrix, or data frame")
+
+    # Check if cluster variable is a character string and available in input 'data'
+    if (isTRUE(!is.character(cluster) || length(cluster) != 1L)) { stop("Please specify a character string for the argument 'cluster'.", call. = FALSE) }
+    if (isTRUE(!cluster %in% colnames(data))) { stop("Cluster variable specified in the argument 'cluster' was not found in 'data'.", call. = FALSE) }
+
+    # Extract data
+    x <- data[, var.names]
+
+    # Cluster variable
+    cluster <- data[, cluster]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+    # Data and cluster
+    var.group <- .var.group(data = x, cluster = cluster)
+
+    # Data
+    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
+
+    # Cluster variable
+    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Check input 'cluster' ####
+
+  if (isTRUE(nrow(data.frame(cluster)) != nrow(data.frame(x)))) { stop("The length of the vector in 'cluster' does not match with the length of the vector in 'x'.", call. = FALSE) }
+
+  # Check if only one variable specified in the input 'cluster'
+  if (isTRUE(ncol(data.frame(cluster)) != 1L)) { stop("More than one variable specified for the argument 'cluster'.", call. = FALSE) }
 
   # Convert 'cluster' into a vector
   cluster <- unlist(cluster, use.names = FALSE)
@@ -132,12 +193,12 @@ cluster.scores <- function(x, cluster, fun = c("mean", "sum", "median", "var", "
     # Check input 'expand'
     if (isTRUE(!is.logical(expand))) { stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE) }
 
-    # Check input 'names'
+    # Check input 'name'
     if (isTRUE(!is.null(dim(x)))) {
 
-      if (isTRUE(!is.character(names))) { stop("Please specify a character string or vector for the argument 'names'.", call. = FALSE) }
+      if (isTRUE(!is.character(name))) { stop("Please specify a character string or vector for the argument 'name'.", call. = FALSE) }
 
-      if (isTRUE(length(names) > 1L && length(names) != ncol(x))) {  stop("The length of the vector specified in 'names' does not match with the number of variable in 'x'.", call. = FALSE) }
+      if (isTRUE(length(name) > 1L && length(name) != ncol(x))) {  stop("The length of the vector specified in 'name' does not match with the number of variable in 'x'.", call. = FALSE) }
 
     }
 
@@ -145,7 +206,7 @@ cluster.scores <- function(x, cluster, fun = c("mean", "sum", "median", "var", "
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Arguments ------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert matrix into data frame ####
@@ -160,18 +221,7 @@ cluster.scores <- function(x, cluster, fun = c("mean", "sum", "median", "var", "
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    x <- misty::as.na(x, na = as.na, check = check)
-
-    # Missing values only
-    if (isTRUE(all(is.na(x)))) {
-
-      stop("After converting user-missing values into NA, vector specified in 'x' is completely missing.", call. = FALSE)
-
-    }
-
-  }
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #_____________________________________________________________________________
   #
@@ -239,20 +289,47 @@ cluster.scores <- function(x, cluster, fun = c("mean", "sum", "median", "var", "
     #...................
     ### Variable names ####
 
-    if (isTRUE(length(names) == 1L)) {
+    if (isTRUE(length(name) == 1L)) {
 
-      colnames(object) <- paste0(colnames(object), names)
+      colnames(object) <- paste0(colnames(object), name)
 
     } else {
 
-      colnames(object) <- names
+      colnames(object) <- name
 
     }
 
   }
 
-  ####################################################################################
-  # Return object
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Append ####
+
+  if (isTRUE(!is.null(data) && expand && append)) {
+
+    if (isTRUE(is.null(dim(x)))) {
+
+      #...................
+      ### Variable names ####
+
+      if (isTRUE(name == ".a")) {
+
+        object <- setNames(as.data.frame(object), nm = paste0(var.names, ".a"))
+
+      } else {
+
+        object <- setNames(as.data.frame(object), nm = name)
+
+      }
+
+    }
+
+    object <- data.frame(data, object)
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
   return(object)
 

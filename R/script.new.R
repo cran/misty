@@ -1,10 +1,6 @@
 #' Open new R Script, R Markdown script, or SQL Script in RStudio
 #'
-#' This function is used to open a new R script, R markdown script, or SQL script
-#' in RStudio.
-#'
-#' The function \code{documentNew()} in the package \pkg{rstudioapi} is used to
-#' open an R script.
+#' This function opens a new R script, R markdown script, or SQL script in RStudio.
 #
 #' @param text     a character vector indicating what text should be inserted in
 #'                 the new R script. By default, an empty script is opened.
@@ -15,29 +11,34 @@
 #'                 package indicating the cursor position.
 #' @param run      logical: if \code{TRUE}, the code is executed after the document
 #'                 is created.
-#' @param check    logical: if \code{TRUE}, argument specification is checked.
+#' @param check    logical: if \code{TRUE} (default), argument specification is
+#'                 checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{script.close}}, \code{\link{script.open}},
-#' \code{\link{script.save}}, \code{\link{setsource}}
+#' \code{\link{script.close}}, \code{\link{script.open}}, \code{\link{script.save}},
+#' \code{\link{script.copy}}, \code{\link{setsource}}
 #'
 #' @references
-#' Ushey, K., Allaire, J., Wickham, H., & Ritchie, G. (2022). rstudioapi: Safely
-#' access the RStudio API. R package version 0.14.
+#' Ushey, K., Allaire, J., Wickham, H., & Ritchie, G. (2023). \emph{rstudioapi: Safely
+#' access the RStudio API}. R package version 0.15.0
 #' https://CRAN.R-project.org/package=rstudioapi
+#'
+#' @note
+#' This function uses the \code{documentNew()} function in the \pkg{rstudioapi}
+#' package by Kevin Ushey, JJ Allaire, Hadley Wickham, and Gary Ritchie (2023).
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #'
-#' # Open new R script file
+#' # Example 1: Open new R script file
 #' script.new()
 #'
-#' # Open new R script file and run some code
+#' # Example 2: Open new R script file and run some code
 #' script.new("#----------------------------
 #' # Example
 #'
@@ -57,6 +58,9 @@ script.new <- function(text = "", type = c("r", "rmarkdown", "sql"),
 
   if (isTRUE(check)) {
 
+    # rstudioapi package
+    if (isTRUE(!nzchar(system.file(package = "rstudioapi")))) { stop("Package \"rstudioapi\" is needed for this function, please install the package.", call. = FALSE) }
+
     # Check input 'text'
     if (isTRUE(!is.character(text))) { stop("Please specify a character vector for the argument 'text'.", call. = FALSE) }
 
@@ -67,13 +71,6 @@ script.new <- function(text = "", type = c("r", "rmarkdown", "sql"),
     if (isTRUE(!is.logical(run))) { stop("Please specify TRUE or FALSE for the argument 'run'.", call. = FALSE) }
 
   }
-
-  #_____________________________________________________________________________
-  #
-  # Package --------------------------------------------------------------------
-
-  # rstudioapi package
-  if (isTRUE(!nzchar(system.file(package = "rstudioapi")))) { stop("Package \"rstudioapi\" is needed for this function, please install the package.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

@@ -4,7 +4,7 @@
 \alias{multilevel.invar}
 \title{Cross-Level Measurement Invariance Evaluation}
 \usage{
-multilevel.invar(x, cluster, model = NULL, rescov = NULL,
+multilevel.invar(..., data = NULL, cluster, model = NULL, rescov = NULL,
                  invar = c("config", "metric", "scalar"), fix.resid = NULL,
                  ident = c("marker", "var", "effect"),
                  estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"),
@@ -13,10 +13,11 @@ multilevel.invar(x, cluster, model = NULL, rescov = NULL,
                            "est", "modind", "resid"),
                  print.fit = c("all", "standard", "scaled", "robust"),
                  mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3,
-                 as.na = NULL, write = NULL, check = TRUE, output = TRUE)
+                 as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+                 output = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame. If \code{model} is \code{NULL},
+\item{...}{a matrix or data frame. If \code{model} is \code{NULL},
 multilevel confirmatory factor analysis based on a
 measurement model with one factor at the Within and Between
 level comprising all variables in the matrix or data frame
@@ -26,11 +27,22 @@ is excluded from \code{x} when specifying the argument
 \code{cluster} using the variable name of the cluster
 variable. If \code{model} is specified, the matrix or data
 frame needs to contain all variables used in the \code{model}
-argument.}
+argument. Alternatively, an expression indicating the
+variable names in \code{data} e.g.,
+\code{multilevel.invar(x1, x2, x3, data = dat)}. Note that
+the operators \code{.}, \code{+}, \code{-}, \code{~},
+\code{:}, \code{::}, and \code{!} can also be used to
+select variables, see 'Details' in the \code{\link{df.subset}}
+function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{cluster}{either a character string indicating the variable name of
-the cluster variable in 'x' or a vector representing the
-nested grouping structure (i.e., group or cluster variable).}
+the cluster variable in \code{...} or \code{data}, or a
+vector representing the nested grouping structure (i.e.,
+group or cluster variable).}
 
 \item{model}{a character vector specifying the same factor structure
 with one factor at the Within and Between Level, or a list
@@ -164,14 +176,22 @@ i.e. these values are converted to \code{NA} before conducting
 the analysis. Note that \code{as.na()} function is only
 applied to \code{x} but not to \code{cluster}.}
 
-\item{write}{a character string for writing the results into a Excel
-file naming a file with or without file extension '.xlsx',
-e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification, convergence
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification, convergence
 and model identification is checked.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -213,53 +233,54 @@ The function uses the functions \code{lavTestLRT} provided in the R package
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#---------------------------
+#----------------------------------------------------------------------------
 # Cluster variable specification
 
-# Cluster variable 'cluster' in 'x'
-multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4", "cluster")],
-                 cluster = "cluster")
+# Example 1a: Cluster variable 'cluster' in 'x'
+multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4", "cluster")], cluster = "cluster")
 
-# Cluster variable 'cluster' not in 'x'
-multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-                 cluster = Demo.twolevel$cluster)
+# Example 1b: Cluster variable 'cluster' not in 'x'
+multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
 
-#---------------------------
+# Example 1c: Alternative specification using the 'data' argument
+multilevel.invar(y1:y4, data = Demo.twolevel, cluster = "cluster")
+
+#----------------------------------------------------------------------------
 # Model specification using 'x' for a one-factor model
 
 #..........
 # Level of measurement invariance
 
-# Configural invariance
+# Example 2a: Configural invariance
 multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
                  cluster = Demo.twolevel$cluster, invar = "config")
 
-# Metric invariance
+# Example 2b: Metric invariance
 multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
                  cluster = Demo.twolevel$cluster, invar = "metric")
 
-# Scalar invariance
+# Example 2c: Scalar invariance
 multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
                  cluster = Demo.twolevel$cluster, invar = "scalar")
 
 #..........
 # Residual covariance at the Within level and residual variance at the Between level
 
-# Residual covariance between "y3" and "y4" at the Within level
+# Example 3a: Residual covariance between "y3" and "y4" at the Within level
 multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
                  cluster = Demo.twolevel$cluster, rescov = c("y3", "y4"))
 
-# Residual variances of 'y1' at the Between level fixed at 0
+# Example 3b: Residual variances of 'y1' at the Between level fixed at 0
 multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
                  cluster = Demo.twolevel$cluster, fix.resid = "y1")
 
 #..........
-# Print all results
+# Example 4: Print all results
 multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
                  cluster = Demo.twolevel$cluster, print = "all")
 
 #..........
-# lavaan model and summary of the estimated model
+# Example 5: lavaan model and summary of the estimated model
 mod <- multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
                         cluster = Demo.twolevel$cluster, output = FALSE)
 
@@ -269,8 +290,28 @@ mod$model$metric
 # Fitted lavaan object of the metric invariance model
 lavaan::summary(mod$model.fit$metric, standardized = TRUE, fit.measures = TRUE)
 
-#..........
+#----------------------------------------------------------------------------
+# Model specification using 'model' for one or multiple factor model
+
+# Example 6a: One-factor model
+multilevel.invar(Demo.twolevel, cluster = "cluster", model = c("y1", "y2", "y3", "y4"))
+
+# Example 6b:  Two-factor model
+multilevel.invar(Demo.twolevel, cluster = "cluster",
+                 model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
+
+#----------------------------------------------------------------------------
 # Write results
+
+# Example 7a: Write results into an Excel file
+multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+                 cluster = Demo.twolevel$cluster, print = "all",
+                 write = "Multilevel_Invariance.txt")
+
+# Example 7b:  Write results into an Excel file
+multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+                 cluster = Demo.twolevel$cluster, print = "all",
+                 write = "Multilevel_Invariance.xlsx")
 
 # Assign results into an object and write results into an Excel file
 mod <- multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
@@ -279,21 +320,6 @@ mod <- multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
 
 # Write results into an Excel file
 write.result(mod, "Multilevel_Invariance.xlsx")
-
-# Estimate models and write results into an Excel file
-multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-                 cluster = Demo.twolevel$cluster, print = "all",
-                 write = "Multilevel_Invariance.xlsx")
-
-#---------------------------
-# Model specification using 'model' for one or multiple factor model
-
-# One-factor model
-multilevel.invar(Demo.twolevel, cluster = "cluster", model = c("y1", "y2", "y3", "y4"))
-
-# Two-factor model
-multilevel.invar(Demo.twolevel, cluster = "cluster",
-                 model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
 }
 }
 \references{

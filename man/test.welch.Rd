@@ -12,7 +12,8 @@ test.welch(formula, data, alternative = c("two.sided", "less", "greater"),
            jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
            jitter.height = 0, jitter.alpha = 0.1, title = "",
            subtitle = "Confidence Interval", digits = 2, p.digits = 4,
-           as.na = NULL, check = TRUE, output = TRUE, ...)
+           as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+           output = TRUE, ...)
 }
 \arguments{
 \item{formula}{a formula of the form \code{y ~ group} where \code{y} is
@@ -36,10 +37,10 @@ ANOVA.}
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence
 level of the interval.}
 
-\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis
+\item{hypo}{logical: if \code{TRUE} (default), null and alternative hypothesis
 are shown on the console.}
 
-\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown
+\item{descript}{logical: if \code{TRUE} (default), descriptive statistics are shown
 on the console.}
 
 \item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d for
@@ -106,9 +107,18 @@ to be used for displaying the \emph{p}-value.}
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 
 \item{...}{further arguments to be passed to or from methods.}
 
@@ -148,49 +158,49 @@ dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
                    group2 = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3),
                    y = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 6, 3, NA))
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # Two-Sample Design
 
-# Two-sided two-sample Welch-test
+# Example 1a: Two-sided two-sample Welch-test
 test.welch(y ~ group1, data = dat1)
 
-# One-sided two-sample Welch-test
+# Example 1b: One-sided two-sample Welch-test
 test.welch(y ~ group1, data = dat1, alternative = "greater")
 
-# Two-sided two-sample Welch-test
+# Example 1c: Two-sided two-sample Welch-test
 # print Cohen's d with weighted pooled SD
 test.welch(y ~ group1, data = dat1, effsize = TRUE)
 
-# Two-sided two-sample Welch-test
+# Example 1d: Two-sided two-sample Welch-test
 # print Cohen's d with unweighted pooled SD
 test.welch(y ~ group1, data = dat1, effsize = TRUE, weighted = FALSE)
 
-# Two-sided two-sample Welch-test
+# Example 1e: Two-sided two-sample Welch-test
 # print Cohen's d with weighted pooled SD and
 # small sample correction factor
 test.welch(y ~ group1, data = dat1, effsize = TRUE, correct = TRUE)
 
-# Two-sided two-sample Welch-test
+# Example 1f: Two-sided two-sample Welch-test
 # print Cohen's d with SD of the reference group 1
 test.welch(y ~ group1, data = dat1, effsize = TRUE,
            ref = 1)
 
-# Two-sided two-sample Welch-test
+# Example 1g: Two-sided two-sample Welch-test
 # print Cohen's d with weighted pooled SD and
 # small sample correction factor
 test.welch(y ~ group1, data = dat1, effsize = TRUE,
            correct = TRUE)
 
-# Two-sided two-sample Welch-test
+# Example 1h: Two-sided two-sample Welch-test
 # do not print hypotheses and descriptive statistics,
 test.welch(y ~ group1, data = dat1, descript = FALSE, hypo = FALSE)
 
-# Two-sided two-sample Welch-test
+# Example 1i: Two-sided two-sample Welch-test
 # print descriptive statistics with 3 digits and p-value with 5 digits
 test.welch(y ~ group1, data = dat1, digits = 3, p.digits = 5)
 
 \dontrun{
-# Two-sided two-sample Welch-test
+# Example 1j: Two-sided two-sample Welch-test
 # plot results
 test.welch(y ~ group1, data = dat1, plot = TRUE)
 
@@ -200,7 +210,7 @@ library(ggplot2)
 # Save plot, ggsave() from the ggplot2 package
 ggsave("Two-sample_Welch-test.png", dpi = 600, width = 4, height = 6)
 
-# Two-sided two-sample Welch-test
+# Example 1k: Two-sided two-sample Welch-test
 # extract plot
 p <- test.welch(y ~ group1, data = dat1, output = FALSE)$plot
 p
@@ -213,25 +223,25 @@ ggplot(plotdat, aes(factor(group), y)) +
   geom_point(stat = "summary", fun = "mean", size = 4) +
   stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
   scale_x_discrete(name = NULL) +
-  labs(subtitle = "Two-Sided 95\% Confidence Interval") +
+  labs(subtitle = "Two-Sided 95% Confidence Interval") +
   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
 }
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # Multiple-Sample Design
 
-# Welch's ANOVA
+# Example 2a: Welch's ANOVA
 test.welch(y ~ group2, data = dat1)
 
-# Welch's ANOVA
+# Example 2b: Welch's ANOVA
 # print eta-squared and omega-squared
 test.welch(y ~ group2, data = dat1, effsize = TRUE)
 
-# Welch's ANOVA
+# Example 2c: Welch's ANOVA
 # do not print hypotheses and descriptive statistics,
 test.welch(y ~ group2, data = dat1, descript = FALSE, hypo = FALSE)
 
 \dontrun{
-# Welch's ANOVA
+# Example 2d: Welch's ANOVA
 # plot results
 test.welch(y ~ group2, data = dat1, plot = TRUE)
 
@@ -241,7 +251,7 @@ library(ggplot2)
 # Save plot, ggsave() from the ggplot2 package
 ggsave("Multiple-sample_Welch-test.png", dpi = 600, width = 4.5, height = 6)
 
-# Welch's ANOVA
+# Example 2e: Welch's ANOVA
 # extract plot
 p <- test.welch(y ~ group2, data = dat1, output = FALSE)$plot
 p
@@ -254,7 +264,7 @@ ggplot(plotdat, aes(group, y)) +
   geom_point(stat = "summary", fun = "mean", size = 4) +
   stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
   scale_x_discrete(name = NULL) +
-  labs(subtitle = "Two-Sided 95\% Confidence Interval") +
+  labs(subtitle = "Two-Sided 95% Confidence Interval") +
   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
 }
 }

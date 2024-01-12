@@ -6,22 +6,30 @@
 #' function. For linear models the heteroscedasticity-robust F-test is computed
 #' as well. By default the function uses the HC4 estimator.
 #'
-#' @param model        a fitted model of class \code{lm} or \code{glm}.
-#' @param type         a character string specifying the estimation type, where
-#'                     \code{"H0"} gives White's estimator and \code{"H1"} to
-#'                     \code{"H5"} are refinement of this estimator. See help page
-#'                     of the \code{vcovHC()} function in the R package \code{sandwich}
-#'                     for more details.
-#' @param digits       an integer value indicating the number of decimal places
-#'                     to be used for displaying results. Note that information
-#'                     criteria and chi-square test statistic are printed with
-#'                     \code{digits} minus 1 decimal places.
-#' @param p.digits     an integer value indicating the number of decimal places
-#' @param write        a character string for writing the results into a Excel file
-#'                     naming a file with or without file extension '.xlsx', e.g.,
-#'                     \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check        logical: if \code{TRUE}, argument specification is checked.
-#' @param output       logical: if \code{TRUE}, output is shown.
+#' @param model    a fitted model of class \code{lm} or \code{glm}.
+#' @param type     a character string specifying the estimation type, where
+#'                 \code{"H0"} gives White's estimator and \code{"H1"} to
+#'                 \code{"H5"} are refinement of this estimator. See help page
+#'                 of the \code{vcovHC()} function in the R package \code{sandwich}
+#'                 for more details.
+#' @param digits   an integer value indicating the number of decimal places
+#'                 to be used for displaying results. Note that information
+#'                 criteria and chi-square test statistic are printed with
+#'                 \code{digits} minus 1 decimal places.
+#' @param p.digits an integer value indicating the number of decimal places
+#' @param write    a character string naming a file for writing the output into
+#'                 either a text file with file extension \code{".txt"} (e.g.,
+#'                 \code{"Output.txt"}) or Excel file with file extention
+#'                 \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'                 name does not contain any file extension, an Excel file will
+#'                 be written.
+#' @param append   logical: if \code{TRUE} (default), output will be appended
+#'                 to an existing text file with extension \code{.txt} specified
+#'                 in \code{write}, if \code{FALSE} existing text file will be
+#'                 overwritten.
+#' @param check    logical: if \code{TRUE} (default), argument specification
+#'                 is checked.
+#' @param output   logical: if \code{TRUE} (default), output is shown.
 #'
 #' @details
 #' The family of heteroscedasticity-consistent (HC) standard errors estimator for
@@ -142,31 +150,33 @@
 #'                   y1 = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8),
 #'                   y2 = c(0, 1, 0, 2, 0, 1, 0, 0, 1, 2, 1, 0))
 #'
-#' #----------------------------
-#' # Linear model
+#' #----------------------------------------------------------------------------
+#' # Example 1: Linear model
 #'
 #' mod1 <- lm(y1 ~ x1 + x2 + x3, data = dat)
 #' robust.coef(mod1)
 #'
-#' #----------------------------
-#' # Generalized linear model
+#' #----------------------------------------------------------------------------
+#' # Example 2: Generalized linear model
 #'
 #' mod2 <- glm(y2 ~ x1 + x2 + x3, data = dat, family = poisson())
 #' robust.coef(mod2)
 #'
 #' \dontrun{
-#' #----------------------------
-#' # Write Results into a Excel file
+#' #----------------------------------------------------------------------------
+#' # Write Results
 #'
-#' mod1 <- lm(y1 ~ x1 + x2 + x3, data = dat)
+#' # Example 3a: Write results into a text file
+#' robust.coef(mod1, write = "Robust_Coef.txt", output = FALSE)
 #'
+#' # Example 3b: Write results into a Excel file
 #' robust.coef(mod1, write = "Robust_Coef.xlsx", output = FALSE)
 #'
 #' result <- robust.coef(mod1, output = FALSE)
 #' write.result(result, "Robust_Coef.xlsx")
 #' }
 robust.coef <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5"),
-                        digits = 3, p.digits = 4, write = NULL, check = TRUE,
+                        digits = 3, p.digits = 4, write = NULL, append = TRUE, check = TRUE,
                         output = TRUE) {
 
   #_____________________________________________________________________________
@@ -200,6 +210,9 @@ robust.coef <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m
 
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     ## Check input 'output' ##
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
@@ -624,7 +637,7 @@ robust.coef <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m
                  type = "robust.coef",
                  model = model,
                  args = list(type = type, digits = digits, p.digits = p.digits,
-                             write = write, check = check, output = output),
+                             write = write, append = append, check = check, output = output),
                  result = list(coef = coef.res, F.test = F.test, sandwich = sandw))
 
   class(object) <- "misty.object"
@@ -633,8 +646,34 @@ robust.coef <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+  if (isTRUE(!is.null(write))) {
 
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
   #_____________________________________________________________________________
   #
   # Output ---------------------------------------------------------------------

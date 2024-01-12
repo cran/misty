@@ -1,3 +1,64 @@
+### misty 0.6.0 (2024-01-12)
+
+##### New features
+* New function `df.subset()` for subsetting data frames using the operators 
+`.`, `+`, `-`, `~`, `:`, `::`, and `!` similar to functions from the R package `tidyselect`.
+* New function `lagged()` to compute lagged values of variables.
+* New function `df.move()` to move variable(s) in a data frame.
+* New functions `read.dta()` and `write.dta()` to read and write Stata DTA files.
+* New function `coding()` to code categorical variables, i.e., dummy, simple, 
+unweighted and weighted effect, repeated, forward Helmert, reverse Helmert, and 
+orthogonal polynomial coding.
+* New function `effsize()` to compute effect sizes for categorical variables, i.e.,
+(adjusted) phi coefficient, (bias-corrected) Cramer's V, (bias-corrected) Tschuprow's T, 
+(adjusted) Pearson's contingency coefficient, Cohen's w, and Fei.
+* New function `script.copy()` to save a copy of the current script in RStudio
+with the current date and time.
+
+##### Minor features and improvements
+* Functions `as.na()`, `na.as()``center()`, `ci.mean()`, `ci.mean.w()`, `ci.median()`, 
+`ci.prop()`, `ci.var()`, `ci.sd()`, `cluster.scores()`, `cor.matrix()`,
+`crosstab()`, `descript()`, `freq()`, `item.alpha()`, `item.cfa()`, `item.invar()`,
+`item.omega()`, `item.reverse()`, `item.scores()`, `multilevel.cfa()`, `multilevel.cor()`,
+`multilevel.descript()`, `multilevel.fit()`, `multilevel.icc()`, `multilevel.invar()`,
+`multilevel.omega()`, `na.auxiliary()`, `na.coverage()`, `na.descript()`,
+`na.indicator()`, `na.pattern()`, `na.prop()`, `na.test()` `rec()`, `rwg.lindell()`,
+`skewness()`, and `kurtosis()` provide the argument `...` instead of the argument 
+`x` to specify variables from the data frame specified in  `data` using the operators 
+`.`, `+`, `-`, `~`, `:`, `::`. 
+* Function `multilevel.icc()` computes intraclass corelation coefficients in
+three-level data.
+* Function `multilevel.descript()` computes multilevel descriptive statistics
+in three-level data.
+* Function `center()` centers predictor variables in three-level data.
+* Function `na.descript()` provides descriptive statistics for missing data in
+two-level and three-lavel data.
+* Function `cor.matrix()` computes tetrachoric and polychoric correlation coefficients.
+* Added the arguments `write` and `append` to all functions providing a 
+print function to save the print output into a text file.
+
+##### User-visible changes
+* Changed the default setting of the argument `names` in the functions `rec()` to `.e`.
+* Changed the default setting of the arguments `label` and `labels` in the `read.sav` function to `FALSE`.
+* Changed the argument `value` in the function `na.as()` to `na` to make it consistent with the arguments of the function `as.na()`.
+* Changed the argument `resid.cov` in the function `item.omega()` to `resocv` to make it consistent with the arguments of the functions `item.cfa()` and `multilevel.cfa()`.
+* Changed the argument `names` in the functions `center`, `cluster.scores`, 
+`item.reverse`, and `rec` to `name` to make it consistent with the arguments of the functions 
+`item.scores()`, `na.prop()`, and `lwg.lindell()`.
+* Changed the argument `x` and `...` in the functions `df.duplicated()` and `df.unique()`to `...` and `data` to make it consistent with all other functions using the `...` argument.
+* Merged help pages for the functions `as.na` and `na.as` into one help page.
+* Merged help pages for the functions `script.open`, `script.close`, and `script.save` into one help page.
+* Merged help pages for the functions `skewness` and `kurtosis` into one help page.
+* Merged help pages for the functions `ci.mean` and `ci.median` into one help page.
+* Merged help pages for the functions `ci.var` and `ci.sd` into one help page.
+* Removed the function `shift()` and replaced it by the function `lagged()`.
+* Removed the function `dummy.c()` and replaced it by the function `coding()`
+* Removed the functions `cor.phi()`, `cor.cont()`, `cor.cramer()`, and `eta.sq()` and replaced them by the function `effsize()`.
+* Removed the function `cor.poly()` and integrated polychoric correlation coefficient into the function `cor.matrix()`.
+
+##### Bug fix
+* Fixed a bug in the function `multilevel.descript()`, function led to a node stack overflow. 
+
 ### misty 0.5.4 (2023-11-14)
 
 ##### New features
@@ -14,7 +75,7 @@
 ### misty 0.5.2 (2023-08-24)
 
 ##### Minor features and improvements
-* Added the argument `group.ind` to the function `result.lca()` to specify 
+* Added the argument `group.ind` to the function `result.lca()` to specify. 
 latent class indicators as grouping variable in the bar charts. 
 
 ### misty 0.5.1 (2023-08-22)

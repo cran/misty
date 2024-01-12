@@ -12,7 +12,7 @@
 #' parameter estimates, modification indices, and residual correlation matrix can
 #' be requested by specifying the argument \code{print}.
 #'
-#' @param x            a matrix or data frame. If \code{model = NULL}, confirmatory
+#' @param ...          a matrix or data frame. If \code{model = NULL}, confirmatory
 #'                     factor analysis based on a measurement model with one factor
 #'                     labeled \code{f} comprising all variables in the matrix or
 #'                     data frame specified in \code{x} for evaluating between-group
@@ -25,7 +25,16 @@
 #'                     the matrix or data frame needs to contain all variables
 #'                     used in the argument \code{model} and the cluster variable
 #'                     when specifying the name of the cluster variable in the
-#'                     argument \code{cluster}.
+#'                     argument \code{cluster}. Alternatively, an expression
+#'                     indicating the variable names in \code{data} e.g.,
+#'                     \code{item.invar(x1, x2, x2, data = dat)}. Note that the
+#'                     operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+#'                     \code{::}, and \code{!} can also be used to select variables,
+#'                     see 'Details' in the \code{\link{df.subset}} function.
+#' @param data         a data frame when specifying one or more variables in the
+#'                     argument \code{...}. Note that the argument is \code{NULL}
+#'                     when specifying a a matrix or data frame for the argument
+#'                     \code{...}.
 #' @param model        a character vector specifying a measurement model with one
 #'                     factor, or a list of character vectors for specifying a
 #'                     measurement model with more than one factor for evaluating
@@ -79,11 +88,11 @@
 #'                     this function can only evaluate either between-group or
 #'                     longitudinal measurement invariance, but not both at the
 #'                     same time.
-#' @param cluster      either a character string indicating the variable name of
-#'                     the cluster variable in the matrix or data frame specified
-#'                     in \code{x} or a vector representing the nested grouping
-#'                     structure (i.e., group or cluster variable) for computing
-#'                     a robust test statistic and cluster-robust standard errors.
+#' @param cluster      either a character string indicating the variable name
+#'                     of the cluster variable in \code{...} or \code{data},
+#'                     or a vector representing the nested grouping structure
+#'                     (i.e., group or cluster variable) for computing
+#'                     cluster-robust standard errors.
 #' @param invar        a character string indicating the level of measurement
 #'                     invariance to be evaluated, i.e., \code{config} to evaluate
 #'                     configural measurement invariance (i.e., same factor structure
@@ -199,13 +208,20 @@
 #'                     these values are converted to \code{NA} before conducting
 #'                     the analysis. Note that \code{as.na()} function is only
 #'                     applied to \code{x} but not to \code{group} or \code{cluster}.
-#' @param write        a character string for writing the results into a Excel file
-#'                     naming a file with or without file extension '.xlsx', e.g.,
-#'                     \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check        logical: if \code{TRUE}, argument specification is checked
-#'                     and convergence and model identification checks are conducted
-#'                     for all estimated models.
-#' @param output       logical: if \code{TRUE}, output is shown.
+#' @param write        a character string naming a file for writing the output into
+#'                     either a text file with file extension \code{".txt"} (e.g.,
+#'                     \code{"Output.txt"}) or Excel file with file extention
+#'                     \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'                     name does not contain any file extension, an Excel file will
+#'                     be written.
+#' @param append       logical: if \code{TRUE} (default), output will be appended
+#'                     to an existing text file with extension \code{.txt} specified
+#'                     in \code{write}, if \code{FALSE} existing text file will be
+#'                     overwritten.
+#' @param check        logical: if \code{TRUE} (default), argument specification
+#'                     is checked and convergence and model identification checks
+#'                     are conducted for all estimated models.
+#' @param output       logical: if \code{TRUE} (default), output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -235,7 +251,8 @@
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
 #' \item{\code{data}}{data frame including all variables used in the analysis, i.e.,
-#'                    indicators for the factor, grouping variable and cluster variable}
+#'                    indicators for the factor, grouping variable and cluster
+#'                    variable}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{model}}{list with specified model for the configural, metric, scalar,
 #'                     and strict invariance model}
@@ -274,21 +291,27 @@
 #' # Load data set "HolzingerSwineford1939" in the lavaan package
 #' data("HolzingerSwineford1939", package = "lavaan")
 #'
-#' #------------------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Between-Group Measurement Invariance Evaluation
 #'
 #' #..................
 #' # Measurement model with one factor
 #'
-#' # Specification of the grouping variable in 'x'
+#' # Example 1a: Specification of the grouping variable in 'x'
 #' item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "sex")], group = "sex")
 #'
-#' # Specification of the grouping variable in 'group'
+#' # Example 1b: Specification of the grouping variable in 'group'
 #' item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
 #'            group = HolzingerSwineford1939$sex)
 #'
-#' # Alternative specification using the argument 'model'
+#' # Example 1c: Alternative specification using the 'data' argument
+#' item.invar(x1:x4, data = HolzingerSwineford1939, group = "sex")
+#'
+#' # Example 1d: Alternative specification using the argument 'model'
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "sex")
+#'
+#' # Example 1e: Alternative specification using the 'data' and 'model' argument
+#' item.invar(., data = HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "sex")
 #'
 #' #..................
 #' # Measurement model with two factors
@@ -300,58 +323,58 @@
 #' #..................
 #' # Measurement model with two factors
 #'
-#' # Evaluate configural, metric, scalar, and strict measurement invariance
+#' # Example 2: Evaluate configural, metric, scalar, and strict measurement invariance
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "sex", invar = "strict")
 #'
 #' #..................
 #' # Partial measurement invariance
 #'
-#' # Free second factor loading (L2) and third intercept (T3)
+#' # Example 3: Free second factor loading (L2) and third intercept (T3)
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "sex", partial = c("L2", "T3"), print = c("fit", "est"))
 #'
 #' #..................
 #' # Residual covariances
 #'
-#' # One residual covariance
+#' # Example 4a: One residual covariance
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            rescov = c("x3", "x4"), group = "sex")
 #'
-#' # Two residual covariances
+#' # Example 4b: Two residual covariances
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            rescov = list(c("x1", "x2"), c("x3", "x4")), group = "sex")
 #'
 #' #..................
 #' # Scaled test statistic and cluster-robust standard errors
 #'
-#' # Specify cluster variable using a variable name in 'x'
+#' # Example 5a: Specify cluster variable using a variable name in 'x'
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "sex", cluster = "agemo")
 #'
-#' # Specify vector of the cluster variable in the argument 'cluster'
+#' # Example 5b: Specify vector of the cluster variable in the argument 'cluster'
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "sex", cluster = HolzingerSwineford1939$agemo)
 #'
 #' #..................
 #' # Default Null model
 #'
-#' # Specify default null model for computing incremental fit indices
+#' # Example 6: Specify default null model for computing incremental fit indices
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "sex", null.model = FALSE)
 #'
 #' #..................
 #' # Print argument
 #'
-#' # Request all results
+#' # Example 7a: Request all results
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "sex", print = "all")
 #'
-#' # Request fit indices with ad hoc non-normality correction
+#' # Example 7b: Request fit indices with ad hoc non-normality correction
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "sex", print.fit = "scaled")
 #'
-#' # Request modification indices with value equal or higher than 10
+#' # Example 7c: Request modification indices with value equal or higher than 10
 #' # and highlight residual correlations equal or higher than 0.3
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "sex", print = c("modind", "resid"),
@@ -360,6 +383,7 @@
 #' #..................
 #' # Model syntax and lavaan summary of the estimated model
 #'
+#' # Example 8
 #' mod <- item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'                   group = "sex", output = FALSE)
 #'
@@ -369,17 +393,22 @@
 #' # lavaan summary of the scalar invariance model
 #' lavaan::summary(mod$model.fit$scalar, standardized = TRUE, fit.measures = TRUE)
 #'
-#' #------------------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Longitudinal Measurement Invariance Evaluation
 #'
-#' # Two time points with three indicators at each time point
+#' # Example 9: Two time points with three indicators at each time point
 #' item.invar(HolzingerSwineford1939,
 #'            model = list(c("x1", "x2", "x3"),
 #'                         c("x5", "x6", "x7")), long = TRUE)
 #'
 #' #------------------------------------------------
-#' # Write Results into a Excel file
+#' # Write Results
 #'
+#' # Example 10a: Write Results into a text file
+#' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
+#'            group = "sex", print = "all", write = "Invariance.txt", output = FALSE)
+#'
+#' # Example 10b: Write Results into a Excel file
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "sex", print = "all", write = "Invariance.xlsx", output = FALSE)
 #'
@@ -387,8 +416,9 @@
 #'                      group = "sex", print = "all", output = FALSE)
 #' write.result(result, "Invariance.xlsx")
 #' }
-item.invar <- function(x, model = NULL, rescov = NULL, rescov.long = TRUE, group = NULL,
-                       long = FALSE, cluster = NULL, invar = c("config", "metric", "scalar", "strict"),
+item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.long = TRUE,
+                       group = NULL, long = FALSE, cluster = NULL,
+                       invar = c("config", "metric", "scalar", "strict"),
                        partial = NULL, ident = c("marker", "var", "effect"),
                        estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
                                      "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
@@ -396,29 +426,66 @@ item.invar <- function(x, model = NULL, rescov = NULL, rescov.long = TRUE, group
                        missing = c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust"),
                        null.model = TRUE, print = c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid"),
                        print.fit = c("all", "standard", "scaled", "robust"), mod.minval = 6.63, resid.minval = 0.1,
-                       digits = 3, p.digits = 3, as.na = NULL, write = NULL, check = TRUE, output = TRUE) {
+                       digits = 3, p.digits = 3, as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing or NULL
-  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is a matrix or a data frame
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or a data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   # Check if input 'model' is a character vector or list of character vectors
   if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
-
-  # Check if variables in input 'model' are available in input 'x'
-  if (isTRUE(!is.null(model) && any(!unlist(model) %in% colnames(x)))) { stop(paste0("Items specified in the argument 'model' were not found in 'x': ", paste(unique(unlist(model))[!unique(unlist(model)) %in% colnames(x)], collapse = ", ")), call. = FALSE) }
 
   # Check if 'group' or 'long' is specified
   if (isTRUE((is.null(group) && !long) || (!is.null(group) && long))) { stop("Please specify the argument 'group' to evaluate between-group measurement invariance or the argument 'long' to evaluate longitudinal measurement invariance.", call. = FALSE) }
 
   # Check if 'model' is specified when evaluating longitudinal measurement invariance
   if (isTRUE((long && is.null(model)) || (long && !is.list(model)))) { stop("Please specify a list of character vectors for the argument 'model' to evaluate longitudinal measurement invariance.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument 'data' ####
+
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
+
+    # Extract data
+    x <- data[, var.names]
+
+    # Cluster variable
+    if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+    # Data and cluster
+    var.group <- .var.group(data = x, cluster = cluster)
+
+    # Data
+    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+
+    # Cluster variable
+    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+
+  }
 
   #_____________________________________________________________________________
   #
@@ -621,6 +688,9 @@ item.invar <- function(x, model = NULL, rescov = NULL, rescov.long = TRUE, group
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
     ## Check input 'output' ##
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
@@ -761,21 +831,7 @@ item.invar <- function(x, model = NULL, rescov = NULL, rescov.long = TRUE, group
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    x[, var] <- misty::as.na(x[, var], na = as.na, check = check)
-
-    # Variable with missing values only
-    x.miss <- vapply(x[, var], function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-    if (isTRUE(any(x.miss))) {
-
-      stop(paste0("After converting user-missing values into NA, following ",
-                  ifelse(length(which(x.miss)) == 1L, "variable is ", "variables are "), "completely missing: ",
-                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
-
-    }
-
-  }
+  if (isTRUE(!is.null(as.na))) { x[, var] <- .as.na(x[, var], na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check variance within groups ##
@@ -3077,7 +3133,7 @@ item.invar <- function(x, model = NULL, rescov = NULL, rescov.long = TRUE, group
                              ident = ident, ordered = ordered, estimator = estimator,
                              missing = missing, null.model = null.model, print = print, print.fit = print.fit,
                              mod.minval = mod.minval, resid.minval = resid.minval,
-                             digits = digits, p.digits = p.digits, as.na = as.na, write = write,
+                             digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append,
                              check = check, output = output),
                  model = list(config = mod.config, metric = mod.metric, scalar = mod.scalar, strict = mod.strict),
                  model.fit = list(config = mod.config.fit, metric = mod.metric.fit, scalar = mod.scalar.fit, strict = mod.strict.fit),
@@ -3099,7 +3155,34 @@ item.invar <- function(x, model = NULL, rescov = NULL, rescov.long = TRUE, group
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #

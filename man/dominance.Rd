@@ -5,7 +5,7 @@
 \title{Dominance Analysis}
 \usage{
 dominance(model, print = c("all", "gen", "cond", "comp"), digits = 3,
-          write = NULL, check = TRUE, output = TRUE)
+          write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{model}{a fitted model of class \code{lm}.}
@@ -20,13 +20,21 @@ used for displaying results. Note that the percentage relative
 importance of predictors are printed with \code{digits} minus 1
 decimal places.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -94,25 +102,23 @@ This function is based on the \code{domir} function from the \code{domir}
 package (Luchman, 2023).
 }
 \examples{
-dat <- data.frame(x1 = c(3, 2, 4, 9, 5, 3, 6, 4, 5, 6, 3, 5),
-                  x2 = c(1, 4, 3, 1, 2, 4, 3, 5, 1, 7, 8, 7),
-                  x3 = c(0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1),
-                  y  = c(0, 1, 0, 2, 0, 1, 0, 0, 1, 2, 1, 0))
+#----------------------------------------------------------------------------
+# Example 1: Dominance analysis for a linear model
 
-#----------------------------
-# Dominance analysis for a linear model
-
-mod <- lm(y ~ x1 + x2 + x3, data = dat)
+mod <- lm(mpg ~ cyl + disp + hp, data = mtcars)
 dominance(mod)
 
 # Print all results
 dominance(mod, print = "all")
 
 \dontrun{
-#----------------------------
-# Write Results into a Excel file
+#----------------------------------------------------------------------------
+# Example 2: Write results into a text file
 
-mod <- lm(y ~ x1 + x2 + x3, data = dat)
+dominance(mod, write = "Dominance.txt", output = FALSE)
+
+#----------------------------------------------------------------------------
+# Example 3: Write results into an Excel file
 
 dominance(mod, write = "Dominance.xlsx", output = FALSE)
 

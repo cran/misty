@@ -27,10 +27,10 @@
 #'                      conducting the analysis.
 #' @param conf.level    a numeric value between 0 and 1 indicating the confidence
 #'                      level of the interval.
-#' @param hypo          logical: if \code{TRUE}, null and alternative hypothesis
+#' @param hypo          logical: if \code{TRUE} (default), null and alternative
+#'                      hypothesis are shown on the console.
+#' @param descript      logical: if \code{TRUE} (default), descriptive statistics
 #'                      are shown on the console.
-#' @param descript      logical: if \code{TRUE}, descriptive statistics are shown
-#'                      on the console.
 #' @param plot          logical: if \code{TRUE}, a plot showing violin plots with
 #'                      boxplots is drawn.
 #' @param violin.alpha  a numeric value indicating the opacity of the violins.
@@ -69,8 +69,16 @@
 #'                      to be used for displaying results.
 #' @param p.digits      an integer value indicating the number of decimal places
 #'                      to be used for displaying the \emph{p}-value.
-#' @param check         logical: if \code{TRUE}, argument specification is checked.
-#' @param output        logical: if \code{TRUE}, output is shown.
+#' @param write         a character string naming a text file with file extension
+#'                      \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                      output into a text file.
+#' @param append        logical: if \code{TRUE} (default), output will be appended
+#'                      to an existing text file with extension \code{.txt} specified
+#'                      in \code{write}, if \code{FALSE} existing text file will be
+#'                      overwritten.
+#' @param check         logical: if \code{TRUE} (default), argument specification
+#'                      is checked.
+#' @param output        logical: if \code{TRUE} (default), output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -105,21 +113,24 @@
 #' dat <- data.frame(y = c(2, 3, 4, 5, 5, 7, 8, 4, 5, 2, 4, 3),
 #'                   group = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3))
 #'
-#' # Levene's test based on the median with 95% confidence interval
+#' # Example 1: Levene's test based on the median with 95% confidence interval
 #' test.levene(y ~ group, data = dat)
 #'
-#' # Levene's test based on the arithmetic mean  with 95% confidence interval
+#' # Example 2: Levene's test based on the arithmetic mean  with 95% confidence interval
 #' test.levene(y ~ group, data = dat, method = "mean")
 #'
-#' # Levene's test based on the median with 99% confidence interval
+#' # Example 3: Levene's test based on the median with 99% confidence interval
 #' test.levene(y ~ group, data = dat, conf.level = 0.99)
 #'
 #' \dontrun{
-#' # Levene's test based on the median with 95% confidence interval
+#' # Example 4: Write results into a text file
+#' test.levene(y ~ group, data = dat, write = "Levene.txt")
+#'
+#' # Example 5: Levene's test based on the median with 95% confidence interval
 #' # plot results
 #' test.levene(y ~ group, data = dat, plot = TRUE)
 #'
-#' #' # Load ggplot2 package
+#' # Load ggplot2 package
 #' library(ggplot2)
 #'
 #' # Save plot, ggsave() from the ggplot2 package
@@ -130,7 +141,7 @@
 #' p <- test.levene(y ~ group, data = dat, output = FALSE)$plot
 #' p
 #'
-#' # Extract data
+#' # Example 6: Extract data
 #' plotdat <- test.levene(y ~ group, data = dat, output = FALSE)$data
 #'
 #' # Draw violin and boxplots in line with the default setting of test.levene()
@@ -142,14 +153,14 @@
 #' }
 test.levene <- function(formula, data, method = c("median", "mean"),
                         conf.level = 0.95, hypo = TRUE, descript = TRUE,
-                        plot = TRUE, violin.alpha = 0.3, violin.trim = FALSE,
+                        plot = FALSE, violin.alpha = 0.3, violin.trim = FALSE,
                         box = TRUE, box.alpha = 0.2, box.width = 0.2,
                         jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
                         jitter.height = 0, jitter.alpha = 0.2,
                         gray = FALSE, start = 0.9, end = 0.4, color = NULL,
                         xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
                         title = "", subtitle = "",  digits = 2, p.digits = 3, as.na = NULL,
-                        check = TRUE, output = TRUE) {
+                        write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -205,20 +216,7 @@ test.levene <- function(formula, data, method = c("median", "mean"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    # Replace user-specified values with missing values
-    data[, y.var] <- misty::as.na(data[, y.var], na = as.na, check = check)
-
-    # Variable with missing values only
-    if (isTRUE(all(is.na(data[, y.var])))) {
-
-      stop(paste0("After converting user-missing values into NA, ", y.var, "is completely missing."),
-           call. = FALSE)
-
-    }
-
-  }
+  if (isTRUE(!is.null(as.na))) { data[, y.var] <- .as.na(data[, y.var], na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
@@ -232,7 +230,7 @@ test.levene <- function(formula, data, method = c("median", "mean"),
   if (isTRUE(check)) {
 
     # ggplot2 package
-    if (isTRUE(!nzchar(system.file(package = "ggplot2"))))  { warning("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
+    if (isTRUE(plot && !nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
 
     # Variance zero
     y.var0 <- tapply(data[, y.var], data[, group.var], var, na.rm = TRUE) == 0L
@@ -277,6 +275,12 @@ test.levene <- function(formula, data, method = c("median", "mean"),
 
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1 != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
+
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
@@ -399,10 +403,32 @@ test.levene <- function(formula, data, method = c("median", "mean"),
                              end = end, color = color, xlab = xlab, ylab = ylab,
                              ylim = ylim, breaks = breaks, title = title, subtitle = subtitle,
                              digits = digits, p.digits = p.digits, as.na = as.na,
-                             check = check, output = output),
+                             write = write, append = append, check = check, output = output),
                  result = list(descript = result.ci, test = result.aov))
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

@@ -2,16 +2,34 @@
 % Please edit documentation in R/ci.mean.R
 \name{ci.mean}
 \alias{ci.mean}
-\title{Confidence Interval for the Arithmetic Mean}
+\alias{ci.median}
+\title{Confidence Interval for the Arithmetic Mean and Median}
 \usage{
-ci.mean(x, sigma = NULL, sigma2 = NULL, adjust = FALSE,
+ci.mean(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALSE,
         alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
         group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-        digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+        digits = 2, as.na = NULL, write = NULL, append = TRUE,
+        check = TRUE, output = TRUE)
+
+ci.median(..., data = NULL, alternative = c("two.sided", "less", "greater"),
+          conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
+          na.omit = FALSE, digits = 2, as.na = NULL, write = NULL, append = TRUE,
+          check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector, matrix or data frame with numeric variables, i.e.,
-factors and character variables are excluded from \code{x} before conducting the analysis.}
+\item{...}{a numeric vector, matrix or data frame with numeric variables,
+i.e., factors and character variables are excluded from \code{x}
+before conducting the analysis. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{ci.mean(x1, x2, data = dat)}. Note that
+the operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+\code{::}, and \code{!} can also be used to select variables, see
+'Details' in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a numeric vector, matrix or data frame
+for the argument \code{...}.}
 
 \item{sigma}{a numeric vector indicating the population standard deviation when computing confidence
 intervals for the arithmetic mean with known standard deviation Note that either argument
@@ -24,20 +42,26 @@ or argument \code{sigma2} is specified and it is only possible to specify one va
 argument \code{sigma2} even though multiple variables are specified in \code{x}.}
 
 \item{adjust}{logical: if \code{TRUE} (default), difference-adjustment for the
-confidence intervals is applied.}
+confidence intervals for the arithmetic means is applied.}
 
 \item{alternative}{a character string specifying the alternative hypothesis, must be one of
 \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
 
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
 
-\item{group}{a numeric vector, character vector or factor as grouping variable. Note that a grouping
-variable can only be used when computing confidence intervals with unknown population
-standard deviation and population variance.}
+\item{group}{either a character string indicating the variable name of
+the grouping variable in \code{...} or \code{data}, or a vector
+representing the grouping variable. Note that a grouping
+variable can only be used when computing confidence intervals
+with unknown population standard deviation and population
+variance.}
 
-\item{split}{a numeric vector, character vector or factor as split variable. Note that a split
-variable can only be used when computing confidence intervals with unknown population
-standard deviation and population variance.}
+\item{split}{either a character string indicating the variable name of
+the split variable in \code{...} or \code{data}, or a vector
+representing the split variable. Note that a grouping
+variable can only be used when computing confidence intervals
+with unknown population standard deviation and population
+variance.}
 
 \item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.}
 
@@ -51,78 +75,97 @@ i.e. these values are converted to \code{NA} before conducting the analysis.
 Note that \code{as.na()} function is only applied to \code{x}, but
 not to \code{group} or \code{split}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
+
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{list with the input specified in \code{x}, \code{group},
-                     and \code{split}}
+  \item{\code{data}}{list with the input specified in \code{...}, \code{data},                           \code{group}, and \code{split}}
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{result table}
 }
 \description{
-This function computes a confidence interval for the arithmetic mean with known or unknown population standard
-deviation or population variance for one or more variables, optionally by a grouping and/or split variable.
+The function \code{ci.mean} computes a confidence interval for the arithmetic
+mean with known or unknown population standard deviation or population variance
+and the function \code{ci.median} computes the confidence interval for the
+median for one or more variables, optionally by a grouping and/or split variable.
 }
 \details{
-A difference-adjusted confidence interval (Baguley, 2012) can be computed by
-specifying \code{adjust = TRUE}.
+A difference-adjusted confidence interval (Baguley, 2012) for the arithmetic
+mean can be computed by specifying \code{adjust = TRUE}.
 }
 \examples{
-dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
-                  group2 = c(1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2),
-                  x1 = c(3, 1, 4, 2, 5, 3, 2, 4, NA, 4, 5, 3),
-                  x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 5, 1, 3, 6),
-                  x3 = c(7, 8, 5, 6, 4, NA, 8, NA, 6, 5, 8, 6))
+# Example 1a: Two-Sided 95% Confidence Interval for the Arithmetic Mean for 'mpg'
+ci.mean(mtcars$mpg)
 
-# Two-Sided 95\% Confidence Interval for x1
-ci.mean(dat$x1)
+# Example 1b: Alternative specification using the 'data' argument
+ci.mean(mpg, data = mtcars)
 
-# Two-Sided 95\% Difference-Adjusted Confidence Interval for x1
-ci.mean(dat$x1, adjust = TRUE)
+# Example 2: Two-Sided 95% Confidence Interval for the Median
+ci.median(mtcars$mpg)
 
-# Two-Sided 95\% Confidence Interval with known standard deviation for x1
-ci.mean(dat$x1, sigma = 1.2)
+# Example 3: Two-Sided 95% Difference-Adjusted Confidence Interval
+ci.mean(mtcars$mpg, adjust = TRUE)
 
-# Two-Sided 95\% Confidence Interval with known variance for x1
-ci.mean(dat$x1, sigma2 = 2.5)
+# Example 4: Two-Sided 95% Confidence Interval with known standard deviation
+ci.mean(mtcars$mpg, sigma = 1.2)
 
-# One-Sided 95\% Confidence Interval for x1
-ci.mean(dat$x1, alternative = "less")
+# Example 5: Two-Sided 95% Confidence Interval with known variance
+ci.mean(mtcars$mpg, sigma2 = 2.5)
 
-# Two-Sided 99\% Confidence Interval
-ci.mean(dat$x1, conf.level = 0.99)
+# Example 6: One-Sided 95% Confidence Interval
+ci.mean(mtcars$mpg, alternative = "less")
 
-# Two-Sided 95\% Confidence Interval, print results with 3 digits
-ci.mean(dat$x1, digits = 3)
+# Example 7: Two-Sided 99% Confidence Interval
+ci.mean(mtcars$mpg, conf.level = 0.99)
 
-# Two-Sided 95\% Confidence Interval for x1, convert value 4 to NA
-ci.mean(dat$x1, as.na = 4)
+# Example 8: Two-Sided 95% Confidence Interval, print results with 3 digits
+ci.mean(mtcars$mpg, digits = 3)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
+# Example 9a: Two-Sided 95% Confidence Interval for 'mpg', 'cyl', and 'disp',
 # listwise deletion for missing data
-ci.mean(dat[, c("x1", "x2", "x3")], na.omit = TRUE)
+ci.mean(mtcars[, c("mpg", "cyl", "disp")], na.omit = TRUE)
+#
+# Example 9b: Alternative specification using the 'data' argument
+ci.mean(mpg:disp, data = mtcars, na.omit = TRUE)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
-# analysis by group1 separately
-ci.mean(dat[, c("x1", "x2", "x3")], group = dat$group1)
+# Example 10a: Two-Sided 95% Confidence Interval, analysis by 'vs' separately
+ci.mean(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
-# analysis by group1 separately, sort by variables
-ci.mean(dat[, c("x1", "x2", "x3")], group = dat$group1, sort.var = TRUE)
+# Example 10b: Alternative specification using the 'data' argument
+ci.mean(mpg:disp, data = mtcars, group = "vs")
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
-# split analysis by group1
-ci.mean(dat[, c("x1", "x2", "x3")], split = dat$group1)
+# Example 11: Two-Sided 95% Confidence Interval, analysis by 'vs' separately,
+# sort by variables
+ci.mean(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, sort.var = TRUE)
 
-# Two-Sided 95\% Confidence Interval for x1, x2, and x3,
-# analysis by group1 separately, split analysis by group2
-ci.mean(dat[, c("x1", "x2", "x3")], group = dat$group1, split = dat$group2)
+# Example 12: Two-Sided 95% Confidence Interval, split analysis by 'am'
+ci.mean(mtcars[, c("mpg", "cyl", "disp")], split = mtcars$am)
+
+# Example 13a: Two-Sided 95% Confidence Interval for 'mpg', 'cyl', and 'disp'
+# analysis by 'vs' separately, split analysis by 'am'
+ci.mean(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, split = mtcars$am)
+
+# Example 13b: Alternative specification using the 'data' argument
+ci.mean(mpg:disp, data = mtcars, group = "vs", split = "am")
+
+\dontrun{
+# Example 14: Write results into a text file
+ci.mean(mpg:disp, data = mtcars, group = "vs", split = "am", write = "Means.txt")
+}
 }
 \references{
 Baguley, T. S. (2012). \emph{Serious stats: A guide to advanced statistics for
@@ -133,8 +176,8 @@ Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psycholog
 }
 \seealso{
 \code{\link{test.z}}, \code{\link{test.t}}, \code{\link{ci.mean.diff}},
-\code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
-\code{\link{ci.sd}}, \code{\link{descript}}
+\code{\link{ci.prop}}, \code{\link{ci.var}}, \code{\link{ci.sd}},
+\code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -2,10 +2,16 @@
 % Please edit documentation in R/script.open.R
 \name{script.open}
 \alias{script.open}
-\title{Open R Script, R Markdown script, or SQL Script in RStudio}
+\alias{script.close}
+\alias{script.save}
+\title{Open, Close and Save R Script in RStudio}
 \usage{
 script.open(path, line = 1, col = 1, cursor = TRUE, run = FALSE,
             echo = TRUE, max.length = 999, spaced = TRUE, check = TRUE)
+
+script.close(save = FALSE, check = TRUE)
+
+script.save(all = FALSE, check = TRUE)
 }
 \arguments{
 \item{path}{a character string indicating the path of the script.}
@@ -22,43 +28,61 @@ requested location after opening the document.}
 \item{run}{logical: if \code{TRUE}, the code is executed after the
 document is opened}
 
-\item{echo}{logical: if \code{TRUE}, each expression is printed after
+\item{echo}{logical: if \code{TRUE} (default), each expression is printed after
 parsing, before evaluation.}
 
 \item{max.length}{a numeric value indicating the maximal number of characters
 output for the deparse of a single expression.}
 
-\item{spaced}{logical: if \code{TRUE}, empty line is printed before each
+\item{spaced}{logical: if \code{TRUE} (default), empty line is printed before each
 expression.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{save}{logical: if \code{TRUE}, the script is saved before closing
+when using the function \code{script.close}.}
+
+\item{all}{logical: if \code{TRUE}, all scripts opened in RStudio are
+saved when using the function \code{script.save}.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \description{
-This function is used to open an R script, R markdown script, or SQL script
-in RStudio.
+The function \code{script.open} opens an R script, R markdown script, or SQL
+script in RStudio, the function \code{script.close} closes an R script, and
+the function \code{script.save} saves an R script. Note that the R script need
+to have a file location before the script can be saved.
 }
-\details{
-The function \code{documentOpen()} in the package \pkg{rstudioapi} is used to
-open an R script.
+\note{
+This function uses the \code{documentOpen()}, \code{documentPath()},
+\code{documentClose()}, \code{documentSave()}, and \code{documentSaveAll()}
+functions in the \pkg{rstudioapi} package by Kevin Ushey,  JJ Allaire, Hadley
+Wickham, and Gary Ritchie (2023).
 }
 \examples{
 \dontrun{
 
-# Open  R script file
+# Example 1: Open  R script file
 script.open("script.R")
 
-# Open  R script file and run the code
+# Example 2: Open  R script file and run the code
 script.open("script.R", run = TRUE)
+
+# Example 3: Close current R script file
+script.close()
+
+# Example 4: Save current R script
+script.save()
+
+# Example 5: Save all R scripts
+script.save(all = TRUE)
 }
 }
 \references{
-Ushey, K., Allaire, J., Wickham, H., & Ritchie, G. (2022). rstudioapi: Safely
-access the RStudio API. R package version 0.14.
+Ushey, K., Allaire, J., Wickham, H., & Ritchie, G. (2023). \emph{rstudioapi: Safely
+access the RStudio API}. R package version 0.15.0
 https://CRAN.R-project.org/package=rstudioapi
 }
 \seealso{
-\code{\link{script.close}}, \code{\link{script.new}},
-\code{\link{script.save}}, \code{\link{setsource}}
+\code{\link{script.save}}, \code{\link{script.copy}}, \code{\link{setsource}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -32,8 +32,15 @@
 #'               Fixed slopes (Between), Slope variation (Within), Intercept variation
 #'               (Between), and Residual (Within). By default, colors from the
 #'               colorblind-friendly palettes are used
-#' @param check  logical: if \code{TRUE}, argument specification is checked.
-#' @param output logical: if \code{TRUE}, output is shown on the console.
+#' @param write  a character string naming a text file with file extension
+#'               \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'               output into a text file.
+#' @param append logical: if \code{TRUE} (default), output will be appended
+#'               to an existing text file with extension \code{.txt} specified
+#'               in \code{write}, if \code{FALSE} existing text file will be
+#'               overwritten.
+#' @param check  logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @details
 #' A number of R-squared measures for multilevel and linear mixed effects models have
@@ -367,7 +374,7 @@
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' #---------------------------
+#' #----------------------------------------------------------------------------
 #'
 #' # Cluster mean centering, center() from the misty package
 #' Demo.twolevel$x2.c <- center(Demo.twolevel$x2, type = "CWC",
@@ -381,21 +388,24 @@
 #' mod1a <- lmer(y1 ~ x2.c + x2.b + w1 + (1 + x2.c | cluster), data = Demo.twolevel,
 #'               REML = FALSE, control = lmerControl(optimizer = "bobyqa"))
 #'
-#' #---------------------------
-#'
-#' # R-squared measures according to Rights and Sterba (2019)
-#' multilevel.r2(mod1a)
-#'
 #' # Estimate multilevel model using the nlme package
 #' mod1b <- lme(y1 ~ x2.c + x2.b + w1, random = ~ 1 + x2.c | cluster, data = Demo.twolevel,
 #'              method = "ML")
 #'
-#' # R-squared measures according to Rights and Sterba (2019)
+#' #----------------------------------------------------------------------------
+#'
+#' # Example 1a: R-squared measures according to Rights and Sterba (2019)
+#' multilevel.r2(mod1a)
+#'
+#' # Example 1b: R-squared measures according to Rights and Sterba (2019)
 #' multilevel.r2(mod1b)
 #'
-#' #-----------------------------------------
+#' # Example 1a: Write Results into a text file
+#' multilevel.r2(mod1a, write = "ML-R2.txt")
 #'
-#' # Bar chart showing the decomposition of scaled total, within-cluster,
+#' #----------------------------------------------------------------------------
+#'
+#' # Example 2: Bar chart showing the decomposition of scaled total, within-cluster,
 #' # and between-cluster outcome variance
 #' multilevel.r2(mod1a, plot = TRUE)
 #'
@@ -405,9 +415,9 @@
 #' # Save bar chart, ggsave() from the ggplot2 package
 #' ggsave("Proportion_of_Variance.png", dpi = 600, width = 5.5, height = 5.5)
 #'
-#' #-----------------------------------------
+#' #----------------------------------------------------------------------------
 #'
-#' # Estimate multilevel model without random slopes
+#' # Example 3: Estimate multilevel model without random slopes
 #' # Note. R-squared measures by Raudenbush and Bryk (2002), and  Snijders and
 #' # Bosker (2012) should be computed based on the random intercept model
 #' mod2 <- lmer(y1 ~ x2.c + x2.b + w1 + (1 | cluster), data = Demo.twolevel,
@@ -416,9 +426,9 @@
 #' # Print all available R-squared measures
 #' multilevel.r2(mod2, print = "all")
 #'
-#' #-----------------------------------------
+#' #----------------------------------------------------------------------------
 #'
-#' # Draw bar chart manually
+#' # Example 4: Draw bar chart manually
 #' mod1a.r2 <- multilevel.r2(mod1a, output = FALSE)
 #'
 #' # Prepare data frame for ggplot()
@@ -445,13 +455,10 @@
 #'         legend.box.margin = margin(-10, 6, 6, 6)) +
 #'   guides(fill = guide_legend(nrow = 2, reverse = TRUE))
 #' }
-
-
-
 multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digits = 3,
                           plot = FALSE, gray = FALSE, start = 0.15, end = 0.85,
                           color = c("#D55E00", "#0072B2", "#CC79A7", "#009E73", "#E69F00"),
-                          check = TRUE, output = TRUE) {
+                          write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -485,7 +492,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   if (isTRUE(check)) {
 
     # ggplot2 package
-    if (isTRUE(!nzchar(system.file(package = "ggplot2"))))  { warning("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
+    if (isTRUE(plot && !nzchar(system.file(package = "ggplot2"))))  { stop("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
 
     # Check input 'print'
     if (isTRUE(!all(print %in%  c("all", "RB", "SB", "NS", "RS")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"RB\", \"SB\", \"NS\", or \"RS\".", call. = FALSE) }
@@ -504,6 +511,12 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
     # Check input 'end'
     if (isTRUE(end < 0L || end > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'end'", call. = FALSE) }
+
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE) }
@@ -1427,8 +1440,8 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
                  model = model,
                  plot = p,
                  args = list(print = print, digits = digits, plot = plot, gray = gray,
-                             start = start, end = end, color = color, check = check,
-                             output = output),
+                             start = start, end = end, color = color, write = write,
+                             append = TRUE, check = check, output = output),
                  result = list(rb = data.frame(rb1 = rb1, rb2 = rb2),
                                sb = data.frame(sb1 = sb1, sb2 = sb2),
                                ns = data.frame(marg = marg, cond = cond),
@@ -1447,6 +1460,28 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
                                                               m  = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "m", "between"], NA)))))
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

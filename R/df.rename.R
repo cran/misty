@@ -1,21 +1,24 @@
 #' Rename Columns in a Matrix or Variables in a Data Frame
 #'
-#' This function renames columns in a matrix or variables in a data frame by specifying a character string or
-#' character vector indicating the columns or variables to be renamed and a character string or character
-#' vector indicating the corresponding replacement values.
+#' This function renames columns in a matrix or variables in a data frame by
+#' specifying a character string or character vector indicating the columns or
+#' variables to be renamed and a character string or character vector indicating
+#' the corresponding replacement values.
 #'
-#' @param x           a matrix or data frame.
-#' @param from        a character string or character vector indicating the column(s) or variable(s) to be renamed.
-#' @param to          a character string or character vector indicating the corresponding replacement values for
-#'                    the column(s) or variable(s) specified in the argument \code{name}.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
+#' @param x     a matrix or data frame.
+#' @param from  a character string or character vector indicating the
+#'              column(s) or variable(s) to be renamed.
+#' @param to    a character string or character vector indicating the corresponding
+#'              replacement values for the column(s) or variable(s) specified in
+#'              the argument \code{name}.
+#' @param check logical: if \code{TRUE} (default), argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
-#' \code{\link{df.sort}}
+#' \code{\link{df.duplicated}}, \code{\link{df.merge}}, \code{\link{df.move}},
+#' \code{\link{df.rbind}}, \code{\link{df.sort}}, \code{\link{df.subset}}
 #'
 #' @return
 #' Returns a matrix or data frame with renamed columns or variables.
@@ -27,10 +30,10 @@
 #'                   b = c(4, 2, 5),
 #'                   c = c(7, 3, 1))
 #'
-#' # Rename variable b in the data frame 'dat' to y
+#' # Example 1: Rename variable b in the data frame 'dat' to y
 #' df.rename(dat, from = "b", to = "y")
 #'
-#' # Rename variable a, b, and c in the data frame 'dat' to x, y, and z
+#' # Example 2: Rename variable a, b, and c in the data frame 'dat' to x, y, and z
 #' df.rename(dat, from = c("a", "b", "c"), to = c("x", "y", "z"))
 df.rename <- function(x, from, to, check = TRUE) {
 

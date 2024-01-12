@@ -74,9 +74,9 @@ By default, the function ensures column names are not empty
 and are unique.}
 
 \item{as.data.frame}{logical: if \code{TRUE} (default), function returns a regular
-data frame (default); if \code{FALSE} function returns a tibble.}
+data frame; if \code{FALSE} function returns a tibble.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 Returns a data frame or tibble.
@@ -87,30 +87,35 @@ by Hadley Wickham and Jennifer Bryan (2019) to read an Excel file (.xlsx).
 }
 \examples{
 \dontrun{
-# Read Excel file (.xlsx)
+# Example 1: Read Excel file (.xlsx)
 read.xlsx("data.xlsx")
 
-# Read Excel file (.xlsx), use default names as column names
+# Example 1: Read Excel file (.xlsx), use default names as column names
 read.xlsx("data.xlsx", header = FALSE)
 
-# Read Excel file (.xlsx), interpret -99 as missing values
+# Example 2: Read Excel file (.xlsx), interpret -99 as missing values
 read.xlsx("data.xlsx", na = "-99")
 
-# Read Excel file (.xlsx), use x1, x2, and x3 as column names
+# Example 3: Read Excel file (.xlsx), use x1, x2, and x3 as column names
 read.xlsx("data.xlsx", header = c("x1", "x2", "x3"))
 
-# Read Excel file (.xlsx), read cells A1:B5
+# Example 4: Read Excel file (.xlsx), read cells A1:B5
 read.xlsx("data.xlsx", range = "A1:B5")
 
-# Read Excel file (.xlsx), skip 2 rows before reading data
+# Example 5: Read Excel file (.xlsx), skip 2 rows before reading data
 read.xlsx("data.xlsx", skip = 2)
 
-# Read Excel file (.xlsx), return a tibble
+# Example 5: Read Excel file (.xlsx), return a tibble
 read.xlsx("data.xlsx", as.data.frame = FALSE)
 }
 }
+\references{
+Wickham H, Miller E, Smith D (2023). \emph{readxl: Read Excel Files}. R package
+version 1.4.3. \url{https://CRAN.R-project.org/package=readxl}
+}
 \seealso{
-\code{\link{write.xlsx}}, \code{\link{read.sav}}, \code{\link{read.mplus}}
+\code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.sav}},
+\code{\link{write.sav}}, \code{\link{read.mplus}}, \code{\link{write.mplus}}
 }
 \author{
 Hadley Wickham and Jennifer Bryan

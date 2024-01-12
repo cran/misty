@@ -4,11 +4,20 @@
 #' values are observed or missing, i.e., \eqn{r = 1} if a value is observed, and
 #' \eqn{r = 0} if a value is missing.
 #'
-#' @param x           a matrix or data frame.
-#' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting
-#'                    the analysis.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
+#' @param ...   a matrix or data frame with incomplete data, where missing
+#'              values are coded as \code{NA}. Alternatively, an expression
+#'              indicating the variable names in \code{data} e.g.,
+#'              \code{na.indicator(x1, x2, x3, data = dat)}. Note that the operators
+#'              \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'              and \code{!} can also be used to select variables, see 'Details'
+#'              in the \code{\link{df.subset}} function.
+#' @param data  a data frame when specifying one or more variables in the
+#'              argument \code{...}. Note that the argument is \code{NULL}
+#'              when specifying a matrix or data frame for the argument \code{...}.
+#' @param as.na a numeric vector indicating user-defined missing values,
+#'              i.e. these values are converted to \code{NA} before conducting
+#'              the analysis.
+#' @param check logical: if \code{TRUE} (default), argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -34,45 +43,66 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(x = c(1, NA, NA, 6, 3),
-#'                   y = c(7, NA, 8, 9, NA),
-#'                   z = c(2, NA, 3, NA, 5))
+#' # Example 1a: Create missing data indicator matrix \eqn{R}
+#' na.indicator(airquality)
 #'
-#' # Create missing data indicator matrix \eqn{R}
-#' na.indicator(dat)
-na.indicator <- function(x, as.na = NULL, check = TRUE) {
+#' # Example 1b: Alternative specification using the 'data' argument
+#' na.indicator(., data = airquality)
+na.indicator <- function(..., data = NULL, as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(as.na))) {
+  if (isTRUE(!is.null(data))) {
 
-    x <- misty::as.na(x, na = as.na, check = check)
+    # Variable names
+    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+
+    # Extract data
+    x <- data[, var.names]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
 
   }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
+
+  x <- as.data.frame(x, stringsAsFactors = FALSE)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #_____________________________________________________________________________
   #
   # Main Function --------------------------------------------------------------
 
-  object <- apply(x, 2, function(y) as.numeric(!is.na(y)))
+  object <- apply(x, 2L, function(y) as.numeric(!is.na(y)))
 
   if (isTRUE(is.data.frame(x))) {
 

@@ -6,9 +6,9 @@
 \usage{
 indirect(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
          se = c("sobel", "aroian", "goodman"), nrep = 100000,
-         alternative = c("two.sided", "less", "greater"),
-         seed = NULL, conf.level = 0.95, digits = 3, check = TRUE,
-         output = TRUE)
+         alternative = c("two.sided", "less", "greater"), seed = NULL,
+         conf.level = 0.95, digits = 3, write = NULL, append = TRUE,
+         check = TRUE, output = TRUE)
 }
 \arguments{
 \item{a}{a numeric value indicating the coefficient \eqn{a}, i.e.,
@@ -53,9 +53,18 @@ of the interval.}
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -153,14 +162,19 @@ The function was adapted from the \code{medci()} function in the \pkg{RMediation
 package by Davood Tofighi and David P. MacKinnon (2016).
 }
 \examples{
-# Distribution of the Product Method
+# Example 1: Distribution of the Product Method
 indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18)
 
-# Monte Carlo Method
+# Example 2: Monte Carlo Method
 indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18, print = "mc")
 
-# Asymptotic Normal Method
+# Example 3: Asymptotic Normal Method
 indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18, print = "asymp")
+
+\dontrun{
+# Example 4: Write results into a text file
+indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18, write = "Indirect.txt")
+}
 }
 \references{
 Aroian, L. A. (1947). The probability function of the product of two normally distributed variables.

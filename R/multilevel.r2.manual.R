@@ -60,8 +60,16 @@
 #'                  (Within), Fixed slopes (Between), Slope variation (Within),
 #'                  Intercept variation (Between), and Residual (Within). By default,
 #'                  colors from the colorblind-friendly palettes are used.
-#' @param check     logical: if \code{TRUE}, argument specification is checked.
-#' @param output    logical: if \code{TRUE}, output is shown on the console.
+#' @param write     a character string naming a text file with file extension
+#'                  \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                  output into a text file.
+#' @param append    logical: if \code{TRUE} (default), output will be appended
+#'                  to an existing text file with extension \code{.txt} specified
+#'                  in \code{write}, if \code{FALSE} existing text file will be
+#'                  overwritten.
+#' @param check     logical: if \code{TRUE} (default), argument specification is
+#'                  checked.
+#' @param output    logical: if \code{TRUE}, (default) output is shown on the console.
 #'
 #' @details
 #' A number of R-squared measures for multilevel and linear mixed effects models
@@ -119,7 +127,7 @@
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' #---------------------------
+#' #----------------------------------------------------------------------------
 #'
 #' # Cluster mean centering, center() from the misty package
 #' Demo.twolevel$x2.c <- center(Demo.twolevel$x2, type = "CWC",
@@ -137,8 +145,8 @@
 #' mod2 <- lmer(y1 ~ x2.c + x2.b + w1 + (1 + x2.c | cluster), data = Demo.twolevel,
 #'              REML = FALSE, control = lmerControl(optimizer = "bobyqa"))
 #'
-#' #---------------------------
-#' # Random intercept model
+#' #----------------------------------------------------------------------------
+#' # Example 1: Random intercept model
 #'
 #' # Fixed slope estimates
 #' fixef(mod1)
@@ -154,8 +162,8 @@
 #'                      tau = 0.9297401,
 #'                      sigma2 = 1.813245794)
 #'
-#' #---------------------------
-#' # Random intercept and slope model
+#' #----------------------------------------------------------------------------
+#' # Example 2: Random intercept and slope model
 #'
 #' # Fixed slope estimates
 #' fixef(mod2)
@@ -176,7 +184,7 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
                                  intercept = TRUE, center = TRUE, digits = 3,
                                  plot = FALSE, gray = FALSE, start = 0.15, end = 0.85,
                                  color = c("#D55E00", "#0072B2", "#CC79A7", "#009E73", "#E69F00"),
-                                 check = TRUE, output = TRUE) {
+                                 write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -197,7 +205,7 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
   # Check if input 'sigma2' is missing
   if (isTRUE(missing(sigma2))) { stop("Please specify a numeric value for the argument 'sigma2'.", call. = FALSE) }
 
-  # Check if input 'sigma' is NULL
+  # Check if input 'sigma2' is NULL
   if (isTRUE(is.null(sigma2))) { stop("Input specified for the argument 'sigma2' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
@@ -209,8 +217,8 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
 
   if (isTRUE(check)) {
 
-    # r2mlm package
-    if (isTRUE(!nzchar(system.file(package = "r2mlm")))) { stop("Package \"r2mlm\" is needed for to compute R-squared according to Rights and Sterba (2019), please install the package.", call. = FALSE) }
+    # ggplot2 package
+    if (isTRUE(plot && !nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
 
     #......
     # Check input 'within'
@@ -334,9 +342,6 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
     # Check input 'plot'
     if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'", call. = FALSE) }
 
-    # ggplot2 package
-    if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { warning("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
-
     # Check input 'gray'
     if (isTRUE(!is.logical(gray))) { stop("Please specify TRUE or FALSE for the argument 'gray'", call. = FALSE) }
 
@@ -345,6 +350,12 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
 
     # Check input 'end'
     if (isTRUE(end < 0L || end > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'end'", call. = FALSE) }
+
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE) }
@@ -794,8 +805,8 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
                              gamma.w = gamma.w, gamma.b = gamma.b, tau = tau,
                              sigma2 = sigma2, intercept = intercept, center = center,
                              digits = digits, plot = plot, gray = gray,
-                             start = start, end = end, color = color, check = check,
-                             output = output),
+                             start = start, end = end, color = color, write = write,
+                             append = append, check = check, output = output),
                  result = list(decomp = rs$decomp,
                                total = data.frame(f1 = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "f1", "total"], NA),
                                                   f2 = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "f2", "total"], NA),
@@ -811,6 +822,28 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
                                                     m  = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "m", "between"], NA))))
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

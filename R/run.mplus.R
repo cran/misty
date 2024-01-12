@@ -6,14 +6,16 @@
 #' @param target         a character string indicating the directory containing
 #'                       Mplus input files (\code{.inp})
 #'                       to run or the single \code{.inp} file to be run. May be
-#'                       a full path, relative path, or a filename within the working
-#'                       directory.
-#' @param recursive      logical: if \code{TRUE}, run all models nested in subdirectories
-#'                       within directory. Not relevant if target is a single file.
-#' @param filefilter     a Perl regular expression (PCRE-compatible) specifying particular
-#'                       input files to be run within directory. See regex or
-#'                       http://www.pcre.org/pcre.txt for details about regular
-#'                       expression syntax. Not relevant if target is a single file.
+#'                       a full path, relative path, or a filename within the
+#'                       working directory.
+#' @param recursive      logical: if \code{TRUE}, run all models nested in
+#'                       subdirectories within directory. Not relevant if target
+#'                       is a single file.
+#' @param filefilter     a Perl regular expression (PCRE-compatible) specifying
+#'                       particular input files to be run within directory. See
+#'                       regex or http://www.pcre.org/pcre.txt for details about
+#'                       regular expression syntax. Not relevant if target is a
+#'                       single file.
 #' @param showOutput     logical: if \code{TRUE}, estimation output (\code{TECH8})
 #'                       is show on the R console. Note that if run within Rgui,
 #'                       output will display within R, but if run via Rterm,
@@ -34,14 +36,15 @@
 #'                       one wants to test different versions of the Mplus program.
 #'                       Note that there is no need to specify this argument for most
 #'                       users since it has intelligent defaults.
-#' @param killOnFail     logical: if \code{TRUE}, all processes named mplus.exe when
-#'                       \code{mplus.run()} does not terminate normally are killed.
-#'                       Windows only.
+#' @param killOnFail     logical: if \code{TRUE} (default), all processes named
+#'                       mplus.exe when \code{mplus.run()} does not terminate
+#'                       normally are killed. Windows only.
 #' @param local_tmpdir   logical: if \code{TRUE}, the TMPDIR environment variable
 #'                       is set to the location of the \code{.inp file} prior to
-#'                       execution. This is useful in Monte Carlo studies where many
-#'                       instances of Mplus may run in parallel and we wish to avoid
-#'                       collisions in temporary files among processes. Linux/Mac only.
+#'                       execution. This is useful in Monte Carlo studies where
+#'                       many instances of Mplus may run in parallel and we wish
+#'                       to avoid collisions in temporary files among processes.
+#'                       Linux/Mac only.
 #'
 #' @author
 #' Hadley Wickham, Romain Francois, Lionel Henry, and Kirill Müller, and Davis Vaughan.
@@ -65,10 +68,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Run Mplus models located within a single directory
+#' # Example 1: Run Mplus models located within a single directory
 #' run.mplus(Mplus = "C:/Program Files/Mplus/Mplus.exe")
 #'
-#' # Run Mplus models located nested within subdirectories
+#' # Example 2: Run Mplus models located nested within subdirectories
 #' run.mplus(recursive = TRUE,
 #'           Mplus = "C:/Program Files/Mplus/Mplus.exe")
 #' }

@@ -4,16 +4,26 @@
 \alias{descript}
 \title{Descriptive Statistics}
 \usage{
-descript(x,
+descript(..., data = NULL,
         print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min",
                   "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
-        group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-        digits = 2, as.na = NULL, write = NULL, check = TRUE, output = TRUE)
+        group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE, digits = 2,
+        as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector, matrix or data frame with numeric variables,
-i.e., factors and character variables are excluded from \code{x}
-before conducting the analysis.}
+\item{...}{a numeric vector, matrix or data frame with numeric variables,
+i.e., factors and character variables are excluded from \code{...}
+before conducting the analysis. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{descript(x1, x2, x3, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a numeric vector, matrix, or data frame for
+the argument \code{...}.}
 
 \item{print}{a character vector indicating which statistical measures to be
 printed on the console, i.e. \code{n} (number of observations),
@@ -27,9 +37,13 @@ percentile, third quartile), \code{max} (maximum),  \code{range}
 and \code{kurt} (excess kurtosis). The default setting is
 \code{print = ("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")}.}
 
-\item{group}{a numeric vector, character vector or factor as grouping variable.}
+\item{group}{a numeric vector, character vector or factor as grouping variable.
+Alternatively, a character string indicating the variable name
+of the grouping variable in \code{data} can be specified.}
 
-\item{split}{a numeric vector, character vector or factor as split variable.}
+\item{split}{a numeric vector, character vector or factor as split variable.
+Alternatively, a character string indicating the variable name
+of the split variable in \code{data} can be specified.}
 
 \item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when
 specifying \code{group}.}
@@ -43,22 +57,30 @@ used.}
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis. Note that \code{as.na()} function is only applied
-to \code{x}, but not to \code{group} or \code{split}.}
+to \code{...}, but not to \code{group} or \code{split}.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{list with the input specified in \code{x}, \code{group},
+  \item{\code{data}}{list with the input specified in \code{...}, \code{group},
                      and \code{split}}
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{result table(s)}
@@ -68,52 +90,50 @@ This function computes summary statistics for one or more variables, optionally
 by a grouping and/or split variable.
 }
 \examples{
-dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
-                  group2 = c(1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2),
-                  x1 = c(3, 1, 4, 2, 5, 3, 2, 4, NA, 4, 5, 3),
-                  x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 5, 1, 3, 6),
-                  x3 = c(7, 8, 5, 6, 4, NA, 8, NA, 6, 5, 8, 6))
+# Example 1a: Descriptive statistics for 'mpg'
+descript(mtcars$mpg)
 
-# Descriptive statistics for x1
-descript(dat$x1)
+# Example 1b: Alternative specification using the 'data' argument
+descript(mpg, data = mtcars)
 
-# Descriptive statistics for x1, print results with 3 digits
-descript(dat$x1, digits = 3)
+# Example 2: Descriptive statistics, print results with 3 digits
+descript(mtcars$mpg, digits = 3)
 
-# Descriptive statistics for x1, convert value 4 to NA
-descript(dat$x1, as.na = 4)
+# Example 3: Descriptive statistics for x1, print all available statistical measures
+descript(mtcars$mpg, print = "all")
 
-# Descriptive statistics for x1, print all available statistical measures
-descript(dat$x1, print = "all")
+# Example 4a: Descriptive statistics for 'mpg', 'cyl', and 'disp'
+descript(mtcars[, c("mpg", "cyl", "disp")])
 
-# Descriptive statistics for x1, x2, and x3
-descript(dat[, c("x1", "x2", "x3")])
+# Example 4b: Alternative specification using the 'data' argument
+descript(mpg:disp, data = mtcars)
 
-# Descriptive statistics for x1, x2, and x3,
-# listwise deletion for missing data
-descript(dat[, c("x1", "x2", "x3")], na.omit = TRUE)
+# Example 5a: Descriptive statistics, analysis by 'vs' separately
+descript(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 
-# Descriptive statistics for x1, x2, and x3,
-# analysis by group1 separately
-descript(dat[, c("x1", "x2", "x3")], group = dat$group1)
+# Example 5b: Alternative specification using the 'data' argument
+descript(mpg:disp, data = mtcars, group = "vs")
 
-# Descriptive statistics for x1, x2, and x3,
-# analysis by group1 separately, sort by variables
-descript(dat[, c("x1", "x2", "x3")], group = dat$group1, sort.var = TRUE)
+# Example 6: Descriptive statistics, analysis by 'vs' separately, sort by variables
+descript(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, sort.var = TRUE)
 
-# Descriptive statistics for x1, x2, and x3,
-# split analysis by group1
-descript(dat[, c("x1", "x2", "x3")], split = dat$group1)
+# Example 7: Descriptive statistics, split analysis by 'am'
+descript(mtcars[, c("mpg", "cyl", "disp")], split = mtcars$am)
 
-# Descriptive statistics for x1, x2, and x3,
-# analysis by group1 separately, split analysis by group2
-descript(dat[, c("x1", "x2", "x3")], group = dat$group1, split = dat$group2)
+# Example 8a: Descriptive statistics,analysis by 'vs' separately, split analysis by 'am'
+descript(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, split = mtcars$am)
+
+# Example 8b: Alternative specification using the 'data' argument
+descript(mpg:disp, data = mtcars, group = "vs", split = "am")
 
 \dontrun{
-# Write Results into a Excel file
-descript(dat[, c("x1", "x2", "x3")], write = "Descript.xlsx")
+# Example 11a: Write results into a text file
+descript(mtcars[, c("mpg", "cyl", "disp")], write = "Descript.txt")
 
-result <- descript(dat[, c("x1", "x2", "x3")], output = FALSE)
+# Example 11b: Write results into an Excel file
+descript(mtcars[, c("mpg", "cyl", "disp")], write = "Descript.xlsx")
+
+result <- descript(mtcars[, c("mpg", "cyl", "disp")], output = FALSE)
 write.result(result, "Descript.xlsx")
 }
 }

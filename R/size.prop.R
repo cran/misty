@@ -1,20 +1,34 @@
 #' Sample Size Determination for Testing Proportions
 #'
-#' This function performs sample size computation for the one-sample and two-sample test for proportions
-#' based on precision requirements (i.e., type-I-risk, type-II-risk and an effect size).
+#' This function performs sample size computation for the one-sample and two-sample
+#' test for proportions based on precision requirements (i.e., type-I-risk,
+#' type-II-risk and an effect size).
 #'
-#' @param pi             a number indicating the true value of the probability under the null hypothesis (one-sample test), \eqn{\pi}.0
-#'                       or a number indicating the true value of the probability in group 1 (two-sample test), \eqn{\pi}.1.
-#' @param delta          minimum difference to be detected, \eqn{\delta}.
-#' @param sample         a character string specifying one- or two-sample proportion test,
-#'                       must be one of "two.sample" (default) or "one.sample".
-#' @param alternative    a character string specifying the alternative hypothesis,
-#'                       must be one of \code{"two.sided"} (default), \code{"less"} or \code{"greater"}.
-#' @param alpha          type-I-risk, \eqn{\alpha}.
-#' @param beta           type-II-risk, \eqn{\beta}.
-#' @param correct        a logical indicating whether continuity correction should be applied.
-#' @param check          logical: if \code{TRUE}, argument specification is checked.
-#' @param output         logical: if \code{TRUE}, output is shown.
+#' @param pi          a number indicating the true value of the probability
+#'                    under the null hypothesis (one-sample test), \eqn{\pi}.0
+#'                    or a number indicating the true value of the probability
+#'                    in group 1 (two-sample test), \eqn{\pi}.1.
+#' @param delta       minimum difference to be detected, \eqn{\delta}.
+#' @param sample      a character string specifying one- or two-sample
+#'                    proportion test, must be one of \code{"two.sample"} (default)
+#'                    or \code{"one.sample"}.
+#' @param alternative a character string specifying the alternative hypothesis,
+#'                    must be one of \code{"two.sided"} (default), \code{"less"}
+#'                    or \code{"greater"}.
+#' @param alpha       type-I-risk, \eqn{\alpha}.
+#' @param beta        type-II-risk, \eqn{\beta}.
+#' @param correct     a logical indicating whether continuity correction should
+#'                    be applied.
+#' @param write       a character string naming a text file with file extension
+#'                    \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                    output into a text file.
+#' @param append      logical: if \code{TRUE} (default), output will be appended
+#'                    to an existing text file with extension \code{.txt} specified
+#'                    in \code{write}, if \code{FALSE} existing text file will be
+#'                    overwritten.
+#' @param check       logical: if \code{TRUE} (default), argument specification
+#'                    is checked.
+#' @param output      logical: if \code{TRUE} (default), output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at},
@@ -23,11 +37,11 @@
 #' \code{\link{size.mean}}, \code{\link{size.cor}}
 #'
 #' @references
-#' Fleiss, J. L., Levin, B., & Paik, M. C. (2003). \emph{Statistical methods for rates and proportions} (3rd ed.).
-#' John Wiley & Sons.
+#' Fleiss, J. L., Levin, B., & Paik, M. C. (2003). \emph{Statistical methods for
+#' rates and proportions} (3rd ed.). John Wiley & Sons.
 #'
-#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-#' John Wiley & Sons.
+#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+#' - Using R and SPSS}. John Wiley & Sons.
 #'
 #' Rasch, D., Pilz, J., Verdooren, L. R., & Gebhardt, G. (2011).
 #' \emph{Optimal experimental design with R}. Chapman & Hall/CRC.
@@ -38,22 +52,22 @@
 #'   \code{call}      \tab function call \cr
 #'   \code{type}      \tab type of the test (i.e., proportion) \cr
 #'   \code{args}      \tab specification of function arguments \cr
-#'   \code{result}       \tab list with the result, i.e., optimal sample size \cr
+#'   \code{result}    \tab list with the result, i.e., optimal sample size \cr
 #' }
 #'
 #' @export
 #'
 #' @examples
-#' #--------------------------------------
-#' # Two-sided one-sample test
+#' #----------------------------------------------------------------------------
+#' # Example 1: Two-sided one-sample test
 #' # H0: pi = 0.5, H1: pi != 0.5
 #' # alpha = 0.05, beta = 0.2, delta = 0.2
 #'
 #' size.prop(pi = 0.5, delta = 0.2, sample = "one.sample",
 #'           alternative = "two.sided", alpha = 0.05, beta = 0.2)
 #'
-#' #--------------------------------------
-#' # Two-sided one-sample test
+#' #----------------------------------------------------------------------------
+#' # Example 2: Two-sided one-sample test
 #' # H0: pi = 0.5, H1: pi != 0.5
 #' # alpha = 0.05, beta = 0.2, delta = 0.2
 #' # with continuity correction
@@ -62,16 +76,16 @@
 #'           alternative = "two.sided", alpha = 0.05, beta = 0.2,
 #'           correct = TRUE)
 #'
-#' #--------------------------------------
-#' # One-sided one-sample test
+#' #----------------------------------------------------------------------------
+#' # Example 3: One-sided one-sample test
 #' # H0: pi <= 0.5, H1: pi > 0.5
 #' # alpha = 0.05, beta = 0.2, delta = 0.2
 #'
 #' size.prop(pi = 0.5, delta = 0.2, sample = "one.sample",
 #'           alternative = "less", alpha = 0.05, beta = 0.2)
 #'
-#' #--------------------------------------
-#' # Two-sided two-sample test
+#' #----------------------------------------------------------------------------
+#' # Example 3: Two-sided two-sample test
 #' # H0: pi.1 = pi.2 = 0.5, H1: pi.1 != pi.2
 #' # alpha = 0.01, beta = 0.1, delta = 0.2
 #'
@@ -79,7 +93,7 @@
 #'           alternative = "two.sided", alpha = 0.01, beta = 0.1)
 #'
 #' #--------------------------------------
-#' # One-sided two-sample test
+#' # Example 4: One-sided two-sample test
 #' # H0: pi.1 <=  pi.1 = 0.5, H1: pi.1 > pi.2
 #' # alpha = 0.01, beta = 0.1, delta = 0.2
 #'
@@ -87,7 +101,8 @@
 #'           alternative = "greater", alpha = 0.01, beta = 0.1)
 size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
                       alternative = c("two.sided", "less", "greater"),
-                      alpha = 0.05, beta = 0.1, correct = FALSE, check = TRUE, output = TRUE) {
+                      alpha = 0.05, beta = 0.1, correct = FALSE, write = NULL,
+                      append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -221,10 +236,33 @@ size.prop <- function(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
   object <- list(call = match.call(),
                  type = "size", size = "prop",
                  args = list(delta = delta, pi = pi, sample = sample, alternative = alternative,
-                             alpha = alpha, beta = beta, correct = correct),
+                             alpha = alpha, beta = beta, correct = correct,
+                             write = write, append = append),
                  result = list(n = n))
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

@@ -2,23 +2,44 @@
 % Please edit documentation in R/multilevel.descript.R
 \name{multilevel.descript}
 \alias{multilevel.descript}
-\title{Multilevel Descriptive Statistics}
+\title{Multilevel Descriptive Statistics for Two-Level and Three-Level Data}
 \usage{
-multilevel.descript(x, cluster, print = c("all", "var", "sd"),
-                    method = c("aov", "lme4", "nlme"), REML = TRUE,
-                    digits = 2, icc.digits = 3, as.na = NULL, write = NULL,
-                    check = TRUE, output = TRUE)
+multilevel.descript(..., data = NULL, cluster, type = c("1a", "1b"),
+                    method = c("aov", "lme4", "nlme"), print = c("all", "var", "sd"),
+                    REML = TRUE, digits = 2, icc.digits = 3, as.na = NULL,
+                    write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a vector, matrix or data frame.}
+\item{...}{a numeric vector, matrix, or data frame. Alternatively, an
+expression indicating the variable names in \code{data} e.g.,
+\code{multilevel.descript(x1, x2, x3, data = dat, cluster = "cluster")}. Note that the operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
 
-\item{cluster}{a vector representing the nested grouping structure (i.e.,
-group or cluster variable).}
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a numeric vector, matrix, or data frame for
+the argument \code{...}.}
 
-\item{print}{a character string or character vector indicating which results to
-show on the console, i.e. \code{"all"} for variances and standard deviations,
-\code{"var"} (default) for variances, or \code{"sd"} for standard deviations
-within and between clusters.}
+\item{cluster}{a character string indicating the name of the cluster
+variable in \code{...} or \code{data} for two-level data,
+a character vector indicating the names of the cluster
+variables in \code{...} for three-level data, or a vector
+or data frame representing the nested grouping structure
+(i.e., group or cluster variables). Alternatively, a
+character string or character vector indicating the variable
+name(s) of the cluster variable(s) in \code{data}. Note that
+the cluster variable at Level 3 come first in a three-level
+model, i.e., \code{cluster = c("level3", "level2")}.}
+
+\item{type}{a character string indicating the type of intraclass
+correlation coefficient, i.e., \code{type = "1a"} (default)
+for ICC(1) representing the propotion of variance at Level 2 and Level 3,
+\code{type = "1b"} representing an estimate of the expected correlation
+between two randomly chosen elements in the same group when specifying
+a three-level model (i.e., two cluster variables). See 'Details' in the
+\code{\link{multilevel.icc}} function for the formula used
+in this function.}
 
 \item{method}{a character string indicating the method used to estimate
 intraclass correlation coefficients, i.e., \code{"aov"} ICC
@@ -26,6 +47,11 @@ estimated using the \code{aov} function, \code{"lme4"} (default)
 ICC estimated using the \code{lmer} function in the \pkg{lme4}
 package, \code{"nlme"} ICC estimated using the \code{lme} function
 in the \pkg{nlme} package.}
+
+\item{print}{a character string or character vector indicating which results to
+show on the console, i.e. \code{"all"} for variances and standard deviations,
+\code{"var"} (default) for variances, or \code{"sd"} for standard deviations
+within and between clusters.}
 
 \item{REML}{logical: if \code{TRUE} (default), restricted maximum likelihood
 is used to estimate the null model when using the \code{lmer()}
@@ -41,81 +67,183 @@ for displaying intraclass correlation coefficients.}
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis. Note that \code{as.na()} function is only applied
-to \code{x} but not to \code{cluster}.}
+to \code{...} but not to \code{cluster}.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{data frame specified in \code{x} including the group variable
-                     specified in \code{cluster}}
+  \item{\code{data}}{data frame specified in \code{...} including the cluster
+                     variable(s) specified in \code{cluster}}
   \item{\code{args}}{specification of function arguments}
   \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
-  \item{\code{result}}{list with result tables, i.e., \code{no.obs} for the
-                       number of observations \code{no.no.miss} for the
-                       number of missing value, \code{no.cluster} for the
-                       number of clusters, \code{m.cluster.size} for the average
-                       cluster size, \code{sd.cluster.size} for the standard
-                       deviation of the cluster size, \code{min.cluster.size} for
-                       the minimum cluster size, \code{max.cluster.size} for the
-                       maximum cluster size, \code{mean.x} for the mean values,
-                       \code{var.w} for the variance within clusters, \code{var.b}
-                       for the variance between clusters, \code{icc1} for ICC(1),
-                       \code{icc2} for ICC(2), \code{deff} for the design effect,
+  \item{\code{result}}{list with result tables, i.e.,
+                       \code{no.obs} for the number of observations
+                       \code{no.no.miss} for the number of missing value,
+                       \code{no.cluster.l2} and \code{no.cluster.l3} for the number of clusters at Level 2 and/or Level 3,
+                       \code{m.cluster.size.l2} and \code{m.cluster.size.l3} for the average cluster size at Level 2 and/or Level 3,
+                       \code{sd.cluster.size.l2} and \code{sd.cluster.size.l3} for the standard deviation of the cluster size at Level 2 and/or Level 3,
+                       \code{min.cluster.size.l2} \code{min.cluster.size.l3} for the minimum cluster size at Level 2 and/or Level 3,
+                       \code{max.cluster.size.l2} \code{max.cluster.size.l3} for the maximum cluster size at Level 2 and/or Level 3,
+                       \code{mean.x} for the intercept of the multilevel model,
+                       \code{var.r} for the variance within clusters,
+                       \code{var.u} for the variance between Level 2 clusters,
+                       \code{var.b} for the variance between Level 3 clusters,
+                       \code{icc1.l2} and \code{icc1.l3} for ICC(1) at Level 2 and/or Level 3,
+                       \code{icc2.l2} and \code{icc2.l3} for ICC(2) at Level 2 and/or Level 3,
+                       \code{deff} for the design effect,
                        \code{deff.sqrt} for the square root of the design effect,
                        \code{n.effect} for the effective sample size}
 }
 \description{
-This function computes descriptive statistics for multilevel data, e.g. average
-cluster size, variance components, intraclass correlation coefficient,
-design effect, and effective sample size.
+This function computes descriptive statistics for two-level and three-level
+multilevel data, e.g. average cluster size, variance components, intraclass
+correlation coefficient, design effect, and effective sample size.
 }
 \details{
-Note that this function is restricted to two-level models.
+\describe{
+\item{\strong{Two-Level Model}}{In a two-level model, the intraclass
+correlation coefficients, design effect, and the effective sample size are
+computed based on the random intercept-only model:
+
+\deqn{Y_{ij} = \gamma_{00} + u_{0j} + r_{ij}}
+
+where the variance in \eqn{Y} is decomposed into two independent components:
+\eqn{\sigma^2_{u_{0}}}, which represents the variance at Level 2, and
+\eqn{\sigma^2_{r}}, which represents the variance at Level 1 (Hox et al.,
+2018). For the computation of the intraclass correlation coefficients, see
+'Details' in the \code{\link{multilevel.icc}} function. The design effect
+represents the effect of cluster sampling on the variance of parameter
+estimation and is defined by the equation
+
+\deqn{deff = (\frac{SE_{Cluster}}{SE_{Simple}})^2 = 1 + \rho(J - 1)}
+
+where \eqn{SE_{Cluster}} is the standard error under cluster sampling,
+\eqn{SE_{Simple}} is the standard error under simple random sampling,
+\eqn{\rho} is the intraclass correlation coefficient, ICC(1), and
+\eqn{J} is the average cluster size. The effective sample size is defined
+by the equation:
+
+\deqn{N_{effective} = \frac{N{total}}{deff}}
+
+The effective sample size \eqn{N_{effective}} represents the equivalent total
+sample size that we should use in estimating the standard error (Snijders &
+Bosker, 2012).
+}
+\item{\strong{Three-Level Model}}{In a three-level model, the intraclass
+correlation coefficients, design effect, and the effective sample size are
+computed based on the random intercept-only model:
+
+\deqn{Y_{ijk} = \gamma_{000} + v_{0k} + u_{0jk} + r_{ijk}}
+
+where the variance in \eqn{Y} is decomposed into three independent components:
+\eqn{\sigma^2_{v_{0}}}, which represents the variance at Level 3,
+\eqn{\sigma^2_{u_{0}}}, which represents the variance at Level 2, and
+\eqn{\sigma^2_{r}}, which represents the variance at Level 1 (Hox et al., 2018).
+For the computation of the intraclass correlation coefficients, see 'Details'
+in the \code{\link{multilevel.icc}} function. The design effect
+represents the effect of cluster sampling on the variance of parameter
+estimation and is defined by the equation
+
+\deqn{deff = (\frac{SE_{Cluster}}{SE_{Simple}})^2 = 1 + \rho_{L2}(J - 1) + \rho_{L3}(JK - 1)}
+
+where \eqn{\rho_{L2}} is the ICC(1) at Level 2, \eqn{\rho_{L3}} is the ICC(1) at Level 3,
+\eqn{J} is the average cluster size at Level 2, and \eqn{K} is the average
+cluster size at Level 3.}
+}
 }
 \examples{
 \dontrun{
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#---------------------------
+#----------------------------------------------------------------------------
+# Two-Level Data
+
+#..........
 # Cluster variable specification
 
-# Cluster variable 'cluster' in 'x'
+# Example 1a: Cluster variable 'cluster'
 multilevel.descript(Demo.twolevel[, c("y1", "cluster")], cluster = "cluster")
 
-# Cluster variable 'cluster' not in 'x'
+# Example 1b: Cluster variable 'cluster' not in '...'
 multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
+
+# Example 1c: Alternative specification using the 'data' argument
+multilevel.descript(y1, data = Demo.twolevel, cluster = "cluster")
 
 #---------------------------
 
-# Multilevel descriptive statistics for y1
+# Example 2: Multilevel descriptive statistics for 'y1'
 multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 
-# Multilevel descriptive statistics for y1, print variance and standard deviation
+# Example 3: Multilevel descriptive statistics, print variance and standard deviation
 multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, print = "all")
 
-# Multilevel descriptive statistics for y1, print ICC with 5 digits
+# Example 4: Multilevel descriptive statistics, print ICC with 5 digits
 multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, icc.digits = 5)
 
-# Multilevel descriptive statistics for y1
+# Example 5: Multilevel descriptive statistics
 # use lme() function in the nlme package to estimate ICC
 multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, method = "nlme")
 
-# Multilevel descriptive statistics for y1, y2, y3, w1, and w2
+# Example 6a: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
 multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-                    cluster = Demo.twolevel$cluster)
+                      cluster = Demo.twolevel$cluster)
 
-# Write Results into a Excel file
+# Example 6b: Alternative specification using the 'data' argument
+multilevel.descript(y1:y3, w1, w2, data = Demo.twolevel, cluster = "cluster")
+
+#----------------------------------------------------------------------------
+# Three-Level Data
+
+# Create arbitrary three-level data
+Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
+                                             cluster3 = rep(1:10, each = 250))
+
+#..........
+# Cluster variable specification
+
+# Example 7a: Cluster variables 'cluster' in '...'
+multilevel.descript(Demo.threelevel[, c("y1", "cluster3", "cluster2")],
+                    cluster = c("cluster3", "cluster2"))
+
+# Example 7b: Cluster variables 'cluster' not in '...'
+multilevel.descript(Demo.threelevel$y1, cluster = Demo.threelevel[, c("cluster3", "cluster2")])
+
+# Example 7c: Alternative specification using the 'data' argument
+multilevel.descript(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
+
+#----------------------------------------------------------------------------
+
+# Example 8: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
+multilevel.descript(y1:y3, w1, w2, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
+
+#----------------------------------------------------------------------------
+# Write Results
+
+# Example 9a: Write results into a Excel file
+multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
+                    cluster = Demo.twolevel$cluster, write = "Multilevel_Descript.txt")
+
+# Example 9b: Write results into a Excel file
 multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
                     cluster = Demo.twolevel$cluster, write = "Multilevel_Descript.xlsx")
 

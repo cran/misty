@@ -29,7 +29,7 @@ for displaying \emph{p}-values.}
 \item{icc.digits}{an integer indicating the number of decimal places to be used
 for displaying intraclass correlation coefficients.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \description{
 This function writes the results of a misty object (\code{misty.object})
@@ -37,120 +37,43 @@ into a Excel file.
 }
 \details{
 Currently the function supports result objects from the function
-\code{cor.matrix}, \code{crosstab}, \code{freq},
-\code{item.alpha}, \code{item.cfa}, \code{item.invar},
-\code{item.omega}, \code{result.lca}, \code{multilevel.cfa},
+\code{cor.matrix}, \code{crosstab}, \code{descript}, \code{dominance.manual},
+\code{dominance}, \code{effsize}, \code{freq}, \code{item.alpha}, \code{item.cfa},
+\code{item.invar}, \code{item.omega}, \code{result.lca}, \code{multilevel.cfa},
 \code{multilevel.cor}, \code{multilevel.descript}, \code{multilevel.fit},
 \code{multilevel.invar}, \code{multilevel.omega}, \code{na.coverage},
-\code{na.descript}, \code{na.pattern}, \code{robust.coef}, \code{std.coef}.
+\code{na.descript}, \code{na.pattern}, \code{robust.coef}, and \code{std.coef}.
 }
 \examples{
 \dontrun{
-#--------------------------------------
-# cor.matrix() function
-
-result <- cor.matrix(mtcars, print = "all", output = FALSE)
-write.result(result, "Correlation.xlsx")
-
-#--------------------------------------
-# crosstab() function
-
-result <- crosstab(mtcars[, c("carb", "gear")], print = "all", output = FALSE)
-write.result(result, "Crosstab.xlsx")
-
-#--------------------------------------
-# descript() function
-
-result <- descript(mtcars, output = FALSE)
-write.result(result, "Descript.xlsx")
-
-#--------------------------------------
-# freq() function
-
-result <- freq(mtcars, exclude = 99, output = FALSE)
-write.result(result, "Freq.xlsx")
-
-#--------------------------------------
-# item.alpha() function
-
-result <- item.alpha(attitude, output = FALSE)
-write.result(result, "Alpha.xlsx")
-
-#--------------------------------------
-# item.cfa() function
+#----------------------------------------------------------------------------
+# Example 1: item.cfa() function
 
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
-result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")],
-                   output = FALSE)
+result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
 write.result(result, "CFA.xlsx")
 
-#--------------------------------------
-# item.omega() function
-
-result <- item.omega(attitude, output = FALSE)
-write.result(result, "Omega.xlsx")
-
-#--------------------------------------
-# multilevel.cor() function
+#----------------------------------------------------------------------------
+# Example 2: multilevel.descript() function
 
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-result <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-                         cluster = Demo.twolevel$cluster, output = FALSE)
-write.result(result, "Multilevel_Correlation.xlsx")
-
-#--------------------------------------
-# multilevel.descript() function
-
-# Load data set "Demo.twolevel" in the lavaan package
-data("Demo.twolevel", package = "lavaan")
-
-result <- multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3")],
-                              cluster = Demo.twolevel$cluster, output = FALSE)
+result <- multilevel.descript(y1:y3, data = Demo.twolevel, cluster = "cluster",
+                              output = FALSE)
 write.result(result, "Multilevel_Descript.xlsx")
-
-#--------------------------------------
-# na.coverage() function
-
-dat <- data.frame(x = c(1, NA, NA, 6, 3),
-                  y = c(7, NA, 8, 9, NA),
-                  z = c(2, NA, 3, NA, 5))
-
-result <- na.coverage(dat, output = FALSE)
-write.result(result, "NA_Coverage.xlsx")
-
-#--------------------------------------
-# na.descript() function
-
-dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
-                  x2 = c(4, 2, 5, 1, 5, 3, 4, 5),
-                  x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
-                  x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
-
- result <- na.descript(dat, table = TRUE, output = FALSE)
-write.result(result, "NA_Descriptives.xlsx")
-
-#--------------------------------------
-# na.pattern() function
-
-dat <- data.frame(x = c(1, NA, NA, 6, 3),
-                  y = c(7, NA, 8, 9, NA),
-                  z = c(2, NA, 3, NA, 5))
-
-result <- na.pattern(dat, output = FALSE)
-write.result(result, "NA_Pattern.xlsx")
 }
 }
 \seealso{
-\code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{freq}},
-\code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.invar}},
+\code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{descript}},
+\code{\link{dominance.manual}}, \code{\link{dominance}}, \code{\link{effsize}},
+\code{\link{freq}}, \code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.invar}},
 \code{\link{item.omega}}, \code{\link{result.lca}}, \code{\link{multilevel.cfa}},
 \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
 \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}}, \code{\link{na.coverage}},
-\code{\link{na.descript}}, \code{\link{na.pattern}}, \code{\link{robust.coef}}, \code{\link{std.coef}},
+\code{\link{na.descript}}, \code{\link{na.pattern}}, \code{\link{robust.coef}}, \code{\link{std.coef}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

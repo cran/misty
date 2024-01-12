@@ -2,16 +2,35 @@
 % Please edit documentation in R/ci.var.R
 \name{ci.var}
 \alias{ci.var}
-\title{Confidence Interval for the Variance}
+\alias{ci.sd}
+\title{Confidence Interval for the Variance and Standard Deviation}
 \usage{
-ci.var(x, method = c("chisq", "bonett"),
+ci.var(..., data = NULL, method = c("chisq", "bonett"),
        alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
        group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-       digits = 2, as.na = NULL, check = TRUE, output = TRUE)
+       digits = 2, as.na = NULL, write = NULL, append = TRUE,
+       check = TRUE, output = TRUE)
+
+ci.sd(..., data = NULL, method = c("chisq", "bonett"),
+      alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
+      group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE, digits = 2,
+      as.na = NULL, write = NULL, append = TRUE,
+      check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector, matrix or data frame with numeric variables, i.e.,
-factors and character variables are excluded from \code{x} before conducting the analysis.}
+\item{...}{a numeric vector, matrix or data frame with numeric variables,
+i.e., factors and character variables are excluded from \code{x}
+before conducting the analysis. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{ci.var(x1, x2, x3, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a numeric vector, matrix or data frame
+for the argument \code{...}.}
 
 \item{method}{a character string specifying the method for computing the confidence interval,
 must be one of \code{"chisq"}, or \code{"bonett"} (default).}
@@ -21,9 +40,13 @@ must be one of \code{"chisq"}, or \code{"bonett"} (default).}
 
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
 
-\item{group}{a numeric vector, character vector or factor as grouping variable.}
+\item{group}{either a character string indicating the variable name of
+the grouping variable in \code{...} or \code{data}, or a vector
+representing the grouping variable.}
 
-\item{split}{a numeric vector, character vector or factor as split variable.}
+\item{split}{either a character string indicating the variable name of
+the split variable in \code{...} or \code{data}, or a vector
+representing the split variable.}
 
 \item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.}
 
@@ -37,23 +60,32 @@ i.e. these values are converted to \code{NA} before conducting the analysis.
 Note that \code{as.na()} function is only applied to \code{x}, but
 not to \code{group} or \code{split}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{list with the input specified in \code{x}, \code{group},
-                     and \code{split}}
+  \item{\code{data}}{list with the input specified in \code{...}, \code{data},                           \code{group}, and \code{split}}
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{result table}
 }
 \description{
-This function computes a confidence interval for the variance for one or more variables, optionally
-by a grouping and/or split variable.
+The function \code{ci.var} computes the confidence interval for the variance,
+and the function \code{ci.sd} computes the confidence interval for the standard
+deviation for one or more variables, optionally by a grouping and/or split variable.
 }
 \details{
 The confidence interval based on the chi-square distribution is computed by specifying \code{method = "chisq"},
@@ -64,55 +96,59 @@ violations of the normality assumption and its performance does not improve with
 Note that at least four valid observations are needed to compute the Bonett confidence interval.
 }
 \examples{
-dat <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
-                             1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2),
-                  group2 = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2,
-                             1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2),
-                  x1 = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 4, 3, NA, 5, 3,
-                         3, 2, 6, 3, 1, 4, 3, 5, 6, 7, 4, 3, 5, 4),
-                  x2 = c(4, NA, 3, 6, 3, 7, 2, 7, 3, 3, 3, 1, 3, 6,
-                         3, 5, 2, 6, 8, 3, 4, 5, 2, 1, 3, 1, 2, NA),
-                  x3 = c(7, 8, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
-                         2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
+# Example 1a: Two-Sided 95% CI for the variance for 'mpg'
+ci.var(mtcars$mpg)
 
-# Two-Sided 95\% CI for x1
-ci.var(dat$x1)
+# Example 1b: Alternative specification using the 'data' argument
+ci.var(mpg, data = mtcars)
 
-# Two-Sided 95\% CI for x1 using chi square distribution
-ci.var(dat$x1, method = "chisq")
+# Example 2a: Two-Sided 95% CI for the standard deviation for 'mpg'
+ci.sd(mtcars$mpg)
 
-# One-Sided 95\% CI for x1
-ci.var(dat$x1, alternative = "less")
+# Example 2b: Alternative specification using the 'data' argument
+ci.sd(mpg, data = mtcars)
 
-# Two-Sided 99\% CI
-ci.var(dat$x1, conf.level = 0.99)
+# Example 3: Two-Sided 95% CI using chi square distribution
+ci.var(mtcars$mpg, method = "chisq")
 
-# Two-Sided 95\% CI, print results with 3 digits
-ci.var(dat$x1, digits = 3)
+# Example 4: One-Sided 95% CI
+ci.var(mtcars$mpg, alternative = "less")
 
-# Two-Sided 95\% CI for x1, convert value 4 to NA
-ci.var(dat$x1, as.na = 4)
+# Example 5: Two-Sided 99% CI
+ci.var(mtcars$mpg, conf.level = 0.99)
 
-# Two-Sided 95\% CI for x1, x2, and x3,
+# Example 6: Two-Sided 95% CI, print results with 3 digits
+ci.var(mtcars$mpg, digits = 3)
+
+# Example 7a: Two-Sided 95% CI for 'mpg', 'disp', and 'hp',
 # listwise deletion for missing data
-ci.var(dat[, c("x1", "x2", "x3")], na.omit = TRUE)
+ci.var(mtcars[, c("mpg", "disp", "hp")])
 
-# Two-Sided 95\% CI for x1, x2, and x3,
-# analysis by group1 separately
-ci.var(dat[, c("x1", "x2", "x3")], group = dat$group1)
+# Example 7b: Alternative specification using the 'data' argument
+ci.var(mpg:hp, data = mtcars)
 
-# Two-Sided 95\% CI for x1, x2, and x3,
-# analysis by group1 separately, sort by variables
-ci.var(dat[, c("x1", "x2", "x3")], group = dat$group1, sort.var = TRUE)
+# Example 8a: Two-Sided 95% CI, analysis by 'vs' separately
+ci.var(mtcars[, c("mpg", "disp", "hp")], group = mtcars$vs)
 
-# Two-Sided 95\% CI for x1, x2, and x3,
-# split analysis by group1
-ci.var(dat[, c("x1", "x2", "x3")], split = dat$group1)
+# Example 8b: Alternative specification using the 'data' argument
+ci.var(mpg:hp, data = mtcars, group = "vs")
 
-# Two-Sided 95\% CI for x1, x2, and x3,
-# analysis by group1 separately, split analysis by group2
-ci.var(dat[, c("x1", "x2", "x3")],
-       group = dat$group1, split = dat$group2)
+# Example 9: Two-Sided 95% CI for, analysis by 'vs' separately, sort by variables
+ci.var(mtcars[, c("mpg", "disp", "hp")], group = mtcars$vs, sort.var = TRUE)
+
+# Example 10: Two-Sided 95% CI, split analysis by 'vs'
+ci.var(mtcars[, c("mpg", "disp", "hp")], split = mtcars$vs)
+
+# Example 11a: Two-Sided 95% CI, analysis by 'vs' separately, split analysis by 'am'
+ci.var(mtcars[, c("mpg", "disp", "hp")], group = mtcars$vs, split = mtcars$am)
+
+# Example 11b: Alternative specification using the 'data' argument
+ci.var(mpg:hp, data = mtcars, group = "vs", split = "am")
+
+\dontrun{
+# Example 12: Write results into a text file
+ci.var(mpg:hp, data = mtcars, group = "vs", split = "am", write = "Variance.txt")
+}
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
@@ -123,8 +159,7 @@ Bonett, D. G. (2006). Approximate confidence interval for standard deviation of 
 }
 \seealso{
 \code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
-\code{\link{ci.prop}}, \code{\link{ci.prop.diff}}, \code{\link{ci.sd}},
-\code{\link{descript}}
+\code{\link{ci.prop}}, \code{\link{ci.prop.diff}}, \code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

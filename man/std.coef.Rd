@@ -5,7 +5,7 @@
 \title{Standardized Coefficients}
 \usage{
 std.coef(model, print = c("all", "stdx", "stdy", "stdyx"), digits = 3, p.digits = 4,
-         write = NULL, check = TRUE, output = TRUE)
+         write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{model}{a fitted model of class \code{"lm"}.}
@@ -24,13 +24,18 @@ results.}
 \item{p.digits}{an integer value indicating the number of decimal places to be used for displaying the
 \emph{p}-value.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -83,35 +88,47 @@ dat <- data.frame(x1 = c(3, 2, 4, 9, 5, 3, 6, 4, 5, 6, 3, 5),
                   x3 = c(0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1),
                   y = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8))
 
-#----------------------------
+#-------------------------------------------------------------------------------
 # Linear model
 
 #...........
-# Regression model with continuous predictors
+# Example 1: Regression model with continuous predictors
 mod.lm1 <- lm(y ~ x1 + x2, data = dat)
 std.coef(mod.lm1)
 
-# Print all standardized coefficients
+# Example 2: Print all standardized coefficients
 std.coef(mod.lm1, print = "all")
 
 #...........
-# Regression model with dichotomous predictor
+# Example 3: Regression model with dichotomous predictor
 mod.lm2 <- lm(y ~ x3, data = dat)
 std.coef(mod.lm2)
 
 #...........
-# Regression model with continuous and dichotomous predictors
+# Example 4: Regression model with continuous and dichotomous predictors
 mod.lm3 <- lm(y ~ x1 + x2 + x3, data = dat)
 std.coef(mod.lm3)
 
 #...........
-# Regression model with continuous predictors and an interaction term
+# Example 5: Regression model with continuous predictors and an interaction term
 mod.lm4 <- lm(y ~ x1*x2, data = dat)
 
 #...........
-# Regression model with a quadratic term
+# Example 6: Regression model with a quadratic term
 mod.lm5 <- lm(y ~ x1 + I(x1^2), data = dat)
 std.coef(mod.lm5)
+
+#-------------------------------------------------------------------------------
+# Example 7: Write Results into an Excel file
+
+\dontrun{
+mod.lm1 <- lm(y ~ x1 + x2, data = dat)
+
+std.coef(mod.lm1, write = "Std_Coef.xlsx", output = FALSE)
+
+result <- std.coef(mod.lm1, output = FALSE)
+write.result(result, "Std_Coef.xlsx")
+}
 }
 \references{
 Muthen, B. O., Muthen, L. K., & Asparouhov, T. (2016). \emph{Regression and mediation analysis using Mplus}.

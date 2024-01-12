@@ -1,6 +1,6 @@
 #' Load and Attach Multiple Packages
 #'
-#' This function is used to load and attach multiple add-on packages at once.
+#' This function loads and attaches multiple add-on packages at once.
 #'
 #' @param ...     the names of the packages to be loaded, given as names
 #'                (e.g., \code{misty, lavaan, lme4}), or  literal character
@@ -10,8 +10,8 @@
 #'                installed.
 #' @param quiet   logical: if \code{TRUE} (default), startup messages when loading
 #'                package are disabled.
-#' @param check   logical: if \code{TRUE}, argument specification is checked.
-#' @param output  logical: if \code{TRUE}, output is shown on the console..
+#' @param check   logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output  logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -26,25 +26,25 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Load packages using the names of the packages
+#' # Example 1: Load packages using the names of the packages
 #' misty::libraries(misty, lme4, lmerTest)
 #'
-#' # Load packages using literal character strings
+#' # Example 2: Load packages using literal character strings
 #' misty::libraries("misty", "lme4", "lmerTest")
 #'
-#' # Load packages using a character vector
+#' # Example 3: Load packages using a character vector
 #' misty::libraries(c("misty", "lme4", "lmerTest"))
 #'
-#' # Check packages, i.e., TRUE = all depends/imports/suggests installed
+#' # Example 4: Check packages, i.e., TRUE = all depends/imports/suggests installed
 #' misty::libraries(misty, lme4, lmerTest, output = FALSE)$result$restab
 #'
-#' # Depends, FALSE = not installed, TRUE = installed
+#' # Example 5: Depends, FALSE = not installed, TRUE = installed
 #' misty::libraries(misty, lme4, lmerTest, output = FALSE)$result$depends
 #'
-#' # Imports, FALSE = not installed, TRUE = installed
+#' # Example 6: Imports, FALSE = not installed, TRUE = installed
 #' misty::libraries(misty, lme4, lmerTest, output = FALSE)$result$imports
 #'
-#' # Suggests, FALSE = not installed, TRUE = installed
+#' # Example 6: Suggests, FALSE = not installed, TRUE = installed
 #' misty::libraries(misty, lme4, lmerTest, output = FALSE)$result$suggests
 #' }
 libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
@@ -170,7 +170,7 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
   #...................
   ### Loaded ####
 
-  loaded <- installed & misty::na.as(depends.check[match(pkg, names(depends.check))], value = TRUE, check = FALSE) & misty::na.as(imports.check[match(pkg, names(imports.check))], value = TRUE, check = FALSE)
+  loaded <- installed & misty::na.as(depends.check[match(pkg, names(depends.check))], na = TRUE, check = FALSE) & misty::na.as(imports.check[match(pkg, names(imports.check))], na = TRUE, check = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Install packages and dependencies ####
@@ -295,7 +295,7 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
       #...................
       ### Loaded ####
 
-      loaded <- installed & misty::na.as(depends.check[match(pkg, names(depends.check))], value = TRUE, check = FALSE) & misty::na.as(imports.check[match(pkg, names(imports.check))], value = TRUE, check = FALSE)
+      loaded <- installed & misty::na.as(depends.check[match(pkg, names(depends.check))], na = TRUE, check = FALSE) & misty::na.as(imports.check[match(pkg, names(imports.check))], na = TRUE, check = FALSE)
 
   }
 

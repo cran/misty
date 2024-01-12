@@ -2,13 +2,35 @@
 % Please edit documentation in R/na.descript.R
 \name{na.descript}
 \alias{na.descript}
-\title{Descriptive Statistics for Missing Data}
+\title{Descriptive Statistics for Missing Data in Single-Level, Two-Level and Three-Level Data}
 \usage{
-na.descript(x, table = FALSE, digits = 2, as.na = NULL, write = NULL,
-            check = TRUE, output = TRUE)
+na.descript(..., data = NULL, cluster = NULL,  table = FALSE, digits = 2,
+            as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+            output = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame.}
+\item{...}{a matrix or data frame with incomplete data, where missing
+values are coded as \code{NA}. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{na.descript(x1, x2, x3, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix or data frame for the argument \code{...}.}
+
+\item{cluster}{a character string indicating the name of the cluster
+variable in \code{...} or \code{data} for two-level data,
+a character vector indicating the names of the cluster
+variables in \code{...} for three-level data, or a vector
+or data frame representing the nested grouping structure
+(i.e., group or cluster variables). Alternatively, a
+character string or character vector indicating the variable
+name(s) of the cluster variable(s) in \code{data}. Note that
+the cluster variable at Level 3 come first in a three-level
+model, i.e., \code{cluster = c("level3", "level2")}.}
 
 \item{table}{logical: if \code{TRUE}, a frequency table with number of
 observed values (\code{"nObs"}), percent of observed values
@@ -23,51 +45,83 @@ be used for displaying percentages.}
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{matrix or data frame specified in \code{x}}
+  \item{\code{data}}{data frame used for the current analysis}
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{list with results}
 }
 \description{
-This function computes descriptive statistics for missing data, e.g. number (%)
-of incomplete cases, number (%) of missing values, and summary statistics for
-the number (%) of missing values across all variables.
+This function computes descriptive statistics for missing data in single-level,
+two-level, and three-level data, e.g. number of incomplete cases, number
+of missing values, and summary statistics for the number of missing
+values across all variables.
 }
 \examples{
-dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
-                  x2 = c(4, 2, 5, 1, 5, 3, 4, 5),
-                  x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
-                  x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
+#----------------------------------------------------------------------------
+# Single-Level Data
 
-# Descriptive statistics for missing data
-na.descript(dat)
+# Example 1a: Descriptive statistics for missing data
+na.descript(airquality)
 
-# Descriptive statistics for missing data, print results with 3 digits
-na.descript(dat, digits = 3)
+# Example 1b: Alternative specification using the 'data' argument
+na.descript(., data = airquality)
 
-# Descriptive statistics for missing data, convert value 2 to NA
-na.descript(dat, as.na = 2)
+# Example 2: Descriptive statistics for missing data, print results with 3 digits
+na.descript(airquality, digits = 3)
 
-# Descriptive statistics for missing data with frequency table
-na.descript(dat, table = TRUE)
+# Example 3: Descriptive statistics for missing data with frequency table
+na.descript(airquality, table = TRUE)
+
+#----------------------------------------------------------------------------
+# Two-Level Data
+
+# Load data set "Demo.twolevel" in the lavaan package
+data("Demo.twolevel", package = "lavaan")
+
+# Example 4: escriptive statistics for missing data
+na.descript(Demo.twolevel, cluster = "cluster")
+
+#----------------------------------------------------------------------------
+# Three-Level Data
+
+# Create arbitrary three-level data
+Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
+                                             cluster3 = rep(1:10, each = 250))
+
+# Example 5: escriptive statistics for missing data
+na.descript(Demo.threelevel, cluster = c("cluster3", "cluster2"))
+
+#----------------------------------------------------------------------------
+# Write Results
 
 \dontrun{
-# Write Results into a Excel file
-na.descript(dat, table = TRUE, write = "NA_Descriptives.xlsx")
+# Example 6a: Write Results into a text file
+na.descript(airquality, table = TRUE, write = "NA_Descriptives.txt")
 
-result <- na.descript(dat, table = TRUE, output = FALSE)
+# Example 6b: Write Results into a Excel file
+na.descript(airquality, table = TRUE, write = "NA_Descriptives.xlsx")
+
+result <- na.descript(airquality, table = TRUE, output = FALSE)
 write.result(result, "NA_Descriptives.xlsx")
 }
 }

@@ -20,11 +20,19 @@
 #'                 printed with \code{digits} minus 1 decimal places.
 #' @param p.digits an integer value indicating the number of decimal places to be
 #'                 used for displaying the \emph{p}-value.
-#' @param write    a character string for writing the results into a Excel file
-#'                 naming a file with or without file extension '.xlsx', e.g.,
-#'                 \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check    logical: if \code{TRUE}, argument specification is checked.
-#' @param output   logical: if \code{TRUE}, output is shown.
+#' @param write    a character string naming a file for writing the output into
+#'                 either a text file with file extension \code{".txt"} (e.g.,
+#'                 \code{"Output.txt"}) or Excel file with file extention
+#'                 \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'                 name does not contain any file extension, an Excel file will
+#'                 be written.
+#' @param append   logical: if \code{TRUE} (default), output will be appended
+#'                 to an existing text file with extension \code{.txt} specified
+#'                 in \code{write}, if \code{FALSE} existing text file will be
+#'                 overwritten.
+#' @param check    logical: if \code{TRUE} (default), argument specification is
+#'                 checked.
+#' @param output   logical: if \code{TRUE} (default), output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -85,28 +93,31 @@
 #'               fb =~ y1 + y2 + y3
 #'               fb ~ w1 + w2'
 #'
-#' #---------------------------
-#' # Model estimation with estimator = "ML"
+#' #----------------------------------------------------------------------------
+#'
+#' # Example 1: Model estimation with estimator = "ML"
 #' fit1 <- lavaan::sem(model = model, data = Demo.twolevel, cluster = "cluster",
 #'                     estimator = "ML")
 #'
-#' # Simultaneous and kevel-specific multilevel model fit information
+#' # Simultaneous and level-specific multilevel model fit information
 #' ls.fit1 <- multilevel.fit(fit1)
+#'
+#' # Write results into a text file
+#' multilevel.fit(fit1, write = "LS-Fit1.txt")
 #'
 #' # Write results into an Excel file
 #' write.result(ls.fit1, "LS-Fit1.xlsx")
 #'
-#' #---------------------------
-#' # Model estimation with estimator = "MLR"
+#' # Example 2: Model estimation with estimator = "MLR"
 #' fit2 <- lavaan::sem(model = model, data = Demo.twolevel, cluster = "cluster",
 #'                     estimator = "MLR")
 #'
-#' # Simultaneous and kevel-specific multilevel model fit information
+#' # Simultaneous and level-specific multilevel model fit information
 #' # Write results into an Excel file
 #' multilevel.fit(fit2, write = "LS-Fit2.xlsx")
 #' }
 multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.digits = 3,
-                           write = NULL, check = TRUE, output = TRUE) {
+                           write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -190,6 +201,9 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
 
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer value for the argument 'p.digits'.", call. = FALSE) }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE) }
@@ -844,7 +858,8 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
   object <- list(call = match.call(),
                  type = "multilevel.fit",
                  x = x,
-                 args = list(print = print, digits = digits, p.digits = p.digits, check = check, output = output),
+                 args = list(print = print, digits = digits, p.digits = p.digits,
+                             write = write, append = append, check = check, output = output),
                  model = list(mod.l1 = mod.l1, mod.l1.syntax = mod.l1.syntax,
                               mod.l2 = mod.l2, mod.l2.syntax = mod.l2.syntax,
                               mod.l12 = mod.l12, mod.l12.syntax = mod.l12.syntax,
@@ -860,7 +875,34 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #

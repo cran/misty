@@ -1,10 +1,30 @@
-#' Descriptive Statistics for Missing Data
+#' Descriptive Statistics for Missing Data in Single-Level, Two-Level and Three-Level Data
 #'
-#' This function computes descriptive statistics for missing data, e.g. number (%)
-#' of incomplete cases, number (%) of missing values, and summary statistics for
-#' the number (%) of missing values across all variables.
+#' This function computes descriptive statistics for missing data in single-level,
+#' two-level, and three-level data, e.g. number (%) of incomplete cases, number
+#' (%) of missing values, and summary statistics for the number (%) of missing
+#' values across all variables.
 #'
-#' @param x       a matrix or data frame.
+#' @param ...     a matrix or data frame with incomplete data, where missing
+#'                values are coded as \code{NA}. Alternatively, an expression
+#'               indicating the variable names in \code{data} e.g.,
+#'                \code{na.descript(x1, x2, x3, data = dat)}. Note that the operators
+#'                \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                and \code{!} can also be used to select variables, see 'Details'
+#'                in the \code{\link{df.subset}} function.
+#' @param data    a data frame when specifying one or more variables in the
+#'                argument \code{...}. Note that the argument is \code{NULL}
+#'                when specifying a matrix or data frame for the argument \code{...}.
+#' @param cluster a character string indicating the name of the cluster
+#'                variable in \code{...} or \code{data} for two-level data,
+#'                a character vector indicating the names of the cluster
+#'                variables in \code{...} for three-level data, or a vector
+#'                or data frame representing the nested grouping structure
+#'                (i.e., group or cluster variables). Alternatively, a
+#'                character string or character vector indicating the variable
+#'                name(s) of the cluster variable(s) in \code{data}. Note that
+#'                the cluster variable at Level 3 come first in a three-level
+#'                model, i.e., \code{cluster = c("level3", "level2")}.
 #' @param table   logical: if \code{TRUE}, a frequency table with number of
 #'                observed values (\code{"nObs"}), percent of observed values
 #'                (\code{"pObs"}), number of missing values (\code{"nNA"}),
@@ -15,11 +35,18 @@
 #' @param as.na   a numeric vector indicating user-defined missing values,
 #'                i.e. these values are converted to \code{NA} before conducting
 #'                the analysis.
-#' @param write   a character string for writing the results into a Excel file
-#'                naming a file with or without file extension '.xlsx', e.g.,
-#'                \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check   logical: if \code{TRUE}, argument specification is checked.
-#' @param output  logical: if \code{TRUE}, output is shown on the console.
+#' @param write   a character string naming a file for writing the output into
+#'                either a text file with file extension \code{".txt"} (e.g.,
+#'                \code{"Output.txt"}) or Excel file with file extention
+#'                \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'                name does not contain any file extension, an Excel file will
+#'                be written.
+#' @param append  logical: if \code{TRUE} (default), output will be appended
+#'                to an existing text file with extension \code{.txt} specified
+#'                in \code{write}, if \code{FALSE} existing text file will be
+#'                overwritten.
+#' @param check  logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -45,7 +72,7 @@
 #' \tabular{ll}{
 #' \code{call} \tab function call \cr
 #' \code{type} \tab type of analysis \cr
-#' \code{data} \tab matrix or data frame specified in \code{x} \cr
+#' \code{data} \tab data frame used for the current analysis \cr
 #' \code{args} \tab specification of function arguments \cr
 #' \code{result} \tab list with result tables \cr
 #' }
@@ -53,59 +80,139 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
-#'                   x2 = c(4, 2, 5, 1, 5, 3, 4, 5),
-#'                   x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
-#'                   x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
+#' #----------------------------------------------------------------------------
+#' # Single-Level Data
 #'
-#' # Descriptive statistics for missing data
-#' na.descript(dat)
+#' # Example 1a: Descriptive statistics for missing data
+#' na.descript(airquality)
 #'
-#' # Descriptive statistics for missing data, print results with 3 digits
-#' na.descript(dat, digits = 3)
+#' # Example 1b: Alternative specification using the 'data' argument
+#' na.descript(., data = airquality)
 #'
-#' # Descriptive statistics for missing data, convert value 2 to NA
-#' na.descript(dat, as.na = 2)
+#' # Example 2: Descriptive statistics for missing data, print results with 3 digits
+#' na.descript(airquality, digits = 3)
 #'
-#' # Descriptive statistics for missing data with frequency table
-#' na.descript(dat, table = TRUE)
+#' # Example 3: Descriptive statistics for missing data with frequency table
+#' na.descript(airquality, table = TRUE)
+#'
+#' #----------------------------------------------------------------------------
+#' # Two-Level Data
+#'
+#' # Load data set "Demo.twolevel" in the lavaan package
+#' data("Demo.twolevel", package = "lavaan")
+#'
+#' # Example 4: escriptive statistics for missing data
+#' na.descript(Demo.twolevel, cluster = "cluster")
+#'
+#' #----------------------------------------------------------------------------
+#' # Three-Level Data
+#'
+#' # Create arbitrary three-level data
+#' Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
+#'                                              cluster3 = rep(1:10, each = 250))
+#'
+#' # Example 5: escriptive statistics for missing data
+#' na.descript(Demo.threelevel, cluster = c("cluster3", "cluster2"))
+#'
+#' #----------------------------------------------------------------------------
+#' # Write Results
 #'
 #' \dontrun{
-#' # Write Results into a Excel file
-#' na.descript(dat, table = TRUE, write = "NA_Descriptives.xlsx")
+#' # Example 6a: Write Results into a text file
+#' na.descript(airquality, table = TRUE, write = "NA_Descriptives.txt")
 #'
-#' result <- na.descript(dat, table = TRUE, output = FALSE)
+#' # Example 6b: Write Results into a Excel file
+#' na.descript(airquality, table = TRUE, write = "NA_Descriptives.xlsx")
+#'
+#' result <- na.descript(airquality, table = TRUE, output = FALSE)
 #' write.result(result, "NA_Descriptives.xlsx")
 #' }
-na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, write = NULL,
-                        check = TRUE, output = TRUE) {
+na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits = 2,
+                        as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+                        output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
+  ## Data using the argument 'data' ####
 
-  df <- as.data.frame(x, stringsAsFactors = FALSE)
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
+
+    # Extract data
+    x <- data[, var.names]
+
+    # Cluster variable
+    if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+    # Data and cluster
+    var.group <- .var.group(data = x, cluster = cluster)
+
+    # Data
+    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+
+    # Cluster variable
+    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) { df <- misty::as.na(df, na = as.na, check = check) }
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## As data frame ####
+
+  x <- as.data.frame(x)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Cluster variables ####
+
+  no.clust <- "none"
+  if (isTRUE(!is.null(cluster))) {
+
+    # Two cluster variables
+    if (isTRUE(ncol(as.data.frame(cluster)) == 2L)) {
+
+      l3.cluster <- cluster[, 1L]
+      l2.cluster <- cluster[, 2L]
+
+      no.clust <- "two"
+
+    # One cluser variables
+    } else {
+
+      no.clust <- "one"
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #
@@ -131,62 +238,302 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, write = NULL
   #
   # Main Function --------------------------------------------------------------
 
-  # Number of cases
-  no.cases <- nrow(df)
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Variable ####
 
-  # Number of complete cases
-  no.complete <- sum(apply(df, 1L, function(y) all(!is.na(y))))
-  perc.complete <- no.complete / no.cases * 100L
+  if (isTRUE(!is.null(cluster))) {
 
-  # Number and percentage of imcomplete cases
-  no.incomplete <- sum(apply(df, 1L, function(y) any(is.na(y))))
-  perc.incomplete <- no.incomplete / no.cases * 100L
+    #...................
+    ### One cluster variable ####
 
-  # Number of values
-  no.values <- length(unlist(df))
+    if (isTRUE(no.clust == "one")) {
 
-  # Number of observed values
-  no.observed.values <- sum(!is.na(unlist(df)))
-  perc.observed.values <- no.observed.values / no.values *100L
+      # No. of clusters
+      no.cluster.l2 <- length(na.omit(unique(cluster)))
 
-  # Number and percentage of missing values
-  no.missing.values <- sum(is.na(unlist(df)))
-  perc.missing.values <- no.missing.values / no.values * 100L
+      # Level-1 Variable
+      L1.var <- names(which(apply(x, 2L, function(y) any(na.omit(as.vector(tapply(y, cluster, var, na.rm = TRUE) != 0L))))))
 
-  # Number of variables
-  no.var <- ncol(df)
+      # Level-2 Variable
+      L2.var <- setdiff(colnames(x), L1.var)
 
-  # Number and percentage of observed values for each variable
-  no.observed.var <- vapply(df, function(y) sum(!is.na(y)), FUN.VALUE = 1L)
-  perc.observed.var <- no.observed.var / no.cases * 100L
+    #...................
+    ### Two cluster variables ####
 
-  # Number and percentage of missing values for each variable
-  no.missing.var <- vapply(df, function(y) sum(is.na(y)), FUN.VALUE = 1L)
-  perc.missing.var <- no.missing.var / no.cases * 100L
+    } else if (isTRUE(no.clust == "two")) {
 
-  no.missing.mean <- mean(no.missing.var)
-  perc.missing.mean <- no.missing.mean / no.cases * 100L
+      # No. of Level-2 clusters
+      no.cluster.l2 <- length(na.omit(unique(cluster[, 2L])))
 
-  no.missing.sd <- sd(no.missing.var)
-  perc.missing.sd <- no.missing.sd / no.cases * 100L
+      # No. of Level-3 clusters
+      no.cluster.l3 <- length(na.omit(unique(cluster[, 1L])))
 
-  no.missing.min <- min(no.missing.var)
-  perc.missing.min <- no.missing.min / no.cases * 100L
+      # Level-2 Variable
+      L1.var <- names(which(apply(x, 2L, function(y) any(na.omit(as.vector(tapply(y, apply(cluster, 1L, paste, collapse = ""), var, na.rm = TRUE))) != 0L))))
 
-  no.missing.p25 <- quantile(no.missing.var, probs = 0.25)
-  perc.missing.p25 <- no.missing.p25 / no.cases * 100L
+      # Level-2 Variable
+      L2.var <- names(which(apply(x, 2L, function(y) all(na.omit(as.vector(tapply(y, apply(cluster, 1L, paste, collapse = ""), var, na.rm = TRUE))) == 0L)) & apply(x, 2L, function(y) any(as.vector(tapply(y, cluster[, 1L], var, na.rm = TRUE)) != 0L))))
 
-  no.missing.p75 <- quantile(no.missing.var, probs = 0.75)
-  perc.missing.p75 <- no.missing.p75 / no.cases * 100L
+      # Level-3 Variable
+      L3.var <- setdiff(colnames(x), c(L1.var, L2.var))
 
-  no.missing.max <- max(no.missing.var)
-  perc.missing.max <- no.missing.max / no.cases * 100L
+    }
 
-  # Frequency table
-  table.missing <- data.frame(Var = colnames(df),
-                              matrix(c(no.observed.var, perc.observed.var, no.missing.var, perc.missing.var), ncol = 4L,
-                                     dimnames = list(NULL, c("nObs", "pObs", "nNA", "pNA"))),
-                              stringsAsFactors = FALSE)
+  #...................
+  ### No cluster variable ####
+
+  } else {
+
+    L1.var <- colnames(x)
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Descriptive Statistics for Missing Data ####
+
+  #...................
+  ### Level-1 Variables ####
+
+  ##### Level-1 Variables
+  if (isTRUE(length(L1.var) != 0L)) {
+
+    ##### No cluster variable
+    if (isTRUE(is.null(cluster))) {
+
+      x.L1 <- x
+
+    ##### Cluster variable(s)
+    } else {
+
+      x.L1 <- x[, L1.var, drop = FALSE]
+
+    }
+
+    # Number of cases
+    no.cases.l1 <- nrow(x.L1)
+
+    # Number of complete cases
+    no.complete.l1 <- sum(apply(x.L1, 1L, function(y) all(!is.na(y))))
+    perc.complete.l1 <- no.complete.l1 / no.cases.l1 * 100L
+
+    # Number and percentage of imcomplete cases
+    no.incomplete.l1 <- sum(apply(x.L1, 1L, function(y) any(is.na(y))))
+    perc.incomplete.l1 <- no.incomplete.l1 / no.cases.l1 * 100L
+
+    # Number of values
+    no.values.l1 <- length(unlist(x.L1))
+
+    # Number of observed values
+    no.observed.values.l1 <- sum(!is.na(unlist(x.L1)))
+    perc.observed.values.l1 <- no.observed.values.l1 / no.values.l1 *100L
+
+    # Number and percentage of missing values
+    no.missing.values.l1 <- sum(is.na(unlist(x.L1)))
+    perc.missing.values.l1 <- no.missing.values.l1 / no.values.l1 * 100L
+
+    # Number of variables
+    no.var.l1 <- ncol(x.L1)
+
+    # Number and percentage of observed values for each variable
+    no.observed.var.l1 <- vapply(x.L1, function(y) sum(!is.na(y)), FUN.VALUE = 1L)
+    perc.observed.var.l1 <- no.observed.var.l1 / no.cases.l1 * 100L
+
+    # Number and percentage of missing values for each variable
+    no.missing.var.l1 <- vapply(x.L1, function(y) sum(is.na(y)), FUN.VALUE = 1L)
+    perc.missing.var.l1 <- no.missing.var.l1 / no.cases.l1 * 100L
+
+    no.missing.mean.l1 <- mean(no.missing.var.l1)
+    perc.missing.mean.l1 <- no.missing.mean.l1 / no.cases.l1 * 100L
+
+    no.missing.sd.l1 <- misty::na.as(sd(no.missing.var.l1), na = 0L, check = FALSE)
+    perc.missing.sd.l1 <- no.missing.sd.l1 / no.cases.l1 * 100L
+
+    no.missing.min.l1 <- min(no.missing.var.l1)
+    perc.missing.min.l1 <- no.missing.min.l1 / no.cases.l1 * 100L
+
+    no.missing.p25.l1 <- quantile(no.missing.var.l1, probs = 0.25)
+    perc.missing.p25.l1 <- no.missing.p25.l1 / no.cases.l1 * 100L
+
+    no.missing.p75.l1 <- quantile(no.missing.var.l1, probs = 0.75)
+    perc.missing.p75.l1 <- no.missing.p75.l1 / no.cases.l1 * 100L
+
+    no.missing.max.l1 <- max(no.missing.var.l1)
+    perc.missing.max.l1 <- no.missing.max.l1 / no.cases.l1 * 100L
+
+    # Frequency table
+    table.missing.l1 <- data.frame(Var = colnames(x.L1),
+                                   matrix(c(no.observed.var.l1, perc.observed.var.l1, no.missing.var.l1, perc.missing.var.l1), ncol = 4L,
+                                          dimnames = list(NULL, c("nObs", "pObs", "nNA", "pNA"))))
+
+  # No Level-1 Variables
+  } else {
+
+    no.complete.l1 <- perc.complete.l1 <- no.incomplete.l1 <- perc.incomplete.l1 <- no.values.l1 <- no.observed.values.l1 <- perc.observed.values.l1 <-
+    no.missing.values.l1 <- perc.missing.values.l1 <- no.var.l1 <- no.observed.var.l1 <- perc.observed.var.l1 <- no.missing.var.l1 <- perc.missing.var.l1 <-
+    no.missing.mean.l1 <- perc.missing.mean.l1 <- no.missing.sd.l1 <- perc.missing.sd.l1 <- no.missing.min.l1 <- perc.missing.min.l1 <-
+    no.missing.p25.l1 <- perc.missing.p25.l1 <- no.missing.p75.l1 <- perc.missing.p75.l1 <- no.missing.max.l1 <- perc.missing.max.l1 <- table.missing.l1 <- NA
+
+  }
+
+  #...................
+  ### Level-2 Variables ####
+
+  if (isTRUE(!is.null(cluster))) {
+
+    ##### Level-2 Variables
+    if (isTRUE(length(L2.var) != 0L)) {
+
+      # One cluster variable
+      if (no.clust == "one") {
+
+        x.L2 <- x[!duplicated(cluster), L2.var, drop = FALSE]
+
+      # Two cluster variables
+      } else {
+
+        x.L2 <- x[!duplicated(apply(cluster, 1L, paste, collapse = "")), L2.var, drop = FALSE]
+
+      }
+
+      # Number of complete cases
+      no.complete.l2 <- sum(apply(x.L2, 1L, function(y) all(!is.na(y))))
+      perc.complete.l2 <- no.complete.l2 / no.cluster.l2 * 100L
+
+      # Number and percentage of imcomplete cases
+      no.incomplete.l2 <- sum(apply(x.L2, 1L, function(y) any(is.na(y))))
+      perc.incomplete.l2 <- no.incomplete.l2 / no.cluster.l2 * 100L
+
+      # Number of values
+      no.values.l2 <- length(unlist(x.L2))
+
+      # Number of observed values
+      no.observed.values.l2 <- sum(!is.na(unlist(x.L2)))
+      perc.observed.values.l2 <- no.observed.values.l2 / no.values.l2 *100L
+
+      # Number and percentage of missing values
+      no.missing.values.l2 <- sum(is.na(unlist(x.L2)))
+      perc.missing.values.l2 <- no.missing.values.l2 / no.values.l2 * 100L
+
+      # Number of variables
+      no.var.l2 <- ncol(x.L2)
+
+      # Number and percentage of observed values for each variable
+      no.observed.var.l2 <- vapply(x.L2, function(y) sum(!is.na(y)), FUN.VALUE = 1L)
+      perc.observed.var.l2 <- no.observed.var.l2 / no.cluster.l2 * 100L
+
+      # Number and percentage of missing values for each variable
+      no.missing.var.l2 <- vapply(x.L2, function(y) sum(is.na(y)), FUN.VALUE = 1L)
+      perc.missing.var.l2 <- no.missing.var.l2 / no.cluster.l2 * 100L
+
+      no.missing.mean.l2 <- mean(no.missing.var.l2)
+      perc.missing.mean.l2 <- no.missing.mean.l2 / no.cluster.l2 * 100L
+
+      no.missing.sd.l2 <- misty::na.as(sd(no.missing.var.l2), na = 0L, check = FALSE)
+      perc.missing.sd.l2 <- no.missing.sd.l2 / no.cluster.l2 * 100L
+
+      no.missing.min.l2 <- min(no.missing.var.l2)
+      perc.missing.min.l2 <- no.missing.min.l2 / no.cluster.l2 * 100L
+
+      no.missing.p25.l2 <- quantile(no.missing.var.l2, probs = 0.25)
+      perc.missing.p25.l2 <- no.missing.p25.l2 / no.cluster.l2 * 100L
+
+      no.missing.p75.l2 <- quantile(no.missing.var.l2, probs = 0.75)
+      perc.missing.p75.l2 <- no.missing.p75.l2 / no.cluster.l2 * 100L
+
+      no.missing.max.l2 <- max(no.missing.var.l2)
+      perc.missing.max.l2 <- no.missing.max.l2 / no.cluster.l2 * 100L
+
+      # Frequency table
+      table.missing.l2 <- data.frame(Var = colnames(x.L2),
+                                     matrix(c(no.observed.var.l2, perc.observed.var.l2, no.missing.var.l2, perc.missing.var.l2), ncol = 4L,
+                                            dimnames = list(NULL, c("nObs", "pObs", "nNA", "pNA"))))
+
+    # No Level-2 Variables
+    } else {
+
+      no.complete.l2 <- perc.complete.l2 <- no.incomplete.l2 <- perc.incomplete.l2 <- no.values.l2 <- no.observed.values.l2 <- perc.observed.values.l2 <-
+      no.missing.values.l2 <- perc.missing.values.l2 <- no.var.l2 <- no.observed.var.l2 <- perc.observed.var.l2 <- no.missing.var.l2 <- perc.missing.var.l2 <-
+      no.missing.mean.l2 <- perc.missing.mean.l2 <- no.missing.sd.l2 <- perc.missing.sd.l2 <- no.missing.min.l2 <- perc.missing.min.l2 <-
+      no.missing.p25.l2 <- perc.missing.p25.l2 <- no.missing.p75.l2 <- perc.missing.p75.l2 <- no.missing.max.l2 <- perc.missing.max.l2 <- table.missing.l2 <- NA
+
+    }
+
+  }
+
+  #...................
+  ### Level-3 Variables ####
+
+  if (isTRUE(no.clust == "two")) {
+
+    ##### Level-3 Variables
+    if (isTRUE(length(L3.var) != 0L)) {
+
+      x.l3 <- x[!duplicated(cluster[, 1L]), L3.var, drop = FALSE]
+
+      # Number of complete cases
+      no.complete.l3 <- sum(apply(x.l3, 1L, function(y) all(!is.na(y))))
+      perc.complete.l3 <- no.complete.l3 / no.cluster.l3 * 100L
+
+      # Number and percentage of imcomplete cases
+      no.incomplete.l3 <- sum(apply(x.l3, 1L, function(y) any(is.na(y))))
+      perc.incomplete.l3 <- no.incomplete.l3 / no.cluster.l3 * 100L
+
+      # Number of values
+      no.values.l3 <- length(unlist(x.l3))
+
+      # Number of observed values
+      no.observed.values.l3 <- sum(!is.na(unlist(x.l3)))
+      perc.observed.values.l3 <- no.observed.values.l3 / no.values.l3 *100L
+
+      # Number and percentage of missing values
+      no.missing.values.l3 <- sum(is.na(unlist(x.l3)))
+      perc.missing.values.l3 <- no.missing.values.l3 / no.values.l3 * 100L
+
+      # Number of variables
+      no.var.l3 <- ncol(x.l3)
+
+      # Number and percentage of observed values for each variable
+      no.observed.var.l3 <- vapply(x.l3, function(y) sum(!is.na(y)), FUN.VALUE = 1L)
+      perc.observed.var.l3 <- no.observed.var.l3 / no.cluster.l3 * 100L
+
+      # Number and percentage of missing values for each variable
+      no.missing.var.l3 <- vapply(x.l3, function(y) sum(is.na(y)), FUN.VALUE = 1L)
+      perc.missing.var.l3 <- no.missing.var.l3 / no.cluster.l3 * 100L
+
+      no.missing.mean.l3 <- mean(no.missing.var.l3)
+      perc.missing.mean.l3 <- no.missing.mean.l3 / no.cluster.l3 * 100L
+
+      no.missing.sd.l3 <- misty::na.as(sd(no.missing.var.l3), na = 0L, check = FALSE)
+      perc.missing.sd.l3 <- no.missing.sd.l3 / no.cluster.l3 * 100L
+
+      no.missing.min.l3 <- min(no.missing.var.l3)
+      perc.missing.min.l3 <- no.missing.min.l3 / no.cluster.l3 * 100L
+
+      no.missing.p25.l3 <- quantile(no.missing.var.l3, probs = 0.25)
+      perc.missing.p25.l3 <- no.missing.p25.l3 / no.cluster.l3 * 100L
+
+      no.missing.p75.l3 <- quantile(no.missing.var.l3, probs = 0.75)
+      perc.missing.p75.l3 <- no.missing.p75.l3 / no.cluster.l3 * 100L
+
+      no.missing.max.l3 <- max(no.missing.var.l3)
+      perc.missing.max.l3 <- no.missing.max.l3 / no.cluster.l3 * 100L
+
+      # Frequency table
+      table.missing.l3 <- data.frame(Var = colnames(x.l3),
+                                     matrix(c(no.observed.var.l3, perc.observed.var.l3, no.missing.var.l3, perc.missing.var.l3), ncol = 4L,
+                                            dimnames = list(NULL, c("nObs", "pObs", "nNA", "pNA"))))
+
+    # No Level-3 Variables
+    } else {
+
+      no.complete.l3 <- perc.complete.l3 <- no.incomplete.l3 <- perc.incomplete.l3 <- no.values.l3 <- no.observed.values.l3 <- perc.observed.values.l3 <-
+      no.missing.values.l3 <- perc.missing.values.l3 <- no.var.l3 <- no.observed.var.l3 <- perc.observed.var.l3 <- no.missing.var.l3 <- perc.missing.var.l3 <-
+      no.missing.mean.l3 <- perc.missing.mean.l3 <- no.missing.sd.l3 <- perc.missing.sd.l3 <- no.missing.min.l3 <- perc.missing.min.l3 <-
+      no.missing.p25.l3 <- perc.missing.p25.l3 <- no.missing.p75.l3 <- perc.missing.p75.l3 <- no.missing.max.l3 <- perc.missing.max.l3 <- table.missing.l3 <- NA
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #
@@ -194,20 +541,82 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, write = NULL
 
   object <- list(call = match.call(),
                  type = "na.descript",
-                 data = x,
-                 args = list(digits = digits, table = table, as.na = as.na, check = check, output = output),
-                 result = list(no.cases = no.cases, no.complete = no.complete, perc.complete = perc.complete,
-                               no.incomplete = no.incomplete, perc.incomplete = perc.incomplete,
-                               no.values = no.values, no.observed.values = no.observed.values,
-                               perc.observed.values = perc.observed.values, no.missing.values = no.missing.values,
-                               perc.missing.values = perc.missing.values, no.var = no.var,
-                               no.missing.mean = no.missing.mean, perc.missing.mean = perc.missing.mean,
-                               no.missing.sd = no.missing.sd, perc.missing.sd = perc.missing.sd,
-                               no.missing.min = no.missing.min, perc.missing.min = perc.missing.min,
-                               no.missing.p25 = no.missing.p25, perc.missing.p25 = perc.missing.p25,
-                               no.missing.p75 = no.missing.p75, perc.missing.p75 = perc.missing.p75,
-                               no.missing.max = no.missing.max, perc.missing.max = perc.missing.max,
-                               table.miss = table.missing))
+                 data = if (is.null(cluster)) { x } else { switch(no.clust, one = { data.frame(x = x, cluster = cluster, stringsAsFactors = FALSE) }, two = data.frame(x = x, cluster3 = cluster[, 1L], cluster2 = cluster[, 2L], stringsAsFactors = FALSE)) },
+                 no.cluster = no.clust,
+                 args = list(digits = digits, table = table, as.na = as.na, write = write, append = append, check = check, output = output),
+                 result = switch(no.clust,
+                                 none = list(L1 = list(no.cases.l1 = no.cases.l1, no.complete.l1 = no.complete.l1, perc.complete.l1 = perc.complete.l1,
+                                                       no.incomplete.l1 = no.incomplete.l1, perc.incomplete.l1 = perc.incomplete.l1,
+                                                       no.values.l1 = no.values.l1, no.observed.values.l1 = no.observed.values.l1,
+                                                       perc.observed.values.l1 = perc.observed.values.l1, no.missing.values.l1 = no.missing.values.l1,
+                                                       perc.missing.values.l1 = perc.missing.values.l1, no.var.l1 = no.var.l1,
+                                                       no.missing.mean.l1 = no.missing.mean.l1, perc.missing.mean.l1 = perc.missing.mean.l1,
+                                                       no.missing.sd.l1 = no.missing.sd.l1, perc.missing.sd.l1 = perc.missing.sd.l1,
+                                                       no.missing.min.l1 = no.missing.min.l1, perc.missing.min.l1 = perc.missing.min.l1,
+                                                       no.missing.p25.l1 = no.missing.p25.l1, perc.missing.p25.l1 = perc.missing.p25.l1,
+                                                       no.missing.p75.l1 = no.missing.p75.l1, perc.missing.p75.l1 = perc.missing.p75.l1,
+                                                       no.missing.max.l1 = no.missing.max.l1, perc.missing.max.l1 = perc.missing.max.l1,
+                                                       table.miss.l1 = table.missing.l1)),
+                                 one = list(L1 = list(no.cases.l1 = no.cases.l1, no.complete.l1 = no.complete.l1, perc.complete.l1 = perc.complete.l1,
+                                                      no.incomplete.l1 = no.incomplete.l1, perc.incomplete.l1 = perc.incomplete.l1,
+                                                      no.values.l1 = no.values.l1, no.observed.values.l1 = no.observed.values.l1,
+                                                      perc.observed.values.l1 = perc.observed.values.l1, no.missing.values.l1 = no.missing.values.l1,
+                                                      perc.missing.values.l1 = perc.missing.values.l1, no.var.l1 = no.var.l1,
+                                                      no.missing.mean.l1 = no.missing.mean.l1, perc.missing.mean.l1 = perc.missing.mean.l1,
+                                                      no.missing.sd.l1 = no.missing.sd.l1, perc.missing.sd.l1 = perc.missing.sd.l1,
+                                                      no.missing.min.l1 = no.missing.min.l1, perc.missing.min.l1 = perc.missing.min.l1,
+                                                      no.missing.p25.l1 = no.missing.p25.l1, perc.missing.p25.l1 = perc.missing.p25.l1,
+                                                      no.missing.p75.l1 = no.missing.p75.l1, perc.missing.p75.l1 = perc.missing.p75.l1,
+                                                      no.missing.max.l1 = no.missing.max.l1, perc.missing.max.l1 = perc.missing.max.l1,
+                                                      table.miss.l1 = table.missing.l1),
+                                            L2 = list(no.cluster.l2 = no.cluster.l2, no.complete.l2 = no.complete.l2, perc.complete.l2 = perc.complete.l2,
+                                                      no.incomplete.l2 = no.incomplete.l2, perc.incomplete.l2 = perc.incomplete.l2,
+                                                      no.values.l2 = no.values.l2, no.observed.values.l2 = no.observed.values.l2,
+                                                      perc.observed.values.l2 = perc.observed.values.l2, no.missing.values.l2 = no.missing.values.l2,
+                                                      perc.missing.values.l2 = perc.missing.values.l2, no.var.l2 = no.var.l2,
+                                                      no.missing.mean.l2 = no.missing.mean.l2, perc.missing.mean.l2 = perc.missing.mean.l2,
+                                                      no.missing.sd.l2 = no.missing.sd.l2, perc.missing.sd.l2 = perc.missing.sd.l2,
+                                                      no.missing.min.l2 = no.missing.min.l2, perc.missing.min.l2 = perc.missing.min.l2,
+                                                      no.missing.p25.l2 = no.missing.p25.l2, perc.missing.p25.l2 = perc.missing.p25.l2,
+                                                      no.missing.p75.l2 = no.missing.p75.l2, perc.missing.p75.l2 = perc.missing.p75.l2,
+                                                      no.missing.max.l2 = no.missing.max.l2, perc.missing.max.l2 = perc.missing.max.l2,
+                                                      table.miss.l2 = table.missing.l2)),
+                                 two = list(L1 = list(no.cases.l1 = no.cases.l1, no.complete.l1 = no.complete.l1, perc.complete.l1 = perc.complete.l1,
+                                                      no.incomplete.l1 = no.incomplete.l1, perc.incomplete.l1 = perc.incomplete.l1,
+                                                      no.values.l1 = no.values.l1, no.observed.values.l1 = no.observed.values.l1,
+                                                      perc.observed.values.l1 = perc.observed.values.l1, no.missing.values.l1 = no.missing.values.l1,
+                                                      perc.missing.values.l1 = perc.missing.values.l1, no.var.l1 = no.var.l1,
+                                                      no.missing.mean.l1 = no.missing.mean.l1, perc.missing.mean.l1 = perc.missing.mean.l1,
+                                                      no.missing.sd.l1 = no.missing.sd.l1, perc.missing.sd.l1 = perc.missing.sd.l1,
+                                                      no.missing.min.l1 = no.missing.min.l1, perc.missing.min.l1 = perc.missing.min.l1,
+                                                      no.missing.p25.l1 = no.missing.p25.l1, perc.missing.p25.l1 = perc.missing.p25.l1,
+                                                      no.missing.p75.l1 = no.missing.p75.l1, perc.missing.p75.l1 = perc.missing.p75.l1,
+                                                      no.missing.max.l1 = no.missing.max.l1, perc.missing.max.l1 = perc.missing.max.l1,
+                                                      table.miss.l1 = table.missing.l1),
+                                            L2 = list(no.cluster.l2 = no.cluster.l2, no.complete.l2 = no.complete.l2, perc.complete.l2 = perc.complete.l2,
+                                                      no.incomplete.l2 = no.incomplete.l2, perc.incomplete.l2 = perc.incomplete.l2,
+                                                      no.values.l2 = no.values.l2, no.observed.values.l2 = no.observed.values.l2,
+                                                      perc.observed.values.l2 = perc.observed.values.l2, no.missing.values.l2 = no.missing.values.l2,
+                                                      perc.missing.values.l2 = perc.missing.values.l2, no.var.l2 = no.var.l2,
+                                                      no.missing.mean.l2 = no.missing.mean.l2, perc.missing.mean.l2 = perc.missing.mean.l2,
+                                                      no.missing.sd.l2 = no.missing.sd.l2, perc.missing.sd.l2 = perc.missing.sd.l2,
+                                                      no.missing.min.l2 = no.missing.min.l2, perc.missing.min.l2 = perc.missing.min.l2,
+                                                      no.missing.p25.l2 = no.missing.p25.l2, perc.missing.p25.l2 = perc.missing.p25.l2,
+                                                      no.missing.p75.l2 = no.missing.p75.l2, perc.missing.p75.l2 = perc.missing.p75.l2,
+                                                      no.missing.max.l2 = no.missing.max.l2, perc.missing.max.l2 = perc.missing.max.l2,
+                                                      table.miss.l2 = table.missing.l2),
+                                            L3 = list(no.cluster.l3 = no.cluster.l3, no.complete.l3 = no.complete.l3, perc.complete.l3 = perc.complete.l3,
+                                                      no.incomplete.l3 = no.incomplete.l3, perc.incomplete.l3 = perc.incomplete.l3,
+                                                      no.values.l3 = no.values.l3, no.observed.values.l3 = no.observed.values.l3,
+                                                      perc.observed.values.l3 = perc.observed.values.l3, no.missing.values.l3 = no.missing.values.l3,
+                                                      perc.missing.values.l3 = perc.missing.values.l3, no.var.l3 = no.var.l3,
+                                                      no.missing.mean.l3 = no.missing.mean.l3, perc.missing.mean.l3 = perc.missing.mean.l3,
+                                                      no.missing.sd.l3 = no.missing.sd.l3, perc.missing.sd.l3 = perc.missing.sd.l3,
+                                                      no.missing.min.l3 = no.missing.min.l3, perc.missing.min.l3 = perc.missing.min.l3,
+                                                      no.missing.p25.l3 = no.missing.p25.l3, perc.missing.p25.l3 = perc.missing.p25.l3,
+                                                      no.missing.p75.l3 = no.missing.p75.l3, perc.missing.p75.l3 = perc.missing.p75.l3,
+                                                      no.missing.max.l3 = no.missing.max.l3, perc.missing.max.l3 = perc.missing.max.l3,
+                                                      table.miss.l3 = table.missing.l3))))
 
   class(object) <- "misty.object"
 
@@ -215,7 +624,34 @@ na.descript <- function(x, table = FALSE, digits = 2, as.na = NULL, write = NULL
   #
   # Write results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #

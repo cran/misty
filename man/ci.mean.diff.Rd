@@ -12,13 +12,14 @@ ci.mean.diff(x, ...)
              var.equal = FALSE, paired = FALSE,
              alternative = c("two.sided", "less", "greater"),
              conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
-             digits = 2, as.na = NULL, check = TRUE, output = TRUE, ...)
+             digits = 2, as.na = NULL, write = NULL, append = TRUE,
+             check = TRUE, output = TRUE, ...)
 
 \method{ci.mean.diff}{formula}(formula, data, sigma = NULL, sigma2 = NULL,
              var.equal = FALSE, alternative = c("two.sided", "less", "greater"),
              conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
-             na.omit = FALSE, digits = 2, as.na = NULL, check = TRUE,
-             output = TRUE, ...)
+             na.omit = FALSE, digits = 2, as.na = NULL, write = NULL, append = TRUE,
+             check = TRUE, output = TRUE, ...)
 }
 \arguments{
 \item{x}{a numeric vector of data values.}
@@ -89,9 +90,18 @@ i.e. these values are converted to \code{NA} before conducting
 the analysis. Note that \code{as.na()} function is only applied
 to \code{x}, but not to \code{group} or \code{split}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 
 \item{formula}{a formula of the form \code{y ~ group} for one outcome variable
 or \code{cbind(y1, y2, y3) ~ group} for more than one outcome
@@ -137,84 +147,84 @@ dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
                    x3 = c(7, 8, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
                           2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # One-sample design
 
-# Two-Sided 95\% CI for x1
+# Example 1: Two-Sided 95% CI for x1
 # population mean = 3
 ci.mean.diff(dat1$x1, mu = 3)
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # Two-sample design
 
-# Two-Sided 95\% CI for y1 by group1
+# Example 2: Two-Sided 95% CI for y1 by group1
 # unknown population variances, unequal variance assumption
 ci.mean.diff(x1 ~ group1, data = dat1)
 
-# Two-Sided 95\% CI for y1 by group1
+# Example 3: Two-Sided 95% CI for y1 by group1
 # unknown population variances, equal variance assumption
 ci.mean.diff(x1 ~ group1, data = dat1, var.equal = TRUE)
 
-# Two-Sided 95\% CI with known standard deviations for x1 by group1
+# Example 4: Two-Sided 95% CI with known standard deviations for x1 by group1
 # known population standard deviations, equal standard deviation assumption
 ci.mean.diff(x1 ~ group1, data = dat1, sigma = 1.2)
 
-# Two-Sided 95\% CI with known standard deviations for x1 by group1
+# Example 5: Two-Sided 95% CI with known standard deviations for x1 by group1
 # known population standard deviations, unequal standard deviation assumption
 ci.mean.diff(x1 ~ group1, data = dat1, sigma = c(1.5, 1.2))
 
-# Two-Sided 95\% CI with known variance for x1 by group1
+# Example 6: Two-Sided 95% CI with known variance for x1 by group1
 # known population variances, equal variance assumption
 ci.mean.diff(x1 ~ group1, data = dat1, sigma2 = 1.44)
 
-# Two-Sided 95\% CI with known variance for x1 by group1
+# Example 7: Two-Sided 95% CI with known variance for x1 by group1
 # known population variances, unequal variance assumption
 ci.mean.diff(x1 ~ group1, data = dat1, sigma2 = c(2.25, 1.44))
 
-# One-Sided 95\% CI for y1 by group1
+# Example 8: One-Sided 95% CI for y1 by group1
 # unknown population variances, unequal variance assumption
 ci.mean.diff(x1 ~ group1, data = dat1, alternative = "less")
 
-# Two-Sided 99\% CI for y1 by group1
+# Example 9: Two-Sided 99% CI for y1 by group1
 # unknown population variances, unequal variance assumption
 ci.mean.diff(x1 ~ group1, data = dat1, conf.level = 0.99)
 
-# Two-Sided 95\% CI for y1 by group1
+# Example 10: Two-Sided 95% CI for y1 by group1
 # unknown population variances, unequal variance assumption
 # print results with 3 digits
 ci.mean.diff(x1 ~ group1, data = dat1, digits = 3)
 
-# Two-Sided 95\% CI for y1 by group1
+# Example 11: Two-Sided 95% CI for y1 by group1
 # unknown population variances, unequal variance assumption
 # convert value 4 to NA
 ci.mean.diff(x1 ~ group1, data = dat1, as.na = 4)
 
-# Two-Sided 95\% CI for y1, y2, and y3 by group1
+# Example 12: Two-Sided 95% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption
 ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1)
 
-# Two-Sided 95\% CI for y1, y2, and y3 by group1
+# Example 13: Two-Sided 95% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption,
 # listwise deletion for missing data
 ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, na.omit = TRUE)
 
-# Two-Sided 95\% CI for y1, y2, and y3 by group1
+# Example 14: Two-Sided 95% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption,
 # analysis by group2 separately
 ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
 
-# Two-Sided 95\% CI for y1, y2, and y3 by group1
+# Example 15: Two-Sided 95% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption,
 # analysis by group2 separately, sort by variables
 ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2,
              sort.var = TRUE)# Check if input 'y' is NULL
 
-# Two-Sided 95\% CI for y1, y2, and y3 by group1
+# Example 16: Two-Sided 95% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption,
 # split analysis by group2
 ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
 
-# Two-Sided 95\% CI for y1, y2, and y3 by group1
+# Example 17: Two-Sided 95% CI for y1, y2, and y3 by group1
 # unknown population variances, unequal variance assumption,
 # analysis by group2 separately, split analysis by group3
 ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1,
@@ -225,57 +235,57 @@ ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1,
 group1 <- c(3, 1, 4, 2, 5, 3, 6, 7)
 group2 <- c(5, 2, 4, 3, 1)
 
-# Two-Sided 95\% CI for the mean difference between group1 and group2
+# Example 18: Two-Sided 95% CI for the mean difference between group1 and group2
 # unknown population variances, unequal variance assumption
 ci.mean.diff(group1, group2)
 
-# Two-Sided 95\% CI for the mean difference between group1 and group2
+# Example 19: Two-Sided 95% CI for the mean difference between group1 and group2
 # unknown population variances, equal variance assumption
 ci.mean.diff(group1, group2, var.equal = TRUE)
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # Paired-sample design
 
 dat2 <- data.frame(pre = c(1, 3, 2, 5, 7, 6),
                    post = c(2, 2, 1, 6, 8, 9),
                    group = c(1, 1, 1, 2, 2, 2), stringsAsFactors = FALSE)
 
-# Two-Sided 95\% CI for the mean difference in pre and post
+# Example 20: Two-Sided 95% CI for the mean difference in pre and post
 # unknown poulation variance of difference scores
 ci.mean.diff(dat2$pre, dat2$post, paired = TRUE)
 
-# Two-Sided 95\% CI for the mean difference in pre and post
+# Example 21: Two-Sided 95% CI for the mean difference in pre and post
 # unknown poulation variance of difference scores
 # analysis by group separately
 ci.mean.diff(dat2$pre, dat2$post, paired = TRUE, group = dat2$group)
 
-# Two-Sided 95\% CI for the mean difference in pre and post
+# Example 22: Two-Sided 95% CI for the mean difference in pre and post
 # unknown poulation variance of difference scores
 # analysis by group separately
 ci.mean.diff(dat2$pre, dat2$post, paired = TRUE, split = dat2$group)
 
-# Two-Sided 95\% CI for the mean difference in pre and post
+# Example 23: Two-Sided 95% CI for the mean difference in pre and post
 # known population standard deviation of difference scores
 ci.mean.diff(dat2$pre, dat2$post, sigma = 2, paired = TRUE)
 
-# Two-Sided 95\% CI for the mean difference in pre and post
+# Example 24: Two-Sided 95% CI for the mean difference in pre and post
 # known population variance of difference scores
 ci.mean.diff(dat2$pre, dat2$post, sigma2 = 4, paired = TRUE)
 
-# One-Sided 95\% CI for the mean difference in pre and post
+# Example 25: One-Sided 95% CI for the mean difference in pre and post
 # unknown poulation variance of difference scores
 ci.mean.diff(dat2$pre, dat2$post, alternative = "less", paired = TRUE)
 
-# Two-Sided 99\% CI for the mean difference in pre and post
+# Example 26: Two-Sided 99% CI for the mean difference in pre and post
 # unknown poulation variance of difference scores
 ci.mean.diff(dat2$pre, dat2$post, conf.level = 0.99, paired = TRUE)
 
-# Two-Sided 95\% CI for for the mean difference in pre and post
+# Example 27: Two-Sided 95% CI for for the mean difference in pre and post
 # unknown poulation variance of difference scores
 # print results with 3 digits
 ci.mean.diff(dat2$pre, dat2$post, paired = TRUE, digits = 3)
 
-# Two-Sided 95\% CI for for the mean difference in pre and post
+# Example 28: Two-Sided 95% CI for for the mean difference in pre and post
 # unknown poulation variance of difference scores
 # convert value 1 to NA
 ci.mean.diff(dat2$pre, dat2$post, as.na = 1, paired = TRUE)

@@ -71,11 +71,19 @@
 #' @param p.digits        an integer value indicating the number of decimal places
 #'                        to be used for displaying \emph{p}-values, entropy value,
 #'                        and class proportions.
-#' @param write           a character string for writing the results into an Excel
-#'                        file naming a file with or without file extension '.xlsx',
-#'                        e.g., \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check           logical: if \code{TRUE}, argument specification is checked.
-#' @param output          logical: if \code{TRUE}, output is shown.
+#' @param write           a character string naming a file for writing the output into
+#'                        either a text file with file extension \code{".txt"} (e.g.,
+#'                        \code{"Output.txt"}) or Excel file with file extention
+#'                        \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'                        name does not contain any file extension, an Excel file will
+#'                        be written.
+#' @param append          logical: if \code{TRUE} (default), output will be appended
+#'                        to an existing text file with extension \code{.txt} specified
+#'                        in \code{write}, if \code{FALSE} existing text file will be
+#'                        overwritten.
+#' @param check           logical: if \code{TRUE} (default), argument specification
+#'                        is checked.
+#' @param output          logical: if \code{TRUE} (default), output is shown.
 #'
 #' @details
 #' The result summary table comprises following entries:
@@ -157,11 +165,14 @@
 #' mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
 #'           run.mplus = TRUE)
 #'
-#' # Read Mplus output files, create result table, write table, and save plots
+#' # Example 1a: Read Mplus output files, create result table, write table, and save plots
 #' result.lca(write = "LCA.xlsx", plot = TRUE)
 #'
-#' #------------------------------------------
-#' # Draw bar chart manually
+#' # Example 1b: Write results into a text file
+#' result.lca(write = "LCA.txt")
+#'
+#' #----------------------------------------------------------------------------
+#' # Example 2: Draw bar chart manually
 #'
 #' library(ggplot2)
 #'
@@ -203,7 +214,7 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
                        error.width = 0.1, legend.title = 7, legend.text = 7,
                        legend.key.size = 0.4, gray = FALSE, start = 0.15, end = 0.85,
                        dpi = 600, width = "n.ind", height = 4, digits = 1, p.digits = 3,
-                       write = NULL, check = TRUE, output = TRUE) {
+                       write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -247,6 +258,9 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
     ## Check input 'output' ##
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
@@ -279,24 +293,33 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
   ### Subfolders with Mplus outputs ####
 
   # Exclude folders without any Mplus outputs
-  lca.folder <- subfolder[which(sapply(subfolder.out, length) > 1L)]
+  lca.folder <- subfolder[which(sapply(subfolder.out, length) > 0L)]
 
   #...................
   ### Read Mplus outputs ####
 
   # Read outputs, iconv() removes Non-ASCII characters
-  lca.out <- suppressWarnings(lapply(lca.folder, function(y) sapply(file.path(y, grep(".out", list.files(y), value = TRUE, useBytes = TRUE)), function(z) iconv(readLines(z),  sub = ""))))
+  lca.out <- suppressWarnings(lapply(lca.folder, function(y) sapply(file.path(y, grep(".out", list.files(y), value = TRUE, useBytes = TRUE)), function(z) list(iconv(readLines(z),  sub = "")))))
 
-  # Check if all outputs are MIXTURE
+  ##### Check if all outputs are MIXTURE
   lca.out.mix <- suppressWarnings(names(which(unlist(lapply(lca.out, function(y) lapply(y, function(z) !any(grepl("MIXTURE", z, ignore.case = TRUE, useBytes = TRUE))))))))
 
-  # Exclude outputs
-  if (isTRUE(length(lca.out.mix) != 0)) { lca.out <- suppressWarnings(lapply(lca.folder, function(y) sapply(misty::chr.omit(file.path(y, grep(".out", list.files(y), value = TRUE, useBytes = TRUE)), omit = lca.out.mix, check = FALSE), function(z) iconv(readLines(z), sub = "")))) }
+  ##### Check if all outputs are ERROR
+  lca.out.error <- suppressWarnings(names(which(unlist(lapply(lca.out, function(y) lapply(y, function(z) any(grepl("ERROR", z, ignore.case = FALSE, useBytes = TRUE))))))))
 
-  # Check if any outputs are based on multiple imputation
+  # Exclude outputs
+  if (isTRUE(length(c(lca.out.mix, lca.out.error)) != 0L)) {
+
+    lca.out <- suppressWarnings(lapply(lca.folder, function(y) sapply(misty::chr.omit(file.path(y, grep(".out", list.files(y), value = TRUE, useBytes = TRUE)), omit = unique(c(lca.out.mix, lca.out.error)), check = FALSE), function(z) list(iconv(readLines(z), sub = "")))))
+
+    if (is.null(unlist(lca.out))) { stop("There are no Mplus MIXTURE outputs left after excluding outputs with error messages.", call. = FALSE) }
+
+  }
+
+  ##### Check if any outputs are based on multiple imputation
   lca.out.imp <- suppressWarnings(names(which(unlist(lapply(lca.out, function(y) lapply(y, function(z) any(grepl("IMPUTATION", z, ignore.case = TRUE, useBytes = TRUE))))))))
 
-  if (isTRUE(length(lca.out.imp) != 0)) { stop("This function does not support Mplus outputs for analysis based on multiply imputed data sets.", call. = FALSE) }
+  if (isTRUE(length(lca.out.imp) != 0L)) { stop("This function does not support Mplus outputs for analysis based on multiply imputed data sets.", call. = FALSE) }
 
   #...................
   ### Check if models with more than one latent class ####
@@ -654,7 +677,8 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
                              ylim = ylim, ylab = ylab, breaks = breaks, error.width = error.width,
                              legend.title = legend.title, legend.text = legend.text, legend.key.size = legend.key.size,
                              gray = gray, start = start, end = end, dpi = dpi,
-                             width = width, height = height, digits = digits, p.digits = p.digits, check = check),
+                             width = width, height = height, digits = digits, p.digits = p.digits,
+                             write = write, append = append, check = check),
                  result = list(summary = lca.summary, mean_var = lca.mean.var, mean = lca.mean, var = lca.var))
 
   class(object) <- "misty.object"
@@ -663,7 +687,34 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #

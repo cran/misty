@@ -13,7 +13,8 @@
 #'                 i.e., if all predictors are continuous, the default setting
 #'                 is \code{print = "stdyx"}; if all predictors are binary, the
 #'                 default setting is \code{print = "stdy"}; if predictors
-#'                 are continuous and binary, the default setting is \code{print = c("stdy", "stdyx")}.
+#'                 are continuous and binary, the default setting is
+#'                 \code{print = c("stdy", "stdyx")}.
 #' @param digits   an integer value indicating the number of decimal places to
 #'                 be used for displaying
 #'                 results.
@@ -22,8 +23,16 @@
 #' @param write    a character string for writing the results into a Excel file
 #'                 naming a file with or without file extension '.xlsx', e.g.,
 #'                 \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check    logical: if \code{TRUE}, argument specification is checked.
-#' @param output   logical: if \code{TRUE}, output is shown on the console.
+#' @param write    a character string naming a text file with file extension
+#'                 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                 output into a text file.
+#' @param append   logical: if \code{TRUE} (default), output will be appended
+#'                 to an existing text file with extension \code{.txt} specified
+#'                 in \code{write}, if \code{FALSE} existing text file will be
+#'                 overwritten.
+#' @param check    logical: if \code{TRUE} (default), argument specification is
+#'                 checked.
+#' @param output   logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @details
 #' The slope \eqn{\beta} can be standardized with respect to only \eqn{x}, only
@@ -92,48 +101,49 @@
 #'                   x3 = c(0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1),
 #'                   y = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8))
 #'
-#' #----------------------------
+#' #----------------------------------------------------------------------------
 #' # Linear model
 #'
 #' #...........
-#' # Regression model with continuous predictors
+#' # Example 1: Regression model with continuous predictors
 #' mod.lm1 <- lm(y ~ x1 + x2, data = dat)
 #' std.coef(mod.lm1)
 #'
-#' # Print all standardized coefficients
+#' # Example 2: Print all standardized coefficients
 #' std.coef(mod.lm1, print = "all")
 #'
 #' #...........
-#' # Regression model with dichotomous predictor
+#' # Example 3: Regression model with dichotomous predictor
 #' mod.lm2 <- lm(y ~ x3, data = dat)
 #' std.coef(mod.lm2)
 #'
 #' #...........
-#' # Regression model with continuous and dichotomous predictors
+#' # Example 4: Regression model with continuous and dichotomous predictors
 #' mod.lm3 <- lm(y ~ x1 + x2 + x3, data = dat)
 #' std.coef(mod.lm3)
 #'
 #' #...........
-#' # Regression model with continuous predictors and an interaction term
+#' # Example 5: Regression model with continuous predictors and an interaction term
 #' mod.lm4 <- lm(y ~ x1*x2, data = dat)
 #'
 #' #...........
-#' # Regression model with a quadratic term
+#' # Example 6: Regression model with a quadratic term
 #' mod.lm5 <- lm(y ~ x1 + I(x1^2), data = dat)
 #' std.coef(mod.lm5)
 #'
-#' #----------------------------
-#' # Write Results into a Excel file
-#'
+#' #----------------------------------------------------------------------------
+#' # Example 7: Write Results into a Excel file
+#' \dontrun{
 #' mod.lm1 <- lm(y ~ x1 + x2, data = dat)
 #'
 #' std.coef(mod.lm1, write = "Std_Coef.xlsx", output = FALSE)
 #'
 #' result <- std.coef(mod.lm1, output = FALSE)
 #' write.result(result, "Std_Coef.xlsx")
+#' }
 std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
-                     digits = 3, p.digits = 4, write = NULL, check = TRUE,
-                     output = TRUE) {
+                     digits = 3, p.digits = 4, write = NULL, append = TRUE,
+                     check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -165,6 +175,12 @@ std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
 
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
+
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
@@ -301,10 +317,32 @@ std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
                  type = "std.coef",
                  model = model,
                  args = list(print = print, digits = digits, p.digits = p.digits,
-                             check = check, output = output),
+                             write = write, append = append, check = check, output = output),
                  result = list(coef = coefficients, sd = c(sd.crit, sd.pred)))
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

@@ -5,7 +5,8 @@
 \title{Unstandardized Coefficients with Heteroscedasticity-Consistent Standard Errors}
 \usage{
 robust.coef(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5"),
-            digits = 3, p.digits = 4, write = NULL, check = TRUE, output = TRUE)
+            digits = 3, p.digits = 4, write = NULL, append = TRUE, check = TRUE,
+            output = TRUE)
 }
 \arguments{
 \item{model}{a fitted model of class \code{lm} or \code{glm}.}
@@ -24,13 +25,21 @@ criteria and chi-square test statistic are printed with
 \item{p.digits}{an integer value indicating the number of decimal places
 to be used for displaying \emph{p}-values.}
 
-\item{write}{a character string for writing the results into a Excel file
-naming a file with or without file extension '.xlsx', e.g.,
-\code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -110,24 +119,26 @@ dat <- data.frame(x1 = c(3, 2, 4, 9, 5, 3, 6, 4, 5, 6, 3, 5),
                   y1 = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8),
                   y2 = c(0, 1, 0, 2, 0, 1, 0, 0, 1, 2, 1, 0))
 
-#----------------------------
-# Linear model
+#-------------------------------------------------------------------------------
+# Example 1: Linear model
 
 mod1 <- lm(y1 ~ x1 + x2 + x3, data = dat)
 robust.coef(mod1)
 
-#----------------------------
-# Generalized linear model
+#-------------------------------------------------------------------------------
+# Example 2: Generalized linear model
 
 mod2 <- glm(y2 ~ x1 + x2 + x3, data = dat, family = poisson())
 robust.coef(mod2)
 
 \dontrun{
-#----------------------------
-# Write Results into a Excel file
+#----------------------------------------------------------------------------
+# Write Results
 
-mod1 <- lm(y1 ~ x1 + x2 + x3, data = dat)
+# Example 3a: Write Results into a text file
+robust.coef(mod1, write = "Robust_Coef.txt", output = FALSE)
 
+# Example 3b: Write Results into an Excel file
 robust.coef(mod1, write = "Robust_Coef.xlsx", output = FALSE)
 
 result <- robust.coef(mod1, output = FALSE)

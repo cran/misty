@@ -8,7 +8,7 @@
 #' indices, and residual correlation matrix can be requested by specifying the
 #' argument \code{print}.
 #'
-#' @param x                a matrix or data frame. If \code{model = NULL},
+#' @param ...              a matrix or data frame. If \code{model = NULL},
 #'                         confirmatory factor analysis based on a measurement
 #'                         model with one factor labeled \code{f} comprising all
 #'                         variables in the matrix or data frame is conducted.
@@ -17,6 +17,17 @@
 #'                         specified, the matrix or data frame needs to contain
 #'                         all variables used in the argument \code{model} and
 #'                         the cluster variable when specifying \code{cluster}.
+#'                         Alternatively, an expression indicating the variable
+#'                         names in \code{data} e.g.,
+#'                         \code{item.cfa(x1, x2, x3, data = dat)}. Note that the
+#'                         operators \code{.}, \code{+}, \code{-}, \code{~},
+#'                         \code{:}, \code{::}, and \code{!} can also be used to
+#'                         select variables, see 'Details' in the \code{\link{df.subset}}
+#'                         function.
+#' @param data             a data frame when specifying one or more variables in
+#'                         the argument \code{...}. Note that the argument is
+#'                         \code{NULL} when specifying a a matrix or data frame
+#'                         for the argument \code{...}.
 #' @param model            a character vector specifying a measurement model with
 #'                         one factor, or a list of character vectors for specifying
 #'                         a measurement model with more than one factor, e.g.,
@@ -71,12 +82,12 @@
 #'                         character vector indicating which variables to treat
 #'                         as ordered (ordinal) variables can be specified.
 #' @param cluster          either a character string indicating the variable name
-#'                         of the cluster variable in 'x' or a vector representing
-#'                         the nested grouping structure (i.e., group or cluster
-#'                         variable) for computing cluster-robust standard errors.
-#'                         Note that cluster-robust standard errors are not
-#'                         available when treating indicators of the measurement
-#'                         model as ordered (ordinal).
+#'                         of the cluster variable in \code{...} or \code{data},
+#'                         or a vector representing the nested grouping structure
+#'                         (i.e., group or cluster variable) for computing
+#'                         cluster-robust standard errors. Note that cluster-robust
+#'                         standard errors are not available when treating indicators
+#'                         of the measurement model as ordered (ordinal).
 #' @param estimator        a character string indicating the estimator to be used
 #'                         (see 'Details'). By default, \code{"MLR"} is used for
 #'                         CFA models with continuous indicators (i.e.,
@@ -135,13 +146,20 @@
 #'                         conducting the analysis. Note that \code{as.na()}
 #'                         function is only applied to \code{x} but not to
 #'                         \code{cluster}.
-#' @param write            a character string for writing the results into a Excel
-#'                         file naming a file with or without file extension '.xlsx',
-#'                         e.g., \code{"Results.xlsx"} or \code{"Results"}.
-#' @param check            logical: if \code{TRUE}, argument specification is checked
-#'                         and convergence and model identification checks are
-#'                         conducted for the estimated model.
-#' @param output           logical: if \code{TRUE}, output is shown.
+#' @param write            a character string naming a file for writing the output into
+#'                         either a text file with file extension \code{".txt"} (e.g.,
+#'                         \code{"Output.txt"}) or Excel file with file extention
+#'                         \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'                         name does not contain any file extension, an Excel file will
+#'                         be written.
+#' @param append           logical: if \code{TRUE} (default), output will be appended
+#'                         to an existing text file with extension \code{.txt} specified
+#'                         in \code{write}, if \code{FALSE} existing text file will be
+#'                         overwritten.
+#' @param check            logical: if \code{TRUE} (default), argument specification
+#'                         is checked and convergence and model identification
+#'                         checks are conducted for the estimated model.
+#' @param output           logical: if \code{TRUE} (default), output is shown.
 #'
 #' @details
 #' \describe{
@@ -409,120 +427,177 @@
 #' # Load data set "HolzingerSwineford1939" in the lavaan package
 #' data("HolzingerSwineford1939", package = "lavaan")
 #'
-#' #---------------------------
+#' #----------------------------------------------------------------------------
 #' # Measurement model with one factor
 #'
-#' # Specification using the argument 'x'
+#' # Example 1a: Specification using the argument 'x'
 #' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")])
 #'
-#' # Alternative specification using the argument 'model'
+#' # Example 1b: Alternative specification using the 'data' argument
+#' item.cfa(x1:x3, data = HolzingerSwineford1939)
+#'
+#' # Example 1c: Alternative specification using the argument 'model'
 #' item.cfa(HolzingerSwineford1939, model = c("x1", "x2", "x3"))
 #'
-#' # Alternative specification using the argument 'model'
+#' # Example 1d: Alternative specification using the 'data' and 'model' argument
+#' item.cfa(., data = HolzingerSwineford1939, model = c("x1", "x2", "x3"))
+#'
+#' # Example 1e: Alternative specification using the argument 'model'
 #' item.cfa(HolzingerSwineford1939, model = list(visual = c("x1", "x2", "x3")))
 #'
-#' #---------------------------
+#' # Example 1f: Alternative specification using the  'data' and 'model' argument
+#' item.cfa(., data = HolzingerSwineford1939, model = list(visual = c("x1", "x2", "x3")))
+#'
+#' #----------------------------------------------------------------------------
 #' # Measurement model with three factors
 #'
-#' # Specification using the argument 'model'
+#' # Example 2: Specification using the argument 'model'
 #' item.cfa(HolzingerSwineford1939,
 #'          model = list(visual = c("x1", "x2", "x3"),
 #'                       textual = c("x4", "x5", "x6"),
 #'                       speed = c("x7", "x8", "x9")))
 #'
-#' #---------------------------
+#' #----------------------------------------------------------------------------
 #' # Residual covariances
 #'
-#' # One residual covariance
+#' # Example 3a: One residual covariance
 #' item.cfa(HolzingerSwineford1939,
 #'          model = list(visual = c("x1", "x2", "x3"),
 #'                       textual = c("x4", "x5", "x6"),
 #'                       speed = c("x7", "x8", "x9")),
 #'          rescov = c("x1", "x2"))
 #'
-#' # Two residual covariances
+#' # Example 3b: Two residual covariances
 #' item.cfa(HolzingerSwineford1939,
 #'          model = list(visual = c("x1", "x2", "x3"),
 #'                       textual = c("x4", "x5", "x6"),
 #'                       speed = c("x7", "x8", "x9")),
 #'          rescov = list(c("x1", "x2"), c("x4", "x5")))
 #'
-#' #---------------------------
+#' #----------------------------------------------------------------------------
 #' # Second-order factor model based on three first-order factors
 #'
+#' # Example 4
 #' item.cfa(HolzingerSwineford1939,
 #'          model = list(visual = c("x1", "x2", "x3"),
 #'                       textual = c("x4", "x5", "x6"),
 #'                       speed = c("x7", "x8", "x9")),
 #'          hierarch = TRUE)
 #'
-#' #---------------------------
+#' #----------------------------------------------------------------------------
 #' # Measurement model with ordered-categorical indicators
 #'
+#' # Example 5
 #' item.cfa(round(HolzingerSwineford1939[, c("x4", "x5", "x6")]), ordered = TRUE)
 #'
-#' #---------------------------
+#' #----------------------------------------------------------------------------
 #' # Cluster-robust standard errors
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' # Specification using a variable in 'x'
+#' # Example 6a: Specification using a variable in 'x'
 #' item.cfa(Demo.twolevel[, c("y4", "y5", "y6", "cluster")], cluster = "cluster")
 #'
-#' # Specification of the cluster variable in 'cluster'
+#' # Example 6b: Specification of the cluster variable in 'cluster'
 #' item.cfa(Demo.twolevel[, c("y4", "y5", "y6")], cluster = Demo.twolevel$cluster)
 #'
-#' #---------------------------
+#' # Example 6c: Alternative specification using the 'data' argument
+#' item.cfa(y4:y6, data = Demo.twolevel, cluster = "cluster")
+#'
+#' #----------------------------------------------------------------------------
 #' # Print argument
 #'
-#' # Request all results
+#' # Example 7a: Request all results
 #' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], print = "all")
 #'
-#' # Request modification indices with value equal or higher than 5
+#' # Example 7b: Request modification indices with value equal or higher than 5
 #' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
 #'          print = "modind", mod.minval = 5)
 #'
-#' #---------------------------
+#' #----------------------------------------------------------------------------
 #' # lavaan summary of the estimated model
 #'
+#' # Example 8
 #' mod <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
 #'
 #' lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 #'
-#' #---------------------------
-#' # Write Results into a Excel file
+#' #----------------------------------------------------------------------------
+#' # Write Results
+#'
+#' # Example 9a: Write Results into a text file
+#' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.txt")
+#'
+#' # Example 9b: Write Results into a Excel file
 #' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.xlsx")
 #'
 #' result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
 #' write.result(result, "CFA.xlsx")
 #' }
-item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstructure = TRUE,
-                     ident = c("marker", "var", "effect"), parameterization = c("delta", "theta"),
-                     ordered = NULL, cluster = NULL,
+item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = FALSE,
+                     meanstructure = TRUE, ident = c("marker", "var", "effect"),
+                     parameterization = c("delta", "theta"), ordered = NULL, cluster = NULL,
                      estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
                                    "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
                                    "ULS", "ULSM", "ULSMV", "DLS", "PML"),
                      missing = c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust"),
                      print = c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid"),
                      mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3, as.na = NULL, write = NULL,
-                     check = TRUE, output = TRUE) {
+                     append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing or NULL
-  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is a matrix or a data frame
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or a data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   # Check if input 'model' is a character vector or list of character vectors
   if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
 
-  # Check if variables in input 'model' are available in input 'x'
-  if (isTRUE(!is.null(model) && any(!unlist(model) %in% colnames(x)))) { stop(paste0("Items specified in the argument 'model' were not found in 'x': ", paste(unique(unlist(model))[!unique(unlist(model)) %in% colnames(x)], collapse = ", ")), call. = FALSE) }
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument 'data' ####
+
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
+
+    # Extract data
+    x <- data[, var.names]
+
+    # Cluster variable
+    if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+    # Data and cluster
+    var.group <- .var.group(data = x, cluster = cluster)
+
+    # Data
+    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+
+    # Cluster variable
+    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+
+  }
 
   #_____________________________________________________________________________
   #
@@ -536,41 +611,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
     # R package lavaan
     if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
 
-    # Check input 'cluster'
-    if (isTRUE(!is.null(cluster))) {
-
-      # Name of the cluster variable in 'x'
-      if (isTRUE(length(cluster) == 1L)) {
-
-        # One cluster variable
-        if (isTRUE(!is.character(cluster))) { stop("Please specify a character string for the name of the cluster variable in 'x'", call. = FALSE) }
-
-        # Cluster variable in 'x'
-        if (isTRUE(!cluster %in% colnames(x))) { stop(paste0("Cluster variable \"", cluster, "\" specified in 'cluster' was not found in 'x'"), call. = FALSE) }
-
-      # Cluster variable
-      } else {
-
-        # Length of cluster variable
-        if (isTRUE(nrow(x) != length(cluster))) { stop("The cluster variable does not match with the number of rows in 'x'.",call. = FALSE) }
-
-        # Number of groups
-        if (isTRUE(length(unique(na.omit(cluster))) == 1L)) { stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE) }
-
-      }
-
-    }
-
     # Check input 'x'
-    if (isTRUE(is.null(cluster) || length(cluster) != 1L)) {
-
-      if (isTRUE(is.null(model) && ncol(data.frame(x)) < 3L)) { stop("Please specify at least three indicators for the measurement model in 'x'.", call. = FALSE) }
-
-    } else if (isTRUE(cluster == 1L)) {
-
-      if (isTRUE(is.null(model) && ncol(data.frame(x)[, !colnames(data.frame(x)) %in% cluster, drop = FALSE]) < 3L)) { stop("Please specify at least three indicators for the measurement model in 'x'.", call. = FALSE) }
-
-    }
+    if (isTRUE(is.null(model) && ncol(data.frame(x)) < 3L)) { stop("Please specify at least three indicators for the measurement model in 'x'.", call. = FALSE) }
 
     # Check input 'model'
     if (isTRUE(!is.null(model))) {
@@ -688,6 +730,9 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
     # Check input 'p.digits'
     if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
 
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
@@ -756,21 +801,7 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    x[, var] <- misty::as.na(x[, var], na = as.na, check = check)
-
-    # Variable with missing values only
-    x.miss <- vapply(x[, var], function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-    if (isTRUE(any(x.miss))) {
-
-      stop(paste0("After converting user-missing values into NA, following ",
-                  ifelse(length(which(x.miss)) == 1L, "variable is ", "variables are "), "completely missing: ",
-                  paste(names(which(x.miss)), collapse = ", ")), call. = FALSE)
-
-    }
-
-  }
+  if (isTRUE(!is.null(as.na))) { x[, var] <- .as.na(x[, var], na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model ####
@@ -1441,8 +1472,8 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
                              cluster = cluster, estimator = estimator, missing = missing,
                              print = print, mod.minval = mod.minval, resid.minval = resid.minval,
                              digits = digits, p.digits = p.digits,
-                             as.na = as.na, check = check,
-                             output = output),
+                             as.na = as.na, write = write, append = append,
+                             check = check, output = output),
                  model = mod.factor,
                  model.fit = model.fit,
                  check = list(vcov = check.vcov, theta = check.theta, cov.lv = check.cov.lv),
@@ -1457,7 +1488,35 @@ item.cfa <- function(x, model = NULL, rescov = NULL, hierarch = FALSE, meanstruc
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) { misty::write.result(object, file = write) }
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    if (isTRUE(grepl("\\.txt", write))) {
+
+      # Send R output to textfile
+      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+      # Print object
+      print(object, check = FALSE)
+
+      # Close file connection
+      sink()
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Excel file ####
+
+    } else {
+
+      misty::write.result(object, file = write)
+
+    }
+
+  }
 
   #_____________________________________________________________________________
   #

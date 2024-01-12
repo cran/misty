@@ -4,12 +4,22 @@
 \alias{na.auxiliary}
 \title{Auxiliary variables analysis}
 \usage{
-na.auxiliary(x, tri = c("both", "lower", "upper"), weighted = FALSE,
-             correct = FALSE, digits = 2, as.na = NULL, check = TRUE,
-             output = TRUE)
+na.auxiliary(..., data = NULL, tri = c("both", "lower", "upper"), weighted = FALSE,
+             correct = FALSE, digits = 2, as.na = NULL, write = NULL, append = TRUE,
+             check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame with numeric vectors.}
+\item{...}{a matrix or data frame with incomplete data, where missing
+values are coded as \code{NA}. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{na.auxiliary(x1, x2, x3, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{tri}{a character string indicating which triangular of the correlation
 matrix to show on the console, i.e., \code{both} for upper and
@@ -30,16 +40,25 @@ estimates.}
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{matrix or data frame specified in \code{x}}
+  \item{\code{data}}{data frame used for the current analysis}
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{list with result tables, i.e., \code{cor.mat} for the
                        correlation matrix and \code{d.mat} for Cohen's d}
@@ -55,13 +74,16 @@ Note that non-numeric variables (i.e., factors, character vectors, and logical
 vectors) are excluded from to the analysis.
 }
 \examples{
-dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
-                  x2 = c(4, 2, 5, 1, 5, 3, 4, 5),
-                  x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
-                  x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
+# Example 1a: Auxiliary variables
+na.auxiliary(airquality)
 
-# Auxiliary variables
-na.auxiliary(dat)
+# Example 1b: Alternative specification using the 'data' argument
+na.auxiliary(., data = airquality)
+
+\dontrun{
+# Example 2: Write Results into a text file
+na.auxiliary(airquality, write = "NA_Auxiliary.txt")
+}
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.

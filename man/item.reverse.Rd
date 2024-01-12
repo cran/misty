@@ -4,12 +4,22 @@
 \alias{item.reverse}
 \title{Reverse Code Scale Item}
 \usage{
-item.reverse(x, min = NULL, max = NULL, keep = NULL, names = ".r",
-             as.na = NULL, table = FALSE, check = TRUE)
+item.reverse(..., data = NULL, min = NULL, max = NULL, keep = NULL, append = TRUE,
+             name = ".r", as.na = NULL, table = FALSE, check = TRUE)
 }
 \arguments{
-\item{x}{a numeric vector for reverse coding an item, matrix or data frame
-for reverse coding more than one item.}
+\item{...}{a numeric vector for reverse coding an item, matrix or data frame
+for reverse coding more than one item. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{item.reverse(x1, x2, x3, data = dat)}. Note that the operators
+\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+and \code{!} can also be used to select variables, see 'Details'
+in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a numeric vector or data frame for the argument
+\code{...}.}
 
 \item{min}{an integer indicating the minimum of the item (i.e., lowest possible
 scale value).}
@@ -19,26 +29,28 @@ scale value).}
 
 \item{keep}{a numeric vector indicating values not to be reverse coded.}
 
-\item{names}{a character string or character vector indicating the names
-of the reverse coded item when specifying more than one variable.
-By default, variables are named with the ending \code{".r"}
-resulting in e.g. \code{"x1.r"} and \code{"x2.r"}. Variable names
+\item{append}{logical: if \code{TRUE} (default), recoded variable(s) are
+appended to the data frame specified in the argument \code{data}.}
+
+\item{name}{a character string or character vector indicating the names
+of the reverse coded item. By default, variables are named with the ending
+\code{".r"} resulting in e.g. \code{"x1.r"} and \code{"x2.r"}. Variable names
 can also be specified using a character vector matching the number
-of variables specified in \code{x} (e.g.,
-\code{names = c("reverse.x1", "reverse.x2")}).}
+of variables specified in \code{...} (e.g.,
+\code{name = c("reverse.x1", "reverse.x2")}).}
 
 \item{as.na}{a numeric vector indicating user-defined missing values, i.e. these
 values are converted to \code{NA} before conducting the analysis.}
 
 \item{table}{logical: if \code{TRUE}, a cross table item x reverse coded item
 is printed on the console if only one variable is specified in
-\code{x}.}
+\code{...}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 Returns a numeric vector or data frame with the same length or same number of
-rows as \code{x} containing the reverse coded scale item(s).
+rows as \code{...} containing the reverse coded scale item(s).
 }
 \description{
 This function reverse codes inverted items, i.e., items that are negatively
@@ -56,19 +68,25 @@ dat <- data.frame(item1 = c(1, 5, 3, 1, 4, 4, 1, 5),
                   item2 = c(1, 1.3, 1.7, 2, 2.7, 3.3, 4.7, 5),
                   item3 = c(4, 2, 4, 5, 1, 3, 5, -99))
 
-# Reverse code item1
+# Example 1a: Reverse code item1 and append to 'dat'
 dat$item1r <- item.reverse(dat$item1, min = 1, max = 5)
 
-# Reverse code item3 while keeping the value -99
+# Example 1b: Alternative specification using the 'data' argument
+item.reverse(item1, data = dat, min = 1, max = 5)
+
+# Example 2: Reverse code item3 while keeping the value -99
 dat$item3r <- item.reverse(dat$item3, min = 1, max = 5, keep = -99)
 
-# Reverse code item3 while keeping the value -99 and check recoding
+# Example 3: Reverse code item3 while keeping the value -99 and check recoding
 dat$item3r <- item.reverse(dat$item3, min = 1, max = 5, keep = -99, table = TRUE)
 
-# Reverse code item1, item2, and item 3 and attach to 'dat'
+# Example 4a: Reverse code item1, item2, and item 3 and attach to 'dat'
 dat <- cbind(dat,
              item.reverse(dat[, c("item1", "item2", "item3")],
                           min = 1, max = 5, keep = -99))
+
+# Example 4b: Alternative specification using the 'data' argument
+item.reverse(item1:item3, data = dat, min = 1, max = 5, keep = -99)
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology

@@ -5,7 +5,7 @@
 \title{Collinearity Diagnostics}
 \usage{
 check.collin(model, print = c("all", "vif", "eigen"), digits = 3, p.digits = 3,
-             check = TRUE, output = TRUE)
+             write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{model}{a fitted model of class \code{"lm"}, \code{"glm"}, \code{"lmerMod"},
@@ -23,9 +23,18 @@ used for displaying results.}
 \item{p.digits}{an integer value indicating the number of decimal places to be
 used for displaying the \emph{p}-value.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -84,70 +93,76 @@ dat <- data.frame(group = c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4),
                   y2 = c(0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1),
                   stringsAsFactors = TRUE)
 
-#----------------------------
+#-------------------------------------------------------------------------------
 # Linear model
 
 # Estimate linear model with continuous predictors
 mod.lm1 <- lm(y1 ~ x1 + x2 + x3, data = dat)
 
-# Tolerance, std. error, and variance inflation factor
+# Example 1: Tolerance, std. error, and variance inflation factor
 check.collin(mod.lm1)
 
-# Tolerance, std. error, and variance inflation factor
+# Example 2: Tolerance, std. error, and variance inflation factor
 # Eigenvalue, Condition index, and variance proportions
 check.collin(mod.lm1, print = "all")
 
 # Estimate model with continuous and categorical predictors
 mod.lm2 <- lm(y1 ~ x1 + x2 + x3 + x4, data = dat)
 
-# Tolerance, generalized std. error, and variance inflation factor
+# Example 3: Tolerance, generalized std. error, and variance inflation factor
 check.collin(mod.lm2)
 
-#----------------------------
+#-------------------------------------------------------------------------------
 # Generalized linear model
 
 # Estimate logistic regression model with continuous predictors
 mod.glm <- glm(y2 ~ x1 + x2 + x3, data = dat, family = "binomial")
 
-# Tolerance, std. error, and variance inflation factor
+# Example 4: Tolerance, std. error, and variance inflation factor
 check.collin(mod.glm)
 
 \dontrun{
-#----------------------------
+#-------------------------------------------------------------------------------
 # Linear mixed-effects model
 
 # Estimate linear mixed-effects model with continuous predictors using lme4 package
 mod.lmer <- lme4::lmer(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
 
-# Tolerance, std. error, and variance inflation factor
+# Example 5: Tolerance, std. error, and variance inflation factor
 check.collin(mod.lmer)
 
 # Estimate linear mixed-effects model with continuous predictors using nlme package
 mod.lme <- nlme::lme(y1 ~ x1 + x2 + x3, random = ~ 1 | group, data = dat)
 
-# Tolerance, std. error, and variance inflation factor
+# Example 6: Tolerance, std. error, and variance inflation factor
 check.collin(mod.lme)
 
 # Estimate linear mixed-effects model with continuous predictors using glmmTMB package
 mod.glmmTMB1 <- glmmTMB::glmmTMB(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
 
-# Tolerance, std. error, and variance inflation factor
+# Example 7: Tolerance, std. error, and variance inflation factor
 check.collin(mod.glmmTMB1)
-#'
-#----------------------------
+
+#-------------------------------------------------------------------------------
 # Generalized linear mixed-effects model
 
 # Estimate mixed-effects logistic regression model with continuous predictors using lme4 package
 mod.glmer <- lme4::glmer(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "binomial")
 
-# Tolerance, std. error, and variance inflation factor
+# Example 8: Tolerance, std. error, and variance inflation factor
 check.collin(mod.glmer)
 
 # Estimate mixed-effects logistic regression model with continuous predictors using glmmTMB package
 mod.glmmTMB2 <- glmmTMB::glmmTMB(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "binomial")
 
-# Tolerance, std. error, and variance inflation factor
+# Example 9: Tolerance, std. error, and variance inflation factor
 check.collin(mod.glmmTMB2)
+
+#----------------------------------------------------------------------------
+# Write Results
+
+# Example 10: Write results into a text file
+check.collin(mod.lm1, write = "Diagnostics.txt")
 }
 }
 \references{

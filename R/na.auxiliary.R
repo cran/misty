@@ -8,23 +8,36 @@
 #' Note that non-numeric variables (i.e., factors, character vectors, and logical
 #' vectors) are excluded from to the analysis.
 #'
-#' @param x           a matrix or data frame with numeric vectors.
-#' @param tri         a character string indicating which triangular of the correlation
-#'                    matrix to show on the console, i.e., \code{both} for upper and
-#'                    lower triangular, \code{lower} (default) for the lower triangular,
-#'                    and \code{upper} for the upper triangular.
-#' @param weighted    logical: if \code{TRUE} (default), the weighted pooled standard
-#'                    deviation is used.
-#' @param correct     logical: if \code{TRUE}, correction factor for Cohen's d to
-#'                    remove positive bias in small samples is used.
-#' @param digits      integer value indicating the number of decimal places digits
-#'                    to be used for displaying correlation coefficients and Cohen's d
-#'                    estimates.
-#' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting
-#'                    the analysis.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
-#' @param output      logical: if \code{TRUE}, output is shown on the console.
+#' @param ...      a matrix or data frame with incomplete data, where missing
+#'                 values are coded as \code{NA}. Alternatively, an expression
+#'                 indicating the variable names in \code{data} e.g.,
+#'                 \code{na.auxiliary(x1, x2, x3, data = dat)}. Note that the
+#'                 operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+#'                 \code{::}, and \code{!} can also be used to select variables,
+#'                 see 'Details' in the \code{\link{df.subset}} function.
+#' @param tri      a character string indicating which triangular of the correlation
+#'                 matrix to show on the console, i.e., \code{both} for upper and
+#'                 lower triangular, \code{lower} (default) for the lower triangular,
+#'                 and \code{upper} for the upper triangular.
+#' @param weighted logical: if \code{TRUE} (default), the weighted pooled standard
+#'                 deviation is used.
+#' @param correct  logical: if \code{TRUE}, correction factor for Cohen's d to
+#'                 remove positive bias in small samples is used.
+#' @param digits   integer value indicating the number of decimal places digits
+#'                 to be used for displaying correlation coefficients and Cohen's d
+#'                 estimates.
+#' @param as.na    a numeric vector indicating user-defined missing values,
+#'                 i.e. these values are converted to \code{NA} before conducting
+#'                 the analysis.
+#' @param write    a character string naming a text file with file extension
+#'                 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                 output into a text file.
+#' @param append   logical: if \code{TRUE} (default), output will be appended
+#'                 to an existing text file with extension \code{.txt} specified
+#'                 in \code{write}, if \code{FALSE} existing text file will be
+#'                 overwritten.
+#' @param check    logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output   logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -50,7 +63,7 @@
 #' \tabular{ll}{
 #' \code{call} \tab function call \cr
 #' \code{type} \tab type of analysis \cr
-#' \code{data} \tab matrix or data frame specified in \code{x} \cr
+#' \code{data} \tab data frame used for the current analysis \cr
 #' \code{args} \tab specification of function arguments \cr
 #' \code{result} \tab list with result tables \cr
 #' }
@@ -63,16 +76,19 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(x1 = c(1, NA, 2, 5, 3, NA, 5, 2),
-#'                   x2 = c(4, 2, 5, 1, 5, 3, 4, 5),
-#'                   x3 = c(NA, 3, 2, 4, 5, 6, NA, 2),
-#'                   x4 = c(5, 6, 3, NA, NA, 4, 6, NA))
+#' # Example 1a: Auxiliary variables
+#' na.auxiliary(airquality)
 #'
-#' # Auxiliary variables
-#' na.auxiliary(dat)
-na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = FALSE,
-                         correct = FALSE, digits = 2, as.na = NULL, check = TRUE,
-                         output = TRUE) {
+#' # Example 1b: Alternative specification using the 'data' argument
+#' na.auxiliary(., data = airquality)
+#'
+#' \dontrun{
+#' # Example 2: Write Results into a text file
+#' na.auxiliary(airquality, write = "NA_Auxiliary.txt")
+#' }
+na.auxiliary <- function(..., data = NULL, tri = c("both", "lower", "upper"),
+                         weighted = FALSE, correct = FALSE, digits = 2, as.na = NULL,
+                         write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -168,18 +184,39 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = FALSE,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument 'data' ####
+
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+
+    # Extract data
+    x <- data[, var.names]
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## As data frame ####
@@ -193,7 +230,6 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = FALSE,
 
   if (isTRUE(any(!x.num))) {
 
-
     # Select numeric variables
     x <- x[, which(x.num)]
 
@@ -205,11 +241,7 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = FALSE,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    x <- misty::as.na(x, na = as.na, check = check)
-
-  }
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #_____________________________________________________________________________
   #
@@ -234,6 +266,12 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = FALSE,
 
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L | digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
+
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input 'output'
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
@@ -324,10 +362,32 @@ na.auxiliary <- function(x, tri = c("both", "lower", "upper"), weighted = FALSE,
                  type = "na.auxiliary",
                  data = x,
                  args = list(tri = tri, weighted = weighted, correct = correct, digits = digits,
-                             as.na = as.na, check = check, output = output),
+                             as.na = as.na, write = write, append = append, check = check, output = output),
                  result = list(cor = cor.mat, d = d.mat))
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

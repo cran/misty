@@ -11,7 +11,7 @@ result.lca(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p = TRUE,
            error.width = 0.1, legend.title = 7, legend.text = 7, legend.key.size = 0.4,
            gray = FALSE, start = 0.15, end = 0.85, dpi = 600,
            width = "n.ind", height = 4, digits = 1, p.digits = 3,
-           write = NULL, check = TRUE, output = TRUE)
+           write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{folder}{a character vector indicating the name of the subfolders
@@ -101,13 +101,21 @@ decimal places.}
 to be used for displaying \emph{p}-values, entropy value,
 and class proportions.}
 
-\item{write}{a character string for writing the results into an Excel
-file naming a file with or without file extension '.xlsx',
-e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object, which is a list with following entries:
@@ -181,11 +189,14 @@ data("HolzingerSwineford1939", package = "lavaan")
 mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
           run.mplus = TRUE)
 
-# Read Mplus output files, create result table, write table, and save plots
+# Example 1a: Read Mplus output files, create result table, write table, and save plots
 result.lca(write = "LCA.xlsx", plot = TRUE)
 
-#------------------------------------------
-# Draw bar chart manually
+# Example 1b: Write results into a text file
+result.lca(write = "LCA.txt")
+
+#-------------------------------------------------------------------------------
+# Example 2: Draw bar chart manually
 
 library(ggplot2)
 

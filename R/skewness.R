@@ -1,29 +1,35 @@
-#' Skewness
+#' Skewness and Kurtosis
 #'
-#' This function computes the skewness.
+#' The function \code{skewness} computes the skewness, the function \code{kurtosis}
+#' computes the kurtosis.
 #'
-#' The same method for estimating skewness is used in SAS and SPSS. Missing values
-#' (\code{NA}) are stripped before the computation. Note that at least 3 observations
-#' are needed to compute skewness.
+#' The same method for estimating skewness and kurtosis is used in SAS and SPSS.
+#' Missing values (\code{NA}) are stripped before the computation. Note that at
+#' least 3 observations are needed to compute skewness and at least 4 observations
+#' are needed to compute excess kurtosis.
 #'
-#' @param x           a numeric vector.
-#' @param as.na       a numeric vector indicating user-defined missing values,
-#'                    i.e. these values are converted to \code{NA} before conducting
-#'                    the analysis.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
+#' @param ...   a numeric vector. Alternatively, an expression indicating the
+#'              variable names in \code{data} e.g., \code{skewness(x1, data = dat)}.
+#' @param data  a data frame when specifying the variable in the argument
+#'              \code{...}. Note that the argument is \code{NULL} when specifying
+#'              a numeric vector for the argument \code{...}.
+#' @param as.na a numeric vector indicating user-defined missing values,
+#'              i.e. these values are converted to \code{NA} before conducting
+#'              the analysis.
+#' @param check logical: if \code{TRUE} (default), argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{kurtosis}}
+#' \code{\link{des.nascript}}
 #'
 #' @references
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
 #' - Using R and SPSS}. New York: John Wiley & Sons.
 #'
 #' @return
-#' Returns the estimated skewness of \code{x}.
+#' Returns the estimated skewness or kurtosis of \code{x}.
 #'
 #' @export
 #'
@@ -33,32 +39,67 @@
 #' # Generate random numbers according to N(0, 1)
 #' x <- rnorm(100)
 #'
-#' # Compute skewness
+#' # Example 1: Compute skewness
 #' skewness(x)
-skewness <- function(x, as.na = NULL, check = TRUE) {
+#'
+#' # Example 2: Compute excess kurtosis
+#' kurtosis(x)
+skewness <- function(..., data = NULL, as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data ####
+
+  #...................
+  ### Data using the argument 'data' ####
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, check.chr = "a numeric vector")
+
+    # Extract variables
+    x <- data[, var.names]
+
+  #...................
+  ### Data without using the argument 'data' ####
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+  }
 
   # Check if only one variable specified in the input 'x'
-  if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.",call. = FALSE) }
+  if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.", call. = FALSE) }
 
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Convert user-missing values into NA
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
+
+  # Omit missing values
+  if (isTRUE(any(is.na(x)))) {
+
+    x <- na.omit(x)
+
+  }
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 
@@ -70,38 +111,6 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
 
     # Check input 'x': Yero variance
     if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE) }
-
-  }
-
-  #_____________________________________________________________________________
-  #
-  # Data -----------------------------------------------------------------------
-
-  # Convert user-missing values into NA
-  if (isTRUE(!is.null(as.na))) {
-
-    x <- misty::as.na(x, na = as.na)
-
-    # Variable with missing values only
-    if (isTRUE(all(is.na(x)))) {
-
-      stop("After converting user-missing values into NA, variable 'x' is completely missing.", call. = FALSE)
-
-    }
-
-    # Zero variance
-    if (isTRUE(length(na.omit(unique(x))) == 1L)) {
-
-      stop("After converting user-missing values into NA, variable 'x' has zero variance.", call. = FALSE)
-
-    }
-
-  }
-
-  # Omit missing values
-  if (isTRUE(any(is.na(x)))) {
-
-    x <- na.omit(x)
 
   }
 
@@ -128,6 +137,113 @@ skewness <- function(x, as.na = NULL, check = TRUE) {
   #_____________________________________________________________________________
   #
   # Return Object --------------------------------------------------------------
+
+  return(object)
+
+}
+
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+
+#' @rdname kurtosis
+kurtosis <- function(..., data = NULL, as.na = NULL, check = TRUE) {
+
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
+
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument 'data' ####
+
+  if (isTRUE(!is.null(data))) {
+
+    # Variable names
+    var.names <- .var.names(..., data = data, check.chr = "a numeric vector")
+
+    # Extract variables
+    x <- data[, var.names]
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
+
+  } else {
+
+    # Extract data
+    x <- eval(..., enclos = parent.frame())
+
+  }
+
+  # Check if only one variable specified in the input 'x'
+  if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.", call. = FALSE) }
+
+  # Convert 'x' into a vector
+  x <- unlist(x, use.names = FALSE)
+
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+
+  if (isTRUE(check)) {
+
+    # Check input 'x': Missing
+    if (isTRUE(all(is.na(x)))) { stop("Vector specified in the argument 'x' is  is completely missing.", call. = FALSE) }
+
+    # Check input 'x': Numeric vector
+    if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
+
+    #.......
+    if (isTRUE(length(x) > 1L)) { if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE) } }
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Data and Arguments ---------------------------------------------------------
+
+  # Convert user-missing values into NA
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
+
+  # Omit missing values
+  if (isTRUE(any(is.na(x)))) { x <- na.omit(x) }
+
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
+
+  n <- length(x)
+
+  if (isTRUE(n >= 4L)) {
+
+    m <- n * sum((x - mean(x))^4L) / (sum((x - mean(x))^2)^2)
+
+    object <- ((n + 1L) * (m - 3L) + 6L) * (n - 1L) / ((n - 2L) * (n - 3L))
+
+    object <- ifelse(is.nan(object), NA, object )
+
+  } else {
+
+    warning("At least 4 observations are needed to compute excess kurtosis.", call. = FALSE)
+
+    object <- NA
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
 
   return(object)
 

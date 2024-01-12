@@ -16,8 +16,8 @@ test.z(x, ...)
        line = TRUE, line.type = 3, line.size = 0.8, jitter = TRUE,
        jitter.size = 1.25, jitter.width = 0.05, jitter.height = 0,
        jitter.alpha = 0.1, title = "", subtitle = "Confidence Interval",
-       digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
-       output = TRUE, ...)
+       digits = 2, p.digits = 4, as.na = NULL, write = NULL, append = TRUE,
+       check = TRUE, output = TRUE, ...)
 
 \method{test.z}{formula}(formula, data, sigma = NULL, sigma2 = NULL,
        alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
@@ -26,8 +26,8 @@ test.z(x, ...)
        xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
        jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05, jitter.height = 0,
        jitter.alpha = 0.1, title = "",  subtitle = "Confidence Interval",
-       digits = 2, p.digits = 4, as.na = NULL, check = TRUE,
-       output = TRUE, ...)
+       digits = 2, p.digits = 4, as.na = NULL, write = NULL, append = TRUE,
+       check = TRUE, output = TRUE, ...)
 }
 \arguments{
 \item{x}{a numeric vector of data values.}
@@ -60,10 +60,10 @@ when computing a one-sample z-test.}
 must be one of \code{"two.sided"} (default), \code{"greater"}
 or \code{"less"}.}
 
-\item{hypo}{logical: if \code{TRUE}, null and alternative hypothesis are
+\item{hypo}{logical: if \code{TRUE} (default), null and alternative hypothesis are
 shown on the console.}
 
-\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown
+\item{descript}{logical: if \code{TRUE} (default), descriptive statistics are shown
 on the console.}
 
 \item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d is
@@ -103,7 +103,7 @@ type for the line representing the population mean under
 the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed,
 3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash.}
 
-\item{line.size}{a numeric value indicating the \code{size} aesthetic
+\item{line.size}{a numeric value indicating the \code{linewidth} aesthetic
 for the line representing the population mean under the
 null hypothesis.}
 
@@ -137,9 +137,18 @@ be used for displaying the \emph{p}-value.}
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown on the console.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 
 \item{formula}{in case of two sample z-test (i.e., \code{paired = FALSE}),
 a formula of the form \code{y ~ group} where \code{group}
@@ -183,43 +192,43 @@ deviations.
 dat1 <- data.frame(group = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
                    x = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 4, 3, NA))
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # One-Sample Design
 
-# Two-sided one-sample z-test
+# Example 1a: Two-sided one-sample z-test
 # population mean = 3, population standard deviation = 1.2
 test.z(dat1$x, sigma = 1.2, mu = 3)
 
-# Two-sided one-sample z-test
+# Example 1b: Two-sided one-sample z-test
 # population mean = 3, population variance = 1.44
 test.z(dat1$x, sigma2 = 1.44, mu = 3)
 
-# One-sided one-sample z-test
+# Example 1c: One-sided one-sample z-test
 # population mean = 3, population standard deviation = 1.2
 test.z(dat1$x, sigma = 1.2, mu = 3, alternative = "greater")
 
-# Two-sided one-sample z-test
+# Example 1d: Two-sided one-sample z-test
 # population mean = 3, population standard deviation = 1.2
 # convert value 3 to NA
 test.z(dat1$x, sigma = 1.2, mu = 3, as.na = 3)
 
-# Two-sided one-sample z-test
+# Example 1e: Two-sided one-sample z-test
 # population mean = 3, population standard deviation = 1.2
 # print Cohen's d
 test.z(dat1$x, sigma = 1.2, mu = 3, effsize = TRUE)
 
-# Two-sided one-sample z-test
+# Example 1f: Two-sided one-sample z-test
 # population mean = 3, population standard deviation = 1.2
 # do not print hypotheses and descriptive statistics
 test.z(dat1$x, sigma = 1.2, mu = 3, hypo = FALSE, descript = FALSE)
 
-# Two-sided one-sample z-test
+# Example 1g: Two-sided one-sample z-test
 # population mean = 3, population standard deviation = 1.2
 # print descriptive statistics with 3 digits and p-value with 5 digits
 test.z(dat1$x, sigma = 1.2, mu = 3, digits = 3, p.digits = 5)
 
 \dontrun{
-# Two-sided one-sample z-test
+# Example 1h: Two-sided one-sample z-test
 # population mean = 3, population standard deviation = 1.2
 # plot results
 test.z(dat1$x, sigma = 1.2, mu = 3, plot = TRUE)
@@ -230,7 +239,7 @@ library(ggplot2)
 # Save plot, ggsave() from the ggplot2 package
 ggsave("One-sample_z-test.png", dpi = 600, width = 3, height = 6)
 
-# Two-sided one-sample z-test
+# Example 1i: Two-sided one-sample z-test
 # population mean = 3, population standard deviation = 1.2
 # extract plot
 p <- test.z(dat1$x, sigma = 1.2, mu = 3, output = FALSE)$plot
@@ -249,50 +258,50 @@ ggplot(plotdat, aes(0, x)) +
                 width = 0.2) +
   scale_x_continuous(name = NULL, limits = c(-2, 2)) +
   scale_y_continuous(name = NULL) +
-  geom_hline(yintercept = 3, linetype = 3, size = 0.8) +
-  labs(subtitle = "Two-Sided 95\% Confidence Interval") +
+  geom_hline(yintercept = 3, linetype = 3, linewidth = 0.8) +
+  labs(subtitle = "Two-Sided 95% Confidence Interval") +
   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
                      axis.text.x = element_blank(),
                      axis.ticks.x = element_blank())
 }
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # Two-Sample Design
 
-# Two-sided two-sample z-test
+# Example 2a: Two-sided two-sample z-test
 # population standard deviation (SD) = 1.2, equal SD assumption
 test.z(x ~ group, sigma = 1.2, data = dat1)
 
-# Two-sided two-sample z-test
+# Example 2b: Two-sided two-sample z-test
 # population standard deviation (SD) = 1.2 and 1.5, unequal SD assumption
 test.z(x ~ group, sigma = c(1.2, 1.5), data = dat1)
 
-# Two-sided two-sample z-test
+# Example 2c: Two-sided two-sample z-test
 # population variance (Var) = 1.44 and 2.25, unequal Var assumption
 test.z(x ~ group, sigma2 = c(1.44, 2.25), data = dat1)
 
-# One-sided two-sample z-test
+# Example 2d: One-sided two-sample z-test
 # population standard deviation (SD) = 1.2, equal SD assumption
 test.z(x ~ group, sigma = 1.2, data = dat1, alternative = "greater")
 
-# Two-sided two-sample z-test
+# Example 2e: Two-sided two-sample z-test
 # population standard deviation (SD) = 1.2, equal SD assumption
 # print Cohen's d
 test.z(x ~ group, sigma = 1.2, data = dat1, effsize = TRUE)
 
-# Two-sided two-sample z-test
+# Example 2f: Two-sided two-sample z-test
 # population standard deviation (SD) = 1.2, equal SD assumption
 # do not print hypotheses and descriptive statistics,
 # print Cohen's d
 test.z(x ~ group, sigma = 1.2, data = dat1, descript = FALSE, hypo = FALSE)
 
-# Two-sided two-sample z-test
+# Example 2g: Two-sided two-sample z-test
 # population mean = 3, population standard deviation = 1.2
 # print descriptive statistics with 3 digits and p-value with 5 digits
 test.z(x ~ group, sigma = 1.2, data = dat1, digits = 3, p.digits = 5)
 
 \dontrun{
-# Two-sided two-sample z-test
+# Example 2h: Two-sided two-sample z-test
 # population standard deviation (SD) = 1.2, equal SD assumption
 # plot results
 test.z(x ~ group, sigma = 1.2, data = dat1, plot = TRUE)
@@ -303,7 +312,7 @@ library(ggplot2)
 # Save plot, ggsave() from the ggplot2 package
 ggsave("Two-sample_z-test.png", dpi = 600, width = 4, height = 6)
 
-# Two-sided two-sample z-test
+# Example 2i: Two-sided two-sample z-test
 # population standard deviation (SD) = 1.2, equal SD assumption
 # extract plot
 p <- test.z(x ~ group, sigma = 1.2, data = dat1, output = FALSE)$plot
@@ -315,53 +324,53 @@ p
 group1 <- c(3, 1, 4, 2, 5, 3, 6, 7)
 group2 <- c(5, 2, 4, 3, 1)
 
-# Two-sided two-sample z-test
+# Example 2j: Two-sided two-sample z-test
 # population standard deviation (SD) = 1.2, equal SD assumption
 test.z(group1, group2, sigma = 1.2)
 
-#--------------------------------------
+#-------------------------------------------------------------------------------
 # Paired-Sample Design
 
 dat2 <- data.frame(pre = c(1, 3, 2, 5, 7),
                    post = c(2, 2, 1, 6, 8), stringsAsFactors = FALSE)
 
-# Two-sided paired-sample z-test
+# Example 3a: Two-sided paired-sample z-test
 # population standard deviation of difference score = 1.2
 test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE)
 
-# Two-sided paired-sample z-test
+# Example 3b: Two-sided paired-sample z-test
 # population variance of difference score = 1.44
 test.z(dat2$pre, dat2$post, sigma2 = 1.44, paired = TRUE)
 
-# One-sided paired-sample z-test
+# Example 3c: One-sided paired-sample z-test
 # population standard deviation of difference score = 1.2
 test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE,
        alternative = "greater")
 
-# Two-sided paired-sample z-test
+# Example 3d: Two-sided paired-sample z-test
 # population standard deviation of difference score = 1.2
 # convert value 1 to NA
 test.z(dat2$pre, dat2$post, sigma = 1.2, as.na = 1, paired = TRUE)
 
-# Two-sided paired-sample z-test
+# Example 3e: Two-sided paired-sample z-test
 # population standard deviation of difference score = 1.2
 # print Cohen's d
 test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE, effsize = TRUE)
 
-# Two-sided paired-sample z-test
+# Example 3f: Two-sided paired-sample z-test
 # population standard deviation of difference score = 1.2
 # do not print hypotheses and descriptive statistics
 test.z(dat2$pre, dat2$post, sigma = 1.2, mu = 3, paired = TRUE,
        hypo = FALSE, descript = FALSE)
 
-# Two-sided paired-sample z-test
+# Example 3g: Two-sided paired-sample z-test
 # population standard deviation of difference score = 1.2
 # print descriptive statistics with 3 digits and p-value with 5 digits
 test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE,
        digits = 3, p.digits = 5)
 
 \dontrun{
-# Two-sided paired-sample z-test
+# Example 3h: Two-sided paired-sample z-test
 # population standard deviation of difference score = 1.2
 # plot results
 test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE, plot = TRUE)
@@ -372,7 +381,7 @@ library(ggplot2)
 # Save plot, ggsave() from the ggplot2 package
 ggsave("Paired-sample_z-test.png", dpi = 600, width = 3, height = 6)
 
-# Two-sided paired-sample z-test
+# Example 3i: Two-sided paired-sample z-test
 # population standard deviation of difference score = 1.2
 # extract plot
 p <- test.z(dat2$pre, dat2$post, sigma = 1.2, paired = TRUE, output = FALSE)$plot
@@ -396,8 +405,8 @@ ggplot(plotdat, aes(0, diff)) +
                 aes(x = 0L, y = m.diff, ymin = m.low, ymax = m.upp), width = 0.2) +
    scale_x_continuous(name = NULL, limits = c(-2, 2)) +
    scale_y_continuous(name = "y") +
-   geom_hline(yintercept = 0, linetype = 3, size = 0.8) +
-   labs(subtitle = "Two-Sided 95\% Confidence Interval") +
+   geom_hline(yintercept = 0, linetype = 3, linewidth = 0.8) +
+   labs(subtitle = "Two-Sided 95% Confidence Interval") +
    theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
                       axis.text.x = element_blank(),
                       axis.ticks.x = element_blank())

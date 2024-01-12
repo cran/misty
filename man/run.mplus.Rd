@@ -47,7 +47,7 @@ one wants to test different versions of the Mplus program.
 Note that there is no need to specify this argument for most
 users since it has intelligent defaults.}
 
-\item{killOnFail}{logical: if \code{TRUE}, all processes named mplus.exe when
+\item{killOnFail}{logical: if \code{TRUE} (default), all processes named mplus.exe when
 \code{mplus.run()} does not terminate normally are killed.
 Windows only.}
 
@@ -70,10 +70,10 @@ This function is a copy of the \code{runModels()} function in the
 }
 \examples{
 \dontrun{
-# Run Mplus models located within a single directory
+# Example 1: Run Mplus models located within a single directory
 run.mplus(Mplus = "C:/Program Files/Mplus/Mplus.exe")
 
-# Run Mplus models located nested within subdirectories
+# Example 2: Run Mplus models located nested within subdirectories
 run.mplus(recursive = TRUE,
           Mplus = "C:/Program Files/Mplus/Mplus.exe")
 }

@@ -115,9 +115,9 @@ in the \code{scale_x_continuous} function.}
 \item{ybreaks}{a numeric value for specifying the argument \code{breaks }
 in the \code{scale_y_continuous} function.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 
-\item{plot}{logical: if \code{TRUE}, a plot is drawn.}
+\item{plot}{logical: if \code{TRUE} (default), a plot is drawn.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -219,21 +219,21 @@ values. The correlation is generally negligible unless the sample size is small.
 }
 \examples{
 \dontrun{
-#----------------------------
+#-------------------------------------------------------------------------------
 # Residual diagnostics for a linear model
 
 mod <- lm(Ozone ~ Solar.R + Wind + Temp, data = airquality)
 
-# Partial (component-plus-residual) plots
+# Example 1: Partial (component-plus-residual) plots
 check.resid(mod, type = "linear")
 
-# Predicted values vs. residuals plot
+# Example 2: Predicted values vs. residuals plot
 check.resid(mod, type = "homo")
 
-# Q-Q plot and histogram with density plot
+# Example 3: Q-Q plot and histogram with density plot
 check.resid(mod, type = "normal")
 
-#----------------------------
+#-------------------------------------------------------------------------------
 # Extract data and ggplot2 object
 
 object <- check.resid(mod, type = "linear", plot = FALSE)

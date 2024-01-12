@@ -57,8 +57,15 @@
 #'                       i.e. these values are converted to \code{NA} before conducting
 #'                       the analysis. Note that \code{as.na()} function is only applied
 #'                       to \code{x}, but not to \code{group} or \code{split}.
-#' @param check          logical: if \code{TRUE}, argument specification is checked.
-#' @param output         logical: if \code{TRUE}, output is shown on the console.
+#' @param write          a character string naming a text file with file extension
+#'                       \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                       output into a text file.
+#' @param append         logical: if \code{TRUE} (default), output will be appended
+#'                       to an existing text file with extension \code{.txt} specified
+#'                       in \code{write}, if \code{FALSE} existing text file will be
+#'                       overwritten.
+#' @param check          logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output         logical: if \code{TRUE} (default), output is shown on the console.
 #' @param formula        a formula of the form \code{y ~ group} for one outcome variable
 #'                       or \code{cbind(y1, y2, y3) ~ group} for more than one outcome
 #'                       variable where \code{y} is a numeric variable giving the data
@@ -110,84 +117,84 @@
 #'                    x3 = c(7, 8, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
 #'                           2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # One-sample design
 #'
-#' # Two-Sided 95% CI for x1
+#' # Example 1: Two-Sided 95% CI for x1
 #' # population mean = 3
 #' ci.mean.diff(dat1$x1, mu = 3)
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Two-sample design
 #'
-#' # Two-Sided 95% CI for y1 by group1
+#' # Example 2: Two-Sided 95% CI for y1 by group1
 #' # unknown population variances, unequal variance assumption
 #' ci.mean.diff(x1 ~ group1, data = dat1)
 #'
-#' # Two-Sided 95% CI for y1 by group1
+#' # Example 3: Two-Sided 95% CI for y1 by group1
 #' # unknown population variances, equal variance assumption
 #' ci.mean.diff(x1 ~ group1, data = dat1, var.equal = TRUE)
 #'
-#' # Two-Sided 95% CI with known standard deviations for x1 by group1
+#' # Example 4: Two-Sided 95% CI with known standard deviations for x1 by group1
 #' # known population standard deviations, equal standard deviation assumption
 #' ci.mean.diff(x1 ~ group1, data = dat1, sigma = 1.2)
 #'
-#' # Two-Sided 95% CI with known standard deviations for x1 by group1
+#' # Example 5: Two-Sided 95% CI with known standard deviations for x1 by group1
 #' # known population standard deviations, unequal standard deviation assumption
 #' ci.mean.diff(x1 ~ group1, data = dat1, sigma = c(1.5, 1.2))
 #'
-#' # Two-Sided 95% CI with known variance for x1 by group1
+#' # Example 6: Two-Sided 95% CI with known variance for x1 by group1
 #' # known population variances, equal variance assumption
 #' ci.mean.diff(x1 ~ group1, data = dat1, sigma2 = 1.44)
 #'
-#' # Two-Sided 95% CI with known variance for x1 by group1
+#' # Example 7: Two-Sided 95% CI with known variance for x1 by group1
 #' # known population variances, unequal variance assumption
 #' ci.mean.diff(x1 ~ group1, data = dat1, sigma2 = c(2.25, 1.44))
 #'
-#' # One-Sided 95% CI for y1 by group1
+#' # Example 8: One-Sided 95% CI for y1 by group1
 #' # unknown population variances, unequal variance assumption
 #' ci.mean.diff(x1 ~ group1, data = dat1, alternative = "less")
 #'
-#' # Two-Sided 99% CI for y1 by group1
+#' # Example 9: Two-Sided 99% CI for y1 by group1
 #' # unknown population variances, unequal variance assumption
 #' ci.mean.diff(x1 ~ group1, data = dat1, conf.level = 0.99)
 #'
-#' # Two-Sided 95% CI for y1 by group1
+#' # Example 10: Two-Sided 95% CI for y1 by group1
 #' # unknown population variances, unequal variance assumption
 #' # print results with 3 digits
 #' ci.mean.diff(x1 ~ group1, data = dat1, digits = 3)
 #'
-#' # Two-Sided 95% CI for y1 by group1
+#' # Example 11: Two-Sided 95% CI for y1 by group1
 #' # unknown population variances, unequal variance assumption
 #' # convert value 4 to NA
 #' ci.mean.diff(x1 ~ group1, data = dat1, as.na = 4)
 #'
-#' # Two-Sided 95% CI for y1, y2, and y3 by group1
+#' # Example 12: Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # unknown population variances, unequal variance assumption
 #' ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1)
 #'
-#' # Two-Sided 95% CI for y1, y2, and y3 by group1
+#' # Example 13: Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # unknown population variances, unequal variance assumption,
 #' # listwise deletion for missing data
 #' ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, na.omit = TRUE)
 #'
-#' # Two-Sided 95% CI for y1, y2, and y3 by group1
+#' # Example 14: Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # unknown population variances, unequal variance assumption,
 #' # analysis by group2 separately
 #' ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
 #'
-#' # Two-Sided 95% CI for y1, y2, and y3 by group1
+#' # Example 15: Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # unknown population variances, unequal variance assumption,
 #' # analysis by group2 separately, sort by variables
 #' ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2,
 #'              sort.var = TRUE)# Check if input 'y' is NULL
 #'
-#' # Two-Sided 95% CI for y1, y2, and y3 by group1
+#' # Example 16: Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # unknown population variances, unequal variance assumption,
 #' # split analysis by group2
 #' ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
 #'
-#' # Two-Sided 95% CI for y1, y2, and y3 by group1
+#' # Example 17: Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # unknown population variances, unequal variance assumption,
 #' # analysis by group2 separately, split analysis by group3
 #' ci.mean.diff(cbind(x1, x2, x3) ~ group1, data = dat1,
@@ -198,57 +205,57 @@
 #' group1 <- c(3, 1, 4, 2, 5, 3, 6, 7)
 #' group2 <- c(5, 2, 4, 3, 1)
 #'
-#' # Two-Sided 95% CI for the mean difference between group1 and group2
+#' # Example 18: Two-Sided 95% CI for the mean difference between group1 and group2
 #' # unknown population variances, unequal variance assumption
 #' ci.mean.diff(group1, group2)
 #'
-#' # Two-Sided 95% CI for the mean difference between group1 and group2
+#' # Example 19: Two-Sided 95% CI for the mean difference between group1 and group2
 #' # unknown population variances, equal variance assumption
 #' ci.mean.diff(group1, group2, var.equal = TRUE)
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Paired-sample design
 #'
 #' dat2 <- data.frame(pre = c(1, 3, 2, 5, 7, 6),
 #'                    post = c(2, 2, 1, 6, 8, 9),
 #'                    group = c(1, 1, 1, 2, 2, 2), stringsAsFactors = FALSE)
 #'
-#' # Two-Sided 95% CI for the mean difference in pre and post
+#' # Example 20: Two-Sided 95% CI for the mean difference in pre and post
 #' # unknown poulation variance of difference scores
 #' ci.mean.diff(dat2$pre, dat2$post, paired = TRUE)
 #'
-#' # Two-Sided 95% CI for the mean difference in pre and post
+#' # Example 21: Two-Sided 95% CI for the mean difference in pre and post
 #' # unknown poulation variance of difference scores
 #' # analysis by group separately
 #' ci.mean.diff(dat2$pre, dat2$post, paired = TRUE, group = dat2$group)
 #'
-#' # Two-Sided 95% CI for the mean difference in pre and post
+#' # Example 22: Two-Sided 95% CI for the mean difference in pre and post
 #' # unknown poulation variance of difference scores
 #' # analysis by group separately
 #' ci.mean.diff(dat2$pre, dat2$post, paired = TRUE, split = dat2$group)
 #'
-#' # Two-Sided 95% CI for the mean difference in pre and post
+#' # Example 23: Two-Sided 95% CI for the mean difference in pre and post
 #' # known population standard deviation of difference scores
 #' ci.mean.diff(dat2$pre, dat2$post, sigma = 2, paired = TRUE)
 #'
-#' # Two-Sided 95% CI for the mean difference in pre and post
+#' # Example 24: Two-Sided 95% CI for the mean difference in pre and post
 #' # known population variance of difference scores
 #' ci.mean.diff(dat2$pre, dat2$post, sigma2 = 4, paired = TRUE)
 #'
-#' # One-Sided 95% CI for the mean difference in pre and post
+#' # Example 25: One-Sided 95% CI for the mean difference in pre and post
 #' # unknown poulation variance of difference scores
 #' ci.mean.diff(dat2$pre, dat2$post, alternative = "less", paired = TRUE)
 #'
-#' # Two-Sided 99% CI for the mean difference in pre and post
+#' # Example 26: Two-Sided 99% CI for the mean difference in pre and post
 #' # unknown poulation variance of difference scores
 #' ci.mean.diff(dat2$pre, dat2$post, conf.level = 0.99, paired = TRUE)
 #'
-#' # Two-Sided 95% CI for for the mean difference in pre and post
+#' # Example 27: Two-Sided 95% CI for for the mean difference in pre and post
 #' # unknown poulation variance of difference scores
 #' # print results with 3 digits
 #' ci.mean.diff(dat2$pre, dat2$post, paired = TRUE, digits = 3)
 #'
-#' # Two-Sided 95% CI for for the mean difference in pre and post
+#' # Example 28: Two-Sided 95% CI for for the mean difference in pre and post
 #' # unknown poulation variance of difference scores
 #' # convert value 1 to NA
 #' ci.mean.diff(dat2$pre, dat2$post, as.na = 1, paired = TRUE)
@@ -264,7 +271,6 @@ ci.mean.diff <- function(x, ...) {
 
 m.diff.conf <- function(x, y, sigma, var.equal, alternative, paired, conf.level,
                         side) {
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Independent samples ####
@@ -420,7 +426,8 @@ m.diff.conf <- function(x, y, sigma, var.equal, alternative, paired, conf.level,
 ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NULL, var.equal = FALSE,
                                  paired = FALSE, alternative = c("two.sided", "less", "greater"),
                                  conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
-                                 digits = 2, as.na = NULL, check = TRUE, output = TRUE, ...) {
+                                 digits = 2, as.na = NULL, write = NULL, append = TRUE,
+                                 check = TRUE, output = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
@@ -459,15 +466,10 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
   if (isTRUE(!is.logical(paired))) { stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE) }
 
-
   if (isTRUE(paired)) {
 
     # Length of 'x' and 'y'
-    if (isTRUE(nrow(data.frame(x)) != nrow(data.frame(y)))) {
-
-      stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.", call. = FALSE)
-
-    }
+    if (isTRUE(nrow(data.frame(x)) != nrow(data.frame(y)))) { stop("Length of the vector specified in 'x' does not match the length of the vector specified in 'y'.", call. = FALSE) }
 
   }
 
@@ -538,48 +540,7 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Replace user-specified values with missing values ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    # Check input 'as.na'
-
-    # Factor or Vector
-    if (isTRUE(is.atomic(xy) || is.factor(xy))) {
-
-      as.na.x <- !as.na %in% xy
-
-    # Matrix or data frame
-    } else if (isTRUE(is.matrix(xy) || is.data.frame(xy))) {
-
-      as.na.x <- vapply(as.character(as.na), function(y) !y %in% misty::chr.trim(apply(as.matrix(x), 2, as.character)),
-                        FUN.VALUE = logical(1L))
-
-    # List
-    } else if (isTRUE(is.list(xy))) {
-
-      as.na.x <- !as.na %in% unlist(xy)
-
-    }
-
-    if (isTRUE(any(as.na.x))) {
-
-      warning(paste0("Values specified in the argument 'as.na' were not found in 'x': ",
-                     paste(as.na[as.na.x], collapse = ", ")), call. = FALSE)
-    }
-
-    # Replace user-specified values with NAs
-    xy <- misty::as.na(xy, na = as.na, check = FALSE)
-
-    # Variable with missing values only
-    xy.miss <- vapply(xy, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-    if (isTRUE(any(xy.miss))) {
-
-      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ",
-                  paste(names(which(xy.miss)), collapse = ", ")), call. = FALSE)
-
-    }
-
-  }
-
+  if (isTRUE(!is.null(as.na))) {  xy <- .as.na(xy, na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
@@ -704,6 +665,12 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
+
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input output
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
@@ -869,6 +836,28 @@ ci.mean.diff.default <- function(x, y = NULL, mu = 0, sigma = NULL, sigma2 = NUL
 
   #_____________________________________________________________________________
   #
+  # Write results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
+
+  #_____________________________________________________________________________
+  #
   # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
@@ -885,7 +874,7 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
                                  alternative = c("two.sided", "less", "greater"),
                                  conf.level = 0.95, group = NULL, split = NULL,
                                  sort.var = FALSE, na.omit = FALSE, digits = 2, as.na = NULL,
-                                 check = TRUE, output = TRUE, ...) {
+                                 write = NULL, append = TRUE, check = TRUE, output = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
@@ -972,8 +961,8 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
     # Matrix or data frame
     } else if (isTRUE(is.matrix(data[, y.vars]) || is.data.frame(data[, y.vars]))) {
 
-      as.na.x <- vapply(as.character(as.na), function(y) !y %in% misty::chr.trim(apply(as.matrix(x), 2, as.character)),
-                        FUN.VALUE = logical(1))
+      as.na.x <- vapply(as.character(as.na), function(y) !y %in% misty::chr.trim(apply(as.matrix(x), 2L, as.character)),
+                        FUN.VALUE = logical(1L))
 
     # List
     } else if (isTRUE(is.list(data[, y.vars]))) {
@@ -1173,10 +1162,32 @@ ci.mean.diff.formula <- function(formula, data, sigma = NULL, sigma2 = NULL, var
                              var.equal = var.equal, alternative = alternative,
                              conf.level = conf.level, sort.var = sort.var,
                              na.omit = na.omit, digits = digits, as.na = as.na,
-                             check = check, output = output),
+                             write = write, append = append, check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

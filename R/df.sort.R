@@ -1,28 +1,31 @@
 #' Data Frame Sorting
 #'
-#' This function arranges a data frame in increasing or decreasing order according to one or more variables.
+#' This function arranges a data frame in increasing or decreasing order according
+#' to one or more variables.
 #'
 #' @param x           a data frame.
-#' @param ...         a sorting variable or a sequence of sorting variables which are specified without
-#'                    quotes \code{''} or double quotes \code{""}.
+#' @param ...         a sorting variable or a sequence of sorting variables which
+#'                    are specified without quotes \code{''} or double quotes \code{""}.
 #' @param decreasing  logical: if \code{TRUE}, the sort is decreasing.
-#' @param check       logical: if \code{TRUE}, argument specification is checked.
+#' @param check       logical: if \code{TRUE} (default), argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
-#' \code{\link{df.rename}}
+#' \code{\link{df.duplicated}}, \code{\link{df.merge}}, \code{\link{df.move}},
+#' \code{\link{df.rbind}}, \code{\link{df.rename}}, \code{\link{df.subset}}
 #'
 #' @references
-#' Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}. Wadsworth & Brooks/Cole.
+#' Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}.
+#' Wadsworth & Brooks/Cole.
 #'
-#' Knuth, D. E. (1998) \emph{The Art of Computer Programming, Volume 3: Sorting and Searching} (2nd ed.). Addison-Wesley.
+#' Knuth, D. E. (1998) \emph{The Art of Computer Programming, Volume 3: Sorting
+#' and Searching} (2nd ed.). Addison-Wesley.
 #'
 #' @return
-#' Returns data frame \code{x} sorted according to the variables specified in \code{...}, a matrix will
-#' be coerced to a data frame.
+#' Returns data frame \code{x} sorted according to the variables specified in
+#' \code{...}, a matrix will be coerced to a data frame.
 #'
 #' @export
 #'
@@ -31,16 +34,16 @@
 #'                   y = c(1, 6, 2, 3, 2, 3),
 #'                   z = c(2, 1, 6, 3, 7, 4))
 #'
-#' # Sort data frame 'dat' by "x" in increasing order
+#' # Example 1: Sort data frame 'dat' by "x" in increasing order
 #' df.sort(dat, x)
 #'
-#' # Sort data frame 'dat' by "x" in decreasing order
+#' # Example 2: Sort data frame 'dat' by "x" in decreasing order
 #' df.sort(dat, x, decreasing = TRUE)
 #'
-#' # Sort data frame 'dat' by "x" and "y" in increasing order
+#' # Example 3: Sort data frame 'dat' by "x" and "y" in increasing order
 #' df.sort(dat, x, y)
 #'
-#' # Sort data frame 'dat' by "x" and "y" in decreasing order
+#' # Example 4: Sort data frame 'dat' by "x" and "y" in decreasing order
 #' df.sort(dat, x, y, decreasing = TRUE)
 df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
@@ -64,7 +67,7 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
   # Data frame for the argument 'x'?
   if (isTRUE(!is.data.frame(x))) { stop("Please specify a data frame for the argument 'x'.", call. = FALSE) }
 
-  # Check if input '...'
+  # Check input '...'
   var.names.check <- !var.names %in% colnames(x)
   if (isTRUE(any(var.names.check))) {
 

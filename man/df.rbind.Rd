@@ -47,6 +47,7 @@ cdat <- data.frame(id = c(7, 8, 9),
                    a = c(1, 4, 6),
                    d = c(9, 5, 4))
 
+# Example 1
 df.rbind(adat, bdat, cdat)
 }
 \references{
@@ -57,8 +58,10 @@ Wickham, H. (2019). plyr: Tools for Splitting, Applying and Combining Data. R pa
 version 1.8.5.
 }
 \seealso{
-\code{\link{df.duplicated}}, \code{\link{df.unique}}, \code{\link{df.merge}},
-\code{\link{df.rename}}, \code{\link{df.sort}}
+\code{\link{df.duplicated}}, \code{\link{df.merge}},
+\code{\link{df.move}},
+\code{\link{df.rename}}, \code{\link{df.sort}},
+\code{\link{df.subset}}
 }
 \author{
 Hadley Wickham

@@ -1,16 +1,28 @@
 #' Sample Size Determination for Testing Pearson's Correlation Coefficient
 #'
-#' This function performs sample size computation for testing Pearson's product-moment correlation coefficient
-#' based on precision requirements (i.e., type-I-risk, type-II-risk and an effect size).
+#' This function performs sample size computation for testing Pearson's product-moment
+#' correlation coefficient based on precision requirements (i.e., type-I-risk,
+#' type-II-risk and an effect size).
 #'
-#' @param rho            a number indicating the correlation coefficient under the null hypothesis, \eqn{\rho}.0.
-#' @param delta          a numeric value indicating the minimum difference to be detected, \eqn{\delta}.
+#' @param rho            a number indicating the correlation coefficient under
+#'                       the null hypothesis, \eqn{\rho}.0.
+#' @param delta          a numeric value indicating the minimum difference to be
+#'                       detected, \eqn{\delta}.
 #' @param alternative    a character string specifying the alternative hypothesis,
-#'                       must be one of \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.
+#'                       must be one of \code{"two.sided"} (default), \code{"greater"}
+#'                       or \code{"less"}.
 #' @param alpha          type-I-risk, \eqn{\alpha}.
 #' @param beta           type-II-risk, \eqn{\beta}.
-#' @param check          logical: if \code{TRUE}, argument specification is checked.
-#' @param output         logical: if \code{TRUE}, output is shown.
+#' @param write          a character string naming a text file with file extension
+#'                       \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                       output into a text file.
+#' @param append         logical: if \code{TRUE} (default), output will be appended
+#'                       to an existing text file with extension \code{.txt} specified
+#'                       in \code{write}, if \code{FALSE} existing text file will be
+#'                       overwritten.
+#' @param check          logical: if \code{TRUE} (default), argument specification
+#'                       is checked.
+#' @param output         logical: if \code{TRUE} (default), output is shown.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at},
@@ -19,8 +31,8 @@
 #' \code{\link{size.mean}}, \code{\link{size.prop}}
 #'
 #' @references
-#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-#' New York: John Wiley & Sons.
+#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology -
+#' Using R and SPSS}. New York: John Wiley & Sons.
 #'
 #' Rasch, D., Pilz, J., Verdooren, L. R., & Gebhardt, G. (2011).
 #' \emph{Optimal experimental design with R}. Boca Raton: Chapman & Hall/CRC.
@@ -37,23 +49,23 @@
 #' @export
 #'
 #' @examples
-#' #--------------------------------------
-#  # Two-sided test
+#' #----------------------------------------------------------------------------
+#  # Example 1: Two-sided test
 #' # H0: rho = 0.3, H1: rho != 0.3
 #' # alpha = 0.05, beta = 0.2, delta = 0.2
 #'
 #' size.cor(rho = 0.3, delta = 0.2, alpha = 0.05, beta = 0.2)
 #'
-#' #--------------------------------------
-#  # One-sided test
+#' #----------------------------------------------------------------------------
+#  # Example 2: One-sided test
 #' # H0: rho <= 0.3, H1: rho > 0.3
 #' # alpha = 0.05, beta = 0.2, delta = 0.2
 #'
 #' size.cor(rho = 0.3, delta = 0.2, alternative = "greater", alpha = 0.05, beta = 0.2)
 size.cor <- function(rho, delta,
                      alternative = c("two.sided", "less", "greater"),
-                     alpha = 0.05, beta = 0.1, check = TRUE, output = TRUE) {
-
+                     alpha = 0.05, beta = 0.1, write = NULL, append = TRUE,
+                     check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -99,6 +111,12 @@ size.cor <- function(rho, delta,
 
     }
 
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
   }
 
   #_____________________________________________________________________________
@@ -125,10 +143,33 @@ size.cor <- function(rho, delta,
 
   object <- list(call = match.call(),
                  type = "size", size = "cor",
-                 args = list(delta = delta, rho = rho, alternative = alternative, alpha = alpha, beta = beta),
+                 args = list(delta = delta, rho = rho, alternative = alternative, alpha = alpha, beta = beta,
+                             write = write, append = append),
                  result = list(n = n))
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

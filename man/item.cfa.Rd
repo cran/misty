@@ -4,7 +4,7 @@
 \alias{item.cfa}
 \title{Confirmatory Factor Analysis}
 \usage{
-item.cfa(x, model = NULL, rescov = NULL, hierarch = FALSE,
+item.cfa(..., data = NULL, model = NULL, rescov = NULL, hierarch = FALSE,
          meanstructure = TRUE, ident = c("marker", "var", "effect"),
          parameterization = c("delta", "theta"), ordered = NULL, cluster = NULL,
          estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
@@ -15,10 +15,10 @@ item.cfa(x, model = NULL, rescov = NULL, hierarch = FALSE,
          print = c("all", "summary", "coverage", "descript", "fit", "est",
                    "modind", "resid"),
          mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3,
-         as.na = NULL, write = NULL, check = TRUE, output = TRUE)
+         as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame. If \code{model = NULL},
+\item{...}{a matrix or data frame. If \code{model = NULL},
 confirmatory factor analysis based on a measurement
 model with one factor labeled \code{f} comprising all
 variables in the matrix or data frame is conducted.
@@ -26,7 +26,17 @@ Note that the cluster variable is excluded from \code{x}
 when specifying \code{cluster}. If \code{model} is
 specified, the matrix or data frame needs to contain
 all variables used in the argument \code{model} and
-the cluster variable when specifying \code{cluster}.}
+the cluster variable when specifying \code{cluster}.
+Alternatively, an expression indicating the variable names in
+\code{data} e.g., \code{item.cfa(x1, x2, x3, data = dat)}.
+Note that the operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+\code{::}, and \code{!} can also be used to select variables,
+see 'Details' in the \code{\link{df.subset}} function.}
+
+\item{data}{a data frame when specifying one or more variables in the
+argument \code{...}. Note that the argument is \code{NULL}
+when specifying a vector, factor, matrix, array, data frame,
+or list for the argument \code{...}.}
 
 \item{model}{a character vector specifying a measurement model with
 one factor, or a list of character vectors for specifying
@@ -89,12 +99,12 @@ character vector indicating which variables to treat
 as ordered (ordinal) variables can be specified.}
 
 \item{cluster}{either a character string indicating the variable name
-of the cluster variable in 'x' or a vector representing
-the nested grouping structure (i.e., group or cluster
-variable) for computing cluster-robust standard errors.
-Note that cluster-robust standard errors are not
-available when treating indicators of the measurement
-model as ordered (ordinal).}
+of the cluster variable in \code{...} or \code{data},
+or a vector representing the nested grouping structure
+(i.e., group or cluster variable) for computing
+cluster-robust standard errors. Note that cluster-robust
+standard errors are not available when treating indicators
+of the measurement model as ordered (ordinal).}
 
 \item{estimator}{a character string indicating the estimator to be used
 (see 'Details'). By default, \code{"MLR"} is used for
@@ -159,13 +169,21 @@ conducting the analysis. Note that \code{as.na()}
 function is only applied to \code{x} but not to
 \code{cluster}.}
 
-\item{write}{a character string for writing the results into a Excel
-file naming a file with or without file extension '.xlsx',
-e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extention
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -400,95 +418,109 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
-#---------------------------
+#----------------------------------------------------------------------------
 # Measurement model with one factor
 
-# Specification using the argument 'x'
+# Example 1a: Specification using the argument 'x'
 item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")])
 
-# Alternative specification using the argument 'model'
+# Example 1b: Alternative specification using the 'data' argument
+item.cfa(x1:x3, data = HolzingerSwineford1939)
+
+# Example 1c: Alternative specification using the argument 'model'
 item.cfa(HolzingerSwineford1939, model = c("x1", "x2", "x3"))
 
-# Alternative specification using the argument 'model'
+# Example 1d: Alternative specification using the 'data' and 'model' argument
+item.cfa(., data = HolzingerSwineford1939, model = c("x1", "x2", "x3"))
+
+# Example 1e: Alternative specification using the argument 'model'
 item.cfa(HolzingerSwineford1939, model = list(visual = c("x1", "x2", "x3")))
 
-#---------------------------
+# Example 1f: Alternative specification using the  'data' and 'model' argument
+item.cfa(., data = HolzingerSwineford1939, model = list(visual = c("x1", "x2", "x3")))
+
+#----------------------------------------------------------------------------
 # Measurement model with three factors
 
-# Specification using the argument 'model'
+# Example 2: Specification using the argument 'model'
 item.cfa(HolzingerSwineford1939,
          model = list(visual = c("x1", "x2", "x3"),
                       textual = c("x4", "x5", "x6"),
                       speed = c("x7", "x8", "x9")))
 
-#---------------------------
+#----------------------------------------------------------------------------
 # Residual covariances
 
-# One residual covariance
+# Example 3a: One residual covariance
 item.cfa(HolzingerSwineford1939,
          model = list(visual = c("x1", "x2", "x3"),
                       textual = c("x4", "x5", "x6"),
                       speed = c("x7", "x8", "x9")),
          rescov = c("x1", "x2"))
 
-# Two residual covariances
+# Example 3b: Two residual covariances
 item.cfa(HolzingerSwineford1939,
          model = list(visual = c("x1", "x2", "x3"),
                       textual = c("x4", "x5", "x6"),
                       speed = c("x7", "x8", "x9")),
          rescov = list(c("x1", "x2"), c("x4", "x5")))
 
-#---------------------------
+#----------------------------------------------------------------------------
 # Second-order factor model based on three first-order factors
 
+# Example 4
 item.cfa(HolzingerSwineford1939,
          model = list(visual = c("x1", "x2", "x3"),
                       textual = c("x4", "x5", "x6"),
                       speed = c("x7", "x8", "x9")),
          hierarch = TRUE)
 
-#---------------------------
+#----------------------------------------------------------------------------
 # Measurement model with ordered-categorical indicators
 
+# Example 5
 item.cfa(round(HolzingerSwineford1939[, c("x4", "x5", "x6")]), ordered = TRUE)
 
-#---------------------------
+#----------------------------------------------------------------------------
 # Cluster-robust standard errors
 
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-# Specification using a variable in 'x'
+# Example 6a: Specification using a variable in 'x'
 item.cfa(Demo.twolevel[, c("y4", "y5", "y6", "cluster")], cluster = "cluster")
 
-# Specification of the cluster variable in 'cluster'
+# Example 6b: Specification of the cluster variable in 'cluster'
 item.cfa(Demo.twolevel[, c("y4", "y5", "y6")], cluster = Demo.twolevel$cluster)
 
-# Specification using a variable in 'x'
-item.cfa(Demo.twolevel, model = c("y4", "y5", "y6"), cluster = "cluster")
+# Example 6c: Alternative specification using the 'data' argument
+item.cfa(y4:y6, data = Demo.twolevel, cluster = "cluster")
 
-# Specification of the cluster variable in 'cluster'
-item.cfa(Demo.twolevel, model = c("y4", "y5", "y6"), cluster = Demo.twolevel$cluster)
-
-#---------------------------
+#----------------------------------------------------------------------------
 # Print argument
 
-# Request all results
+# Example 7a: Request all results
 item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], print = "all")
 
-# Request modification indices with value equal or higher than 5
+# Example 7b: Request modification indices with value equal or higher than 5
 item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
-         print = "modind", min.value = 5)
+         print = "modind", mod.minval = 5)
 
-#---------------------------
+#----------------------------------------------------------------------------
 # lavaan summary of the estimated model
 
+# Example 8
 mod <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
 
-lavaan::summary(mod$mod.fit, standardized = TRUE, fit.measures = TRUE)
+lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 
-#---------------------------
-# Write Results into a Excel file
+#----------------------------------------------------------------------------
+# Write Results
+
+# Example 9a: Write results into a text file
+item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.txt")
+
+# Example 9b: Write results into an Excel file
 item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.xlsx")
 
 result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)

@@ -1,47 +1,70 @@
 #' Confidence Interval for the Difference in Proportions
 #'
-#' This function computes a confidence interval for the difference in proportions in a two-sample
-#' and paired-sample design for one or more variables, optionally by a grouping and/or split variable.
+#' This function computes a confidence interval for the difference in proportions
+#' in a two-sample and paired-sample design for one or more variables, optionally
+#' by a grouping and/or split variable.
 #'
-#' The Wald confidence interval which is based on the normal approximation to the binomial distribution are
-#' computed by specifying \code{method = "wald"}, while the Newcombe Hybrid Score interval (Newcombe, 1998a;
-#' Newcombe, 1998b) is requested by specifying \code{method = "newcombe"}. By default, Newcombe Hybrid Score
-#' interval is computed which have been shown to be reliable in small samples (less than n = 30 in each sample)
-#' as well as moderate to larger samples(n > 30 in each sample) and with proportions close to 0 or 1, while the
-#' Wald confidence intervals does not perform well unless the sample size is large (Fagerland, Lydersen & Laake, 2011).
+#' The Wald confidence interval which is based on the normal approximation to the
+#' binomial distribution are computed by specifying \code{method = "wald"}, while
+#' the Newcombe Hybrid Score interval (Newcombe, 1998a; Newcombe, 1998b) is
+#' requested by specifying \code{method = "newcombe"}. By default, Newcombe Hybrid
+#' Score interval is computed which have been shown to be reliable in small samples
+#' (less than n = 30 in each sample) as well as moderate to larger samples(n > 30
+#' in each sample) and with proportions close to 0 or 1, while the Wald confidence
+#' intervals does not perform well unless the sample size is large (Fagerland,
+#' Lydersen & Laake, 2011).
 #'
-#' @param x              a numeric vector with 0 and 1 values.
-#' @param y              a numeric vector with 0 and 1 values.
-#' @param method         a character string specifying the method for computing the confidence interval,
-#'                       must be one of \code{"wald"}, or \code{"newcombe"} (default).
-#' @param paired         logical: if \code{TRUE}, confidence interval for the difference of proportions
-#'                       in paired samples is computed.
-#' @param alternative    a character string specifying the alternative hypothesis, must be one of
-#'                       \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.
-#' @param conf.level     a numeric value between 0 and 1 indicating the confidence level of the interval.
-#' @param group          a numeric vector, character vector or factor as grouping variable. Note that a grouping
-#'                       variable can only be used when computing confidence intervals with unknown population
-#'                       standard deviation and population variance.
-#' @param split          a numeric vector, character vector or factor as split variable. Note that a split
-#'                       variable can only be used when computing confidence intervals with unknown population
-#'                       standard deviation and population variance.
-#' @param sort.var       logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.
-#' @param digits         an integer value indicating the number of decimal places to be used.
-#' @param as.na          a numeric vector indicating user-defined missing values,
-#'                       i.e. these values are converted to \code{NA} before conducting the analysis.
-#'                       Note that \code{as.na()} function is only applied to \code{x}, but
-#'                       not to \code{group} or \code{split}.
-#' @param check          logical: if \code{TRUE}, argument specification is checked.
-#' @param output         logical: if \code{TRUE}, output is shown on the console.
-#' @param formula        a formula of the form \code{y ~ group} for one outcome variable or
-#'                       \code{cbind(y1, y2, y3) ~ group} for more than one outcome variable where
-#'                       \code{y} is a numeric variable with 0 and 1 values and \code{group} a numeric
-#'                       variable, character variable or factor with two values or factor levels giving
-#'                       the corresponding group.
-#' @param data           a matrix or data frame containing the variables in the formula \code{formula}.
-#' @param na.omit        logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-#'                       (i.e., listwise deletion) when specifying more than one outcome variable.
-#' @param ...            further arguments to be passed to or from methods.
+#' @param x           a numeric vector with 0 and 1 values.
+#' @param y           a numeric vector with 0 and 1 values.
+#' @param method      a character string specifying the method for computing
+#'                    the confidence interval,
+#'                    must be one of \code{"wald"}, or \code{"newcombe"} (default).
+#' @param paired      logical: if \code{TRUE}, confidence interval for the
+#'                    difference of proportions in paired samples is computed.
+#' @param alternative a character string specifying the alternative hypothesis,
+#'                    must be one of \code{"two.sided"} (default), \code{"greater"}
+#'                    or \code{"less"}.
+#' @param conf.level  a numeric value between 0 and 1 indicating the confidence
+#'                    level of the interval.
+#' @param group       a numeric vector, character vector or factor as grouping
+#'                    variable. Note that a grouping variable can only be used
+#'                    when computing confidence intervals with unknown population
+#'                    standard deviation and population variance.
+#' @param split       a numeric vector, character vector or factor as split variable.
+#'                    Note that a split variable can only be used when computing
+#'                    confidence intervals with unknown population standard
+#'                    deviation and population variance.
+#' @param sort.var    logical: if \code{TRUE}, output table is sorted by variables
+#'                    when specifying \code{group}.
+#' @param digits      an integer value indicating the number of decimal places
+#'                    to be used.
+#' @param as.na       a numeric vector indicating user-defined missing values,
+#'                    i.e. these values are converted to \code{NA} before conducting
+#'                    the analysis. Note that \code{as.na()} function is only
+#'                    applied to \code{x}, but not to \code{group} or \code{split}.
+#' @param write       a character string naming a text file with file extension
+#'                    \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                    output into a text file.
+#' @param append      logical: if \code{TRUE} (default), output will be appended
+#'                    to an existing text file with extension \code{.txt} specified
+#'                    in \code{write}, if \code{FALSE} existing text file will be
+#'                    overwritten.
+#' @param check       logical: if \code{TRUE} (default), argument specification
+#'                    is checked.
+#' @param output      logical: if \code{TRUE} (default), output is shown on the
+#'                    console.
+#' @param formula     a formula of the form \code{y ~ group} for one outcome
+#'                    variable or \code{cbind(y1, y2, y3) ~ group} for more than
+#'                    one outcome variable where \code{y} is a numeric variable
+#'                    with 0 and 1 values and \code{group} a numeric variable,
+#'                    character variable or factor with two values or factor
+#'                    levels giving the corresponding group.
+#' @param data        a matrix or data frame containing the variables in the
+#'                    formula \code{formula}.
+#' @param na.omit     logical: if \code{TRUE}, incomplete cases are removed before
+#'                    conducting the analysis (i.e., listwise deletion) when
+#'                    specifying more than one outcome variable.
+#' @param ...         further arguments to be passed to or from methods.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -56,17 +79,20 @@
 #' @exportMethod  ci.prop.diff formula
 #'
 #' @references
-#' Fagerland, M. W., Lydersen S., & Laake, P. (2011) Recommended confidence intervals for two independent binomial
-#' proportions. \emph{Statistical Methods in Medical Research, 24}, 224-254.
+#' Fagerland, M. W., Lydersen S., & Laake, P. (2011) Recommended confidence
+#' intervals for two independent binomial proportions. \emph{Statistical Methods
+#' in Medical Research, 24}, 224-254.
 #'
-#' Newcombe, R. G. (1998a). Interval estimation for the difference between independent proportions: Comparison of
-#' eleven methods. \emph{Statistics in Medicine, 17}, 873-890.
+#' Newcombe, R. G. (1998a). Interval estimation for the difference between
+#' independent proportions: Comparison of eleven methods. \emph{Statistics in
+#' Medicine, 17}, 873-890.
 #'
-#' Newcombe, R. G. (1998b). Improved confidence intervals for the difference between binomial proportions based on
-#' paired data. \emph{Statistics in Medicine, 17}, 2635-2650.
+#' Newcombe, R. G. (1998b). Improved confidence intervals for the difference
+#' between binomial proportions based on paired data. \emph{Statistics in Medicine,
+#' 17}, 2635-2650.
 #'
-#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-#' John Wiley & Sons.
+#' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+#' - Using R and SPSS}. John Wiley & Sons.
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
@@ -96,55 +122,55 @@
 #'                    x3 = c(1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0,
 #'                           1, 0, 1, 1, 0, 1, 1, 1, 0, 1, NA, 1, 0, 1))
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Two-sample design
 #'
-#' # Two-Sided 95% CI for x1 by group1
+#' # Example 1: Two-Sided 95% CI for x1 by group1
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(x1 ~ group1, data = dat1)
 #'
-#' # Two-Sided 95% CI for x1 by group1
+#' # Example 2: Two-Sided 95% CI for x1 by group1
 #' # Wald CI
 #' ci.prop.diff(x1 ~ group1, data = dat1, method = "wald")
 #'
-#' # One-Sided 95% CI for x1 by group1
+#' # Example 3: One-Sided 95% CI for x1 by group1
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(x1 ~ group1, data = dat1, alternative = "less")
 #'
-#' # Two-Sided 99% CI for x1 by group1
+#' # Example 4: Two-Sided 99% CI for x1 by group1
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(x1 ~ group1, data = dat1, conf.level = 0.99)
 #'
-#' # Two-Sided 95% CI for y1 by group1
-#' # # Newcombes Hybrid Score interval, print results with 3 digits
+#' # Example 5: Two-Sided 95% CI for y1 by group1
+#' # Newcombes Hybrid Score interval, print results with 3 digits
 #' ci.prop.diff(x1 ~ group1, data = dat1, digits = 3)
 #'
-#' # Two-Sided 95% CI for y1 by group1
-#' # # Newcombes Hybrid Score interval, convert value 0 to NA
+#' # Example 6: Two-Sided 95% CI for y1 by group1
+#' # Newcombes Hybrid Score interval, convert value 0 to NA
 #' ci.prop.diff(x1 ~ group1, data = dat1, as.na = 0)
 #'
-#' # Two-Sided 95% CI for y1, y2, and y3 by group1
+#' # Example 7: Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1)
 #'
-#' # Two-Sided 95% CI for y1, y2, and y3 by group1
-#' # # Newcombes Hybrid Score interval, listwise deletion for missing data
+#' # Example 8: Two-Sided 95% CI for y1, y2, and y3 by group1
+#' # Newcombes Hybrid Score interval, listwise deletion for missing data
 #' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, na.omit = TRUE)
 #'
-#' # Two-Sided 95% CI for y1, y2, and y3 by group1
+#' # Example 9: Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # Newcombes Hybrid Score interval, analysis by group2 separately
 #' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
 #'
-#' # Two-Sided 95% CI for y1, y2, and y3 by group1
+#' # Example 10: Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # Newcombes Hybrid Score interval, analysis by group2 separately, sort by variables
 #' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2,
 #'              sort.var = TRUE)
 #'
-#' # Two-Sided 95% CI for y1, y2, and y3 by group1
+#' # Example 11: Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # split analysis by group2
 #' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
 #'
-#' # Two-Sided 95% CI for y1, y2, and y3 by group1
+#' # Example 12: Two-Sided 95% CI for y1, y2, and y3 by group1
 #' # Newcombes Hybrid Score interval, analysis by group2 separately, split analysis by group3
 #' ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1,
 #'              group = dat1$group2, split = dat1$group3)
@@ -154,33 +180,33 @@
 #' group1 <- c(0, 1, 1, 0, 0, 1, 0, 1)
 #' group2 <- c(1, 1, 1, 0, 0)
 #'
-#' # Two-Sided 95% CI for the mean difference between group1 amd group2
+#' # Example 13: Two-Sided 95% CI for the mean difference between group1 amd group2
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(group1, group2)
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Paires-sample design
 #'
 #' dat2 <- data.frame(pre = c(0, 1, 1, 0, 1),
-#'                    post = c(1, 1, 0, 1, 1), stringsAsFactors = FALSE)
+#'                    post = c(1, 1, 0, 1, 1))
 #'
-#' # Two-Sided 95% CI for the mean difference in x1 and x2
+#' # Example 14: Two-Sided 95% CI for the mean difference in x1 and x2
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(dat2$pre, dat2$post, paired = TRUE)
 #'
-#' # Two-Sided 95% CI for the mean difference in x1 and x2
+#' # Example 15: Two-Sided 95% CI for the mean difference in x1 and x2
 #' # Wald CI
 #' ci.prop.diff(dat2$pre, dat2$post, method = "wald", paired = TRUE)
 #'
-#' # One-Sided 95% CI for the mean difference in x1 and x2
+#' # Example 16: One-Sided 95% CI for the mean difference in x1 and x2
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(dat2$pre, dat2$post, alternative = "less", paired = TRUE)
 #'
-#' # Two-Sided 99% CI for the mean difference in x1 and x2
+#' # Example 17: Two-Sided 99% CI for the mean difference in x1 and x2
 #' # Newcombes Hybrid Score interval
 #' ci.prop.diff(dat2$pre, dat2$post, conf.level = 0.99, paired = TRUE)
 #'
-#' # Two-Sided 95% CI for for the mean difference in x1 and x2
+#' # Example 18: Two-Sided 95% CI for for the mean difference in x1 and x2
 #' # Newcombes Hybrid Score interval, print results with 3 digits
 #' ci.prop.diff(dat2$pre, dat2$post, paired = TRUE, digits = 3)
 ci.prop.diff <- function(x, ...) {
@@ -224,15 +250,15 @@ prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) 
 
       #......
       # At least 2 observations for x or y
-      if (isTRUE((x.n >= 2L || y.n >= 2L) && (var(x) != 0 || var(y) != 0))) {
+      if (isTRUE((x.n >= 2L || y.n >= 2L) && (var(x) != 0L || var(y) != 0L))) {
 
         term <- crit * sqrt(p1*(1 - p1) / x.n + p2*(1 - p2) / y.n)
 
         # Confidence interval
         ci <- switch(alternative,
-                     two.sided = c(low = max(-1, p.diff - term), upp = min(1, p.diff + term)),
+                     two.sided = c(low = max(-1L, p.diff - term), upp = min(1L, p.diff + term)),
                      less = c(low = -1, upp = min(1, p.diff + term)),
-                     greater = c(low = max(-1, p.diff - term), upp = 1))
+                     greater = c(low = max(-1L, p.diff - term), upp = 1L))
 
       # Less than 2 observations for x or y
       } else {
@@ -350,9 +376,9 @@ prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) 
 
         as.numeric(a)
 
-        if (isTRUE(A == 0)) {
+        if (isTRUE(A == 0L)) {
 
-          phi <- 0
+          phi <- 0L
 
         } else {
 
@@ -361,10 +387,10 @@ prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) 
         }
 
         ci <- switch(alternative,
-                     two.sided = c(xy.diff.mean - sqrt((y.p - y.ci.wilson$low)^2 - 2 * phi * (y.p - y.ci.wilson$low) * (x.ci.wilson$upp - x.p) + (x.ci.wilson$upp - x.p)^2),
-                                   xy.diff.mean + sqrt((x.p - x.ci.wilson$low)^2 - 2 * phi * (x.p - x.ci.wilson$low) * (y.ci.wilson$upp - y.p) + (y.ci.wilson$upp - y.p)^2)),
-                     less = c(-1, xy.diff.mean + sqrt((x.p - x.ci.wilson$low)^2 - 2 * phi * (x.p - x.ci.wilson$low) * (y.ci.wilson$upp - y.p) + (y.ci.wilson$upp - y.p)^2)),
-                      greater = c(xy.diff.mean - sqrt((y.p - y.ci.wilson$low)^2 - 2 * phi * (y.p - y.ci.wilson$low) * (x.ci.wilson$upp - x.p) + (x.ci.wilson$upp - x.p)^2), 1))
+                     two.sided = c(xy.diff.mean - sqrt((y.p - y.ci.wilson$low)^2 - 2L * phi * (y.p - y.ci.wilson$low) * (x.ci.wilson$upp - x.p) + (x.ci.wilson$upp - x.p)^2L),
+                                   xy.diff.mean + sqrt((x.p - x.ci.wilson$low)^2 - 2L * phi * (x.p - x.ci.wilson$low) * (y.ci.wilson$upp - y.p) + (y.ci.wilson$upp - y.p)^2L)),
+                     less = c(-1L, xy.diff.mean + sqrt((x.p - x.ci.wilson$low)^2 - 2L * phi * (x.p - x.ci.wilson$low) * (y.ci.wilson$upp - y.p) + (y.ci.wilson$upp - y.p)^2L)),
+                     greater = c(xy.diff.mean - sqrt((y.p - y.ci.wilson$low)^2 - 2L * phi * (y.p - y.ci.wilson$low) * (x.ci.wilson$upp - x.p) + (x.ci.wilson$upp - x.p)^2), 1L))
 
       } else {
 
@@ -390,7 +416,8 @@ prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) 
 ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = FALSE,
                                  alternative = c("two.sided", "less", "greater"),
                                  conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
-                                 digits = 2, as.na = NULL, check = TRUE, output = TRUE, ...) {
+                                 digits = 2, as.na = NULL, write = NULL, append = TRUE,
+                                 check = TRUE, output = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
@@ -492,20 +519,7 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) {
-
-    # Replace user-specified values with missing values
-    xy <- misty::as.na(xy, na = as.na, check = check)
-
-    # Variable with missing values only
-    xy.miss <- vapply(xy, function(y) all(is.na(y)), FUN.VALUE = logical(1))
-    if (isTRUE(any(xy.miss))) {
-
-      stop(paste0("After converting user-missing values into NA, following variables are completely missing: ", paste(names(which(xy.miss)), collapse = ", ")), call. = FALSE)
-
-    }
-
-  }
+  if (isTRUE(!is.null(as.na))) { xy <- .as.na(xy, na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
@@ -575,6 +589,12 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
     # Check input 'digits'
     if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Pleaes specify a positive integer number for the argument 'digits'.", call. = FALSE) }
+
+    # Check input 'write'
+    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input output
     if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
@@ -702,6 +722,28 @@ ci.prop.diff.default <- function(x, y, method = c("wald", "newcombe"), paired = 
 
   #_____________________________________________________________________________
   #
+  # Write results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
+
+  #_____________________________________________________________________________
+  #
   # Output ---------------------------------------------------------------------
 
   if (isTRUE(output)) { print(object, check = FALSE) }
@@ -718,7 +760,8 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
                                  alternative = c("two.sided", "less", "greater"),
                                  conf.level = 0.95, group = NULL, split = NULL,
                                  sort.var = FALSE, na.omit = FALSE, digits = 2,
-                                 as.na = NULL, check = TRUE, output = TRUE, ...) {
+                                 as.na = NULL, write = NULL, append = TRUE,
+                                 check = TRUE, output = TRUE, ...) {
 
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
@@ -968,10 +1011,33 @@ ci.prop.diff.formula <- function(formula, data, method = c("wald", "newcombe"),
                  args = list(formula = formula, method = method,
                              alternative = alternative, conf.level = conf.level,
                              sort.var = sort.var, na.omit = na.omit, digits = digits,
-                             as.na = as.na, check = check, output = output),
+                             as.na = as.na, write = write, append = append,
+                             check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Text file ####
+
+    # Send R output to textfile
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  }
 
   #_____________________________________________________________________________
   #

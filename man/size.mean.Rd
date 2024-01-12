@@ -6,7 +6,8 @@
 \usage{
 size.mean(delta, sample = c("two.sample", "one.sample"),
           alternative = c("two.sided", "less", "greater"),
-          alpha = 0.05, beta = 0.1, check = TRUE, output = TRUE)
+          alpha = 0.05, beta = 0.1, write = NULL, append = TRUE,
+          check = TRUE, output = TRUE)
 }
 \arguments{
 \item{delta}{a numeric value indicating the relative minimum difference
@@ -22,9 +23,18 @@ must be one of \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
 
 \item{beta}{type-II-risk, \eqn{\beta}.}
 
-\item{check}{logical: if \code{TRUE}, argument specification is checked.}
+\item{write}{a character string naming a text file with file extension
+\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+output into a text file.}
 
-\item{output}{logical: if \code{TRUE}, output is shown.}
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -40,32 +50,32 @@ This function performs sample size computation for the one-sample and two-sample
 based on precision requirements (i.e., type-I-risk, type-II-risk and an effect size).
 }
 \examples{
-#--------------------------------------
-# Two-sided one-sample test
+#-------------------------------------------------------------------------------
+# Example 1: Two-sided one-sample test
 # H0: mu = mu.0, H1: mu != mu.0
 # alpha = 0.05, beta = 0.2, delta = 0.5
 
 size.mean(delta = 0.5, sample = "one.sample",
           alternative = "two.sided", alpha = 0.05, beta = 0.2)
 
-#--------------------------------------
-# One-sided one-sample test
+#-------------------------------------------------------------------------------
+# Example 2: One-sided one-sample test
 # H0: mu <= mu.0, H1: mu > mu.0
 # alpha = 0.05, beta = 0.2, delta = 0.5
 
 size.mean(delta = 0.5, sample = "one.sample",
           alternative = "greater", alpha = 0.05, beta = 0.2)
 
-#--------------------------------------
-# Two-sided two-sample test
+#-------------------------------------------------------------------------------
+# Example 3: Two-sided two-sample test
 # H0: mu.1 = mu.2, H1: mu.1 != mu.2
 # alpha = 0.01, beta = 0.1, delta = 1
 
 size.mean(delta = 1, sample = "two.sample",
           alternative = "two.sided", alpha = 0.01, beta = 0.1)
 
-#--------------------------------------
-# One-sided two-sample test
+#-------------------------------------------------------------------------------
+# Example 4: One-sided two-sample test
 # H0: mu.1 <= mu.2, H1: mu.1 > mu.2
 # alpha = 0.01, beta = 0.1, delta = 1
 
