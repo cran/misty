@@ -1,8 +1,8 @@
 #' Missing Data Indicator Matrix
 #'
-#' This function creates a missing data indicator matrix \eqn{R} that denotes whether
-#' values are observed or missing, i.e., \eqn{r = 1} if a value is observed, and
-#' \eqn{r = 0} if a value is missing.
+#' This function creates a missing data indicator matrix \eqn{R} that denotes
+#' whether values are observed or missing, i.e., \eqn{r = 1} if a value is
+#' observed, and \eqn{r = 0} if a value is missing.
 #'
 #' @param ...   a matrix or data frame with incomplete data, where missing
 #'              values are coded as \code{NA}. Alternatively, an expression

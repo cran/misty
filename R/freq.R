@@ -611,8 +611,8 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
       # Close file connection
       sink()
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Excel file ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Excel file ####
 
     } else {
 
@@ -622,13 +622,16 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
 
   }
 
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Message ####
-  if (isTRUE(message.split)) {
 
-    message("Argument 'split' set to FALSE because only one variable was specified in 'x'.")
+  if (isTRUE(message.split)) { message("Argument 'split' set to FALSE because only one variable was specified in 'x'.") }
 
-  }
+  if (isTRUE(output)) { print(object, check = FALSE) }
 
   return(invisible(object))
 

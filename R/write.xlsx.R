@@ -67,11 +67,9 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
 
   if (isTRUE(check)) {
 
-    #......
     # Check input 'col.names'
     if (isTRUE(!is.logical(col.names))) { stop("Please specify TRUE or FALSE for the argument 'col.names'.", call. = FALSE) }
 
-    #......
     # Check input 'use.zip64'
     if (isTRUE(!is.logical(use.zip64))) { stop("Please specify TRUE or FALSE for the argument 'use.zip64'.", call. = FALSE) }
 
@@ -86,7 +84,7 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
 
   # Matrix
 
-  if (is.list(x)) {
+  if (isTRUE(is.list(x))) {
 
     if(any(sapply(x, is.matrix))) {
 
@@ -108,7 +106,6 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
   #
   # Main Function --------------------------------------------------------------
 
-  writexl::write_xlsx(x = x, path = file, col_names = col.names, format_headers = format,
-                      use_zip64 = use.zip64)
+  writexl::write_xlsx(x = x, path = file, col_names = col.names, format_headers = format, use_zip64 = use.zip64)
 
 }

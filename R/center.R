@@ -151,7 +151,7 @@
 #' membership variable needs to be specified when centering a L3 predictor variable
 #' in three-level data.}
 #' }
-#' }
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'

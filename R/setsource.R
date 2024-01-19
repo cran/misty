@@ -69,11 +69,7 @@ setsource <- function(path = TRUE, check = TRUE) {
   path.source <- try(dirname(rstudioapi::documentPath()), silent = TRUE)
 
   # Check
-  if (isTRUE(class(path.source) == "try-error")) {
-
-    stop("The current R script does not have a file location yet, please save the R script first.", call. = FALSE)
-
-  }
+  if (isTRUE(class(path.source) == "try-error")) { stop("The current R script does not have a file location yet, please save the R script first.", call. = FALSE) }
 
   # Set working directory
   setwd(path.source)

@@ -148,7 +148,6 @@ script.copy <- function(file = NULL, folder = "_R_Script_Archive", create.folder
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Save Copy ####
 
-  invisible(file.copy(path, to = paste0(folder, ifelse(!is.null(folder), "/", ""), file.name, ifelse(!is.null(file.time), "_", ""), file.time, ".R"),
-                      overwrite = overwrite))
+  invisible(file.copy(path, to = paste0(folder, ifelse(!is.null(folder), "/", ""), file.name, ifelse(!is.null(file.time), "_", ""), file.time, ".R"), overwrite = overwrite))
 
 }

@@ -5,10 +5,11 @@
 #'
 #' @param ...       a numeric vector, character vector, factor, matrix or data
 #'                  frame. Alternatively, an expression indicating the variable
-#'                  names in \code{data} e.g., \code{rec(x1, x2, x3, data = dat, spec = "1 = 0"))}.
-#'                  Note that the operators \code{.}, \code{+}, \code{-}, \code{~},
-#'                  \code{:}, \code{::}, and \code{!} can also be used to select
-#'                  variables, see 'Details' in the \code{\link{df.subset}} function.
+#'                  names in \code{data} e.g., \code{rec(x1, x2, x3, data = dat,
+#'                  spec = "1 = 0"))}. Note that the operators \code{.}, \code{+},
+#'                  \code{-}, \code{~}, \code{:}, \code{::}, and \code{!} can also
+#'                  be used to select variables, see 'Details' in the
+#'                  \code{\link{df.subset}} function.
 #' @param data      a data frame when specifying one or more variables in the
 #'                  argument \code{...}. Note that the argument is \code{NULL}
 #'                  when specifying a a numeric vector, character vector, factor,
@@ -32,7 +33,8 @@
 #' @param table     logical: if \code{TRUE}, a cross table variable x recoded
 #'                  variable is printed on the console if only one variable is
 #'                  specified in \code{...}.
-#' @param check     logical: if \code{TRUE} (default), argument specification is checked.
+#' @param check     logical: if \code{TRUE} (default), argument specification is
+#'                  checked.
 #'
 #' @details
 #' Recode specifications appear in a character string, separated by semicolons

@@ -10,7 +10,7 @@
 #'                    \code{~}, \code{:}, \code{::}, and \code{!} can also be
 #'                    used to select variables, see 'Details' in the
 #'                    \code{\link{df.subset}} function.
-#' @data              a data frame when specifying one or more variables in the
+#' @param data        a data frame when specifying one or more variables in the
 #'                    argument \code{...}. Note that the argument is \code{NULL}
 #'                    when specifying a numeric vector, matrix, or data frame for
 #'                    the argument \code{...}.
@@ -24,7 +24,7 @@
 #'                    name(s) of the cluster variable(s) in \code{data}. Note that
 #'                    the cluster variable at Level 3 come first in a three-level
 #'                    model, i.e., \code{cluster = c("level3", "level2")}.
-#' @type              a character string indicating the type of intraclass
+#' @param type        a character string indicating the type of intraclass
 #'                    correlation coefficient, i.e., \code{type = "1a"} (default)
 #'                    for ICC(1) representing the propotion of variance at Level
 #'                    2 and Level 3, \code{type = "1b"} representing an estimate
@@ -119,7 +119,6 @@
 #' where \eqn{\rho_{L2}} is the ICC(1) at Level 2, \eqn{\rho_{L3}} is the ICC(1)
 #' at Level 3, \eqn{J} is the average cluster size at Level 2, and \eqn{K} is
 #' the average cluster size at Level 3.}
-#' }
 #' }
 #'
 #' @author

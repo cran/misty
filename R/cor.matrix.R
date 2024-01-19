@@ -101,14 +101,9 @@
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
 #' - Using R and SPSS}. John Wiley & Sons.
 #'
-#' Zhang G, Trichtinger L, Lee D (2020). \emph{Turbofuns: Computing polychoric
-#' correlations and their asymptotic covariance matrix}. R package version 1.0.0.
-#'
-#' Zhang, G., Trichtinger, L. A., Lee, D., & Jiang, G. (2022) PolychoricRM:
-#' A computationally efficient R function for estimating polychoric correlations
-#' and their asymptotic covariance matrix. \emph{Structural Equation Modeling:
-#' A Multidisciplinary Journal, 29}(2), 310-320.
-#' https://doi.org/10.1080/10705511.2021.1929996
+#' Revelle, W. (2018) \emph{psych: Procedures for personality and psychological
+#' research}. Northwestern University, Evanston, Illinois, USA,
+#' https://CRAN.R-project.org/package=psych Version = 1.8.12.
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
@@ -122,9 +117,9 @@
 #' }
 #'
 #' @note
-#' This function uses a modified copy of the \code{PolychoricRM} function from the
-#' \pkg{Turbofuns} package by Guangjian Zhang, Lauren Trichtinger, and Dayoung Lee
-#' (2020) to estimate tetrachoric and polychoric correlation coefficients.
+#' This function uses the \code{polychoric()} function in the \pkg{psych}
+#' package by William Revelle to estimate tetrachoric and polychoric correlation
+#' coefficients.
 #'
 #' @export
 #'
@@ -477,12 +472,12 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
 
     }, "tetra" = {
 
-      cor.mat <- .internal.polychoric(as.matrix(x))$correlation
+      cor.mat <- .internal.polychoric(as.matrix(x))
       colnames(cor.mat) <- rownames(cor.mat) <- colnames(x)
 
     }, "poly" = {
 
-      cor.mat <- .internal.polychoric(as.matrix(x))$correlation
+      cor.mat <- .internal.polychoric(as.matrix(x))
       colnames(cor.mat) <- rownames(cor.mat) <- colnames(x)
 
     })

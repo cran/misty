@@ -15,14 +15,17 @@
 #' @param input         a character string indicating the Mplus input (\code{.inp})
 #'                      or output file (\code{.out}) in which the variable names
 #'                      are specified in the \code{VARIABLE:} section. Note that if
-#'                      \code{input = NULL}, this function is equivalent to \code{read.table(file)}.
+#'                      \code{input = NULL}, this function is equivalent to
+#'                      \code{read.table(file)}.
 #' @param print         logical: if \code{TRUE}, variable names are printed on the
 #'                      console.
 #' @param return.var    logical: if \code{TRUE}, the function returns the variable
 #'                      names extracted from the Mplus input or output file only.
 #' @param fileEncoding  character string declaring the encoding used on \code{file}
-#'                      so the character data can be re-encoded. See \code{\link{df.sort}}.
-#' @param check         logical: if \code{TRUE} (default), argument specification is checked.
+#'                      so the character data can be re-encoded. See
+#'                      \code{\link{df.sort}}.
+#' @param check         logical: if \code{TRUE} (default), argument specification
+#'                      is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}

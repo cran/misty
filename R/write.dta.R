@@ -88,7 +88,6 @@ write.dta <- function(x, file = "Stata_Data.dta", version = 14, label = NULL,
   # Main Function --------------------------------------------------------------
 
   # Write Stata data file
-  haven::write_dta(x, path = file, version = version, label = label, strl_threshold = str.thres,
-                   adjust_tz = adjust.tz)
+  haven::write_dta(x, path = file, version = version, label = label, strl_threshold = str.thres, adjust_tz = adjust.tz)
 
 }

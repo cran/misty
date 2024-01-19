@@ -106,7 +106,6 @@ export(write.mplus)
 export(write.result)
 export(write.sav)
 export(write.xlsx)
-useDynLib(misty, .registration=TRUE)
 importFrom("stats", "aov", "as.formula", "chisq.test", "contr.helmert", 
            "contr.poly", "contr.sum", "contr.treatment", "coef", "coefficients", 
            "cooks.distance", "cor", "cor.test", "cov", "cov2cor", "density", "df", 

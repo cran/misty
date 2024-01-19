@@ -129,7 +129,7 @@
 #' where \eqn{n_j} is the average group size at Level 2 and \eqn{n_j} is the average
 #' group size at Level 3 (Hox et al., 2018).}
 #' }
-#' }
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'

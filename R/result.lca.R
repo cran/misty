@@ -705,8 +705,8 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
       # Close file connection
       sink()
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Excel file ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Excel file ####
 
     } else {
 

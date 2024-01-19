@@ -32,7 +32,7 @@
 #' Dominance analysis (Budescu, 1993; Azen & Budescu, 2003) is used to determine
 #' the relative importance of predictor variables in a statistical model by examining
 #' the additional contribution of predictors in \emph{R}-squared relative to each
-#' other in all of the possible \eqn{2^{(p - 2)]} subset models with \eqn{p} being
+#' other in all of the possible \eqn{2^{(p - 2)}} subset models with \eqn{p} being
 #' the number of predictors. Three levels of dominance can be established through
 #' pairwise comparison of all predictors in a regression model:
 #' \describe{

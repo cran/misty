@@ -421,8 +421,9 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
     # One sample
     if (isTRUE(is.null(y))) {
 
-      # Replace user-specified values with missing values
-      x <- .as.na(x, na = as.na)
+    # Replace user-specified values with missing values
+    x <- .as.na(x, na = as.na)
+
     # Two or paired sample
     } else {
 

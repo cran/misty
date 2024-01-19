@@ -1249,23 +1249,564 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## .internal.polychoric Function ####
 
-.internal.polychoric <- function (iRaw = NULL, IMissing = 1, IAdjust = 0, NCore = 1) {
+.internal.polychoric <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0,
+                                 progress = FALSE, na.rm = TRUE, delete = TRUE) {
 
-  iRaw[is.na(iRaw)] <- - 999
-  nvar <- ncol(iRaw)
-  ncase <- nrow(iRaw)
+  #----------------------------------------
+  cor.smooth <- function (x, eig.tol = 10^-12) {
 
-  if (isTRUE(!is.integer(IMissing))) { storage.mode(IMissing) <- 'integer' }
-  if (isTRUE(!is.integer(IAdjust))) { storage.mode(IAdjust) <- 'integer' }
-  if (isTRUE(!is.integer(NCore))) { storage.mode(NCore) <- 'integer' }
-  if (isTRUE(!is.integer(iRaw))) { storage.mode(iRaw) <- 'integer' }
+    eigens <- try(eigen(x), TRUE)
 
-  output = .Call("c_polyR_f", ncase, nvar, IMissing, IAdjust, NCore, iRaw)
-  names(output) = c('threshold','correlation','flag')
+    if (isTRUE(class(eigens) == as.character("try-error"))) {
 
-  return(output)
+      warning("There is something wrong with the correlation matrix, i.e., cor.smooth() failed to smooth it because some of the eigenvalues are NA.", call. = FALSE)
+
+    } else {
+
+      if (isTRUE(min(eigens$values) < .Machine$double.eps)) {
+
+        warning("Matrix was not positive definite, smoothing was done.", call. = FALSE)
+
+        eigens$values[eigens$values < eig.tol] <- 100L * eig.tol
+        nvar <- dim(x)[1L]
+        tot <- sum(eigens$values)
+        eigens$values <- eigens$values * nvar/tot
+        cnames <- colnames(x)
+        rnames <- rownames(x)
+        x <- eigens$vectors %*% diag(eigens$values) %*% t(eigens$vectors)
+        x <- cov2cor(x)
+        colnames(x) <- cnames
+        rownames(x) <- rnames
+
+      }
+
+    }
+
+    return(x)
+
+  }
+
+  #----------------------------------------
+  mcmapply <- function (FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = TRUE,
+                        mc.preschedule = TRUE, mc.set.seed = TRUE, mc.silent = FALSE,
+                        mc.cores = 1L, mc.cleanup = TRUE, affinity.list = NULL) {
+
+    cores <- as.integer(mc.cores)
+
+    if (isTRUE(cores < 1L)) {
+
+      stop("'mc.cores' must be >= 1", call. = FALSE)
+
+    }
+
+    if (isTRUE(cores > 1L)) {
+
+      stop("'mc.cores' > 1 is not supported on Windows", call. = FALSE)
+
+    }
+
+    mapply(FUN = FUN, ..., MoreArgs = MoreArgs, SIMPLIFY = SIMPLIFY,
+           USE.NAMES = USE.NAMES)
+
+  }
+
+  #----------------------------------------
+  tableF <- function(x,y) {
+
+    minx <- min(x,na.rm = TRUE)
+    maxx <- max(x,na.rm = TRUE)
+    miny <- min(y,na.rm = TRUE)
+    maxy <- max(y,na.rm = TRUE)
+    maxxy <- (maxx+(minx == 0L))*(maxy + (miny == 0L))
+    dims <- c(maxx + 1L - min(1L, minx), maxy + 1L - min(1L, minx))
+    bin <- x - minx + (y - miny)*(dims[1L]) + max(1L, minx)
+    ans <- matrix(tabulate(bin, maxxy), dims)
+
+    return(ans)
+  }
+
+  #----------------------------------------
+  tableFast <- function(x, y, minx, maxx, miny, maxy) {
+
+    maxxy <- (maxx + (minx == 0L))*(maxy + (minx == 0L))
+    bin <- x-minx + (y - minx) *maxx + 1
+    dims <- c(maxx + 1L - min(1L, minx), maxy + 1L - min(1L, miny))
+    ans <- matrix(tabulate(bin, maxxy), dims)
+
+    return(ans)
+
+  }
+
+  #----------------------------------------
+  polyBinBvn <- function(rho, rc, cc) {
+
+    row.cuts <- c(-Inf, rc,Inf)
+    col.cuts <- c(-Inf, cc, Inf)
+    nr <- length(row.cuts) - 1L
+    nc <- length(col.cuts) - 1L
+
+    P <- matrix(0L, nr, nc)
+    R <- matrix(c(1L, rho, rho,1), 2L, 2L)
+
+    for (i in seq_len((nr - 1L))) {
+
+      for (j in seq_len((nc - 1L))) {
+
+        P[i, j] <- mnormt::sadmvn(lower = c(row.cuts[i], col.cuts[j]),
+                                  upper = c(row.cuts[i + 1L], col.cuts[j + 1L]), mean = rep(0L, 2L),
+                                  varcov = R)
+      }
+
+    }
+
+    P[1L, nc] <- pnorm(rc[1L]) - sum(P[1L, seq_len((nc - 1L))])
+    P[nr, 1L] <- pnorm(cc[1L]) - sum(P[seq_len((nr - 1L)), 1L])
+    if (isTRUE(nr >2L)) { for (i in (2L:(nr - 1L))) {P[i, nc] <- pnorm(rc[i]) -pnorm(rc[i - 1L])- sum(P[i, seq_len((nc - 1L))]) }}
+    if (isTRUE(nc >2L)) { for (j in (2L:(nc - 1L))) {P[nr, j] <- pnorm(cc[j]) - pnorm(cc[j - 1L])-sum(P[seq_len((nr - 1L)), j]) }}
+    if (isTRUE(nc > 1L))  P[nr, nc] <- 1L - pnorm(rc[nr - 1L]) - sum(P[nr, seq_len((nc - 1L))])
+    P
+
+  }
+
+  #----------------------------------------
+  polyF <- function(rho, rc, cc, tab) {
+
+    P <- polyBinBvn(rho, rc, cc)
+    P[P <= 0L] <- NA
+    lP <- log(P)
+    lP[lP == -Inf] <- NA
+    lP[lP == Inf] <- NA
+    -sum(tab * lP, na.rm = TRUE)  }
+
+  #----------------------------------------
+  wtd.table <- function(x, y, weight) {
+
+    tab <- tapply(weight, list(x, y), sum, na.rm = TRUE, simplify = TRUE)
+    tab[is.na(tab)] <- 0L
+
+    return(tab)
+
+  }
+
+  #----------------------------------------
+  polyc <- function(x, y = NULL, taux, tauy, global = TRUE, weight = NULL, correct = correct,
+                    gminx, gmaxx, gminy, gmaxy) {
+
+    if (is.null(weight)) {
+
+      tab <- tableFast(x, y, gminx, gmaxx, gminy, gmaxy)
+
+    }  else {
+
+      tab <- wtd.table(x,y,weight)
+
+    }
+
+    fixed <- 0L
+    tot <- sum(tab)
+    if (isTRUE(tot == 0L)) {
+
+      result <- list(rho = NA, objective = NA, fixed = 1L)
+
+      return(result)
+
+    }
+
+    tab <- tab/tot
+
+    if (isTRUE(correct > 0L)) {
+
+      if (isTRUE(any(tab[] == 0L))) {
+
+        fixed <- 1L
+        tab[tab == 0L] <- correct/tot
+
+      }
+
+    }
+
+    if (isTRUE(global)) {
+
+      rho <- optimize(polyF, interval = c(-1L, 1L), rc = taux, cc = tauy, tab)
+
+    } else {
+
+      if (isTRUE(!is.na(sum(tab))))  {
+
+        zerorows <- apply(tab, 1L, function(x) all(x == 0L))
+        zerocols <- apply(tab, 2L, function(x) all(x == 0L))
+        zr <- sum(zerorows)
+        zc <- sum(zerocols)
+        tab <- tab[!zerorows, , drop = FALSE]
+        tab <- tab[, !zerocols, drop = FALSE]
+        csum <- colSums(tab)
+        rsum <- rowSums(tab)
+
+        if (isTRUE(min(dim(tab)) < 2L)) {
+
+          rho <- list(objective = NA)
+
+        } else {
+
+          cc <-  qnorm(cumsum(csum)[-length(csum)])
+          rc <-  qnorm(cumsum(rsum)[-length(rsum)])
+          rho <- optimize(polyF, interval = c(-1L, 1L), rc = rc, cc = cc, tab)
+
+        }
+
+      } else {
+
+        rho <- list(objective = NA, rho= NA)
+
+      }
+
+    }
+
+    if (isTRUE(is.na(rho$objective))) {
+
+      result <- list(rho = NA, objective = NA, fixed = fixed)
+
+    } else {
+
+      result <- list(rho=rho$minimum, objective=rho$objective, fixed = fixed)
+
+    }
+
+    return(result)
+
+  }
+
+  #----------------------------------------
+  polydi <- function(p, d, taup, taud, global = TRUE, ML = FALSE, std.err = FALSE, weight = NULL,
+                     progress = TRUE, na.rm = TRUE, delete = TRUE, correct = 0.5) {
+
+    myfun <- function(x, i, j, correct, taup, taud, gminx, gmaxx, gminy, gmaxy, np) {
+
+      polyc(x[, i], x[, j], taup[, i], taud[1L, (j - np)], global = global, weight = weight,
+            correct = correct, gminx = gminx, gmaxx = gmaxx, gminy = gminy, gmaxy = gmaxy)
+
+    }
+
+    matpLower <- function(x, np, nd, taup, taud, gminx, gmaxx, gminy, gmaxy) {
+
+      k <- 1
+      il <- vector()
+      jl <- vector()
+      for(i in seq_len(np)) {
+
+        for (j in seq_len(nd)) {
+
+          il[k] <- i
+          jl [k] <- j
+          k <- k + 1
+
+        }
+
+      }
+
+      poly <- mcmapply(function(i, j) myfun(x, i, j, correct = correct,
+                                            taup = taup, taud = taud, gminx = gminx, gmaxx = gmaxx, gminy = gminy, gmaxy = gmaxy, np = np), il, jl + np)
+
+      mat <- matrix(np,nd)
+      mat <- as.numeric(poly[1L, ])
+
+      return(mat)
+
+    }
+
+    if (isTRUE(!is.null(weight))) {
+
+      if (isTRUE(length(weight) != nrow(x))) {
+
+        stop("Length of the weight vector must match the number of cases.", call. = FALSE)
+
+      }
+    }
+
+    cl <- match.call()
+    np <- dim(p)[2L]
+    nd <- dim(d)[2L]
+
+    if (isTRUE(is.null(np))) np <- 1L
+    if (isTRUE(is.null(nd))) nd <- 1L
+
+    nsub <- dim(p)[1L]
+    p <- as.matrix(p)
+    d <- as.matrix(d)
+    nvalues <- max(p, na.rm = TRUE) - min(p, na.rm = TRUE) + 1L
+    dmin <- apply(d, 2L, function(x) min(x, na.rm = TRUE))
+    dmax <- apply(d, 2L, function(x) max(x, na.rm = TRUE))
+    dvalues <- max(dmax - dmin)
+
+    if (isTRUE(dvalues != 1L)) stop("You did not supply a dichotomous variable.", call. = FALSE)
+
+    if (isTRUE(nvalues > 8L)) stop("You have more than 8 categories for your items, polychoric is probably not needed.", call. = FALSE)
+
+    item.var <- apply(p, 2L, sd, na.rm = na.rm)
+    bad <- which((item.var <= 0L) | is.na(item.var))
+
+    if (isTRUE(length(bad) > 0L && delete)) {
+
+      for (baddy in seq_len(length(bad))) {
+
+        message("Item = ", colnames(p)[bad][baddy], " had no variance and was deleted")
+
+      }
+
+      p <- p[, -bad]
+      np <- np - length(bad)
+
+    }
+
+    pmin <- apply(p, 2, function(x) min(x, na.rm = TRUE))
+    minx <- min(pmin)
+    p <- t(t(p) - pmin + 1L)
+
+    miny <- min(dmin)
+    d <-  t(t(d) - dmin + 1L)
+    gminx <- gminy <- 1L
+
+    pmax <- apply(p,2,function(x)  max(x,na.rm = TRUE))
+    gmaxx <- max(pmax)
+
+    if (isTRUE(min(pmax) != max(pmax))) { global <- FALSE
+    warning("The items do not have an equal number of response alternatives, setting global to FALSE.", call. = FALSE)}
+
+    gmaxy <- max(apply(d, 2L, function(x) max(x, na.rm = TRUE)))
+    pfreq <- apply(p, 2L, tabulate, nbins = nvalues)
+    n.obs <- colSums(pfreq)
+    pfreq <- t(t(pfreq)/n.obs)
+
+    taup <- as.matrix(qnorm(apply(pfreq, 2L, cumsum))[seq_len(nvalues - 1L), ], ncol = ncol(pfreq))
+
+    rownames(taup) <- paste(seq_len(nvalues - 1L))
+    colnames(taup) <- colnames(p)
+
+    dfreq <- apply(d, 2L, tabulate, nbins = 2L)
+    if (isTRUE(nd < 2L)) {
+
+      n.obsd <- sum(dfreq)
+
+    } else {
+
+      n.obsd <- colSums(dfreq)
+
+    }
+
+    dfreq <- t(t(dfreq)/n.obsd)
+    taud <-  qnorm(apply(dfreq, 2L, cumsum))
+
+    mat <- matrix(0L, np, nd)
+    rownames(mat) <- colnames(p)
+    colnames(mat) <- colnames(d)
+
+    x <- cbind(p,d)
+
+    mat <- matpLower(x, np, nd, taup, taud, gminx, gmaxx, gminy, gmaxy)
+
+    mat <- matrix(mat, np, nd, byrow = TRUE)
+    rownames(mat) <- colnames(p)
+    colnames(mat)  <- colnames(d)
+
+    taud <- t(taud)
+    result <- list(rho = mat,tau = taud, n.obs = nsub)
+
+    class(result) <- c("psych","polydi")
+
+    return(result)
+
+  }
+
+  #----------------------------------------
+  polytab <- function(tab, correct = TRUE) {
+
+    tot <- sum(tab)
+    tab <- tab/tot
+    if (isTRUE(correct > 0L)) tab[tab == 0L] <- correct/tot
+
+    csum <- colSums(tab)
+    rsum <- rowSums(tab)
+    cc <-  qnorm(cumsum(csum[-length(csum)]))
+    rc <-  qnorm(cumsum(rsum[-length(rsum)]))
+    rho <- optimize(polyF, interval = c(-1L, 1L), rc = rc, cc = cc, tab)
+
+    result <- list(rho = rho$minimum, objective = rho$objective, tau.row = rc, tau.col = cc)
+
+    return(result)
+
+  }
+
+  #----------------------------------------
+  myfun <- function(x, i, j, gminx, gmaxx, gminy, gmaxy) {
+
+    polyc(x[, i], x[, j], tau[, i], tau[, j], global = global, weight = weight, correct = correct,
+          gminx = gminx, gmaxx = gmaxx, gminy = gminy, gmaxy = gmaxy)
+
+  }
+
+  #----------------------------------------
+  matpLower <- function(x, nvar, gminx, gmaxx, gminy, gmaxy) {
+
+    k <- 1L
+    il <- vector()
+    jl <- vector()
+    for(i in 2L:nvar) {
+
+      for (j in seq_len(i - 1L)) {
+
+        il[k] <- i
+        jl[k] <- j
+        k <- k + 1L
+
+      }
+
+    }
+
+    poly <- mcmapply(function(i, j) myfun(x, i, j, gminx = gminx, gmaxx = gmaxx, gminy = gminy, gmaxy = gmaxy), il, jl)
+
+    mat <- diag(nvar)
+    if (isTRUE(length(dim(poly)) == 2L)) {
+
+      mat[upper.tri(mat)] <- as.numeric(poly[1L, ])
+      mat <- t(mat) + mat
+      fixed <- as.numeric(poly[3L, ])
+      diag(mat) <- 1L
+      fixed <- sum(fixed)
+
+      if (isTRUE(fixed > 0L && correct > 0L)) {
+
+        warning(fixed ," cell(s) adjusted for 0 values using the correction for continuity.", call. = FALSE)
+
+      }
+
+      return(mat)
+
+    } else {
+
+      warning("Something is wrong in polycor.", call. = FALSE)
+
+      return(poly)
+
+      stop("Something was seriously wrong. Please look at the results.", call. = FALSE)
+
+    }
+
+  }
+
+  #----------------------------------------
+
+  if (isTRUE(!is.null(weight))) {
+
+    if (isTRUE(length(weight) !=nrow(x))) {
+
+      stop("Length of the weight vector must match the number of cases", call. = FALSE)
+
+    }
+
+  }
+
+  nvar <- dim(x)[2L]
+  nsub <- dim(x)[1L]
+  if (isTRUE((prod(dim(x)) == 4L) || is.table(x))) {
+
+    result <- polytab(x, correct = correct)
+
+  } else {
+
+    x <- as.matrix(x)
+    if (isTRUE(!is.numeric(x))) {
+
+      x <- matrix(as.numeric(x), ncol = nvar)
+      message("Non-numeric input converted to numeric.")
+
+    }
+
+    xt <- table(x)
+    nvalues <- length(xt)
+    maxx <- max(x, na.rm = TRUE)
+
+    if (isTRUE(maxx > nvalues)) {
+
+      xtvalues <- as.numeric(names(xt))
+      for(i in seq_len(nvalues)) {
+
+        x[x == xtvalues[i]] <- i
+
+      }
+
+    }
+
+    nvalues <- max(x, na.rm = TRUE) - min(x, na.rm = TRUE) + 1L
+
+    item.var <- apply(x, 2L, sd, na.rm = na.rm)
+    bad <- which((item.var <= 0)|is.na(item.var))
+
+    if (isTRUE(length(bad) > 0L && delete)) {
+
+      for (baddy in seq_len(length(bad))) {
+
+        message("Item = ", colnames(x)[bad][baddy], " had no variance and was deleted.")
+
+      }
+
+      x <- x[, -bad]
+      nvar <- nvar - length(bad)
+
+    }
+
+    xmin <- apply(x, 2L, function(x) min(x, na.rm = TRUE))
+
+    xmin <- min(xmin)
+    x <- t(t(x) - xmin + 1L)
+
+    gminx <- gminy <- 1L
+    xmax <- apply(x, 2L, function(x) max(x, na.rm = TRUE))
+    xmax <- max(xmax)
+    gmaxx <- gmaxy <- xmax
+
+    if (isTRUE(min(xmax) != max(xmax))) {
+
+      global <- FALSE
+      warning("Items do not have an equal number of response categories, global set to FALSE.", call. = FALSE)
+
+    }
+
+    xfreq <- apply(x, 2L, tabulate, nbins = nvalues)
+    n.obs <- colSums(xfreq)
+    xfreq <- t(t(xfreq) / n.obs)
+    tau <- qnorm(apply(xfreq, 2L, cumsum))[seq_len(nvalues - 1L), ]
+
+    if (isTRUE(!is.matrix(tau))) tau <- matrix(tau, ncol = nvar)
+
+    rownames(tau) <- seq_len(nvalues - 1L)
+    colnames(tau) <- colnames(x)
+
+    mat <- matrix(0L, nvar, nvar)
+    colnames(mat) <- rownames(mat) <- colnames(x)
+
+    mat <- matpLower(x, nvar, gminx, gmaxx, gminy, gmaxy)
+
+    if (isTRUE(any(is.na(mat)))) {
+
+      message("Some correlations are missing, smoothing turned off.")
+      smooth <- FALSE
+
+    }
+
+    if (isTRUE(smooth)) {
+
+      mat <- cor.smooth(mat)
+
+    }
+
+    colnames(mat) <- rownames(mat) <- colnames(x)
+
+  }
+
+  return(mat)
 
 }
+
 
 #_______________________________________________________________________________
 #_______________________________________________________________________________

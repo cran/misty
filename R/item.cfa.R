@@ -22,8 +22,8 @@
 #'                         \code{item.cfa(x1, x2, x3, data = dat)}. Note that the
 #'                         operators \code{.}, \code{+}, \code{-}, \code{~},
 #'                         \code{:}, \code{::}, and \code{!} can also be used to
-#'                         select variables, see 'Details' in the \code{\link{df.subset}}
-#'                         function.
+#'                         select variables, see 'Details' in the
+#'                         \code{\link{df.subset}} function.
 #' @param data             a data frame when specifying one or more variables in
 #'                         the argument \code{...}. Note that the argument is
 #'                         \code{NULL} when specifying a a matrix or data frame
@@ -134,9 +134,10 @@
 #'                         or higher 0.1 are highlighted. Note that highlighting
 #'                         can be disabled by setting the minimum value to 1.
 #' @param digits           an integer value indicating the number of decimal places
-#'                         to be used for displaying results. Note that loglikelihood,
-#'                         information criteria and chi-square test statistic are
-#'                         printed with \code{digits} minus 1 decimal places.
+#'                         to be used for displaying results. Note that
+#'                         loglikelihood, information criteria and chi-square
+#'                         test statistic are printed with \code{digits} minus
+#'                         1 decimal places.
 #' @param p.digits         an integer value indicating the number of decimal places
 #'                         to be used for displaying \emph{p}-values, covariance
 #'                         coverage (i.e., \code{p.digits - 1}), and residual

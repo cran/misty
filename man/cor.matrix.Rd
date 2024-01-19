@@ -133,10 +133,9 @@ the console when specifying \code{sig = TRUE}. However, this option is not suppo
 when using R Markdown, i.e., the argument \code{sig} will switch to \code{FALSE}.
 }
 \note{
-This function uses a modified copy of the \code{PolychoricRM} function from the
-\pkg{Turbofuns} package by Guangjian Zhang, Lauren Trichtinger, and Dayoung Lee
-(2020) to estimate tetrachoric and polychoric correlation coefficients.
-
+This function uses the \code{polychoric()} function in the \pkg{psych}
+package by William Revelle to estimate tetrachoric and polychoric correlation
+coefficients.
 }
 \examples{
 # Example 1a: Pearson product-moment correlation coefficient between 'Ozone' and 'Solar.R#
@@ -197,14 +196,9 @@ write.result(result, "Correlation.xlsx")
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
 - Using R and SPSS}. John Wiley & Sons.
 
-Zhang G, Trichtinger L, Lee D (2020). \emph{Turbofuns: Computing polychoric
-correlations and their asymptotic covariance matrix}. R package version 1.0.0.
-
-Zhang, G., Trichtinger, L. A., Lee, D., & Jiang, G. (2022) PolychoricRM:
-A computationally efficient R function for estimating polychoric correlations
-and their asymptotic covariance matrix. \emph{Structural Equation Modeling:
-A Multidisciplinary Journal, 29}(2), 310-320.
-https://doi.org/10.1080/10705511.2021.1929996
+Revelle, W. (2018) \emph{psych: Procedures for personality and psychological
+research}. Northwestern University, Evanston, Illinois, USA,
+https://CRAN.R-project.org/package=psych Version = 1.8.12.
 }
 \seealso{
 \code{\link{write.result}}, \code{\link{cohens.d}}, \code{\link{effsize}},

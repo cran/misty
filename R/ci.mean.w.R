@@ -23,7 +23,7 @@
 #' number of means and can be removed by rescaling the confidence interval by
 #' a factor of \eqn{\sqrt{J - 1}/J}:
 #'
-#' \deqn{\hat{\mu}_j \pm t_{n - 1, 1 - \alpha/2} \sqrt{\frac{J}{J - 1}} \hat{\sigma}^{'}_{{\hat{\mu}}_j}
+#' \deqn{\hat{\mu}_j \pm t_{n - 1, 1 - \alpha/2} \sqrt{\frac{J}{J - 1}} \hat{\sigma}^{'}_{{\hat{\mu}}_j}}
 #'
 #' where \eqn{\hat{\sigma}^{'}_{{\mu}_j}} is the standard error of the mean computed
 #' from the normalized scores of he \eqn{j}th factor level.

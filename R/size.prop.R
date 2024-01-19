@@ -92,7 +92,7 @@
 #' size.prop(pi = 0.5, delta = 0.2, sample = "two.sample",
 #'           alternative = "two.sided", alpha = 0.01, beta = 0.1)
 #'
-#' #--------------------------------------
+#' #----------------------------------------------------------------------------
 #' # Example 4: One-sided two-sample test
 #' # H0: pi.1 <=  pi.1 = 0.5, H1: pi.1 > pi.2
 #' # alpha = 0.01, beta = 0.1, delta = 0.2

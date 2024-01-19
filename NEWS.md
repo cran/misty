@@ -1,3 +1,12 @@
+### misty 0.6.1 (2024-01-19)
+
+##### User-visible changes
+* Removed the Fortran implementation of the polychoric correlation coefficient
+because it causes problems when loading the package on Mac computers.
+
+##### Bug fix
+* Fixed a bug in the function `freq()`, function did not provide an output. 
+
 ### misty 0.6.0 (2024-01-12)
 
 ##### New features

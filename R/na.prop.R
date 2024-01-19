@@ -25,7 +25,8 @@
 #' @param as.na   a numeric vector indicating user-defined missing values,
 #'                i.e. these values are converted to \code{NA} before conducting
 #'                the analysis.
-#' @param check   logical: if \code{TRUE} (default), argument specification is checked.
+#' @param check   logical: if \code{TRUE} (default), argument specification is
+#'                checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}

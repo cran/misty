@@ -104,7 +104,6 @@
 #' #----------------------------------------------------------------------------
 #' # Linear model
 #'
-#' #...........
 #' # Example 1: Regression model with continuous predictors
 #' mod.lm1 <- lm(y ~ x1 + x2, data = dat)
 #' std.coef(mod.lm1)
@@ -112,21 +111,17 @@
 #' # Example 2: Print all standardized coefficients
 #' std.coef(mod.lm1, print = "all")
 #'
-#' #...........
 #' # Example 3: Regression model with dichotomous predictor
 #' mod.lm2 <- lm(y ~ x3, data = dat)
 #' std.coef(mod.lm2)
 #'
-#' #...........
 #' # Example 4: Regression model with continuous and dichotomous predictors
 #' mod.lm3 <- lm(y ~ x1 + x2 + x3, data = dat)
 #' std.coef(mod.lm3)
 #'
-#' #...........
 #' # Example 5: Regression model with continuous predictors and an interaction term
 #' mod.lm4 <- lm(y ~ x1*x2, data = dat)
 #'
-#' #...........
 #' # Example 6: Regression model with a quadratic term
 #' mod.lm5 <- lm(y ~ x1 + I(x1^2), data = dat)
 #' std.coef(mod.lm5)

@@ -82,7 +82,7 @@
 #'
 #' @references
 #' Darlington, R. B., & Hayes, A. F. (2017). \emph{Regression analysis and linear
-#' models: Concepts, applications, and implementation. The Guilford Press.
+#' models: Concepts, applications, and implementation}. The Guilford Press.
 #'
 #' Cribari-Neto, F. (2004). Asymptotic inference under heteroskedasticity of unknown
 #' form. \emph{Computational Statistics & Data Analysis, 45}, 215-233.
@@ -664,8 +664,8 @@ robust.coef <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m
       # Close file connection
       sink()
 
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Excel file ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Excel file ####
 
     } else {
 

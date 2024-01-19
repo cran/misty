@@ -203,8 +203,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
             if(isTRUE(!all(as.numeric(value.labels.split.matrix[1, ]) %in% x[, varnames[i]]))) {
 
-              warning(paste0("Values in the column \"values\" specified in 'var.attr' does not match with the variable '",
-                             varnames[i], "'."), call. = FALSE)
+              warning(paste0("Values in the column \"values\" specified in 'var.attr' does not match with the variable '", varnames[i], "'."), call. = FALSE)
 
             }
 
@@ -351,7 +350,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
     # Convert factors and logical to numeric
 
-    any.factors <- any(vapply(x, is.factor, FUN.VALUE = logical(1)))
+    any.factors <- any(vapply(x, is.factor, FUN.VALUE = logical(1L)))
 
     if (isTRUE(any.factors)) {
 
