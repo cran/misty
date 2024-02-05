@@ -1,3 +1,22 @@
+### misty 0.6.2 (2024-02-05)
+
+##### Bug fix
+* Fixed a bug related to variable selection using the operators 
+`.`, `+`, `-`, `~`, `:`, `::`, functions which caused an warning message. 
+* Fixed a bug in the functions `center()`, `multilevel.icc()`, and `multilevel.descript()` 
+which caused an error message in three-level data with ambiguously coded cluster 
+variables common in longitudinal data. 
+
+##### User-visible changes
+* Revised the function `multilevel.descript()` to take into account missing 
+values, e.g., `No. of cases` and `No. of clusters` show the number observations 
+and clusters after excluding missing values. 
+* Variable attributes in the function `write.sav()` do not require specifying all
+three columns `label`, `values`, and `missing` anymore.
+
+##### Minor features and improvements
+* Added the argument `na` to the function `read.mplus()`.
+
 ### misty 0.6.1 (2024-01-19)
 
 ##### User-visible changes
@@ -33,7 +52,7 @@ with the current date and time.
 `multilevel.omega()`, `na.auxiliary()`, `na.coverage()`, `na.descript()`,
 `na.indicator()`, `na.pattern()`, `na.prop()`, `na.test()` `rec()`, `rwg.lindell()`,
 `skewness()`, and `kurtosis()` provide the argument `...` instead of the argument 
-`x` to specify variables from the data frame specified in  `data` using the operators 
+`x` to specify variables from the data frame specified in `data` using the operators 
 `.`, `+`, `-`, `~`, `:`, `::`. 
 * Function `multilevel.icc()` computes intraclass corelation coefficients in
 three-level data.
@@ -90,7 +109,7 @@ latent class indicators as grouping variable in the bar charts.
 ### misty 0.5.1 (2023-08-22)
 
 ##### Minor features and improvements
-* Function `mplus.lca()` can  be used to conduct latent class analysis with
+* Function `mplus.lca()` can be used to conduct latent class analysis with
 count, unordered categorical, and ordered categorical indicator variables.
 * Function `result.lca()` can be used to save bar charts with error bars for confidence 
 intervals for each of the latent class solutions.
@@ -181,9 +200,9 @@ and influence for linear models estimated by using the `lm()` function
 * Function `crosstab()` displays marginal row-wise, column-wise, and total percentages in the output (thanks to Joachim Fritz Punter and Lisa Bucher). Note that the function now also returns the crosstable in the list element `result$crosstab` of the return object .
 
 ##### User-visible changes
-* Revised the `Value` sections in the documentation of the functions.  
+* Revised the `Value` sections in the documentation of the functions.
 * Changed the default setting of the argument `weighted` in the `test.t` and the `na.auxiliary` function 
-to `FALSE` in line with the recommendation by Delacre et al. (2021).  
+to `FALSE` in line with the recommendation by Delacre et al. (2021).
 * Renamed the function `collin.diag()` to `check.collin()`.
 
 ##### Bug fix
@@ -410,4 +429,4 @@ and `multilevel.cor()` to `FALSE`.
 
 * Fixed a bug in the function `cohens.d()`, function returned `NA` for Cohen's d in within-subject design in the presence of missing values
 * Fixed a bug in the function `alpha.coef()`, function did not provide any item statistics irrespective of the argument `print`
-* Fixed a bug in the function `as.na()`, function always generated a warning message irrespective of the argument `as.na`  
+* Fixed a bug in the function `as.na()`, function always generated a warning message irrespective of the argument `as.na`.

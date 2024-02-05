@@ -945,10 +945,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
                                             Total = rowSums(write.object$perc[, -1L]),
                                             fix.empty.names = FALSE, check.names = FALSE, row.names = NULL)
 
-            write.object$v.perc <- data.frame(write.object$v.perc[, "Var"],
-                                              write.object$v.perc[, -c(1L, ncol(write.object$v.perc))],
-                                              Total = rowSums(write.object$v.perc[, -c(1L, ncol(write.object$v.perc))]),
-                                              Missing = write.object$v.perc[, ncol(write.object$v.perc)],
+            write.object$v.perc <- data.frame(write.object$v.perc,
                                               Total = rowSums(write.object$v.perc[, -1L]),
                                               fix.empty.names = FALSE, check.names = FALSE, row.names = NULL)
 

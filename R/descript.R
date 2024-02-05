@@ -1,7 +1,7 @@
 #' Descriptive Statistics
 #'
-#' This function computes summary statistics for one or more variables, optionally
-#' by a grouping and/or split variable.
+#' This function computes summary statistics for one or more than one variables,
+#' optionally by a grouping and/or split variable.
 #'
 #' @param ...      a numeric vector, matrix or data frame with numeric variables,
 #'                 i.e., factors and character variables are excluded from \code{...}

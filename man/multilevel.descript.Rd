@@ -5,9 +5,10 @@
 \title{Multilevel Descriptive Statistics for Two-Level and Three-Level Data}
 \usage{
 multilevel.descript(..., data = NULL, cluster, type = c("1a", "1b"),
-                    method = c("aov", "lme4", "nlme"), print = c("all", "var", "sd"),
-                    REML = TRUE, digits = 2, icc.digits = 3, as.na = NULL,
-                    write = NULL, append = TRUE, check = TRUE, output = TRUE)
+                    method = c("aov", "lme4", "nlme"),
+                    print = c("all", "var", "sd"), REML = TRUE, digits = 2,
+                    icc.digits = 3, as.na = NULL, write = NULL, append = TRUE,
+                    check = TRUE, output = TRUE)
 }
 \arguments{
 \item{...}{a numeric vector, matrix, or data frame. Alternatively, an
@@ -95,7 +96,7 @@ entries:
   \item{\code{args}}{specification of function arguments}
   \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
   \item{\code{result}}{list with result tables, i.e.,
-                       \code{no.obs} for the number of observations
+                       \code{no.obs} for the number of observations,
                        \code{no.no.miss} for the number of missing value,
                        \code{no.cluster.l2} and \code{no.cluster.l3} for the number of clusters at Level 2 and/or Level 3,
                        \code{m.cluster.size.l2} and \code{m.cluster.size.l3} for the average cluster size at Level 2 and/or Level 3,

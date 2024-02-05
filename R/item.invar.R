@@ -321,7 +321,7 @@
 #'                         c("x5", "x6", "x7", "x8")), group = "sex")
 #'
 #' #..................
-#' # Measurement model with two factors
+#' # Configural, metric, scalar, and strict measurement invariance
 #'
 #' # Example 2: Evaluate configural, metric, scalar, and strict measurement invariance
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
@@ -460,10 +460,13 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   if (isTRUE(!is.null(data))) {
 
     # Variable names
-    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
+    var.names <- .var.names(..., data = data, group = group, cluster = cluster, check.chr = "a matrix or data frame")
 
     # Extract data
     x <- data[, var.names]
+
+    # Grouping variable
+    if (isTRUE(!is.null(group))) { group <- data[, group] }
 
     # Cluster variable
     if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
@@ -477,13 +480,10 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     x <- eval(..., enclos = parent.frame())
 
     # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster)
+    var.group <- .var.group(data = x, group = group)
 
-    # Data
     if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
-
-    # Cluster variable
-    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+    if (isTRUE(!is.null(var.group$group))) { group <- var.group$group }
 
   }
 

@@ -11,27 +11,12 @@
 
 .var.names <- function(..., data, group = NULL, split = NULL, cluster = NULL,
                        id = NULL, obs = NULL, day = NULL, time = NULL,
-                       check.chr = NULL, check = TRUE) {
+                       check.chr = NULL) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Elements in the '...' Argument ####
 
   var.names <- sapply(substitute(list(...)), as.character)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## # Check variable names ####
-
-  if (isTRUE(check)) {
-
-    var.names.check <- misty::chr.omit(var.names, omit = "list", check = FALSE)
-    var.names.miss <- which(!var.names.check %in% colnames(data))
-    if (isTRUE(length(var.names.miss) != 0L)) {
-
-      if (isTRUE(length(var.names.miss) == 1L)) { warning(paste0("Variable specified in '...' was not found in the data frame: ", var.names.check[var.names.miss]), call. = FALSE) } else { warning(paste0("Variables specified in '...' were not found in the data frame: ", paste0(var.names.check[var.names.miss], collapse = ", ")), call. = FALSE) }
-
-    }
-
-  }
 
   #...................
   ### Check for ! operators ####
@@ -345,7 +330,8 @@
       }
 
       # Order of cluster variables
-      if (isTRUE(length(unique(data[, cluster[2L]])) < length(unique(data[, cluster[1L]])))) { stop("Please specify the Level 3 cluster variable first, e.g., cluster = c(\"level3\", \"level2\").", call. = FALSE) }
+      check.cluster <- suppressWarnings(tapply(data[, cluster[2L]], data[, cluster[1L]], var, na.rm = TRUE))
+      if (isTRUE(all(check.cluster == 0) || all(is.na(check.cluster)))) { stop("Please specify the Level 3 cluster variable first, e.g., cluster = c(\"level3\", \"level2\").", call. = FALSE) }
 
     }
 
@@ -366,7 +352,7 @@
 
   #...................
   ### Exclude obs variable ####
-  if (isTRUE(!is.null(check.chr) && !is.null(obs ))) {
+  if (isTRUE(!is.null(check.chr) && !is.null(obs))) {
 
     if (isTRUE(!is.character(obs) || length(obs) != 1L)) { stop("Please specify a character string for the argument 'obs'.", call. = FALSE) }
     if (isTRUE(!id %in% colnames(data))) { stop("Split variable specifed in 'obs' was not found in 'data'.", call. = FALSE) }

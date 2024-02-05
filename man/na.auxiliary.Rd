@@ -5,8 +5,8 @@
 \title{Auxiliary variables analysis}
 \usage{
 na.auxiliary(..., data = NULL, tri = c("both", "lower", "upper"), weighted = FALSE,
-             correct = FALSE, digits = 2, as.na = NULL, write = NULL, append = TRUE,
-             check = TRUE, output = TRUE)
+             correct = FALSE, digits = 2, as.na = NULL, write = NULL,
+             append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{...}{a matrix or data frame with incomplete data, where missing

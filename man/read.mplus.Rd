@@ -4,7 +4,7 @@
 \alias{read.mplus}
 \title{Read Mplus Data File and Variable Names}
 \usage{
-read.mplus(file, sep = "", input = NULL, print = FALSE, return.var = FALSE,
+read.mplus(file, sep = "", input = NULL, na = -99, print = FALSE, return.var = FALSE,
            fileEncoding = "UTF-8-BOM", check = TRUE)
 }
 \arguments{
@@ -24,6 +24,11 @@ or output file (\code{.out}) in which the variable names
 are specified in the \code{VARIABLE:} section. Note that if
 \code{input = NULL}, this function is equivalent to \code{read.table(file)}.}
 
+\item{na}{a numeric vector indicating values to replace with \code{NA}.
+By default, \code{-99} is replaced with \code{NA}. If
+\code{-99} is not a missing value change the argument to
+\code{NULL}.}
+
 \item{print}{logical: if \code{TRUE}, variable names are printed on the
 console.}
 
@@ -40,7 +45,8 @@ A data frame containing a representation of the data in the file.
 }
 \description{
 This function reads a Mplus data file and/or Mplus input/output file to return
-a data frame with variable names extracted from the Mplus input/output file.
+a data frame with variable names extracted from the Mplus input/output file. Note
+that by default \code{-99} in the Mplus data file is replaced with to \code{NA}.
 }
 \examples{
 \dontrun{

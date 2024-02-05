@@ -147,7 +147,7 @@
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
 #' \item{\code{result}}{list with result tables, i.e.,
-#'                     \code{no.obs} for the number of observations
+#'                     \code{no.obs} for the number of observations,
 #'                     \code{no.no.miss} for the number of missing value,
 #'                     \code{no.cluster.l2} and \code{no.cluster.l3} for the number of clusters at Level 2 and/or Level 3,
 #'                     \code{m.cluster.size.l2} and \code{m.cluster.size.l3} for the average cluster size at Level 2 and/or Level 3,
@@ -328,6 +328,19 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Three-level data with ambiguously coded cluster variables ####
+
+  if (isTRUE(no.clust == "two")) {
+
+    if (isTRUE(length(unique(apply(cluster, 1L, paste, collapse = ""))) > length(unique(cluster[, 2L])))) {
+
+      cluster[, 2L] <- apply(cluster, 1L, paste, collapse = "_")
+
+    }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- misty::as.na(x, na = as.na, check = check) }
@@ -471,22 +484,25 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
           no.obs <- length(na.omit(x))
 
           # No. of missing values
-          no.miss <- no.obs - nrow(na.omit(data.frame(x, cluster)))
+          no.miss <- nrow(data.frame(x, cluster)) - no.obs
+
+          ###### Cluster
+          x.cluster <- na.omit(data.frame(x, cluster = cluster))[, "cluster"]
 
           # No. of clusters
-          no.cluster.l2 <- length(na.omit(unique(cluster)))
+          no.cluster.l2 <- length(unique(x.cluster))
 
           # Average cluster size
-          m.cluster.size.l2 <- mean(table(cluster))
+          m.cluster.size.l2 <- mean(table(x.cluster))
 
           # Standard deviation cluster size
-          sd.cluster.size.l2 <- sd(table(cluster))
+          sd.cluster.size.l2 <- sd(table(x.cluster))
 
           # Minimum cluster size
-          min.cluster.size.l2 <- min(table(cluster))
+          min.cluster.size.l2 <- min(table(x.cluster))
 
           # Maximum cluster size
-          max.cluster.size.l2 <- max(table(cluster))
+          max.cluster.size.l2 <- max(table(x.cluster))
 
           # Objects not used in a two-level model
           no.cluster.l3 <- m.cluster.size.l3 <- sd.cluster.size.l3 <- min.cluster.size.l3 <- max.cluster.size.l3 <- NA
@@ -638,46 +654,53 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
         switch(vartype, L1 = {
 
           # No. of observations
-          no.obs <- length(x)
+          no.obs <- length(na.omit(x))
 
           # No. of missing values
-          no.miss <- no.obs - nrow(na.omit(data.frame(x, cluster)))
+          no.miss <- nrow(data.frame(x, cluster)) - no.obs
 
           #...................
           #### Level 2
 
+          ###### Clusters
+          x.cluster <- na.omit(data.frame(x, cluster = cluster[, 2L]))[, "cluster"]
+
           # No. of clusters
-          no.cluster.l2 <- length(na.omit(unique(cluster[, 2L])))
+          no.cluster.l2 <- length(unique(x.cluster))
 
           # Average cluster size
-          m.cluster.size.l2 <- mean(table(cluster[, 2L]))
+          m.cluster.size.l2 <- mean(table(x.cluster))
 
           # Standard deviation cluster size
-          sd.cluster.size.l2 <- sd(table(cluster[, 2L]))
+          sd.cluster.size.l2 <- sd(table(x.cluster))
 
           # Minimum cluster size
-          min.cluster.size.l2 <- min(table(cluster[, 2L]))
+          min.cluster.size.l2 <- min(table(x.cluster))
 
           # Maximum cluster size
-          max.cluster.size.l2 <- max(table(cluster[, 2L]))
+          max.cluster.size.l2 <- max(table(x.cluster))
 
           #...................
           #### Level 3
 
+          ###### Clusters
+          x.cluster <- data.frame(x, cluster = cluster)
+          x.cluster <- x.cluster[which(!is.na(x.cluster[, 1L]) & !is.na(x.cluster[, 2L])), ]
+
           # No. of clusters
-          no.cluster.l3 <- length(na.omit(unique(cluster[, 1L])))
+          no.cluster.l3 <- length(unique(x.cluster[, 2L]))
 
           # Average cluster size
-          m.cluster.size.l3 <- mean(table(cluster[which(!duplicated(cluster[, 2])), 1L]))
+          m.cluster.size.l3 <- mean(table(x.cluster[, 3L]))
 
           # Standard deviation cluster size
-          sd.cluster.size.l3 <- sd(table(cluster[which(!duplicated(cluster[, 2])), 1L]))
+          sd.cluster.size.l3 <- sd(table(x.cluster[, 3L]))
 
           # Minimum cluster size
-          min.cluster.size.l3 <- min(table(cluster[which(!duplicated(cluster[, 2])), 1L]))
+          min.cluster.size.l3 <- min(table(x.cluster[, 3L]))
 
           # Maximum cluster size
-          max.cluster.size.l3 <- max(table(cluster[which(!duplicated(cluster[, 2])), 1L]))
+          max.cluster.size.l3 <- max(table(x.cluster[, 3L]))
 
           ###### ICC using lmer() function
           if (isTRUE(method == "lme4")) {
@@ -771,19 +794,20 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
         }, L2 = {
 
           # Data
-          data <- data.frame(x, cluster)
+          data.l2 <- data.frame(x, cluster)
+          data.l2 <- data.l2[which(!is.na(data.l2[, 1L]) & !is.na(data.l2[, 2L]) & !is.na(data.l2[, 3L])), ]
 
           # Level 2 data
-          x <- data[which(!duplicated(cluster[, 2L])), 1L]
+          x.l2 <- data.l2[which(!duplicated(data.l2[, 3L])), 1L]
 
           # Level 3 cluster
-          cluster <- data[which(!duplicated(cluster[, 2L])), 2L]
+          cluster.l2 <- data.l2[which(!duplicated(data.l2[, 3L])), 2L]
 
           #...................
           #### Level 2
 
           # No. of clusters
-          no.cluster.l2 <- length(x)
+          no.cluster.l2 <- length(na.omit(x.l2))
 
           # Average cluster size
           m.cluster.size.l2 <- NA
@@ -801,19 +825,19 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
           #### Level 3
 
           # No. of clusters
-          no.cluster.l3 <- length(na.omit(unique(cluster)))
+          no.cluster.l3 <- length(na.omit(unique(cluster.l2)))
 
           # Average cluster size
-          m.cluster.size.l3 <- mean(table(cluster))
+          m.cluster.size.l3 <- mean(table(cluster.l2))
 
           # Standard deviation cluster size
-          sd.cluster.size.l3 <- sd(table(cluster))
+          sd.cluster.size.l3 <- sd(table(cluster.l2))
 
           # Minimum cluster size
-          min.cluster.size.l3 <- min(table(cluster))
+          min.cluster.size.l3 <- min(table(cluster.l2))
 
           # Maximum cluster size
-          max.cluster.size.l3 <- max(table(cluster))
+          max.cluster.size.l3 <- max(table(cluster.l2))
 
           # Objects not used for a Level 2 variable
           no.obs <- no.miss <- m.cluster.size.l2 <- sd.cluster.size.l2 <- min.cluster.size.l2 <- max.cluster.size.l2 <- NA
@@ -822,7 +846,7 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
           if (isTRUE(method == "lme4")) {
 
             # Estimate model
-            mod <- suppressMessages(lme4::lmer(x ~ 1 + (1|cluster), REML = REML, control = lme4::lmerControl(optimizer = "bobyqa")))
+            mod <- suppressMessages(lme4::lmer(x.l2 ~ 1 + (1|cluster.l2), REML = REML, control = lme4::lmerControl(optimizer = "bobyqa")))
 
             # Mean
             mean.x <- unname(lme4::fixef(mod))
@@ -831,7 +855,7 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
             vartab <- as.data.frame(suppressMessages(lme4::VarCorr(mod)))
 
             # Level 3 Between-cluster variance
-            var.v <- vartab[vartab$grp == "cluster", "vcov"]
+            var.v <- vartab[vartab$grp == "cluster.l2", "vcov"]
 
             # Level 2 Between-cluster variance
             var.u <- vartab[vartab$grp == "Residual", "vcov"]
@@ -849,7 +873,7 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
             mean.x <- unname(lme4::fixef(mod))
 
             # Estimate model
-            mod <- suppressMessages(nlme::lme(x ~ 1, random = ~1 | cluster, na.action = na.omit, method = REML))
+            mod <- suppressMessages(nlme::lme(x.l2 ~ 1, random = ~1 | cluster.l2, na.action = na.omit, method = REML))
 
             # Variance components
             vartab <- nlme::VarCorr(mod)
@@ -867,10 +891,10 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
 
           # Intraclass correlation coefficient
           icc1.l3 <- var.v / var.total
-          icc2.l3 <- var.v / (var.v + var.u / mean(table(cluster)))
+          icc2.l3 <- var.v / (var.v + var.u / mean(table(cluster.l2)))
 
           # Design effect
-          deff <- 1L + icc1.l3*(mean(table(cluster)) - 1L)
+          deff <- 1L + icc1.l3*(mean(table(cluster.l2)) - 1L)
 
           # Square root design effect
           deff.sqrt <- sqrt(deff)
@@ -890,24 +914,25 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
         }, L3 = {
 
           # Data
-          data <- data.frame(x, cluster)
+          data.l3 <- data.frame(x, cluster)
+          data.l3 <- data.l3[which(!is.na(data.l3[, 1L]) & !is.na(data.l3[, 2L])), ]
 
-          # Level 2 data
-          x <- data[which(!duplicated(cluster[, 1L])), 1L]
+          # Level 3 data
+          x.l3 <- data[which(!duplicated(data.l3[, 2L])), 1L]
 
           # Level 3 cluster
-          cluster <- data[which(!duplicated(cluster[, 1L])), 2L]
+          cluster <- data[which(!duplicated(data.l3[, 2L])), 2L]
 
           #...................
           #### Level 3
 
           # No. of clusters
-          no.cluster.l3 <- length(x)
+          no.cluster.l3 <- length(x.l3)
 
           # Mean
-          mean.x <- mean(x, na.rm = TRUE)
+          mean.x <- mean(x.l3, na.rm = TRUE)
           # Variance
-          var.v <- var(x, na.rm = TRUE)
+          var.v <- var(x.l3, na.rm = TRUE)
           # Standard deviation
           sd.v <- sqrt(var.v)
 

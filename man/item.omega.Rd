@@ -7,7 +7,8 @@
 item.omega(..., data = NULL, rescov = NULL, type = c("omega", "hierarch", "categ"),
            exclude = NULL, std = FALSE, na.omit = FALSE,
            print = c("all", "omega", "item"), digits = 2, conf.level = 0.95,
-           as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
+           as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+           output = TRUE)
 }
 \arguments{
 \item{...}{a matrix or data frame. Note that at least three items are

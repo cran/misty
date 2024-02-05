@@ -334,6 +334,7 @@ item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "s
 
 # Example 1e: Alternative specification using the 'data' and 'model' argument
 item.invar(., data = HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "sex")
+
 #..................
 # Measurement model with two factors
 
@@ -342,7 +343,7 @@ item.invar(HolzingerSwineford1939,
                         c("x5", "x6", "x7", "x8")), group = "sex")
 
 #..................
-# Measurement model with two factors
+# Configural, metric, scalar, and strict measurement invariance
 
 # Example 2: Evaluate configural, metric, scalar, and strict measurement invariance
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),

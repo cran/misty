@@ -11,7 +11,8 @@ multilevel.cor(..., data = NULL, cluster, within = NULL, between = NULL,
                order = FALSE, tri = c("both", "lower", "upper"), tri.lower = TRUE,
                p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel",
                          "BH", "BY", "fdr"), digits = 2, p.digits = 3,
-               as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
+               as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+               output = TRUE)
 }
 \arguments{
 \item{...}{a matrix or data frame.  Alternatively, an expression

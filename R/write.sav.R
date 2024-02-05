@@ -201,9 +201,17 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
 
             value.labels.split.matrix <- matrix(misty::chr.trim(unlist(sapply(value.labels.split, function(y) strsplit(y, "=")))), ncol = length(value.labels.split))
 
+            # Duplicated values
+            if (isTRUE(any(duplicated(value.labels.split.matrix[1L, ])))) {
+
+              stop(paste0("Values in the column \"values\" specified in 'var.attr' are duplicated for the variable '", varnames[i], "'."), call. = FALSE)
+
+            }
+
+            # Values specified in 'values' in the data
             if(isTRUE(!all(as.numeric(value.labels.split.matrix[1, ]) %in% x[, varnames[i]]))) {
 
-              warning(paste0("Values in the column \"values\" specified in 'var.attr' does not match with the variable '", varnames[i], "'."), call. = FALSE)
+              warning(paste0("Values in the column \"values\" specified in 'var.attr' do not all match with the variable '", varnames[i], "'."), call. = FALSE)
 
             }
 
@@ -222,9 +230,17 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
     if (isTRUE(write.csv & any(!sep %in% c(";", ",")))) { stop("Specify either \";\" or \",\" for the argument sep.", call. = FALSE) }
 
   }
+
   #_____________________________________________________________________________
   #
   # Main Function --------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Variable attributes ####
+
+  if (isTRUE("label" %in% names(var.attr))) { var.attr[, "label"] <- na.as(var.attr[, "label"], na = "", check = FALSE) }
+  if (isTRUE("values" %in% names(var.attr))) { var.attr[, "values"] <- na.as(var.attr[, "values"], na = "", check = FALSE) }
+  if (isTRUE("missing" %in% names(var.attr))) { var.attr[, "missing"] <- na.as(var.attr[, "missing"], na = "", check = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Use haven package ####
@@ -232,11 +248,7 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
   if (isTRUE(is.null(pspp.path))) {
 
     # Package haven installed?
-    if (isTRUE(!requireNamespace("haven", quietly = TRUE))) {
-
-      stop("Package \"haven\" is needed for this function to work, please install it.", call. = FALSE )
-
-    }
+    if (isTRUE(!requireNamespace("haven", quietly = TRUE))) { stop("Package \"haven\" is needed for this function to work, please install it.", call. = FALSE ) }
 
     #...................
     ### Without variable attributes ####
@@ -250,58 +262,36 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
     } else {
 
       # Variable labels, value labels, and user-missing values
-      labels <- as.character(var.attr[, match("values", colnames(var.attr))])
-      na <- as.character(var.attr[, match("missing", colnames(var.attr))])
-      label <- as.character(var.attr[, match("label", colnames(var.attr))])
+      if (isTRUE("label" %in% names(var.attr))) { label <- as.character(var.attr[, match("label", colnames(var.attr))]) } else { label <- rep("", times = nrow(var.attr)) }
+      if (isTRUE("values" %in% names(var.attr))) { labels <- as.character(var.attr[, match("values", colnames(var.attr))]) } else { labels <- rep("", times = nrow(var.attr)) }
+      if (isTRUE("missing" %in% names(var.attr))) { na <- as.character(var.attr[, match("missing", colnames(var.attr))]) } else { na <- rep("", times = nrow(var.attr)) }
 
       # For numeric variables only, i.e., exclude factors, strings, and dates
       for (i in which(vapply(x, is.numeric, FUN.VALUE = logical(1L)))) {
 
-        # Value labels
-        if (misty::chr.trim(labels[i]) == "") {
-
-          # No User-missing values
-          if (isTRUE(misty::chr.trim(na[i]) == "")) {
-
-            labels.i <- NULL
-
-          } else {
-
-            x.na <- misty::chr.trim(unlist(strsplit(na[i], ";")))
-
-            labels.i <- paste0("c(", paste(sapply(x.na, function(y) paste("\"NA\" = ", y)), collapse = ", "), ")")
-
-          }
-
-        } else {
+        ##### Value labels ####
+        if (misty::chr.trim(labels[i]) != "") {
 
           x.labels <- unlist(strsplit(labels[i], ";"))
 
           x.labels <- matrix(misty::chr.trim(unlist(sapply(x.labels, function(y) strsplit(y, "=")))), ncol = length(x.labels))
 
-          if (misty::chr.trim(na[i]) == "") {
-
-            labels.i <- paste0("c(", paste(apply(x.labels, 2, function(y) paste(paste0("\"", y[2L], "\""), y[1], sep = " = ")), collapse = ", "), ")")
-
-          } else {
-
-            x.na <- misty::chr.trim(unlist(strsplit(na[i], ";")))
-
-            labels.i <- paste0("c(", paste(c(apply(x.labels, 2, function(y) paste(paste0("\"", y[2L], "\""), y[1], sep = " = ")),
-                                             paste(sapply(x.na, function(y) paste("\"NA\" = ", y)), collapse = ", ")), collapse = ", "), ")")
-
-          }
-
-        }
-
-        # User-missing values
-        if (isTRUE(misty::chr.trim(na[i]) == "")) {
-
-          na.i <- NULL
+          labels.i <- paste0("c(", paste(apply(x.labels, 2L, function(y) paste(paste0("\"", y[2L], "\""), y[1L], sep = " = ")), collapse = ", "), ")")
 
         } else {
 
+          labels.i <- NULL
+
+        }
+
+        ##### User-missing values ####
+        if (isTRUE(misty::chr.trim(na[i]) != "")) {
+
           na.i <- paste0("c(", paste(misty::chr.trim(unlist(strsplit(na[i], ";"))), collapse = ", "), ")")
+
+        } else {
+
+          na.i <- NULL
 
         }
 
@@ -349,7 +339,6 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
     add.quote <- function(x) { paste0("\"", x, "\"") }
 
     # Convert factors and logical to numeric
-
     any.factors <- any(vapply(x, is.factor, FUN.VALUE = logical(1L)))
 
     if (isTRUE(any.factors)) {

@@ -2,23 +2,29 @@
 #'
 #' This function reads a Mplus data file and/or Mplus input/output file to return
 #' a data frame with variable names extracted from the Mplus input/output file.
+#' Note that by default \code{-99} in the Mplus data file is replaced with to
+#' \code{NA}.
 #'
 #' @param file          a character string indicating the name of the Mplus data
 #'                      file with or without the file extension \code{.dat}, e.g.,
 #'                      \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.
-#'                      Note that it is not necessary to specify this argument when
-#'                      \code{return.var = TRUE}.
+#'                      Note that it is not necessary to specify this argument
+#'                      when \code{return.var = TRUE}.
 #' @param sep           a character string indicating the field separator (i.e.,
 #'                      delimiter) used in the data file specified in \code{file}.
-#'                      By default, the separator is 'white space', i.e., one or more
-#'                      spaces, tabs, newlines or carriage returns.
+#'                      By default, the separator is 'white space', i.e., one or
+#'                      more spaces, tabs, newlines or carriage returns.
 #' @param input         a character string indicating the Mplus input (\code{.inp})
 #'                      or output file (\code{.out}) in which the variable names
-#'                      are specified in the \code{VARIABLE:} section. Note that if
-#'                      \code{input = NULL}, this function is equivalent to
+#'                      are specified in the \code{VARIABLE:} section. Note that
+#'                      if \code{input = NULL}, this function is equivalent to
 #'                      \code{read.table(file)}.
-#' @param print         logical: if \code{TRUE}, variable names are printed on the
-#'                      console.
+#' @param na            a numeric vector indicating values to replace with \code{NA}.
+#'                      By default, \code{-99} is replaced with \code{NA}. If
+#'                      \code{-99} is not a missing value change the argument to
+#'                      \code{NULL}.
+#' @param print         logical: if \code{TRUE}, variable names are printed on
+#'                      the console.
 #' @param return.var    logical: if \code{TRUE}, the function returns the variable
 #'                      names extracted from the Mplus input or output file only.
 #' @param fileEncoding  character string declaring the encoding used on \code{file}
@@ -55,8 +61,8 @@
 #' # Example 3: Read variable names extracted from the Mplus input file
 #' varnames <- read.mplus(input = "Mplus_Input.inp", return.var = TRUE)
 #' }
-read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var = FALSE,
-                       fileEncoding = "UTF-8-BOM", check = TRUE) {
+read.mplus <- function(file, sep = "", input = NULL, na = -99, print = FALSE,
+                       return.var = FALSE, fileEncoding = "UTF-8-BOM", check = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -75,8 +81,7 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
     #...................
     ### File extension .inp or .out ####
 
-    input <- ifelse(length(grep(".inp", input)) == 0L && length(grep(".out", input)) == 0L,
-                    input <- paste0(input, ".inp"), input)
+    input <- ifelse(length(grep(".inp", input)) == 0L && length(grep(".out", input)) == 0L, input <- paste0(input, ".inp"), input)
 
     #...................
     ### Read input text lines ####
@@ -166,8 +171,7 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
     #...................
     ### File extension .dat, .txt. or .csv ####
 
-    file <- ifelse(length(grep(".dat", file)) == 0L && length(grep(".txt", file)) == 0L && length(grep(".csv", file)) == 0L,
-                   file <- paste0(file, ".dat"), file)
+    file <- ifelse(length(grep(".dat", file)) == 0L && length(grep(".txt", file)) == 0L && length(grep(".csv", file)) == 0L, file <- paste0(file, ".dat"), file)
 
     if (isTRUE(!file.exists(file))) { stop(paste0("Unable to open Mplus data file: ", sQuote(file), " does not exist."), call. = FALSE) }
 
@@ -204,14 +208,9 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
         if (isTRUE(ncol(df.check) != length(varnames))) {
 
           # Print variable names on console
-          if (isTRUE(print)) {
+          if (isTRUE(print)) { print(varnames) }
 
-            print(varnames)
-
-          }
-
-          stop(paste0("Number of columns in data file ", file, " (", ncol(df.check), ")", " does not match with the number of variables specified in ", input,
-                      " (", length(varnames), ")."), call. = FALSE)
+          stop(paste0("Number of columns in data file ", file, " (", ncol(df.check), ")", " does not match with the number of variables specified in ", input, " (", length(varnames), ")."), call. = FALSE)
 
         }
 
@@ -229,19 +228,20 @@ read.mplus <- function(file, sep = "", input = NULL, print = FALSE, return.var =
     # Read data
     object <- read.table(file, sep = sep, stringsAsFactors = FALSE, fileEncoding = fileEncoding)
 
-    #----------------------------------------
-    # Assign variable names
+    #...................
+    ### Missing values ####
+
+    if (isTRUE(!is.null(na))) { object <- misty::as.na(object, na = na, check = FALSE) }
+
+    #...................
+    ### Assign variable names ####
 
     if (isTRUE(!is.null(input))) {
 
       colnames(object) <- varnames
 
       # Print variable names on console
-      if (isTRUE(print)) {
-
-        print(varnames)
-
-      }
+      if (isTRUE(print)) { print(varnames) }
 
     }
 

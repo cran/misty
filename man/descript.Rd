@@ -86,7 +86,7 @@ entries:
   \item{\code{result}}{result table(s)}
 }
 \description{
-This function computes summary statistics for one or more variables, optionally
+This function computes summary statistics for one or more than one variables, optionally
 by a grouping and/or split variable.
 }
 \examples{
