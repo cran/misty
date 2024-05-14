@@ -99,7 +99,7 @@ case it is recommended to reduce the number of variables specified in the argume
 \code{x}. If the number of variables cannot be reduced, it is recommended to
 use the \code{LittleMCAR} function in the \pkg{BaylorEdPsych} package which can
 deal with up to 50 variables. However, this package was removed from the CRAN
-repository and needs to be obtained from the archive along with the \pkg{mvnmle}
+repository and needs to be obtained from the archive along with the \pkg{mvnmle} package
 which is needed for using the \code{LittleMCAR} function. Note that the
 \code{mcar_test} function in the \pkg{naniar} package is also based on the
 \code{prelim.norm} function which results are not trustworthy whenever the warning

@@ -95,47 +95,47 @@
 #' df.subset(Sepal.Length, Petal.Width, data = iris)
 #'
 #' #----------------------------------------------------------------------------
-#' # Select all variables using the \code{.} operator
+#' # Select all variables using the . operator
 #'
 #' # Example 2a: Select all variables, select rows with 'Species' equal 'setosa'
-#' # Note that single quotation marks (\code{''}) are needed to specify 'setosa'
+#' # Note that single quotation marks ('') are needed to specify 'setosa'
 #' df.subset(., data = iris, subset = "Species == 'setosa'")
 #'
 #' # Example 2b: Select all variables, select rows with 'Petal.Length' smaller 1.2
 #' df.subset(., data = iris, subset = "Petal.Length < 1.2")
 #'
 #' #----------------------------------------------------------------------------
-#' # Select variables matching a prefix using the \code{+} operator
+#' # Select variables matching a prefix using the + operator
 #'
 #' # Example 3: Select variables with prefix 'Petal'
 #' df.subset(+Petal, data = iris)
 #'
 #' #----------------------------------------------------------------------------
-#' # Select variables matching a suffix using the \code{-} operator
+#' # Select variables matching a suffix using the - operator
 #'
 #' # Example 4: Select variables with suffix 'Width'
 #' df.subset(-Width, data = iris)
 #'
 #' #----------------------------------------------------------------------------
-#' # Select variables containing a word using the \code{~} operator
+#' # Select variables containing a word using the ~ operator
 #
 #' # Example 5: Select variables containing 'al'
 #' df.subset(~al, data = iris)
 #'
 #' #----------------------------------------------------------------------------
-#' # Select consecutive variables using the \code{:} operator
+#' # Select consecutive variables using the : operator
 #'
 #' # Example 6: Select all variables from 'Sepal.Width' to 'Petal.Width'
 #' df.subset(Sepal.Width:Petal.Width, data = iris)
 #'
 #' #----------------------------------------------------------------------------
-#' # Select numbered variables using the \code{::} operator
+#' # Select numbered variables using the :: operator
 #'
 #' # Example 7: Select all variables from 'x1' to 'x3' and 'y1' to 'y3'
 #' df.subset(x1::x3, y1::y3, data = anscombe)
 #
 #' #----------------------------------------------------------------------------
-#' # Drop variables using the \code{!} operator
+#' # Drop variables using the ! operator
 #'
 #' # Example 8a: Select all variables but 'Sepal.Width'
 #' df.subset(., !Sepal.Width, data = iris)
@@ -144,7 +144,7 @@
 #' df.subset(., !Sepal.Width:Petal.Width, data = iris)
 #'
 #' #----------------------------------------------------------------------------
-#' # Combine \code{+}, \code{-}, \code{!}, and \code{:} operators
+#' # Combine +, -, !, and : operators
 #'
 #' # Example 9: Select variables with prefix 'x' and suffix '3', but exclude
 #' # variables from 'x2' to 'x3'

@@ -223,6 +223,23 @@ item.omega <- function(..., data = NULL, rescov = NULL,
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Numeric Variables ####
+
+  # Non-numeric variables
+  non.num <- !vapply(x, is.numeric, FUN.VALUE = logical(1L))
+
+  if (isTRUE(any(non.num))) {
+
+    x <- x[, -which(non.num), drop = FALSE]
+
+    # Variables left
+    if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
+
+    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(non.num)), collapse = ", ")), call. = FALSE)
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Exclude items ####
 
   if (isTRUE(!is.null(exclude))) {
@@ -264,29 +281,17 @@ item.omega <- function(..., data = NULL, rescov = NULL,
 
       x.check <- vapply(as.data.frame(x, stringsAsFactors = FALSE), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
 
-      if (isTRUE(any(x.check))) {
-
-        stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
-
-      }
+      if (isTRUE(any(x.check))) { stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE) }
 
     }
 
     # Check input 'rescov'
     if (isTRUE(!is.null(rescov))) {
 
-      if (!isTRUE(ordered)) {
+      rescov.items <- unique(unlist(rescov))
+      if (isTRUE(any(!rescov.items %in% colnames(x)))) {
 
-        rescov.items <- unique(unlist(rescov))
-        if (isTRUE(any(!rescov.items %in% colnames(x)))) {
-
-          stop(paste0("Items specified in the argument 'rescov' were not found in 'x': ", paste(rescov.items[!rescov.items %in% colnames(x)], collapse = ", ")), call. = FALSE)
-
-        }
-
-      } else if (isTRUE(length(type) == 1L && type %in% c("hierarch", "categ"))) {
-
-        warning("Residual covariances cannot be specified when computing hierarchical or categorical omega.", call. = FALSE)
+        stop(paste0("Items specified in the argument 'rescov' were not found in 'x': ", paste(rescov.items[!rescov.items %in% colnames(x)], collapse = ", ")), call. = FALSE)
 
       }
 
@@ -330,11 +335,7 @@ item.omega <- function(..., data = NULL, rescov = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Residual covariance ####
 
-  if (isTRUE(!is.null(rescov))) {
-
-    if (isTRUE(!is.list(rescov))) { rescov <- list(rescov) }
-
-  }
+  if (isTRUE(!is.null(rescov) & !is.list(rescov))) { rescov <- list(rescov) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Standardize ####
@@ -342,11 +343,7 @@ item.omega <- function(..., data = NULL, rescov = NULL,
   # Unstandardized data
   x.raw <- x
 
-  if (isTRUE(std) && type != "categ") {
-
-    x <- as.data.frame(scale(x), stringsAsFactors = FALSE)
-
-  }
+  if (isTRUE(std && type != "categ")) { x <- as.data.frame(scale(x), stringsAsFactors = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print coefficient omega and/or item statistic ####
@@ -359,8 +356,7 @@ item.omega <- function(..., data = NULL, rescov = NULL,
   #
   # Main Function --------------------------------------------------------------
 
-  omega.mod <- omega.function(y = x, y.rescov = rescov, y.type = type,
-                              y.std = std, check = TRUE)
+  omega.mod <- omega.function(y = x, y.rescov = rescov, y.type = type, y.std = std, check = TRUE)
 
   omega.x <- data.frame(n = lavaan::lavInspect(omega.mod$mod.fit, "nobs"),
                         items = ncol(lavaan::lavInspect(omega.mod$mod.fit, "data")),
@@ -380,8 +376,7 @@ item.omega <- function(..., data = NULL, rescov = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Standardized factor loading and omega if item deleted ####
 
-  itemstat <- matrix(rep(NA, times = ncol(x)*2L), ncol = 2L,
-                     dimnames = list(NULL, c("std.ld", "omega")))
+  itemstat <- matrix(rep(NA, times = ncol(x)*2L), ncol = 2L, dimnames = list(NULL, c("std.ld", "omega")))
 
   # Standardized factor loadings
   lambda.std <- lavaan::inspect(omega.mod$mod.fit, what = "std")$lambda
@@ -465,7 +460,7 @@ item.omega <- function(..., data = NULL, rescov = NULL,
                              std = std, na.omit = na.omit, print = print,
                              digits = digits, conf.level = conf.level, as.na = as.na,
                              write = write, append = append, check = check, output = output),
-                 model.fit  = omega.mod$mod.fit,
+                 model.fit = omega.mod$mod.fit,
                  result = list(omega = omega.x, itemstat = itemstat))
 
   class(object) <- "misty.object"

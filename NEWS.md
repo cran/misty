@@ -1,3 +1,24 @@
+### misty 0.6.3 (2024-05-15)
+
+##### Bug fix
+* Fixed a bug in the function `result.lca()`, function excluded all outputs 
+which involved the word `ERROR` even though results were available (thanks to Michael Weber).
+* Fixed a bug in the function `multilevel.fit()`, function used the 
+number of observations at the Within level instead of the Between level for 
+computing RMSEA at the Between Level (thanks to Maurizio Sicorello).
+* Fixed a bug in the function `descript()` which caused an error message when
+specifying a split variable.
+* Fixed a bug in the function `robust.coef()` which caused an error message in
+the presence of missing data on predictor variables.
+* Fixed a bug in the functions `multilevel.icc()` and `multilevel.descript()` 
+which caused an error message in when specifying a tibble instead of a data frame
+(thanks to Tanja Held).
+
+##### Minor features and improvements
+* In the function `mplus.lca()`, the argument `processors` allows to specify the 
+number of processors and threads separately.
+* In the function `item.omega()`, residual covariances can be specified when `type = "categ"`.
+
 ### misty 0.6.2 (2024-02-05)
 
 ##### Bug fix

@@ -252,6 +252,9 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
 
   if (isTRUE(!is.null(data))) {
 
+    # Convert tibble to data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- data.frame(data) }
+
     # Variable names
     var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
 
@@ -268,6 +271,21 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble to data frame
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) {
+
+      if (isTRUE(ncol(cluster) == 1L)) {
+
+        cluster <- unlist(cluster)
+
+      } else {
+
+        cluster <- data.frame(cluster)
+
+      }
+
+    }
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)

@@ -15,7 +15,7 @@ mplus.lca(x, ind = NULL,
           file = "Data_LCA.dat", write = c("all", "folder", "data", "input"),
           useobservations = NULL, missing = -99, classes = 6, estimator = "MLR",
           starts = c(100, 50), stiterations = 10, lrtbootstrap = 1000,
-          lrtstarts = c(0, 0, 100, 50), processors = 8,
+          lrtstarts = c(0, 0, 100, 50), processors = c(8, 8),
          output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14"),
           replace.inp = FALSE, run.mplus = FALSE, Mplus = "Mplus",
           replace.out = c("always", "never", "modifiedDate"), check = TRUE)
@@ -118,11 +118,12 @@ and 0 optimizations in the final stage are used for the
 values in the initial stage and 50 optimizations in the
 final stage are used for the \code{k} class model.}
 
-\item{processors}{an integer value for specifying the \code{PROCESSORS}
-option in Mplus. The value specifies the number of
-processors and threads to be used for parallel computing
-to increase computational speed. By default, 8 processors
-and threads are used for parallel computing.}
+\item{processors}{a vector of two integer values for specifying the
+\code{PROCESSORS} option in Mplus. The values specifies
+the number of processors and threads to be used for
+parallel computing to increase computational speed. By
+default, 8 processors and threads are used for parallel
+computing.}
 
 \item{output}{a character string or character vector specifying the
 \code{TECH} options in the \code{OUTPUT} section in Mplus,

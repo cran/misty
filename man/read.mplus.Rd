@@ -5,7 +5,7 @@
 \title{Read Mplus Data File and Variable Names}
 \usage{
 read.mplus(file, sep = "", input = NULL, na = -99, print = FALSE, return.var = FALSE,
-           fileEncoding = "UTF-8-BOM", check = TRUE)
+           encoding = "UTF-8-BOM", check = TRUE)
 }
 \arguments{
 \item{file}{a character string indicating the name of the Mplus data
@@ -35,8 +35,9 @@ console.}
 \item{return.var}{logical: if \code{TRUE}, the function returns the variable
 names extracted from the Mplus input or output file only.}
 
-\item{fileEncoding}{character string declaring the encoding used on \code{file}
-so the character data can be re-encoded. See \code{\link{df.sort}}.}
+\item{encoding}{character string declaring the encoding used on \code{file}
+so the character data can be re-encoded.See the 'Encoding' section of the help
+page for the \code{file} function, the 'R Data Import/Export Manual' and 'Note'.}
 
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }

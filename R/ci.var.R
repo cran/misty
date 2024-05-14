@@ -478,8 +478,8 @@ ci.var <- function(..., data = NULL, method = c("chisq", "bonett"),
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(x, f = group), function(y) misty::ci.var(y, method = method, alternative = alternative, conf.level = conf.level,
-                                                                          group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
-                                                                          as.na = as.na, check = FALSE, output = FALSE)$result)
+                                                                          group = NULL, split = NULL, sort.var = sort.var, na.omit = FALSE,
+                                                                          as.na = NULL, check = FALSE, output = FALSE)$result)
 
     result <- data.frame(group = rep(names(object.group), each = ncol(x)),
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))),
@@ -492,8 +492,8 @@ ci.var <- function(..., data = NULL, method = c("chisq", "bonett"),
 
       result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
                        function(y) misty::ci.var(y, method = method, alternative = alternative, conf.level = conf.level,
-                                                 group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
-                                                 as.na = as.na, check = FALSE, output = FALSE)$result)
+                                                 group = NULL, split = NULL, sort.var = sort.var, na.omit = FALSE,
+                                                 as.na = NULL, check = FALSE, output = FALSE)$result)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, Split ####
@@ -504,7 +504,7 @@ ci.var <- function(..., data = NULL, method = c("chisq", "bonett"),
                        function(y) misty::ci.var(y[, -grep("group", names(y))], method = method,
                                                  alternative = alternative, conf.level = conf.level,
                                                  group = y$group, split = NULL, sort.var = sort.var,
-                                                 na.omit = na.omit, as.na = as.na,
+                                                 na.omit = FALSE, as.na = NULL,
                                                  check = FALSE, output = FALSE)$result)
 
   }
@@ -878,8 +878,8 @@ ci.sd <- function(..., data = NULL, method = c("chisq", "bonett"),
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(x, f = group), function(y) misty::ci.sd(y, method = method, alternative = alternative, conf.level = conf.level,
-                                                                         group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
-                                                                         as.na = as.na, check = FALSE, output = FALSE)$result)
+                                                                         group = NULL, split = NULL, sort.var = sort.var, na.omit = FALSE,
+                                                                         as.na = NULL, check = FALSE, output = FALSE)$result)
 
     result <- data.frame(group = rep(names(object.group), each = ncol(x)),
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))),
@@ -892,8 +892,8 @@ ci.sd <- function(..., data = NULL, method = c("chisq", "bonett"),
 
     result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
                      function(y) misty::ci.sd(y, method = method, alternative = alternative, conf.level = conf.level,
-                                              group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
-                                              as.na = as.na, check = FALSE, output = FALSE)$result)
+                                              group = NULL, split = NULL, sort.var = sort.var, na.omit = FALSE,
+                                              as.na = NULL, check = FALSE, output = FALSE)$result)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, Split ####
@@ -904,7 +904,7 @@ ci.sd <- function(..., data = NULL, method = c("chisq", "bonett"),
                      function(y) misty::ci.sd(y[, -grep("group", names(y))], method = method,
                                               alternative = alternative, conf.level = conf.level,
                                               group = y$group, split = NULL, sort.var = sort.var,
-                                              na.omit = na.omit, as.na = as.na,
+                                              na.omit = FALSE, as.na = NULL,
                                               check = FALSE, output = FALSE)$result)
 
   }

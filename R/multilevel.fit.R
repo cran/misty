@@ -549,6 +549,10 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
   l1.mod.base.fit.measures <- lavaan::fitmeasures(l1.mod.base.fit)
   l1.mod.hypo.fit.measures <- lavaan::fitmeasures(l1.mod.hypo.fit)
 
+  # Between Sample size: Number of clusters
+  l2.mod.base.fit@SampleStats@ntotal <- lavaan::lavInspect(x, what = "nclusters")
+  l2.mod.hypo.fit@SampleStats@ntotal <- lavaan::lavInspect(x, what = "nclusters")
+
   l2.mod.base.fit.measures <- lavaan::fitmeasures(l2.mod.base.fit)
   l2.mod.hypo.fit.measures <- lavaan::fitmeasures(l2.mod.hypo.fit)
 
@@ -639,7 +643,7 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
   #...................
   ### RMSEA ####
 
-  mod.rmsea <- mod.hypo.fit.measures[grep("rmsea", names(l1.mod.hypo.fit.measures))]
+  mod.rmsea <- mod.hypo.fit.measures[grep("rmsea", names(mod.hypo.fit.measures))]
   l1.rmsea <- l1.mod.hypo.fit.measures[grep("rmsea", names(l1.mod.hypo.fit.measures))]
   l2.rmsea <- l2.mod.hypo.fit.measures[grep("rmsea", names(l2.mod.hypo.fit.measures))]
 

@@ -538,11 +538,11 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
     # Grouping
     x.group <- split(x, f = group)
 
-    object.g1 <- misty::cor.matrix(x.group[[1L]], method = method, na.omit = na.omit, group = NULL,
+    object.g1 <- misty::cor.matrix(x.group[[1L]], method = method, na.omit = FALSE, group = NULL,
                                    digits = digits, continuity = continuity, print = print, tri = tri,
                                    p.adj = p.adj, p.digits = p.digits, check = FALSE, output = FALSE)
 
-    object.g2 <- misty::cor.matrix(x.group[[2L]], method = method, na.omit = na.omit, group = NULL,
+    object.g2 <- misty::cor.matrix(x.group[[2L]], method = method, na.omit = FALSE, group = NULL,
                                    digits = digits, continuity = continuity, print = print, tri = tri,
                                    p.adj = p.adj, p.digits = p.digits, check = FALSE, output = FALSE)
 

@@ -473,7 +473,7 @@ ci.prop <- function(..., data = NULL, method = c("wald", "wilson"),
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(x, f = group), function(y) misty::ci.prop(y, method = method, alternative = alternative, conf.level = conf.level,
-                                                                           group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
+                                                                           group = NULL, split = NULL, sort.var = sort.var, na.omit = FALSE,
                                                                            digits = digits, as.na = NULL, check = FALSE, output = FALSE)$result)
 
     result <- data.frame(group = rep(names(object.group), each = ncol(x)),
@@ -487,7 +487,7 @@ ci.prop <- function(..., data = NULL, method = c("wald", "wilson"),
 
       result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
                        function(y) misty::ci.prop(y, method = method, alternative = alternative, conf.level = conf.level,
-                                                  group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
+                                                  group = NULL, split = NULL, sort.var = sort.var, na.omit = FALSE,
                                                   digits = digits, as.na = NULL, check = FALSE, output = FALSE)$result)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -499,7 +499,7 @@ ci.prop <- function(..., data = NULL, method = c("wald", "wilson"),
                        function(y) misty::ci.prop(y[, -grep("group", names(y))], method = method,
                                                   alternative = alternative, conf.level = conf.level,
                                                   group = y$group, split = NULL, sort.var = sort.var,
-                                                  na.omit = na.omit, digits = digits, as.na = NULL,
+                                                  na.omit = FALSE, digits = digits, as.na = NULL,
                                                   check = FALSE, output = FALSE)$result)
 
   }

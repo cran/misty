@@ -182,7 +182,7 @@ descript <- function(..., data = NULL,
 
     if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
     if (isTRUE(!is.null(var.group$group))) { group <- var.group$group }
-    if (isTRUE(!is.null(var.group$split))) { group <- var.group$split }
+    if (isTRUE(!is.null(var.group$split))) { split <- var.group$split }
 
   }
 
@@ -412,8 +412,8 @@ descript <- function(..., data = NULL,
   ## Grouping, No Split ####
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    object.group <- lapply(split(x, f = group), function(y) misty::descript(y, data = NULL, group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
-                                                                            as.na = as.na, check = FALSE, output = FALSE)$result)
+    object.group <- lapply(split(x, f = group), function(y) misty::descript(y, data = NULL, group = NULL, split = NULL, sort.var = sort.var, na.omit = FALSE,
+                                                                            as.na = NULL, check = FALSE, output = FALSE)$result)
 
     result <- data.frame(group = rep(names(object.group), each = ncol(x)),
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))),
@@ -424,18 +424,16 @@ descript <- function(..., data = NULL,
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
-                     function(y) misty::descript(y, data = NULL, group = NULL, split = NULL, sort.var = sort.var,
-                                                 na.omit = na.omit, as.na = as.na, check = FALSE,
-                                                 output = FALSE)$result)
+                     function(y) misty::descript(y, data = NULL, group = NULL, split = NULL, sort.var = sort.var, na.omit = FALSE,
+                                                 as.na = NULL, check = FALSE, output = FALSE)$result)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, Split ####
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split),
-                     function(y) misty::descript(y[, -grep("group", names(y))], data = NULL, group = y$group, split = NULL,
-                                                 sort.var = sort.var, na.omit = na.omit, as.na = as.na,
-                                                 check = FALSE, output = FALSE)$result)
+                     function(y) misty::descript(y[, -grep("group", names(y))], data = NULL, group = y$group, split = NULL, sort.var = sort.var, na.omit = FALSE,
+                                                 as.na = NULL, check = FALSE, output = FALSE)$result)
 
   }
 

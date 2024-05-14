@@ -205,7 +205,7 @@
 #' # Example 1b: Alternative specification using the 'data' argument
 #' center(disp, data = mtcars)
 #'
-#' # Example 2a: Center predictors 'disp' and 'hp' at the grabd mean and append to 'mtcars'
+#' # Example 2a: Center predictors 'disp' and 'hp' at the grand mean and append to 'mtcars'
 #' cbind(mtcars, center(mtcars[, c("disp", "hp")]))
 #'
 #' # Example 2b: Alternative specification using the 'data' argument

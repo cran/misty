@@ -341,8 +341,8 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
 
   if (isTRUE(is.null(between))) { var.with <- colnames(x) } else { var.with <- colnames(x)[!colnames(x) %in% between] }
 
-  # No within variables
-  if (isTRUE(length(var.with) == 0L)) { stop("Please specify at least two within-group variables.", call. = FALSE) }
+  # At least two within variables
+  if (isTRUE(length(var.with) <= 1L)) { stop("Please specify at least two within-group variables.", call. = FALSE) }
 
   # Between variables in 'x'
   between.miss <- !between %in% colnames(x)
@@ -356,8 +356,8 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   #  Between variables
   if (isTRUE(is.null(within))) { var.betw <- colnames(x) } else { var.betw <- colnames(x)[!colnames(x) %in% within] }
 
-  # No between variables
-  if (length(var.betw) == 0L) { stop("Please specify at least two between-group variables.", call. = FALSE) }
+  # At least two between variables
+  if (isTRUE(length(var.betw) <= 1L)) { stop("Please specify at least two between-group variables.", call. = FALSE) }
 
   # Variables in 'within' or 'between'
   wb.inter <- intersect(within, between)

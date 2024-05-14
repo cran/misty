@@ -133,7 +133,7 @@
 #' # Example 9a: Two-Sided 95% Confidence Interval for 'mpg', 'cyl', and 'disp',
 #' # listwise deletion for missing data
 #' ci.mean(mtcars[, c("mpg", "cyl", "disp")], na.omit = TRUE)
-#
+#'
 #' # Example 9b: Alternative specification using the 'data' argument
 #' ci.mean(mpg:disp, data = mtcars, na.omit = TRUE)
 #'
@@ -530,8 +530,8 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(x, f = group), function(y) misty::ci.mean(y, data = NULL, sigma = NULL, sigma2 = NULL, adjust = adjust, alternative = alternative, conf.level = conf.level,
-                                                                           group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
-                                                                           as.na = as.na, check = FALSE, output = FALSE)$result)
+                                                                           group = NULL, split = NULL, sort.var = sort.var, na.omit = FALSE,
+                                                                           as.na = NULL, check = FALSE, output = FALSE)$result)
 
     result <- data.frame(group = rep(names(object.group), each = ncol(x)),
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))),
@@ -543,8 +543,8 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
 
     result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
                      function(y) misty::ci.mean(y, data = NULL, sigma = NULL, sigma2 = NULL, adjust = adjust, alternative = alternative, conf.level = conf.level,
-                                                group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
-                                                as.na = as.na, check = FALSE, output = FALSE)$result)
+                                                group = NULL, split = NULL, sort.var = sort.var, na.omit = FALSE,
+                                                as.na = NULL, check = FALSE, output = FALSE)$result)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, Split ####
@@ -554,7 +554,7 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
                      function(y) misty::ci.mean(y[, -grep("group", names(y))], data = NULL, sigma = NULL, sigma2 = NULL,
                                                 adjust = adjust, alternative = alternative, conf.level = conf.level,
                                                 group = y$group, split = NULL, sort.var = sort.var,
-                                                na.omit = na.omit, as.na = as.na,
+                                                na.omit = FALSE, as.na = NULL,
                                                 check = FALSE, output = FALSE)$result)
 
   }
@@ -915,8 +915,8 @@ ci.median <- function(..., data = NULL, alternative = c("two.sided", "less", "gr
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     object.group <- lapply(split(x, f = group), function(y) misty::ci.median(y, data = NULL, alternative = alternative, conf.level = conf.level,
-                                                                             group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
-                                                                             as.na = as.na, check = FALSE, output = FALSE)$result)
+                                                                             group = NULL, split = NULL, sort.var = sort.var, na.omit = FALSE,
+                                                                             as.na = NULL, check = FALSE, output = FALSE)$result)
 
     result <- data.frame(group = rep(names(object.group), each = ncol(x)),
                          eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))),
@@ -929,8 +929,8 @@ ci.median <- function(..., data = NULL, alternative = c("two.sided", "less", "gr
 
     result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split),
                      function(y) misty::ci.median(y, data = NULL, alternative = alternative, conf.level = conf.level,
-                                                  group = NULL, split = NULL, sort.var = sort.var, na.omit = na.omit,
-                                                  as.na = as.na, check = FALSE, output = FALSE)$result)
+                                                  group = NULL, split = NULL, sort.var = sort.var, na.omit = FALSE,
+                                                  as.na = NULL, check = FALSE, output = FALSE)$result)
 
   #...................
   ### Grouping, Split ####
@@ -941,7 +941,7 @@ ci.median <- function(..., data = NULL, alternative = c("two.sided", "less", "gr
                      function(y) misty::ci.median(y[, -grep("group", names(y))],
                                                   alternative = alternative, conf.level = conf.level,
                                                   group = y$group, split = NULL, sort.var = sort.var,
-                                                  na.omit = na.omit, as.na = as.na,
+                                                  na.omit = FALSE, as.na = NULL,
                                                   check = FALSE, output = FALSE)$result)
 
   }

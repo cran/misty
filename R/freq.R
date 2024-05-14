@@ -12,56 +12,56 @@
 #' in the data frame specified in the argument \code{...}. By default, numeric
 #' variables are rounded to three digits before computing the frequency table.
 #'
-#' @param ...     a vector, factor, matrix or data frame. Alternatively, an
-#'                expression indicating the variable names in \code{data} e.g.,
-#'                \code{freq(x1, x2, x3, data = dat)}. Note that the operators
-#'                \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-#'                and \code{!} can also be used to select variables, see 'Details'
-#'                in the \code{\link{df.subset}} function.
-#' @param data    a data frame when specifying one or more variables in the
-#'                argument \code{...}. Note that the argument is \code{NULL}
-#'                when specifying a vector, factor, matrix or data frame for
-#'                the argument \code{...}.
-#' @param print   a character string indicating which percentage(s) to be printed
-#'                on the console, i.e., no percentages (\code{"no"}), all percentages
-#'                (\code{"all"}), percentage frequencies (\code{"print"}), and
-#'                valid percentage frequencies \code{"v.perc"}). Default setting
-#'                when specifying one variable in \code{...} is \code{print = "all"},
-#'                while default setting when specifying more than one variable
-#'                in \code{...} is \code{print = "no"} unless \code{split = TRUE}.
-#' @param freq    logical: if \code{TRUE} (default), absolute frequencies will
-#'                be shown on the console.
-#' @param split   logical: if \code{TRUE}, output table is split by variables
-#'                when specifying more than one variable in \code{...}.
-#' @param labels  logical: if \code{TRUE} (default), labels for the factor
-#'                levels will be used.
-#' @param val.col logical: if \code{TRUE}, values are shown in the columns,
-#'                variables in the rows.
-#' @param round   an integer value indicating the number of decimal places to be
-#'                used for rounding numeric variables.
-#' @param exclude an integer value indicating the maximum number of unique values
-#'                for variables to be included in the analysis when specifying
-#'                more than one variable in \code{...} i.e., variables with the
-#'                number of unique values exceeding \code{exclude} will be
-#'                excluded from the analysis. It is also possible to specify
-#'                \code{exclude = FALSE} to include all variables in the analysis.
-#' @param digits  an integer value indicating the number of decimal places to be
-#'                used for displaying percentages.
-#' @param as.na   a numeric vector indicating user-defined missing values, i.e.
-#'                these values are converted to \code{NA} before conducting the
-#'                analysis.
-#' @param write   a character string naming a file for writing the output into
-#'                either a text file with file extension \code{".txt"} (e.g.,
-#'                \code{"Output.txt"}) or Excel file with file extention
-#'                \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
-#'                name does not contain any file extension, an Excel file will
-#'                be written.
-#' @param append  logical: if \code{TRUE} (default), output will be appended
-#'                to an existing text file with extension \code{.txt} specified
-#'                in \code{write}, if \code{FALSE} existing text file will be
-#'                overwritten.
-#' @param check   logical: if \code{TRUE} (default), argument specification is checked.
-#' @param output  logical: if \code{TRUE} (default), output is shown on the console.
+#' @param ...      a vector, factor, matrix or data frame. Alternatively, an
+#'                 expression indicating the variable names in \code{data} e.g.,
+#'                 \code{freq(x1, x2, x3, data = dat)}. Note that the operators
+#'                 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                 and \code{!} can also be used to select variables, see 'Details'
+#'                 in the \code{\link{df.subset}} function.
+#' @param data     a data frame when specifying one or more variables in the
+#'                 argument \code{...}. Note that the argument is \code{NULL}
+#'                 when specifying a vector, factor, matrix or data frame for
+#'                 the argument \code{...}.
+#' @param print    a character string indicating which percentage(s) to be printed
+#'                 on the console, i.e., no percentages (\code{"no"}), all percentages
+#'                 (\code{"all"}), percentage frequencies (\code{"print"}), and
+#'                 valid percentage frequencies \code{"v.perc"}). Default setting
+#'                 when specifying one variable in \code{...} is \code{print = "all"},
+#'                 while default setting when specifying more than one variable
+#'                 in \code{...} is \code{print = "no"} unless \code{split = TRUE}.
+#' @param freq     logical: if \code{TRUE} (default), absolute frequencies will
+#'                 be shown on the console.
+#' @param split    logical: if \code{TRUE}, output table is split by variables
+#'                 when specifying more than one variable in \code{...}.
+#' @param labels   logical: if \code{TRUE} (default), labels for the factor
+#'                 levels will be used.
+#' @param val.col  logical: if \code{TRUE}, values are shown in the columns,
+#'                 variables in the rows.
+#' @param round    an integer value indicating the number of decimal places to be
+#'                 used for rounding numeric variables.
+#' @param exclude  an integer value indicating the maximum number of unique values
+#'                 for variables to be included in the analysis when specifying
+#'                 more than one variable in \code{...} i.e., variables with the
+#'                 number of unique values exceeding \code{exclude} will be
+#'                 excluded from the analysis. It is also possible to specify
+#'                 \code{exclude = FALSE} to include all variables in the analysis.
+#' @param digits   an integer value indicating the number of decimal places to be
+#'                 used for displaying percentages.
+#' @param as.na    a numeric vector indicating user-defined missing values, i.e.
+#'                 these values are converted to \code{NA} before conducting the
+#'                 analysis.
+#' @param write    a character string naming a file for writing the output into
+#'                 either a text file with file extension \code{".txt"} (e.g.,
+#'                 \code{"Output.txt"}) or Excel file with file extention
+#'                 \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'                 name does not contain any file extension, an Excel file will
+#'                 be written.
+#' @param append   logical: if \code{TRUE} (default), output will be appended
+#'                 to an existing text file with extension \code{.txt} specified
+#'                 in \code{write}, if \code{FALSE} existing text file will be
+#'                 overwritten.
+#' @param check    logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output   logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -127,8 +127,8 @@
 #' }
 freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
                  freq = TRUE, split = FALSE, labels = TRUE, val.col = FALSE,
-                 round = 3, exclude = 15, digits = 2, as.na = NULL, write = NULL,
-                 append = TRUE, check = TRUE, output = TRUE) {
+                 round = 3, exclude = 15, digits = 2, as.na = NULL,
+                 write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -358,11 +358,7 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
                      function(y) any(na.omit(nchar(gsub("(.*)(\\.)|([0]*$)","", y)) > round)), FUN.VALUE = logical(1L))))
 
   # If at least one numeric variable
-  if (isTRUE(length(x.numeric) > 0L)) {
-
-    x[, x.numeric] <- lapply(x[, x.numeric, drop = FALSE], base::round, digits = round)
-
-  }
+  if (isTRUE(length(x.numeric) > 0L)) { x[, x.numeric] <- lapply(x[, x.numeric, drop = FALSE], base::round, digits = round) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Exclude variables ####
@@ -425,16 +421,16 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
     ### Values in columns ####
     if (!isTRUE(val.col)) {
 
-      freqtab <- data.frame(Value = c(na.omit(names(x.abs)), NA),
+      freqtab <- data.frame(Value = c(na.omit(suppressWarnings(iconv(na.omit(names(x.abs)), from = "ISO-8859-1", to = "UTF-8"))), NA),
                             Freq = as.numeric(x.abs),
                             Perc = as.numeric(x.perc),
                             V.Perc = c(as.numeric(x.v.perc), NA), stringsAsFactors = FALSE)
 
       # Convert 'Value' in numeric
-      if(all(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)",
-             x = na.omit(freqtab$Value)))) {
+      if(all(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)", x = na.omit(freqtab$Value)))) {
 
-        freqtab$Value <- as.numeric(freqtab$Value)
+        # Do not convert "000", "001", "010" etc. into numeric
+        if (isTRUE(all(substr(na.omit(freqtab$Value), 1L, 1L) != "0"))) { freqtab$Value <- as.numeric(freqtab$Value) }
 
       }
 

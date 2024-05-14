@@ -479,11 +479,17 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     # Extract data
     x <- eval(..., enclos = parent.frame())
 
-    # Data and cluster
-    var.group <- .var.group(data = x, group = group)
+    # Data and group
+    var.group <- .var.group(data = x, group = group, cluster = cluster)
 
+    # Data
     if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+
+    # Group variable
     if (isTRUE(!is.null(var.group$group))) { group <- var.group$group }
+
+    # Cluster variable
+    if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
 
@@ -707,47 +713,13 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   ### Model specification with 'x' ####
   if (isTRUE(is.null(model))) {
 
-    #### No cluster variable
-    if (isTRUE(is.null(cluster))) {
-
-      # Grouping variable by variable name
-      if (isTRUE(length(group) == 1L)) {
-
-        var <- colnames(x)[!colnames(x) %in% group]
-
-      # Grouping variable by vector
-      } else {
-
-        var <- colnames(x)
-
-      }
-
-    #### Cluster variable
-    } else {
-
-      if (isTRUE(length(cluster) == 1L)) {
-
-        # Grouping variable by variable name
-        if (isTRUE(length(group) == 1L)) {
-
-          var <- colnames(x)[!colnames(x) %in% c(group, cluster)]
-
-        # Grouping variable by vector
-        } else {
-
-          var <- colnames(x)[!colnames(x) %in% cluster]
-
-        }
-
-      }
-
-    }
+    var.mod <- colnames(x)
 
   #...................
   ### Model specification with 'model' ####
   } else {
 
-    var <- unique(unlist(model))
+    var.mod <- unique(unlist(model))
 
   }
 
@@ -758,20 +730,15 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   ### No cluster variable ####
   if (isTRUE(is.null(cluster))) {
 
-    # Grouping variable by variable name
-    if (isTRUE(!is.null(group) && length(group) == 1L)) {
+    # Grouping variable
+    if (isTRUE(!is.null(group))) {
 
-      x <- data.frame(x[, var], .group = x[, group], stringsAsFactors = FALSE)
-
-    # Grouping variable by vector
-    } else if (isTRUE(!is.null(group) && length(group) > 1L)) {
-
-      x <- data.frame(x[, var], .group = group, stringsAsFactors = FALSE)
+      x <- data.frame(x[, var.mod], .group = group, stringsAsFactors = FALSE)
 
     # No grouping variable
     } else if (isTRUE(is.null(group))) {
 
-      x <- data.frame(x[, var], stringsAsFactors = FALSE)
+      x <- data.frame(x[, var.mod], stringsAsFactors = FALSE)
 
     }
 
@@ -779,45 +746,15 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   ### Cluster variable ####
   } else {
 
-    # Cluster variable by variable name
-    if (isTRUE(length(cluster) == 1L)) {
+    # Grouping variable
+    if (isTRUE(!is.null(group))) {
 
-      # Grouping variable by variable name
-      if (isTRUE(!is.null(group) && length(group) == 1L)) {
+      x <- data.frame(x[, var.mod], .group = group, .cluster = cluster, stringsAsFactors = FALSE)
 
-        x <- data.frame(x[, var], .group = x[, group], .cluster = x[, cluster], stringsAsFactors = FALSE)
+    # No grouping variable
+    } else if (isTRUE(is.null(group))) {
 
-      # Grouping variable by vector
-      } else if (isTRUE(!is.null(group) && length(group) > 1L)) {
-
-        x <- data.frame(x[, var], .group = group, .cluster = x[, cluster], stringsAsFactors = FALSE)
-
-      # No grouping variable
-      } else if (isTRUE(is.null(group))) {
-
-        x <- data.frame(x[, var], .cluster = x[, cluster], stringsAsFactors = FALSE)
-
-      }
-
-    # Cluster variable by vector
-    } else {
-
-      # Grouping variable by variable name
-      if (isTRUE(!is.null(group) && length(group) == 1L)) {
-
-        x <- data.frame(x[, var], .group = x[, group], .cluster = cluster, stringsAsFactors = FALSE)
-
-      # Grouping variable by vector
-      } else if (isTRUE(!is.null(group) && length(group) > 1L)) {
-
-        x <- data.frame(x[, var], .group = group, .cluster = cluster, stringsAsFactors = FALSE)
-
-      # No grouping variable
-      } else if (isTRUE(is.null(group))) {
-
-        x <- data.frame(x[, var], .cluster = cluster, stringsAsFactors = FALSE)
-
-      }
+      x <- data.frame(x[, var.mod], .cluster = cluster, stringsAsFactors = FALSE)
 
     }
 
@@ -831,18 +768,18 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert User-Missing Values into NA ####
 
-  if (isTRUE(!is.null(as.na))) { x[, var] <- .as.na(x[, var], na = as.na) }
+  if (isTRUE(!is.null(as.na))) { x[, var.mod] <- .as.na(x[, var.mod], na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check variance within groups ##
 
   if (isTRUE(!long)) {
 
-    check.var <- sapply(split(x, f = x$.group), function(y) apply(y[, var], 2L, var, na.rm = TRUE))
+    check.var <- sapply(split(x, f = x$.group), function(y) apply(y[, var.mod], 2L, var, na.rm = TRUE))
 
-    if (isTRUE(any(check.var == 0 | is.na(check.var)))) {
+    if (isTRUE(any(check.var == 0L | is.na(check.var)))) {
 
-      stop(paste0("There is no variance in group ", paste(names(which(apply(check.var, 2L, function(y) any(y == 0 | is.na(y))))), collapse = ", "), " for following variable: ", paste(names(which(apply(check.var, 1L, function(y) any(y == 0 | is.na(y))))), collapse = ", ")), call. = FALSE)
+      stop(paste0("There is no variance in group ", paste(names(which(apply(check.var, 2L, function(y) any(y == 0L | is.na(y))))), collapse = ", "), " for following variable: ", paste(names(which(apply(check.var, 1L, function(y) any(y == 0 | is.na(y))))), collapse = ", ")), call. = FALSE)
 
     }
 
@@ -872,7 +809,7 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   if (isTRUE(!is.null(rescov) && !is.list(rescov))) { rescov <- list(rescov) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Level of invariance ####
+  ## Level of Invariance ####
 
   if (isTRUE(all(c("config", "metric", "scalar", "strict") %in% invar))) {
 
@@ -992,7 +929,7 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   ## Missing ####
 
   # Any missing values
-  if (isTRUE(any(is.na(x[, var])))) {
+  if (isTRUE(any(is.na(x[, var.mod])))) {
 
     complete <- FALSE
 
@@ -1070,7 +1007,7 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   # Cases with missing on all variables
   if (isTRUE(missing %in% c("fiml", "two.stage", "robust.two.stage"))) {
 
-    x.na.prop <- misty::na.prop(x[, var])
+    x.na.prop <- misty::na.prop(x[, var.mod])
     if (any(x.na.prop == 1L)) {
 
       warning(paste("Data set contains", sum(x.na.prop == 1L), "cases with missing on all variables which were not included in the analysis."), call. = FALSE)
@@ -1122,12 +1059,12 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     ### Grouping variable
     if (isTRUE(is.null(group))) {
 
-      coverage <- suppressWarnings(misty::na.coverage(x[, var], output = FALSE)$result)
+      coverage <- suppressWarnings(misty::na.coverage(x[, var.mod], output = FALSE)$result)
 
     ### No grouping variable
     } else {
 
-      coverage <- suppressWarnings(lapply(split(x[, var], f = x[, ".group"]), function(y) misty::na.coverage(y, output = FALSE)$result))
+      coverage <- suppressWarnings(lapply(split(x[, var.mod], f = x[, ".group"]), function(y) misty::na.coverage(y, output = FALSE)$result))
 
     }
 
@@ -1144,19 +1081,19 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     if (isTRUE(is.null(group))) {
 
       # Descriptive statistics
-      itemstat <- suppressWarnings(misty::descript(x[, var], output = FALSE)$result[, c("variable", "n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")])
+      itemstat <- suppressWarnings(misty::descript(x[, var.mod], output = FALSE)$result[, c("variable", "n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")])
 
       # Frequency table
-      itemfreq <-  suppressWarnings(misty::freq(x[, var], val.col = TRUE, exclude = 9999, output = FALSE)$result)
+      itemfreq <-  suppressWarnings(misty::freq(x[, var.mod], val.col = TRUE, exclude = 9999, output = FALSE)$result)
 
     ### Grouping variable
     } else {
 
       # Descriptive statistics
-      itemstat <- suppressWarnings(misty::descript(x[, var], group = x[, ".group"], output = FALSE)$result[, c("group", "variable", "n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")])
+      itemstat <- suppressWarnings(misty::descript(x[, var.mod], group = x[, ".group"], output = FALSE)$result[, c("group", "variable", "n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")])
 
       # Frequency table
-      itemfreq <- suppressWarnings(lapply(split(x[, var], f = x[, ".group"]), function(y) misty::freq(y, val.col = TRUE, exclude = 9999, output = FALSE)$result))
+      itemfreq <- suppressWarnings(lapply(split(x[, var.mod], f = x[, ".group"]), function(y) misty::freq(y, val.col = TRUE, exclude = 9999, output = FALSE)$result))
 
     }
 
@@ -1175,10 +1112,10 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     if (isTRUE(is.null(model) || !is.list(model))) {
 
       # Configural
-      mod.factor.config <- paste("f =~", paste(var, collapse = " + "))
+      mod.factor.config <- paste("f =~", paste(var.mod, collapse = " + "))
 
       # Metric
-      mod.factor.metric <- paste("f =~", paste0("L", seq_along(var), "*", var, collapse = " + "))
+      mod.factor.metric <- paste("f =~", paste0("L", seq_along(var.mod), "*", var.mod, collapse = " + "))
 
     ##### Model specification with 'model'
     } else if (isTRUE(!is.null(model) && is.list(model))) {
@@ -1195,13 +1132,13 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     ### Intercept ####
 
     # Scalar
-    mod.inter.scalar <- paste0(var, " ~ T", seq_along(var), "*1", collapse = " \n")
+    mod.inter.scalar <- paste0(var.mod, " ~ T", seq_along(var.mod), "*1", collapse = " \n")
 
     #...................
     ### Residual Variance ####
 
     # Strict
-    mod.resid.strict <- paste0(var, " ~~ E", seq_along(var), "*", var, collapse = " \n")
+    mod.resid.strict <- paste0(var.mod, " ~~ E", seq_along(var.mod), "*", var.mod, collapse = " \n")
 
   #### Longitudinal measurement invariance ####
   } else {
@@ -1271,7 +1208,7 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
         # Fix intercept of first indicator at 0 and estimate latent mean
         mod.config <- paste0(mod.config, "\n",
                              paste0(misty::chr.trim(unlist(strsplit(mod.config, "=~"))[[1L]]), " ~ NA*1"), "\n",
-                             paste0(var[1L], " ~ 0*1"))
+                             paste0(var.mod[1L], " ~ 0*1"))
 
       # Multiple factor model
       } else {
@@ -1299,7 +1236,7 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
           # Fix intercept of first indicator at 0 and estimate latent mean
           mod.metric <- paste0(mod.metric, "\n",
                                paste0(misty::chr.trim(unlist(strsplit(mod.metric, "=~"))[[1L]]), " ~ NA*1"), "\n",
-                               paste0(var[1L], " ~ 0*1"))
+                               paste0(var.mod[1L], " ~ 0*1"))
 
         # Multiple factor model
         } else {
@@ -1528,18 +1465,18 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     if (isTRUE(!long)) {
 
       mod.null <- paste0(# Covariances
-                       c(apply(combn(var, m = 2L), 2L, function(y) paste0(y[1L], " ~~ 0*", y[2L])),
+                       c(apply(combn(var.mod, m = 2L), 2L, function(y) paste0(y[1L], " ~~ 0*", y[2L])),
                          # Intercepts
-                         sapply(seq_along(var), function(y) paste0(var[y], " ~ T", y, "*1")),
+                         sapply(seq_along(var.mod), function(y) paste0(var.mod[y], " ~ T", y, "*1")),
                          # Variance
-                         sapply(seq_along(var), function(y) paste0(var[y], " ~~ V", y, "*", var[y]))), collapse = "\n")
+                         sapply(seq_along(var.mod), function(y) paste0(var.mod[y], " ~~ V", y, "*", var.mod[y]))), collapse = "\n")
 
     #...................
     ### Longitudinal measurement invariance ####
     } else {
 
       mod.null <- paste0(# Covariances
-                       c(apply(combn(var, m = 2L), 2L, function(y) paste0(y[1L], " ~~ 0*", y[2L])),
+                       c(apply(combn(var.mod, m = 2L), 2L, function(y) paste0(y[1L], " ~~ 0*", y[2L])),
                          # Intercepts
                          sapply(seq_along(model), function(y) paste0(model[[y]], " ~ T", seq_along(model[[y]]),  "*1")),
                          # Variance
@@ -2948,8 +2885,6 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
 
     # Latent variance
     print.var <- model.param[which(model.param$op == "~~" & (model.param$lhs %in% print.latent$lhs) & (model.param$lhs == model.param$rhs)), ]
-
-    #if (isTRUE(!is.null(model))) { print.var <- print.var[match(names(model), print.var$lhs), ] }
 
     # Intercepts
     print.interc <- model.param[which(model.param$op == "~1" & !model.param$lhs %in% print.latent$lhs), ]

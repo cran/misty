@@ -301,16 +301,13 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
   # Read outputs, iconv() removes Non-ASCII characters
   lca.out <- suppressWarnings(lapply(lca.folder, function(y) sapply(file.path(y, grep(".out", list.files(y), value = TRUE, useBytes = TRUE)), function(z) list(iconv(readLines(z),  sub = "")))))
 
-  ##### Check if all outputs are MIXTURE
+  # Check if all outputs are MIXTURE
   lca.out.mix <- suppressWarnings(names(which(unlist(lapply(lca.out, function(y) lapply(y, function(z) !any(grepl("MIXTURE", z, ignore.case = TRUE, useBytes = TRUE))))))))
 
-  ##### Check if all outputs are ERROR
-  lca.out.error <- suppressWarnings(names(which(unlist(lapply(lca.out, function(y) lapply(y, function(z) any(grepl("ERROR", z, ignore.case = FALSE, useBytes = TRUE))))))))
-
   # Exclude outputs
-  if (isTRUE(length(c(lca.out.mix, lca.out.error)) != 0L)) {
+  if (isTRUE(length(lca.out.mix) != 0L)) {
 
-    lca.out <- suppressWarnings(lapply(lca.folder, function(y) sapply(misty::chr.omit(file.path(y, grep(".out", list.files(y), value = TRUE, useBytes = TRUE)), omit = unique(c(lca.out.mix, lca.out.error)), check = FALSE), function(z) list(iconv(readLines(z), sub = "")))))
+    lca.out <- suppressWarnings(lapply(lca.folder, function(y) sapply(misty::chr.omit(file.path(y, grep(".out", list.files(y), value = TRUE, useBytes = TRUE)), omit = lca.out.mix, check = FALSE), function(z) list(iconv(readLines(z), sub = "")))))
 
     if (is.null(unlist(lca.out))) { stop("There are no Mplus MIXTURE outputs left after excluding outputs with error messages.", call. = FALSE) }
 

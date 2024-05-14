@@ -260,7 +260,24 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
   x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Exclude items (exclude) and specify user-defined NA ####
+  ## Numeric Variables ####
+
+  # Non-numeric variables
+  non.num <- !vapply(x, is.numeric, FUN.VALUE = logical(1L))
+
+  if (isTRUE(any(non.num))) {
+
+    x <- x[, -which(non.num), drop = FALSE]
+
+    # Variables left
+    if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
+
+    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(non.num)), collapse = ", ")), call. = FALSE)
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Exclude items and specify user-defined NA ####
 
   # Raw data
   if (isTRUE(x.raw)) {

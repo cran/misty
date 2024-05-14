@@ -643,7 +643,7 @@
     # One cluster variable
     if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) {
 
-      if (isTRUE(length(unique(na.omit(cluster))) == 1L)) { stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE) }
+      if (isTRUE(length(unique(na.omit(unlist(cluster)))) == 1L)) { stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE) }
 
     # Two cluster variables
     } else {
@@ -939,7 +939,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the coding() function -----------------------------
+# Internal functions for the coding() function ---------------------------------
 #
 # - .contr.sum
 # - .contr.wec
@@ -1085,7 +1085,7 @@
 
   }
 
-  #-----------------------------------------
+  #-----------------------------------------#
   # If n > 2
   if (isTRUE(x.n > 2L & x.nrow > 1L & x.ncol > 1L)) {
 
@@ -1238,7 +1238,9 @@
 .internal.polychoric <- function(x, smooth = TRUE, global = TRUE, weight = NULL, correct = 0,
                                  progress = FALSE, na.rm = TRUE, delete = TRUE) {
 
-  #----------------------------------------
+  #...................
+  ### cor.smooth ####
+
   cor.smooth <- function (x, eig.tol = 10^-12) {
 
     eigens <- try(eigen(x), TRUE)
@@ -1272,7 +1274,9 @@
 
   }
 
-  #----------------------------------------
+  #...................
+  ### mcmapply ####
+
   mcmapply <- function (FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE, USE.NAMES = TRUE,
                         mc.preschedule = TRUE, mc.set.seed = TRUE, mc.silent = FALSE,
                         mc.cores = 1L, mc.cleanup = TRUE, affinity.list = NULL) {
@@ -1296,7 +1300,9 @@
 
   }
 
-  #----------------------------------------
+  #...................
+  ### tableF ####
+
   tableF <- function(x,y) {
 
     minx <- min(x,na.rm = TRUE)
@@ -1311,7 +1317,9 @@
     return(ans)
   }
 
-  #----------------------------------------
+  #...................
+  ### tableFast ####
+
   tableFast <- function(x, y, minx, maxx, miny, maxy) {
 
     maxxy <- (maxx + (minx == 0L))*(maxy + (minx == 0L))
@@ -1323,7 +1331,9 @@
 
   }
 
-  #----------------------------------------
+  #...................
+  ### polyBinBvn ####
+
   polyBinBvn <- function(rho, rc, cc) {
 
     row.cuts <- c(-Inf, rc,Inf)
@@ -1354,7 +1364,9 @@
 
   }
 
-  #----------------------------------------
+  #...................
+  ### polyF ####
+
   polyF <- function(rho, rc, cc, tab) {
 
     P <- polyBinBvn(rho, rc, cc)
@@ -1364,7 +1376,9 @@
     lP[lP == Inf] <- NA
     -sum(tab * lP, na.rm = TRUE)  }
 
-  #----------------------------------------
+  #...................
+  ### wtd.table ####
+
   wtd.table <- function(x, y, weight) {
 
     tab <- tapply(weight, list(x, y), sum, na.rm = TRUE, simplify = TRUE)
@@ -1374,7 +1388,9 @@
 
   }
 
-  #----------------------------------------
+  #...................
+  ### polyc ####
+
   polyc <- function(x, y = NULL, taux, tauy, global = TRUE, weight = NULL, correct = correct,
                     gminx, gmaxx, gminy, gmaxy) {
 
@@ -1462,7 +1478,9 @@
 
   }
 
-  #----------------------------------------
+  #...................
+  ### polydi ####
+
   polydi <- function(p, d, taup, taud, global = TRUE, ML = FALSE, std.err = FALSE, weight = NULL,
                      progress = TRUE, na.rm = TRUE, delete = TRUE, correct = 0.5) {
 
@@ -1603,7 +1621,9 @@
 
   }
 
-  #----------------------------------------
+  #...................
+  ### polytab ####
+
   polytab <- function(tab, correct = TRUE) {
 
     tot <- sum(tab)
@@ -1622,7 +1642,9 @@
 
   }
 
-  #----------------------------------------
+  #...................
+  ### myfun ####
+
   myfun <- function(x, i, j, gminx, gmaxx, gminy, gmaxy) {
 
     polyc(x[, i], x[, j], tau[, i], tau[, j], global = global, weight = weight, correct = correct,
@@ -1630,7 +1652,9 @@
 
   }
 
-  #----------------------------------------
+  #...................
+  ### matpLower ####
+
   matpLower <- function(x, nvar, gminx, gmaxx, gminy, gmaxy) {
 
     k <- 1L
@@ -1678,8 +1702,6 @@
     }
 
   }
-
-  #----------------------------------------
 
   if (isTRUE(!is.null(weight))) {
 
@@ -1908,18 +1930,15 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
       resid.sum <- sum(param.resid$est)
 
       # Residual covariances
-      if (isTRUE(!is.null(y.rescov))) {
-
-        resid.sum <- resid.sum + 2L*sum(param.rcov$est)
-
-      }
+      if (isTRUE(!is.null(y.rescov))) { resid.sum <- resid.sum + 2L*sum(param.rcov$est) }
 
       omega <- load.sum2 / (load.sum2 + resid.sum)
 
-    # Hierarchical omega
+    #...................
+    ### Hierarchical omega ####
     } else {
 
-      mod.cov <- paste(apply(combn(seq_len(length(varnames)), m = 2L), 2L, function(z) paste(varnames[z[1]], "~~", varnames[z[2L]])), collapse = " \n ")
+      mod.cov <- paste(apply(combn(seq_len(length(varnames)), m = 2L), 2L, function(z) paste(varnames[z[1L]], "~~", varnames[z[2L]])), collapse = " \n ")
 
       mod.cov.fit <- suppressWarnings(lavaan::cfa(mod.cov, data = y, ordered = FALSE, se = "none", std.lv = TRUE, estimator = "ML", missing = "fiml"))
 
@@ -1940,10 +1959,11 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
     # Return object
     object <- list(mod.fit = mod.fit, omega = omega)
 
-    # Omega for ordered-categorical items
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Omega for ordered-categorical items ####
   } else {
 
-    object <- .catOmega(y, check = TRUE)
+    object <- .catOmega(y, y.rescov = y.rescov, check = TRUE)
 
   }
 
@@ -1954,40 +1974,46 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## .catOmega Function ####
 
-.catOmega <- function(dat, check = TRUE) {
+.catOmega <- function(dat, y.rescov = NULL, check = TRUE) {
 
-  q <- ncol(dat)
-  for(i in 1L:q) {
+  # Variable names
+  varnames <- colnames(dat)
 
-    dat[, i] <- ordered(dat[, i])
+  # Sequence from 1 to the number of columns
+  q <- seq_len(ncol(dat))
+
+  # Convert in ordered factor
+  dat <- data.frame(lapply(dat, ordered))
+
+  # Factor loadings
+  loadingLine <- paste(paste0(paste0("L", q), "*", varnames), collapse = " + ")
+
+  # Factor variance
+  factorLine <- "f1 ~~ 1*f1\n"
+
+  # Paste model syntax
+  model <- paste0("f1 =~ NA*", varnames[1L], " + ", loadingLine, "\n", factorLine)
+
+  # Residual covariance
+  if (isTRUE(!is.null(y.rescov))) {
+
+    rescovLine <- vapply(y.rescov, function(y) paste(y, collapse = " ~~ "), FUN.VALUE = character(1L))
+
+    # Paste residual covariances
+    model <- paste0(model, paste(rescovLine, collapse = "\n "))
 
   }
 
-  varnames <- paste0("y", 1L:q)
-  colnames(dat) <- varnames
-
-  loadingName <- paste0("a", 1L:q)
-  errorName <- paste0("b", 1L:q)
-
-  model <- "f1 =~ NA*y1 + "
-  loadingLine <- paste(paste0(loadingName, "*", varnames), collapse = " + ")
-  factorLine <- "f1 ~~ 1*f1\n"
-
-  model <- paste(model, loadingLine, "\n", factorLine)
+  # Estimate model
   mod.fit <- suppressWarnings(lavaan::cfa(model, data = dat, estimator = "DWLS", se = "none", ordered = TRUE))
 
   # Model convergence
-  if (isTRUE(check)) {
-
-    if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) { warning("CFA model did not converge, results are most likely unreliable.", call. = FALSE) }
-
-  }
+  if (isTRUE(check)) { if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) { warning("CFA model did not converge, results are most likely unreliable.", call. = FALSE) } }
 
   param <- lavaan::inspect(mod.fit, "coef")
+
   ly <- param[["lambda"]]
   ps <- param[["psi"]]
-
-  truevar <- ly%*%ps%*%t(ly)
 
   threshold <- .getThreshold(mod.fit)[[1L]]
 
@@ -1995,14 +2021,14 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
 
   invstdvar <- 1L / sqrt(diag(lavaan::lavInspect(mod.fit, "implied")$cov))
 
-  polyr <- diag(invstdvar) %*% truevar %*% diag(invstdvar)
+  polyr <- diag(invstdvar) %*% ly%*%ps%*%t(ly) %*% diag(invstdvar)
 
   sumnum <- 0L
   addden <- 0L
 
-  for(j in 1L:q) {
+  for (j in q) {
 
-    for(jp in 1L:q) {
+    for (jp in q) {
 
       sumprobn2 <- 0L
       addprobn2 <- 0L
@@ -2010,9 +2036,9 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
       t1 <- threshold[[j]]
       t2 <- threshold[[jp]]
 
-      for(c in 1L:length(t1)) {
+      for(c in seq_along(t1)) {
 
-        for(cp in 1L:length(t2)) {
+        for(cp in seq_along(t2)) {
 
           sumprobn2 <- sumprobn2 + .p2(t1[c], t2[cp], polyr[j, jp])
           addprobn2 <- addprobn2 + .p2(t1[c], t2[cp], denom[j, jp])
@@ -2023,6 +2049,7 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
 
       sumprobn1 <- sum(pnorm(t1))
       sumprobn1p <- sum(pnorm(t2))
+
       sumnum <- sumnum + (sumprobn2 - sumprobn1 * sumprobn1p)
       addden <- addden + (addprobn2 - sumprobn1 * sumprobn1p)
 
@@ -2030,9 +2057,7 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
 
   }
 
-  omega <- sumnum / addden
-
-  object <- list(mod.fit = mod.fit, omega = omega)
+  object <- list(mod.fit = mod.fit, omega = sumnum / addden)
 
   return(object)
 
@@ -2103,7 +2128,7 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
 
   barpos <- sapply(strsplit(targettaunames, ""), function(x) which(x == "|"))
 
-  varnames <- unique(apply(data.frame(targettaunames, barpos - 1L, stringsAsFactors = FALSE), 1, function(x) substr(x[1L], 1, x[2L])))
+  varnames <- unique(apply(data.frame(targettaunames, barpos - 1L, stringsAsFactors = FALSE), 1L, function(x) substr(x[1L], 1L, x[2L])))
 
   script <- ""
 
@@ -2437,5 +2462,379 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
   if (chi <= stats::qchisq(probs[2L], df)) { chi_ncp[1L] <- 0L }
 
   return(chi_ncp)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the robust.coef() function ----------------------------
+#
+# - .sandw
+# - .coeftest
+# - .waldtest
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Making Sandwiches with Bread and Meat ####
+
+.sandw <- function(x, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5")) {
+
+  # Hat values
+  diaghat <- try(hatvalues(x), silent = TRUE)
+
+  # Specify omega function
+  switch(type,
+         const = { omega <- function(residuals, diaghat, df) rep(1, length(residuals)) * sum(residuals^2L) / df },
+         HC0   = { omega <- function(residuals, diaghat, df) residuals^2L },
+         HC1   = { omega <- function(residuals, diaghat, df) residuals^2L * length(residuals)/df },
+         HC2   = { omega <- function(residuals, diaghat, df) residuals^2L / (1L - diaghat) },
+         HC3   = { omega <- function(residuals, diaghat, df) residuals^2L / (1L - diaghat)^2L },
+         HC4   = { omega <- function(residuals, diaghat, df) {
+           n <- length(residuals)
+           p <- as.integer(round(sum(diaghat),  digits = 0L))
+           delta <- pmin(4L, n * diaghat/p)
+           residuals^2L / (1L - diaghat)^delta
+         }},
+         HC4m  = { omega <- function(residuals, diaghat, df) {
+           gamma <- c(1.0, 1.5) ## as recommended by Cribari-Neto & Da Silva
+           n <- length(residuals)
+           p <- as.integer(round(sum(diaghat)))
+           delta <- pmin(gamma[1L], n * diaghat/p) + pmin(gamma[2L], n * diaghat/p)
+           residuals^2L / (1L - diaghat)^delta
+         }},
+         HC5   = { omega <- function(residuals, diaghat, df) {
+           k <- 0.7 ## as recommended by Cribari-Neto et al.
+           n <- length(residuals)
+           p <- as.integer(round(sum(diaghat)))
+           delta <- pmin(n * diaghat / p, pmax(4L, n * k * max(diaghat) / p))
+           residuals^2L / sqrt((1L - diaghat)^delta)
+         }})
+
+  if (isTRUE(type %in% c("HC2", "HC3", "HC4", "HC4m", "HC5"))) {
+
+    if (isTRUE(inherits(diaghat, "try-error"))) stop(sprintf("hatvalues() could not be extracted successfully but are needed for %s", type), call. = FALSE)
+
+    id <- which(diaghat > 1L - sqrt(.Machine$double.eps))
+
+    if(length(id) > 0L) {
+
+      id <- if (isTRUE(is.null(rownames(X)))) { as.character(id) } else { rownames(X)[id] }
+
+      if(length(id) > 10L) id <- c(id[1L:10L], "...")
+
+      warning(sprintf("%s covariances become numerically unstable if hat values are close to 1 as for observations %s", type, paste(id, collapse = ", ")), call. = FALSE)
+
+    }
+
+  }
+
+  # Ensure that NAs are omitted
+  if(is.list(x) && !is.null(x$na.action)) class(x$na.action) <- "omit"
+
+  # Extract design matrix
+  X <- model.matrix(x)
+  if (isTRUE(any(alias <- is.na(coef(x))))) X <- X[, !alias, drop = FALSE]
+
+  # Number of observations
+  n <- NROW(X)
+
+  # Generalized Linear Model
+  if (isTRUE(inherits(x, "glm"))) {
+
+    wres <- as.vector(residuals(x, "working")) * weights(x, "working")
+    dispersion <- if (isTRUE(substr(x$family$family, 1L, 17L) %in% c("poisson", "binomial", "Negative Binomial"))) { 1L } else { sum(wres^2L, na.rm = TRUE) / sum(weights(x, "working"), na.rm = TRUE) }
+
+    ef <- wres * X / dispersion
+
+    # Linear Model
+  } else {
+
+    # Weights
+    wts <- if (isTRUE(is.null(weights(x)))) { 1L } else { weights(x) }
+    ef <- as.vector(residuals(x)) * wts * X
+
+  }
+
+  # Meat
+  meat <- crossprod(sqrt(omega(rowMeans(ef / X, na.rm = TRUE), diaghat, n - NCOL(X))) * X) / n
+
+  # Bread
+  sx <- summary.lm(x)
+  bread <- sx$cov.unscaled * as.vector(sum(sx$df[1L:2L]))
+
+  # Sandwich
+  sandw <- 1L / n * (bread %*% meat %*% bread)
+
+  return(invisible(sandw))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Inference for Estimated Coefficients ####
+
+.coeftest <- function(x, vcov = NULL) {
+
+  # Extract coefficients and standard errors
+  est <- coef(x)
+  se <- sqrt(diag(vcov))
+
+  ## match using names and compute t/z statistics
+  if (isTRUE(!is.null(names(est)) && !is.null(names(se)))) {
+
+    if (length(unique(names(est))) == length(names(est)) && length(unique(names(se))) == length(names(se))) {
+
+      anames <- names(est)[names(est) %in% names(se)]
+      est <- est[anames]
+      se <- se[anames]
+
+    }
+
+  }
+
+  # Test statistic
+  stat <- as.vector(est) / se
+
+  df <- try(df.residual(x), silent = TRUE)
+
+  # Generalized Linear Model
+  if (isTRUE(inherits(x, "glm"))) {
+
+    pval <- 2L * pnorm(abs(stat), lower.tail = FALSE)
+    cnames <- c("Estimate", "Std. Error", "z value", "Pr(>|z|)")
+    mthd <- "z"
+
+    # Linear Model
+  } else {
+
+    pval <- 2L * pt(abs(stat), df = df, lower.tail = FALSE)
+    cnames <- c("Estimate", "Std. Error", "t value", "Pr(>|t|)")
+    mthd <- "t"
+
+  }
+
+  object <- cbind(est, se, stat, pval)
+  colnames(object) <- cnames
+
+  return(invisible(object))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Wald Test of Nested Models ####
+
+.waldtest <- function(object, ..., vcov = NULL, name = NULL) {
+
+  coef0 <- function(x, ...) { na.omit(coef(x, ...)) }
+
+  nobs0 <- function(x, ...) {
+
+    nobs1 <- nobs
+    nobs2 <- function(x, ...) { NROW(residuals(x, ...)) }
+
+    object <- try(nobs1(x, ...), silent = TRUE)
+
+    if (isTRUE(inherits(object, "try-error") | is.null(object))) object <- nobs2(x, ...)
+
+    return(object)
+
+  }
+
+  df.residual0 <- function(x) {
+
+    df <- try(df.residual(x), silent = TRUE)
+
+    if (isTRUE(inherits(df, "try-error") | is.null(df))) { df <- try(nobs0(x) - attr(logLik(x), "df"), silent = TRUE) }
+    if (isTRUE(inherits(df, "try-error") | is.null(df))) { df <- try(nobs0(x) - length(as.vector(coef0(x))), silent = TRUE) }
+    if (isTRUE(inherits(df, "try-error"))) df <- NULL
+
+    return(df)
+
+  }
+
+  cls <- class(object)[1L]
+
+  # 1. Extracts term labels
+  tlab <- function(x) {
+
+    tt <- try(terms(x), silent = TRUE)
+    if (isTRUE(inherits(tt, "try-error"))) "" else attr(tt, "term.labels")
+
+  }
+
+  # 2. Extracts model name
+  if (isTRUE(is.null(name))) name <- function(x) {
+
+    object <- try(formula(x), silent = TRUE)
+
+    if (isTRUE(inherits(object, "try-error") | is.null(object))) { object <- try(x$call, silent = TRUE) }
+    if (isTRUE(inherits(object, "try-error") | is.null(object))) { return(NULL) } else { return(paste(deparse(object), collapse="\n")) }
+
+  }
+
+  # 3. Compute an updated model object
+  modelUpdate <- function(fm, update) {
+
+    if (isTRUE(is.numeric(update))) {
+
+      if (isTRUE(any(update < 1L))) {
+
+        warning("For numeric model specifications all values have to be >= 1", call. = FALSE)
+        update <- abs(update)[abs(update) > 0L]
+
+      }
+
+      if (isTRUE(any(update > length(tlab(fm))))) {
+
+        warning(paste("More terms specified than existent in the model:", paste(as.character(update[update > length(tlab(fm))]), collapse = ", ")), call. = FALSE)
+        update <- update[update <= length(tlab(fm))]
+
+      }
+
+      update <- tlab(fm)[update]
+
+    }
+
+    if (isTRUE(is.character(update))) {
+
+      if (isTRUE(!all(update %in% tlab(fm)))) {
+
+        warning(paste("Terms specified that are not in the model:", paste(dQuote(update[!(update %in% tlab(fm))]), collapse = ", ")), call. = FALSE)
+        update <- update[update %in% tlab(fm)]
+
+      }
+
+      if (isTRUE(length(update) < 1L)) { stop("Empty model specification", call. = FALSE)  }
+      update <- as.formula(paste(". ~ . -", paste(update, collapse = " - ")))
+
+    }
+
+    if (isTRUE(inherits(update, "formula"))) {
+
+      update <- update(fm, update, evaluate = FALSE)
+      update <- eval(update, parent.frame(3))
+
+    }
+
+    if (isTRUE(!inherits(update, cls))) { stop(paste("Original model was of class \"", cls, "\", updated model is of class \"", class(update)[1], "\"", sep = ""), call. = FALSE) }
+
+    return(update)
+
+  }
+
+  # 4. Compare two fitted model objects
+  modelCompare <- function(fm, fm.up, vfun = NULL) {
+
+    q <- length(coef0(fm)) - length(coef0(fm.up))
+
+    if (isTRUE(q > 0L)) {
+
+      fm0 <- fm.up
+      fm1 <- fm
+
+    } else {
+
+      fm0 <- fm
+      fm1 <- fm.up
+
+    }
+
+    k <- length(coef0(fm1))
+    n <- nobs0(fm1)
+
+    # Determine omitted variables
+    if (isTRUE(!all(tlab(fm0) %in% tlab(fm1)))) { stop("Nesting of models cannot be determined", call. = FALSE) }
+
+    ovar <- which(!(names(coef0(fm1)) %in% names(coef0(fm0))))
+
+    if (isTRUE(abs(q) != length(ovar))) { stop("Nesting of models cannot be determined", call. = FALSE) }
+
+    # Get covariance matrix estimate
+    vc <- if (isTRUE(is.null(vfun))) { vcov(fm1) } else if (isTRUE(is.function(vfun))) { vfun(fm1) } else { vfun }
+
+    ## Compute Chisq statistic
+    stat <- t(coef0(fm1)[ovar]) %*% solve(vc[ovar,ovar]) %*% coef0(fm1)[ovar]
+
+    return(c(-q, stat))
+
+  }
+
+  # Recursively fit all objects
+  objects <- list(object, ...)
+  nmodels <- length(objects)
+
+  if (isTRUE(nmodels < 2L)) {
+
+    objects <- c(objects, . ~ 1)
+    nmodels <- 2L
+
+  }
+
+  # Remember which models are already fitted
+  no.update <- sapply(objects, function(obj) inherits(obj, cls))
+
+  # Updating
+  for(i in 2L:nmodels) objects[[i]] <- modelUpdate(objects[[i - 1L]], objects[[i]])
+
+  # Check responses
+  getresponse <- function(x) {
+
+    tt <- try(terms(x), silent = TRUE)
+    if (isTRUE(inherits(tt, "try-error"))) { "" } else { deparse(tt[[2L]]) }
+
+  }
+
+  responses <- as.character(lapply(objects, getresponse))
+  sameresp <- responses == responses[1L]
+
+  if (isTRUE(!all(sameresp))) {
+
+    objects <- objects[sameresp]
+    warning("Models with response ", deparse(responses[!sameresp]), " removed because response differs from ", "model 1", call. = FALSE)
+
+  }
+
+  # Check sample sizes
+  ns <- sapply(objects, nobs0)
+  if (isTRUE(any(ns != ns[1L]))) {
+
+    for(i in 2L:nmodels) {
+
+      if (isTRUE(ns[1L] != ns[i])) {
+
+        if (isTRUE(no.update[i])) { stop("Models were not all fitted to the same size of dataset")
+
+        } else {
+
+          commonobs <- row.names(model.frame(objects[[i]])) %in% row.names(model.frame(objects[[i - 1L]]))
+          objects[[i]] <- eval(substitute(update(objects[[i]], subset = commonobs), list(commonobs = commonobs)))
+
+          if (isTRUE(nobs0(objects[[i]]) != ns[1L])) { stop("Models could not be fitted to the same size of dataset", call. = FALSE) }
+
+        }
+
+      }
+
+    }
+
+  }
+
+  # ANOVA matrix
+  object <- matrix(rep(NA, 4L * nmodels), ncol = 4L)
+
+  colnames(object) <- c("Res.Df", "Df", "F", "pval")
+  rownames(object) <- 1L:nmodels
+
+  object[, 1L] <- as.numeric(sapply(objects, df.residual0))
+  for(i in 2L:nmodels) object[i, 2L:3L] <- modelCompare(objects[[i - 1L]], objects[[i]], vfun = vcov)
+
+  df <- object[, 1L]
+  for(i in 2L:nmodels) if (isTRUE(object[i, 2L] < 0L)) { df[i] <- object[i - 1L, 1L] }
+  object[, 3L] <- object[, 3L] / abs(object[, 2L])
+  object[, 4L] <- pf(object[, 3L], abs(object[, 2L]), df, lower.tail = FALSE)
+
+  variables <- lapply(objects, name)
+  if (isTRUE(any(sapply(variables, is.null)))) { variables <- lapply(match.call()[-1L], deparse)[1L:nmodels] }
+
+  return(invisible(object))
 
 }

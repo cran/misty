@@ -159,7 +159,7 @@ dominance.manual(fit.cor$cluster)
 #----------------------------------------------------------------------------
 # Example 5: Mplus
 #
-# In Mplus, the model-impied correlation matrix  of the latent variables
+# In Mplus, the model-impied correlation matrix of the latent variables
 # can be requested by OUTPUT: TECH4 and imported into R by using the
 # MplusAuomtation package, for example:
 

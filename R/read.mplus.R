@@ -5,33 +5,34 @@
 #' Note that by default \code{-99} in the Mplus data file is replaced with to
 #' \code{NA}.
 #'
-#' @param file          a character string indicating the name of the Mplus data
-#'                      file with or without the file extension \code{.dat}, e.g.,
-#'                      \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.
-#'                      Note that it is not necessary to specify this argument
-#'                      when \code{return.var = TRUE}.
-#' @param sep           a character string indicating the field separator (i.e.,
-#'                      delimiter) used in the data file specified in \code{file}.
-#'                      By default, the separator is 'white space', i.e., one or
-#'                      more spaces, tabs, newlines or carriage returns.
-#' @param input         a character string indicating the Mplus input (\code{.inp})
-#'                      or output file (\code{.out}) in which the variable names
-#'                      are specified in the \code{VARIABLE:} section. Note that
-#'                      if \code{input = NULL}, this function is equivalent to
-#'                      \code{read.table(file)}.
-#' @param na            a numeric vector indicating values to replace with \code{NA}.
-#'                      By default, \code{-99} is replaced with \code{NA}. If
-#'                      \code{-99} is not a missing value change the argument to
-#'                      \code{NULL}.
-#' @param print         logical: if \code{TRUE}, variable names are printed on
-#'                      the console.
-#' @param return.var    logical: if \code{TRUE}, the function returns the variable
-#'                      names extracted from the Mplus input or output file only.
-#' @param fileEncoding  character string declaring the encoding used on \code{file}
-#'                      so the character data can be re-encoded. See
-#'                      \code{\link{df.sort}}.
-#' @param check         logical: if \code{TRUE} (default), argument specification
-#'                      is checked.
+#' @param file       a character string indicating the name of the Mplus data
+#'                   file with or without the file extension \code{.dat}, e.g.,
+#'                   \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.
+#'                   Note that it is not necessary to specify this argument
+#'                   when \code{return.var = TRUE}.
+#' @param sep        a character string indicating the field separator (i.e.,
+#'                   delimiter) used in the data file specified in \code{file}.
+#'                   By default, the separator is 'white space', i.e., one or
+#'                   more spaces, tabs, newlines or carriage returns.
+#' @param input      a character string indicating the Mplus input (\code{.inp})
+#'                   or output file (\code{.out}) in which the variable names
+#'                   are specified in the \code{VARIABLE:} section. Note that
+#'                   if \code{input = NULL}, this function is equivalent to
+#'                   \code{read.table(file)}.
+#' @param na         a numeric vector indicating values to replace with \code{NA}.
+#'                   By default, \code{-99} is replaced with \code{NA}. If
+#'                   \code{-99} is not a missing value change the argument to
+#'                   \code{NULL}.
+#' @param print      logical: if \code{TRUE}, variable names are printed on
+#'                   the console.
+#' @param return.var logical: if \code{TRUE}, the function returns the variable
+#'                   names extracted from the Mplus input or output file only.
+#' @param encoding   character string declaring the encoding used on \code{file}
+#'                   so the character data can be re-encoded. See the 'Encoding'
+#'                   section of the help page for the \code{file} function, the
+#'                   'R Data Import/Export Manual' and 'Note'.
+#' @param check      logical: if \code{TRUE} (default), argument specification
+#'                   is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -62,11 +63,11 @@
 #' varnames <- read.mplus(input = "Mplus_Input.inp", return.var = TRUE)
 #' }
 read.mplus <- function(file, sep = "", input = NULL, na = -99, print = FALSE,
-                       return.var = FALSE, fileEncoding = "UTF-8-BOM", check = TRUE) {
+                       return.var = FALSE, encoding = "UTF-8-BOM", check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Mplus Variable names -------------------------------------------------------
+  # Mplus Variable Names -------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check input 'input' ####
@@ -86,7 +87,8 @@ read.mplus <- function(file, sep = "", input = NULL, na = -99, print = FALSE,
     #...................
     ### Read input text lines ####
 
-    inp.lines <- sapply(strsplit(suppressWarnings(readLines(input)), "!"), function(y) ifelse(length(y) > 1L, y[1L], y))
+    # Remove comments
+    inp.lines <- sapply(strsplit(iconv(suppressWarnings(readLines(input)), from = "ISO-8859-1", to = "UTF-8"), "!"), function(y) ifelse(length(y) > 1L, y[1L], y))
 
     #...................
     ### Extract VARIABLE section ####
@@ -99,7 +101,7 @@ read.mplus <- function(file, sep = "", input = NULL, na = -99, print = FALSE,
     #...................
     ### Extract variable names ####
 
-    varnames <- misty::chr.omit(unlist(strsplit(misty::chr.trim(gsub("VARIABLE:|variable:|Variable:|NAMES ARE|names ARE|Names ARE|NAMES are|names are|Names are|NAMES Are|names Are|Names Are|NAMES =|names =|Names =|;|\n|\t|\r|\r\n", "",
+    varnames <- misty::chr.omit(unlist(strsplit(misty::chr.trim(gsub("VARIABLE:|variable:|Variable:|NAMES ARE|names ARE|Names ARE|NAMES are|names are|Names are|NAMES Are|names Are|Names Are|NAMES =|names =|Names =|NAMES=|names=|Names=|;|\n|\t|\r|\r\n", "",
                                                                 inp.variable)), " ")), check = FALSE)
 
     #...................
@@ -195,7 +197,7 @@ read.mplus <- function(file, sep = "", input = NULL, na = -99, print = FALSE,
       #...................
       ### Number of rows ####
 
-      invisible(tryCatch(read.table(file, sep = sep, stringsAsFactors = FALSE, fileEncoding = fileEncoding),
+      invisible(tryCatch(read.table(file, sep = sep, stringsAsFactors = FALSE, fileEncoding = encoding),
                          error = function(y) { stop(paste0("Data file ", file, " does not have the same number of entries in each line."), call. = FALSE) }))
 
       #...................
@@ -203,7 +205,7 @@ read.mplus <- function(file, sep = "", input = NULL, na = -99, print = FALSE,
 
       if (isTRUE(!is.null(input))) {
 
-        df.check <- read.table(file, fileEncoding = fileEncoding, stringsAsFactors = FALSE)
+        df.check <- read.table(file, fileEncoding = encoding, stringsAsFactors = FALSE)
 
         if (isTRUE(ncol(df.check) != length(varnames))) {
 
@@ -226,7 +228,7 @@ read.mplus <- function(file, sep = "", input = NULL, na = -99, print = FALSE,
     ## Mplus data ####
 
     # Read data
-    object <- read.table(file, sep = sep, stringsAsFactors = FALSE, fileEncoding = fileEncoding)
+    object <- read.table(file, sep = sep, stringsAsFactors = FALSE, fileEncoding = encoding)
 
     #...................
     ### Missing values ####
