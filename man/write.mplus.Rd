@@ -4,7 +4,7 @@
 \alias{write.mplus}
 \title{Write Mplus Data File}
 \usage{
-write.mplus(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8,
+write.mplus(x, file = "Mplus_Data.dat", data = TRUE, input = TRUE,
             var = FALSE, na = -99, check = TRUE)
 }
 \arguments{
@@ -13,12 +13,12 @@ write.mplus(x, file = "Mplus_Data.dat", input = TRUE, n.var = 8,
 \item{file}{a character string naming a file with or without the file extension
 '.dat', e.g., \code{"Mplus_Data.dat"} or \code{"Mplus_Data"}.}
 
+\item{data}{logical: if \code{TRUE} (default), Mplus data file is written in a
+text file named according to the argument\code{file}.}
+
 \item{input}{logical: if \code{TRUE} (default), Mplus input template is written
 in a text file named according to the argument\code{file} with the
 extension \code{_INPUT.inp}.}
-
-\item{n.var}{a numeric value indicating the number of variables in each line
-under \code{NAMES ARE} in the the Mplus input template.}
 
 \item{var}{logical: if \code{TRUE}, variable names are written in a text file
 named according to the argument\code{file} with the extension
@@ -30,7 +30,7 @@ named according to the argument\code{file} with the extension
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
-None.
+Returns a character string indicating the variable names for the Mplus input file.
 }
 \description{
 This function writes a matrix or data frame to a tab-delimited file without variable
@@ -44,9 +44,9 @@ the data set. Missing data will be coded as a single numeric value.
 write.mplus(mtcars)
 
 # Example 2: Write Mplus Data File "mtcars.dat" and a Mplus input template "mtcars_INPUT.inp",
-# missing values coded with -999, 4 variables in each line under "NAMES ARE"
+# missing values coded with -999,
 # write variable names in a text file called "mtcars_VARNAMES.inp"
-write.mplus(mtcars, file = "mtcars.dat", n.var = 4, var = TRUE, na = -999)
+write.mplus(mtcars, file = "mtcars.dat", var = TRUE, na = -999)
 }
 }
 \references{
@@ -54,7 +54,7 @@ Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
 Muthen & Muthen.
 }
 \seealso{
-\code{\link{read.mplus}}, \code{\link{run.mplus}}, \code{\link{write.sav}},
+\code{\link{read.mplus}}, \code{\link{mplus.run}}, \code{\link{write.sav}},
 \code{\link{write.xlsx}}, \code{\link{write.dta}}
 }
 \author{

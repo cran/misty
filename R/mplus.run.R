@@ -16,17 +16,19 @@
 #'                       regex or http://www.pcre.org/pcre.txt for details about
 #'                       regular expression syntax. Not relevant if target is a
 #'                       single file.
-#' @param showOutput     logical: if \code{TRUE}, estimation output (\code{TECH8})
+#' @param show.out       logical: if \code{TRUE}, estimation output (\code{TECH8})
 #'                       is show on the R console. Note that if run within Rgui,
 #'                       output will display within R, but if run via Rterm,
 #'                       a separate window will appear during estimation.
-#' @param replaceOutfile a character string for specifying three settings:
+#' @param replace.out    a character string for specifying three settings:
 #'                       \code{"always"} (default), which runs all models, regardless
 #'                       of whether an output file for the model exists, \code{"never"},
 #'                       which does not run any model that has an existing output file,
-#'                       and \code{"modifiedDate"}, which only runs a model if the
+#'                       and \code{"modified"}, which only runs a model if the
 #'                       modified date for the input file is more recent than the
 #'                       output file modified date.
+#' @param message        logical: if \code{TRUE}, message \code{Running model:}
+#'                       and \code{System command:} is pringted on the console.
 #' @param logFile        a character string specifying a file that records the settings
 #'                       passed into the function and the models run (or skipped)
 #'                       during the run.
@@ -48,6 +50,10 @@
 #'
 #' @author
 #' Hadley Wickham, Romain Francois, Lionel Henry, and Kirill Müller, and Davis Vaughan.
+#'
+#' @seealso
+#' \code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus.print}},
+#' \code{\link{mplus}}, \code{\link{mplus.update}}, \code{\link{mplus.lca}}
 #'
 #' @references
 #' Hallquist, M. N. & Wiley, J. F. (2018). MplusAutomation: An R package for facilitating
@@ -75,9 +81,9 @@
 #' run.mplus(recursive = TRUE,
 #'           Mplus = "C:/Program Files/Mplus/Mplus.exe")
 #' }
-run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, showOutput = FALSE,
-                      replaceOutfile = c("always", "never", "modifiedDate"), logFile = NULL,
-                      Mplus = "Mplus", killOnFail = TRUE, local_tmpdir = FALSE) {
+mplus.run <- function(target = getwd(), recursive = FALSE, filefilter = NULL, show.out = FALSE,
+                      replace.out = c("always", "never", "modified"), message = TRUE,
+                      logFile = NULL, Mplus = "Mplus", killOnFail = TRUE, local_tmpdir = FALSE) {
 
   #_____________________________________________________________________________
   #
@@ -126,13 +132,9 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
   #
   # Input Check ----------------------------------------------------------------
 
-  stopifnot(replaceOutfile %in% c("always", "never", "modifiedDate"))
+  stopifnot(replace.out %in% c("always", "never", "modified"))
 
-  if (isTRUE(length(target) > 1L)) {
-
-    stop("Target for run.mplus() must be a single file or single directory.", call. = FALSE)
-
-  }
+  if (isTRUE(length(target) > 1L)) { stop("Target for run.mplus() must be a single file or single directory.", call. = FALSE) }
 
   curdir <- getwd()
 
@@ -146,19 +148,11 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
     }
 
-    if (isTRUE(!file.exists(target))) {
-
-      stop("run.mplus() cannot locate target file: ", target, call. = FALSE)
-
-    }
+    if (isTRUE(!file.exists(target))) { stop("run.mplus() cannot locate target file: ", target, call. = FALSE) }
 
     setwd(directory)
 
-    if (isTRUE(file.exists(outtest <- sub("\\.inp?$", ".out", filelist, perl = TRUE)))) {
-
-      filelist <- c(filelist, outtest)
-
-    }
+    if (isTRUE(file.exists(outtest <- sub("\\.inp?$", ".out", filelist, perl = TRUE)))) { filelist <- c(filelist, outtest) }
 
   } else {
 
@@ -170,11 +164,7 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
     }
 
-    if (isTRUE(!file.exists(directory))) {
-
-      stop("run.mplus() cannot change to directory: ", directory, call. = FALSE)
-
-    }
+    if (isTRUE(!file.exists(directory))) { stop("run.mplus() cannot change to directory: ", directory, call. = FALSE) }
 
     setwd(directory)
     filelist <- list.files(recursive = recursive, pattern = filefilter)
@@ -185,8 +175,8 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
   #
   # Arguments ------------------------------------------------------------------
 
-  # Argument replaceOutfile
-  if (isTRUE(all(c("always", "never", "modifiedDate") %in% replaceOutfile))) { replaceOutfile <- "always" }
+  # Argument replace.out
+  if (isTRUE(all(c("always", "never", "modified") %in% replace.out))) { replace.out <- "always" }
 
   #_____________________________________________________________________________
   #
@@ -202,8 +192,8 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
                        format(Sys.time(), "%d%b%Y %H:%M:%S"), "------"),
                  paste0("Target directory: ", directory), "Run options:",
                  paste("\tRecursive (run models in subdirectories):",
-                       as.character(recursive)), paste("\tShow output on console:", as.character(showOutput)),
-                 paste("\tReplace existing outfile:", replaceOutfile), "------"), con = logTarget)
+                       as.character(recursive)), paste("\tShow output on console:", as.character(show.out)),
+                 paste("\tReplace existing outfile:", replace.out), "------"), con = logTarget)
 
     flush(logTarget)
 
@@ -316,11 +306,7 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
   inpfiles <- filelist[grep(".*\\.inp?$", filelist, ignore.case = TRUE)]
   outfiles <- filelist[grep(".*\\.out$", filelist, ignore.case = TRUE)]
 
-  if (isTRUE(length(inpfiles) < 1L)) {
-
-    stop("No Mplus input files detected in the target directory: ", directory)
-
-  }
+  if (isTRUE(length(inpfiles) < 1L)) { stop("No Mplus input files detected in the target directory: ", directory) }
 
   dropOutExtensions <- sapply(outfiles, function(x) {
 
@@ -332,11 +318,11 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
   for (i in seq_len(length(inpfiles))) {
 
-    if (isTRUE(!replaceOutfile == "always")) {
+    if (isTRUE(!replace.out == "always")) {
 
       if (isTRUE(tolower(sub("\\.inp?$", "", inpfiles[i], perl = TRUE)) %in% dropOutExtensions)) {
 
-        if (isTRUE(replaceOutfile == "modifiedDate")) {
+        if (isTRUE(replace.out == "modified")) {
 
           inpmtime <- file.info(inpfiles[i])$mtime
 
@@ -364,7 +350,7 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
           }
 
-        } else if (isTRUE(replaceOutfile == "never")) {
+        } else if (isTRUE(replace.out == "never")) {
 
           if (isTRUE(isLogOpen())) {
 
@@ -428,17 +414,20 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
     }
 
-    cat("\nRunning model:", inputSplit$filename, "\n")
-    cat("System command:", command, "\n")
+    if (isTRUE(message)) {
+
+      cat("\nRunning Model:", inputSplit$filename, "\n")
+      cat("System Command:", command, "\n")
+
+    }
 
     if (isTRUE(.Platform$OS.type == "windows")) {
 
-      system(command, show.output.on.console = showOutput,
-             invisible = (!showOutput), wait = TRUE)
+      system(command, show.output.on.console = show.out, invisible = (!show.out), wait = TRUE)
 
     } else {
 
-      if (isTRUE(showOutput)) {
+      if (isTRUE(show.out)) {
 
         stdout.value <- ""
 
@@ -456,8 +445,7 @@ run.mplus <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
       }
 
-      exitCode <- system2(Mplus, args = c(shQuote(inputSplit$filename)),
-                          stdout = stdout.value, wait = TRUE)
+      exitCode <- system2(Mplus, args = c(shQuote(inputSplit$filename)), stdout = stdout.value, wait = TRUE)
 
       if (isTRUE(exitCode > 0L)) {
 

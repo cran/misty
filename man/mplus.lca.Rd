@@ -18,7 +18,7 @@ mplus.lca(x, ind = NULL,
           lrtstarts = c(0, 0, 100, 50), processors = c(8, 8),
          output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14"),
           replace.inp = FALSE, run.mplus = FALSE, Mplus = "Mplus",
-          replace.out = c("always", "never", "modifiedDate"), check = TRUE)
+          replace.out = c("always", "never", "modified"), check = TRUE)
 }
 \arguments{
 \item{x}{a matrix or data frame. Note that all variable names must
@@ -158,7 +158,7 @@ for most users since it has intelligent defaults.}
 \code{"always"} to run all models regardless of whether
 an output file for the model exists, \code{"never"} (default)
 to not run any model that has an existing output file,
-and \code{"modifiedDate"} to only runs a model if the
+and \code{"modified"} to only runs a model if the
 modified date for the input file is more recent than
 the output file modified date.}
 
@@ -260,8 +260,8 @@ in hierarchical data. \emph{Journal of Work and Organizational Psychology, 32}(4
 489-505. https://doi.org/10.1080/1359432X.2023.2177537
 }
 \seealso{
-\code{\link{result.lca}}, \code{\link{run.mplus}}, \code{\link{read.mplus}},
-\code{\link{write.mplus}}
+\code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus.print}},
+\code{\link{mplus}}, \code{\link{mplus.update}}, \code{\link{mplus.run}},
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

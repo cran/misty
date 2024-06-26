@@ -4,7 +4,7 @@
 \alias{aov.b}
 \title{Between-Subject Analysis of Variance}
 \usage{
-aov.b(formula, data, posthoc = TRUE, conf.level = 0.95, hypo = TRUE,
+aov.b(formula, data, posthoc = FALSE, conf.level = 0.95, hypo = TRUE,
       descript = TRUE, effsize = FALSE, weighted = FALSE, correct = FALSE,
       plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
       xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
@@ -24,7 +24,7 @@ groups.}
 \item{data}{a matrix or data frame containing the variables in the
 formula \code{formula}.}
 
-\item{posthoc}{logical: if \code{TRUE} (default), Tukey HSD post hoc test for
+\item{posthoc}{logical: if \code{TRUE}, Tukey HSD post hoc test for
 multiple comparison is conducted.}
 
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence

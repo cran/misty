@@ -32,28 +32,24 @@ This function was adapted from the \code{mgsub()} function in the \pkg{mgsub}
 package by Mark Ewing (2019).
 }
 \examples{
-# Example 1
-string <- c("hey ho, let's go!")
-chr.gsub(c("hey", "ho"), c("ho", "hey"), string)
+# Example 1: Replace 'the' and 'they' with 'a' and 'we'
+chr.vector <- "they don't understand the value of what they seek."
+chr.gsub(c("the", "they"), c("a", "we"), chr.vector)
 
-# Example 2
-string <- "they don't understand the value of what they seek."
-chr.gsub(c("the", "they"), c("a", "we"), string)
+# Example 2: Replace 'heyy' and 'ho' with 'yo'
+chr.vector <- c("hey ho, let's go!")
+chr.gsub(c("hey", "ho"), "yo", chr.vector, recycle = TRUE)
 
-# Example 3
-string <- c("hey ho, let's go!")
-chr.gsub(c("hey", "ho"), "yo", string, recycle = TRUE)
-
-# Example 4
-string <- "Dopazamine is not the same as dopachloride or dopastriamine, yet is still fake."
-chr.gsub(c("[Dd]opa([^ ]*?mine)","fake"), c("Meta\\\\1","real"), string)
+# Example 3: Replace with regular expressions
+chr.vector <- "Dopazamine is not the same as dopachloride or dopastriamine, yet is still fake."
+chr.gsub(c("[Dd]opa([^ ]*?mine)","fake"), c("Meta\\1","real"), chr.vector)
 }
 \references{
 Mark Ewing (2019). \emph{mgsub: Safe, Multiple, Simultaneous String Substitution}.
 R package version 1.7.1. https://CRAN.R-project.org/package=mgsub
 }
 \seealso{
-\code{\link{chr.omit}}, \code{\link{chr.trim}}
+\code{\link{chr.grep}}, \code{\link{chr.grepl}}, \code{\link{chr.omit}}, \code{\link{chr.trim}}
 }
 \author{
 Mark Ewing

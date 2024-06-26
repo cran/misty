@@ -74,7 +74,7 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
   if (isTRUE(missing(file))) { stop("Please specify a character string indicating the name of the SPSS data file for the argument 'file'", call. = FALSE) }
 
   # File extension .sav
-  file <- ifelse(length(grep(".sav", file)) == 0, file <- paste0(file, ".sav"), file)
+  file <- ifelse(length(grep(".sav", file)) == 0L, file <- paste0(file, ".sav"), file)
 
   # Check if 'file' exists
   if (isTRUE(!file.exists(file))) { stop(paste0("Unable to open SPSS data file: ", sQuote(file), " does not exist."), call. = FALSE) }

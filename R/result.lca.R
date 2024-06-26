@@ -129,7 +129,7 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{mplus.lca}}, \code{\link{run.mplus}}, \code{\link{read.mplus}},
+#' \code{\link{mplus.lca}}, \code{\link{mplus.run}}, \code{\link{read.mplus}},
 #' \code{\link{write.mplus}}
 #'
 #' @references
@@ -694,7 +694,7 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
       # Send R output to textfile
       sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
-      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
 
       # Print object
       print(object, check = FALSE)

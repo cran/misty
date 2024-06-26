@@ -5,7 +5,7 @@
 \title{Welch's Test}
 \usage{
 test.welch(formula, data, alternative = c("two.sided", "less", "greater"),
-           posthoc = TRUE, conf.level = 0.95, hypo = TRUE, descript = TRUE,
+           posthoc = FALSE, conf.level = 0.95, hypo = TRUE, descript = TRUE,
            effsize = FALSE, weighted = FALSE, ref = NULL, correct = FALSE,
            plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
            xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),

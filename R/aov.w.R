@@ -18,8 +18,8 @@
 #'                      for no correction, \code{LB} for lower bound correction,
 #'                      \code{GG} for Greenhouse-Geisser correction, and \code{HF},
 #'                      for Huynh-Feldt correction.
-#' @param posthoc       logical: if \code{TRUE} (default), paired-samples t-tests
-#'                      for multiple comparison are conducted.
+#' @param posthoc       logical: if \code{TRUE}, paired-samples t-tests for
+#'                      multiple comparison are conducted.
 #' @param conf.level    a numeric value between 0 and 1 indicating the confidence
 #'                      level of the interval.
 #' @param p.adj         a character string indicating an adjustment method for
@@ -278,7 +278,7 @@
 #'         plot.title = element_text(hjust = 0.5))
 #' }
 aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
-                  posthoc = TRUE, conf.level = 0.95,
+                  posthoc = FALSE, conf.level = 0.95,
                   p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
                   hypo = TRUE, descript = TRUE, epsilon = TRUE, effsize = FALSE, na.omit = TRUE,
                   plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
@@ -782,7 +782,7 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
     # Send R output to textfile
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
-    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+    if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
 
     # Print object
     print(object, check = FALSE)

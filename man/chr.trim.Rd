@@ -43,7 +43,7 @@ operations}.
 R package version 1.4.0.
 }
 \seealso{
-\code{\link{chr.gsub}}, \code{\link{chr.omit}}
+\code{\link{chr.grep}}, \code{\link{chr.grepl}}, \code{\link{chr.gsub}}, \code{\link{chr.omit}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -1,3 +1,31 @@
+### misty 0.6.4 (2024-06-26)
+
+##### New features
+* New function `mplus.print()` for printing a Mplus output file on the R console.
+* New function `mplus()` to create and run a Mplus input to print the output on 
+the console.
+* New function `update.mplus()` to update specific Mplus input command sections
+in the `mplus` object, run the updated input file, and print the output on the console.
+
+* New functions `chr.grep()` and `chr.grepl()` for multiple pattern matching, i.e., 
+`grep()` and `grepl()`functions for matching a vector of character strings.
+
+##### User-visible changes
+* The function `write.mplus()` is not restricted to variable names with up to 8 
+characters anymore.
+* Renamed the function `run.mplus()` to `mplus.run()`.
+* Changed the default setting of the argument `posthoc` in the functions `aov.b()`, 
+`aov.w()` and `test.welch()` to `FALSE`.
+* Changed the option of the argument `replace` from `modifiedDate` to `modified`
+in the functions `mplus.lca()` and `mplus.run()`.
+* Changed the arguments `showOutput` into `show.out` and `replaceOutfile` into
+`replace.out` in the function `mplus.run()`.
+* Added the argument `message` to the function `mplus.run()`.
+
+##### Bug fix
+* Fixed a bug in the function `test.welch()`, function did not print post hoc 
+tests when specifying `posthoc = TRUE`.
+
 ### misty 0.6.3 (2024-05-15)
 
 ##### Bug fix
@@ -87,7 +115,7 @@ two-level and three-lavel data.
 print function to save the print output into a text file.
 
 ##### User-visible changes
-* Changed the default setting of the argument `names` in the functions `rec()` to `.e`.
+* Changed the default setting of the argument `names` in the function `rec()` to `.e`.
 * Changed the default setting of the arguments `label` and `labels` in the `read.sav` function to `FALSE`.
 * Changed the argument `value` in the function `na.as()` to `na` to make it consistent with the arguments of the function `as.na()`.
 * Changed the argument `resid.cov` in the function `item.omega()` to `resocv` to make it consistent with the arguments of the functions `item.cfa()` and `multilevel.cfa()`.
@@ -285,8 +313,8 @@ to the functions `test.welch()`.
 
 ##### User-visible changes
 * Revised the output of the function `multilevel.cor()` to make it consistent with the output of the function `item.cfa()`.
-* Changed the argument `na.omit` in the functions `multilevel.cor()` to `missing` to make it consistent with the arguments of the function `item.cfa()`.
-* Changed the default setting of the argument `estimator` in the functions `multilevel.cor()` to `ML`, so that full information maximum likelihood method is used for dealing with missing data.
+* Changed the argument `na.omit` in the function `multilevel.cor()` to `missing` to make it consistent with the arguments of the function `item.cfa()`.
+* Changed the default setting of the argument `estimator` in the function `multilevel.cor()` to `ML`, so that full information maximum likelihood method is used for dealing with missing data.
 
 ##### Bug fix
 * Fixed a bug in the function `multilevel.cor()`, function did not use Huber-White 

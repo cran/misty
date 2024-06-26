@@ -27,7 +27,7 @@ variable if \code{version} is greater or equal 13.}
 
 \item{adjust.tz}{this argument controls how the timezone of date-time values
 is treated when writing, see 'Details' in the
-in the \code{\link{write_dta}} function in the \code{havan}
+in the \code{write_dta} function in the \code{havan}
 package.}
 
 \item{check}{logical: if \code{TRUE} (default), variable attributes

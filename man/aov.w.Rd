@@ -5,7 +5,7 @@
 \title{Repeated Measures Analysis of Variance (Within-Subject ANOVA)}
 \usage{
 aov.w(formula, data, print = c("all", "none", "LB", "GG", "HF"),
-      posthoc = TRUE, conf.level = 0.95,
+      posthoc = FALSE, conf.level = 0.95,
       p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
       hypo = TRUE, descript = TRUE, epsilon = TRUE, effsize = FALSE,
       na.omit = TRUE, plot = FALSE, point.size = 4, adjust = TRUE,
@@ -32,7 +32,7 @@ for no correction, \code{LB} for lower bound correction,
 \code{GG} for Greenhouse-Geisser correction, and \code{HF},
 for Huynh-Feldt correction.}
 
-\item{posthoc}{logical: if \code{TRUE} (default), paired-samples t-tests for multiple
+\item{posthoc}{logical: if \code{TRUE}, paired-samples t-tests for multiple
 comparison are conducted.}
 
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence

@@ -12,8 +12,8 @@
 #'                      groups.
 #' @param data          a matrix or data frame containing the variables in the
 #'                      formula \code{formula}.
-#' @param posthoc       logical: if \code{TRUE} (default), Tukey HSD post hoc test
-#'                      for multiple comparison is conducted.
+#' @param posthoc       logical: if \code{TRUE}, Tukey HSD post hoc test for
+#'                      multiple comparison is conducted.
 #' @param conf.level    a numeric value between 0 and 1 indicating the confidence
 #'                      level of the interval.
 #' @param hypo          logical: if \code{TRUE} (default), null and alternative
@@ -170,7 +170,7 @@
 #'   labs(subtitle = "Two-Sided 95% Confidence Interval") +
 #'   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
 #' }
-aov.b <- function(formula, data, posthoc = TRUE, conf.level = 0.95,
+aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95,
                   hypo = TRUE, descript = TRUE, effsize = FALSE, weighted = FALSE,
                   correct = FALSE, plot = FALSE, point.size = 4, adjust = TRUE,
                   error.width = 0.1, xlab = NULL, ylab = NULL, ylim = NULL,
@@ -502,7 +502,7 @@ aov.b <- function(formula, data, posthoc = TRUE, conf.level = 0.95,
     # Send R output to textfile
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
-    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+    if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
 
     # Print object
     print(object, check = FALSE)

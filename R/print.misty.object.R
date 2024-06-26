@@ -4019,7 +4019,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       print.fit[, 1L] <- paste0("  ", print.fit[, 1L])
 
       labels <- c("H0 Value, Specified Model", "Scaling Correction Factor", "H1 Value, Unrestricted Model", "Scaling Correction Factor",
-                  "Akaike (AIC)", "Bayesian (BIC)", "Sample-size adjusted BIC", "Test statistic", "Degrees of freedom", "P-value",
+                  "Akaike (AIC)", "Bayesian (BIC)", "Sample-Size Adjusted BIC", "Test statistic", "Degrees of freedom", "P-value",
                   "Scaling correction factor", "CFI", "TLI", "RMSEA", "90 Percent CI - lower", "90 Percent CI - upper", "P-value RMSEA <= 0.05", "SRMR")
 
       print.fit[which(misty::chr.trim(print.fit[, 1L]) %in% labels), 1L] <- paste("", unlist(print.fit[which(misty::chr.trim(print.fit[, 1L]) %in% labels), 1L]))
@@ -5415,6 +5415,14 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     }
 
+    #___________________________________________________________________________
+    #
+    # Mplus Object ....---------------------------------------------------------
+    }, mplus = {
+
+      cat("Please use the mplus.print function to print a \"mplus\" object.")
+
+
     #-----------------------------------------
     # Item statistics
 
@@ -6662,8 +6670,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      #............
-      ### Combined results
+    #............
+    ### Combined results
     } else {
 
       #### Correlation coefficient
@@ -7034,8 +7042,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     }
 
-    ####################################################################################
-    # Output
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Output ####
 
     cat(" R-Squared Measures for Multilevel and Linear Mixed Effects Models\n\n")
 
@@ -9885,7 +9893,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       ###
       # Print post-hoc test
-      if (!isTRUE(posthoc)) {
+      if (isTRUE(posthoc)) {
 
         cat(paste0("\n  Games-Howell Post Hoc Test for Multiple Comparison\n\n"))
 

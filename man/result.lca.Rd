@@ -241,7 +241,7 @@ Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
 Muthen & Muthen.
 }
 \seealso{
-\code{\link{mplus.lca}}, \code{\link{run.mplus}}, \code{\link{read.mplus}},
+\code{\link{mplus.lca}}, \code{\link{mplus.run}}, \code{\link{read.mplus}},
 \code{\link{write.mplus}}
 }
 \author{

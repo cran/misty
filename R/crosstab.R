@@ -736,7 +736,7 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
       # Send R output to textfile
       sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
-      if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
 
       # Print object
       print(object, check = FALSE)

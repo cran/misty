@@ -129,7 +129,7 @@
 #'                        \code{"always"} to run all models regardless of whether
 #'                        an output file for the model exists, \code{"never"} (default)
 #'                        to not run any model that has an existing output file,
-#'                        and \code{"modifiedDate"} to only runs a model if the
+#'                        and \code{"modified"} to only runs a model if the
 #'                        modified date for the input file is more recent than
 #'                        the output file modified date.
 #' @param check           logical: if \code{TRUE} (default), argument specification
@@ -173,8 +173,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{result.lca}}, \code{\link{run.mplus}}, \code{\link{read.mplus}},
-#' \code{\link{write.mplus}}
+#' \code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus.print}},
+#' \code{\link{mplus}}, \code{\link{mplus.update}}, \code{\link{mplus.run}},
 #'
 #' @references
 #' Masyn, K. E. (2013). Latent class analysis and finite mixture modeling. In T. D.
@@ -240,7 +240,7 @@ mplus.lca <- function(x, ind = NULL,
                       lrtstarts = c(0, 0, 100, 50), processors = c(8, 8),
                       output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14"),
                       replace.inp = FALSE, run.mplus = FALSE, Mplus = "Mplus",
-                      replace.out = c("always", "never", "modifiedDate"), check = TRUE) {
+                      replace.out = c("always", "never", "modified"), check = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -312,17 +312,17 @@ mplus.lca <- function(x, ind = NULL,
     # Check 'processors'
     if (isTRUE(length(processors) %in% c(1L, 2L))) { stop("Please specify a vector with two integer values for the argument 'processors'.", call. = FALSE) }
 
-    ## Check input 'print' ##
+    # Check input 'print' ##
     if (isTRUE(!all(output %in% c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14")))) { stop("Character string in the argument 'output' does not match with \"SVALUES\", \"CINTERVAL\", \"TECH7\", \"TECH8\", \"TECH11\", or \"TECH14\".", call. = FALSE) }
 
-    ## Check input 'replace.inp' ##
+    # Check input 'replace.inp' ##
     if (isTRUE(!is.logical(replace.inp))) { stop("Please specify TRUE or FALSE for the argument 'replace.inp '.", call. = FALSE) }
 
-    ## Check input 'run.mplus' ##
+    # Check input 'run.mplus' ##
     if (isTRUE(!is.logical(run.mplus))) { stop("Please specify TRUE or FALSE for the argument 'run.mplus '.", call. = FALSE) }
 
-    ## Check input 'replace.out' ##
-    if (isTRUE(!all(replace.out %in% c("always", "never", "modifiedDate")))) { stop("Character string in the argument 'replace.out ' does not match with \"always\", \"never\",  or \"modifiedDate\".", call. = FALSE) }
+    # Check input 'replace.out' ##
+    if (isTRUE(!all(replace.out %in% c("always", "never", "modified")))) { stop("Character string in the argument 'replace.out ' does not match with \"always\", \"never\",  or \"modified\".", call. = FALSE) }
 
   }
 
@@ -359,9 +359,9 @@ mplus.lca <- function(x, ind = NULL,
   if (isTRUE(all(c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14") %in% output))) { output <- c("SVALUES", "TECH11") }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## replaceOutfile ####
+  ## replace.out ####
 
-  if (isTRUE(all(c("always", "never", "modifiedDate") %in% replace.out))) {
+  if (isTRUE(all(c("always", "never", "modified") %in% replace.out))) {
 
     replace.out <- "never"
 
@@ -750,7 +750,7 @@ mplus.lca <- function(x, ind = NULL,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Run Mplus ####
 
-    if (isTRUE(run.mplus)) { sapply(folder, function(y) misty::run.mplus(target = file.path(getwd(), y), recursive = FALSE, Mplus = Mplus, replaceOutfile = replace.out)) }
+    if (isTRUE(run.mplus)) { sapply(folder, function(y) misty::mplus.run(target = file.path(getwd(), y), recursive = FALSE, Mplus = Mplus, replaceOutfile = replace.out)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Count, Categorical, and Nominal Indicators ####
@@ -790,7 +790,7 @@ mplus.lca <- function(x, ind = NULL,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Run Mplus ####
 
-    if (isTRUE(run.mplus)) { misty::run.mplus(target = file.path(getwd(), paste0("LCA_1-", classes, "_Classes")), recursive = FALSE, Mplus = Mplus, replaceOutfile = replace.out) }
+    if (isTRUE(run.mplus)) { misty::mplus.run(target = file.path(getwd(), paste0("LCA_1-", classes, "_Classes")), recursive = FALSE, Mplus = Mplus, replaceOutfile = replace.out) }
 
   }
 

@@ -1815,370 +1815,6 @@
 
 }
 
-
-#_______________________________________________________________________________
-#_______________________________________________________________________________
-#
-# Internal functions for the item.omega() function -----------------------------
-#
-# - omega.function
-# - .catOmega
-# - .getThreshold
-# - .polycorLavaan
-# - .refit
-# - .p2
-#
-# MBESS: The MBESS R Package
-# https://cran.r-project.org/web/packages/MBESS/index.html
-
-omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check = TRUE) {
-
-  std <- type <- NULL
-
-  # Variable names
-  varnames <- colnames(y)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Omega for continuous items ####
-
-  if (isTRUE(y.type != "categ")) {
-
-    #...................
-    ### Mode specification ####
-
-    # Factor model
-    mod.factor <- paste("f =~", paste(varnames, collapse = " + "))
-
-    # Residual covariance
-
-    if (isTRUE(!is.null(y.rescov))) {
-
-      mod.rescov <- vapply(y.rescov, function(y) paste(y, collapse = " ~~ "), FUN.VALUE = character(1L))
-
-      # Paste residual covariances
-      mod.factor <- paste(mod.factor, "\n", paste(mod.rescov, collapse = " \n "))
-
-    }
-
-    #...................
-    ### Model estimation ####
-
-    mod.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = y, ordered = FALSE, se = "none", std.lv = TRUE, estimator = "ML", missing = "fiml"))
-
-    #...................
-    ### Check for convergence and negative degrees of freedom ####
-
-    if (isTRUE(check)) {
-
-      # Model convergence
-      if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) {
-
-        warning("CFA model did not converge, results are most likely unreliable.", call. = FALSE)
-
-      }
-
-      # Degrees of freedom
-      if (isTRUE(lavaan::lavInspect(mod.fit, "fit")["df"] < 0L)) {
-
-        warning("CFA model has negative degrees of freedom, results are most likely unreliable.", call. = FALSE)
-
-      }
-
-    }
-
-    #...................
-    ### Parameter estimates ####
-
-    if (!isTRUE(y.std)) {
-
-      # Unstandardized parameter estimates
-      param <- lavaan::parameterestimates(mod.fit)
-
-    } else {
-
-      # Standardized parameter estimates
-      param <- lavaan::standardizedSolution(mod.fit)
-
-      names(param)[grep("est.std", names(param))] <- "est"
-
-    }
-
-    #...................
-    ### Factor loadings ####
-
-    param.load <- param[which(param$op == "=~"), ]
-
-    #...................
-    ### Residual covariance ####
-
-    param.rcov <- param[param$op == "~~" & param$lhs != param$rhs, ]
-
-    #...................
-    ### Residuals ####
-
-    param.resid <- param[param$op == "~~" & param$lhs == param$rhs & param$lhs != "f" & param$rhs != "f", ]
-
-    #...................
-    ### Omega ####
-
-    # Numerator
-    load.sum2 <- sum(param.load$est)^2L
-
-    # Total omega
-    if (isTRUE(y.type != "hierarch"))  {
-
-      resid.sum <- sum(param.resid$est)
-
-      # Residual covariances
-      if (isTRUE(!is.null(y.rescov))) { resid.sum <- resid.sum + 2L*sum(param.rcov$est) }
-
-      omega <- load.sum2 / (load.sum2 + resid.sum)
-
-    #...................
-    ### Hierarchical omega ####
-    } else {
-
-      mod.cov <- paste(apply(combn(seq_len(length(varnames)), m = 2L), 2L, function(z) paste(varnames[z[1L]], "~~", varnames[z[2L]])), collapse = " \n ")
-
-      mod.cov.fit <- suppressWarnings(lavaan::cfa(mod.cov, data = y, ordered = FALSE, se = "none", std.lv = TRUE, estimator = "ML", missing = "fiml"))
-
-      if (!isTRUE(std)) {
-
-        var.total <- sum(lavaan::inspect(mod.cov.fit, "cov.ov")[varnames, varnames])
-
-      } else {
-
-        var.total <- sum(lavaan::inspect(mod.cov.fit, "cor.ov")[varnames, varnames])
-
-      }
-
-      omega <- load.sum2 / var.total
-
-    }
-
-    # Return object
-    object <- list(mod.fit = mod.fit, omega = omega)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Omega for ordered-categorical items ####
-  } else {
-
-    object <- .catOmega(y, y.rescov = y.rescov, check = TRUE)
-
-  }
-
-  return(object)
-
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## .catOmega Function ####
-
-.catOmega <- function(dat, y.rescov = NULL, check = TRUE) {
-
-  # Variable names
-  varnames <- colnames(dat)
-
-  # Sequence from 1 to the number of columns
-  q <- seq_len(ncol(dat))
-
-  # Convert in ordered factor
-  dat <- data.frame(lapply(dat, ordered))
-
-  # Factor loadings
-  loadingLine <- paste(paste0(paste0("L", q), "*", varnames), collapse = " + ")
-
-  # Factor variance
-  factorLine <- "f1 ~~ 1*f1\n"
-
-  # Paste model syntax
-  model <- paste0("f1 =~ NA*", varnames[1L], " + ", loadingLine, "\n", factorLine)
-
-  # Residual covariance
-  if (isTRUE(!is.null(y.rescov))) {
-
-    rescovLine <- vapply(y.rescov, function(y) paste(y, collapse = " ~~ "), FUN.VALUE = character(1L))
-
-    # Paste residual covariances
-    model <- paste0(model, paste(rescovLine, collapse = "\n "))
-
-  }
-
-  # Estimate model
-  mod.fit <- suppressWarnings(lavaan::cfa(model, data = dat, estimator = "DWLS", se = "none", ordered = TRUE))
-
-  # Model convergence
-  if (isTRUE(check)) { if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) { warning("CFA model did not converge, results are most likely unreliable.", call. = FALSE) } }
-
-  param <- lavaan::inspect(mod.fit, "coef")
-
-  ly <- param[["lambda"]]
-  ps <- param[["psi"]]
-
-  threshold <- .getThreshold(mod.fit)[[1L]]
-
-  denom <- .polycorLavaan(mod.fit, dat)[varnames, varnames]
-
-  invstdvar <- 1L / sqrt(diag(lavaan::lavInspect(mod.fit, "implied")$cov))
-
-  polyr <- diag(invstdvar) %*% ly%*%ps%*%t(ly) %*% diag(invstdvar)
-
-  sumnum <- 0L
-  addden <- 0L
-
-  for (j in q) {
-
-    for (jp in q) {
-
-      sumprobn2 <- 0L
-      addprobn2 <- 0L
-
-      t1 <- threshold[[j]]
-      t2 <- threshold[[jp]]
-
-      for(c in seq_along(t1)) {
-
-        for(cp in seq_along(t2)) {
-
-          sumprobn2 <- sumprobn2 + .p2(t1[c], t2[cp], polyr[j, jp])
-          addprobn2 <- addprobn2 + .p2(t1[c], t2[cp], denom[j, jp])
-
-        }
-
-      }
-
-      sumprobn1 <- sum(pnorm(t1))
-      sumprobn1p <- sum(pnorm(t2))
-
-      sumnum <- sumnum + (sumprobn2 - sumprobn1 * sumprobn1p)
-      addden <- addden + (addprobn2 - sumprobn1 * sumprobn1p)
-
-    }
-
-  }
-
-  object <- list(mod.fit = mod.fit, omega = sumnum / addden)
-
-  return(object)
-
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## .getThreshold Function ####
-
-.getThreshold <- function(object) {
-
-  ngroups <- lavaan::inspect(object, "ngroups")
-
-  coef <- lavaan::inspect(object, "coef")
-
-  result <- NULL
-  if (isTRUE(ngroups == 1L)) {
-
-    targettaunames <- rownames(coef$tau)
-
-    barpos <- sapply(strsplit(targettaunames, ""), function(x) which(x == "|"))
-
-    varthres <- apply(data.frame(targettaunames, barpos - 1L, stringsAsFactors = FALSE), 1L, function(x) substr(x[1], 1L, x[2L]))
-
-    result <- list(split(coef$tau, varthres))
-
-  } else {
-
-    result <- list()
-
-    for (g in 1L:ngroups) {
-
-      targettaunames <- rownames(coef[[g]]$tau)
-
-      barpos <- sapply(strsplit(targettaunames, ""), function(x) which(x == "|"))
-
-      varthres <- apply(data.frame(targettaunames, barpos - 1L, stringsAsFactors = FALSE), 1L, function(x) substr(x[1L], 1L, x[2L]))
-
-      result[[g]] <- split(coef[[g]]$tau, varthres)
-
-    }
-
-  }
-
-  return(result)
-
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## .polycorLavaan Function ####
-
-.polycorLavaan <- function(object, data) {
-
-  ngroups <- lavaan::inspect(object, "ngroups")
-
-  coef <- lavaan::inspect(object, "coef")
-
-  targettaunames <- NULL
-
-  if (isTRUE(ngroups == 1L)) {
-
-    targettaunames <- rownames(coef$tau)
-
-  } else {
-
-    targettaunames <- rownames(coef[[1L]]$tau)
-
-  }
-
-  barpos <- sapply(strsplit(targettaunames, ""), function(x) which(x == "|"))
-
-  varnames <- unique(apply(data.frame(targettaunames, barpos - 1L, stringsAsFactors = FALSE), 1L, function(x) substr(x[1L], 1L, x[2L])))
-
-  script <- ""
-
-  for(i in 2L:length(varnames)) {
-
-    temp <- paste0(varnames[1L:(i - 1L)], collapse = " + ")
-
-    temp <- paste0(varnames[i], "~~", temp, "\n")
-
-    script <- paste(script, temp)
-
-  }
-
-  suppressWarnings(newobject <- .refit(script, data, varnames, object))
-
-  if (isTRUE(ngroups == 1L)) {
-
-    return(lavaan::inspect(newobject, "coef")$theta)
-
-  } else {
-
-    return(lapply(lavaan::inspect(newobject, "coef"), "[[", "theta"))
-
-  }
-
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## .refit Function ####
-
-.refit <- function(pt, data, vnames, object) {
-
-  args <- lavaan::lavInspect(object, "call")
-
-  args$model <- pt
-  args$data <- data
-  args$ordered <- vnames
-  tempfit <- do.call(eval(parse(text = paste0("lavaan::", "lavaan"))), args[-1])
-
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## .p2 Function ####
-
-.p2 <- function(t1, t2, r) {
-
-  mnormt::pmnorm(c(t1, t2), c(0L, 0L), matrix(c(1L, r, r, 1L), 2L, 2L))
-
-}
-
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
@@ -2462,6 +2098,450 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
   if (chi <= stats::qchisq(probs[2L], df)) { chi_ncp[1L] <- 0L }
 
   return(chi_ncp)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the item.omega() function -----------------------------
+#
+# - omega.function
+# - .catOmega
+# - .getThreshold
+# - .polycorLavaan
+# - .refit
+# - .p2
+#
+# MBESS: The MBESS R Package
+# https://cran.r-project.org/web/packages/MBESS/index.html
+
+omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check = TRUE) {
+
+  std <- type <- NULL
+
+  # Variable names
+  varnames <- colnames(y)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Omega for continuous items ####
+
+  if (isTRUE(y.type != "categ")) {
+
+    #...................
+    ### Mode specification ####
+
+    # Factor model
+    mod.factor <- paste("f =~", paste(varnames, collapse = " + "))
+
+    # Residual covariance
+
+    if (isTRUE(!is.null(y.rescov))) {
+
+      mod.rescov <- vapply(y.rescov, function(y) paste(y, collapse = " ~~ "), FUN.VALUE = character(1L))
+
+      # Paste residual covariances
+      mod.factor <- paste(mod.factor, "\n", paste(mod.rescov, collapse = " \n "))
+
+    }
+
+    #...................
+    ### Model estimation ####
+
+    mod.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = y, ordered = FALSE, se = "none", std.lv = TRUE, estimator = "ML", missing = "fiml"))
+
+    #...................
+    ### Check for convergence and negative degrees of freedom ####
+
+    if (isTRUE(check)) {
+
+      # Model convergence
+      if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) {
+
+        warning("CFA model did not converge, results are most likely unreliable.", call. = FALSE)
+
+      }
+
+      # Degrees of freedom
+      if (isTRUE(lavaan::lavInspect(mod.fit, "fit")["df"] < 0L)) {
+
+        warning("CFA model has negative degrees of freedom, results are most likely unreliable.", call. = FALSE)
+
+      }
+
+    }
+
+    #...................
+    ### Parameter estimates ####
+
+    if (!isTRUE(y.std)) {
+
+      # Unstandardized parameter estimates
+      param <- lavaan::parameterestimates(mod.fit)
+
+    } else {
+
+      # Standardized parameter estimates
+      param <- lavaan::standardizedSolution(mod.fit)
+
+      names(param)[grep("est.std", names(param))] <- "est"
+
+    }
+
+    #...................
+    ### Factor loadings ####
+
+    param.load <- param[which(param$op == "=~"), ]
+
+    #...................
+    ### Residual covariance ####
+
+    param.rcov <- param[param$op == "~~" & param$lhs != param$rhs, ]
+
+    #...................
+    ### Residuals ####
+
+    param.resid <- param[param$op == "~~" & param$lhs == param$rhs & param$lhs != "f" & param$rhs != "f", ]
+
+    #...................
+    ### Omega ####
+
+    # Numerator
+    load.sum2 <- sum(param.load$est)^2L
+
+    # Total omega
+    if (isTRUE(y.type != "hierarch"))  {
+
+      resid.sum <- sum(param.resid$est)
+
+      # Residual covariances
+      if (isTRUE(!is.null(y.rescov))) { resid.sum <- resid.sum + 2L*sum(param.rcov$est) }
+
+      omega <- load.sum2 / (load.sum2 + resid.sum)
+
+      #...................
+      ### Hierarchical omega ####
+    } else {
+
+      mod.cov <- paste(apply(combn(seq_len(length(varnames)), m = 2L), 2L, function(z) paste(varnames[z[1L]], "~~", varnames[z[2L]])), collapse = " \n ")
+
+      mod.cov.fit <- suppressWarnings(lavaan::cfa(mod.cov, data = y, ordered = FALSE, se = "none", std.lv = TRUE, estimator = "ML", missing = "fiml"))
+
+      if (!isTRUE(std)) {
+
+        var.total <- sum(lavaan::inspect(mod.cov.fit, "cov.ov")[varnames, varnames])
+
+      } else {
+
+        var.total <- sum(lavaan::inspect(mod.cov.fit, "cor.ov")[varnames, varnames])
+
+      }
+
+      omega <- load.sum2 / var.total
+
+    }
+
+    # Return object
+    object <- list(mod.fit = mod.fit, omega = omega)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Omega for ordered-categorical items ####
+  } else {
+
+    object <- .catOmega(y, y.rescov = y.rescov, check = TRUE)
+
+  }
+
+  return(object)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .catOmega Function ####
+
+.catOmega <- function(dat, y.rescov = NULL, check = TRUE) {
+
+  # Variable names
+  varnames <- colnames(dat)
+
+  # Sequence from 1 to the number of columns
+  q <- seq_len(ncol(dat))
+
+  # Convert in ordered factor
+  dat <- data.frame(lapply(dat, ordered))
+
+  # Factor loadings
+  loadingLine <- paste(paste0(paste0("L", q), "*", varnames), collapse = " + ")
+
+  # Factor variance
+  factorLine <- "f1 ~~ 1*f1\n"
+
+  # Paste model syntax
+  model <- paste0("f1 =~ NA*", varnames[1L], " + ", loadingLine, "\n", factorLine)
+
+  # Residual covariance
+  if (isTRUE(!is.null(y.rescov))) {
+
+    rescovLine <- vapply(y.rescov, function(y) paste(y, collapse = " ~~ "), FUN.VALUE = character(1L))
+
+    # Paste residual covariances
+    model <- paste0(model, paste(rescovLine, collapse = "\n "))
+
+  }
+
+  # Estimate model
+  mod.fit <- suppressWarnings(lavaan::cfa(model, data = dat, estimator = "DWLS", se = "none", ordered = TRUE))
+
+  # Model convergence
+  if (isTRUE(check)) { if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) { warning("CFA model did not converge, results are most likely unreliable.", call. = FALSE) } }
+
+  param <- lavaan::inspect(mod.fit, "coef")
+
+  ly <- param[["lambda"]]
+  ps <- param[["psi"]]
+
+  threshold <- .getThreshold(mod.fit)[[1L]]
+
+  denom <- .polycorLavaan(mod.fit, dat)[varnames, varnames]
+
+  invstdvar <- 1L / sqrt(diag(lavaan::lavInspect(mod.fit, "implied")$cov))
+
+  polyr <- diag(invstdvar) %*% ly%*%ps%*%t(ly) %*% diag(invstdvar)
+
+  sumnum <- 0L
+  addden <- 0L
+
+  for (j in q) {
+
+    for (jp in q) {
+
+      sumprobn2 <- 0L
+      addprobn2 <- 0L
+
+      t1 <- threshold[[j]]
+      t2 <- threshold[[jp]]
+
+      for(c in seq_along(t1)) {
+
+        for(cp in seq_along(t2)) {
+
+          sumprobn2 <- sumprobn2 + .p2(t1[c], t2[cp], polyr[j, jp])
+          addprobn2 <- addprobn2 + .p2(t1[c], t2[cp], denom[j, jp])
+
+        }
+
+      }
+
+      sumprobn1 <- sum(pnorm(t1))
+      sumprobn1p <- sum(pnorm(t2))
+
+      sumnum <- sumnum + (sumprobn2 - sumprobn1 * sumprobn1p)
+      addden <- addden + (addprobn2 - sumprobn1 * sumprobn1p)
+
+    }
+
+  }
+
+  object <- list(mod.fit = mod.fit, omega = sumnum / addden)
+
+  return(object)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .getThreshold Function ####
+
+.getThreshold <- function(object) {
+
+  ngroups <- lavaan::inspect(object, "ngroups")
+
+  coef <- lavaan::inspect(object, "coef")
+
+  result <- NULL
+  if (isTRUE(ngroups == 1L)) {
+
+    targettaunames <- rownames(coef$tau)
+
+    barpos <- sapply(strsplit(targettaunames, ""), function(x) which(x == "|"))
+
+    varthres <- apply(data.frame(targettaunames, barpos - 1L, stringsAsFactors = FALSE), 1L, function(x) substr(x[1], 1L, x[2L]))
+
+    result <- list(split(coef$tau, varthres))
+
+  } else {
+
+    result <- list()
+
+    for (g in 1L:ngroups) {
+
+      targettaunames <- rownames(coef[[g]]$tau)
+
+      barpos <- sapply(strsplit(targettaunames, ""), function(x) which(x == "|"))
+
+      varthres <- apply(data.frame(targettaunames, barpos - 1L, stringsAsFactors = FALSE), 1L, function(x) substr(x[1L], 1L, x[2L]))
+
+      result[[g]] <- split(coef[[g]]$tau, varthres)
+
+    }
+
+  }
+
+  return(result)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .polycorLavaan Function ####
+
+.polycorLavaan <- function(object, data) {
+
+  ngroups <- lavaan::inspect(object, "ngroups")
+
+  coef <- lavaan::inspect(object, "coef")
+
+  targettaunames <- NULL
+
+  if (isTRUE(ngroups == 1L)) {
+
+    targettaunames <- rownames(coef$tau)
+
+  } else {
+
+    targettaunames <- rownames(coef[[1L]]$tau)
+
+  }
+
+  barpos <- sapply(strsplit(targettaunames, ""), function(x) which(x == "|"))
+
+  varnames <- unique(apply(data.frame(targettaunames, barpos - 1L, stringsAsFactors = FALSE), 1L, function(x) substr(x[1L], 1L, x[2L])))
+
+  script <- ""
+
+  for(i in 2L:length(varnames)) {
+
+    temp <- paste0(varnames[1L:(i - 1L)], collapse = " + ")
+
+    temp <- paste0(varnames[i], "~~", temp, "\n")
+
+    script <- paste(script, temp)
+
+  }
+
+  suppressWarnings(newobject <- .refit(script, data, varnames, object))
+
+  if (isTRUE(ngroups == 1L)) {
+
+    return(lavaan::inspect(newobject, "coef")$theta)
+
+  } else {
+
+    return(lapply(lavaan::inspect(newobject, "coef"), "[[", "theta"))
+
+  }
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .refit Function ####
+
+.refit <- function(pt, data, vnames, object) {
+
+  args <- lavaan::lavInspect(object, "call")
+
+  args$model <- pt
+  args$data <- data
+  args$ordered <- vnames
+  tempfit <- do.call(eval(parse(text = paste0("lavaan::", "lavaan"))), args[-1])
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .p2 Function ####
+
+.p2 <- function(t1, t2, r) {
+
+  mnormt::pmnorm(c(t1, t2), c(0L, 0L), matrix(c(1L, r, r, 1L), 2L, 2L))
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the mplus() and mplus.update() function ---------------
+#
+# - .extract.section
+
+# Function for Extracting Input Command Sections ####
+.extract.section <- function(section, x, section.pos) {
+
+  # Split input
+  split.x <- strsplit(x, "")[[1L]]
+
+  # Start and end position of the section
+  start <- as.numeric(gregexec(section, toupper(x))[[1L]])
+
+  if (isTRUE(length(start) > 1L)) { stop(paste0("There are more than one ", dQuote(section), " sections in the input text."), call. = FALSE) }
+
+  end <- if (isTRUE(any(section.pos > start))) { section.pos[which(section.pos > start)][1L] - 1L } else { length(split.x) }
+
+  # Extract section, remove "", and paste "\n"
+  object <- sapply(misty::chr.omit(misty::chr.trim(strsplit(paste(split.x[start:end], collapse = ""), "\n")[1L], side = "right", check = FALSE), check = FALSE),
+                   function(y) if (grepl(";", y)) { paste0(y, "\n") } else { y }, USE.NAMES = FALSE)
+
+  # Remove last "\n"
+  object[length(object)] <- gsub("\n", "", object[length(object)])
+
+  # Collapse with "\n" and return object
+  object <- paste(object, collapse = "\n")
+
+  return(object)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the mplus.update() function ----------------------------
+#
+# - .variable.section
+
+.variable.section <- function(section, input, update) {
+
+  # Colon or semicolon position
+  input.semicol <- misty::chr.grep(c(":", ";"), unlist(strsplit(input, "")))
+  update.semicol <- misty::chr.grep(c(":", ";"), unlist(strsplit(update, "")))
+
+  # Section in update input
+  if (isTRUE(grepl(section, toupper(update)))) {
+
+    # Start and end position of the updated section
+    start.update <- rev(update.semicol[which(update.semicol < rev(unlist(gregexec(section, toupper(update))))[1L])])[1L] + 1L
+    end.update <- update.semicol[which(update.semicol > unlist(gregexec(section, toupper(update)))[1L])][1L]
+
+    ## Subsection is in Input Object
+    if (isTRUE(grepl(section, toupper(input)))) {
+
+      ### Start/End Position of the Removal Section
+      start.inp <- rev(input.semicol[which(input.semicol < rev(unlist(gregexec(section, toupper(input))))[1L])])[1L] + 1L
+      end.inp <- input.semicol[which(input.semicol > unlist(gregexec(section, toupper(input)))[1L])][1L]
+
+      ### Insert Updated Sub-Section
+      input <- sub("...", "",
+                   paste(c(unlist(strsplit(input, ""))[seq_len(start.inp - 1L)], "\n",
+                           unlist(strsplit(update, ""))[start.update:end.update],
+                           if (isTRUE(end.inp != nchar(input))) { unlist(strsplit(input, ""))[((end.inp + 1L):nchar(input))] }),
+                         collapse = ""), fixed = TRUE)
+
+    ## Subsection is not in Input Object
+    } else {
+
+      input <- sub("...", "", paste(c(input, "\n\n", unlist(strsplit(update, ""))[start.update:end.update]), collapse = ""), fixed = TRUE)
+
+    }
+
+  }
+
+  return(invisible(input))
 
 }
 

@@ -16,9 +16,9 @@
 #'                      must be one of \code{"two.sided"} (default), \code{"greater"}
 #'                      or \code{"less"}. Note that this argument is only used when
 #'                      conducting Welch's two-sample t-test.
-#' @param posthoc       logical: if \code{TRUE} (default), Games-Howell post hoc
-#'                      test for multiple comparison is conducted when performing
-#'                      Welch's ANOVA.
+#' @param posthoc       logical: if \code{TRUE}, Games-Howell post hoc test for
+#'                      multiple comparison is conducted when performing Welch's
+#'                      ANOVA.
 #' @param conf.level    a numeric value between 0 and 1 indicating the confidence
 #'                      level of the interval.
 #' @param hypo          logical: if \code{TRUE} (default), null and alternative
@@ -241,7 +241,7 @@
 #'   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
 #' }
 test.welch <- function(formula, data, alternative = c("two.sided", "less", "greater"),
-                       posthoc = TRUE, conf.level = 0.95, hypo = TRUE, descript = TRUE,
+                       posthoc = FALSE, conf.level = 0.95, hypo = TRUE, descript = TRUE,
                        effsize = FALSE, weighted = FALSE, ref = NULL, correct = FALSE,
                        plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
                        xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
@@ -612,7 +612,7 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
     # Send R output to textfile
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
-    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+    if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
 
     # Print object
     print(object, check = FALSE)

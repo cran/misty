@@ -117,7 +117,7 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
   if (isTRUE(missing(file))) { stop("Please specify a character string indicating the name of the SPSS data file for the argument 'file'", call. = FALSE) }
 
   # File extension .xlsx
-  file <- ifelse(length(grep(".xlsx", file)) == 0, file <- paste0(file, ".xlsx"), file)
+  file <- ifelse(length(grep(".xlsx", file)) == 0L, file <- paste0(file, ".xlsx"), file)
 
   # Check if file exists
   if (isTRUE(!file.exists(file))) { stop(paste0("Unable to open Excel data file: ", sQuote(file), " does not exist."), call. = FALSE) }

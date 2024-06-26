@@ -17,7 +17,7 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{chr.gsub}}, \code{\link{chr.trim}}
+#' \code{\link{chr.grep}}, \code{\link{chr.grepl}}, \code{\link{chr.gsub}}, \code{\link{chr.trim}}
 #'
 #' @return
 #' Returns a numeric vector, character vector or factor with values or strings

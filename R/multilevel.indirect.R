@@ -325,7 +325,7 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
     # Send R output to textfile
     sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
-    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
+    if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
 
     # Print object
     print(object, check = FALSE)
