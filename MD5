@@ -1,7 +1,7 @@
-f5cf567acfe60853259816042bdb9e59 *DESCRIPTION
+547ffe1b98c9060002d4d14d5b8e6731 *DESCRIPTION
 f988a6eca78c0879aedf94627be12320 *LICENSE
 128f7bbcbed3ffbfc46b6a50fe68ea35 *NAMESPACE
-136355ddda152d9b03fbbed37d39c732 *NEWS.md
+49350b8f96ef2681aa7a0e3622b8ca80 *NEWS.md
 6bbe18875180518727ec0235d0e78425 *R/aov.b.R
 dd9d2525cae3da0d861f2745611a12e5 *R/aov.w.R
 f6b3e2c06a18202a3528ebf2f2ca8625 *R/as.na.R
@@ -46,11 +46,11 @@ fb3b182b2ac3920ccd27b4892a27550c *R/item.alpha.R
 df9b048b522d8e07433675e8d450f89b *R/item.scores.R
 21ebe4a70db196e164d8602ad1763a1d *R/lagged.R
 846fd3631ebbeb448942e72f11e8c6ec *R/libraries.R
-b5e0498ab9cdcefc0884fcc413187d38 *R/mplus.R
+59387246f20f2ddf4e23ba7e1aea6390 *R/mplus.R
 d47dc464dd1065a0023debd089033bf8 *R/mplus.lca.R
-c3e135d4afa3af61d93a3569fc9849cc *R/mplus.print.R
-4767d143c1233244f60ed75ff6259af6 *R/mplus.run.R
-c4573f95325aaefba6ad502f921c39b2 *R/mplus.update.R
+9e1493dc13b4fde3cf34592a8f2e32f1 *R/mplus.print.R
+37dded99e9f59a3285c042bb56784466 *R/mplus.run.R
+3fe33c517dcd219ec77c2d9d5b21fa26 *R/mplus.update.R
 cb489756baa4ecd695611d8effef1c44 *R/multilevel.cfa.R
 63efd5bee10207795802224ac96d1371 *R/multilevel.cor.R
 05c099ce8efd8f49ba7be996c93ba76c *R/multilevel.descript.R
@@ -92,7 +92,7 @@ a471c7853745ee87b95511da313a55d3 *R/skewness.R
 6b57e4a750a7c90099132ae7a4914113 *R/test.t.R
 e09fcfb657495814004c71fa05630d25 *R/test.welch.R
 0b7abc7e1e33a65167b4feb20416726a *R/test.z.R
-48a5fc0035dc1a300de20162a4ba8b72 *R/utils.R
+90f76d8bdd7bc23725fb253080c47db8 *R/utils.R
 3fb845f152187605995ebcdf2969fb1c *R/write.dta.R
 d62bbd15dceb7f8fc064cedbbf8e3f22 *R/write.mplus.R
 00e6b4f2bc31b957389b215e90fd4d49 *R/write.result.R
@@ -143,8 +143,8 @@ dd4cc03263ac9094f7c8ec000447ec76 *man/lagged.Rd
 34d18ca3dd5fb294645058110d20e006 *man/libraries.Rd
 dcca288ed74b41afd1767e77a1f807be *man/mplus.Rd
 349db929f0ac5f1f3a3d39ae1b662d85 *man/mplus.lca.Rd
-2977b2ba8a7e60e0d6e257845502aaa6 *man/mplus.print.Rd
-8e7afc3830d3b121744b059176d298b2 *man/mplus.run.Rd
+f58b72f75dfd375e44631e29d55ed85d *man/mplus.print.Rd
+21e2dd276f3d16bc9d175016399a311f *man/mplus.run.Rd
 9a6772698549611c20396eebcaea858c *man/mplus.update.Rd
 32d3316b75f7d2893be3ab12bdceba9c *man/multilevel.cfa.Rd
 065ec40916480f3a2983cfb2c28b6a2d *man/multilevel.cor.Rd

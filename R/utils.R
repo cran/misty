@@ -2467,6 +2467,279 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
+# Internal functions for the mplus.run() function ------------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Functions to identify the operating system ####
+
+is.windows <- function() {
+  if (isTRUE(exists("Sys.info"))) {
+    os <- Sys.info()[["sysname"]]
+  } else {
+    os <- .Platform$OS.type
+  }
+  os <- tolower(os)
+  if (isTRUE(grepl("windows", os))) {
+    TRUE
+  } else {
+    FALSE
+  }
+}
+
+
+is.macos <- function() {
+  if (isTRUE(exists("Sys.info"))) {
+    os <- Sys.info()[["sysname"]]
+  } else {
+    os <- R.version$os
+  }
+  os <- tolower(os)
+  if (isTRUE(grepl("darwin", os))) {
+    TRUE
+  } else {
+    FALSE
+  }
+}
+
+
+is.linux <- function() {
+  if (isTRUE(exists("Sys.info"))) {
+    os <- Sys.info()[["sysname"]]
+  } else {
+    os <- R.version$os
+  }
+  os <- tolower(os)
+  if (isTRUE(grepl("linux", os))) {
+    TRUE
+  } else {
+    FALSE
+  }
+}
+
+os <- function() {
+  windows <- is.windows()
+  macos <- is.macos()
+  linux <- is.linux()
+
+  count <- windows + macos + linux
+
+  if (isTRUE(count > 1) || isTRUE(count == 0)) {
+    "unknown"
+  } else if (windows) {
+    "windows"
+  } else if (macos) {
+    "macos"
+  } else if (linux) {
+    "linux"
+  }
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Detect the location/name of the Mplus command ####
+
+detectMplus <- function() {
+
+  ostype <- os()
+
+  if (identical(ostype, "windows")) {
+
+    suppressWarnings(mplus <- system("where Mplus", intern = TRUE, ignore.stderr = TRUE))
+
+    if (isTRUE(length(mplus) > 0) && isTRUE(file.exists(mplus))) {
+      mplus <- "Mplus"
+    } else {
+
+      if (isTRUE(file.exists("C:\\Program Files\\Mplus\\Mplus.exe"))) {
+        mplus <- "C:\\Program Files\\Mplus\\Mplus.exe"
+      } else {
+
+        suppressWarnings(mplus <- system("where Mpdemo8", intern = TRUE, ignore.stderr = TRUE))
+
+        if (isTRUE(length(mplus) > 0 && file.exists(mplus))) {
+          mplus <- "Mpdemo8"
+        } else {
+          if (isTRUE(file.exists("C:\\Program Files\\Mplus Demo\\Mpdemo8.exe"))) {
+            mplus <- "C:\\Program Files\\Mplus Demo\\Mpdemo8.exe"
+          } else {
+            note <- paste0(
+              "Mplus and Mpdemo8 are either not installed or could not be found\n",
+              "Try installing Mplus or Mplus Demo. If Mplus or Mplus Demo are already installed, \n",
+              "make sure one can be found on your PATH. The following may help\n\n",
+              "Windows 10:\n",
+              " (1) In Search, search for and then select: System (Control Panel)\n",
+              " (2) Click the Advanced system settings link.\n",
+              " (3) Click Environment Variables ...\n",
+              " (4) In the Edit System Variable (or New System Variable ) window,\n",
+              " (5) specify the value of the PATH environment variable...\n",
+              " (6) Close and reopen R and run:\n\n",
+              "mplusAvailable(silent=FALSE)",
+              "\n")
+            stop(note)
+          }
+        }
+      }
+    }
+  }
+
+  if (isTRUE(identical(ostype, "macos"))) {
+
+    suppressWarnings(mplus <- system("which mplus", intern = TRUE, ignore.stderr = TRUE))
+
+    if (isTRUE(length(mplus) > 0 && file.exists(mplus))) {
+      mplus <- "mplus"
+    } else {
+      if (isTRUE(file.exists("/Applications/Mplus/mplus"))) {
+        mplus <- "/Applications/Mplus/mplus"
+      } else {
+
+        suppressWarnings(mplus <- system("which mpdemo", intern = TRUE, ignore.stderr = TRUE))
+
+        if (isTRUE(length(mplus) > 0 && file.exists(mplus))) {
+          mplus <- "mpdemo"
+        } else {
+          if (isTRUE(file.exists("/Applications/MplusDemo/mpdemo"))) {
+            mplus <- "/Applications/MplusDemo/mpdemo"
+          } else {
+            stop("mplus and mpdemo not found on the system path or in the 'usual' /Applications/Mplus location. Ensure Mplus or the Mplus Demo are installed and that the location of the command is on your system path.")
+          }
+        }
+      }
+    }
+  }
+
+  if (isTRUE(identical(ostype, "linux"))) {
+    failure_note <- paste0(
+      "Mplus is either not installed or could not be found\n",
+      "Try installing Mplus or if it already is installed,\n",
+      "making sure it can be found by adding it to your PATH or adding a symlink\n\n",
+      "To see directories on your PATH, From a terminal, run:\n\n",
+      "  echo $PATH",
+      "\n\nthen try something along these lines:\n\n",
+      "  sudo ln -s /path/to/mplus/on/your/system /directory/on/your/PATH",
+      "\n"
+    )
+
+    mplus_found <- FALSE
+
+    suppressWarnings(mplus <- system("which mplus", intern = TRUE, ignore.stderr = TRUE))
+
+    if (isTRUE(length(mplus) > 0L && file.exists(mplus))) {
+      mplus <- "mplus"
+      mplus_found <- TRUE
+    } else {
+      if (isTRUE(dir.exists("/opt/mplus"))) {
+        test <- file.path(
+          list.dirs("/opt/mplus", recursive = FALSE)[1],
+          "mplus"
+        )
+        if (isTRUE(file.exists(test))) {
+          mplus <- test
+          mplus_found <- TRUE
+        }
+      } else {
+
+        suppressWarnings(mplus <- system("which mpdemo", intern = TRUE, ignore.stderr = TRUE))
+
+        if (isTRUE(length(mplus) > 0L && file.exists(mplus))) {
+          mplus <- "mpdemo"
+          mplus_found <- TRUE
+        }
+      }
+    }
+
+    if (isTRUE(!mplus_found)) {
+      stop(failure_note)
+    }
+  }
+
+  if (isTRUE(identical(ostype, "unknown"))) {
+    stop("OS Type not known. Cannot auto detect Mplus command name. You must specify it.")
+  }
+
+  return(mplus)
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## convert_to_filelist() ####
+
+convert_to_filelist <- function(target, filefilter = NULL, recursive = FALSE) {
+
+  filelist <- c()
+  for (tt in target) {
+
+    fi <- file.info(tt)
+
+    if (isTRUE(is.na(fi$size))) { stop("Cannot find target: ", tt) }
+
+    if (isTRUE(fi$isdir)) {
+      directory <- sub("(\\\\|/)?$", "", tt, perl = TRUE)
+
+      if (is.windows() && isTRUE(grepl("^[a-zA-Z]:$", directory))) {directory <- paste0(directory, "/") }
+
+      if (isTRUE(!file.exists(directory))) stop("Cannot find directory: ", directory)
+
+      this_set <- list.files(path=directory, recursive=recursive, pattern=".*\\.inp?$", full.names = TRUE)
+      filelist <- c(filelist, this_set)
+
+    } else {
+      if (isTRUE(!grepl(".*\\.inp?$", tt, perl = TRUE))) {
+        warning("Target: ", tt, "does not appear to be an .inp file. Ignoring it.")
+        next
+      } else {
+        if (isTRUE(!file.exists(tt))) { stop("Cannot find input file: ", tt) }
+
+        filelist <- c(filelist, tt)
+      }
+    }
+  }
+
+  if (isTRUE(!is.null(filefilter))) filelist <- grep(filefilter, filelist, perl = TRUE, value = TRUE)
+
+  filelist <- normalizePath(filelist)
+
+  return(filelist)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## splitFilePath() ####
+
+splitFilePath <- function(filepath, normalize = FALSE) {
+
+  if (isTRUE(!is.character(filepath))) stop("Path not a character string")
+  if (isTRUE(nchar(filepath) < 1L || is.na(filepath))) stop("Path is missing or of zero length")
+
+  filepath <- sub("(\\\\|/)?$", "", filepath, perl = TRUE)
+
+  components <- strsplit(filepath, split="[\\/]")[[1L]]
+  lcom <- length(components)
+
+  stopifnot(lcom > 0L)
+
+  relFilename <- components[lcom]
+  absolute <- FALSE
+
+  if (isTRUE(lcom == 1L)) {
+    dirpart <- NA_character_
+  } else if (isTRUE(lcom > 1L)) {
+    components <- components[-lcom]
+    dirpart <- do.call("file.path", as.list(components))
+
+    if (grepl("^([A-Z]{1}:|~/|/|//|\\\\)+.*$", dirpart, perl=TRUE)) absolute <- TRUE
+
+    if (normalize) { #convert to absolute path
+      dirpart <- normalizePath(dirpart)
+      absolute <- TRUE
+    }
+  }
+
+  return(list(directory = dirpart, filename = relFilename, absolute = absolute))
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
 # Internal functions for the mplus() and mplus.update() function ---------------
 #
 # - .extract.section

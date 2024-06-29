@@ -1,3 +1,13 @@
+### misty 0.6.5 (2024-06-29)
+
+##### Minor features and improvements
+* Updated the function `mplus.run()` according to the lastest version of the 
+function `runModels()` in the MplusAutomation package.
+
+##### Bug fix
+* Fixed a bug in the function `mplus.print()`, function did not print result of 
+a misty.object of type mplus.
+
 ### misty 0.6.4 (2024-06-26)
 
 ##### New features
@@ -6,9 +16,8 @@
 the console.
 * New function `update.mplus()` to update specific Mplus input command sections
 in the `mplus` object, run the updated input file, and print the output on the console.
-
 * New functions `chr.grep()` and `chr.grepl()` for multiple pattern matching, i.e., 
-`grep()` and `grepl()`functions for matching a vector of character strings.
+`grep()` and `grepl()` functions for matching a vector of character strings.
 
 ##### User-visible changes
 * The function `write.mplus()` is not restricted to variable names with up to 8 

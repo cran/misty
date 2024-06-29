@@ -6,7 +6,7 @@
 \usage{
 mplus.run(target = getwd(), recursive = FALSE, filefilter = NULL, show.out = FALSE,
           replace.out = c("always", "never", "modified"), message = TRUE,
-          logFile = NULL, Mplus = "Mplus", killOnFail = TRUE,
+          logFile = NULL, Mplus = detectMplus(), killOnFail = TRUE,
           local_tmpdir = FALSE)
 }
 \arguments{
@@ -95,5 +95,5 @@ Muthen & Muthen.
 \code{\link{mplus}}, \code{\link{mplus.update}}, \code{\link{mplus.lca}}
 }
 \author{
-Michael Hallquist
+ Michael Hallquist and Joshua Wiley
 }

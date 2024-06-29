@@ -567,7 +567,7 @@ mplus <- function(x, file = "Mplus_Input.inp", replace.inp = TRUE, data = NULL, 
                              variable = variable, not.input = not.input, not.result = not.result,
                              write = write, append = append, check = check, output = output),
                  input = input.object, write = write.object,
-                 result = result.object)
+                 result = result.object$result)
 
   class(object) <- "misty.object"
 

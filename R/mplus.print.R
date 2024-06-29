@@ -11,9 +11,9 @@
 #' @param x          a character string indicating the name of the Mplus output
 #'                   file with or without the file extension \code{.out}, e.g.,
 #'                   \code{"Mplus_Output.out"} or \code{"Mplus_Output"}.
-#'                   Alternatively, a \code{misty.object} of type \code{mplus.print}
-#'                   can be specified, i.e., result object of the \code{mplus.print()}
-#'                   function.
+#'                   Alternatively, a \code{misty.object} of type \code{mplus}
+#'                   can be specified, i.e., result object of the \code{mplus.print()},
+#'                   \code{mplus()} or \code{mplus.update()} function.
 #' @param print      a character vector indicating which results to show, i.e.
 #'                   \code{"all"} (default) for all results \code{"input"} for
 #'                   input command sections, and \code{"result"} for result sections.
