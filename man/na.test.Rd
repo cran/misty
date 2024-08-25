@@ -2,10 +2,14 @@
 % Please edit documentation in R/na.test.R
 \name{na.test}
 \alias{na.test}
-\title{Little's Missing Completely at Random (MCAR) Test}
+\title{Missing Completely at Random (MCAR) Test}
 \usage{
-na.test(..., data = NULL, digits = 2, p.digits = 3, as.na = NULL, write = NULL,
-        append = TRUE,check = TRUE, output = TRUE)
+na.test(..., data = NULL, print = c("all", "little", "jamjal"),
+        impdat = NULL, delete = 6, method = c("npar", "normal"),
+        m = 20, seed = 123, nrep = 10000, n.min = 30,
+        pool = c("m", "med", "min", "max", "random"),
+        alpha = 0.05, digits = 2, p.digits = 3, as.na = NULL,
+        write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{...}{a matrix or data frame with incomplete data, where missing
@@ -19,6 +23,69 @@ in the \code{\link{df.subset}} function.}
 \item{data}{a data frame when specifying one or more variables in the
 argument \code{...}. Note that the argument is \code{NULL}
 when specifying a matrix or data frame for the argument \code{...}.}
+
+\item{print}{a character vector indicating which results to be printed on
+the console, i.e. \code{"all"} (default) for Little's MCAR
+test and Jamshidian and Jalal's approach, \code{"little} for
+Little's MCAR test, and \code{"jamjal} for Jamshidian and
+Jalal's approach.}
+
+\item{impdat}{an object of class \code{mids} from the \pkg{mice} package to
+provide a data set multiply imputed in the \pkg{mice} package.
+The function will not impute the data data set specified in
+the argument \code{data} when specifying this argument and will
+use the imputed data sets provided in the argument \code{impdat}
+for performing the Jamshidian and Jalal's approach. Note that
+the argument \code{data} still needs to be specified because
+the variables used for the analysis are extracted from the
+data frame specified in \code{data}.}
+
+\item{delete}{an integer value indicating missing data patterns consisting
+of \code{delete} number of cases or less removed from the
+Jamshidian and Jalal's approach. The default setting is
+\code{delete = 6}.}
+
+\item{method}{a character string indicating the imputation method, i.e.,
+\code{"npar"} for using a non-parametric imputation method
+by Sirvastava and Dolatabadi (2009) or \code{"normal"} for
+imputing missing data assuming that the data come from a
+multivariate normal distribution (see Jamshidian & Jalal, 2010).}
+
+\item{m}{an integer value indicating the number of multiple imputations.
+The default setting is \code{m = 20}.}
+
+\item{seed}{an integer value that is used as argument by the \code{set.seed}
+function for offsetting the random number generator before
+performing Jamshidian and Jalal's approach. The default
+setting is \code{seed = 123}. Set the value to \code{NULL} to
+specify a system selected seed.}
+
+\item{nrep}{an integer value indicating the replications used to simulate
+the Neyman distribution to determine the cut off value for the
+Neyman test. Larger values increase the accuracy of the Neyman
+test. The default setting is \code{nrep = 10000}.}
+
+\item{n.min}{an integer value indicating the minimum number of cases in a
+group that triggers the use of asymptotic Chi-square distribution
+in place of the empirical distribution in the Neyman test of
+uniformity.}
+
+\item{pool}{a character string indicating the pooling method, i.e.,
+\code{"m"} for computing the average test statistic and p-values,
+\code{"med"} for computing the median test statistic and p-values,
+\code{"min"} for computing the maximum test statistic and minimum p-values,
+\code{"max"} for computing the minimum test statistic and maximum p-values,
+and \code{"random"} for randomly choosing a test statistic and
+corresponding p-value from repeated complete data analyses.
+The default setting is \code{pool = "med"}, i.e., median test
+statistic and p-values are computed as suggested by
+Eekhout, Wiel and Heymans (2017).}
+
+\item{alpha}{a numeric value between 0 and 1 indicating the significance
+level of the Hawkins test. The default setting is \code{alpha = 0.05},
+i.e., the Anderson-Darling non-parametric test is provided
+when the p-value of the Hawkins test is less than or equal
+\code{0.05}.}
 
 \item{digits}{an integer value indicating the number of decimal places to
 be used for displaying results.}
@@ -45,73 +112,143 @@ overwritten.}
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-  \item{\code{call}}{function call}
-  \item{\code{type}}{type of analysis}
-  \item{\code{data}}{matrix or data frame specified in \code{x}}
-  \item{\code{args}}{specification of function arguments}
-  \item{\code{result}}{result table}
+
+\item{\code{call}}{function call}
+\item{\code{type}}{type of analysis}
+\item{\code{data}}{matrix or data frame specified in \code{x}}
+\item{\code{args}}{specification of function arguments}
+\item{\code{result}}{list with result tables, i.e., \code{little} for the
+                     result table of the Little's MCAR test, \code{jamjal}
+                     for the list with results of the Jamshidian and Jalal's
+                     approach, \code{hawkins} for the result table of the
+                     Hawkins test, and \code{anderson} for the result table of
+                     the Anderson-Darling non-parametric test}
 }
 \description{
-This function performs Little's Missing Completely at Random (MCAR) test
+This function performs Little's Missing Completely at Random (MCAR) test and
+Jamshidian and Jalal's approach for testing the MCAR assumption. By default,
+the function performs the Jamshidian and Jalal's
+approach.
 }
 \details{
-Little (1988) proposed a multivariate test of Missing Completely at Random (MCAR)
-that tests for mean differences on every variable in the data set across subgroups
-that share the same missing data pattern by comparing the observed variable means
-for each pattern of missing data with the expected population means estimated using
-the expectation-maximization (EM) algorithm (i.e., EM maximum likelihood estimates).
-The test statistic is the sum of the squared standardized differences between the
-subsample means and the expected population means weighted by the estimated
-variance-covariance matrix and the number of observations within each subgroup
-(Enders, 2010). Under the null hypothesis that data are MCAR, the test statistic
-follows asymptotically a chi-square distribution with \eqn{\sum k_j - k} degrees
-of freedom, where \eqn{k_j} is the number of complete variables for missing data
-pattern \eqn{j}, and \eqn{k} is the total number of variables. A statistically
-significant result provides evidence against MCAR.
+\describe{
+  \item{\strong{Little's MCAR Test}}{
+  Little (1988) proposed a multivariate test of Missing Completely at Random
+  (MCAR) that tests for mean differences on every variable in the data set
+  across subgroups that share the same missing data pattern by comparing the
+  observed variable means for each pattern of missing data with the expected
+  population means estimated using the expectation-maximization (EM) algorithm
+  (i.e., EM maximum likelihood estimates). The test statistic is the sum of
+  the squared standardized differences between the subsample means and the
+  expected population means weighted by the estimated variance-covariance
+  matrix and the number of observations within each subgroup (Enders, 2010).
+  Under the null hypothesis that data are MCAR, the test statistic follows
+  asymptotically a chi-square distribution with \eqn{\sum k_j - k} degrees of
+  freedom, where \eqn{k_j} is the number of complete variables for missing data
+  pattern \eqn{j}, and \eqn{k} is the total number of variables. A statistically
+  significant result provides evidence against MCAR.
 
-Note that Little's MCAR test has a number of problems (see Enders, 2010).
-\strong{First}, the test does not identify the specific variables that violates
-MCAR, i.e., the test does not identify potential correlates of missingness (i.e.,
-auxiliary variables). \strong{Second}, the test is based on multivariate normality,
-i.e., under departure from the normality assumption the test might be unreliable
-unless the sample size is large and is not suitable for categorical variables.
-\strong{Third}, the test investigates mean  differences assuming that the missing
-data pattern share a common covariance matrix, i.e., the test cannot detect
-covariance-based deviations from MCAR stemming from a Missing at Random (MAR)
-or Missing Not at Random (MNAR) mechanism because MAR and MNAR mechanisms can
-also produce missing data subgroups with equal means. \strong{Fourth}, simulation
-studies suggest that Little's MCAR test suffers from low statistical power,
-particularly when the number of variables that violate MCAR is small, the
-relationship between the data and missingness is weak, or the data are MNAR
-(Thoemmes & Enders, 2007). \strong{Fifth}, the test can only reject, but cannot
-prove the MCAR assumption, i.e., a statistically not significant result and failing
-to reject the null hypothesis of the MCAR test does not prove the null hypothesis
-that the data is MCAR. \strong{Finally}, under the null hypothesis the data are
-actually MCAR or MNAR, while a statistically significant result indicates that
-missing data are MAR or MNAR, i.e., MNAR cannot be ruled out regardless of the
-result of the test.
+  Note that Little's MCAR test has a number of problems (see Enders, 2010).
+    \itemize{
+       \item{\strong{First}}, the test does not identify the specific variables
+       that violates MCAR, i.e., the test does not identify potential correlates
+       of missingness (i.e., auxiliary variables).
+       \item{\strong{Second}}, the test is based on multivariate normality,
+       i.e., under departure from the normality assumption the test might be
+       unreliable unless the sample size is large and is not suitable for
+       categorical variables.
+       \item{\strong{Third}}, the test investigates mean differences assuming
+       that the missing data pattern share a common covariance matrix, i.e.,
+       the test cannot detect covariance-based deviations from MCAR stemming
+       from a Missing at Random (MAR) or Missing Not at Random (MNAR) mechanism
+       because MAR and MNAR mechanisms can also produce missing data subgroups
+       with equal means.
+       \item{\strong{Fourth}}, simulation studies suggest that Little's MCAR
+       test suffers from low statistical power, particularly when the number
+       of variables that violate MCAR is small, the relationship between the
+       data and missingness is weak, or the data are MNAR (Thoemmes & Enders,
+       2007).
+       \item{\strong{Fifth}}, the test can only reject, but cannot prove the
+       MCAR assumption, i.e., a statistically not significant result and failing
+       to reject the null hypothesis of the MCAR test does not prove the null
+       hypothesis that the data is MCAR.
+       \item{\strong{Sixth}}, under the null hypothesis the data are actually
+       MCAR or MNAR, while a statistically significant result indicates that
+       missing data are MAR or MNAR, i.e., MNAR cannot be ruled out regardless
+       of the result of the test.
+  }
+  The function for performing Little's MCAR test is based on the \code{mlest}
+  function from the \pkg{mvnmle} package which can handle up to 50 variables.
+  Note that the \code{mcar_test} function in the \pkg{naniar} package is based
+  on the \code{prelim.norm} function from the \pkg{norm} package. This function
+  can handle about 30 variables, but with more than 30 variables specified in
+  the argument \code{data}, the \code{prelim.norm} function might run into
+  numerical problems leading to results that are not trustworthy (i.e.,
+  \code{p.value = 1}). In that case, the warning message
+  \code{In norm::prelim.norm(data) : NAs introduced by coercion to integer range}
+  is printed on the console.}
 
-This function is based on the \code{prelim.norm} function in the \pkg{norm}
-package which can handle about 30 variables. With more than 30 variables
-specified in the argument \code{x}, the \code{prelim.norm} function might run
-into numerical problems leading to results that are not trustworthy. In this
-case it is recommended to reduce the number of variables specified in the argument
-\code{x}. If the number of variables cannot be reduced, it is recommended to
-use the \code{LittleMCAR} function in the \pkg{BaylorEdPsych} package which can
-deal with up to 50 variables. However, this package was removed from the CRAN
-repository and needs to be obtained from the archive along with the \pkg{mvnmle} package
-which is needed for using the \code{LittleMCAR} function. Note that the
-\code{mcar_test} function in the \pkg{naniar} package is also based on the
-\code{prelim.norm} function which results are not trustworthy whenever the warning
-message \code{In norm::prelim.norm(data) : NAs introduced by coercion to integer range}
-is printed on the console.
+  \item{\strong{Jamshidian and Jalal's Approach for Testing MCAR}}{Jamshidian
+  and Jalal (2010) proposed an approach for testing the Missing Completely at
+  Random (MCAR) assumption based on two tests of multivariate normality and
+  homogeneity of covariances among groups of cases with identical missing data
+  patterns:
+      \enumerate{
+       \item{\strong{In the first step}}, missing data are multiply imputed
+       (\code{m = 20} times by default) using a non-parametric imputation method
+       (\code{method = "npar"} by default) by Sirvastava and Dolatabadi (2009)
+       or using a parametric imputation method assuming multivariate normality
+       of data (\code{method = "normal"}) for each group of cases sharing a common
+       missing data pattern.
+       \item{\strong{In the second step}}, a modified Hawkins test for multivariate
+       normality and homogeneity of covariances applicable to complete data
+       consisting of groups with a small number of cases is performed. A statistically
+       not significant result indicates no evidence against multivariate normality
+       of data or homogeneity of covariances, while a statistically significant
+       result provides evidence against multivariate normality of data or homogeneity
+       of covariances (i.e., violation of the MCAR assumption). Note that the
+       Hawkins test is a test of multivariate normality as well as homogeneity
+       of covariance. Hence, a statistically significant test is ambiguous unless
+       the researcher assumes multivariate normality of data.
+       \item{\strong{In the third step}}, if the Hawkins test is statistically
+       significant, the Anderson-Darling non-parametric test is performed. A
+       statistically not significant result indicates evidence against multivariate
+       normality of data but no evidence against homogeneity of covariances, while
+       a statistically significant result provides evidence against homogeneity
+       of covariances (i.e., violation of the MCAR assumption). However, no
+       conclusions can be made about the multivariate normality of data when the
+       Anderson-Darling non-parametric test is statistically significant.
+  }
+  In summary, a statistically significant result of both the Hawkins and the
+  Anderson-Darling non-parametric test provides evidence against the MCAR assumption.
+  The test statistic and the significance values of the Hawkins test and the
+  Anderson-Darling non-parametric based on multiply imputed data sets are pooled
+  by computing the median test statistic and significance value (\code{pool = "med"}
+  by default) as suggested by Eekhout, Wiel, and Heymans (2017).
+
+  Note that out of the problems listed for the Little's MCAR test the first,
+  second (i.e., approach is not suitable for categorical variables), fifth,
+  and sixth problems also apply to the Jamshidian and Jalal's approach for
+  testing the MCAR assumption.
+  }
+  In practice, rejecting or not rejecting the MCAR assumption may not be relevant
+  as modern missing data handling methods like full information maximum likelihood
+  (FIML) estimation, Bayesian estimation, or multiple imputation are asymptotically
+  valid under the missing at random (MAR) assumption (Jamshidian & Yuan, 2014).
+  It is more important to distinguish MAR from missing not at random (MNAR),
+  but MAR and MNAR mechanisms cannot be distinguished without auxiliary
+  information.
+}
 }
 \note{
-Code is adapted from the R function by Eric Stemmler:
-tinyurl.com/r-function-for-MCAR-test
+The code for Little's MCAR test is a modified copy of the \code{LittleMCAR}
+function in the \pkg{BaylorEdPsych} package by A. Alexander Beaujean. The code
+for Jamshidian and Jalal's approach is a modified copy of the \code{TestMCARNormality}
+function in the \pkg{MissMech} package by Mortaza Jamshidian, Siavash Jalal,
+Camden Jansen, and Mao Kobayashi (2024).
 }
 \examples{
-# Example 1a: Conduct Little's MCAR test
+# Example 1a: Perform Little's MCAR test and Jamshidian and Jalal's approach
 na.test(airquality)
 
 # Example b: Alternative specification using the 'data' argument,
@@ -123,15 +260,41 @@ na.test(airquality, write = "NA_Test.txt")
 }
 }
 \references{
+Beaujean, A. A. (2012). \emph{BaylorEdPsych: R Package for Baylor University
+Educational Psychology Quantitative Courses}. R package version 0.5.
+http://cran.nexr.com/web/packages/BaylorEdPsych/index.html
+
+Eekhout, I., M. A. Wiel, & M. W. Heymans (2017). Methods for significance
+testing of categorical covariates in logistic regression models after multiple
+imputation: Power and applicability analysis. \emph{BMC Medical Research
+Methodology}, 17:129. https://doi.org/10.1186/s12874-017-0404-7
+
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
+
+Little, R. J. A. (1988). A test of Missing Completely at Random for multivariate
+data with missing values. \emph{Journal of the American Statistical Association,
+83}, 1198-1202. https://doi.org/10.2307/2290157
+
+Jamshidian, M., & Jalal, S. (2010). Tests of homoscedasticity, normality, and
+missing completely at random for incomplete multivariate data. \emph{Psychometrika,
+75}(4), 649-674. https://doi.org/10.1007/s11336-010-9175-3
+
+Jamshidian, M., & Yuan, K.H. (2014). Examining missing data mechanisms via
+homogeneity of parameters, homogeneity of distributions, and multivariate
+normality. \emph{WIREs Computational Statistics, 6}(1), 56-73.
+https://doi.org/10.1002/wics.1287
+
+Mortaza, J., Siavash, J., Camden, J., & Kobayashi, M. (2024). \emph{MissMech:
+Testing Homoscedasticity, Multivariate Normality, and Missing Completely at
+Random}. R package version 1.0.4. https://doi.org/10.32614/CRAN.package.MissMech
+
+Srivastava, M.S., & Dolatabadi, M. (2009). Multiple imputation and other
+resampling scheme for imputing missing observations. \emph{Journal of Multivariate
+Analysis, 100}, 1919-1937. https://doi.org/10.1016/j.jmva.2009.06.003
 
 Thoemmes, F., & Enders, C. K. (2007, April). \emph{A structural equation model for
 testing whether data are missing completely at random}. Paper presented at the
 annual meeting of the American Educational Research Association, Chicago, IL.
-
-Little, R. J. A. (1988). A test of Missing Completely at Random for multivariate
-data with missing values. \emph{Journal of the American Statistical Association, 83},
-1198-1202. https://doi.org/10.2307/2290157
 }
 \seealso{
 \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.auxiliary}},

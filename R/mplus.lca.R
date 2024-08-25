@@ -10,7 +10,7 @@
 #' \emph{k} = 1 to \emph{k} = 6 classes into these folders, and writes the matrix
 #' or data frame specified in \code{x} into a Mplus data file in the current working
 #' directory. Optionally, all models can be estimated by setting the argument
-#' \code{run.mplus} to \code{TRUE}.
+#' \code{mplus.run} to \code{TRUE}.
 #'
 #' @param x               a matrix or data frame. Note that all variable names must
 #'                        be no longer than 8 character.
@@ -94,7 +94,7 @@
 #'                        \code{k - 1} classes model and 100 random sets of starting
 #'                        values in the initial stage and 50 optimizations in the
 #'                        final stage are used for the \code{k} class model.
-#' @param processors      a vector of two integer values for specifying the
+#' @param processors      a vector of one or two integer values for specifying the
 #'                        \code{PROCESSORS} option in Mplus. The values specifies
 #'                        the number of processors and threads to be used for
 #'                        parallel computing to increase computational speed. By
@@ -116,9 +116,9 @@
 #'                        is only available for the \code{MLR} estimator.
 #' @param replace.inp     logical: if \code{TRUE}, all existing input files in the
 #'                        folder specified in the argument \code{folder} are replaced.
-#' @param run.mplus       logical: if \code{TRUE}, all models in the folders specified
+#' @param mplus.run       logical: if \code{TRUE}, all models in the folders specified
 #'                        in the argument \code{folder} are estimated by using the
-#'                        \code{run.mplus} function in the R package \code{misty}.
+#'                        \code{mplus.run} function in the R package \code{misty}.
 #' @param Mplus           a character string for specifying the name or path of
 #'                        the Mplus executable to be used for running models. This
 #'                        covers situations where Mplus is not in the system's path,
@@ -127,10 +127,10 @@
 #'                        for most users since it has intelligent defaults.
 #' @param replace.out     a character string for specifying three settings, i.e.,
 #'                        \code{"always"} to run all models regardless of whether
-#'                        an output file for the model exists, \code{"never"} (default)
+#'                        an output file for the model exists, \code{"never"}
 #'                        to not run any model that has an existing output file,
-#'                        and \code{"modified"} to only runs a model if the
-#'                        modified date for the input file is more recent than
+#'                        and \code{"modified"} (default) to only runs a model if
+#'                        the modified date for the input file is more recent than
 #'                        the output file modified date.
 #' @param check           logical: if \code{TRUE} (default), argument specification
 #'                        is checked.
@@ -173,8 +173,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus.print}},
-#' \code{\link{mplus}}, \code{\link{mplus.update}}, \code{\link{mplus.run}},
+#' \code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus}},
+#' \code{\link{mplus.update}}, \code{\link{mplus.print}}, \code{\link{mplus.plot}},
+#' \code{\link{mplus.bayes}}, \code{\link{mplus.run}}
 #'
 #' @references
 #' Masyn, K. E. (2013). Latent class analysis and finite mixture modeling. In T. D.
@@ -223,7 +224,7 @@
 #' # Estimate all models in Mplus
 #' mplus.lca(round(HolzingerSwineford1939[, -5]), ind = c("x1", "x2", "x3", "x4"),
 #'           type = "categorical", useobservations = "ageyr <= 13",
-#'           run.mplus = TRUE)
+#'           mplus.run = TRUE)
 #' }
 mplus.lca <- function(x, ind = NULL,
                       type = c("continuous", "count", "categorical", "nominal"),
@@ -239,7 +240,7 @@ mplus.lca <- function(x, ind = NULL,
                       starts = c(100, 50), stiterations = 10, lrtbootstrap = 1000,
                       lrtstarts = c(0, 0, 100, 50), processors = c(8, 8),
                       output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14"),
-                      replace.inp = FALSE, run.mplus = FALSE, Mplus = "Mplus",
+                      replace.inp = FALSE, mplus.run = FALSE, Mplus = "Mplus",
                       replace.out = c("always", "never", "modified"), check = TRUE) {
 
   #_____________________________________________________________________________
@@ -260,9 +261,6 @@ mplus.lca <- function(x, ind = NULL,
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
-
-    # Check variable names in 'x'
-    if (isTRUE(any(nchar(colnames(x)) > 8L))) { stop(paste0("Variables names in the matrix or data frame specified in 'x' have more than 8 characters: ", paste0(colnames(x)[which(nchar(colnames(x)) > 8L)], collapse = ", ")), call. = FALSE) }
 
     # Check 'ind' in 'x'
     if (isTRUE(any(!ind %in% colnames(x)))) { stop(paste0("Variables specified in 'ind' were not all found in the matrix or data frame specified in 'x': ", paste0(ind[which(!ind %in% colnames(x))], collapse = ", ")), call. = FALSE) }
@@ -310,7 +308,7 @@ mplus.lca <- function(x, ind = NULL,
     if (isTRUE(lrtstarts[4L] > lrtstarts[3L])) { stop("The fourth value must be less than or equal the third value in the argument 'lrtstarts'.", call. = FALSE) }
 
     # Check 'processors'
-    if (isTRUE(length(processors) %in% c(1L, 2L))) { stop("Please specify a vector with two integer values for the argument 'processors'.", call. = FALSE) }
+    if (isTRUE(!length(processors) %in% c(1L, 2L) || any(processors %% 1L != 0L))) { stop("Please specify a vector with one or two integer values for the argument 'processors'.", call. = FALSE) }
 
     # Check input 'print' ##
     if (isTRUE(!all(output %in% c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14")))) { stop("Character string in the argument 'output' does not match with \"SVALUES\", \"CINTERVAL\", \"TECH7\", \"TECH8\", \"TECH11\", or \"TECH14\".", call. = FALSE) }
@@ -318,8 +316,8 @@ mplus.lca <- function(x, ind = NULL,
     # Check input 'replace.inp' ##
     if (isTRUE(!is.logical(replace.inp))) { stop("Please specify TRUE or FALSE for the argument 'replace.inp '.", call. = FALSE) }
 
-    # Check input 'run.mplus' ##
-    if (isTRUE(!is.logical(run.mplus))) { stop("Please specify TRUE or FALSE for the argument 'run.mplus '.", call. = FALSE) }
+    # Check input 'mplus.run' ##
+    if (isTRUE(!is.logical(mplus.run))) { stop("Please specify TRUE or FALSE for the argument 'mplus.run '.", call. = FALSE) }
 
     # Check input 'replace.out' ##
     if (isTRUE(!all(replace.out %in% c("always", "never", "modified")))) { stop("Character string in the argument 'replace.out ' does not match with \"always\", \"never\",  or \"modified\".", call. = FALSE) }
@@ -363,7 +361,7 @@ mplus.lca <- function(x, ind = NULL,
 
   if (isTRUE(all(c("always", "never", "modified") %in% replace.out))) {
 
-    replace.out <- "never"
+    replace.out <- "modified"
 
   } else {
 
@@ -451,7 +449,7 @@ mplus.lca <- function(x, ind = NULL,
                     "            STITERATIONS ARE ", stiterations, ";\n",
                     if (isTRUE("TECH14" %in% output)) { paste0("            LRTBOOTSTRAP IS ", lrtbootstrap, ";\n",
                                                                "            LRTSTARTS ARE ", paste0(lrtstarts, collapse = " "), ";\n") },
-                    "            PROCESSORS ARE ", processors, ";\n\n")
+                    "            PROCESSORS ARE ", paste(processors, collapse = " "), ";\n\n")
 
   # Output
   mod.out <- paste0("OUTPUT:     ", paste0(output, collapse = " "), ";")
@@ -750,7 +748,7 @@ mplus.lca <- function(x, ind = NULL,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Run Mplus ####
 
-    if (isTRUE(run.mplus)) { sapply(folder, function(y) misty::mplus.run(target = file.path(getwd(), y), recursive = FALSE, Mplus = Mplus, replaceOutfile = replace.out)) }
+    if (isTRUE(mplus.run)) { sapply(folder, function(y) misty::mplus.run(target = file.path(getwd(), y), recursive = FALSE, Mplus = Mplus, replace.out = replace.out)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Count, Categorical, and Nominal Indicators ####
@@ -790,7 +788,7 @@ mplus.lca <- function(x, ind = NULL,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Run Mplus ####
 
-    if (isTRUE(run.mplus)) { misty::mplus.run(target = file.path(getwd(), paste0("LCA_1-", classes, "_Classes")), recursive = FALSE, Mplus = Mplus, replaceOutfile = replace.out) }
+    if (isTRUE(mplus.run)) { misty::mplus.run(target = file.path(getwd(), paste0("LCA_1-", classes, "_Classes")), recursive = FALSE, Mplus = Mplus, replaceOutfile = replace.out) }
 
   }
 
@@ -806,7 +804,7 @@ mplus.lca <- function(x, ind = NULL,
                              missing = missing, classes = classes, estimator = estimator,
                              starts = starts, stiterations = stiterations, lrtbootstra = lrtbootstrap,
                              lrtstarts = lrtstarts, processors = processors, output = output,
-                             replace.inp = replace.inp, run.mplus = run.mplus, Mplus = Mplus,
+                             replace.inp = replace.inp, mplus.run = mplus.run, Mplus = Mplus,
                              replace.out = replace.out, check = check),
                  result = mod)
 

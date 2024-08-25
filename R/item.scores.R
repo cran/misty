@@ -1,4 +1,4 @@
-#' Compute Scale Scores
+#' Scale Scores
 #'
 #' This function computes (prorated) scale scores by averaging the (available)
 #' items that measure a single construct by default.
@@ -52,7 +52,7 @@
 #' @param append   logical: if \code{TRUE} (default), a variable with scale scores
 #'                 is appended to the data frame specified in the argument \code{data}.
 #' @param name     a character string indicating the names of the variable appended
-#'                 to the data frame specified in the arguement \code{data} when
+#'                 to the data frame specified in the argument \code{data} when
 #'                 \code{append = TRUE}. By default, the variable is named \code{scores}.
 #' @param as.na    a numeric vector indicating user-defined missing values,
 #'                 i.e. these values are converted to \code{NA} before conducting

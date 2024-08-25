@@ -4,10 +4,9 @@
 #' a single directory or nested within subdirectories.
 #'
 #' @param target         a character string indicating the directory containing
-#'                       Mplus input files (\code{.inp})
-#'                       to run or the single \code{.inp} file to be run. May be
-#'                       a full path, relative path, or a filename within the
-#'                       working directory.
+#'                       Mplus input files (\code{.inp}) to run or the single
+#'                       \code{.inp} file to be run. May be a full path, relative
+#'                       path, or a filename within the working directory.
 #' @param recursive      logical: if \code{TRUE}, run all models nested in
 #'                       subdirectories within directory. Not relevant if target
 #'                       is a single file.
@@ -23,12 +22,12 @@
 #' @param replace.out    a character string for specifying three settings:
 #'                       \code{"always"} (default), which runs all models, regardless
 #'                       of whether an output file for the model exists, \code{"never"},
-#'                       which does not run any model that has an existing output file,
-#'                       and \code{"modified"}, which only runs a model if the
-#'                       modified date for the input file is more recent than the
-#'                       output file modified date.
+#'                       which does not run any model that has an existing output
+#'                       file, and \code{"modified"}, which only runs a model if
+#'                       the modified date for the input file is more recent than
+#'                       the output file modified date.
 #' @param message        logical: if \code{TRUE}, message \code{Running model:}
-#'                       and \code{System command:} is pringted on the console.
+#'                       and \code{System command:} is printed on the console.
 #' @param logFile        a character string specifying a file that records the settings
 #'                       passed into the function and the models run (or skipped)
 #'                       during the run.
@@ -52,8 +51,9 @@
 #' Michael Hallquist and Joshua Wiley.
 #'
 #' @seealso
-#' \code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus.print}},
-#' \code{\link{mplus}}, \code{\link{mplus.update}}, \code{\link{mplus.lca}}
+#' \code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus}},
+#' \code{\link{mplus.update}}, \code{\link{mplus.print}}, \code{\link{mplus.plot}},
+#' \code{\link{mplus.bayes}}, \code{\link{mplus.lca}}
 #'
 #' @references
 #' Hallquist, M. N. & Wiley, J. F. (2018). MplusAutomation: An R package for facilitating
@@ -75,15 +75,15 @@
 #' @examples
 #' \dontrun{
 #' # Example 1: Run Mplus models located within a single directory
-#' run.mplus(Mplus = "C:/Program Files/Mplus/Mplus.exe")
+#' mplus.run(Mplus = "C:/Program Files/Mplus/Mplus.exe")
 #'
 #' # Example 2: Run Mplus models located nested within subdirectories
-#' run.mplus(recursive = TRUE,
+#' mplus.run(recursive = TRUE,
 #'           Mplus = "C:/Program Files/Mplus/Mplus.exe")
 #' }
 mplus.run <- function(target = getwd(), recursive = FALSE, filefilter = NULL, show.out = FALSE,
                       replace.out = c("always", "never", "modified"), message = TRUE,
-                      logFile = NULL, Mplus = detectMplus(),
+                      logFile = NULL, Mplus = detect.mplus(),
                       killOnFail = TRUE, local_tmpdir = FALSE) {
 
   #_____________________________________________________________________________
@@ -262,9 +262,9 @@ mplus.run <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
           inpmtime <- file.info(inp_files[i])$mtime
 
-          matchPos <- grep(tolower(substr(inp_files[i], 1, (nchar(inp_files[i]) - 4L))), dropOutExtensions)
+          matchPos <- grep(tolower(substr(inp_files[i], 1L, (nchar(inp_files[i]) - 4L))), dropOutExtensions)
           if (isTRUE(length(matchPos) < 1)) warning("Could not locate matching outfile")
-          outmtime <- file.info(outfiles[matchPos[1]])$mtime
+          outmtime <- file.info(outfiles[matchPos[1L]])$mtime
 
           if (isTRUE(inpmtime <= outmtime)) {
 
@@ -298,7 +298,7 @@ mplus.run <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
     }
 
-    inputSplit <- splitFilePath(inp_files[i], normalize=TRUE)
+    inputSplit <- splitFilePath(inp_files[i], normalize = TRUE)
 
     cur_inpfile <- inp_files[i]
 

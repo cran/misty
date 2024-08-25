@@ -44,7 +44,7 @@
 #'                 to \code{...}, but not to \code{group} or \code{split}.
 #' @param write    a character string naming a file for writing the output into
 #'                 either a text file with file extension \code{".txt"} (e.g.,
-#'                 \code{"Output.txt"}) or Excel file with file extention
+#'                 \code{"Output.txt"}) or Excel file with file extension
 #'                 \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
 #'                 name does not contain any file extension, an Excel file will
 #'                 be written.
@@ -92,8 +92,11 @@
 #' # Example 2: Descriptive statistics, print results with 3 digits
 #' descript(mtcars$mpg, digits = 3)
 #'
-#' # Example 3: Descriptive statistics for x1, print all available statistical measures
+#' # Example 3a: Descriptive statistics for x1, print all available statistical measures
 #' descript(mtcars$mpg, print = "all")
+#'
+#' # Example 3b: Descriptive statistics for x1, print default plus median
+#' descript(mtcars$mpg, print = c("default", "med"))
 #'
 #' # Example 4a: Descriptive statistics for 'mpg', 'cyl', and 'disp'
 #' descript(mtcars[, c("mpg", "cyl", "disp")])
@@ -130,7 +133,7 @@
 #' write.result(result, "Descript.xlsx")
 #' }
 descript <- function(..., data = NULL,
-                     print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
+                     print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
                      group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
                      digits = 2, as.na = NULL, write = NULL, append = TRUE,
                      check = TRUE, output = TRUE) {
@@ -316,9 +319,9 @@ descript <- function(..., data = NULL,
   if (isTRUE(check)) {
 
     # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "skew", "range", "iqr", "kurt")))) {
+    if (isTRUE(!all(print %in% c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "skew", "range", "iqr", "kurt")))) {
 
-      stop("Character strings in the argument 'print' do not all match with \"all\", \"n\", \"nNA\", \"pNA\", \"m\", \"se.m\", \"var\", \"sd\", \"min\", \"p25\", \"med\", \"p75\", \"max\", \"range\", \"iqr\", \"skew\", or \"kurt\".", call. = FALSE)
+      stop("Character strings in the argument 'print' do not all match with \"all\", \"default\", \"n\", \"nNA\", \"pNA\", \"m\", \"se.m\", \"var\", \"sd\", \"min\", \"p25\", \"med\", \"p75\", \"max\", \"range\", \"iqr\", \"skew\", or \"kurt\".", call. = FALSE)
 
     }
 
@@ -368,15 +371,27 @@ descript <- function(..., data = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Statistical measures ####
 
-  if (isTRUE(all(c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt") %in% print))) {
+  print.all <- c("n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt")
+
+  # Default setting
+  if (isTRUE(all(c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt") %in% print))) {
 
     print <- c("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")
 
-  }
+  # All statistical measures
+  } else if (isTRUE("all" %in% print)) {
 
-  if (isTRUE(length(print) == 1L && print == "all")) {
+    print <- print.all
 
-    print <- c("n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt")
+  # Default setting with additional statistical measures
+  } else if (isTRUE("default" %in% print && length(print > 1L))) {
+
+    print <- print.all[print.all %in% misty::chr.omit(union(c("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt"), print), "default", check = FALSE)]
+
+  # Manual default setting
+  } else if (isTRUE(all(print == "default"))) {
+
+    print <- c("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")
 
   }
 

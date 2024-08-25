@@ -2,52 +2,59 @@
 #'
 #' This function prints the \code{misty.object} object
 #'
-#' @param x          \code{misty.object} object.
-#' @param print      a character string or character vector indicating which
-#'                   results to to be printed on the console.
-#' @param tri        a character string or character vector indicating which
-#'                   triangular of the matrix to show on the console, i.e.,
-#'                   \code{both} for upper and lower triangular, \code{lower}
-#'                   for the lower triangular, and \code{upper} for the upper
-#'                   triangular.
-#' @param freq       logical: if \code{TRUE}, absolute frequencies will be included
-#'                   in the cross tabulation (\code{crosstab()} function).
-#' @param hypo       logical: if \code{TRUE}, null and alternative hypothesis are
-#'                   shown on the console (\code{\link{test.t}},
-#'                   \code{\link{test.welch}}, \code{\link{test.z}} function).
-#' @param descript   logical: if \code{TRUE}, descriptive statistics are shown on
-#'                   the console (\code{\link{test.t}}, \code{\link{test.welch}},
-#'                   \code{\link{test.z}} function).
-#' @param epsilon    logical: if \code{TRUE}, box indices of sphericity (epsilon)
-#'                   are shown on the console (\code{\link{aov.w}}).
-#' @param effsize    logical: if \code{TRUE}, effect size measure(s) is shown on
-#'                   the console (\code{\link{test.t}}, \code{\link{test.welch}},
-#'                   \code{\link{test.z}} function).
-#'                   \code{\link{test.z}} function).
-#' @param posthoc    logical: if \code{TRUE},post hoc test for multiple comparison
-#'                   is shown on the console (\code{\link{test.welch}}).
-#' @param split      logical: if \code{TRUE}, output table is split by variables
-#'                   when specifying more than one variable in \code{x}
-#'                   (\code{\link{freq}}).
-#' @param table      logical: if \code{TRUE}, a frequency table with number of
-#'                   observed values (\code{"nObs"}), percent of observed values
-#'                   (\code{"pObs"}), number of missing values (\code{"nNA"}),
-#'                   and percent of missing values (\code{"pNA"}) is printed for
-#'                   each variable on the console (\code{na.descript()} function).
-#' @param digits     an integer value indicating the number of decimal places digits
-#'                   to be used for displaying results.
-#' @param p.digits   an integer indicating the number of decimal places to be used
-#'                   for displaying \emph{p}-values.
-#' @param icc.digits an integer indicating the number of decimal places to be used
-#'                   for displaying intraclass correlation coefficients
-#'                   (\code{multilevel.descript()} and \code{multilevel.icc()}
-#'                   function).
-#' @param sort.var   logical: if \code{TRUE}, output is sorted by variables.
-#' @param order      logical: if \code{TRUE}, variables are ordered from left to
-#'                   right in increasing order
-#'                   of missing values (\code{na.descript()} function).
-#' @param check      logical: if \code{TRUE}, argument specification is checked.
-#' @param ...        further arguments passed to or from other methods.
+#' @param x           \code{misty.object} object.
+#' @param print       a character string or character vector indicating which
+#'                    results to to be printed on the console.
+#' @param tri         a character string or character vector indicating which
+#'                    triangular of the matrix to show on the console, i.e.,
+#'                    \code{both} for upper and lower triangular, \code{lower}
+#'                    for the lower triangular, and \code{upper} for the upper
+#'                    triangular.
+#' @param freq        logical: if \code{TRUE}, absolute frequencies will be included
+#'                    in the cross tabulation (\code{crosstab()} function).
+#' @param hypo        logical: if \code{TRUE}, null and alternative hypothesis are
+#'                    shown on the console (\code{\link{test.t}},
+#'                    \code{\link{test.welch}}, \code{\link{test.z}} function).
+#' @param descript    logical: if \code{TRUE}, descriptive statistics are shown on
+#'                    the console (\code{\link{test.t}}, \code{\link{test.welch}},
+#'                    \code{\link{test.z}} function).
+#' @param epsilon     logical: if \code{TRUE}, box indices of sphericity (epsilon)
+#'                    are shown on the console (\code{\link{aov.w}}).
+#' @param effsize     logical: if \code{TRUE}, effect size measure(s) is shown on
+#'                    the console (\code{\link{test.t}}, \code{\link{test.welch}},
+#'                    \code{\link{test.z}} function).
+#'                    \code{\link{test.z}} function).
+#' @param posthoc     logical: if \code{TRUE},post hoc test for multiple comparison
+#'                    is shown on the console (\code{\link{test.welch}}).
+#' @param split       logical: if \code{TRUE}, output table is split by variables
+#'                    when specifying more than one variable in \code{x}
+#'                    (\code{\link{freq}}).
+#' @param table       logical: if \code{TRUE}, a frequency table with number of
+#'                    observed values (\code{"nObs"}), percent of observed values
+#'                    (\code{"pObs"}), number of missing values (\code{"nNA"}),
+#'                    and percent of missing values (\code{"pNA"}) is printed for
+#'                    each variable on the console (\code{na.descript()} function).
+#' @param digits      an integer value indicating the number of decimal places digits
+#'                    to be used for displaying results.
+#' @param p.digits    an integer indicating the number of decimal places to be used
+#'                    for displaying \emph{p}-values.
+#' @param icc.digits  an integer indicating the number of decimal places to be used
+#'                    for displaying intraclass correlation coefficients
+#'                    (\code{multilevel.descript()} and \code{multilevel.icc()}
+#'                    function).
+#' @param r.digits    an integer value indicating the number of decimal places
+#'                    to be used for displaying R-hat values.
+#' @param ess.digits  an integer value indicating the number of decimal places
+#'                    to be used for displaying effective sample sizes.
+#' @param mcse.digits an integer value indicating the number of decimal places
+#'                    to be used for displaying monte carlo standard errors.
+#'
+#' @param sort.var    logical: if \code{TRUE}, output is sorted by variables.
+#' @param order       logical: if \code{TRUE}, variables are ordered from left to
+#'                    right in increasing order
+#'                    of missing values (\code{na.descript()} function).
+#' @param check       logical: if \code{TRUE}, argument specification is checked.
+#' @param ...         further arguments passed to or from other methods.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -61,8 +68,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                                effsize = x$args$effsize, posthoc = x$args$posthoc,
                                split = x$args$split, table = x$args$table,
                                digits = x$args$digits, p.digits = x$args$p.digits,
-                               icc.digits = x$args$icc.digits, sort.var = x$args$sort.var,
-                               order = x$args$order, check = TRUE, ...) {
+                               icc.digits = x$args$icc.digits, r.digits = x$args$r.digits,
+                               ess.digits = x$args$ess.digits, mcse.digits = x$args$mcse.digits,
+                               sort.var = x$args$sort.var, order = x$args$order, check = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
@@ -494,6 +502,138 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       cat(paste0("\n   Adjustment for multiple testing: ", x$args$p.adj))
 
       cat("\n")
+
+    }
+
+  #___________________________________________________________________________
+  #
+  # Blimp Summary Measures, Convergence and Efficiency Diagnostics -----------
+  }, blimp.bayes = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Round ####
+
+    # digits
+    print.round <- c("m", "med", "map", "sd", "mad", "skew", "kurt", "eti.low", "eti.upp", "hdi.low", "hdi.upp")
+    print.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+    # r.digits
+    print.object[, "rhat"] <- ifelse(!is.na(print.object[, "rhat"]), formatC(print.object[, "rhat"], digits = r.digits, format = "f", zero.print = ifelse(r.digits > 0L, paste0("0.", paste(rep(0L, times = r.digits), collapse = "")), "0")), NA)
+
+    # ess.digits
+    print.object[, "b.ess"] <- ifelse(!is.na(print.object[, "b.ess"]), formatC(print.object[, "b.ess"], digits = ess.digits, format = "f", zero.print = ifelse(ess.digits > 0L, paste0("0.", paste(rep(0L, times = ess.digits), collapse = "")), "0")), NA)
+    print.object[, "t.ess"] <- ifelse(!is.na(print.object[, "t.ess"]), formatC(print.object[, "t.ess"], digits = ess.digits, format = "f", zero.print = ifelse(ess.digits > 0L, paste0("0.", paste(rep(0L, times = ess.digits), collapse = "")), "0")), NA)
+
+    # mcse.digits
+    print.object[, "b.mcse"] <- ifelse(!is.na(print.object[, "b.mcse"]), formatC(print.object[, "b.mcse"], digits = mcse.digits, format = "f", zero.print = ifelse(mcse.digits > 0L, paste0("0.", paste(rep(0L, times = mcse.digits), collapse = "")), "0")), NA)
+    print.object[, "t.mcse"] <- ifelse(!is.na(print.object[, "t.mcse"]), formatC(print.object[, "t.mcse"], digits = mcse.digits, format = "f", zero.print = ifelse(mcse.digits > 0L, paste0("0.", paste(rep(0L, times = mcse.digits), collapse = "")), "0")), NA)
+
+    # p.digits
+    print.object[, "pd"] <- ifelse(!is.na(print.object[, "pd"]), formatC(print.object[, "pd"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA)
+    print.object[, "rope"] <- ifelse(!is.na(print.object[, "rope"]), formatC(print.object[, "rope"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ##  Row Names ####
+
+    print.object <- rbind(c("Param", "L1", "L2", "L3", "M", "Med", "MAP", "SD", "MAD", "Skew", "Kurt", "ETI.Low", "ETI.Upp", "HDI.Low", "HDI.Upp", "R-hat", "B.ESS", "T.ESS", "B.MCSE", "T.MCSE", "pd", "ROPE"), print.object)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Select Statistical Measures and Add Parameters ####
+
+    # Print statistics
+    if (isTRUE("eti" %in% print)) { print <- c(print, c("eti.low", "eti.upp")) }
+    if (isTRUE("hdi" %in% print)) { print <- c(print, c("hdi.low", "hdi.upp")) }
+
+    # pd and ROPE
+    if (isTRUE(x$args$pd)) { print <- c(print, "pd")}
+    if (isTRUE(!is.null(x$args$rope))) { print <- c(print, "rope")}
+
+    # Sort
+    print <- intersect(c("m", "med", "map", "sd", "mad", "skew", "kurt", "eti.low", "eti.upp", "hdi.low", "hdi.upp", "rhat", "b.ess", "t.ess", "b.mcse", "t.mcse", "pd", "rope"), print)
+
+    # Select
+    print.object <- data.frame(print.object[, c("param", "latent1", "latent2", "latent3")], print.object[, print, drop = FALSE], stringsAsFactors = FALSE, check.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Format ####
+
+    # Justify left and right
+    print.object[, 1L] <- format(print.object[, 1L, drop = FALSE], justify = "left")
+    print.object[, -1L] <- apply(print.object[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+    # Add blank space
+    print.object[, "param"] <- c(paste0("  ", print.object[1L, "param"], collapse = ""), paste0("   ", print.object[-1L, "param"]))
+    print.object[, "param"] <- format(c(print.object[1L, "param"], misty::chr.trim(print.object[-1L, "param"], side = "right")), justify = "left")
+
+    # Replace NA
+    print.object[, -c(1L:4L)] <- apply(print.object[, -c(1L:4L)], 2L, function(y) gsub("NA", "  ", y))
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Print Result Table ####
+
+    # Header
+    cat(" Summary Measures, Convergence and Efficiency Diagnostics\n\n")
+
+    # Print table
+    write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    # R-hat
+    if (isTRUE("rhat" %in% print)) {
+
+      if (isTRUE(x$args$fold)) {
+
+        cat("\n  Note. Maximum of Rank-Normalized (Folded-)Split R-hat")
+
+      } else {
+
+        if (isTRUE(x$args$rank)) {
+
+          if (isTRUE(x$args$split)) {
+
+            cat("\n  Note. Rank-Normalizsed Split R-hat")
+
+          } else {
+
+            cat("\n  Note. Rank-Normalized R-hat")
+
+          }
+
+        } else {
+
+          if (isTRUE(x$args$split)) {
+
+            cat("\n  Note. Traditional Split R-hat")
+
+          } else {
+
+            cat("\n  Note. Traditional R-hat")
+
+          }
+
+        }
+
+      }
+
+    }
+
+    # ROPE
+    if (isTRUE(!is.null(x$args$rope))) {
+
+      if (isTRUE("rhat" %in% print)) {
+
+        switch(x$args$alternative,
+               two.sided = { cat(paste0("\n        Region of Practical Equivalence (ROPE): [", x$args$rope[1L], ", ", x$args$rope[2L], "]")) },
+               less = { cat(paste0("\n        Region of Practical Equivalence (ROPE): [", x$args$rope[1L], ", Inf]")) },
+               greater = { cat(paste0("\n        Region of Practical Equivalence (ROPE): [-Inf, ", x$args$rope[2L], "]"))} )
+
+      } else {
+
+        switch(x$args$alternative,
+               two.sided = cat(paste0("\n    Note. Region of Practical Equivalence (ROPE): [", x$args$rope[1L], ", ", x$args$rope[2L], "]")),
+               less = cat(paste0("\n    Note. Region of Practical Equivalence (ROPE): [", x$args$rope[1L], ", Inf]")),
+               greater = cat(paste0("\n    Note. Region of Practical Equivalence (ROPE): [-Inf, ", x$args$rope[2L], "]")))
+
+      }
 
     }
 
@@ -5362,8 +5502,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       # Check input 'print'
       if (isTRUE(!all(print %in% c("all", "omega", "item")))) {
 
-        stop("Character strings in the argument 'print' do not all match with \"all\", \"omega\", or \"item\".",
-             call. = FALSE)
+        stop("Character strings in the argument 'print' do not all match with \"all\", \"omega\", or \"item\".", call. = FALSE)
 
       }
 
@@ -5412,6 +5551,54 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       }
 
       write.table(print.object$omega, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    }
+
+    #-----------------------------------------
+    # Item statistics
+
+    if (isTRUE("item" %in% print)) {
+
+      print.object$itemstat$pNA <- paste0(formatC(print.object$itemstat$pNA, digits = 2L, format = "f",
+                                                  zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%")
+      print.object$itemstat$m <- formatC(print.object$itemstat$m, digits = 2L, format = "f",
+                                         zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
+      print.object$itemstat$sd <- formatC(print.object$itemstat$sd, digits = 2L, format = "f",
+                                          zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
+      print.object$itemstat$min <- formatC(print.object$itemstat$min, digits = 2L, format = "f",
+                                           zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
+      print.object$itemstat$max <- formatC(print.object$itemstat$max, digits = 2L, format = "f",
+                                           zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
+
+      print.object$itemstat$std.ld <- formatC(print.object$itemstat$std.ld, digits = digits, format = "f",
+                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$itemstat$omega <- formatC(print.object$itemstat$omega, digits = digits, format = "f",
+                                             zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+
+      print.object$itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Std.Ld", "Omega"),
+                                     print.object$itemstat)
+
+      # Format
+      print.object$itemstat[, 1L] <- format(paste(" ", print.object$itemstat[, 1L]), justify = "left")
+      print.object$itemstat[, -1L] <- apply(print.object$itemstat[, -1L], 2L, function(y) format(y, justify = "right"))
+
+      if (isTRUE("omega" %in% print)) { cat("\n") }
+
+      if (isTRUE(x$args$type == "omega")) {
+
+        cat(" Standardized Factor Loadings and Coefficient Omega if Item Deleted\n\n")
+
+      } else if (isTRUE(x$args$type == "hierarch")) {
+
+        cat(" Standardized Factor Loadings and Hierarchical Omega if Item Deleted\n\n")
+
+      } else if (isTRUE(x$args$type == "categ")) {
+
+        cat(" Standardized Factor Loadings and Categorical Omega if Item Deleted\n\n")
+
+      }
+
+      write.table(print.object$itemstat, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
     }
 
@@ -5468,6 +5655,139 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       }
 
       write.table(print.object$itemstat, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    }
+
+  #___________________________________________________________________________
+  #
+  # Mplus Summary Measures, Convergence and Efficiency Diagnostics -----------
+  }, mplus.bayes = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Round ####
+
+    # digits
+    print.round <- c("m", "med", "map", "sd", "mad", "skew", "kurt", "eti.low", "eti.upp", "hdi.low", "hdi.upp")
+    print.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+    # r.digits
+    print.object[, "rhat"] <- ifelse(!is.na(print.object[, "rhat"]), formatC(print.object[, "rhat"], digits = r.digits, format = "f", zero.print = ifelse(r.digits > 0L, paste0("0.", paste(rep(0L, times = r.digits), collapse = "")), "0")), NA)
+
+    # ess.digits
+    print.object[, "b.ess"] <- ifelse(!is.na(print.object[, "b.ess"]), formatC(print.object[, "b.ess"], digits = ess.digits, format = "f", zero.print = ifelse(ess.digits > 0L, paste0("0.", paste(rep(0L, times = ess.digits), collapse = "")), "0")), NA)
+    print.object[, "t.ess"] <- ifelse(!is.na(print.object[, "t.ess"]), formatC(print.object[, "t.ess"], digits = ess.digits, format = "f", zero.print = ifelse(ess.digits > 0L, paste0("0.", paste(rep(0L, times = ess.digits), collapse = "")), "0")), NA)
+
+    # mcse.digits
+    print.object[, "b.mcse"] <- ifelse(!is.na(print.object[, "b.mcse"]), formatC(print.object[, "b.mcse"], digits = mcse.digits, format = "f", zero.print = ifelse(mcse.digits > 0L, paste0("0.", paste(rep(0L, times = mcse.digits), collapse = "")), "0")), NA)
+    print.object[, "t.mcse"] <- ifelse(!is.na(print.object[, "t.mcse"]), formatC(print.object[, "t.mcse"], digits = mcse.digits, format = "f", zero.print = ifelse(mcse.digits > 0L, paste0("0.", paste(rep(0L, times = mcse.digits), collapse = "")), "0")), NA)
+
+    # p.digits
+    print.object[, "pd"] <- ifelse(!is.na(print.object[, "pd"]), formatC(print.object[, "pd"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA)
+    print.object[, "rope"] <- ifelse(!is.na(print.object[, "rope"]), formatC(print.object[, "rope"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ##  Row Names ####
+
+    print.object <- rbind(c("Parameter", "M", "Med", "MAP", "SD", "MAD", "Skew", "Kurt", "ETI.Low", "ETI.Upp", "HDI.Low", "HDI.Upp", "R-hat", "B.ESS", "T.ESS", "B.MCSE", "T.MCSE", "pd", "ROPE"), print.object)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Select Statistical Measures and Add Parameters ####
+
+    # Print statistics
+    if (isTRUE("eti" %in% print)) { print <- c(print, c("eti.low", "eti.upp")) }
+    if (isTRUE("hdi" %in% print)) { print <- c(print, c("hdi.low", "hdi.upp")) }
+
+    # pd and ROPE
+    if (isTRUE(x$args$pd)) { print <- c(print, "pd")}
+    if (isTRUE(!is.null(x$args$rope))) { print <- c(print, "rope")}
+
+    # Sort
+    print <- intersect(c("m", "med", "map", "sd", "mad", "skew", "kurt", "eti.low", "eti.upp", "hdi.low", "hdi.upp", "rhat", "b.ess", "t.ess", "b.mcse", "t.mcse", "pd", "rope"), print)
+
+    # Select
+    print.object <- data.frame(parameter = print.object[, "param"], print.object[, print, drop = FALSE], stringsAsFactors = FALSE, check.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Format ####
+
+    # Justify left and right
+    print.object[, 1L] <- format(print.object[, 1L, drop = FALSE], justify = "left")
+    print.object[, -1L] <- apply(print.object[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+    # Add blank space
+    print.object[, "parameter"] <- c(paste0("  ", print.object[1L, "parameter"], collapse = ""), paste0("   ", print.object[-1L, "parameter"]))
+    print.object[, "parameter"] <- format(c(print.object[1L, "parameter"], misty::chr.trim(print.object[-1L, "parameter"], side = "right")), justify = "left")
+
+    # Replace NA
+    print.object[, -1L] <- apply(print.object[, -1L], 2L, function(y) gsub("NA", "  ", y))
+
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Print Result Table ####
+
+    # Header
+    cat(" Summary Measures, Convergence and Efficiency Diagnostics\n\n")
+
+    # Print table
+    write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    # R-hat
+    if (isTRUE("rhat" %in% print)) {
+
+      if (isTRUE(x$args$fold)) {
+
+        cat("\n  Note. Maximum of Rank-Normalized (Folded-)Split R-hat")
+
+      } else {
+
+        if (isTRUE(x$args$rank)) {
+
+          if (isTRUE(x$args$split)) {
+
+            cat("\n  Note. Rank-Normalizsed Split R-hat")
+
+          } else {
+
+            cat("\n  Note. Rank-Normalized R-hat")
+
+          }
+
+        } else {
+
+          if (isTRUE(x$args$split)) {
+
+            cat("\n  Note. Traditional Split R-hat")
+
+          } else {
+
+            cat("\n  Note. Traditional R-hat")
+
+          }
+
+        }
+
+      }
+
+    }
+
+    # ROPE
+    if (isTRUE(!is.null(x$args$rope))) {
+
+      if (isTRUE("rhat" %in% print)) {
+
+        switch(x$args$alternative,
+               two.sided = { cat(paste0("\n        Region of Practical Equivalence (ROPE): [", x$args$rope[1L], ", ", x$args$rope[2L], "]")) },
+               less = { cat(paste0("\n        Region of Practical Equivalence (ROPE): [", x$args$rope[1L], ", Inf]")) },
+               greater = { cat(paste0("\n        Region of Practical Equivalence (ROPE): [-Inf, ", x$args$rope[2L], "]"))} )
+
+      } else {
+
+        switch(x$args$alternative,
+               two.sided = cat(paste0("\n    Note. Region of Practical Equivalence (ROPE): [", x$args$rope[1L], ", ", x$args$rope[2L], "]")),
+               less = cat(paste0("\n    Note. Region of Practical Equivalence (ROPE): [", x$args$rope[1L], ", Inf]")),
+               greater = cat(paste0("\n    Note. Region of Practical Equivalence (ROPE): [-Inf, ", x$args$rope[2L], "]")))
+
+      }
 
     }
 
@@ -8143,61 +8463,121 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
   # Auxiliary variables analysis -----------------------------------------------
   }, na.auxiliary = {
 
-    #-----------------------------------------
-    # Format correlation matrix
-    print.object$cor <- apply(print.object$cor, 2L, function(y) formatC(as.numeric(y), digits = digits, format = "f",
-                                                                        zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Product-Moment Correlation matrix and Cohen's d Matrix ####
 
-    # Lower and/or upper triangular
-    switch(tri, "lower" = {
+    if (isTRUE(is.null(x$args$model))) {
 
-      print.object$cor[upper.tri(print.object$cor)] <- ""
+      #-----------------------------------------
+      # Format correlation matrix
 
-    }, "upper" = {
+      print.object$cor <- apply(print.object$cor, 2L, function(y) formatC(as.numeric(y), digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
 
-      print.object$cor[lower.tri(print.object$cor)] <- ""
+      # Lower and/or upper triangular
+      switch(tri, "lower" = {
 
-    })
+        print.object$cor[upper.tri(print.object$cor)] <- ""
 
-    diag(print.object$cor) <- ""
+      }, "upper" = {
 
-    #-----------------------------------------
-    # Format Cohen's d matrix
+        print.object$cor[lower.tri(print.object$cor)] <- ""
 
-    print.object$d <- apply(print.object$d, 2L, function(y) formatC(as.numeric(y), digits = digits, format = "f",
-                                                                    zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
-    diag(print.object$d) <- ""
+      })
 
-    # Print table
-    print.object  <- data.frame(cbind(c("", colnames(print.object$cor), "", colnames(print.object$cor)),
-                                      rbind(colnames(print.object$cor), print.object$cor, colnames(print.object$cor), print.object$d)),
-                                stringsAsFactors = FALSE)
+      diag(print.object$cor) <- ""
 
-    # Format
-    print.object[, 1L] <- paste0("   ", print.object[, 1L])
+      #-----------------------------------------
+      # Format Cohen's d matrix
 
-    print.object[, 1L] <- format(print.object[, 1L], justify = "left")
+      print.object$d <- apply(print.object$d, 2L, function(y) formatC(as.numeric(y), digits = digits, format = "f",
+                                                                      zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+      diag(print.object$d) <- ""
 
-    print.object[, -1L] <- apply(print.object[, -1L], 2L, function(y) format(y, justify = "right"))
+      # Print table
+      print.object  <- data.frame(cbind(c("", colnames(print.object$cor), "", colnames(print.object$cor)),
+                                        rbind(colnames(print.object$cor), print.object$cor, colnames(print.object$cor), print.object$d)),
+                                  stringsAsFactors = FALSE)
 
-    ####################################################################################
-    # Output
+      # Format
+      print.object[, 1L] <- paste0("    ", print.object[, 1L])
 
-    cat(" Auxiliary Variables\n\n",
-        " Variables related to the incomplete variable\n\n",
-        "  Pearson product-moment correlation matrix\n")
+      print.object[, 1L] <- format(print.object[, 1L], justify = "left")
 
-    write.table(print.object[1L:(nrow(x$result$cor) + 1L), ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+      print.object[, -1L] <- apply(print.object[, -1L], 2L, function(y) format(y, justify = "right"))
 
-    cat("\n")
+      #-----------------------------------------
+      # Output
 
-    cat("  Variables related to the probability of missigness\n\n",
-        "  Cohen's d\n")
+      cat(" Auxiliary Variables Analysis\n\n",
+          " Variables Related to the Incomplete Variable\n\n",
+          "  Pearson product-moment correlation matrix\n")
 
-    write.table(print.object[(nrow(x$result$cor) + 2L):nrow(print.object), ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+      write.table(print.object[1L:(nrow(x$result$cor) + 1L), ], quote = FALSE, row.names = FALSE, col.names = FALSE)
 
-    cat("\n",
-        " Note. Indicator variables are in the rows (0 = miss, 1 = obs)\n")
+      cat("\n")
+
+      cat("  Variables Related to the Probability of Missigness\n\n",
+          "  Cohen's d\n")
+
+      write.table(print.object[(nrow(x$result$cor) + 2L):nrow(print.object), ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      cat("\n", " Note. Indicator variables are in the rows (0 = miss, 1 = obs)\n")
+
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Semi-Partial Correlation Coefficients ####
+    } else {
+
+      #...................
+      ### Extract Results ####
+
+      # Standardized Solution
+      print.object <- x$model.fit.stand
+
+      # Outcome variable
+      outcome <- setdiff(all.vars(as.formula(x$args$model)), attr(terms(as.formula(x$args$model)[-2L]), "term.labels"))
+
+      # Select outcome rows
+      print.object <- print.object[print.object$lhs == outcome, ]
+
+      # Indices substantive model
+      model.sub <- which(print.object$op == "~")
+
+      # Indices auxiliary model
+      model.aux <- which(print.object$op == "~~" & (print.object$lhs != print.object$rhs))
+
+      #...................
+      ### Round ####
+
+      # Variables to round
+      print.round <- c("est.std", "se", "z", "ci.lower", "ci.upper")
+
+      print.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(x$args$digits > 0L, paste0("0.", paste(rep(0L, times = x$args$digits), collapse = "")), "0")), NA))
+      print.object$pvalue <- formatC(print.object$pval, digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+      #...................
+      ### Format ####
+
+      print.object <- rbind(c("", "", "", "Estimate", "Std.Err", "z-value", "P(>|z|)", "Low", "Upp"), print.object)
+
+      print.object[, 1L] <- paste("   ", print.object[, 1L])
+
+      print.object <- apply(print.object, 2L, format, justify = "right")
+
+      #...................
+      ### Print Output ####
+
+      cat(" Auxiliary Variables\n\n",
+          " Variables Related to the Incomplete Variable\n\n",
+          "  Substantive model: Standardized slope\n")
+
+      write.table(print.object[c(1L, model.sub + 1L), ], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+      cat("\n   Auxiliary model: Semi-partial correlation coefficient\n")
+
+      write.table(print.object[c(1L, model.aux + 1L), ], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+    }
 
   #_____________________________________________________________________________
   #
@@ -8533,41 +8913,127 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Little's MCAR test ---------------------------------------------------------
+  # Missing Completely at Random (MCAR) Test -----------------------------------
   }, na.test = {
 
-    #---------------------------------------------------------------------------
-    # Round
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Little's MCAR Test ####
 
-    print.object$statistic  <- formatC(print.object$statistic , digits = digits, format = "f",
-                                       zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+    if (isTRUE("little" %in% x$args$print)) {
 
-    print.object$pval <- formatC(print.object$pval, digits = p.digits, format = "f",
-                                 zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+      #...................
+      ### Round ####
 
-    #---------------------------------------------------------------------------
-    # Format
+      print.object$little$statistic <- formatC(print.object$little$statistic, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$little$pval <- formatC(print.object$little$pval, digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
-    print.object <- rbind(c("n", "nIncomp", "nPattern", "chi2", "df", "pval"), print.object)
+      #...................
+      ### Format ####
 
-    print.object <- apply(print.object, 2L, format, justify = "right")
+      print.object$little <- rbind(c("n", "nIncomp", "nPattern", "chi2", "df", "pval"), print.object$little)
 
-    # R Markdown in progress
-    if (isTRUE(is.null(getOption("knitr.in.progress")))) {
+      print.object$little <- apply(print.object$little, 2L, format, justify = "right")
 
-      print.object[1L, "statistic"] <- paste0(paste0(rep(" ", times = nchar(print.object[1L, "statistic"]) - 2L), collapse = ""), "\u03C7\u00B2", collapes = "")
+      # R Markdown in progress
+      if (isTRUE(is.null(getOption("knitr.in.progress")))) {
+
+        print.object$little[1L, "statistic"] <- paste0(paste0(rep(" ", times = nchar(print.object$little[1L, "statistic"]) - 2L), collapse = ""), "\u03C7\u00B2", collapes = "")
+
+      }
+
+      print.object$little[, 1L] <- paste(" ", print.object$little[, 1L])
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(" Little's MCAR Test\n\n"))
+
+      cat(paste(print.object$little[1L, ], collapse = " "), "\n")
+      write.table(print.object$little[-1L, , drop = FALSE], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
 
     }
 
-    print.object[, 1L] <- paste(" ", print.object[, 1L])
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Jamshidian and Jalal's Approach ####
 
-    #.....................................
-    # Print output
+    if (isTRUE("jamjal" %in% x$args$print)) {
 
-    cat(paste0(" Little's MCAR Test\n\n"))
+      #...................
+      ### Round ####
 
-    cat(paste(print.object[1L, ], collapse = " "), "\n")
-    write.table(print.object[-1L, , drop = FALSE], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+      print.object$hawkins$statistic <- formatC(print.object$hawkins$statistic, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$hawkins$pval <- formatC(print.object$hawkins$pval, digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+      print.object$anderson$statistic <- formatC(print.object$anderson$statistic , digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$anderson$pval <- formatC(print.object$anderson$pval, digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+      #...................
+      ### Format ####
+
+      print.object$hawkins <- rbind(c("n", "nIncomp", "nPattern", "chi2", "df", "pval"), print.object$hawkins)
+      print.object$hawkins <- apply(print.object$hawkins, 2L, format, justify = "right")
+
+      print.object$anderson <- rbind(c("n", "nIncomp", "nPattern", "T", "pval"), print.object$anderson)
+      print.object$anderson <- apply(print.object$anderson, 2L, format, justify = "right")
+
+      # R Markdown in progress
+      if (isTRUE(is.null(getOption("knitr.in.progress")))) { print.object$hawkins[1L, "statistic"] <- paste0(paste0(rep(" ", times = nchar(print.object$hawkins[1L, "statistic"]) - 2L), collapse = ""), "\u03C7\u00B2", collapes = "") }
+
+      print.object$hawkins[, 1L] <- paste("   ", print.object$hawkins[, 1L])
+      print.object$anderson[, 1L] <- paste("   ", print.object$anderson[, 1L])
+
+      #...................
+      ### Print Output ####
+
+      if (isTRUE("little" %in% x$args$print)) { cat("\n") }
+
+      cat(paste0(" Jamshidian and Jalal's Approach for Testing MCAR\n\n"))
+
+      cat(paste0("  Imputation:         ", ifelse(!is.null(x$args$impdat), "Imputed Data Provided", misty::rec(x$args$method, spec = "'npar' = 'Non-Parametric'; 'normal' = 'Parametric Normal'"))), "\n")
+      cat(paste0("  Nr. of Imputations: ", x$args$m), "\n")
+      cat(paste0("  Pooling:            ", misty::rec(x$args$pool, spec = "'m' = 'Mean'; 'med' = 'Median'; 'min' = 'Minimum'; 'max' = 'Maximum'; 'random' = 'Random'")), "\n\n")
+
+      #### Hawkins Test ####
+      cat(paste0("  Hawkins Test\n\n"))
+
+      if (isTRUE(is.null(getOption("knitr.in.progress")))) {
+
+        cat("   H\u2080: Multivariate Normality and Homogeneity of Covariances (MCAR)\n")
+        cat("   H\u2081: Multivariate Non-Normality or Heterogeneity of Covariances (MCAR Violation)\n\n")
+
+      } else {
+
+        cat("   H0: Multivariate Normality and Homogeneity of Covariances (MCAR)\n")
+        cat("   H1: Multivariate Non-Normality or Heterogeneity of Covariances (MCAR Violation)\n\n")
+
+      }
+
+      cat(paste(print.object$hawkins[1L, ], collapse = " "), "\n")
+      write.table(print.object$hawkins[-1L, , drop = FALSE], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+      #### Anderson-Darling Non-Parametric Test ####
+      if (isTRUE(x$result$hawkins$pval <= x$args$alpha)) {
+
+        cat(paste0("\n  Anderson-Darling Non-Parametric Test\n\n"))
+
+        if (isTRUE(is.null(getOption("knitr.in.progress")))) {
+
+          cat("   H\u2080: Multivariate Non-Normality, but Homogeneity of Covariances (MCAR)\n")
+          cat("   H\u2081: Heterogeneity of Covariances (MCAR Violation)\n\n")
+
+        } else {
+
+          cat("   H0: Multivariate Non-Normality, but Homogeneity of Covariances (MCAR)\n")
+          cat("   H1: Heterogeneity of Covariances (MCAR Violation)\n\n")
+
+        }
+
+        cat(paste(print.object$anderson[1L, ], collapse = " "), "\n")
+        write.table(print.object$anderson[-1L, , drop = FALSE], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
+
+      }
+
+    }
 
   #_____________________________________________________________________________
   #

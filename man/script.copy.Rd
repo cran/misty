@@ -40,7 +40,7 @@ checked.}
 }
 \description{
 This function saves a copy of the current script in RStudio. By default, a
-folder callled \code{_R_Script_Archive} will be created to save the copy of
+folder called \code{_R_Script_Archive} will be created to save the copy of
 the current R script with the current date and time into the folder. Note that
 the current R script needs to have a file location before the script can be
 copied.

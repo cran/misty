@@ -167,7 +167,7 @@
 #'                     applied to \code{x} but not to \code{cluster}.
 #' @param write        a character string naming a file for writing the output into
 #'                     either a text file with file extension \code{".txt"} (e.g.,
-#'                     \code{"Output.txt"}) or Excel file with file extention
+#'                     \code{"Output.txt"}) or Excel file with file extension
 #'                     \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
 #'                     name does not contain any file extension, an Excel file will
 #'                     be written.
@@ -390,7 +390,7 @@
 multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NULL,
                            model.w = NULL, model.b = NULL, rescov.w = NULL, rescov.b = NULL,
                            const = c("within", "shared", "config", "shareconf"), fix.resid = NULL,
-                           ident = c("marker", "var", "effect"), ls.fit = TRUE, estimator = c("ML", "MLR"),
+                           ident = c("marker", "var", "effect"), ls.fit = FALSE, estimator = c("ML", "MLR"),
                            optim.method = c("nlminb", "em"), missing = c("listwise", "fiml"),
                            print = c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid"),
                            mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3, as.na = NULL,
@@ -503,42 +503,57 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
     # Check input 'rescov'
     if (isTRUE(!is.null(rescov))) {
 
-      # Two variables for each residual covariance
-      if (isTRUE(is.list(rescov) && any(sapply(rescov, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov', where each element has two variable names", call. = FALSE)
+      # List of residual covariances
+      if (isTRUE(is.list(rescov))) {
 
-      } else { if (isTRUE(length(rescov) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov'", call. = FALSE) } }
+        # Two variables for each residual covariance
+        if (isTRUE(any(sapply(rescov, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov', where each element has two variable names", call. = FALSE) }
 
-      # Variable in 'x'
-      rescov.var <- !unique(unlist(rescov)) %in% colnames(x)
-      if (isTRUE(any(rescov.var))) { stop(paste0("Variables specified in the argument 'rescov' were not found in 'x': ", paste(unique(unlist(rescov))[rescov.var], collapse = ", ")), call. = FALSE) }
+      # Character vector of one residual covariance
+      } else {
+
+        # Two variables for the residual covariance
+        if (isTRUE(length(rescov) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov'", call. = FALSE) }
+
+      }
 
     }
 
     # Check input 'rescov.w'
     if (isTRUE(!is.null(rescov.w))) {
 
-      # Two variables for each residual covariance
-      if (isTRUE(is.list(rescov.w) && any(sapply(rescov.w, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov.w', where each element has two variable names", call. = FALSE)
+      # List of residual covariances
+      if (isTRUE(is.list(rescov.w))) {
 
-      } else { if (isTRUE(length(rescov.w) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov.w'", call. = FALSE) } }
+        # Two variables for each residual covariance
+        if (isTRUE(any(sapply(rescov.w, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov.w', where each element has two variable names", call. = FALSE) }
 
-      # Variable in 'x'
-      rescov.w.var <- !unique(unlist(rescov.w)) %in% colnames(x)
-      if (isTRUE(any(rescov.w.var))) { stop(paste0("Variables specified in the argument 'rescov.w' were not found in 'x': ", paste(unique(unlist(rescov.w))[rescov.w.var], collapse = ", ")), call. = FALSE) }
+          # Character vector of one residual covariance
+        } else {
+
+          # Two variables for the residual covariance
+          if (isTRUE(length(rescov.w) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov.w'", call. = FALSE) }
+
+      }
 
     }
 
     # Check input 'rescov.b'
     if (isTRUE(!is.null(rescov.b))) {
 
-      # Two variables for each residual covariance
-      if (isTRUE(is.list(rescov.b) && any(sapply(rescov.b, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov.b', where each element has two variable names", call. = FALSE)
+      # List of residual covariances
+      if (isTRUE(is.list(rescov.b))) {
 
-      } else { if (isTRUE(length(rescov.b) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov.b'", call. = FALSE) } }
+        # Two variables for each residual covariance
+        if (isTRUE(any(sapply(rescov.b, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov.b', where each element has two variable names", call. = FALSE) }
 
-      # Variable in 'x'
-      rescov.b.var <- !unique(unlist(rescov.b)) %in% colnames(x)
-      if (isTRUE(any(rescov.b.var))) { stop(paste0("Variables specified in the argument 'rescov.w' were not found in 'x': ", paste(unique(unlist(rescov.b))[rescov.b.var], collapse = ", ")), call. = FALSE) }
+          # Character vector of one residual covariance
+        } else {
+
+          # Two variables for the residual covariance
+          if (isTRUE(length(rescov.b) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov.b'", call. = FALSE) }
+
+      }
 
     }
 

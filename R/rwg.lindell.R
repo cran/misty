@@ -56,7 +56,7 @@
 #'                within-group agreement index are appended to the data frame
 #'                specified in the argument \code{data}.
 #' @param name    a character string indicating the name of the variable appended
-#'                to the data frame specified in the arguement \code{data} when
+#'                to the data frame specified in the argument \code{data} when
 #'                \code{append = TRUE}. By default, the variable is named \code{rwg}.
 #' @param as.na   a numeric vector indicating user-defined missing values,
 #'                i.e. these values are converted to \code{NA} before conducting

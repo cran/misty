@@ -6,7 +6,7 @@
 \usage{
 mplus.run(target = getwd(), recursive = FALSE, filefilter = NULL, show.out = FALSE,
           replace.out = c("always", "never", "modified"), message = TRUE,
-          logFile = NULL, Mplus = detectMplus(), killOnFail = TRUE,
+          logFile = NULL, Mplus = detect.mplus(), killOnFail = TRUE,
           local_tmpdir = FALSE)
 }
 \arguments{
@@ -38,7 +38,7 @@ modified date for the input file is more recent than the
 output file modified date.}
 
 \item{message}{logical: if \code{TRUE}, message \code{Running model:}
-and \code{System command:} is pringted on the console.}
+and \code{System command:} is printed on the console.}
 
 \item{logFile}{a character string specifying a file that records the settings
 passed into the function and the models run (or skipped)
@@ -75,10 +75,10 @@ This function is a copy of the \code{runModels()} function in the
 \examples{
 \dontrun{
 # Example 1: Run Mplus models located within a single directory
-run.mplus(Mplus = "C:/Program Files/Mplus/Mplus.exe")
+mplus.run(Mplus = "C:/Program Files/Mplus/Mplus.exe")
 
 # Example 2: Run Mplus models located nested within subdirectories
-run.mplus(recursive = TRUE,
+mplus.run(recursive = TRUE,
           Mplus = "C:/Program Files/Mplus/Mplus.exe")
 }
 }
@@ -91,8 +91,9 @@ Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
 Muthen & Muthen.
 }
 \seealso{
-\code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus.print}},
-\code{\link{mplus}}, \code{\link{mplus.update}}, \code{\link{mplus.lca}}
+\code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus}},
+\code{\link{mplus.update}}, \code{\link{mplus.print}}, \code{\link{mplus.plot}},
+\code{\link{mplus.bayes}}, \code{\link{mplus.lca}}
 }
 \author{
  Michael Hallquist and Joshua Wiley

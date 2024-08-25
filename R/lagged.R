@@ -24,7 +24,7 @@
 #'                subject IDs, see 'Details'.
 #' @param obs     either a character string indicating the variable name of the
 #'                observation number variable in '...' or a vector representing
-#'                the observations. Note that duplicaed values within the same
+#'                the observations. Note that duplicated values within the same
 #'                subject ID are not allowed, see 'Details'.
 #' @param day     either a character string indicating the variable name of the
 #'                day number variable in '...' or a vector representing the days,
@@ -33,7 +33,7 @@
 #'                returns lag-1 values.
 #' @param time    a variable of class \code{POSIXct} or \code{POSIXlt} representing
 #'                the date and time of the observation used to compute time
-#'                differences beween observations.
+#'                differences between observations.
 #' @param units   a character string indicating the units in which the time
 #'                difference is represented, i.e., \code{"secs"} for seconds,
 #'                \code{"mins"} (default) for minutes, \code{"hours"} for hours,
@@ -64,7 +64,7 @@
 #'
 #' @details
 #' \describe{
-#' The function is used to create lagged verions of the variable(s) specified via
+#' The function is used to create lagged versions of the variable(s) specified via
 #' the \code{...} argument:
 #' \item{\strong{Optional argument \code{id}}}{If the \code{id} argument is not specified
 #' \code{i.e., id = NULL}, all observations are assumed to come from the same

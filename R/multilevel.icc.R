@@ -29,7 +29,7 @@
 #'                coefficient, i.e., \code{type = "1a"} (default) for ICC(1) and
 #'                \code{type = "2"} for ICC(2) when specifying a two-level model
 #'                (i.e., one cluster variable), and \code{type = "1a"} (default)
-#'                for ICC(1) representing the propotion of variance at Level 2
+#'                for ICC(1) representing the proportion of variance at Level 2
 #'                and Level 3, \code{type = "1b"} representing an estimate
 #'                of the expected correlation between two randomly chosen elements
 #'                in the same group, and \code{type = "2"} for ICC(2) when
@@ -92,7 +92,7 @@
 #' 2018). There are two ways to compute intraclass correlation coefficients
 #' in a three-level model. The first method requested by \code{type = "1a"}
 #' represents the proportion of variance at Level 2 and Level 3 and should be
-#' used if we are interestd in a decomposition of the variance across levels.
+#' used if we are interested in a decomposition of the variance across levels.
 #' The intraclass correlation coefficient, ICC(1) \eqn{\rho_{L2}} at Level 2 is
 #' defined as:
 #'
@@ -209,7 +209,7 @@
 #'
 #' #----------------------------------------------------------------------------
 #'
-#' # Example 7a: ICC(1), propotion of variance at Level 2 and Level 3
+#' # Example 7a: ICC(1), proportion of variance at Level 2 and Level 3
 #' multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
 #'
 #' # Example 7b: ICC(1), expected correlation between two randomly chosen elements

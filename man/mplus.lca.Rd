@@ -17,7 +17,7 @@ mplus.lca(x, ind = NULL,
           starts = c(100, 50), stiterations = 10, lrtbootstrap = 1000,
           lrtstarts = c(0, 0, 100, 50), processors = c(8, 8),
          output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14"),
-          replace.inp = FALSE, run.mplus = FALSE, Mplus = "Mplus",
+          replace.inp = FALSE, mplus.run = FALSE, Mplus = "Mplus",
           replace.out = c("always", "never", "modified"), check = TRUE)
 }
 \arguments{
@@ -76,7 +76,7 @@ file as \code{MISSING IS ALL(missing)}. By default,
 
 \item{classes}{an integer value specifying the maximum number of classes
 for the latent class analysis. By default, LCA with
-a maximum of 6 classes isspecified (i.e., \emph{k} = 1
+a maximum of 6 classes is specified (i.e., \emph{k} = 1
 to \emph{k} = 6).}
 
 \item{estimator}{a character string for specifying the \code{ESTIMATOR}
@@ -118,7 +118,7 @@ and 0 optimizations in the final stage are used for the
 values in the initial stage and 50 optimizations in the
 final stage are used for the \code{k} class model.}
 
-\item{processors}{a vector of two integer values for specifying the
+\item{processors}{a vector of one or two integer values for specifying the
 \code{PROCESSORS} option in Mplus. The values specifies
 the number of processors and threads to be used for
 parallel computing to increase computational speed. By
@@ -143,9 +143,9 @@ is only available for the \code{MLR} estimator.}
 \item{replace.inp}{logical: if \code{TRUE}, all existing input files in the
 folder specified in the argument \code{folder} are replaced.}
 
-\item{run.mplus}{logical: if \code{TRUE}, all models in the folders specified
+\item{mplus.run}{logical: if \code{TRUE}, all models in the folders specified
 in the argument \code{folder} are estimated by using the
-\code{run.mplus} function in the R package \code{misty}.}
+\code{mplus.run} function in the R package \code{misty}.}
 
 \item{Mplus}{a character string for specifying the name or path of
 the Mplus executable to be used for running models. This
@@ -156,9 +156,9 @@ for most users since it has intelligent defaults.}
 
 \item{replace.out}{a character string for specifying three settings, i.e.,
 \code{"always"} to run all models regardless of whether
-an output file for the model exists, \code{"never"} (default)
+an output file for the model exists, \code{"never"}
 to not run any model that has an existing output file,
-and \code{"modified"} to only runs a model if the
+and \code{"modified"} (default) to only runs a model if the
 modified date for the input file is more recent than
 the output file modified date.}
 
@@ -189,7 +189,7 @@ six sets of analysis, writes Mplus input files for conducting LCA with
 \emph{k} = 1 to \emph{k} = 6 classes into these folders, and writes the matrix
 or data frame specified in \code{x} into a Mplus data file in the current working
 directory. Optionally, all models can be estimated by setting the argument
-\code{run.mplus} to \code{TRUE}.
+\code{mplus.run} to \code{TRUE}.
 }
 \details{
 Latent class analysis (LCA) is a model-based clustering and classification
@@ -243,7 +243,7 @@ mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
 # Estimate all models in Mplus
 mplus.lca(round(HolzingerSwineford1939[, -5]), ind = c("x1", "x2", "x3", "x4"),
           type = "categorical", useobservations = "ageyr <= 13",
-          run.mplus = TRUE)
+          mplus.run = TRUE)
 }
 }
 \references{
@@ -260,8 +260,9 @@ in hierarchical data. \emph{Journal of Work and Organizational Psychology, 32}(4
 489-505. https://doi.org/10.1080/1359432X.2023.2177537
 }
 \seealso{
-\code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus.print}},
-\code{\link{mplus}}, \code{\link{mplus.update}}, \code{\link{mplus.run}},
+\code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus}},
+\code{\link{mplus.update}}, \code{\link{mplus.print}}, \code{\link{mplus.plot}},
+\code{\link{mplus.bayes}}, \code{\link{mplus.run}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

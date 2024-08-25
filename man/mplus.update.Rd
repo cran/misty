@@ -4,7 +4,7 @@
 \alias{mplus.update}
 \title{Mplus Input Updating}
 \usage{
-mplus.update(x, update, file = "Mplus_Input_Update.inp",
+mplus.update(x, update, file = "Mplus_Input_Update.inp", comment = FALSE,
              replace.inp = TRUE, mplus.run = TRUE,
              show.out = FALSE, replace.out = c("always", "never", "modified"),
              print = c("all", "input", "result"),
@@ -21,12 +21,16 @@ mplus.update(x, update, file = "Mplus_Input_Update.inp",
 \arguments{
 \item{x}{\code{misty.object} object of type \code{mplus}.}
 
-\item{update}{a character vector containing the updated input command
+\item{update}{a character string containing the updated input command
 sections.}
 
 \item{file}{a character string indicating the name of the updated Mplus
 input file with or without the file extension \code{.inp},
 e.g., \code{"Mplus_Input_Update.inp"} or \code{"Mplus_Input_Update"}.}
+
+\item{comment}{logical: if \code{FALSE} (default), comments (i.e., text
+after the \code{!} symbol) are removed from the input text
+specified in the argument \code{x}.}
 
 \item{replace.inp}{logical: if \code{TRUE} (default), an existing input
 file will be replaced.}
@@ -53,15 +57,15 @@ output file modified date.}
 \code{"all"} (default) for all results \code{"input"} for
 input command sections, and \code{"result"} for result sections.}
 
-\item{input}{a character vector specifiying Mplus input command sections
+\item{input}{a character vector specifying Mplus input command sections
 included in the output (see 'Details' in the \code{\link{mplus.print}}
 function).}
 
-\item{result}{a character vector specifiying Mplus result sections included
+\item{result}{a character vector specifying Mplus result sections included
 in the output (see 'Details' in the \code{\link{mplus.print}}
 function).}
 
-\item{exclude}{a character vector specifiying Mplus input command or result
+\item{exclude}{a character vector specifying Mplus input command or result
 sections excluded from the output (see 'Details' in the
 \code{\link{mplus.print}} function).}
 
@@ -99,10 +103,10 @@ entries:
 
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
-\item{\code{x}}{a character vector containing the Mplus input text}
+\item{\code{x}}{\code{misty.object} object of type \code{mplus}}
 \item{\code{args}}{specification of function arguments}
 \item{\code{input}}{list with input command sections}
-\item{\code{write}}{write command sections}
+\item{\code{write}}{updated write command sections}
 \item{\code{result}}{list with input command sections (\code{input}) and
                      result sections (\code{input})}
 }
@@ -114,43 +118,76 @@ output file by using the \code{mplus.print()} function.
 }
 \details{
 \describe{
-\item{\strong{The \code{...} Specification}}{The \code{...} Specification
-can be used to update specific options in the \code{VARIABLE} and \code{ANALYSIS}
+ \item{\strong{Mplus Input Sections}}{The function is used to update
+ following Mplus input sections:
+\itemize{
+ \item{\code{TITLE}}
+ \item{\code{DATA}}
+ \item{\code{DATA IMPUTATION}}
+ \item{\code{DATA WIDETOLONG}}
+ \item{\code{DATA LONGTOWIDE}}
+ \item{\code{DATA TWOPARTE}}
+ \item{\code{DATA MISSING}}
+ \item{\code{DATA SURVIVAL}}
+ \item{\code{DATA COHORT}}
+ \item{\code{VARIABLE}}
+ \item{\code{DEFINE}}
+ \item{\code{ANALYSIS}}
+ \item{\code{MODEL}}
+ \item{\code{MODEL INDIRECT}}
+ \item{\code{MODEL CONSTRAINT}}
+ \item{\code{MODEL TEST}}
+ \item{\code{MODEL PRIORS}}
+ \item{\code{MODEL MONTECARLO}}
+ \item{\code{MODEL POPULATION}}
+ \item{\code{MODEL COVERAGE}}
+ \item{\code{MODEL MISSING}}
+ \item{\code{OUTPUT}}
+ \item{\code{SAVEDATA}}
+ \item{\code{PLOT}}
+}
+}
+\item{\strong{The \code{...;} Specification}}{The \code{...;} Specification
+is used to update specific options in the \code{VARIABLE} and \code{ANALYSIS}
 section, while keeping all other options in the \code{misty.object} of type
-\code{mplus} specified in the argument \code{x}. Note that the \code{...}
-specification is only available for the \code{VARIABLE} and \code{ANALYSIS} section.}
-\item{\strong{The \code{---;} Specification}}{can be used to remove entire sections
-(e.g., \code{OUTPUT: ---;}) or options within the \code{VARIABLE:} and \code{ANALYSIS:}
-section (e.g., \code{ANALYSIS: ESTIMATOR IS ---;}) from the Mplus input.}
+\code{mplus} specified in the argument \code{x}. The \code{...;} specification
+is only available for the \code{VARIABLE} and \code{ANALYSIS} section. Note
+that \code{...;} including the semicolon \code{;} needs to be specified,
+i.e., \code{...} without the semicolon \code{;} will result in an error message.}
+\item{\strong{The \code{---;} Specification}}{The \code{---;} specification is
+used to remove entire sections (e.g., \code{OUTPUT: ---;}) or options within the
+\code{VARIABLE:} and \code{ANALYSIS:} section (e.g., \code{ANALYSIS: ESTIMATOR IS ---;})
+from the Mplus input. Note that \code{---;} including the semicolon \code{;}
+needs to be specified, i.e., \code{---} without the semicolon \code{;} will
+result in an error message.}
 \item{\strong{Comments in the Mplus Input}}{Comments in the Mplus Input can cause
 problems when following keywords in uppercase, lower case, or mixed upper and lower
 case letters are involved in the comments of the \code{VARIABLE} and \code{ANALYSIS}
 section:
   \itemize{
-     \item{\code{VARIABLE} section}: \code{"NAMES", "USEOBSERVATIONS", "USEVARIABLES",
-     "MISSING", "CENSORED", "CATEGORICAL", "NOMINAL", "COUNT", "DSURVIVAL", "GROUPING",
-     "IDVARIABLE", "FREQWEIGHT", "TSCORES", "AUXILIARY", "CONSTRAINT", "PATTERN",
-     "STRATIFICATION", "CLUSTER", "WEIGHT", "WTSCALE", "BWEIGHT", "B2WEIGHT",
-     "B3WEIGHT", "BWTSCALE", "REPWEIGHTS", "SUBPOPULATION", "FINITE", "CLASSES",
-     "KNOWNCLASS", "TRAINING", "WITHIN", "BETWEEN", "SURVIVAL", "TIMECENSORED",
-     "LAGGED"}, or \code{"TINTERVAL"}.
-     \item{\code{ANALYSIS} section}: \code{"TYPE", "ESTIMATOR", "MODEL", "ALIGNMENT",
-     "DISTRIBUTION", "PARAMETERIZATION", "LINK", "ROTATION", "ROWSTANDARDIZATION",
-     "PARALLEL", "REPSE", "BASEHAZARD", "CHOLESKY", "ALGORITHM", "INTEGRATION",
-     "MCSEED", "ADAPTIVE", "INFORMATION", "BOOTSTRAP", "LRTBOOTSTRAP", "STARTS",
-     "STITERATIONS", "STCONVERGENCE", "STSCALE", "STSEED", "OPTSEED", "K-1STARTS",
-     "LRTSTARTS", "RSTARTS", "ASTARTS", "H1STARTS", "DIFFTEST", "MULTIPLIER",
-     "COVERAGE", "ADDFREQUENCY", "ITERATIONS", "SDITERATIONS", "H1ITERATIONS",
-     "MITERATIONS", "MCITERATIONS", "MUITERATIONS", "RITERATIONS", "AITERATIONS",
-     "CONVERGENCE", "H1CONVERGENCE", "LOGCRITERION", "RLOGCRITERION", "MCONVERGENCE",
-     "MCCONVERGENCE", "MUCONVERGENCE", "RCONVERGENCE", "ACONVERGENCE", "MIXC",
-     "MIXU", "LOGHIGH", "LOGLOW", "UCELLSIZE", "VARIANCE", "SIMPLICITY", "TOLERANCE",
-     "METRIC", "MATRIX", "POINT", "CHAINS", "BSEED", "STVALUES", "PREDICTOR",
-     "ALGORITHM", "BCONVERGENCE", "BITERATIONS", "FBITERATIONS", "THIN",
-     "MDITERATIONS", "KOLMOGOROV", "PRIOR", "INTERACTIVE"}, or \code{"PROCESSORS"}.
+     \item{\strong{\code{VARIABLE} section}}: \code{"NAMES", "USEOBSERVATIONS",
+     "USEVARIABLES", "MISSING", "CENSORED", "CATEGORICAL", "NOMINAL", "COUNT",
+     "DSURVIVAL", "GROUPING", "IDVARIABLE", "FREQWEIGHT", "TSCORES", "AUXILIARY",
+     "CONSTRAINT", "PATTERN", "STRATIFICATION", "CLUSTER", "WEIGHT", "WTSCALE",
+     "BWEIGHT", "B2WEIGHT", "B3WEIGHT", "BWTSCALE", "REPWEIGHTS", "SUBPOPULATION",
+     "FINITE", "CLASSES", "KNOWNCLASS", "TRAINING", "WITHIN", "BETWEEN", "SURVIVAL",
+     "TIMECENSORED", "LAGGED"}, or \code{"TINTERVAL"}.
+     \item{\strong{\code{ANALYSIS} section}}: \code{"TYPE", "ESTIMATOR", "MODEL",
+     "ALIGNMENT", "DISTRIBUTION", "PARAMETERIZATION", "LINK", "ROTATION",
+     "ROWSTANDARDIZATION", "PARALLEL", "REPSE", "BASEHAZARD", "CHOLESKY", "ALGORITHM",
+     "INTEGRATION", "MCSEED", "ADAPTIVE", "INFORMATION", "BOOTSTRAP", "LRTBOOTSTRAP",
+     "STARTS", "STITERATIONS", "STCONVERGENCE", "STSCALE", "STSEED", "OPTSEED",
+     "K-1STARTS", "LRTSTARTS", "RSTARTS", "ASTARTS", "H1STARTS", "DIFFTEST",
+     "MULTIPLIER", "COVERAGE", "ADDFREQUENCY", "ITERATIONS", "SDITERATIONS",
+     "H1ITERATIONS", "MITERATIONS", "MCITERATIONS", "MUITERATIONS", "RITERATIONS",
+     "AITERATIONS", "CONVERGENCE", "H1CONVERGENCE", "LOGCRITERION", "RLOGCRITERION",
+     "MCONVERGENCE", "MCCONVERGENCE", "MUCONVERGENCE", "RCONVERGENCE", "ACONVERGENCE",
+     "MIXC", "MIXU", "LOGHIGH", "LOGLOW", "UCELLSIZE", "VARIANCE", "SIMPLICITY",
+     "TOLERANCE", "METRIC", "MATRIX", "POINT", "CHAINS", "BSEED", "STVALUES",
+     "PREDICTOR", "ALGORITHM", "BCONVERGENCE", "BITERATIONS", "FBITERATIONS",
+     "THIN", "MDITERATIONS", "KOLMOGOROV", "PRIOR", "INTERACTIVE"}, or \code{"PROCESSORS"}.
   }
-Note that it is recommended to remove all comments in the \code{VARIABLE} and
-\code{VARIABLE} section when the function crashes.
+  Note that comments are removed from the input text by default, i.e., \code{comment = FALSE}.
 }
 }
 }
@@ -175,7 +212,7 @@ mod0 <- mplus(input, file = "ex3_1.inp")
 
 # Update VARIABLE and MODEL section
 update1 <- '
-VARIABLE: ...
+VARIABLE: ...;
           USEVARIABLES ARE y1 x1;
 MODEL:    y1 ON x1;
 '
@@ -211,8 +248,9 @@ Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
 Muthen & Muthen.
 }
 \seealso{
-\code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus.print}},
-\code{\link{mplus}}, \code{\link{mplus.run}}, \code{\link{mplus.lca}}
+\code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus}},
+\code{\link{mplus.print}}, \code{\link{mplus.plot}}, \code{\link{mplus.bayes}},
+\code{\link{mplus.run}}, \code{\link{mplus.lca}}
 }
 \author{
 Takuya Yanagida

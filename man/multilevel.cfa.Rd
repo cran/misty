@@ -8,7 +8,7 @@ multilevel.cfa(..., data = NULL, cluster, model = NULL, rescov = NULL,
                model.w = NULL, model.b = NULL, rescov.w = NULL, rescov.b = NULL,
                const = c("within", "shared", "config", "shareconf"),
                fix.resid = NULL, ident = c("marker", "var", "effect"),
-               ls.fit = TRUE, estimator = c("ML", "MLR"),
+               ls.fit = FALSE, estimator = c("ML", "MLR"),
                optim.method = c("nlminb", "em"), missing = c("listwise", "fiml"),
                print = c("all", "summary", "coverage", "descript", "fit", "est",
                          "modind", "resid"),
@@ -183,7 +183,7 @@ applied to \code{x} but not to \code{cluster}.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
-\code{"Output.txt"}) or Excel file with file extention
+\code{"Output.txt"}) or Excel file with file extension
 \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
 name does not contain any file extension, an Excel file will
 be written.}

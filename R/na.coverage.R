@@ -24,7 +24,7 @@
 #'               the analysis.
 #' @param write  a character string naming a file for writing the output into
 #'               either a text file with file extension \code{".txt"} (e.g.,
-#'               \code{"Output.txt"}) or Excel file with file extention
+#'               \code{"Output.txt"}) or Excel file with file extension
 #'               \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
 #'               name does not contain any file extension, an Excel file will
 #'               be written.
@@ -212,7 +212,7 @@ na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), dig
 
     if (isTRUE(grepl("\\.txt", write))) {
 
-      # Send R output to textfile
+      # Send R output to text file
       sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
 
       if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }

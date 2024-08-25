@@ -32,7 +32,7 @@ subject IDs, see 'Details'.}
 
 \item{obs}{either a character string indicating the variable name of the
 observation number variable in '...' or a vector representing
-the observations. Note that duplicaed values within the same
+the observations. Note that duplicated values within the same
 subject ID are not allowed, see 'Details'.}
 
 \item{day}{either a character string indicating the variable name of the
@@ -44,7 +44,7 @@ returns lag-1 values.}
 
 \item{time}{a variable of class \code{POSIXct} or \code{POSIXlt} representing
 the date and time of the observation used to compute time
-differences beween observations.}
+differences between observations.}
 
 \item{units}{a character string indicating the units in which the time
 difference is represented, i.e., \code{"secs"} for seconds,
@@ -90,7 +90,7 @@ matrix, or data frame specified in the first argument.
 }
 \details{
 \describe{
-The function is used to create lagged verions of the variable(s) specified via
+The function is used to create lagged version of the variable(s) specified via
 the \code{...} argument:
 \item{\strong{Optional argument \code{id}}}{If the \code{id} argument is not specified
 \code{i.e., id = NULL}, all observations are assumed to come from the same

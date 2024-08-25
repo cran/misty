@@ -13,10 +13,17 @@ S3method(print,misty.object)
 export(aov.b)
 export(aov.w)
 export(as.na)
+export(blimp.bayes)
+export(blimp.plot)
+export(blimp.print)
+export(blimp)
+export(blimp.run)
+export(blimp.update)
 export(center)
 export(check.collin)
 export(check.outlier)
 export(check.resid)
+export(chr.color)
 export(chr.grep)
 export(chr.grepl)
 export(chr.gsub)
@@ -30,6 +37,7 @@ export(ci.prop)
 export(ci.prop.diff)
 export(ci.sd)
 export(ci.var)
+export(clear)
 export(cluster.scores)
 export(coding)
 export(cohens.d)
@@ -58,9 +66,11 @@ export(item.scores)
 export(kurtosis)
 export(lagged)
 export(libraries)
-export(mplus)
+export(mplus.bayes)
 export(mplus.lca)
+export(mplus.plot)
 export(mplus.print)
+export(mplus)
 export(mplus.run)
 export(mplus.update)
 export(multilevel.cfa)
@@ -113,13 +123,14 @@ export(write.xlsx)
 importFrom("stats", "aov", "as.formula", "chisq.test", "contr.helmert", 
            "contr.poly", "contr.sum", "contr.treatment", "coef", "coefficients", 
            "cooks.distance", "cor", "cor.test", "cov", "cov2cor", "density", "df", 
-           "dfbetas", "df.residual", "dt", "formula", "hatvalues", "IQR", "lm", "loess",
-           "logLik", "mahalanobis", "median", "model.frame", "model.matrix", "na.omit",
-           "nobs", "oneway.test", "optimize", "dnorm", "integrate", "pnorm", "predict", 
-           "residuals", "rnorm", "rstandard", "rstudent", "setNames", "summary.lm",
-           "pchisq", "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", "reshape",
+           "dfbetas", "df.residual", "dt", "fft", "formula", "hatvalues", "IQR", "lag", "lm", 
+           "loess", "logLik", "mad", "mahalanobis", "median", "model.frame", "model.matrix", 
+           "na.omit", "nextn", "nobs", "oneway.test", "optimize", "dnorm", "integrate", "pnorm", 
+           "predict", "residuals", "rnorm", "rstandard", "rstudent", "setNames", "summary.lm",
+           "pchisq", "qbeta", "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", "reshape",
            "sd", "terms", "time", "t.test", "p.adjust", "pf", "pt", "uniroot", "update",
            "var", "vcov", "weights")
+importFrom("grDevices", "hcl.colors", "hcl.pals")
 importFrom("utils", "as.relistable", "available.packages", "combn", "head",
-           "install.packages", "installed.packages", "packageDescription", 
+           "install.packages", "installed.packages", "packageDescription", "read.csv",
            "read.table", "relist", "write.csv", "write.csv2", "write.table")

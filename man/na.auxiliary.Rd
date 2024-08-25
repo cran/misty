@@ -2,24 +2,50 @@
 % Please edit documentation in R/na.auxiliary.R
 \name{na.auxiliary}
 \alias{na.auxiliary}
-\title{Auxiliary variables analysis}
+\title{Auxiliary Variables Analysis}
 \usage{
-na.auxiliary(..., data = NULL, tri = c("both", "lower", "upper"), weighted = FALSE,
-             correct = FALSE, digits = 2, as.na = NULL, write = NULL,
-             append = TRUE, check = TRUE, output = TRUE)
+na.auxiliary(..., data = NULL, model = NULL, estimator = c("ML", "MLR"),
+             missing = c("fiml", "two.stage", "robust.two.stage", "doubly.robust"),
+             tri = c("both", "lower", "upper"), weighted = FALSE, correct = FALSE,
+             digits = 2, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
+             check = TRUE, output = TRUE)
 }
 \arguments{
 \item{...}{a matrix or data frame with incomplete data, where missing
 values are coded as \code{NA}. Alternatively, an expression
 indicating the variable names in \code{data} e.g.,
-\code{na.auxiliary(x1, x2, x3, data = dat)}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+\code{na.auxiliary(x1, x2, x3, data = dat)}. Note that the
+operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+\code{::}, and \code{!} can also be used to select variables,
+see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{data}{a data frame when specifying one or more variables in the
 argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument \code{...}.}
+when specifying a matrix or data frame for the argument
+\code{...}.}
+
+\item{model}{a character string specifying the substantive model predicting
+an continuous outcome variable using a set of predictor variables
+to estimate semi-partial correlations between the outcome
+variable and a set of candidate auxiliary variables. The default
+setting is \code{model = NULL}, i.e., the function computes
+Pearson product-moment correlation matrix and Cohen's d matrix.}
+
+\item{estimator}{a character string indicating the estimator to be used
+when estimating semi-partial correlation coefficients, i.e.,
+\code{"ML"} for maximum likelihood parameter estimates with
+conventional standard errors or \code{"MLR"} (default) maximum
+likelihood parameter estimates with Huber-White robust standard
+errors.}
+
+\item{missing}{a character string indicating how to deal with missing data
+when estimating semi-partial correlation coefficients,
+i.e., \code{"fiml"} for full information maximum likelihood
+method, \code{two.stage} for two-stage maximum likelihood
+method, \code{robust.two.stage} for robust two-stage maximum
+likelihood method, and \code{doubly-robust} for doubly-robust
+method (see 'Details' in the \code{\link{item.cfa}} function).
+The default setting is \code{missing = "fiml"}.}
 
 \item{tri}{a character string indicating which triangular of the correlation
 matrix to show on the console, i.e., \code{both} for upper and
@@ -36,13 +62,19 @@ remove positive bias in small samples is used.}
 to be used for displaying correlation coefficients and Cohen's d
 estimates.}
 
+\item{p.digits}{an integer value indicating the number of decimal places
+to be used for displaying the \emph{p}-value.}
+
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
 
-\item{write}{a character string naming a text file with file extension
-\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
-output into a text file.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extension
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
 \item{append}{logical: if \code{TRUE} (default), output will be appended
 to an existing text file with extension \code{.txt} specified
@@ -56,18 +88,25 @@ overwritten.}
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-  \item{\code{call}}{function call}
-  \item{\code{type}}{type of analysis}
-  \item{\code{data}}{data frame used for the current analysis}
-  \item{\code{args}}{specification of function arguments}
-  \item{\code{result}}{list with result tables, i.e., \code{cor.mat} for the
-                       correlation matrix and \code{d.mat} for Cohen's d}
+\tabular{ll}{
+\code{call} \tab function call \cr
+\code{type} \tab type of analysis \cr
+\code{data} \tab data frame used for the current analysis \cr
+\code{model} \tab lavaan model syntax for estimating the semi-partial correlations  \cr
+\code{model.fit} \tab fitted lavaan model for estimating the semi-partial correlations  \cr
+\code{args} \tab specification of function arguments \cr
+\code{result} \tab list with result tables \cr
+}
 }
 \description{
 This function computes (1) Pearson product-moment correlation matrix to identify
-variables related to the incomplete variable and (2) Cohen's d comparing cases
-with and without missing values to identify variables related to the probability
-of missingness.
+variables related to the incomplete variable (i.e., correlates of incomplete
+variables), (2) Cohen's d matrix comparing cases with and without missing values
+to identify variables related to the probability of missingness(i.e., correlates
+of missingness), and (3) semi-partial correlations of an outcome variable
+conditional on the predictor variables of a substantive model with a set of
+candidate auxiliary variables to identify correlates of an incomplete outcome
+variable as suggested by Raykov and West (2016).
 }
 \details{
 Note that non-numeric variables (i.e., factors, character vectors, and logical
@@ -80,8 +119,14 @@ na.auxiliary(airquality)
 # Example 1b: Alternative specification using the 'data' argument
 na.auxiliary(., data = airquality)
 
+# Example 2a: Semi-partial correlation coefficients
+na.auxiliary(airquality, model = "Ozone ~ Solar.R + Wind")
+
+# Example 2b: Alternative specification using the 'data' argument
+na.auxiliary(Temp, Month, Day, data = airquality, model = "Ozone ~ Solar.R + Wind")
+
 \dontrun{
-# Example 2: Write Results into a text file
+# Example 3: Write Results into a text file
 na.auxiliary(airquality, write = "NA_Auxiliary.txt")
 }
 }
@@ -91,6 +136,11 @@ Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
 Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 \emph{Annual Review of Psychology, 60}, 549-576.
 https://doi.org/10.1146/annurev.psych.58.110405.085530
+
+Raykov, T., & West, B. T. (2016). On enhancing plausibility of the missing at
+random assumption in incomplete data analyses via evaluation of response-auxiliary
+variable correlations. \emph{Structural Equation Modeling, 23}(1), 45–53.
+https://doi.org/10.1080/10705511.2014.937848
 
 van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.).
 Chapman & Hall.

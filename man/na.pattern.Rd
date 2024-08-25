@@ -4,8 +4,14 @@
 \alias{na.pattern}
 \title{Missing Data Pattern}
 \usage{
-na.pattern(..., data = NULL, order = FALSE, digits = 2, as.na = NULL, write = NULL,
-           append = TRUE, check = TRUE, output = TRUE)
+na.pattern(..., data = NULL, order = FALSE, n.pattern = NULL, plot = FALSE,
+           square = TRUE, rotate = FALSE, fill.col = c("#B61A51B3", "#006CC2B3"),
+           alpha = 0.6, plot.margin = c(4, 16, 0, 4),
+           legend.box.margin = c(-8, 6, 6, 6), legend.key.size = 12,
+           legend.text.size = 9, saveplot = FALSE, file = "NA_Patternt.pdf",
+           width = NA, height = NA, units = c("in", "cm", "mm", "px"), dpi = 600,
+           digits = 2, as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+           output = TRUE)
 }
 \arguments{
 \item{...}{a matrix or data frame with incomplete data, where missing
@@ -24,6 +30,53 @@ when specifying a matrix or data frame for the argument \code{...}.}
 \item{order}{logical: if \code{TRUE}, variables are ordered from left to
 right in increasing order of missing values.}
 
+\item{n.pattern}{an integer value indicating the minimum number of cases sharing
+a missing data pattern to be included in the result table and the plot, e.g., specifying
+\code{n.pattern = 5} excludes missing data patters with less than \code{5} cases.}
+
+\item{plot}{logical: if \code{TRUE}, missing data pattern is plotted.}
+
+\item{square}{logical: if \code{TRUE} (default), the plot tiles are squares
+to mimic the \code{md.pattern} function in the package \pkg{mice}.}
+
+\item{rotate}{logical: if \code{TRUE}, the variable name labels are rotated 90 degrees.}
+
+\item{fill.col}{a character string indicating the color for the \code{"fill"} argument.
+Note that the first color represents missing values and the second color
+represent observed values.}
+
+\item{alpha}{a numeric value between 0 and 1 for the \code{alpha} argument (default is \code{0.1}.}
+
+\item{plot.margin}{a numeric vector indicating the \code{plot.margin} argument for the \code{theme} function.}
+
+\item{legend.box.margin}{a numeric vector indicating the \code{legend.box.margin}
+argument for the \code{theme} function.}
+
+\item{legend.key.size}{a numeric value indicating the \code{legend.key}
+argument (default is \code{unit(12, "pt")}) for the \code{theme} function.}
+
+\item{legend.text.size}{a numeric value indicating the \code{legend.text}
+argument (default is \code{element_text(size = 10)}) for the \code{theme} function.}
+
+\item{saveplot}{logical: if \code{TRUE}, the ggplot is saved.}
+
+\item{file}{a character string indicating the \code{filename} argument (default is \code{"NA_Pattern.pdf"}) including
+the file extension for the \code{ggsave} function. Note that one of \code{".eps"}, \code{".ps"},
+\code{".tex"}, \code{".pdf"} (default), \code{".jpeg"}, \code{".tiff"}, \code{".png"}, \code{".bmp"},
+\code{".svg"} or \code{".wmf"} needs to be specified as file extension in the \code{file} argument.}
+
+\item{width}{a numeric value indicating the \code{width} argument (default is the
+size of the current graphics device) for the \code{ggsave} function.}
+
+\item{height}{a numeric value indicating the \code{height} argument
+(default is the size of the current graphics device) for the \code{ggsave} function.}
+
+\item{units}{a character string indicating the \code{units} argument
+(default is \code{in}) for the \code{ggsave} function.}
+
+\item{dpi}{a numeric value indicating the \code{dpi} argument
+(default is \code{600}) for the \code{ggsave} function.}
+
 \item{digits}{an integer value indicating the number of decimal places to
 be used for displaying percentages.}
 
@@ -33,7 +86,7 @@ analysis.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
-\code{"Output.txt"}) or Excel file with file extention
+\code{"Output.txt"}) or Excel file with file extension
 \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
 name does not contain any file extension, an Excel file will
 be written.}
@@ -50,16 +103,24 @@ overwritten.}
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-  \item{\code{call}}{function call}
-  \item{\code{type}}{type of analysis}
-  \item{\code{data}}{data frame used for the current analysis}
-  \item{\code{args}}{specification of function arguments}
-  \item{\code{result}}{result tables}
-  \item{\code{pattern}}{group variable of missing data pattern}
+\item{\code{call}}{function call}
+\item{\code{type}}{type of analysis}
+\item{\code{data}}{list with data frames, i.e., \code{data} for the data frame
+                   with variables used in the current analysis, and \code{plotdat}
+                   for the data frame used for plotting the results}
+\item{\code{args}}{specification of function arguments}
+\item{\code{result}}{result table}
+\item{\code{plot}}{ggplot2 object for plotting the results}
+\item{\code{pattern}}{a numeric vector indicating the missing data pattern for each case}
 }
 \description{
 This function computes a summary of missing data patterns, i.e., number (%) of
-cases with a specific missing data pattern.
+cases with a specific missing data pattern and plots the missing data
+patterns.
+}
+\note{
+The code for plotting missing data patterns is based on the \code{plot_pattern}
+function in the \pkg{ggmice} package by Hanne Oberman.
 }
 \examples{
 \dontrun{
@@ -69,19 +130,25 @@ dat.pattern <- na.pattern(airquality)
 # Example 1b: Alternative specification using the 'data' argument
 dat.pattern <- na.pattern(., data = airquality)
 
-# Example 2: Vector of missing data pattern for each case
+# Example 2a: Compute and plot a summary of missing data patterns
+na.pattern(airquality, plot = TRUE)
+
+# Example 2b: Plot missing data patterns with at least 3 cases
+na.pattern(airquality, plot = TRUE, n.pattern = 3)
+
+# Example 3: Vector of missing data pattern for each case
 dat.pattern$pattern
 
 # Data frame without cases with missing data pattern 2 and 4
 airquality[!dat.pattern$pattern %in% c(2, 4), ]
 
-# Example 3a: Write Results into an text file
-result <- na.pattern(airquality, write = "NA_Pattern.txt")
-
-# Example 3b: Write Results into an Excel file
+# Example 4a: Write Results into a text file
 result <- na.pattern(airquality, write = "NA_Pattern.xlsx")
 
-result <- na.pattern(dat, output = FALSE)
+# Example 4b: Write Results into a Excel file
+result <- na.pattern(airquality, write = "NA_Pattern.xlsx")
+
+result <- 4c.pattern(dat, output = FALSE)
 write.result(result, "NA_Pattern.xlsx")
 }
 }
@@ -91,6 +158,9 @@ Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
 Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 \emph{Annual Review of Psychology, 60}, 549-576.
 https://doi.org/10.1146/annurev.psych.58.110405.085530
+
+Oberman, H. (2023). \emph{ggmice: Visualizations for 'mice' with 'ggplot2'}.
+R package version 0.1.0. https://doi.org/10.32614/CRAN.package.ggmice
 
 van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.).
 Chapman & Hall.

@@ -35,7 +35,7 @@ model, i.e., \code{cluster = c("level3", "level2")}.}
 
 \item{type}{a character string indicating the type of intraclass
 correlation coefficient, i.e., \code{type = "1a"} (default)
-for ICC(1) representing the propotion of variance at Level 2 and Level 3,
+for ICC(1) representing the proportion of variance at Level 2 and Level 3,
 \code{type = "1b"} representing an estimate of the expected correlation
 between two randomly chosen elements in the same group when specifying
 a three-level model (i.e., two cluster variables). See 'Details' in the
@@ -72,7 +72,7 @@ to \code{...} but not to \code{cluster}.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
-\code{"Output.txt"}) or Excel file with file extention
+\code{"Output.txt"}) or Excel file with file extension
 \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
 name does not contain any file extension, an Excel file will
 be written.}

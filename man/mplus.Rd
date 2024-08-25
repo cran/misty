@@ -4,8 +4,9 @@
 \alias{mplus}
 \title{Create, Run, and Print Mplus Models}
 \usage{
-mplus(x, file = "Mplus_Input.inp", replace.inp = TRUE, data = NULL, mplus.run = TRUE,
-      show.out = FALSE, replace.out = c("always", "never", "modified"),
+mplus(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE,
+      replace.inp = TRUE, mplus.run = TRUE, show.out = FALSE,
+      replace.out = c("always", "never", "modified"), Mplus = detect.mplus(),
       print = c("all", "input", "result"),
       input = c("all", "default", "data", "variable", "define", "analysis",
                 "model", "montecarlo", "mod.pop", "mod.cov", "mod.miss",
@@ -24,12 +25,16 @@ mplus(x, file = "Mplus_Input.inp", replace.inp = TRUE, data = NULL, mplus.run = 
 file with or without the file extension \code{.inp}, e.g.,
 \code{"Mplus_Input.inp"} or \code{"Mplus_Input"}.}
 
-\item{replace.inp}{logical: if \code{TRUE} (default), an existing input
-file will be replaced.}
-
 \item{data}{a matrix or data frame from which the variables names for
 the subsection \code{NAMES} are extracted when using the
 \code{...} specification in the \code{VARIABLE} section.}
+
+\item{comment}{logical: if \code{FALSE} (default), comments (i.e., text
+after the \code{!} symbol) are removed from the input text
+specified in the argument \code{x}.}
+
+\item{replace.inp}{logical: if \code{TRUE} (default), an existing input
+file will be replaced.}
 
 \item{mplus.run}{logical: if \code{TRUE}, the input file specified in the
 argument \code{file} containing the input text specified
@@ -49,19 +54,26 @@ and \code{"modified"}, which only runs a model if the
 modified date for the input file is more recent than the
 output file modified date.}
 
+\item{Mplus}{a character string for specifying the name or path of the
+Mplus executable to be used for running models. This covers
+situations where Mplus is not in the system's path, or where
+one wants to test different versions of the Mplus program.
+Note that there is no need to specify this argument for most
+users since it has intelligent defaults.}
+
 \item{print}{a character vector indicating which results to show, i.e.
 \code{"all"} (default) for all results \code{"input"} for
 input command sections, and \code{"result"} for result sections.}
 
-\item{input}{a character vector specifiying Mplus input command sections
+\item{input}{a character vector specifying Mplus input command sections
 included in the output (see 'Details' in the \code{\link{mplus.print}}
 function).}
 
-\item{result}{a character vector specifiying Mplus result sections included
+\item{result}{a character vector specifying Mplus result sections included
 in the output (see 'Details' in the \code{\link{mplus.print}}
 function).}
 
-\item{exclude}{a character vector specifiying Mplus input command or result
+\item{exclude}{a character vector specifying Mplus input command or result
 sections excluded from the output (see 'Details' in the
 \code{\link{mplus.print}} function).}
 
@@ -104,7 +116,7 @@ entries:
 \item{\code{input}}{list with input command sections}
 \item{\code{write}}{write command sections}
 \item{\code{result}}{list with input command sections (\code{input}) and
-                     result sections (\code{input})}
+                     result sections (\code{result})}
 }
 \description{
 This wrapper function creates a Mplus input file, runs the input file by using
@@ -114,8 +126,8 @@ the \code{mplus.run()} function, and prints the Mplus output file by using the
 \details{
 \describe{
 \item{\strong{The \code{NAMES} Option}}{in the \code{VARIABLE} section used to
-assign names to the variables in the data set can be specified by using \code{...}
-and the \code{data} argument:
+assign names to the variables in the data set can be specified by using the
+\code{...} specification and the \code{data} argument:
    \itemize{
       \item{\code{Write Mplus Data File}}: In the first step, the Mplus data
       file is written by using the \code{write.mplus()} function, e.g.
@@ -125,10 +137,12 @@ and the \code{data} argument:
       specified by using \code{...}, e.g.,
       \code{input <- 'DATA:     FILE IS ex3_1.dat;\nVARIABLE: ...\nMODEL:    y1 ON x1 x3;'}.
       \item{\code{Run Mplus Input}}: In the third step, the Mplus input is run
-      by using the \code{mplus()} function. Note that the argument \code{data}
+      by using the \code{mplus()} function. The argument \code{data}
       needs to be specified given that the \code{NAMES} option was specified
       by using \code{...} in the previous step, e.g.,
-      \code{mplus(input, file = "ex3_1.inp", data = ex3_1)}
+      \code{mplus(input, file = "ex3_1.inp", data = ex3_1)}. Note that \code{...;}
+      including the semicolon \code{;} needs to be specified, i.e., \code{...}
+      without the semicolon \code{;} will result in an error message.
    }
 }
 }
@@ -153,7 +167,7 @@ OUTPUT:   SAMPSTAT;
 mplus(input1, file = "ex3_1.inp")
 
 #----------------------------------------------------------------------------
-# Example 2: Alterantive specification using ... and the data argument
+# Example 2: Alternative  specification using ... and the data argument
 
 # Specify Mplus input, specify NAMES option by using ...
 input2 <- '
@@ -172,9 +186,9 @@ Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
 Muthen & Muthen.
 }
 \seealso{
-\code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus.print}},
-\code{\link{mplus.update}}, \code{\link{mplus.run}},
-\code{\link{mplus.lca}}
+\code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus.update}},
+\code{\link{mplus.print}}, \code{\link{mplus.plot}}, \code{\link{mplus.bayes}},
+\code{\link{mplus.run}}, \code{\link{mplus.lca}}
 }
 \author{
 Takuya Yanagida

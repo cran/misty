@@ -1,7 +1,65 @@
+### misty 0.6.6 (2024-08-25)
+
+##### New features
+* New function `mplus.plot()` and to read a Mplus GH5 file to display trace plots, 
+posterior distribution plots, autocorrelation plots, posterior predictive check 
+plots, and the loop plot.
+* New function `blimp.run()` to run a group of Blimp models located within a single directory 
+or nested within subdirectories.
+* New function `blimp.print()` for printing a Blimp output file on the R console.
+* New function`blimp.plot()` to read the posterior distribution for all parameters
+to display trace plots and posterior distribution plots.
+* New function `blimp()` to create and run a Blimp input to print the output on 
+* New function `blimp.update()` updates specific input command sections of a 
+`misty.object` of type `blimp` to create an updated Blimp input file, run the updated
+input file, and print the updated Blimp output.
+* New functions `mplus.bayes()` to read a Mplus GH5 file and `blimp.bayes()` 
+to read the posterior distribution for all parameters to compute point estimates,
+measures of dispersion, measures of shape, credible intervals, convergence and 
+efficiency diagnostics, probability of direction, and probability of being in 
+the ROPE for the posterior distribution for each parameter.
+* The `na.test` function provides Jamshidian and Jalalꞌs approach for testing the missing completely
+at random (MCAR) assumption.
+* New function `clear()` to clear the console equivalent to `Ctrl + L` in 
+RStudio.
+* New function `chr.color()` to add color and style to output texts on terminals 
+that support 'ANSI' color and highlight codes.
+
+##### Minor features and improvements
+* Added the option `default` to the argument `print` of the `descript` function.
+* Added the argument `comment` to the `mplus` function.
+* The function `na.test` performs Little's MCAR test using the `mlest` function 
+from the `mvnmle` package that can handle up to 50 variables instead of using 
+the `prelim.norm` function in the `norm` package that can only handle about 30 
+variables.
+* The function `na.pattern` plots the missing data pattern when specifying 
+`plot = TRUE` and runs faster. 
+
+##### User-visible changes
+* Changed the default setting of the argument `print` in the functions `mplus.print`, 
+to `result`.
+* The function `mplus.print` does not print the section `MODEL FIT INFORMATION` 
+if the degrees of freedom is zero.
+* Renamed the argument `run.mplus` in the function `mplus.lca()` to `mplus.run`.
+* Changed the default setting of the argument `ls.fit` in the function `multilevel.cfa()`
+to `FALSE`.
+
+##### Bug fix
+* Fixed a bug in the function `mplus.update()`, which caused an error message when
+specifying `output = FALSE`.
+* Fixed a bug in the function `mplus.lca()`, which caused an error message when 
+checking the input for the argument `processors`.
+* Fixed a bug in the functions `item.cfa()` and `multilevel.cfa()`, functions did
+not allow specifying more than two residual covariances (thanks to Lydia Laninga-Wijnen).
+* Fixed a bug in the function `multilevel.descript()`, average, minimum, and 
+maximum cluster size at Level 3 were calculated incorrectly.
+* Fixed a bug in the function `item.omega()`, function did not provide item 
+statistics regardless of the `print` argument setting (thanks to Ainhoa Coloma Carmona).
+
 ### misty 0.6.5 (2024-06-29)
 
 ##### Minor features and improvements
-* Updated the function `mplus.run()` according to the lastest version of the 
+* Updated the function `mplus.run()` according to the latest version of the 
 function `runModels()` in the MplusAutomation package.
 
 ##### Bug fix
@@ -112,13 +170,13 @@ with the current date and time.
 `skewness()`, and `kurtosis()` provide the argument `...` instead of the argument 
 `x` to specify variables from the data frame specified in `data` using the operators 
 `.`, `+`, `-`, `~`, `:`, `::`. 
-* Function `multilevel.icc()` computes intraclass corelation coefficients in
+* Function `multilevel.icc()` computes intraclass correlation coefficients in
 three-level data.
 * Function `multilevel.descript()` computes multilevel descriptive statistics
 in three-level data.
 * Function `center()` centers predictor variables in three-level data.
 * Function `na.descript()` provides descriptive statistics for missing data in
-two-level and three-lavel data.
+two-level and three-level data.
 * Function `cor.matrix()` computes tetrachoric and polychoric correlation coefficients.
 * Added the arguments `write` and `append` to all functions providing a 
 print function to save the print output into a text file.
@@ -173,7 +231,7 @@ count, unordered categorical, and ordered categorical indicator variables.
 intervals for each of the latent class solutions.
 
 ##### Bug fix
-* Fixed a bug in the function `dominance.manual()`, function provided the wrong rank orderning.
+* Fixed a bug in the function `dominance.manual()`, function provided the wrong rank ordering.
 
 ##### User-visible changes
 * Renamed the functions `mplus.lpa()` and `results.lpa()` to `mplus.lca()` and `results.lca()`.
@@ -451,7 +509,7 @@ and `multilevel.cor()` to `FALSE`.
 
 ##### User-visible changes
 * Added descriptive statistics and confidence intervals to the function `levenes.test()`.
-* Changed the output of the functions `size.mean()`, `size.prop()`, and `size.cor()` to include greek letters.
+* Changed the output of the functions `size.mean()`, `size.prop()`, and `size.cor()` to include Greek letters.
 * Changed the argument `theta` in the `size.mean()` function into `delta`.
 
 ### misty 0.3.0 (2020-04-06)

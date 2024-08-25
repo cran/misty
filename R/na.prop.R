@@ -17,7 +17,7 @@
 #'                missing data is appended to the data frame specified in the
 #'                argument \code{data}.
 #' @param name    a character string indicating the name of the variable appended
-#'                to the data frame specified in the arguement \code{data} when
+#'                to the data frame specified in the argument \code{data} when
 #'                \code{append = TRUE}. By default, the variable is named
 #'                \code{na.prop}.
 #' @param digits  an integer value indicating the number of decimal places to be

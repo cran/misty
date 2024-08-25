@@ -16,11 +16,11 @@ coerced to a data frame.}
 
 \item{version}{Stats file version to use. Supports versions 8-15.}
 
-\item{label}{Sataset label to use, or \code{NULL}. Defaults to the value
+\item{label}{dataset label to use, or \code{NULL}. Defaults to the value
 stored in the "label" attribute pf data. Must be <= 80
 characters.}
 
-\item{str.thres}{any chracter vector with a maximum length greater than
+\item{str.thres}{any character vector with a maximum length greater than
 \code{str.thre} bytes wil be stored as a long string
 \code{strL} instead of a standard string \code{str}
 variable if \code{version} is greater or equal 13.}

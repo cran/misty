@@ -939,6 +939,540 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
+# Internal functions for the blimp.run() function ------------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Run Blimp ####
+
+.blimp.source <- function(target, Blimp, posterior, folder, format, clear) {
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## File Name, Blimp Path, and Plot Folder ####
+
+  # File name
+  base <- sub("\\.imp", "", basename(target))
+
+  # Path name
+  dirnam <- dirname(target)
+
+  # Blimp path
+  blimp_path <- Blimp
+
+  # Preprocess path for non-UNIX platform
+  if (isTRUE(.Platform$OS.type != "unix")) { blimp_path <- paste0('"', blimp_path, '"') }
+
+  # Make Posterior folder
+  if (isTRUE(posterior)) { dir.create(file.path(dirnam, paste0(folder, base)), showWarnings = FALSE) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Modify Input ####
+
+  if (isTRUE(posterior)) {
+
+    target.read <- suppressWarnings(readLines(target))
+
+    suppressWarnings(writeLines(target.read |>
+                       (\(x) c(x, paste("SAVE:\n",
+                                        if (isTRUE(any(grepl("BYGROUP:", x, ignore.case = TRUE)))) {
+
+                                          paste0("estimates = ", folder, base, "/estimates*.csv;\n")
+
+                                        } else {
+
+                                          paste0("estimates = ", folder, base, "/estimates.csv;\n")
+
+                                        },
+                                        paste0("iterations = ", folder, base, "/iter*.csv;\n"))))(), target))
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Make Command ####
+
+  if (isTRUE(posterior)) {
+
+    cmd <- paste(blimp_path, shQuote(target), "--traceplot",  shQuote(file.path(paste0(folder, base))), "--truncate 100", "--output", shQuote(file.path(dirnam, paste0(base, ".blimp-out"))))
+
+  } else {
+
+    cmd <- paste(blimp_path, shQuote(target), "--truncate 100", "--output", shQuote(file.path(dirnam, paste0(base, ".blimp-out"))))
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Run Command ####
+
+  tryCatch(system(cmd, ignore.stderr = TRUE), error = function(y) { stop("Running Blimp failed.", call. = FALSE) })
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Post-Process Posterior Data ####
+
+  if (isTRUE(posterior)) {
+
+    if (isTRUE(all(!grepl("BYGROUP:", target.read, ignore.case = TRUE)))) {
+
+      param <- chain <- iter <- latent1 <- latent2 <- latent3 <- NULL
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Message ####
+
+      cat("Saving posterior distribution for all parameters, this may take a while.\n")
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Labels ####
+
+       labels <- read.table(paste0(folder, base, "/labels.dat"), header = TRUE) |>
+         setNames(object = _, nm = c("latent1", "latent2", "latent3", "param")) |>
+         (\(z) within(z, param <- paste0("p", param)))()
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Burn-In Data ####
+
+      # Data in long format
+      burnin <- lapply(list.files(paste0(folder, base), pattern = "burn", full.names = TRUE), function(y) {
+
+        read.csv(y, header = FALSE) |>
+           setNames(object = _, nm = c("iter", labels$param)) |>
+           (\(z) reshape(z, varying = list(colnames(z)[-1L]), v.names = "value", idvar = colnames(z)[1L], times = colnames(z)[-1], direction = "long"))()
+
+      })
+
+      # Add chain
+      for (i in seq_along(burnin)) { burnin[[i]] <- data.frame(chain = i, burnin[[i]]) }
+
+      # Row bind
+      burnin <- do.call(rbind, burnin)
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Post-Burn-In Data ####
+
+      # Data in long format
+      postburn <- lapply(list.files(paste0(folder, base), pattern = "iter", full.names = TRUE), function(y) {
+
+        read.csv(y, header = FALSE) |>
+           setNames(object = _, nm = labels$param) |>
+           (\(z) data.frame(iter = max(burnin$iter) + 1L:nrow(z), z))() |>
+           (\(w) reshape(w, varying = list(colnames(w)[-1L]), v.names = "value", idvar = colnames(w)[1L], times = colnames(w)[-1], direction = "long"))()
+
+      })
+
+      # Add chain
+      for (i in seq_along(postburn)) { postburn[[i]] <- data.frame(chain = i, postburn[[i]]) }
+
+      # Row bind
+      postburn <- do.call(rbind, postburn)
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Combine Burn-in Data and Post-Burn-In Data ####
+
+      # Row bind and merge with labels
+      posterior <- misty::df.rename(rbind(data.frame(postburn = 0L, burnin), data.frame(postburn = 1L, postburn)), from = "time", to = "param") |>
+         (\(z) misty::df.move(latent1, latent2, latent3, data = merge(x = z, labels, by = "param"), after = "param"))() |>
+         (\(w) misty::df.sort(w, param, chain, iter))() |>
+         (\(q) within(q, param <- as.numeric(sub("p", "", param))))()
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Save Data ####
+
+      if (isTRUE("csv" %in% format)) { utils::write.csv(posterior, file.path(paste0(folder, base), "posterior.csv"), row.names = FALSE) }
+
+      if (isTRUE("csv2" %in% format)) { utils::write.csv2(posterior, file.path(paste0(folder, base), "posterior.csv"), row.names = FALSE) }
+
+      if (isTRUE("xlsx" %in% format)) { misty::write.xlsx(posterior, file.path(paste0(folder, base), "posterior.xlsx")) }
+
+      if (isTRUE("rds" %in% format)) { base::saveRDS(posterior, file = file.path(paste0(folder, base), "posterior.rds")) }
+
+      if (isTRUE("RData" %in% format)) { base::save(posterior, file = file.path(paste0(folder, base), "posterior.RData")) }
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Save Parameter Table ####
+
+      labels[, c("param", "latent1", "latent2", "latent3")] |>
+        (\(z) within(z, param <- as.numeric(gsub("p", "", param))))() |>
+        (\(w) format(rbind(c("Param", "L1", "L2", "L3"), w), justify = "left"))() |>
+        write.table(x = _, file = paste0(folder, base, "/partable.txt"), quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Post-Process Estimates ####
+
+      write.csv(read.csv(paste0(folder, base, "/estimates.csv"), check.names = FALSE) |>
+         (\(z) data.frame(param = as.numeric(sub("p", "", labels$param)), latent1 = labels$latent1, latent2 = labels$latent2, latent3 = labels$latent3, z, check.names = FALSE))(), paste0(folder, base, "/estimates.csv"), row.names = FALSE)
+
+    }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Clear Console ####
+
+  if (isTRUE(clear && .Platform$GUI == "RStudio")) { clear() }
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Detect Blimp Location ####
+
+detect.blimp <- function(exec = "blimp") {
+
+  env_r_blimp <- Sys.getenv("R_BLIMP", unset = NA)
+
+  if (isTRUE(!is.na(env_r_blimp))) { if (isTRUE(file.exists(env_r_blimp) & !dir.exists(env_r_blimp))) { return(env_r_blimp) } }
+
+  user_os <- tolower(R.Version()$os)
+
+  # Mac
+  if (isTRUE(grepl("darwin", user_os))) {
+
+    return(.detect_blimp_macos(exec))
+
+  # Linux
+  } else if (isTRUE(grepl("linux", user_os))) {
+
+    return(.detect_blimp_linux(exec))
+
+  # Windows
+  } else if (isTRUE(grepl("windows", user_os) || grepl("mingw32", user_os))) {
+
+    return(.detect_blimp_windows(paste0(exec, ".exe")))
+
+  }
+
+  stop("Unable to detect the operating system.", call. = FALSE)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Find Blimp on MacOS ####
+
+.detect_blimp_macos <- function(exec) {
+
+  output <- suppressWarnings(system(paste("which", exec), intern = TRUE, ignore.stderr = TRUE)[1L])
+
+  if (isTRUE(length(output) != 0L)) { if (isTRUE(file.exists(output))) { return(output) } }
+
+  output <- paste0("/Applications/Blimp/", exec)
+
+  if (isTRUE(file.exists(output))) { return(output) }
+
+  output <- paste0("~", output)
+
+  if (isTRUE(file.exists(output))) { return(output) }
+
+  stop("Unable to find blimp executable, make sure Blimp is installed.", call. = FALSE)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Find Blimp on Linux ####
+
+.detect_blimp_linux <- function(exec) {
+
+  output <- suppressWarnings(system(paste("which", exec), intern = TRUE, ignore.stderr = TRUE)[1L])
+
+  if (isTRUE(length(output) != 0L)) { if (isTRUE(file.exists(output))) { return(output) }  }
+
+  stop("Unable to find blimp executable, ,ake sure Blimp is installed.", call. = FALSE)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Find Blimp on Windows ####
+
+.detect_blimp_windows <- function(exec) {
+
+  output <- suppressWarnings(system(paste("where", exec), intern = TRUE, ignore.stderr = TRUE))
+
+  if (isTRUE(length(output) != 0L)) { if (isTRUE(file.exists(output))) { return(output) } }
+
+  output <- paste0("C:\\Program Files\\Blimp\\", exec)
+
+  if (isTRUE(file.exists(output))) { return(output) }
+
+  output <- paste0("D:\\Program Files\\Blimp\\", exec)
+
+  if (isTRUE(file.exists(output))) { return(output) }
+
+  stop("Unable to find blimp executable, ,ake sure Blimp is installed.", call. = FALSE)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the mplus.bayes() function ----------------------------
+#                            blimp.bayes() function ----------------------------
+#
+# - .map
+# - .hdi
+# - .rhat
+# - .split.chains
+# - .zscale
+# - .autocovariance
+# - .ess
+# - .mcse
+#
+# rstan package
+# https://github.com/stan-dev/rstan/blob/develop/rstan/rstan/R/monitor.R
+#
+# bayestestR package
+# https://github.com/easystats/bayestestR/blob/main/R/map_estimate.R
+# https://github.com/easystats/bayestestR/blob/main/R/hdi.R
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Modified map_estimate Function from the bayestestR Package ####
+#
+# Maximum A Posteriori probability estimate
+
+.map <- function(x) {
+
+  x.density <- density(na.omit(x), n = 2L^10L, bw = "SJ", from = range(x)[1L], to = range(x)[2L])
+  x.density$x[which.max(x.density$y)]
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Modified hdi Function from the bayestestR Package ####
+#
+# Highest density interval
+
+.hdi <- function(x, conf.level = NULL) {
+
+  x.sorted <- unname(sort.int(x, method = "quick"))
+
+  window.size <- ceiling(conf.level * length(x.sorted))
+
+  if (isTRUE(window.size < 2L)) { return(data.frame(low = NA, upp = NA)) }
+
+  nCIs <- length(x.sorted) - window.size
+
+  if (isTRUE(nCIs < 1L)) { return(data.frame(low = NA, upp = NA)) }
+
+  ci.width <- sapply(seq_len(nCIs), function(y) x.sorted[y + window.size] - x.sorted[y])
+
+  min.i <- which(ci.width == min(ci.width))
+
+  if (isTRUE(length(min.i) > 1L)) {
+
+    if (isTRUE(any(diff(sort(min.i)) != 1L))) {
+
+      min.i <- max(min.i)
+
+    } else {
+
+      min.i <- floor(mean(min.i))
+
+    }
+
+  }
+
+  c(low = x.sorted[min.i], upp = x.sorted[min.i + window.size])
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Modified rhat_rfun Function from the rstan Package ####
+#
+# Compute the Rhat convergence diagnostic for a single parameter
+
+.rhat <- function(x, fold, split, rank) {
+
+  # One chain
+  if (isTRUE(is.vector(x))) { dim(x) <- c(length(x), 1L) }
+
+  # Fold
+  if (isTRUE(fold)) { x <-  abs(x - median(x)) }
+
+  # Split chains
+  if (isTRUE(split)) { x <- .split.chains(x) }
+
+  # Rank-normalization
+  if (isTRUE(rank)) { x <- .zscale(x) }
+
+  # Number of iterations
+  n.iter <- nrow(x)
+
+  # Compute R hat
+  rhat <- sqrt((n.iter * var(colMeans(x)) / mean(apply(x, 2L, var)) + n.iter - 1L) / n.iter)
+
+  # Return value
+  return(rhat)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Modified split_chains Function from the rstan Package ####
+#
+# Split Markov Chains
+
+.split.chains <- function(x) {
+
+  # One chain
+  if (isTRUE(is.vector(x))) { dim(x) <- c(length(x), 1L) }
+
+  # Number of iterations
+  n.iter <- nrow(x)
+
+  # Combine by columns
+  x <- cbind(x[1L:floor(n.iter / 2L), ], x[ceiling(n.iter / 2L + 1L):n.iter, ])
+
+  # Return value
+  return(x)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Modified z_scale Function from the rstan Package ####
+#
+# Compute rank normalization for a numeric array
+
+.zscale <- function(x) {
+
+  z <- qnorm((rank(x, ties.method = "average") - 1L / 2L) / length(x))
+
+  z[is.na(x)] <- NA
+
+  if (!is.null(dim(x))) { z <- array(z, dim = dim(x), dimnames = dimnames(x)) }
+
+  return(z)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Modified autocovariance Function from the rstan Package ####
+#
+# Compute autocorrelation estimates for every lag for the specified input sequence
+# using a fast Fourier transform approach
+
+.autocovariance <- function(x) {
+
+  N <- length(x)
+
+  varx <- var(x)
+
+  if (isTRUE(varx == 0L)) { return(rep(0L, N)) }
+
+  ac <- Re(fft(abs(fft(c((x - mean(x)), rep.int(0L, (2L * nextn(N)) - N))))^2L, inverse = TRUE)[1L:N])
+
+  ac <- ac / ac[1L] * varx * (N - 1L) / N
+
+  return(ac)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Modified ess_rfun Function from the rstan Package ####
+#
+# Compute the effective sample size estimate for a sample of several chains for
+# one parameter
+
+.ess <- function(x, split, rank) {
+
+  # One chain
+  if (isTRUE(is.vector(x))) { dim(x) <- c(length(x), 1L) }
+
+  # Split chains
+  if (isTRUE(split)) { x <- .split.chains(x) }
+
+  # Rank-normalization
+  if (isTRUE(rank)) { x <- .zscale(x) }
+
+  chains <- ncol(x)
+  n_samples <- nrow(x)
+
+  if (isTRUE(n_samples < 3L)) { return(NA_real_) }
+
+  acov <- do.call(cbind, lapply(seq_len(chains), function(y) .autocovariance(x[, y])))
+
+  mean_var <- mean(acov[1L, ]) * n_samples / (n_samples - 1L)
+
+  var_plus <- mean_var * (n_samples - 1L) / n_samples
+
+  if (isTRUE(chains > 1L)) { var_plus <- var_plus + var(colMeans(x)) }
+
+  rho_hat_t <- rep.int(0L, n_samples)
+  t <- 0L
+  rho_hat_even <- 1L
+  rho_hat_t[t + 1L] <- rho_hat_even
+  rho_hat_odd <- 1L - (mean_var - mean(acov[t + 2L, ])) / var_plus
+  rho_hat_t[t + 2L] <- rho_hat_odd
+
+  while (isTRUE(t < nrow(acov) - 5L && !is.nan(rho_hat_even + rho_hat_odd) && (rho_hat_even + rho_hat_odd > 0L))) {
+
+    t <- t + 2L
+    rho_hat_even <- 1L - (mean_var - mean(acov[t + 1L, ])) / var_plus
+    rho_hat_odd <- 1L - (mean_var - mean(acov[t + 2L, ])) / var_plus
+
+    if (isTRUE((rho_hat_even + rho_hat_odd) >= 0L)) {
+
+      rho_hat_t[t + 1L] <- rho_hat_even
+      rho_hat_t[t + 2L] <- rho_hat_odd
+
+    }
+
+  }
+
+  max_t <- t
+
+  if (isTRUE(rho_hat_even > 0L)) { rho_hat_t[max_t + 1L] <- rho_hat_even }
+
+  t <- 0L
+  while (isTRUE(t <= max_t - 4L)) {
+
+    t <- t + 2L
+
+    if (isTRUE(rho_hat_t[t + 1L] + rho_hat_t[t + 2L] > rho_hat_t[t - 1L] + rho_hat_t[t])) {
+
+      rho_hat_t[t + 1L] = (rho_hat_t[t - 1L] + rho_hat_t[t]) / 2L
+      rho_hat_t[t + 2L] = rho_hat_t[t + 1L]
+
+    }
+
+  }
+
+  ess <- chains * n_samples
+
+  tau_hat <- -1L + 2L * sum(rho_hat_t[1L:max_t]) + rho_hat_t[max_t + 1L]
+
+  tau_hat <- max(tau_hat, 1L/log10(ess))
+
+  ess <- ess / tau_hat
+
+  return(ess)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Modified conv_quantile and  mcse_mean Function from the rstan Package ####
+#
+# Compute Monte Carlo standard error for the mean and a quantile
+
+.mcse <- function(x, quant = FALSE, prob = NULL, split = TRUE, rank = TRUE) {
+
+  # MCSE for a quantile
+  if (isTRUE(quant)) {
+
+    ess <- .ess(x <= quantile(x, prob), split = split, rank = rank)
+
+    a <- qbeta(c(0.1586553, 0.8413447), ess * prob + 1L, ess * (1L - prob) + 1L)
+    x.sort <- sort(x)
+    S <- length(x.sort)
+
+    mcse <- (x.sort[min(round(a[2L] * S), S)] - x.sort[max(round(a[1L] * S), 1L)] ) / 2L
+
+  # MCSE for the mean
+  } else {
+
+    mcse <- sd(x) / sqrt(.ess(x, split = split, rank = rank))
+
+  }
+
+  return(mcse)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
 # Internal functions for the coding() function ---------------------------------
 #
 # - .contr.sum
@@ -2219,8 +2753,8 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
 
       omega <- load.sum2 / (load.sum2 + resid.sum)
 
-      #...................
-      ### Hierarchical omega ####
+    #...................
+    ### Hierarchical omega ####
     } else {
 
       mod.cov <- paste(apply(combn(seq_len(length(varnames)), m = 2L), 2L, function(z) paste(varnames[z[1L]], "~~", varnames[z[2L]])), collapse = " \n ")
@@ -2244,8 +2778,8 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
     # Return object
     object <- list(mod.fit = mod.fit, omega = omega)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Omega for ordered-categorical items ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Omega for ordered-categorical items ####
   } else {
 
     object <- .catOmega(y, y.rescov = y.rescov, check = TRUE)
@@ -2473,71 +3007,114 @@ omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check
 ## Functions to identify the operating system ####
 
 is.windows <- function() {
+
   if (isTRUE(exists("Sys.info"))) {
+
     os <- Sys.info()[["sysname"]]
+
   } else {
+
     os <- .Platform$OS.type
+
   }
+
   os <- tolower(os)
   if (isTRUE(grepl("windows", os))) {
-    TRUE
+
+    return(TRUE)
+
   } else {
-    FALSE
+
+    return(FALSE)
+
   }
+
 }
 
 
 is.macos <- function() {
+
   if (isTRUE(exists("Sys.info"))) {
+
     os <- Sys.info()[["sysname"]]
+
   } else {
+
     os <- R.version$os
+
   }
+
   os <- tolower(os)
   if (isTRUE(grepl("darwin", os))) {
-    TRUE
+
+    return(TRUE)
+
   } else {
-    FALSE
+
+    return(FALSE)
+
   }
+
 }
 
 
 is.linux <- function() {
+
   if (isTRUE(exists("Sys.info"))) {
+
     os <- Sys.info()[["sysname"]]
+
   } else {
+
     os <- R.version$os
+
   }
+
   os <- tolower(os)
   if (isTRUE(grepl("linux", os))) {
-    TRUE
+
+    return(TRUE)
+
   } else {
-    FALSE
+
+    return(FALSE)
+
   }
+
 }
 
 os <- function() {
+
   windows <- is.windows()
   macos <- is.macos()
   linux <- is.linux()
 
   count <- windows + macos + linux
 
-  if (isTRUE(count > 1) || isTRUE(count == 0)) {
-    "unknown"
+  if (isTRUE(count > 1L) || isTRUE(count == 0L)) {
+
+    return("unknown")
+
   } else if (windows) {
-    "windows"
+
+    return("windows")
+
   } else if (macos) {
-    "macos"
+
+    return("macos")
+
   } else if (linux) {
-    "linux"
+
+    return("linux")
+
   }
+
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Detect the location/name of the Mplus command ####
 
-detectMplus <- function() {
+detect.mplus <- function() {
 
   ostype <- os()
 
@@ -2586,28 +3163,44 @@ detectMplus <- function() {
     suppressWarnings(mplus <- system("which mplus", intern = TRUE, ignore.stderr = TRUE))
 
     if (isTRUE(length(mplus) > 0 && file.exists(mplus))) {
+
       mplus <- "mplus"
+
     } else {
+
       if (isTRUE(file.exists("/Applications/Mplus/mplus"))) {
+
         mplus <- "/Applications/Mplus/mplus"
+
       } else {
 
         suppressWarnings(mplus <- system("which mpdemo", intern = TRUE, ignore.stderr = TRUE))
 
         if (isTRUE(length(mplus) > 0 && file.exists(mplus))) {
           mplus <- "mpdemo"
+
         } else {
+
           if (isTRUE(file.exists("/Applications/MplusDemo/mpdemo"))) {
+
             mplus <- "/Applications/MplusDemo/mpdemo"
+
           } else {
+
             stop("mplus and mpdemo not found on the system path or in the 'usual' /Applications/Mplus location. Ensure Mplus or the Mplus Demo are installed and that the location of the command is on your system path.")
+
           }
+
         }
+
       }
+
     }
+
   }
 
   if (isTRUE(identical(ostype, "linux"))) {
+
     failure_note <- paste0(
       "Mplus is either not installed or could not be found\n",
       "Try installing Mplus or if it already is installed,\n",
@@ -2616,47 +3209,52 @@ detectMplus <- function() {
       "  echo $PATH",
       "\n\nthen try something along these lines:\n\n",
       "  sudo ln -s /path/to/mplus/on/your/system /directory/on/your/PATH",
-      "\n"
-    )
+      "\n")
 
     mplus_found <- FALSE
 
     suppressWarnings(mplus <- system("which mplus", intern = TRUE, ignore.stderr = TRUE))
 
     if (isTRUE(length(mplus) > 0L && file.exists(mplus))) {
+
       mplus <- "mplus"
       mplus_found <- TRUE
+
     } else {
+
       if (isTRUE(dir.exists("/opt/mplus"))) {
-        test <- file.path(
-          list.dirs("/opt/mplus", recursive = FALSE)[1],
-          "mplus"
-        )
+
+        test <- file.path(list.dirs("/opt/mplus", recursive = FALSE)[1], "mplus")
         if (isTRUE(file.exists(test))) {
+
           mplus <- test
           mplus_found <- TRUE
+
         }
+
       } else {
 
         suppressWarnings(mplus <- system("which mpdemo", intern = TRUE, ignore.stderr = TRUE))
 
         if (isTRUE(length(mplus) > 0L && file.exists(mplus))) {
+
           mplus <- "mpdemo"
           mplus_found <- TRUE
+
         }
+
       }
+
     }
 
-    if (isTRUE(!mplus_found)) {
-      stop(failure_note)
-    }
+    if (isTRUE(!mplus_found)) { stop(failure_note) }
+
   }
 
-  if (isTRUE(identical(ostype, "unknown"))) {
-    stop("OS Type not known. Cannot auto detect Mplus command name. You must specify it.")
-  }
+  if (isTRUE(identical(ostype, "unknown"))) { stop("OS Type not known. Cannot auto detect Mplus command name. You must specify it.") }
 
   return(mplus)
+
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2678,19 +3276,26 @@ convert_to_filelist <- function(target, filefilter = NULL, recursive = FALSE) {
 
       if (isTRUE(!file.exists(directory))) stop("Cannot find directory: ", directory)
 
-      this_set <- list.files(path=directory, recursive=recursive, pattern=".*\\.inp?$", full.names = TRUE)
+      this_set <- list.files(path = directory, recursive = recursive, pattern = ".*\\.inp?$", full.names = TRUE)
       filelist <- c(filelist, this_set)
 
     } else {
       if (isTRUE(!grepl(".*\\.inp?$", tt, perl = TRUE))) {
+
         warning("Target: ", tt, "does not appear to be an .inp file. Ignoring it.")
+
         next
+
       } else {
+
         if (isTRUE(!file.exists(tt))) { stop("Cannot find input file: ", tt) }
 
         filelist <- c(filelist, tt)
+
       }
+
     }
+
   }
 
   if (isTRUE(!is.null(filefilter))) filelist <- grep(filefilter, filelist, perl = TRUE, value = TRUE)
@@ -2730,7 +3335,9 @@ splitFilePath <- function(filepath, normalize = FALSE) {
     if (normalize) { #convert to absolute path
       dirpart <- normalizePath(dirpart)
       absolute <- TRUE
+
     }
+
   }
 
   return(list(directory = dirpart, filename = relFilename, absolute = absolute))
@@ -2741,31 +3348,64 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #
 # Internal functions for the mplus() and mplus.update() function ---------------
+#                        the blimp() and blimp.update() function ---------------
 #
 # - .extract.section
 
 # Function for Extracting Input Command Sections ####
 .extract.section <- function(section, x, section.pos) {
 
+  # Sort section position
+  section.pos <- sort(section.pos)
+
   # Split input
   split.x <- strsplit(x, "")[[1L]]
 
-  # Start and end position of the section
-  start <- as.numeric(gregexec(section, toupper(x))[[1L]])
+  # Start position of the section
+  start <- setdiff(as.numeric(gregexec(section, toupper(x))[[1L]]),
+                   c(as.numeric(gregexec(paste0("\\.", section), toupper(x))[[1L]]) + 1L, as.numeric(gregexec(paste0("\\_", section), toupper(x))[[1L]]) + 1L, as.numeric(gregexec("SAVEDATA:", toupper(x))[[1L]]) + 4L))
 
-  if (isTRUE(length(start) > 1L)) { stop(paste0("There are more than one ", dQuote(section), " sections in the input text."), call. = FALSE) }
+  # Multiple sections
+  if (isTRUE(length(start) > 1L && section != "TEST:")) {
 
-  end <- if (isTRUE(any(section.pos > start))) { section.pos[which(section.pos > start)][1L] - 1L } else { length(split.x) }
+    stop(paste0("There are more than one ", dQuote(section), " sections in the input text."), call. = FALSE)
 
-  # Extract section, remove "", and paste "\n"
-  object <- sapply(misty::chr.omit(misty::chr.trim(strsplit(paste(split.x[start:end], collapse = ""), "\n")[1L], side = "right", check = FALSE), check = FALSE),
-                   function(y) if (grepl(";", y)) { paste0(y, "\n") } else { y }, USE.NAMES = FALSE)
+  # One section
+  } else if (isTRUE(length(start) == 1L)) {
 
-  # Remove last "\n"
-  object[length(object)] <- gsub("\n", "", object[length(object)])
+    # End position of the section
+    end <- if (isTRUE(any(section.pos > start))) { section.pos[which(section.pos > start)][1L] - 1L } else { length(split.x) }
 
-  # Collapse with "\n" and return object
-  object <- paste(object, collapse = "\n")
+    # Extract section
+    object <- misty::chr.trim(strsplit(paste(split.x[start:end], collapse = ""), "\n")[1L], side = "right", check = FALSE)
+
+    # Remove last "\n"
+    object[length(object)] <- gsub("\n", "", object[length(object)])
+
+    # Collapse with "\n" and return object
+    object <- paste(object, collapse = "\n")
+
+  # Multiple TEST: sections in Blimp
+  } else if (isTRUE(length(start) > 1L)) {
+
+    # End position of the section
+    end <- sapply(start, function(y) {
+
+      if (isTRUE(any(section.pos > y))) { section.pos[which(section.pos > y)][1L] - 1L } else { length(split.x) }
+
+    })
+
+    # Extract section
+    object <- sapply(seq_along(start), function(y) {
+
+      misty::chr.trim(strsplit(paste(split.x[start[y]:end[y]], collapse = ""), "\n")[1L], side = "right", check = FALSE)
+
+    })
+
+    # Paste sections
+    object <- paste(object, collapse = "\n")
+
+  }
 
   return(object)
 
@@ -2815,6 +3455,1228 @@ splitFilePath <- function(filepath, normalize = FALSE) {
   }
 
   return(invisible(input))
+
+}
+
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the na.auxiliary() function --------------------------------
+
+.cohens.d.na.auxiliary <- function(formula, data, weighted = TRUE, correct = FALSE) {
+
+  #-----------------------------------------------------------------------------------
+  # Formula
+
+  # Variables
+  var.formula <- all.vars(as.formula(formula))
+
+  # Outcome(s)
+  y.var <- var.formula[-length(var.formula)]
+
+  # Grouping variable
+  group.var <- var.formula[length(var.formula)]
+
+  # Data
+  data <- as.data.frame(data[, var.formula], stringsAsFactors = FALSE)
+
+  #...................
+  # Data and Arguments
+
+  # Outcome
+  x.dat <- data[, y.var]
+
+  # Grouping
+  group.dat <- data[, group.var]
+
+  #...................
+  # Descriptives
+
+  # Mean difference
+  x.diff <- diff(tapply(x.dat, group.dat, mean, na.rm = TRUE))
+
+  # Sample size by group
+  n.group <- tapply(x.dat, group.dat, function(y) length(na.omit(y)))
+
+  #...................
+  # Standard deviation
+
+  # Variance by group
+  var.group <- tapply(x.dat, group.dat, var, na.rm = TRUE)
+
+  # Weighted pooled standard deviation
+  if (isTRUE(weighted)) {
+
+    sd.group <- sqrt(((n.group[1L] - 1L)*var.group[1] + (n.group[2L] - 1L)*var.group[2L]) / (sum(n.group) - 2L))
+
+    # Unweigted pooled standard deviation
+  } else {
+
+    sd.group <- sum(var.group) / 2L
+
+  }
+
+  #........................................
+  # Cohen's d estimate
+
+  estimate <- x.diff / sd.group
+
+  #........................................
+  # Correction factor
+
+  # Bias-corrected Cohen's d
+  if (isTRUE(correct && weighted)) {
+
+    v <- sum(n.group) - 2L
+
+    # Correction factor based on gamma function
+    if (isTRUE(sum(n.group) < 200L)) {
+
+      corr.factor <- gamma(0.5*v) / ((sqrt(v / 2)) * gamma(0.5 * (v - 1L)))
+
+      # Correction factor based on approximation
+    } else {
+
+      corr.factor <- (1L - (3L / (4L * v - 1L)))
+
+    }
+
+    estimate <- estimate*corr.factor
+
+  }
+
+  return(estimate)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the na.test() function --------------------------------
+#
+# - .LittleMCAR
+# - .TestMCARNormality
+# - .OrderMissing
+# - .DelLessData
+# - .Mls
+# - .Sexpect
+# - .Impute
+# - .Mimpute
+# - .MimputeS
+# - .Hawkins
+# - .TestUNey
+# - .SimNey
+# - .AndersonDarling
+#
+# BaylorEdPsych:
+# https://rdrr.io/cran/BaylorEdPsych/src/R/LittleMCAR.R
+#
+# MissMech
+# https://github.com/cran/MissMech/tree/master/R
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Little's missing completely at random (MCAR) test ####
+
+.LittleMCAR <- function(x) {
+
+  n.var <- ncol(x)
+  r <- 1L * is.na(x)
+
+  x.mp <- data.frame(cbind(x, ((r %*% (2L^((seq_len(n.var) - 1L)))) + 1L)))
+  colnames(x.mp) <- c(colnames(x), "MisPat")
+
+  n.mis.pat <- length(unique(x.mp$MisPat))
+
+  gmean <- suppressWarnings(mvnmle::mlest(x)$muhat)
+  gcov <- suppressWarnings(mvnmle::mlest(x)$sigmahat)
+  colnames(gcov) <- rownames(gcov) <- colnames(x)
+
+  x.mp$MisPat2 <- rep(NA, nrow(x))
+  for (i in seq_len(n.mis.pat)) { x.mp$MisPat2[x.mp$MisPat == sort(unique(x.mp$MisPat), partial = (i))[i]] <- i }
+
+  x.mp$MisPat <- x.mp$MisPat2
+  x.mp <- x.mp[, -which(names(x.mp) %in% "MisPat2")]
+
+  datasets <- list()
+  for (i in seq_len(n.mis.pat)) { datasets[[paste0("DataSet", i)]] <- x.mp[which(x.mp$MisPat == i), seq_len(n.var)] }
+
+  kj <- 0L
+  for (i in seq_len(n.mis.pat)) {
+
+    no.na <- as.matrix(1L * !is.na(colSums(datasets[[i]])))
+
+    kj <- kj + colSums(no.na)
+
+  }
+
+  df <- kj - n.var
+  d2 <- 0L
+  for (i in seq_len(n.mis.pat)) {
+
+    mean <- (colMeans(datasets[[i]]) - gmean)
+    mean <- mean[!is.na(mean)]
+    keep <- 1L * !is.na(colSums(datasets[[i]]))
+    keep <- keep[which(keep[seq_len(n.var)] != 0L)]
+    cov <- gcov
+    cov <- cov[which(rownames(cov) %in% names(keep)), which(colnames(cov) %in% names(keep))]
+    d2 <- as.numeric(d2 + (sum(x.mp$MisPat == i)*(t(mean) %*% solve(cov) %*% mean)))
+
+  }
+
+  return(list(chi.square = d2, df = df, p.value = 1L - pchisq(d2, df), missing.patterns = n.mis.pat))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Testing Homoscedasticity, Multivariate Normality, and MCAR ####
+
+.TestMCARNormality <- function(data, delete = 6, m = 20, method = "npar", nrep = 10000,
+                               n.min = 30, seed = NULL, pool = "med", impdat = NULL) {
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Imputation ####
+
+  if (isTRUE(is.null(impdat))) {
+
+    # Order missing data pattern
+    newdata <- .OrderMissing(data, delete)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Imputed Data Provided ####
+
+  } else {
+
+    # Number of imputations
+    m <- impdat$m
+
+    # Order missing data pattern
+    newdata <- .OrderMissing(impdat$data[, colnames(data)], delete)
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data Check ####
+
+  if(isTRUE(length(newdata$data) == 0L)) { stop("There are no cases left after deleting insufficient cases.", call. = FALSE) }
+
+  if (isTRUE(newdata$g == 1L)) { stop("There is only one missing data pattern present.", call. = FALSE) }
+
+  if (isTRUE(sum(newdata$patcnt == 1L) > 0L)) { stop("At least 2 cases needed in each missing data patterns.", call. = FALSE) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Extract Data ####
+
+  y <- newdata$data
+  patused <- newdata$patused
+  patcnt <- newdata$patcnt
+  spatcnt <- newdata$spatcnt
+  caseorder <- newdata$caseorder
+  removedcases <- newdata$removedcases
+
+  colnam <- colnames(patused)
+  n <- nrow(y)
+  p <- ncol(y)
+  g <- newdata$g
+
+  spatcntz <- c(0L, spatcnt)
+  pvalsn <- matrix(0L, m, g)
+  adistar <- matrix(0L, m, g)
+  pnormality <- c()
+  x <- vector("list", g)
+  n4sim <- vector("list", g)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Imputation ####
+
+  if (isTRUE(is.null(impdat))) {
+
+    # Set seed
+    if (isTRUE(!is.null(seed))) { set.seed(seed) }
+
+    yimp <- y
+
+    #...................
+    ### Non-Parametric ####
+
+    if (isTRUE(method == "npar")) {
+
+      iscomp <- rowSums(patused, na.rm = TRUE) == p
+
+      cind <- which(iscomp)
+      ncomp <- patcnt[cind]
+
+      if (isTRUE(length(ncomp) == 0L)) { ncomp <- 0L }
+
+      use.normal <- FALSE
+
+      if (isTRUE(ncomp >= 10L && ncomp >= 2L*p)) {
+
+        compy <- y[seq(spatcntz[cind] + 1L, spatcntz[cind + 1L]), ]
+        ybar <- matrix(colMeans(compy))
+        sbar <- stats::cov(compy)
+        resid <- (ncomp / (ncomp - 1L))^0.5 * (compy - matrix(ybar, ncomp, p, byrow = TRUE))
+
+      } else {
+
+        warning("There are not sufficient number of complete cases for non-parametric imputation, imputation method \"normal\" will be used instead.", call. = FALSE)
+
+        use.normal <- TRUE
+
+        mu <- matrix(0L, p, 1L)
+        sig <- diag(1L, p)
+
+        emest <- .Mls(newdata, mu, sig, 1e-6)
+
+      }
+
+    #...................
+    ### Parametric Normal ####
+
+    } else {
+
+      mu <- matrix(0L, p, 1L)
+      sig <- diag(1L, p)
+
+      emest <- .Mls(newdata, mu, sig, 1e-6)
+
+    }
+
+    #...................
+    ### Impute and Analyze ####
+
+    for (k in seq_len(m)) {
+
+      #...................
+      ### Parametric Normal ####
+
+      if (isTRUE(method == "normal" || use.normal)) {
+
+        yimp <- .Impute(data = y, emest$mu, emest$sig, method = "normal")
+        yimp <- yimp$yimpOrdered
+
+      #...................
+      ### Non-Parametric ####
+
+      } else {
+
+        yimp <- .Impute(data = y, ybar, sbar, method = "npar", resid)$yimpOrdered
+
+      }
+
+      if (isTRUE(k == 1L)) { yimptemp <- yimp }
+
+      #...................
+      ### Hawkins Test ####
+
+      templist <- .Hawkins(yimp, spatcnt)
+      fij <- templist$fij
+      tail <- templist$a
+      ni <- templist$ni
+
+      for (i in seq_len(g)) {
+
+        if (isTRUE(ni[i] < n.min && k == 1L)) { n4sim[[i]] <- .SimNey(ni[i], nrep) }
+
+        templist <- .TestUNey(tail[[i]], nrep, sim = n4sim[[i]], n.min)
+        pn <- templist$pn
+        n4 <- templist$n4
+        pn <- pn + (pn == 0L) / nrep
+        pvalsn[k, i] <- pn
+
+      }
+
+      #...................
+      ### Anderson-Darling Non-Parametric Test ####
+
+      if (isTRUE(length(ni) < 2L)) { stop("Not enough groups for Anderson Darling test.", call. = FALSE) }
+
+      templist <- .AndersonDarling(fij, ni)
+      adistar[k, ] <- templist$adk.all
+      pnormality <- c(pnormality, templist$pn)
+
+    }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Imputed Data Provided ####
+
+  } else {
+
+    for (k in seq_len(m)) {
+
+      #...................
+      ### Hawkins Test ####
+
+      templist <- .Hawkins(as.matrix(mice::complete(impdat, action = k)[newdata$caseorder, colnam]), spatcnt)
+
+      fij <- templist$fij
+      tail <- templist$a
+      ni <- templist$ni
+
+      for (i in seq_len(g)) {
+
+        if (isTRUE(ni[i] < n.min && k == 1L)) { n4sim[[i]] <- .SimNey(ni[i], nrep) }
+
+        templist <- .TestUNey(tail[[i]], nrep, sim = n4sim[[i]], n.min)
+        pn <- templist$pn
+        n4 <- templist$n4
+        pn <- pn + (pn == 0L) / nrep
+        pvalsn[k, i] <- pn
+
+      }
+
+      #...................
+      ### Anderson-Darling Non-Parametric Test ####
+
+      if (isTRUE(length(ni) < 2L)) { stop("Not enough groups for Anderson Darling test.", call. = FALSE) }
+
+      templist <- .AndersonDarling(fij, ni)
+      adistar[k, ] <- templist$adk.all
+      pnormality <- c(pnormality, templist$pn)
+
+    }
+
+  }
+
+  #...................
+  ### Result Table ####
+
+  #### Test Statistics and p-Values ####
+  ts.hawkins <- -2L * rowSums(log(pvalsn))
+  p.hawkins <- stats::pchisq(-2L * rowSums(log(pvalsn)), 2L*g, lower.tail = FALSE)
+  ts.anderson <- rowSums(adistar)
+  p.anderson <- pnormality
+
+  switch(pool,
+         "m" = {
+
+           tsa.hawkins <- mean(ts.hawkins)
+           pa.hawkins <- mean(p.hawkins)
+           tsa.anderson <- mean(ts.anderson)
+           pa.anderson <- mean(p.anderson)
+
+         }, "med" = {
+
+           tsa.hawkins <- median(ts.hawkins)
+           pa.hawkins <- median(p.hawkins)
+           tsa.anderson <- median(ts.anderson)
+           pa.anderson <- median(p.anderson)
+
+         }, "min" = {
+
+           tsa.hawkins <- max(ts.hawkins)
+           pa.hawkins <- min(p.hawkins)
+           tsa.anderson <- max(ts.anderson)
+           pa.anderson <- min(p.anderson)
+
+         }, "max" = {
+
+           tsa.hawkins <- min(ts.hawkins)
+           pa.hawkins <- max(p.hawkins)
+           tsa.anderson <- min(ts.anderson)
+           pa.anderson <- max(p.anderson)
+
+         }, "random" = {
+
+           ind.hawkins <- sample(seq_along(ts.hawkins), size = 1L)
+           tsa.hawkins <- ts.hawkins[ind.hawkins]
+           pa.hawkins <- p.hawkins[ind.hawkins]
+
+           ind.anderson <- sample(seq_along(ts.anderson), size = 1L)
+           tsa.anderson <- ts.anderson[ind.anderson]
+           pa.anderson <- p.anderson[ind.anderson]
+
+         })
+
+  #### Analysis Data ####
+  if (isTRUE(length(removedcases) == 0L)) {
+
+    dataused <- data
+
+  } else {
+
+    dataused <- data[-1L * removedcases, ]
+
+  }
+
+  #### Return object ####
+  restab <- list(dat.analysis = dataused, dat.ordered =  y, case.order = caseorder, g = g, pattern = patused,  n.pattern = patcnt,
+                 t.hawkins = pvalsn, ts.hawkins = ts.hawkins, tsa.hawkins = tsa.hawkins, p.hawkins = p.hawkins, pa.hawkins = pa.hawkins,
+                 t.anderson = adistar, ts.anderson = ts.anderson, tsa.anderson = tsa.anderson, p.anderson = p.anderson, pa.anderson = pa.anderson)
+
+  return(restab)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Order Missing Data Pattern ####
+
+.OrderMissing <- function(y, del.lesscases = 0L) {
+
+  if (isTRUE(is.data.frame(y))) { y <- as.matrix(y) }
+
+  if (isTRUE(!is.matrix(y))) { stop("Data is not a matrix or data frame", call. = FALSE) }
+
+  if (isTRUE(length(y) == 0L)) { stop("Data is empty", call. = FALSE) }
+
+  names <- colnames(y)
+  pp <- ncol(y)
+  yfinal <- c()
+  patused <- c()
+  patcnt <- c()
+  caseorder <- c()
+  removedcases <- c()
+  ordertemp <- seq_len(nrow(y))
+  ntemp <- nrow(y)
+  ptemp <- ncol(y)
+  done <- FALSE
+  yatone <- FALSE
+
+  while (isTRUE(!done)) {
+
+    pattemp <- is.na(y[1L, ])
+    indin <- c()
+    indout <- c()
+    done <- TRUE
+
+    for (i in seq_len(ntemp)) {
+
+      if (isTRUE(all(is.na(y[i, ]) == pattemp))) {
+
+        indout <- c(indout, i)
+
+      } else {
+
+        indin <- c(indin, i)
+        done <- FALSE
+
+      }
+
+    }
+
+    if (isTRUE(length(indin) == 1L)) { yatone <- TRUE }
+
+    yfinal <- rbind(yfinal, y[indout, ])
+    y <- y[indin, ]
+    caseorder <- c(caseorder, ordertemp[indout])
+    ordertemp <- ordertemp[indin]
+    patcnt <- c(patcnt, length(indout))
+    patused <- rbind(patused, pattemp)
+
+    if (isTRUE(yatone)) {
+
+      pattemp <- is.na(y)
+      yfinal <- rbind(yfinal, matrix(y, ncol = pp))
+      y <- c()
+      indin <- c()
+      indout <- c(1L)
+      caseorder <- c(caseorder, ordertemp[indout])
+      ordertemp <- ordertemp[indin]
+      patcnt <- c(patcnt, length(indout))
+      patused <- rbind(patused, pattemp)
+      done <- TRUE
+
+    }
+
+    if (isTRUE(!done)) { ntemp <- nrow(y) }
+
+  }
+
+  caseorder <- c(caseorder, ordertemp)
+  patused <- ifelse(patused, NA, 1L)
+  rownames(patused) <- NULL
+  colnames(patused) <- names
+  dataorder <- list(data = yfinal, patused = patused, patcnt = patcnt,
+                    spatcnt = cumsum(patcnt), g = length(patcnt),
+                    caseorder = caseorder, removedcases = removedcases)
+
+  dataorder$call <- match.call()
+  class(dataorder) <- "orderpattern"
+
+  if (isTRUE(del.lesscases > 0L)) { dataorder <- .DelLessData(dataorder, del.lesscases) }
+
+  dataorder$patused <- matrix(dataorder$patused, ncol = pp)
+  colnames(dataorder$patused) <- names
+
+  return(dataorder)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Removes groups with identical missing data patterns ####
+
+.DelLessData <- function(data, ncases = 0) {
+
+  if (isTRUE(length(data) == 0L)) { stop("Data is empty", call. = FALSE) }
+
+  if (isTRUE(is.matrix(data))) { data <- .OrderMissing(data) }
+
+  ind <- which(data$patcnt <= ncases)
+  spatcntz <- c(0L, data$spatcnt)
+
+  rm <- c()
+  removedcases <- c()
+
+  if (isTRUE(length(ind) != 0L)) {
+
+    for (i in seq_len(length(ind))) {
+
+      rm <- c(rm, seq(spatcntz[ind[i]] + 1L, spatcntz[ind[i] + 1L]));
+
+    }
+
+    y <- data$data[-1L * rm, ]
+    removedcases <- data$caseorder[rm]
+    patused <- data$patused[-1L * ind, ]
+    patcnt <- data$patcnt[-1L * ind]
+    caseorder <- data$caseorder[-1L * rm]
+    spatcnt <- cumsum(patcnt)
+
+  } else {
+
+    patused <- data$patused
+    patcnt <- data$patcnt
+    spatcnt <- data$spatcnt
+    caseorder <- data$caseorder
+    y <- data$data
+
+  }
+
+  newdata <- list(data = y, patused = patused, patcnt = patcnt,
+                  spatcnt = spatcnt, g = length(patcnt), caseorder = caseorder,
+                  removedcases = removedcases)
+
+  class(newdata) <- "orderpattern"
+  return(newdata)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## ML Estimates of Mean and Covariance Based on Incomplete Data ####
+
+.Mls <- function(data, mu = NA, sig = NA, tol = 1e-6, Hessian = FALSE) {
+
+  if (isTRUE(!is.matrix(data) && !inherits(data, "orderpattern"))) { stop("Data must have the classes of matrix or orderpattern.", call. = FALSE) }
+
+  if (isTRUE(is.matrix(data))) {
+
+    allempty <- which(rowSums(!is.na(data)) == 0L)
+    if (isTRUE(length(allempty) != 0L)) { data <- data[rowSums(!is.na(data)) != 0L, ] }
+
+    data <- .OrderMissing(data)
+
+  }
+
+  if (isTRUE(inherits(data, "orderpattern"))) {
+
+    allempty <- which(rowSums(!is.na(data$data)) == 0L)
+
+    if (isTRUE(length(allempty) != 0L)) {
+
+      data <- data$data
+      data <- data[rowSums(!is.na(data)) != 0L, ]
+
+      data <- .OrderMissing(data)
+
+    }
+
+  }
+
+  if (isTRUE(length(data$data) == 0L)) { stop("Data is empty", call. = FALSE) }
+
+  if (isTRUE(ncol(data$data) < 2L)) { stop("More than one variable is required.", call. = FALSE) }
+
+  y <- data$data
+  patused <- data$patused
+  spatcnt <- data$spatcnt
+
+  if (isTRUE(is.na(mu[1L]))) {
+
+    mu <- matrix(0L, ncol(y), 1L)
+    sig <- diag(1L, ncol(y))
+
+  }
+
+  itcnt <- 0L
+  em <- 0L
+
+  repeat {
+
+    emtemp <- .Sexpect(y, mu, sig, patused, spatcnt)
+    ysbar <- emtemp$ysbar
+    sstar <- emtemp$sstar
+    em <- max(abs(sstar - mu %*% t(mu) - sig), abs(mu - ysbar))
+    mu <- ysbar
+    sig <- sstar - mu %*% t(mu)
+    itcnt <- itcnt + 1L
+
+    if (isTRUE(!(em > tol || itcnt < 2L))) break
+
+  }
+
+  rownames(mu) <- colnames(y)
+  colnames(sig) <- colnames(y)
+
+  if (isTRUE(Hessian)) {
+
+    templist <- .Ddf(y, mu, sig)
+    hessian <- templist$dd
+    stderror <- templist$se
+
+    return (list(mu = mu, sig = sig, hessian = hessian, stderror = stderror, iteration = itcnt))
+
+  }
+
+  return(list(mu = mu, sig = sig, iteration = itcnt))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.Sexpect <- function(y, mu, sig, patused, spatcnt) {
+
+  n <-  nrow(y)
+  pp <- ncol(y)
+  sstar <- matrix(0L, pp, pp)
+  ysbar <- matrix(0L, nrow(mu), ncol(mu))
+  first <- 1L
+
+  for (i in seq_len(length(spatcnt))) {
+
+    ni <- spatcnt[i] - first + 1L
+    stemp <- matrix(0L, pp, pp)
+    indm <- which(is.na(patused[i, ]))
+    indo <- which(!is.na(patused[i, ]))
+    yo <- matrix(y[first:spatcnt[i], indo], ni, length(indo))
+    first <- spatcnt[i] + 1L
+    muo <- mu[indo]
+    mum <- mu[indm]
+    sigoo <- sig[indo, indo]
+    sigooi <- solve(sigoo)
+    soo <- t(yo) %*% yo
+    stemp[indo, indo] <- soo
+    ystemp <- matrix(0L, ni, pp)
+    ystemp[, indo] <- yo
+
+    if (isTRUE(length(indm)!= 0L)) {
+
+      sigmo <- matrix(sig[indm, indo], length(indm), length(indo))
+      sigmm <- sig[indm, indm]
+      temp1 <- matrix(mum, ni, length(indm), byrow = TRUE)
+      temp2 <- yo - matrix(muo, ni, length(indo), byrow = TRUE)
+      ym <- temp1 + temp2 %*% sigooi %*% t(sigmo)
+      som <- t(yo) %*% ym
+      smm <- ni * (sigmm - sigmo %*% sigooi %*% t(sigmo))+ t(ym)%*%ym
+      stemp[indo, indm] <- som
+      stemp[indm, indo] <- t(som)
+      stemp[indm, indm] <- smm
+      ystemp[, indm] <- ym
+
+    }
+
+    sstar <- sstar + stemp
+    if (isTRUE(ni == 1L)) {
+
+      ysbar <- t(ystemp) + ysbar
+
+    } else {
+
+      ysbar <- colSums(ystemp) + ysbar
+
+    }
+
+  }
+
+  ysbar <- (1L / n) * ysbar
+  sstar <- (1L / n) * sstar
+  sstar <- (sstar + t(sstar)) / 2L
+
+  return(list(ysbar = ysbar, sstar = sstar))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Hessian of the Observed Data ####
+
+.Ddf <- function(data, mu, sig) {
+
+  y <- data
+  n <- nrow(y)
+  p <- ncol(y)
+  ns <- p * (p + 1L) / 2L
+  nparam <- ns + p
+  ddss <- matrix(0L, ns, ns)
+  ddmm <- matrix(0L, p, p)
+  ddsm <- matrix(0L, ns, p)
+
+  for (i in seq_len(n)) {
+
+    obs <- which(!is.na(y[i, ]))
+    lo <- length(obs)
+    tmp <- cbind(rep(obs, 1L, each = lo), rep(obs, lo))
+    tmp <- matrix(tmp[tmp[, 1L] >= tmp[, 2L], ], ncol = 2L)
+    lolo = lo*(lo + 1L) / 2L
+    subsig <- sig[obs, obs]
+    submu <- mu[obs, ]
+    temp <- matrix(y[i, obs] - submu, nrow = 1L)
+    a <- solve(subsig)
+    b <- a %*% (2L * t(temp) %*% temp - subsig) * a
+    d <- temp %*% a
+    ddimm <- 2L * a
+
+    ddmm[obs, obs] <- ddmm[obs, obs] + ddimm
+
+    rcnt <- 0L
+    ddism <- matrix(0L, lolo, lo)
+    for (k in seq_len(lo)) {
+
+      for (l in seq_len(k)) {
+
+        rcnt <- rcnt + 1L
+        ccnt <- 0L
+        for (kk in seq_len(lo)) {
+
+          ccnt <- ccnt + 1L
+          ddism[rcnt, ccnt] <- 2L * (1L - 0.5 * (k == l)) * (a[kk, l] %*% d[k] + a[kk, k] %*% d[l])
+
+        }
+
+      }
+
+    }
+
+    for (k in seq_len(lolo)) {
+
+      par1 <- tmp[k, 1L] * (tmp[k, 1L] -1L) / 2L + tmp[k, 2L]
+      for (j in seq_len(lo)) {
+
+        ddsm[par1, obs[j]] <- ddsm[par1, obs[j]] + ddism[k, j]
+
+      }
+
+    }
+
+    ssi <- matrix(0L, lolo, lolo)
+    for (m in seq_len(lolo)) {
+
+      u <- which(obs == tmp[m, 1L])
+      v <- which(obs == tmp[m, 2L])
+
+      for (q in seq_len(m)) {
+
+        k <- which(obs == tmp[q, 1L])
+        l <- which(obs == tmp[q, 2L])
+
+        ssi[m, q] <- (b[v, k] * a[l, u] + b[v, l] * a[k, u] + b[u, k] * a [l, v] + b[u, l] * a[k, v]) * (1L - 0.5 * (u == v)) * (1L - 0.5 * (k == l))
+
+      }
+
+    }
+
+    for (k in seq_len(lolo)) {
+
+      par1 <- tmp[k, 1L] * (tmp[k, 1L] - 1L) / 2L + tmp[k, 2L]
+      for (l in seq_len(k)) {
+
+        par2 <- tmp[l, 1L] * (tmp[l, 1L] - 1L) / 2L + tmp[l, 2L]
+        ddss[par1, par2] <- ddss[par1, par2] + ssi[k, l]
+        ddss[par2, par1] <- ddss[par1, par2]
+
+      }
+
+    }
+
+  }
+
+  dd <- -1L * rbind(cbind(ddmm, t(ddsm)), cbind(ddsm, ddss)) / 2L
+  se <- -solve(dd)
+
+  return(list(dd = dd, se = se))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Parametric and Non-Parameric Imputation ####
+
+.Impute <- function(data, mu = NA, sig = NA, method = "normal", resid = NA) {
+
+  if (isTRUE(!is.matrix(data) && !inherits(data, "orderpattern"))) { stop("Data must have the classes of matrix or orderpattern.", call. = FALSE) }
+
+  if (isTRUE(is.matrix(data))) {
+
+    allempty <- which(rowSums(!is.na(data)) == 0L)
+
+    if (isTRUE(length(allempty) != 0L)) {
+
+      data <- data[rowSums(!is.na(data)) != 0L, ]
+
+      warning(length(allempty), " Cases with all variables missing have been removed from the data.", call. = FALSE)
+
+    }
+
+    data <- .OrderMissing(data)
+
+  }
+
+  if (isTRUE(inherits(data, "orderpattern"))) {
+
+    allempty <- which(rowSums(!is.na(data$data)) == 0L)
+
+    if (isTRUE(length(allempty) != 0L)) {
+
+      data <- data$data
+      data <- data[rowSums(!is.na(data)) != 0L, ]
+
+      warning(length(allempty), " Cases with all variables missing have been removed from the data.", call. = FALSE)
+
+      data <- .OrderMissing(data)
+
+    }
+
+  }
+
+  if(isTRUE(length(data$data) == 0L)) { stop("Data is empty", call. = FALSE) }
+
+  if (isTRUE(ncol(data$data) < 2L)) { stop("More than one variable is required.", call. = FALSE) }
+
+  y <- data$data
+  patused <- data$patused
+  spatcnt <- data$spatcnt
+  patcnt <- data$patcnt
+  g <- data$g
+  caseorder <- data$caseorder
+  spatcntz <- c(0L, spatcnt)
+  p <- ncol(y)
+  n <- nrow(y)
+  yimp <- y
+  use.normal <- TRUE
+
+  #-----------------------------------------------------------------------------
+  # Imputation Method: Distribution Free
+
+  if (isTRUE(method == "npar")) {
+
+    if (isTRUE(is.na(mu[1L]))) {
+
+      ybar <- matrix(0L, p, 1L)
+      sbar <- diag(1L, p)
+
+      cind <- which(rowSums(patused, na.rm = TRUE) == p)
+      ncomp <- patcnt[cind]
+      use.normal <- FALSE
+      if (isTRUE(ncomp >= 10L && ncomp >= 2L*p)) {
+
+        compy <- y[seq(spatcntz[cind] + 1L, spatcntz[cind + 1L]), ]
+        ybar <- matrix(colMeans(compy))
+        sbar <- stats::cov(compy)
+
+        if (isTRUE(is.na(resid[1L]))) {
+
+          resid <- (ncomp / (ncomp - 1)) ^ 0.5 * (compy - matrix(ybar, ncomp, p, byrow = TRUE))
+
+        }
+
+      } else {
+
+        stop("There is not sufficient number of complete cases.\n  Dist.free imputation requires a least 10 complete cases\n  or 2*number of variables, whichever is bigger.\n", call. = FALSE)
+
+      }
+
+    }
+
+    if (isTRUE(!is.na(mu[1L]))) {
+
+      ybar <- mu
+      sbar <- sig
+      cind <- which(rowSums(patused, na.rm = TRUE) == p)
+      ncomp <- patcnt[cind]
+      use.normal <- FALSE
+      compy <- y[seq(spatcntz[cind] + 1L, spatcntz[cind + 1L]), ]
+
+      if (isTRUE(is.na(resid[1L]))) {
+
+        resid <- (ncomp / (ncomp - 1L)) ^ 0.5 * (compy - matrix(ybar, ncomp, p, byrow = TRUE))
+
+      }
+
+    }
+
+    resstar <- resid[sample(ncomp, n - ncomp, replace = TRUE), ]
+    indres1 <- 1L
+
+    for (i in seq_len(g)) {
+
+      if (isTRUE(sum(patused[i, ], na.rm = TRUE) != p)) {
+
+        test <- y[(spatcntz[i] + 1L) : spatcntz[i + 1L], ]
+        indres2 <- indres1 + patcnt[i] - 1L
+        test <- .MimputeS(matrix(test, ncol = p), patused[i, ], ybar, sbar, matrix(resstar[indres1:indres2, ], ncol = p))
+        indres1 <- indres2 + 1L
+
+        yimp[(spatcntz[i] + 1L) : spatcntz[i + 1L], ] <- test
+
+      }
+
+    }
+
+  }
+
+  #-----------------------------------------------------------------------------
+  # Imputation Method: Normal
+
+  if (isTRUE(method == "normal" | use.normal)) {
+
+    if (isTRUE(is.na(mu[1L]))) {
+
+      emest <- .Mls(data, tol = 1e-6)
+      mu <- emest$mu
+      sig <- emest$sig
+
+    }
+
+    for (i in seq_len(g)) {
+
+      if (sum(patused[i, ], na.rm = TRUE) != p) {
+
+        test <- y[(spatcntz[i] + 1L) : spatcntz[i + 1L], ]
+        test <- .Mimpute(matrix(test, ncol = p), patused[i, ], mu, sig)
+        yimp[(spatcntz[i] + 1L) : spatcntz[i + 1L], ] <- test
+
+      }
+
+    }
+
+  }
+
+  imputed <- list(yimp = yimp[order(caseorder), ], yimpOrdered = yimp, caseorder = caseorder, patused = patused, patcnt = patcnt)
+
+  return(imputed)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.Mimpute <- function(data, patused, mu, sig) {
+
+  ni <- nrow(data)
+  indm <- which(is.na(patused))
+  indo <- which(!is.na(patused))
+  pm <- length(indm)
+  sigmo <- matrix(sig[indm, indo], pm, length(indo))
+  ss1 <- sigmo %*% solve(sig[indo, indo])
+  varymiss <- matrix(sig[indm, indm], pm, pm) - ss1 %*% t(sigmo)
+
+  if (isTRUE(pm == 1L)) {
+
+    a <- sqrt(varymiss)
+
+  } else {
+
+    svdvar <- svd(varymiss)
+    a <- diag(sqrt(svdvar$d)) %*% t(svdvar$u)
+
+  }
+
+  data[, indm] <- matrix(rnorm(ni * pm), ni, pm) %*% a + (matrix(mu[indm], ni, pm, byrow = TRUE) + (data[, indo] - matrix(mu[indo], ni, length(indo), byrow = TRUE)) %*% t(ss1))
+
+  return(data)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.MimputeS <- function(data, patused, y1, s1, e) {
+
+  ni <- nrow(data)
+  indm <- which(is.na(patused))
+  indo <- which(!is.na(patused))
+  pm <- length(indm)
+  po <- length(indo)
+  a <- matrix(s1[indm, indo], pm, po) %*% solve(s1[indo, indo])
+  zij <- (matrix(y1[indm], ni, pm, byrow = TRUE) + (data[, indo] - matrix(y1[indo], ni, po, byrow = TRUE)) %*% t(a)) + matrix(e[, indm], ni, pm) - matrix(e[, indo], ni, po) %*% t(a)
+  data[, indm] <- zij
+
+  return(data)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Test Statistic for the Hawkins Homoscedasticity Test ####
+
+.Hawkins <- function(y, spatcnt) {
+
+  n <- nrow(y)
+  p <- ncol(y)
+  g <- length(spatcnt)
+
+  spool <- matrix(0L, p, p)
+  gind <- c(0L, spatcnt)
+  ygc <- matrix(0L, n, p)
+  ni <- matrix(0L, g, 1L)
+
+  for (i in seq_len(g)) {
+
+    yg <- y[seq(gind[i] + 1L, gind[i + 1L]), ]
+    ni[i] <- nrow(yg)
+    spool <- spool + (ni[i] - 1L) * stats::cov(yg)
+    ygmean <- colMeans(yg)
+    ygc[seq(gind[i] + 1L, gind[i + 1L]), ] <- yg - matrix(ygmean, ni[i], p, byrow = TRUE)
+
+  }
+
+  spool <- solve(spool / (n - g))
+  f <- matrix(0L, n, 1L)
+  nu <- n - g - 1L
+  a <- vector("list", g)
+
+  for (i in seq_len(g)) {
+
+    vij <- ygc [seq(gind[i] + 1L, gind[i + 1L]), ]
+    vij <- rowSums(vij %*% spool * vij)
+    vij <-  vij*ni[i]
+    f[seq(gind[i] + 1L, gind[i + 1L])] <- ((n - g - p) * vij)/ (p * ((ni[i] - 1L ) * (n - g) - vij))
+    a[[i]] <- 1L - stats::pf(f[seq(gind[i] + 1L, gind[i + 1L])], p, (nu - p + 1L))
+
+  }
+
+  return(list(fij = f, a = a, ni = ni))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Test of Goodness of Fit (Uniformity) ####
+
+.TestUNey <- function(x, nrep = 10000, sim = NA, n.min = 30) {
+
+  n <- length(x)
+  pi <- .LegNorm(x)
+
+  n4 <- (colSums(pi$p1)^2 + colSums(pi$p2)^2L + colSums(pi$p3)^2L + colSums(pi$p4)^2L) / n
+
+  if (isTRUE(n < n.min)) {
+
+    if (isTRUE(is.na(sim[1L]))) {
+
+      sim <- .SimNey(n, nrep)
+
+    }
+
+    pn <- length(which(sim > n4)) / nrep
+
+  } else {
+
+    pn <- stats::pchisq(n4, 4L, lower.tail = FALSE)
+
+  }
+
+  return(list(pn = pn, n4 = n4))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.SimNey <- function(n, nrep) {
+
+  pi <- .LegNorm(matrix(stats::runif(nrep * n), ncol = nrep))
+  n4sim <- sort((colSums(pi$p1)^2L + colSums(pi$p2)^2L + colSums(pi$p3)^2L + colSums(pi$p4)^2L) / n )
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Evaluating Legendre's Polynomials of Degree 1, 2, 3, or 4 ####
+
+.LegNorm <- function(x) {
+
+  if (isTRUE(!is.matrix(x))) { x <- as.matrix(x) }
+
+  x <- 2L * x - 1L
+  p0 <- matrix(1,nrow(x), ncol(x))
+  p1 <- x
+  p2 <- (3L * x * p1 - p0) / 2L
+  p3 <- (5L * x * p2 - 2L * p1) / 3L
+  p4 <- (7L * x * p3 - 3L * p2) / 4L
+
+  p1 <- sqrt(3L) * p1
+  p2 <- sqrt(5L) * p2
+  p3 <- sqrt(7L) * p3
+  p4 <- 3L * p4
+
+  return(list(p1 = p1, p2 = p2, p3 = p3, p4 = p4))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## K-Sample Anderson Darling Test ####
+
+.AndersonDarling <- function(x, ni) {
+
+  if (isTRUE(length(ni) < 2L)) { stop("Not enough groups for the Anderson-Darling k-sample test.") }
+
+  k <- length(ni)
+  ni.z <- c(0L, cumsum(ni))
+  n <- length(x)
+  x.sort <- sort(x)[seq_len(n - 1L)]
+  ind <- which(duplicated(x.sort) == 0L)
+  hj <- (c(ind, length(x.sort) + 1L) - c(0L, ind))[2L:(length(ind) + 1L)]
+  hn <- cumsum(hj)
+  zj <- x.sort[ind]
+  adk <- 0L
+  adk.all <- matrix(0L, k, 1L)
+
+  for (i in seq_len(k)) {
+
+    ind <- (ni.z[i] + 1L):ni.z[i + 1L]
+    templist <- expand.grid(zj, x[ind])
+    b <- templist[, 1L] == templist[, 2L]
+    fij <- rowSums(matrix(b, length(zj)))
+    mij <- cumsum(fij)
+    num <- (n * mij - ni[i] * hn)^ 2L
+    dem <- hn*(n - hn)
+    adk.all[i] <- (1L / ni[i] * sum(hj * (num / dem)))
+    adk <- adk + adk.all[i]
+
+  }
+
+  adk <- (1L / n) * adk
+  adk.all <- adk.all / n
+
+  j <- sum(1L / ni)
+  i <- seq_len(n - 1)
+  h <- sum(1L / i)
+  g <- 0L
+
+  for (i in seq_len(n - 2L)) { g <- g + (1L / (n - i)) * sum(1L / seq((i + 1L), (n - 1L))) }
+
+  a <- (4L * g - 6L) * (k - 1L) + (10L - 6L * g) * j
+  b <- (2L * g - 4L) * k^2 + 8L * h * k + (2L * g - 14L * h - 4L) * j - 8L * h + 4L * g - 6L
+  c <- (6L * h + 2L * g - 2L) * k ^ 2L + (4L * h - 4L * g + 6L) * k + (2L * h - 6L) * j + 4L * h
+  d <- (2L * h + 6L) * k ^ 2L - 4L * h * k
+
+  var.adk <- ((a * n^3L) + (b * n^2L) + (c * n) + d) / ((n - 1L) * (n - 2L) * (n - 3L))
+
+  if (isTRUE(var.adk < 0L)) { var.adk <- 0L }
+
+  adk.s <- (adk - (k - 1L)) / sqrt(var.adk)
+
+  a0 <- c(0.25, 0.10, 0.05, 0.025, 0.01)
+  b0 <- c(0.675, 1.281, 1.645, 1.96, 2.326)
+  b1 <- c(-0.245, 0.25, 0.678, 1.149, 1.822)
+  b2 <- c(-0.105, -0.305, -0.362, -0.391, -0.396)
+  c0 <- log((1L - a0) / a0)
+
+  qnt <- b0 + b1 / sqrt(k - 1L) + b2 / (k - 1L)
+
+  if (isTRUE(adk.s <= qnt[3L])) {
+
+    ind <- 1L:4L
+
+  } else {
+
+    ind <- 2L:5L
+
+  }
+
+  return(list(pn = 1L / (1L + exp(stats::spline(qnt[ind], c0[ind], xout = adk.s)$y)), adk.all = adk.all, adk = adk, var.adk = var.adk))
 
 }
 

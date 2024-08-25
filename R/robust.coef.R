@@ -4,7 +4,7 @@
 #' significance values for linear models estimated by using the \code{lm()}
 #' function and generalized linear models estimated by using the \code{glm()}
 #' function. For linear models the heteroscedasticity-robust F-test is computed
-#' as well. By default the function uses the HC4 estimator.
+#' as well. By default, the function uses the HC4 estimator.
 #'
 #' @param model    a fitted model of class \code{lm} or \code{glm}.
 #' @param type     a character string specifying the estimation type, where
@@ -19,7 +19,7 @@
 #' @param p.digits an integer value indicating the number of decimal places
 #' @param write    a character string naming a file for writing the output into
 #'                 either a text file with file extension \code{".txt"} (e.g.,
-#'                 \code{"Output.txt"}) or Excel file with file extention
+#'                 \code{"Output.txt"}) or Excel file with file extension
 #'                 \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
 #'                 name does not contain any file extension, an Excel file will
 #'                 be written.
@@ -38,7 +38,7 @@
 #' HC estimators approach the correct value with increasing sample size, even in
 #' the presence of heteroscedasticity. On the other hand, the OLS standard error
 #' estimator is biased and does not converge to the proper value when the assumption
-#' of homoscedasticity is violated (Dalington & Hayes, 2017). White (1980) introduced
+#' of homoscedasticity is violated (Darlington & Hayes, 2017). White (1980) introduced
 #' the idea of HC covariance matrix to econometricians and derived the asymptotically
 #' justified form of the HC covariance matrix known as HC0 (Long & Ervin, 2000).
 #' Simulation studies have shown that the HC0 estimator tends to underestimate the

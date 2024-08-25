@@ -37,7 +37,7 @@
 #'                the analysis.
 #' @param write   a character string naming a file for writing the output into
 #'                either a text file with file extension \code{".txt"} (e.g.,
-#'                \code{"Output.txt"}) or Excel file with file extention
+#'                \code{"Output.txt"}) or Excel file with file extension
 #'                \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
 #'                name does not contain any file extension, an Excel file will
 #'                be written.

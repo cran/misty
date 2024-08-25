@@ -32,7 +32,7 @@
 #'                    and t-distribution or normal distribution curve is drawn in
 #'                    the histogram.
 #' @param line2       logical: if \code{TRUE} (default), Loess smooth line is drawn
-#'                    in the partial (component-plus-residual) plots, loess mooth
+#'                    in the partial (component-plus-residual) plots, loess smooth
 #'                    lines are drawn in the predicted values vs. residuals plot,
 #'                    and density curve is drawn in the histogram.
 #' @param line.type1  a character string or numeric value for specifying the argument

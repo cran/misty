@@ -359,8 +359,8 @@ aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95,
   #...................
   ### Omega squared ####
 
-  omega.sq <- (ss.m - df.m*ms.r) / (ss.t + ms.r)
-  omega.sq <- ifelse(omega.sq < 0L, 0L, omega.sq)
+  omega.sq <- ((ss.m - df.m*ms.r) / (ss.t + ms.r)) |>
+    (\(y) ifelse(y < 0L, 0L, y))()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## ANOVA table ####

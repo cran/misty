@@ -149,7 +149,7 @@
 #'                         \code{cluster}.
 #' @param write            a character string naming a file for writing the output into
 #'                         either a text file with file extension \code{".txt"} (e.g.,
-#'                         \code{"Output.txt"}) or Excel file with file extention
+#'                         \code{"Output.txt"}) or Excel file with file extension
 #'                         \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
 #'                         name does not contain any file extension, an Excel file will
 #'                         be written.
@@ -633,18 +633,16 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
     # Check input 'rescov'
     if (isTRUE(!is.null(rescov))) {
 
-      # Two variables for each residual covariance
-      if (isTRUE(is.list(rescov)) && any(sapply(rescov, length) != 2L)) {
+      # List of residual covariances
+      if (isTRUE(is.list(rescov))) {
 
-        stop("Please specify a list of character vectors for the argument 'rescov', where each element has two variable names", call. = FALSE)
+        # Two variables for each residual covariance
+        if (isTRUE(any(sapply(rescov, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov', where each element has two variable names", call. = FALSE) }
 
+      # Character vector of one residual covariance
       } else {
 
-        if (isTRUE(length(rescov) != 2L)) {
-
-          stop("Please specify a character vector with two variable names for the argument 'rescov'", call. = FALSE)
-
-        }
+        if (isTRUE(length(rescov) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov'", call. = FALSE) }
 
       }
 
@@ -1152,7 +1150,7 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
 
     if (isTRUE(any(diag(lavaan::lavInspect(model.fit, what = "theta")) < 0L))) {
 
-      warning("Some estimated variances of the observed variables are negative.")
+      warning("Some estimated variances of the observed variables are negative.", call. = FALSE)
 
       check.theta <- FALSE
 
@@ -1212,7 +1210,14 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
 
   if (isTRUE(check.vcov && estimator != "PML")) {
 
-    model.modind <- lavaan::modindices(model.fit)
+    model.modind <- tryCatch(suppressWarnings(lavaan::modindices(model.fit)),
+                             error = function(y) {
+
+                               if (isTRUE("modind" %in% print)) { warning("Modification indices could not be computed.", call. = FALSE) }
+
+                               return(NULL)
+
+                             })
 
   } else {
 
@@ -1224,7 +1229,11 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
   ## Residual Correlation Matrix ####
 
   model.resid <- tryCatch(suppressWarnings(lavaan::lavResiduals(model.fit, type = "cor.bollen")),
-                          error = function(y) { return(NULL) })
+                          error = function(y) {
+
+                            if (isTRUE("resid" %in% print)) { warning("Residual correlation matrix indices could not be computed.", call. = FALSE) }
+
+                            return(NULL) })
 
   #_____________________________________________________________________________
   #

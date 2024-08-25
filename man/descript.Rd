@@ -5,8 +5,8 @@
 \title{Descriptive Statistics}
 \usage{
 descript(..., data = NULL,
-        print = c("all", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min",
-                  "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
+        print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd",
+                  "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
         group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE, digits = 2,
         as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
@@ -61,7 +61,7 @@ to \code{...}, but not to \code{group} or \code{split}.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
-\code{"Output.txt"}) or Excel file with file extention
+\code{"Output.txt"}) or Excel file with file extension
 \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
 name does not contain any file extension, an Excel file will
 be written.}
@@ -99,8 +99,11 @@ descript(mpg, data = mtcars)
 # Example 2: Descriptive statistics, print results with 3 digits
 descript(mtcars$mpg, digits = 3)
 
-# Example 3: Descriptive statistics for x1, print all available statistical measures
+# Example 3a: Descriptive statistics for x1, print all available statistical measures
 descript(mtcars$mpg, print = "all")
+
+# Example 3b: Descriptive statistics for x1, print default plus median
+descript(mtcars$mpg, print = c("default", "med"))
 
 # Example 4a: Descriptive statistics for 'mpg', 'cyl', and 'disp'
 descript(mtcars[, c("mpg", "cyl", "disp")])

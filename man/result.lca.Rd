@@ -103,7 +103,7 @@ and class proportions.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
-\code{"Output.txt"}) or Excel file with file extention
+\code{"Output.txt"}) or Excel file with file extension
 \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
 name does not contain any file extension, an Excel file will
 be written.}
@@ -163,7 +163,7 @@ The result summary table comprises following entries:
    \item{\code{"Chi-Pear"}}: Pearson chi-square test of model fit (i.e., \code{Pearson Chi-Square}),
                              only available when indicators are count or ordered categorical.
    \item{\code{"Chi-LRT"}}: Likelihood ratio chi-square test of model fit (i.e., \code{Likelihood Ratio Chi-Square}),
-                            only available when indicators are count or ordered catgeorical.
+                            only available when indicators are count or ordered categorical.
    \item{\code{"SABIC"}}: Sample-size adjusted BIC (i.e., \code{Sample-Size Adjusted BIC}).
    \item{\code{"LMR-LRT"}}: Significance value (\emph{p}-value) of the Vuong-Lo-Mendell-Rubin test
                             (i.e., \code{VUONG-LO-MENDELL-RUBIN LIKELIHOOD RATIO TEST}).

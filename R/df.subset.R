@@ -20,7 +20,7 @@
 #'               checked.
 #'
 #' @details
-#' The argument \code{...} is used to specify an epxression indicating the
+#' The argument \code{...} is used to specify an expression indicating the
 #' variables to select from the data frame specified in \code{data}, e.g.,
 #' \code{df.subset(x1, x2, x3, data = dat)}. There are seven operators which
 #' can be used in the expression \code{...}:
@@ -41,7 +41,7 @@
 #' suffix \code{y}. Note that this operator is equivalent to the function
 #' \code{ends_with()} from the \pkg{tidyselect} package.}
 #' \item{\strong{Tilde (\code{~}) Operator}}{The tilde operator is used to select
-#' variables containg a word from the data frame specified in \code{data}. For
+#' variables containing a word from the data frame specified in \code{data}. For
 #' example, \code{df.subset(?al, data = dat)} selects all variables with the word
 #' \code{al}. Note that this operator is equivalent to the function
 #' \code{contains()} from the \pkg{tidyselect} package.}

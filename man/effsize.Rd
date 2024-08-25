@@ -25,7 +25,7 @@ argument \code{...}. Note that the argument is \code{NULL}
 when specifying a vector, factor, matrix, array, data frame,
 or list for the argument \code{...}.}
 
-\item{type}{a chracter string indicating the type of effect size, i.e.,
+\item{type}{a character string indicating the type of effect size, i.e.,
 \code{phi} for phi coefficient, \code{cramer} for Cramer's
 V, \code{tschuprow} for Tschuprow’s T, \code{cont} for
 Pearson's contingency coefficient, \code{w} for Cohen's w,
@@ -50,7 +50,7 @@ computation is based on a chi-square goodness-of-fit test
 (default when specifying one variable in \code{...}).}
 
 \item{p}{a numeric vector specifying the expected proportions in
-each category of the categorical variable when conduting a
+each category of the categorical variable when conducting a
 chi-square goodness-of-fit test. By default, the expected
 proportions in each category are assumed to be equal.}
 
@@ -64,7 +64,7 @@ conducting the analysis.}
 \item{write}{a character string naming a file for writing the output
 into either a text file with file extension \code{".txt"}
 (e.g., \code{"Output.txt"}) or Excel file with file
-extention \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If
+extension \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If
 the file name does not contain any file extension, an Excel
 file will be written.}
 

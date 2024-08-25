@@ -31,7 +31,7 @@ matching elements themselves is returned.}
 as is. Overrides all conflicting arguments.}
 
 \item{useBytes}{logical: if \code{TRUE}, the matching is done byte-by-byte
-rather than character-by-character. See ‘Details’.}
+rather than character-by-character. See 'Details'.}
 
 \item{invert}{logical: if \code{TRUE}, function returns indices or values
 for elements that do not match.}

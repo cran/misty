@@ -26,7 +26,7 @@
 #'                    model, i.e., \code{cluster = c("level3", "level2")}.
 #' @param type        a character string indicating the type of intraclass
 #'                    correlation coefficient, i.e., \code{type = "1a"} (default)
-#'                    for ICC(1) representing the propotion of variance at Level
+#'                    for ICC(1) representing the proportion of variance at Level
 #'                    2 and Level 3, \code{type = "1b"} representing an estimate
 #'                    of the expected correlation between two randomly chosen
 #'                    elements in the same group when specifying a three-level
@@ -58,7 +58,7 @@
 #'                    to \code{x} but not to \code{cluster}.
 #' @param write       a character string naming a file for writing the output into
 #'                    either a text file with file extension \code{".txt"} (e.g.,
-#'                    \code{"Output.txt"}) or Excel file with file extention
+#'                    \code{"Output.txt"}) or Excel file with file extension
 #'                    \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
 #'                    name does not contain any file extension, an Excel file will
 #'                    be written.
@@ -312,7 +312,7 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Cluster variables ####
 
-  # Two cluser variables
+  # Two cluster variables
   if (isTRUE(ncol(as.data.frame(cluster)) == 2L)) {
 
     l3.cluster <- cluster[, 1L]
@@ -320,7 +320,7 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
 
     no.clust <- "two"
 
-  # One cluser variables
+  # One cluster variables
   } else {
 
     no.clust <- "one"
@@ -353,6 +353,12 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
+
+    # Package lme4 installed?
+    if (isTRUE(method == "lme4")) { if (isTRUE(!nzchar(system.file(package = "lme4")))) { stop("Package \"lme4\" is needed for method = \"lme4\", please install the package or switch to a different method.", call. = FALSE) } }
+
+    # Package nlme installed?
+    if (isTRUE(method == "nlme")) { if (isTRUE(!nzchar(system.file(package = "nlme")))) { stop("Package \"nlme\" is needed for method = \"nlme\", please install the package or switch to a different method.", call. = FALSE) } }
 
     # Check input 'print'
     if (isTRUE(!all(print %in% c("all", "var", "sd")))) { stop("Character strings in the argument 'print' do not all match with \"var\" or \"sd\".", call. = FALSE) }
@@ -395,15 +401,6 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
   if (isTRUE(all(c("aov", "lme4", "nlme") %in% method))) { method <- "lme4" }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Check if packages are installed ####
-
-  # Package lme4 installed?
-  if (isTRUE(method == "lme4")) { if (isTRUE(!nzchar(system.file(package = "lme4")))) { stop("Package \"lme4\" is needed for method = \"lme4\", please install the package or switch to a different method.", call. = FALSE) } }
-
-  # Package nlme installed?
-  if (isTRUE(method == "nlme")) { if (isTRUE(!nzchar(system.file(package = "nlme")))) { stop("Package \"nlme\" is needed for method = \"nlme\", please install the package or switch to a different method.", call. = FALSE) } }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Two cluster variables ####
 
   if (isTRUE(ncol(as.data.frame(cluster)) == 2L && method == "aov")) { stop("Please specify \"lme4\" or \"nlme\" for the argument 'method' when specifying two cluster variables.", call. = FALSE) }
@@ -442,7 +439,7 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
 
       }
 
-    ##### Two cluster variable s
+    ##### Two cluster variables
     } else if (isTRUE(no.clust == "two")) {
 
       # Level 1 Variable
@@ -691,16 +688,18 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
           no.cluster.l3 <- length(unique(x.cluster[, 2L]))
 
           # Average cluster size
-          m.cluster.size.l3 <- mean(table(x.cluster[, 3L]))
+          cluster.size <- tapply(x.cluster[, 3L], x.cluster[, 2L], function(y) length(unique(y)))
+
+          m.cluster.size.l3 <- mean(cluster.size)
 
           # Standard deviation cluster size
-          sd.cluster.size.l3 <- sd(table(x.cluster[, 3L]))
+          sd.cluster.size.l3 <- sd(cluster.size)
 
           # Minimum cluster size
-          min.cluster.size.l3 <- min(table(x.cluster[, 3L]))
+          min.cluster.size.l3 <- min(cluster.size)
 
           # Maximum cluster size
-          max.cluster.size.l3 <- max(table(x.cluster[, 3L]))
+          max.cluster.size.l3 <- max(cluster.size)
 
           ###### ICC using lmer() function
           if (isTRUE(method == "lme4")) {

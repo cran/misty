@@ -2,7 +2,7 @@
 % Please edit documentation in R/item.scores.R
 \name{item.scores}
 \alias{item.scores}
-\title{Compute Scale Scores}
+\title{Scale Scores}
 \usage{
 item.scores(..., data = NULL, fun = c("mean", "sum", "median", "var", "sd", "min", "max"),
             prorated = TRUE, p.avail = NULL, n.avail = NULL, append = TRUE,
@@ -50,7 +50,7 @@ criterion.}
 is appended to the data frame specified in the argument \code{data}.}
 
 \item{name}{a character string indicating the names of the variable appended
-to the data frame specified in the arguement \code{data} when
+to the data frame specified in the argument \code{data} when
 \code{append = TRUE}. By default, the variable is named \code{scores}.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,

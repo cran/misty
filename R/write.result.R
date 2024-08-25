@@ -4,12 +4,13 @@
 #' into an Excel file.
 #'
 #' Currently the function supports result objects from the function
-#' \code{cor.matrix}, \code{crosstab}, \code{descript}, \code{dominance.manual},
+#' \code{blimp.bayes}, \code{cor.matrix}, \code{crosstab}, \code{descript}, \code{dominance.manual},
 #' \code{dominance}, \code{effsize}, \code{freq}, \code{item.alpha}, \code{item.cfa},
-#' \code{item.invar}, \code{item.omega}, \code{result.lca}, \code{multilevel.cfa},
-#' \code{multilevel.cor}, \code{multilevel.descript}, \code{multilevel.fit},
-#' \code{multilevel.invar}, \code{multilevel.omega}, \code{na.coverage},
-#' \code{na.descript}, \code{na.pattern}, \code{robust.coef}, and \code{std.coef}.
+#' \code{item.invar}, \code{item.omega}, \code{result.lca}, \code{mplus.bayes},
+#' \code{multilevel.cfa}, \code{multilevel.cor}, \code{multilevel.descript},
+#' \code{multilevel.fit}, \code{multilevel.invar}, \code{multilevel.omega},
+#' \code{na.coverage}, \code{na.descript}, \code{na.pattern}, \code{robust.coef},
+#' and \code{std.coef}.
 #'
 #' @param x          misty object (\code{misty.object}) resulting from a misty
 #'                   function supported by the \code{write.result} function (see
@@ -29,6 +30,12 @@
 #'                   used for displaying intraclass correlation coefficients
 #'                   (\code{multilevel.descript()} and \code{multilevel.icc()}
 #'                   function).
+#' @param r.digits    an integer value indicating the number of decimal places
+#'                    to be used for displaying R-hat values.
+#' @param ess.digits  an integer value indicating the number of decimal places
+#'                    to be used for displaying effective sample sizes.
+#' @param mcse.digits an integer value indicating the number of decimal places
+#'                    to be used for displaying monte carlo standard errors.
 #' @param check     logical: if \code{TRUE} (default), argument specification is
 #'                  checked.
 #'
@@ -40,11 +47,13 @@
 #' \code{\link{dominance.manual}}, \code{\link{dominance}}, \code{\link{effsize}},
 #' \code{\link{freq}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
 #' \code{\link{item.invar}}, \code{\link{item.omega}}, \code{\link{result.lca}},
-#' \code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
-#' \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
-#' \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}},
-#' \code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.pattern}},
-#' \code{\link{robust.coef}}, \code{\link{std.coef}}
+#' \code{\link{mplus.bayes}}, \code{\link{multilevel.cfa}},
+#' \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}},
+#' \code{\link{multilevel.fit}}, \code{\link{multilevel.invar}},
+#' \code{\link{multilevel.omega}}, \code{\link{na.auxiliary}},
+#' \code{\link{na.coverage}}, \code{\link{na.descript}},
+#' \code{\link{na.pattern}}, \code{\link{robust.coef}},
+#' \code{\link{std.coef}}
 #'
 #' @export
 #'
@@ -70,8 +79,9 @@
 #' write.result(result, "Multilevel_Descript.xlsx")
 #' }
 write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
-                         digits = x$args$digits, p.digits = x$args$p.digits,
-                         icc.digits = x$args$icc.digits, check = TRUE) {
+                         digits = x$args$digits, p.digits = x$args$p.digits, icc.digits = x$args$icc.digits,
+                         r.digits = x$args$r.digits, ess.digits = x$args$ess.digits, mcse.digits = x$args$mcse.digits,
+                         check = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -87,16 +97,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   if (isTRUE(class(x) != "misty.object")) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is supported by the function
-  if (isTRUE(!x$type %in% c("cor.matrix", "crosstab", "descript", "dominance.manual",
-                            "dominance", "effsize", "freq", "item.alpha", "item.cfa",
-                            "item.invar", "item.omega", "result.lca", "multilevel.cfa",
-                            "multilevel.cor", "multilevel.descript", "multilevel.fit",
-                            "multilevel.invar", "multilevel.omega", "na.coverage",
-                            "na.descript", "na.pattern", "robust.coef", "std.coef"))) {
-
-    stop("This type of misty object is not supported by the function.", call. = FALSE)
-
-  }
+  if (isTRUE(!x$type %in% c("blimp.bayes", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "result.lca", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "robust.coef", "std.coef"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
@@ -116,6 +117,15 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     # Check input 'icc.digits'
     if (isTRUE(!is.null(icc.digits))) { if (isTRUE(icc.digits %% 1L != 0L || icc.digits < 0L)) { stop("Specify a positive integer number for the argument 'icc.digits'", call. = FALSE) } }
 
+    # Check input 'r.digits'
+    if (isTRUE(!is.null(r.digits))) { if (isTRUE(r.digits %% 1L != 0L || r.digits < 0L)) { stop("Specify a positive integer number for the argument 'r.digits'", call. = FALSE) } }
+
+    # Check input 'ess.digits'
+    if (isTRUE(!is.null(ess.digits))) { if (isTRUE(ess.digits %% 1L != 0L || ess.digits < 0L)) { stop("Specify a positive integer number for the argument 'ess.digits'", call. = FALSE) } }
+
+    # Check input 'mcse.digits'
+    if (isTRUE(!is.null(mcse.digits))) { if (isTRUE(mcse.digits %% 1L != 0L || mcse.digits < 0L)) { stop("Specify a positive integer number for the argument 'mcse.digits'", call. = FALSE) } }
+
   }
 
   #_____________________________________________________________________________
@@ -131,8 +141,119 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
+  # Blimp Summary Measures, blimp.bayes() --------------------------------------
+  switch(x$type, blimp.bayes = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Round ####
+
+    # digits
+    print.round <- c("m", "med", "map", "sd", "mad", "skew", "kurt", "eti.low", "eti.upp", "hdi.low", "hdi.upp")
+    write.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(write.object[, y]), round(write.object[, y], digits = digits), NA))
+
+    # r.digits
+    write.object[, "rhat"] <- ifelse(!is.na(write.object[, "rhat"]), round(write.object[, "rhat"], digits = r.digits), NA)
+
+    # ess.digits
+    write.object[, "b.ess"] <- ifelse(!is.na(write.object[, "b.ess"]), round(write.object[, "b.ess"], digits = ess.digits), NA)
+    write.object[, "t.ess"] <- ifelse(!is.na(write.object[, "t.ess"]), round(write.object[, "t.ess"], digits = ess.digits), NA)
+
+    # mcse.digits
+    write.object[, "b.mcse"] <- ifelse(!is.na(write.object[, "b.mcse"]), round(write.object[, "b.mcse"], digits = mcse.digits), NA)
+    write.object[, "t.mcse"] <- ifelse(!is.na(write.object[, "t.mcse"]), round(write.object[, "t.mcse"], digits = mcse.digits), NA)
+
+    # p.digits
+    write.object[, "pd"] <- ifelse(!is.na(write.object[, "pd"]), round(write.object[, "pd"], digits = p.digits), NA)
+    write.object[, "rope"] <- ifelse(!is.na(write.object[, "rope"]), round(write.object[, "rope"], digits = p.digits), NA)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Variable Names ####
+
+    colnames(write.object) <- c("Param", "L1", "L2", "L3", "M", "Med", "MAP", "SD", "MAD", "Skew", "Kurt", "ETI.Low", "ETI.Upp", "HDI.Low", "HDI.Upp", "R-hat", "B.ESS", "T.ESS", "B.MCSE", "T.MCSE", "pd", "ROPE")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Select Statistical Measures and Add Parameters ####
+
+    # Print statistics
+    print <- misty::rec(x$args$print, spec = "'m' = 'M'; 'med' = 'Med'; 'map' = 'MAP'; 'sd' = 'SD'; 'mad' = 'MAD'; 'skew' = 'Skew'; 'kurt' = 'Kurt'; 'rhat' = 'R-hat'; 'b.ess' = 'B.ESS'; 't.ess' = 'T.ESS'; 'b.mcse' = 'B.MCSE'; 't.mcse' = 'T.MCSE'; 'rope' = 'ROPE'")
+
+    if (isTRUE("eti" %in% print)) { print <- c(print, c("ETI.Low", "ETI.Upp")) }
+    if (isTRUE("hdi" %in% print)) { print <- c(print, c("HDI.Low", "HDI.Upp")) }
+
+    # Sort
+    print <- intersect(c("M", "Med", "MAP", "SD", "MAD", "Skew", "Kurt", "ETI.Low", "ETI.Upp", "HDI.Low", "HDI.Upp", "R-hat", "B.ESS", "T.ESS", "B.MCSE", "T.MCSE"), print)
+
+    # Select
+    write.object <- data.frame(write.object[, c(1L:4L)], write.object[, print, drop = FALSE], stringsAsFactors = FALSE, check.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note ####
+
+    note <- NULL
+
+    # R-hat
+    if (isTRUE("R-hat" %in% print)) {
+
+      if (isTRUE(x$args$fold)) {
+
+        note <- rbind(note, data.frame("Maximum of Rank-Normalized (Folded-)Split R-hat", fix.empty.names = FALSE))
+
+      } else {
+
+        if (isTRUE(x$args$rank)) {
+
+          if (isTRUE(x$args$split)) {
+
+            note <- rbind(note, data.frame("Rank-Normalizsed Split R-hat", fix.empty.names = FALSE))
+
+          } else {
+
+            note <- rbind(note, data.frame("Rank-Normalizsed R-hat", fix.empty.names = FALSE))
+
+          }
+
+        } else {
+
+          if (isTRUE(x$args$split)) {
+
+            note <- rbind(note, data.frame("Traditional Split R-hat", fix.empty.names = FALSE))
+
+          } else {
+
+            note <- rbind(note, data.frame("Traditional R-hat", fix.empty.names = FALSE))
+
+          }
+
+        }
+
+      }
+
+    }
+
+    # ROPE
+    if (isTRUE(!is.null(x$args$rope))) {
+
+      if (isTRUE("ROPE" %in% print)) {
+
+        note <- rbind(note, data.frame(paste0("Region of Practical Equivalence (ROPE): [", x$args$rope[1L], ", ", x$args$rope[2L], "]"), fix.empty.names = FALSE))
+
+      } else {
+
+        note <- rbind(note, data.frame(paste0("Region of Practical Equivalence (ROPE): [", x$args$rope[1L], ", ", x$args$rope[2L], "]"), fix.empty.names = FALSE))
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
+
+    if (isTRUE(!is.null(note))) { write.object <- list(Summary = write.object, Note = note) }
+
+  #_____________________________________________________________________________
+  #
   # Correlation Matrix, cor.matrix() -------------------------------------------
-    switch(x$type, cor.matrix = {
+  }, cor.matrix = {
 
     # Round
     write.object$cor <- round(write.object$cor, digits = digits)
@@ -1476,6 +1597,118 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
+  # Summary Measures, Convergence and Efficiency Diagnostics, mplus.bayes() ----
+
+  }, mplus.bayes = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Round ####
+
+    # digits
+    print.round <- c("m", "med", "map", "sd", "mad", "skew", "kurt", "eti.low", "eti.upp", "hdi.low", "hdi.upp")
+    write.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(write.object[, y]), round(write.object[, y], digits = digits), NA))
+
+    # r.digits
+    write.object[, "rhat"] <- ifelse(!is.na(write.object[, "rhat"]), round(write.object[, "rhat"], digits = r.digits), NA)
+
+    # ess.digits
+    write.object[, "b.ess"] <- ifelse(!is.na(write.object[, "b.ess"]), round(write.object[, "b.ess"], digits = ess.digits), NA)
+    write.object[, "t.ess"] <- ifelse(!is.na(write.object[, "t.ess"]), round(write.object[, "t.ess"], digits = ess.digits), NA)
+
+    # mcse.digits
+    write.object[, "b.mcse"] <- ifelse(!is.na(write.object[, "b.mcse"]), round(write.object[, "b.mcse"], digits = mcse.digits), NA)
+    write.object[, "t.mcse"] <- ifelse(!is.na(write.object[, "t.mcse"]), round(write.object[, "t.mcse"], digits = mcse.digits), NA)
+
+    # p.digits
+    write.object[, "pd"] <- ifelse(!is.na(write.object[, "pd"]), round(write.object[, "pd"], digits = p.digits), NA)
+    write.object[, "rope"] <- ifelse(!is.na(write.object[, "rope"]), round(write.object[, "rope"], digits = p.digits), NA)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Variable Names ####
+
+    colnames(write.object) <- c("Parameter", "M", "Med", "MAP", "SD", "MAD", "Skew", "Kurt", "ETI.Low", "ETI.Upp", "HDI.Low", "HDI.Upp", "R-hat", "B.ESS", "T.ESS", "B.MCSE", "T.MCSE", "pd", "ROPE")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Select Statistical Measures and Add Parameters ####
+
+    # Print statistics
+    print <- misty::rec(x$args$print, spec = "'m' = 'M'; 'med' = 'Med'; 'map' = 'MAP'; 'sd' = 'SD'; 'mad' = 'MAD'; 'skew' = 'Skew'; 'kurt' = 'Kurt'; 'rhat' = 'R-hat'; 'b.ess' = 'B.ESS'; 't.ess' = 'T.ESS'; 'b.mcse' = 'B.MCSE'; 't.mcse' = 'T.MCSE'; 'rope' = 'ROPE'")
+
+    if (isTRUE("eti" %in% print)) { print <- c(print, c("ETI.Low", "ETI.Upp")) }
+    if (isTRUE("hdi" %in% print)) { print <- c(print, c("HDI.Low", "HDI.Upp")) }
+
+    # Sort
+    print <- intersect(c("M", "Med", "MAP", "SD", "MAD", "Skew", "Kurt", "ETI.Low", "ETI.Upp", "HDI.Low", "HDI.Upp", "R-hat", "B.ESS", "T.ESS", "B.MCSE", "T.MCSE"), print)
+
+    # Select
+    write.object <- data.frame(Parameter = write.object[, "Parameter"], write.object[, print, drop = FALSE], stringsAsFactors = FALSE, check.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note ####
+
+    note <- NULL
+
+    # R-hat
+    if (isTRUE("R-hat" %in% print)) {
+
+      if (isTRUE(x$args$fold)) {
+
+        note <- rbind(note, data.frame("Maximum of Rank-Normalized (Folded-)Split R-hat", fix.empty.names = FALSE))
+
+      } else {
+
+        if (isTRUE(x$args$rank)) {
+
+          if (isTRUE(x$args$split)) {
+
+            note <- rbind(note, data.frame("Rank-Normalizsed Split R-hat", fix.empty.names = FALSE))
+
+          } else {
+
+            note <- rbind(note, data.frame("Rank-Normalizsed R-hat", fix.empty.names = FALSE))
+
+          }
+
+        } else {
+
+          if (isTRUE(x$args$split)) {
+
+            note <- rbind(note, data.frame("Traditional Split R-hat", fix.empty.names = FALSE))
+
+          } else {
+
+            note <- rbind(note, data.frame("Traditional R-hat", fix.empty.names = FALSE))
+
+          }
+
+        }
+
+      }
+
+    }
+
+    # ROPE
+    if (isTRUE(!is.null(x$args$rope))) {
+
+      if (isTRUE("ROPE" %in% print)) {
+
+        note <- rbind(note, data.frame(paste0("Region of Practical Equivalence (ROPE): [", x$args$rope[1L], ", ", x$args$rope[2L], "]"), fix.empty.names = FALSE))
+
+      } else {
+
+        note <- rbind(note, data.frame(paste0("Region of Practical Equivalence (ROPE): [", x$args$rope[1L], ", ", x$args$rope[2L], "]"), fix.empty.names = FALSE))
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
+
+    if (isTRUE(!is.null(note))) { write.object <- list(Summary = write.object, Note = note) }
+
+  #_____________________________________________________________________________
+  #
   # Multilevel Confirmatory Factor Analysis, multilevel.cfa() ------------------
 
   }, multilevel.cfa = {
@@ -2002,6 +2235,130 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
+  # Multilevel Composite Reliability, multilevel.omega() -----------------------
+
+  }, multilevel.omega = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Omega ####
+
+    write.omega <- NULL
+
+    if (isTRUE("omega" %in% x$args$print)) {
+
+      # Extracr result table
+      write.omega <- write.object$omega
+
+      #### Round ####
+      write.omega[, -c(1L:2L)] <- sapply(write.omega[, -c(1L:2L)], round, digits = digits)
+
+      #### Column names ####
+      colnames(write.omega) <- c("Type", "Items", "Omega", "Low", "Upp")
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Item Statistics ####
+
+    write.item <- NULL
+
+    if (isTRUE("item" %in% x$args$print)) {
+
+      # Extracr result table
+      write.item <- write.object$item
+
+      #### Round ####
+
+      # Variables to round
+      write.round <- switch(x$args$const,
+                            within = c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC", "wstd.ld"),
+                            shared = c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC", "bstd.ld"),
+                            config = c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC", "wstd.ld", "bstd.ld"))
+
+      write.item[, write.round] <- sapply(write.item[, write.round], round, digits = digits)
+
+      #### Column names ####
+      colnames(write.item) <- switch(x$args$const,
+                                     within = c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)", "WStd.ld"),
+                                     shared = c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)", "BStd.ld"),
+                                     config = c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)", "WStd.ld", "BStd.ld"))
+
+    }
+
+    #### Write object ####
+    write.object <- list(Omega = write.omega, Itemstat = write.item)
+
+  #_____________________________________________________________________________
+  #
+  # Auxiliary Variables Analysis, na.auxiliary() --------------------------------
+
+  }, na.auxiliary = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Product-Moment Correlation matrix and Cohen's d Matrix ####
+
+    if (isTRUE(is.null(x$args$model))) {
+
+      # Round
+      write.object$cor <- apply(write.object$cor, 2L, round, digits = digits)
+      write.object$d <- apply(write.object$d, 2L, round, digits = digits)
+
+      # Diagonals
+      diag(print.object$cor) <- NA
+      diag(write.object$d) <- NA
+
+      # Lower and/or upper triangular
+      switch(tri, "lower" = {
+
+        print.object$cor[upper.tri(print.object$cor)] <- NA
+
+      }, "upper" = {
+
+        print.object$cor[lower.tri(print.object$cor)] <- NA
+
+      })
+
+      write.object$cor <- data.frame(colnames(write.object$cor), write.object$cor, fix.empty.names = FALSE)
+      write.object$d <- data.frame(colnames(write.object$d), write.object$d, fix.empty.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Semi-Partial Correlation Coefficients ####
+
+    } else {
+
+      # Standardized Solution
+      write.object <- x$model.fit.stand
+
+      # Outcome variable
+      outcome <- setdiff(all.vars(as.formula(x$args$model)), attr(terms(as.formula(x$args$model)[-2L]), "term.labels"))
+
+      # Select outcome rows
+      write.object <- write.object[write.object$lhs == outcome, ]
+
+      # Indices substantive model
+      model.sub <- which(write.object$op == "~")
+
+      # Indices auxiliary model
+      model.aux <- which(write.object$op == "~~" & (write.object$lhs != write.object$rhs))
+
+      # Round
+      print.round <- c("est.std", "se", "z", "ci.lower", "ci.upper")
+
+      write.object[, print.round] <- sapply(write.object[, print.round], round, digits)
+      write.object$pvalue <- round(write.object$pval, digits = p.digits)
+
+      # Names
+      colnames(write.object) <- c("lhs", "op", "rhs", "Estimate", "Std.Err", "z-value", "pval", "Low", "Upp")
+
+      # Models
+      write.object <- data.frame(c("Substantive model", rep("", times = length(model.sub)),
+                                           "Auxiliary model", rep("", times = length(model.aux))),
+                                 rbind(rep(NA, times = 9L), write.object[model.sub, ], rep(NA, times = 9L), write.object[model.aux, ]), fix.empty.names = FALSE)
+
+    }
+
+  #_____________________________________________________________________________
+  #
   # Variance-Covariance Coverage, na.coverage() --------------------------------
 
   }, na.coverage = {
@@ -2164,61 +2521,6 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
                          L1.Table = write.object$L1$table.miss.l1, L2.Table = write.object$L2$table.miss.l2, L3.Table = write.object$L3$table.miss.l3)
 
     write.object <- write.object[sapply(write.object, function(y) !is.null(y))]
-
-  #_____________________________________________________________________________
-  #
-  # Multilevel Composite Reliability, multilevel.omega() -----------------------
-
-  }, multilevel.omega = {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Omega ####
-
-    write.omega <- NULL
-
-    if (isTRUE("omega" %in% x$args$print)) {
-
-      # Extracr result table
-      write.omega <- write.object$omega
-
-      #### Round ####
-      write.omega[, -c(1L:2L)] <- sapply(write.omega[, -c(1L:2L)], round, digits = digits)
-
-      #### Column names ####
-      colnames(write.omega) <- c("Type", "Items", "Omega", "Low", "Upp")
-
-    }
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Item Statistics ####
-
-    write.item <- NULL
-
-    if (isTRUE("item" %in% x$args$print)) {
-
-      # Extracr result table
-      write.item <- write.object$item
-
-      #### Round ####
-
-      # Variables to round
-      write.round <- switch(x$args$const,
-                            within = c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC", "wstd.ld"),
-                            shared = c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC", "bstd.ld"),
-                            config = c("pNA", "m", "sd", "min", "max", "skew", "kurt", "ICC", "wstd.ld", "bstd.ld"))
-
-      write.item[, write.round] <- sapply(write.item[, write.round], round, digits = digits)
-
-      #### Column names ####
-      colnames(write.item) <- switch(x$args$const,
-                                     within = c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)", "WStd.ld"),
-                                     shared = c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)", "BStd.ld"),
-                                     config = c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max",  "Skew", "Kurt", "ICC(1)", "WStd.ld", "BStd.ld"))
-
-    }
-
-    #### Write object ####
-    write.object <- list(Omega = write.omega, Itemstat = write.item)
 
   #_____________________________________________________________________________
   #

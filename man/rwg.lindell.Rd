@@ -51,7 +51,7 @@ within-group agreement index are appended to the data frame
 specified in the argument \code{data}.}
 
 \item{name}{a character string indicating the name of the variable appended
-to the data frame specified in the arguement \code{data} when
+to the data frame specified in the argument \code{data} when
 \code{append = TRUE}. By default, the variable is named \code{rwg}.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,

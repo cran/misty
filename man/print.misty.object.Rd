@@ -9,8 +9,9 @@
       hypo = x$args$hypo, descript = x$args$descript, epsilon = x$args$epsilon,
       effsize = x$args$effsize, posthoc = x$args$posthoc, split = x$args$split,
       table = x$args$table, digits = x$args$digits, p.digits = x$args$p.digits,
-      icc.digits = x$args$icc.digits, sort.var = x$args$sort.var,
-      order = x$args$order, check = TRUE, ...)
+      icc.digits = x$args$icc.digits, r.digits = x$args$r.digits,
+      ess.digits = x$args$ess.digits, mcse.digits = x$args$mcse.digits,
+      sort.var = x$args$sort.var, order = x$args$order, check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{misty.object} object.}
@@ -56,7 +57,7 @@ observed values (\code{"nObs"}), percent of observed values
 and percent of missing values (\code{"pNA"}) is printed for
 each variable on the console (\code{na.descript()} function).}
 
-\item{digits}{an integer value indicating the number of decimal places digits
+\item{digits}{an integer value indicating the number of decimal places
 to be used for displaying results.}
 
 \item{p.digits}{an integer indicating the number of decimal places to be used
@@ -66,6 +67,15 @@ for displaying \emph{p}-values.}
 for displaying intraclass correlation coefficients
 (\code{multilevel.descript()} and \code{multilevel.icc()}
 function).}
+
+\item{r.digits}{an integer value indicating the number of decimal places
+to be used for displaying R-hat values.}
+
+\item{ess.digits}{an integer value indicating the number of decimal places
+to be used for displaying effective sample sizes.}
+
+\item{mcse.digits}{an integer value indicating the number of decimal places
+to be used for displaying monte carlo standard errors.}
 
 \item{sort.var}{logical: if \code{TRUE}, output is sorted by variables.}
 

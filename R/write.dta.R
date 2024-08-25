@@ -7,10 +7,10 @@
 #' @param file      a character string naming a file with or without file extension
 #'                  '.dta', e.g., \code{"Stata_Data.dta"} or \code{"Stata_Data"}.
 #' @param version   Stats file version to use. Supports versions 8-15.
-#' @param label     Sataset label to use, or \code{NULL}. Defaults to the value
+#' @param label     dataset label to use, or \code{NULL}. Defaults to the value
 #'                  stored in the "label" attribute pf data. Must be <= 80
 #'                  characters.
-#' @param str.thres any chracter vector with a maximum length greater than
+#' @param str.thres any character vector with a maximum length greater than
 #'                  \code{str.thre} bytes wil be stored as a long string
 #'                  \code{strL} instead of a standard string \code{str}
 #'                  variable if \code{version} is greater or equal 13.

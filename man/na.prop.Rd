@@ -21,7 +21,7 @@ argument \code{...}. Note that the argument is \code{NULL}
 when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{name}{a character string indicating the name of the variable appended
-to the data frame specified in the arguement \code{data} when
+to the data frame specified in the argument \code{data} when
 \code{append = TRUE}.}.
 
 \item{append}{logical: if \code{TRUE} (default), variable with proportion of

@@ -85,7 +85,7 @@ groups \code{A}, \code{B}, \code{C}, \code{D} makes following comparisons:
 \code{B vs A}, \code{C vs A}, and \code{D vs A} with \code{A} being the
 baseline group.}
 \item{\strong{Unweighted Effect Coding}}{Unweighted effect or sum coding
-compares the mean of a given level to the unweighed grand mean, i.e., mean of
+compares the mean of a given level to the unweighted grand mean, i.e., mean of
 group means. By default, the first group or factor level is selected as
 omitted group. For example, effect coding based on a  categorical variable
 with four groups \code{A}, \code{B}, \code{C}, \code{D} makes following

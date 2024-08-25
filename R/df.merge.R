@@ -113,13 +113,10 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
   if (isTRUE(check)) {
 
     # Same matching variable in each data frame
-    if (isTRUE(any(vapply(df, function(y) !by %in%  names(y), FUN.VALUE = logical(1L))))) { stop("Data frames do not have the same matching variable specified in 'by'.", call. = FALSE) }
+    if (isTRUE(any(vapply(df, function(y) !by %in% names(y), FUN.VALUE = logical(1L))))) { stop("Data frames do not have the same matching variable specified in 'by'.", call. = FALSE) }
 
     # Same class
     if (isTRUE(length(unique(vapply(df, function(y) class(y[, by]), FUN.VALUE = character(1L)))) != 1L)) { stop("Matching variable in the data frames do not all have the same class.", call. = FALSE) }
-
-    # Duplicated values in the matching variable
-    if (isTRUE(any(vapply(df, function(y) anyDuplicated(na.omit(y[, by])), FUN.VALUE = 1L) != 0L))) { stop("There are duplicated values in the matching variable specified in 'by'.", call. = FALSE) }
 
     # Missing values in the matching variable
     if (isTRUE(any(vapply(df, function(y) any(is.na(y[, by])), FUN.VALUE = logical(1L))))) { stop("There are missing values in the matching variable specified in 'by'.", call. = FALSE) }
