@@ -22,8 +22,7 @@ file with or without the file extension \code{.imp}, e.g.,
 \code{"Blimp_Input.imp"} or \code{"Blimp_Input.imp"}.}
 
 \item{data}{a matrix or data frame from which the variables names for
-the section \code{VARIABLES} are extracted when using the
-\code{...;} specification in the \code{VARIABLES} section.}
+the section \code{VARIABLES} are extracted.}
 
 \item{comment}{logical: if \code{FALSE} (default), comments (i.e., text
 after the \code{#} symbol) are removed from the input text
@@ -130,21 +129,19 @@ the \code{blimp.run()} function, and prints the Blimp output file by using the
 \describe{
 \item{\strong{\code{VARIABLES} Section}}{The \code{VARIABLES} section used to
 assign names to the variables in the data set can be specified by using
-\code{...;} and the \code{data} argument:
+the \code{data} argument:
    \itemize{
       \item{\code{Write Blimp Data File}}: In the first step, the Blimp data
       file is written by using the \code{write.mplus()} function, e.g.
       \code{write.mplus(data1, file = "data1.dat")}.
       \item{\code{Specify Blimp Input}}: In the second step, the Blimp input
-      is specified as a character string. The \code{VARIABLES} option can be
-      specified by using \code{...;}, e.g.,
-      \code{input <- 'DATA: data1.dat;\nVARIABLES: ...;\nMODEL: y ~ x1@b1 x2@b2 d2;'}.
+      is specified as a character string. The \code{VARIABLES} option is left
+      out from the Blimp input text, e.g.,
+      \code{input <- 'DATA: data1.dat;\nMODEL: y ~ x1@b1 x2@b2 d2;'}.
       \item{\code{Run Blimp Input}}: In the third step, the Blimp input is run
       by using the \code{blimp()} function. The argument \code{data} needs to be
-      specified given that the \code{VARIABLES} section was specified by using
-      \code{...;} in the previous step, e.g., \code{blimp(input, file = "Ex4.3.imp", data = data1)}
-      Note that \code{...;} including the semicolon \code{;} needs to be specified,
-      i.e., \code{...} without the semicolon \code{;} will result in an error message.
+      specified given that the \code{VARIABLES} section was left out from the
+      Blimp input text in the previous step, e.g., \code{blimp(input, file = "Ex4.3.imp", data = data1)}.
    }
  Note that unlike Mplus, Blimp allows to specify a CSV data file with variable
  names in the first row. Hence, it is recommended to export the data from
@@ -202,7 +199,7 @@ ITERATIONS: 10000;
 blimp(input2, file = "Ex4.3.imp")
 
 #----------------------------------------------------------------------------
-# Example 3: Alternative specification using ...; and the data argument
+# Example 3: Alternative specification using the data argument
 
 # Write Data File
 write.mplus(data1, file = "data1.dat", input = FALSE)
@@ -210,7 +207,6 @@ write.mplus(data1, file = "data1.dat", input = FALSE)
 # Specify Blimp input
 input3 <- '
 DATA: data1.dat;
-VARIABLES: ...;
 ORDINAL: d;
 MISSING: 999;
 FIXED: d;

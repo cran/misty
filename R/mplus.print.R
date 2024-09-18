@@ -11,9 +11,10 @@
 #'                   Alternatively, a \code{misty.object} of type \code{mplus}
 #'                   can be specified, i.e., result object of the \code{mplus.print()},
 #'                   \code{mplus()} or \code{mplus.update()} function.
-#' @param print      a character vector indicating which results to show, i.e.
-#'                   \code{"all"}  for all results \code{"input"} for input command
-#'                   sections, and \code{"result"} (default) for result sections.
+#' @param print      a character vector indicating which section to show, i.e.
+#'                   \code{"all"} for input and result sections, \code{"input"}
+#'                   for input command section only, and \code{"result"} (default)
+#'                   for result sections only.
 #' @param input      a character vector specifying Mplus input command sections
 #                    included in the output (see 'Details').
 #' @param result     a character vector specifying Mplus result sections included
@@ -368,7 +369,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
   ## 'print' Argument ####
 
   # Default
-  if (isTRUE(all(c("all", "input", "result") %in% print) || all(print == "all"))) {
+  if (isTRUE(all(c("all", "input", "result") %in% print))) {
 
     print <- "result"
 

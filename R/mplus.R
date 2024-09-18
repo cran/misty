@@ -9,8 +9,7 @@
 #'                    file with or without the file extension \code{.inp}, e.g.,
 #'                    \code{"Mplus_Input.inp"} or \code{"Mplus_Input"}.
 #' @param data        a matrix or data frame from which the variables names for
-#'                    the subsection \code{NAMES} are extracted when using the
-#'                    \code{...;} specification in the \code{VARIABLE} section.
+#'                    the subsection \code{NAMES} are extracted.
 #' @param comment     logical: if \code{FALSE} (default), comments (i.e., text
 #'                    after the \code{!} symbol) are removed from the input text
 #'                    specified in the argument \code{x}.
@@ -73,24 +72,22 @@
 #'
 #' @details
 #' \describe{
-#' \item{\strong{\code{NAMES} Option}}{in the \code{VARIABLE} section used to
-#' assign names to the variables in the data set can be specified by using
-#' the \code{...;} specification and the \code{data} argument:
+#' \item{\strong{\code{NAMES} Option}}{The \code{NAMES} Option in the \code{VARIABLE}
+#' section used to assign names to the variables in the data set can be specified
+#' by using the \code{data} argument:
 #'    \itemize{
-#'       \item{\code{Write Mplus Data File}}: In the first step, the Mplus data
-#'       file is written by using the \code{write.mplus()} function, e.g.
-#'       \code{write.mplus(ex3_1, file = "ex3_1.dat")}.
-#'       \item{\code{Specify Mplus Input}}: In the second step, the Mplus input
-#'       is specified as a character string. The \code{NAMES} option can be
-#'       specified by using \code{...;}, e.g.,
-#'       \code{input <- 'DATA:     FILE IS ex3_1.dat;\nVARIABLE: ...;\nMODEL:    y1 ON x1 x3;'}.
-#'       \item{\code{Run Mplus Input}}: In the third step, the Mplus input is run
-#'       by using the \code{mplus()} function. The argument \code{data} needs to
-#'       be specified given that the \code{NAMES} option was specified by using
-#'       \code{...;} in the previous step, e.g., \code{mplus(input, file = "ex3_1.inp", data = ex3_1)}.
-#'       Note that \code{...;} including the semicolon \code{;} needs to be specified,
-#'       i.e., \code{...} without the semicolon \code{;} will result in an error
-#'       message.
+#'        \item{\code{Write Mplus Data File}}: In the first step, the Mplus data
+#'          file is written by using the \code{write.mplus()} function, e.g.
+#'          \code{write.mplus(ex3_1, file = "ex3_1.dat")}.
+#'        \item{\code{Specify Mplus Input}}: In the second step, the Mplus input
+#'          is specified as a character string. The \code{NAMES} option is left
+#'          out from the Mplus input text, e.g.,
+#'        \code{input <- 'DATA:     FILE IS ex3_1.dat;\nMODEL:    y1 ON x1 x3;'}.
+#'        \item{\code{Run Mplus Input}}: In the third step, the Mplus input is run
+#'          by using the \code{mplus()} function. The argument \code{data}
+#'          needs to be specified given that the \code{NAMES} option was left out
+#'          from the Mplus input text in the previous step, e.g.,
+#           \code{mplus(input, file = "ex3_1.inp", data = ex3_1)}.
 #'    }
 #' }
 #' }
@@ -142,17 +139,16 @@
 #' mplus(input1, file = "ex3_1.inp")
 #'
 #' #----------------------------------------------------------------------------
-#' # Example 2: Alternative specification using ...; and the data argument
+#' # Example 2: Alternative specification using the data argument
 #'
-#' # Specify Mplus input, specify NAMES option by using ...
+#' # Specify Mplus input, leave out the NAMES option
 #' input2 <- '
 #' DATA:     FILE IS ex3_1.dat;
-#' VARIABLE: ...;
 #' MODEL:    y1 ON x1 x3;
 #' OUTPUT:   SAMPSTAT;
 #' '
 #'
-#' # Run Mplus input
+#' # Run Mplus input, specify the data argument
 #' mplus(input2, file = "ex3_1.inp", data = ex3_1)
 #' }
 mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, replace.inp = TRUE,
@@ -205,12 +201,6 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
       unlist(strsplit(x, ""))[as.numeric(gregexec("\\.\\.\\.", x)[[1L]]) + 3L] |>
         (\(z) if (isTRUE(z != ";" || is.na(z))) { stop("Please include the semicolon ; when using the \"...;\" specification.", call. = FALSE)} )()
 
-      # Data argument specified
-      if (isTRUE(is.null(data))) { stop("Please specify a data frame or matrix for the argument 'data' when using the '...;' specification.", call. = FALSE) }
-
-      # NAMES specified
-      if (isTRUE(grepl("NAMES", toupper(x)))) { stop("Please do not specify the subection NAMES in the Mplus input text when using the '...;' specification.") }
-
     }
 
     # Check input 'file'
@@ -225,8 +215,8 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
       # Data frame or matrix for
       if (isTRUE(!is.data.frame(data) && !is.matrix(data))) { stop("Please specify a data frame or matrix for the argument 'data'.", call. = FALSE) }
 
-      # ...; specification
-      if (isTRUE(!grepl("...;", x, fixed = TRUE))) { stop("Please specify '...;' in the Mplus input text when using the argument 'data'.", call. = FALSE) }
+      # NAMES ARE specification
+      if (isTRUE(grepl("NAMES ARE|NAMES IS|NAMES =|NAMES  ARE|NAMES  IS|NAMES  =", toupper(x)))) { stop("Please do not specify the subection NAMES in the Mplus input text when using the argument 'data'.", call. = FALSE) }
 
     }
 
@@ -491,14 +481,48 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
   if (isTRUE(any(grepl("SAVEDATA:", x.upp)))) { savedata <- .extract.section("SAVEDATA:", x, section.pos) }
 
-
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variable Names ####
 
-  if (isTRUE(grepl("...;", inpvariable, fixed = TRUE))) {
+  if (isTRUE(!is.null(data))) {
 
-    ### Prepare Variable Names ####
-    names.are <- names.temp <- names.length <- paste0(paste0(rep(" ", times = n.space <- as.numeric(gregexec("\\.\\.\\.;", inpvariable)[[1L]]) - (as.numeric(gregexec("VARIABLE:", inpvariable)[[1L]]) + 10L)), collapse = ""), "        ", collapse = "")
+    # VARIABLE Section available
+    if (isTRUE(!is.null(inpvariable))) {
+
+      colon.section <- inpvariable
+
+    # VARIABLE Section not available
+    } else {
+
+      colon.section <- inpdata
+
+    }
+
+    # Colon position
+    col.pos <- as.numeric(gregexec(":", toupper(colon.section)))
+
+    # Space between : and input text
+    n.space <- diff(c(col.pos, (which(unlist(strsplit(colon.section, "")) != " ") |>
+                                  (\(y) y[y > col.pos][1L])()))) - 1L
+
+    # VARIABLE Section not available
+    if (isTRUE(is.null(inpvariable))) {
+
+      if (isTRUE(n.space <= 5L)) {
+
+        n.space <- 1L
+
+      } else {
+
+        n.space <- n.space - 4L
+
+      }
+
+    }
+
+    names.are <- names.temp <- names.length <- paste0(paste0(rep(" ", times = n.space), collapse = ""), "        ", collapse = "")
+
+    # Loop across variables names
     for (i in colnames(data)) {
 
       # Replace "." with "_"
@@ -513,15 +537,27 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
       } else {
 
-        names.are <- paste(names.are, "\n         ", i, collapse = " ")
-        names.length <- paste("         ", i, collapse = " ")
+        names.are <- paste(names.are, "\n", "      ", paste0(rep(" ", times = n.space), collapse = ""), i, collapse = " ")
+        names.length <- paste("      ", paste0(rep(" ", times = n.space), collapse = ""), i, collapse = " ")
 
       }
 
     }
 
-    # Replace ...;
-    inpvariable <- sub("...;", paste("NAMES ARE\n", paste0(names.are, ";"), "\n", collapse = " "), inpvariable, fixed = TRUE)
+    # VARIABLE Section available
+    if (isTRUE(!is.null(inpvariable))) {
+
+      inpvariable <- paste0(c("VARIABLE:", rep(" ", times = n.space), "NAMES ARE\n",
+                            names.are, ";\n\n",
+                            rep(" ", times = col.pos), paste(unlist(strsplit(inpvariable, ""))[-c(1L:col.pos)], collapse = "")), collapse = "")
+
+    # VARIABLE Section not available
+    } else {
+
+      inpvariable <- paste0(c("VARIABLE:", rep(" ", times = n.space), "NAMES ARE\n",
+                              names.are, ";\n"), collapse = "")
+
+    }
 
   }
 
@@ -607,7 +643,7 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Mplus Output ####
 
-  if (isTRUE(output)) {
+  if (isTRUE(mplus.run && output)) {
 
     # Existing output file
     if (isTRUE(file.exists(file.out))) {

@@ -130,8 +130,8 @@
 na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "MLR"),
                          missing = c("fiml", "two.stage", "robust.two.stage", "doubly.robust"),
                          tri = c("both", "lower", "upper"), weighted = FALSE, correct = FALSE,
-                         digits = 2, p.digits = 3, as.na = NULL, write = NULL, append = TRUE, check = TRUE,
-                         output = TRUE) {
+                         digits = 2, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
+                         check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -161,8 +161,8 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
     # Extract data
     x <- data[, var.names]
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Data without using the argument 'data' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
 
   } else {
 
@@ -334,6 +334,9 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
     d.mat <- t(d.mat)
 
     d.mat[lower.tri(d.mat)] <- result.d.low
+
+    # Remove empty rows
+    d.mat <- d.mat[apply(d.mat, 1L, function(y) any(!is.na(y))), ]
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Return object ####

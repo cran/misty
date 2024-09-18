@@ -9,8 +9,7 @@
 #'                    file with or without the file extension \code{.imp}, e.g.,
 #'                    \code{"Blimp_Input.imp"} or \code{"Blimp_Input.imp"}.
 #' @param data        a matrix or data frame from which the variables names for
-#'                    the section \code{VARIABLES} are extracted when using the
-#'                    \code{...;} specification in the \code{VARIABLES} section.
+#'                    the section \code{VARIABLES} are extracted.
 #' @param comment     logical: if \code{FALSE} (default), comments (i.e., text
 #'                    after the \code{#} symbol) are removed from the input text
 #'                    specified in the argument \code{x}.
@@ -84,22 +83,20 @@
 #' \describe{
 #' \item{\strong{\code{VARIABLES} Section}}{The \code{VARIABLES} section used to
 #' assign names to the variables in the data set can be specified by using
-#' \code{...} and the \code{data} argument:
+#' the \code{data} argument:
 #'    \itemize{
 #'       \item{\code{Write Blimp Data File}}: In the first step, the Blimp data
 #'       file is written by using the \code{write.mplus()} function, e.g.
 #'       \code{write.mplus(data1, file = "data1.dat")}.
 #'       \item{\code{Specify Blimp Input}}: In the second step, the Blimp input
-#'       is specified as a character string. The \code{VARIABLES} option can be
-#'       specified by using \code{...}, e.g.,
-#'       \code{input <- 'DATA: data1.dat;\nVARIABLES: ...\nMODEL: y ~ x1@b1 x2@b2 d2;'}.
+#'       is specified as a character string. The \code{VARIABLES} option is left
+#'       out from the Blimp input text, e.g.,
+#'       \code{input <- 'DATA: data1.dat;\nMODEL: y ~ x1@b1 x2@b2 d2;'}.
 #'       \item{\code{Run Blimp Input}}: In the third step, the Blimp input is run
 #'       by using the \code{blimp()} function. The argument \code{data} needs to
-#'       be specified given that the \code{VARIABLES} section was specified
-#'       by using \code{...} in the previous step, e.g.,
-#'       \code{blimp(input, file = "Ex4.3.imp", data = data1)}. Note that \code{...;}
-#'       including the semicolon \code{;} needs to be specified, i.e., \code{...}
-#'       without the semicolon \code{;} will result in an error message.
+#'       be specified given that the \code{VARIABLES} section was left out from
+#'       the Blimp input text in the previous step, e.g.,
+#'       \code{blimp(input, file = "Ex4.3.imp", data = data1)}.
 #'    }
 #'  Note that unlike Mplus, Blimp allows to specify a CSV data file with variable
 #'  names in the first row. Hence, it is recommended to export the data from
@@ -181,7 +178,7 @@
 #' blimp(input2, file = "Ex4.3.imp")
 #'
 #' #----------------------------------------------------------------------------
-#' # Example 3: Alternative specification using ...; and the data argument
+#' # Example 3: Alternative specification using the data argument
 #'
 #' # Write Data File
 #' write.mplus(data1, file = "data1.dat", input = FALSE)
@@ -189,7 +186,6 @@
 #' # Specify Blimp input
 #' input3 <- '
 #' DATA: data1.dat;
-#' VARIABLES: ...;
 #' ORDINAL: d;
 #' MISSING: 999;
 #' FIXED: d;
@@ -249,9 +245,6 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
       unlist(strsplit(x, ""))[as.numeric(gregexec("\\.\\.\\.", x)[[1L]]) + 3L] |>
         (\(z) if (isTRUE(z != ";" || is.na(z))) { stop("Please include the semicolon ; when using the \"...;\" specification.", call. = FALSE)} )()
 
-      # Data argument specified
-      if (isTRUE(is.null(data))) { stop("Please specify a data frame or matrix for the argument 'data' when using the '...' specification.", call. = FALSE) }
-
     }
 
     # Check input 'file'
@@ -263,8 +256,8 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
       # Data frame or matrix for
       if (isTRUE(!is.data.frame(data) && !is.matrix(data))) { stop("Please specify a data frame or matrix for the argument 'data'.", call. = FALSE) }
 
-      # ... specification
-      if (isTRUE(!grepl("...", x, fixed = TRUE))) { stop("Please specify '...' in the Blimp input text when using the argument 'data'.", call. = FALSE) }
+      # VARIABLES specification
+      if (isTRUE(grepl("VARIABLES:", toupper(x)))) { stop("Please do not specify the VARIABLE command in the Blimp input text when using the argument 'data'.", call. = FALSE) }
 
     }
 
@@ -616,11 +609,32 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variable Names ####
 
-  if (isTRUE(grepl("...", variables, fixed = TRUE))) {
+  if (isTRUE(!is.null(data))) {
 
-    ### Prepare Variable Names ####
-    names.are <- names.temp <- names.length <- ""
+    # Colon position
+    col.pos <- as.numeric(gregexec(":", toupper(bdata)))
+
+    # Space between : and input text
+    n.space <- diff(c(col.pos, (which(unlist(strsplit(bdata, "")) != " ") |>
+                                  (\(y) y[y > col.pos][1L])()))) - 1L
+
+    if (isTRUE(n.space <= 5L)) {
+
+      n.space <- 1L
+
+    } else {
+
+      n.space <- n.space - 4L
+
+    }
+
+    names.are <- names.temp <- names.length <- paste0(rep(" ", times = n.space), collapse = "")
+
+    # Loop across variables names
     for (i in colnames(data)) {
+
+      # Replace "." with "_"
+      if (isTRUE(grepl("\\.", i))) { i <- gsub("\\.", "_", i) }
 
       names.temp <- paste(names.are, i, collapse = " ")
       names.length <- paste(names.length, i, collapse = " ")
@@ -631,15 +645,14 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
       } else {
 
-        names.are <- paste(names.are, "\n          ", i, collapse = " ")
-        names.length <- paste("          ", i, collapse = " ")
+        names.are <- paste(names.are, "\n", "      ", paste0(rep(" ", times = n.space), collapse = ""), i, collapse = " ")
+        names.length <- paste("      ", paste0(rep(" ", times = n.space), collapse = ""), i, collapse = " ")
 
       }
 
     }
 
-    # Replace ...
-    variables <- sub("...;", misty::chr.trim(paste0(paste0(names.are, ";"), "\n", collapse = "")), variables, fixed = TRUE)
+    variables <- paste0(c("VARIABLES:", paste(rep(" ", times = n.space), collapse = ""), misty::chr.trim(names.are), ";"), collapse = "")
 
   }
 
@@ -696,7 +709,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
       cat("Running Model:", file, "\n")
 
       misty::blimp.run(file, recursive = FALSE, replace.out = replace.out, posterior = posterior,
-                       folder = folder, format = format, clear = clear, Blim = Blimp, check = FALSE)
+                       folder = folder, format = format, clear = clear, Blimp = Blimp, check = FALSE)
 
       if (isTRUE(output)) { cat("\n") }
 

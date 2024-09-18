@@ -788,7 +788,7 @@ mplus.lca <- function(x, ind = NULL,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Run Mplus ####
 
-    if (isTRUE(mplus.run)) { misty::mplus.run(target = file.path(getwd(), paste0("LCA_1-", classes, "_Classes")), recursive = FALSE, Mplus = Mplus, replaceOutfile = replace.out) }
+    if (isTRUE(mplus.run)) { misty::mplus.run(target = file.path(getwd(), paste0("LCA_1-", classes, "_Classes")), recursive = FALSE, Mplus = Mplus, replace.out = replace.out) }
 
   }
 

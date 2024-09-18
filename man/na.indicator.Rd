@@ -4,7 +4,8 @@
 \alias{na.indicator}
 \title{Missing Data Indicator Matrix}
 \usage{
-na.indicator(..., data = NULL, as.na = NULL, check = TRUE)
+na.indicator(..., data = NULL, na = 0, append = TRUE, name = ".i", as.na = NULL,
+             check = TRUE)
 }
 \arguments{
 \item{...}{a matrix or data frame with incomplete data, where missing
@@ -19,6 +20,19 @@ in the \code{\link{df.subset}} function.}
 argument \code{...}. Note that the argument is \code{NULL}
 when specifying a matrix or data frame for the argument \code{...}.}
 
+\item{na}{an integer value specifying, i.e., either \code{1} for
+\code{0 = observed} and \code{1 = missing}, or \code{0} (default) for
+\code{1 = observed} and \code{0 = missing}.}
+
+\item{append}{logical: if \code{TRUE} (default), missing data indicator matrix
+is appended to the data frame specified in the argument \code{data}.}
+
+\item{name}{a character string indicating the name suffix of indicator variables
+By default, the indicator variables are named with the ending
+\code{".i"} resulting in e.g. \code{"x1.i"} and \code{"x2.i"}.
+Note that when selecting one single variable, the indicator variable
+is named \code{x.i} by default or named after the argument \code{name}.}
+
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
@@ -31,14 +45,17 @@ if a value is missing.
 }
 \description{
 This function creates a missing data indicator matrix \eqn{R} that denotes whether
-values are observed or missing, i.e., \eqn{r = 1} if a value is observed, and
-\eqn{r = 0} if a value is missing.
+values are observed or missing, i.e., \eqn{r = 0} if a value is observed, and
+\eqn{r = 1} if a value is missing.
 }
 \examples{
 # Example 1a: Create missing data indicator matrix \eqn{R}
 na.indicator(airquality)
 
 # Example 1b: Alternative specification using the 'data' argument
+na.indicator(., data = airquality)
+
+# Example 2: Append missing data indicator matrix to the data frame
 na.indicator(., data = airquality)
 }
 \references{

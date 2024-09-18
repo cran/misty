@@ -251,8 +251,8 @@
 #' # Example 7b: Center L1 predictor 'y1' within L2 cluster and L2 predictor 'w1' within L3 cluster
 #' center(y1, w1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
 center <- function(..., data = NULL, cluster = NULL, type = c("CGM", "CWC"),
-                   cwc.mean = c("L2", "L3"), value = NULL, name = ".c",
-                   append = TRUE, as.na = NULL, check = TRUE) {
+                   cwc.mean = c("L2", "L3"), value = NULL,  append = TRUE,
+                   name = ".c", as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #

@@ -33,8 +33,8 @@
 #'                    for \code{write.csv()}, \code{"csv2"} for \code{write.csv2()},
 #'                    \code{"xlsx"} for \code{write.xlsx()}, \code{"rds"} for
 #'                    \code{saveRDS()}, and \code{"RData"} for \code{write()}.
-#' @param clear       logical: if \code{TRUE} (default), the console is cleared
-#'                    after estimating each model.
+#' @param clear       logical: if \code{TRUE}, the console is cleared after
+#'                    estimating each model.
 #' @param Blimp       a character string for specifying the name or path of the
 #'                    Blimp executable to be used for running models. This covers
 #'                    situations where Blimp is not in the system's path, or where
@@ -88,7 +88,7 @@ blimp.run <- function(target = getwd(), recursive = FALSE,
                       replace.out = c("always", "never", "modified"),
                       posterior = FALSE, folder = "Posterior_",
                       format = c("csv", "csv2", "xlsx", "rds", "RData"),
-                      clear = TRUE, Blimp = detect.blimp(), check = TRUE) {
+                      clear = FALSE, Blimp = detect.blimp(), check = TRUE) {
 
   #_____________________________________________________________________________
   #

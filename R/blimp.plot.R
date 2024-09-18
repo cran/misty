@@ -32,6 +32,11 @@
 #'                          and \code{L3}) are provided in the text file
 #'                          \code{"partable.txt"}. Note that parameters with zero
 #'                          variance are excluded by default.
+#' @param labels            logical: if \code{TRUE} (default), parameter labels
+#'                          (e.g., \code{y Beta x} for the slope of the regression
+#'                          y on x) are shown in the facet labels. If \code{FALSE},
+#'                          the numbers of the parameter (e.g., \code{Parameter 1}
+#'                          are shown in the the facet labels.
 #' @param burnin            logical: if \code{FALSE}, the burn-in iterations are
 #'                          discarded when displaying trace plots. The default
 #'                          setting for \code{plot = "trace"} is \code{TRUE}.
@@ -260,7 +265,7 @@
 #' blimp.plot("Posterior_Ex4.3", saveplot = "all", file = "Blimp_Plot.png", dpi = 300)
 #'
 #' # Example 3a: Save posterior distribution plot, specify width and height of the plot
-#' blimp.plot("Posterior_Ex4.3", plot = "none", saveplot = "poast",
+#' blimp.plot("Posterior_Ex4.3", plot = "none", saveplot = "post",
 #'            width = 7.5, height = 7)
 #'
 #' #----------------------------------------------------------------------------
@@ -346,7 +351,7 @@
 #'         legend.box.margin = margin(c(-30, 6, 6, 6)),
 #'         legend.background = element_rect(fill = "transparent"))
 #' }
-blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
+blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, labels = TRUE,
                        burnin = TRUE, point = c("all", "none", "m", "med", "map"),
                        ci = c("none", "eti", "hdi"), conf.level = 0.95, hist = TRUE,
                        density = TRUE, area = TRUE, alpha = 0.4, fill = "gray85",
@@ -438,6 +443,9 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
 
     if (isTRUE(!all(c("none", "trace", "post") %in% plot) && length(plot) != 1L)) { stop("Please specify \"none\", \"trace\", \"post\", \"auto\", \"ppc\", or \"loop\" for the argument 'plot'.", call. = FALSE) }
 
+    # Check input 'labels'
+    if (isTRUE(!is.logical(labels))) { stop("Please specify TRUE or FALSE for the argument 'labels'.", call. = FALSE) }
+
     # Check input 'burnin'
     if (isTRUE(!is.logical(burnin))) { stop("Please specify TRUE or FALSE for the argument 'burnin'.", call. = FALSE) }
 
@@ -486,7 +494,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
     if (isTRUE(!is.null(legend.box.margin) && length(legend.box.margin) != 4L)) { stop("Please specify numeric vector with four elements for the argument 'legend.box.margin'.", call. = FALSE) }
 
     # Check input 'saveplot'
-    if (isTRUE(!all(saveplot %in% c("all", "none", "trace", "post")))) { stop("Character strings in the argument 'saveplot' do not all match with \"all\", \"none\", \"trace\", \"post\", \"ppc\", or \"loop\".", call. = FALSE) }
+    if (isTRUE(!all(saveplot %in% c("all", "none", "trace", "post")))) { stop("Character strings in the argument 'saveplot' do not all match with \"all\", \"none\", \"trace\", or \"post\".", call. = FALSE) }
 
     # Check input 'file.plot'
     if (isTRUE(length(file.plot) != 2L)) { stop("Please specify a character vector with two elements for the argument 'file.plot'.", call. = FALSE) }
@@ -514,7 +522,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
 
     param <- "on"
 
-    # All input commands
+  # All input commands
   } else if (isTRUE("all" %in% param)) {
 
     param <- c("on", "by", "with", "inter", "var", "r2", "new")
@@ -648,6 +656,35 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
       })()
 
     #...................
+    ### Label ####
+
+    # With Labels
+    if (isTRUE(labels)) {
+
+      # Shorten Labels
+      plotdat[, c("latent1", "latent2", "latent3")] <- sapply(plotdat[, c("latent1", "latent2", "latent3")], function(y) {
+
+        misty::rec(y, spec = "'Correlations' = 'Cor.'; 'Exponentiated Coefficients' = 'Exp. Coef'; 'Standardized Beta' = 'Std. Beta'; 'Coefficients' = 'Coef'; 'Dispersion Parameter' = 'Disp. Par.'; 'Heterogeneity Index' = 'Hetero. Index'; 'Level-1 Residual Variation' = 'L1 Resid. Var.'; 'Level-2 Random Intercepts' = 'L2 Rand. Inter.'; 'Level-3 Random Intercepts' = 'L3 Rand. Inter.'; 'Level-2 Random Slopes' = 'L2 Random Slope'; 'Level-3 Random Slopes' = 'L3 Random Slope'; 'Q25% Residual Var.' = 'Q25% Resid. Var.'; 'Residual Var.' = 'Resid. Var.'; 'Residual Variation' = 'Resid. Var.'; 'Yeo-Johnson (lambda)' = 'Yeo-Johnson'", check = FALSE)
+
+      })
+
+      # Duplicated Entries
+      plotdat[which(apply(plotdat[, c("latent2", "latent3")], 1L, function(y) any(duplicated(y)))), "latent3"] <- ""
+
+      # Paste labels
+      plotdat$label <- apply(plotdat[, c("latent1", "latent2", "latent3")], 1L, paste, collapse = " ")
+
+      # Factor
+      plotdat$label <- factor(plotdat$label, levels = unique(plotdat[order(plotdat$param), "label"]))
+
+    # Without Labels
+    } else {
+
+      plotdat$label <- factor(paste0("Parameter ", plotdat$param), levels = paste0("Parameter ", sort(unique(plotdat$param))))
+
+    }
+
+    #...................
     ### Select Parameters ####
 
     if (isTRUE(!is.null(param))) {
@@ -665,11 +702,6 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
 
     plotdat.post$postburn <- plotdat.trace$postburn <- factor(plotdat.trace$postburn, levels = unique(plotdat.trace$postburn))
     plotdat.post$chain <- plotdat.trace$chain <- factor(plotdat.trace$chain)
-
-    #...................
-    ### Label ####
-
-    plotdat.post$param <- plotdat.trace$param <- factor(paste0("Parameter ", plotdat.trace$param), levels = paste0("Parameter ", sort(unique(plotdat.trace$param))))
 
     #...................
     ### Discard burn-in iterations ####
@@ -745,7 +777,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
 
     # Plot
     plot.trace <- suppressMessages(ggplot2::ggplot(plotdat.trace, ggplot2::aes(x = iter, y = value, color = chain)) +
-                                     ggplot2::facet_wrap(~ param, nrow = nrow, ncol = ncol, scales = scales) +
+                                     ggplot2::facet_wrap(~ label, nrow = nrow, ncol = ncol, scales = scales) +
                                      ggplot2::scale_x_continuous(name = xlab.trace, limits = xlim.trace, breaks = xbreaks.trace, expand = xexpand.trace) +
                                      ggplot2::scale_y_continuous(name = ylab.trace, limits = ylim.trace, breaks = ybreaks.trace, expand = yexpand.trace) +
                                      ggplot2::scale_colour_manual(name = "Chain", values = hcl.colors(n = n.chains, palette = palette)) +
@@ -803,7 +835,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
 
     # Plot
     plot.post <- suppressMessages(ggplot2::ggplot(plotdat.post, ggplot2::aes(x = value)) +
-                                    ggplot2::facet_wrap(~ param, nrow = nrow, ncol = ncol, scales = scales) +
+                                    ggplot2::facet_wrap(~ label, nrow = nrow, ncol = ncol, scales = scales) +
                                     ggplot2::scale_x_continuous(name = xlab.post, limits = xlim.post, breaks = xbreaks.post, expand = xexpand.post) +
                                     ggplot2::scale_y_continuous(name = ylab.post, limits = ylim.post, breaks = ybreaks.post, expand = yexpand.post) +
                                     ggplot2::theme_bw() +
@@ -829,7 +861,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
         if (isTRUE(is.null(legend.box.margin))) { legend.box.margin.post <- c(-24L, 6L, 6L, 6L) } else { legend.box.margin.post <- legend.box.margin }
 
         plot.post <- suppressMessages(plot.post +
-                                        ggplot2::geom_vline(data = data.frame(param = levels(plotdat.post$param), stat = tapply(plotdat.post$value, plotdat.post$param, mean, na.rm = TRUE)),
+                                        ggplot2::geom_vline(data = data.frame(label = factor(levels(plotdat.post$label), levels = levels(plotdat.post$label)), stat = tapply(plotdat.post$value, plotdat.post$label, mean, na.rm = TRUE)),
                                                             ggplot2::aes(xintercept = stat, color = "Mean"), linewidth = linewidth) +
                                         ggplot2::scale_color_manual(name = "Point Estimate", values = c(Mean = point.col[1L])) +
                                         ggplot2::guides(color = ggplot2::guide_legend(nrow = 1, byrow = TRUE)) +
@@ -852,7 +884,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
         if (isTRUE(is.null(legend.box.margin))) { legend.box.margin.post <- c(-24L, 6L, 6L, 6L) } else { legend.box.margin.post <- legend.box.margin }
 
         plot.post <- suppressMessages(plot.post +
-                                        ggplot2::geom_vline(data = data.frame(param = levels(plotdat.post$param), stat = tapply(plotdat.post$value, plotdat.post$param, median, na.rm = TRUE)),
+                                        ggplot2::geom_vline(data = data.frame(label = factor(levels(plotdat.post$label), levels = levels(plotdat.post$label)), stat = tapply(plotdat.post$value, plotdat.post$label, median, na.rm = TRUE)),
                                                             ggplot2::aes(xintercept = stat, color = "Median"), linewidth = linewidth) +
                                         ggplot2::scale_color_manual(name = "Point Estimate", values = c(Mean = point.col[1L], Median = point.col[2L])) +
                                         ggplot2::guides(color = ggplot2::guide_legend(nrow = 1, byrow = TRUE)) +
@@ -875,7 +907,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
         if (isTRUE(is.null(legend.box.margin))) { legend.box.margin.post <- c(-24L, 6L, 6L, 6L) } else { legend.box.margin.post <- legend.box.margin }
 
         plot.post <- suppressMessages(plot.post +
-                                        ggplot2::geom_vline(data = data.frame(param = levels(plotdat.post$param), stat = tapply(plotdat.post$value, plotdat.post$param, function(y) {
+                                        ggplot2::geom_vline(data = data.frame(label = factor(levels(plotdat.post$label), levels = levels(plotdat.post$label)), stat = tapply(plotdat.post$value, plotdat.post$label, function(y) {
                                           x.density <- density(na.omit(y), n = 2L^10L, bw = "SJ", from = range(y)[1L], to = range(y)[2L])
                                           x.density$x[which.max(x.density$y)]
                                         })),
@@ -901,27 +933,27 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
       switch(ci, eti = {
 
         plot.post <- suppressMessages(plot.post +
-                                        ggplot2::geom_vline(data = data.frame(param = levels(plotdat.post$param),
-                                                                              low = tapply(plotdat.post$value, plotdat.post$param, function(y) quantile(y, probs = (1L - conf.level) / 2L))),
+                                        ggplot2::geom_vline(data = data.frame(label = factor(levels(plotdat.post$label), levels = levels(plotdat.post$label)),
+                                                                              low = tapply(plotdat.post$value, plotdat.post$label, function(y) quantile(y, probs = (1L - conf.level) / 2L))),
                                                             ggplot2::aes(xintercept = low), color = line.col, linetype = linetype, linewidth = linewidth) +
-                                        ggplot2::geom_vline(data = data.frame(param = levels(plotdat.post$param),
-                                                                              upp = tapply(plotdat.post$value, plotdat.post$param, function(y) quantile(y, probs = 1L - (1L - conf.level) / 2L))),
+                                        ggplot2::geom_vline(data = data.frame(label = factor(levels(plotdat.post$label), levels = levels(plotdat.post$label)),
+                                                                              upp = tapply(plotdat.post$value, plotdat.post$label, function(y) quantile(y, probs = 1L - (1L - conf.level) / 2L))),
                                                             ggplot2::aes(xintercept = upp), color = line.col, linetype = linetype, linewidth = linewidth) +
                                         ggplot2::labs(caption = paste0(round(conf.level * 100, digits = 2), "% Equal-Tailed Interval")) +
-                                        ggplot2::theme(plot.caption = ggplot2::element_text(hjust = 0.5, vjust = 7)))
+                                        ggplot2::theme(plot.caption = ggplot2::element_text(hjust = 0.5, vjust = 7L)))
 
       ##### Highest Density Interval
       }, hdi = {
 
         plot.post <- suppressMessages(plot.post +
-                                        ggplot2::geom_vline(data = data.frame(param = levels(plotdat.post$param),
-                                                                              low = tapply(plotdat.post$value, plotdat.post$param, function(y) .hdi(y, conf.level = conf.level)$low)),
+                                        ggplot2::geom_vline(data = data.frame(label = factor(levels(plotdat.post$label), levels = levels(plotdat.post$label)),
+                                                                              low = tapply(plotdat.post$value, plotdat.post$label, function(y) .hdi(y, conf.level = conf.level)[1L])),
                                                             ggplot2::aes(xintercept = low), color = line.col, linetype = linetype, linewidth = linewidth) +
-                                        ggplot2::geom_vline(data = data.frame(param = levels(plotdat.post$param),
-                                                                              upp = tapply(plotdat.post$value, plotdat.post$param, function(y) .hdi(y, conf.level = conf.level)$upp)),
+                                        ggplot2::geom_vline(data = data.frame(label = factor(levels(plotdat.post$label), levels = levels(plotdat.post$label)),
+                                                                              upp = tapply(plotdat.post$value, plotdat.post$label, function(y) .hdi(y, conf.level = conf.level)[2L])),
                                                             ggplot2::aes(xintercept = upp), color = line.col, linetype = linetype, linewidth = linewidth) +
                                         ggplot2::labs(caption = paste0(round(conf.level * 100L, digits = 2L), "% Highest Density Interval")) +
-                                        ggplot2::theme(plot.caption = ggplot2::element_text(hjust = 0.5, vjust = 7)))
+                                        ggplot2::theme(plot.caption = ggplot2::element_text(hjust = 0.5, vjust = 7L)))
 
       })
 
@@ -934,7 +966,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
     object <- list(call = match.call(),
                    type = "blimp",
                    x = x,
-                   args = list(plot = plot, param = param, burnin = burnin,
+                   args = list(plot = plot, param = param, labels = labels, burnin = burnin,
                                point = point, ci = ci, conf.level = conf.level,
                                hist = hist, density = density, area = area,
                                alpha = alpha, fill = fill, nrow = nrow, ncol = ncol,
@@ -973,6 +1005,47 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL,
            trace = { suppressWarnings(suppressMessages(plot(object$plot$trace))) },
            # Posterior distribution plots
            post = { suppressWarnings(suppressMessages(plot(object$plot$post))) })
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Save ggplot ----------------------------------------------------------------
+
+  if (isTRUE(all(saveplot != "none"))) {
+
+    # File extension
+    file.ext <- paste0(".", rev(unlist(strsplit(file, "\\.")))[1L])
+
+    # Trace plot
+    if (isTRUE("trace" %in% saveplot)) {
+
+      if (isTRUE(is.null(object$plot$trace))) {
+
+        stop("Trace plots could not be created.", call. = FALSE)
+
+      } else {
+
+        suppressWarnings(suppressMessages(ggplot2::ggsave(filename = sub(file.ext, paste0(file.plot[1L], file.ext), file), plot = object$plot$trace, width = width, height = height, units = units, dpi = dpi)))
+
+      }
+
+    }
+
+    # Posterior distribution plot
+    if (isTRUE("post" %in% saveplot)) {
+
+      if (isTRUE(is.null(object$plot$post))) {
+
+        stop("Posterior parameter distribution plots could not be created.", call. = FALSE)
+
+      } else {
+
+        suppressWarnings(suppressMessages(ggplot2::ggsave(filename = sub(file.ext, paste0(file.plot[2L], file.ext), file), plot = object$plot$post, width = width, height = height, units = units, dpi = dpi)))
+
+      }
+
+    }
 
   }
 

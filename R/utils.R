@@ -1007,7 +1007,7 @@
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Post-Process Posterior Data ####
 
-  if (isTRUE(posterior)) {
+  if (isTRUE(posterior && file.exists(paste0(folder, base, "/labels.dat")))) {
 
     if (isTRUE(all(!grepl("BYGROUP:", target.read, ignore.case = TRUE)))) {
 
@@ -3588,8 +3588,9 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 
   n.mis.pat <- length(unique(x.mp$MisPat))
 
-  gmean <- suppressWarnings(mvnmle::mlest(x)$muhat)
-  gcov <- suppressWarnings(mvnmle::mlest(x)$sigmahat)
+  mlest.result <- suppressWarnings(mvnmle::mlest(x))
+  gmean <- mlest.result$muhat
+  gcov <- mlest.result$sigmahat
   colnames(gcov) <- rownames(gcov) <- colnames(x)
 
   x.mp$MisPat2 <- rep(NA, nrow(x))
@@ -3660,7 +3661,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 
   if(isTRUE(length(newdata$data) == 0L)) { stop("There are no cases left after deleting insufficient cases.", call. = FALSE) }
 
-  if (isTRUE(newdata$g == 1L)) { stop("There is only one missing data pattern present.", call. = FALSE) }
+  if (isTRUE(newdata$g == 1L)) { stop(paste0("There is only one missing data pattern present after removing patterns consisting of less than or equal ", delete, " cases."), call. = FALSE) }
 
   if (isTRUE(sum(newdata$patcnt == 1L) > 0L)) { stop("At least 2 cases needed in each missing data patterns.", call. = FALSE) }
 

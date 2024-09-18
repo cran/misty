@@ -26,8 +26,7 @@ file with or without the file extension \code{.inp}, e.g.,
 \code{"Mplus_Input.inp"} or \code{"Mplus_Input"}.}
 
 \item{data}{a matrix or data frame from which the variables names for
-the subsection \code{NAMES} are extracted when using the
-\code{...} specification in the \code{VARIABLE} section.}
+the subsection \code{NAMES} are extracted.}
 
 \item{comment}{logical: if \code{FALSE} (default), comments (i.e., text
 after the \code{!} symbol) are removed from the input text
@@ -125,24 +124,22 @@ the \code{mplus.run()} function, and prints the Mplus output file by using the
 }
 \details{
 \describe{
-\item{\strong{The \code{NAMES} Option}}{in the \code{VARIABLE} section used to
-assign names to the variables in the data set can be specified by using the
-\code{...} specification and the \code{data} argument:
+\item{\strong{The \code{NAMES} Option}}{The \code{NAMES} option in the \code{VARIABLE}
+section used to assign names to the variables in the data set can be specified by using the
+\code{data} argument:
    \itemize{
       \item{\code{Write Mplus Data File}}: In the first step, the Mplus data
       file is written by using the \code{write.mplus()} function, e.g.
       \code{write.mplus(ex3_1, file = "ex3_1.dat")}.
       \item{\code{Specify Mplus Input}}: In the second step, the Mplus input
-      is specified as a character string. The \code{NAMES} option can be
-      specified by using \code{...}, e.g.,
-      \code{input <- 'DATA:     FILE IS ex3_1.dat;\nVARIABLE: ...\nMODEL:    y1 ON x1 x3;'}.
+      is specified as a character string. The \code{NAMES} option is left out
+      from the Mplus input text, e.g.,
+      \code{input <- 'DATA:     FILE IS ex3_1.dat;\nMODEL:    y1 ON x1 x3;'}.
       \item{\code{Run Mplus Input}}: In the third step, the Mplus input is run
       by using the \code{mplus()} function. The argument \code{data}
-      needs to be specified given that the \code{NAMES} option was specified
-      by using \code{...} in the previous step, e.g.,
-      \code{mplus(input, file = "ex3_1.inp", data = ex3_1)}. Note that \code{...;}
-      including the semicolon \code{;} needs to be specified, i.e., \code{...}
-      without the semicolon \code{;} will result in an error message.
+      needs to be specified given that the \code{NAMES} option was left out from
+      the Mplus input text in the previous step, e.g.,
+      \code{mplus(input, file = "ex3_1.inp", data = ex3_1)}.
    }
 }
 }
@@ -167,17 +164,16 @@ OUTPUT:   SAMPSTAT;
 mplus(input1, file = "ex3_1.inp")
 
 #----------------------------------------------------------------------------
-# Example 2: Alternative  specification using ... and the data argument
+# Example 2: Alternative specification using the data argument
 
-# Specify Mplus input, specify NAMES option by using ...
+# Specify Mplus input, leave out the NAMES option
 input2 <- '
 DATA:     FILE IS ex3_1.dat;
-VARIABLE: ...
 MODEL:    y1 ON x1 x3;
 OUTPUT:   SAMPSTAT;
 '
 
-# Run Mplus input
+# Run Mplus input, specify the data argument
 mplus(input2, file = "ex3_1.inp", data = ex3_1)
 }
 }

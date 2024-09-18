@@ -25,10 +25,9 @@ argument \code{...}. Note that the argument is \code{NULL}
 when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{print}{a character vector indicating which results to be printed on
-the console, i.e. \code{"all"} (default) for Little's MCAR
-test and Jamshidian and Jalal's approach, \code{"little} for
-Little's MCAR test, and \code{"jamjal} for Jamshidian and
-Jalal's approach.}
+the console, i.e. \code{"all"} for Little's MCAR test and Jamshidian and
+Jalal's approach, \code{"little"} for Little's MCAR test, and \code{"jamjal"}
+(default) for Jamshidian and Jalal's approach.}
 
 \item{impdat}{an object of class \code{mids} from the \pkg{mice} package to
 provide a data set multiply imputed in the \pkg{mice} package.

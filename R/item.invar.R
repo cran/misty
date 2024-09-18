@@ -726,6 +726,8 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data Frame with Cluster and Grouping Variable ####
 
+  .group <- NULL
+
   #...................
   ### No cluster variable ####
   if (isTRUE(is.null(cluster))) {
@@ -733,7 +735,10 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     # Grouping variable
     if (isTRUE(!is.null(group))) {
 
-      x <- data.frame(x[, var.mod], .group = group, stringsAsFactors = FALSE)
+
+      # Sort by group
+      x <- data.frame(x[, var.mod], .group = group, stringsAsFactors = FALSE) |>
+        (\(y) misty::df.sort(y, .group))()
 
     # No grouping variable
     } else if (isTRUE(is.null(group))) {

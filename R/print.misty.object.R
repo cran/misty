@@ -505,6 +505,13 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     }
 
+  #____________________--_______________________________________________________
+  #
+  # Blimp Object ---------------------------------------------------------------
+  }, blimp = {
+
+    cat("Please use the blimp.print function to print a \"blimp\" object.")
+
   #___________________________________________________________________________
   #
   # Blimp Summary Measures, Convergence and Efficiency Diagnostics -----------
@@ -5602,65 +5609,16 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     }
 
-    #___________________________________________________________________________
-    #
-    # Mplus Object ....---------------------------------------------------------
-    }, mplus = {
+  #_____________________________________________________________________________
+  #
+  # Mplus Object ---------------------------------------------------------------
+  }, mplus = {
 
       cat("Please use the mplus.print function to print a \"mplus\" object.")
 
-
-    #-----------------------------------------
-    # Item statistics
-
-    if (isTRUE("item" %in% print)) {
-
-      print.object$itemstat$pNA <- paste0(formatC(print.object$itemstat$pNA, digits = 2L, format = "f",
-                                                  zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%")
-      print.object$itemstat$m <- formatC(print.object$itemstat$m, digits = 2L, format = "f",
-                                         zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
-      print.object$itemstat$sd <- formatC(print.object$itemstat$sd, digits = 2L, format = "f",
-                                          zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
-      print.object$itemstat$min <- formatC(print.object$itemstat$min, digits = 2L, format = "f",
-                                           zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
-      print.object$itemstat$max <- formatC(print.object$itemstat$max, digits = 2L, format = "f",
-                                           zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
-
-      print.object$itemstat$std.ld <- formatC(print.object$itemstat$std.ld, digits = digits, format = "f",
-                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-      print.object$itemstat$omega <- formatC(print.object$itemstat$omega, digits = digits, format = "f",
-                                             zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-
-      print.object$itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Std.Ld", "Omega"),
-                                     print.object$itemstat)
-
-      # Format
-      print.object$itemstat[, 1L] <- format(paste(" ", print.object$itemstat[, 1L]), justify = "left")
-      print.object$itemstat[, -1L] <- apply(print.object$itemstat[, -1L], 2L, function(y) format(y, justify = "right"))
-
-      if (isTRUE("omega" %in% print)) { cat("\n") }
-
-      if (isTRUE(x$args$type == "omega")) {
-
-        cat(" Standardized Factor Loadings and Coefficient Omega if Item Deleted\n\n")
-
-      } else if (isTRUE(x$args$type == "hierarch")) {
-
-        cat(" Standardized Factor Loadings and Hierarchical Omega if Item Deleted\n\n")
-
-      } else if (isTRUE(x$args$type == "categ")) {
-
-        cat(" Standardized Factor Loadings and Categorical Omega if Item Deleted\n\n")
-
-      }
-
-      write.table(print.object$itemstat, quote = FALSE, row.names = FALSE, col.names = FALSE)
-
-    }
-
-  #___________________________________________________________________________
+  #_____________________________________________________________________________
   #
-  # Mplus Summary Measures, Convergence and Efficiency Diagnostics -----------
+  # Mplus Summary Measures, Convergence and Efficiency Diagnostics -------------
   }, mplus.bayes = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8489,14 +8447,15 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #-----------------------------------------
       # Format Cohen's d matrix
 
-      print.object$d <- apply(print.object$d, 2L, function(y) formatC(as.numeric(y), digits = digits, format = "f",
-                                                                      zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
-      diag(print.object$d) <- ""
+      print.object$d <- apply(print.object$d, 2L, function(y) formatC(as.numeric(y), digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
 
       # Print table
-      print.object  <- data.frame(cbind(c("", colnames(print.object$cor), "", colnames(print.object$cor)),
+      print.object  <- data.frame(cbind(c("", colnames(print.object$cor), "", row.names(x$result$d)),
                                         rbind(colnames(print.object$cor), print.object$cor, colnames(print.object$cor), print.object$d)),
                                   stringsAsFactors = FALSE)
+
+      # NA
+      print.object <- sapply(print.object, function(y) gsub("NA", "", y))
 
       # Format
       print.object[, 1L] <- paste0("    ", print.object[, 1L])
@@ -8521,8 +8480,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       write.table(print.object[(nrow(x$result$cor) + 2L):nrow(print.object), ], quote = FALSE, row.names = FALSE, col.names = FALSE)
 
-      cat("\n", " Note. Indicator variables are in the rows (0 = miss, 1 = obs)\n")
-
+      cat("\n", " Note. Indicator variables are in the rows (0 = obs, 1 = miss)\n")
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Semi-Partial Correlation Coefficients ####

@@ -17,8 +17,8 @@
 #'                 when specifying a matrix or data frame for the argument \code{...}.
 #' @param print    a character vector indicating which results to be printed on
 #'                 the console, i.e. \code{"all"} for Little's MCAR test and
-#'                 Jamshidian and Jalalꞌs approach, \code{"little} for Little's
-#'                 MCAR test, and \code{"jamjal} (default) for Jamshidian and
+#'                 Jamshidian and Jalalꞌs approach, \code{"little"} for Little's
+#'                 MCAR test, and \code{"jamjal"} (default) for Jamshidian and
 #'                 Jalalꞌs approach.
 #' @param impdat   an object of class \code{mids} from the \pkg{mice} package to
 #'                 provide a data set multiply imputed in the \pkg{mice} package.
@@ -381,7 +381,7 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
     }
 
     # Check input 'delete'
-    if (isTRUE(delete %% 1L != 0L || delete < 0L || delete < 2L)) { stop("Please specify a positive integer number greater than 2 for the argument 'delete'.", call. = FALSE) }
+    if (isTRUE(delete %% 1L != 0L || delete < 0L || delete < 2L)) { stop("Please specify a positive integer number greater than or equal 2 for the argument 'delete'.", call. = FALSE) }
 
     # Check input 'method'
     if (isTRUE(!all(method  %in% c("npar", "normal")))) { stop("Character string in the argument 'method' does not match with \"npar\", or \"normal\".", call. = FALSE) }

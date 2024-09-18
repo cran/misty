@@ -4,11 +4,11 @@
 \alias{blimp.plot}
 \title{Blimp Trace Plots and Posterior Distribution Plots}
 \usage{
-blimp.plot(x, plot = c("none", "trace", "post"), param = NULL, burnin = TRUE,
-           point = c("all", "none", "m", "med", "map"), ci = c("none", "eti", "hdi"),
-           conf.level = 0.95, hist = TRUE, density = TRUE, area = TRUE,
-           alpha = 0.4, fill = "gray85", nrow = NULL, ncol = NULL,
-           scales = c("fixed", "free", "free_x", "free_y"),
+blimp.plot(x, plot = c("none", "trace", "post"), param = NULL, labels = TRUE,
+           burnin = TRUE, point = c("all", "none", "m", "med", "map"),
+           ci = c("none", "eti", "hdi"), conf.level = 0.95, hist = TRUE,
+           density = TRUE, area = TRUE, alpha = 0.4, fill = "gray85",
+           nrow = NULL, ncol = NULL, scales = c("fixed", "free", "free_x", "free_y"),
            xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL,
            xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
            xexpand = ggplot2::waiver(), yexpand = ggplot2::waiver(),
@@ -51,6 +51,12 @@ and the parameter specification (\code{L1}, \code{L2},
 and \code{L3}) are provided in the text file
 \code{"partable.txt"}. Note that parameters with zero
 variance are excluded by default.}
+
+\item{labels}{logical: if \code{TRUE} (default), parameter labels
+(e.g., \code{y Beta x} for the slope of the regression
+y on x) are shown in the facet labels. If \code{FALSE},
+the numbers of the parameter (e.g., \code{Parameter 1}
+are shown in the the facet labels.}
 
 \item{burnin}{logical: if \code{FALSE}, the burn-in iterations are
 discarded when displaying trace plots. The default
@@ -313,7 +319,7 @@ blimp.plot("Posterior_Ex4.3", saveplot = "all")
 blimp.plot("Posterior_Ex4.3", saveplot = "all", file = "Blimp_Plot.png", dpi = 300)
 
 # Example 3a: Save posterior distribution plot, specify width and height of the plot
-blimp.plot("Posterior_Ex4.3", plot = "none", saveplot = "poast",
+blimp.plot("Posterior_Ex4.3", plot = "none", saveplot = "post",
            width = 7.5, height = 7)
 
 #----------------------------------------------------------------------------

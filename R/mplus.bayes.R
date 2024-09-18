@@ -62,7 +62,9 @@
 #'                    \code{m.bulk = FALSE}, i.e., the Monte Carlo standard error
 #'                    for the median is computed.
 #' @param split       logical: if \code{TRUE} (default), each MCMC chain is split
-#'                    in half before computing R-hat, ESS, and MCSE.
+#'                    in half before computing R-hat. Note that the argument
+#'                    \code{split} is always set to \code{FALSE} when computing
+#'                    ESS.
 #' @param rank        logical: if \code{TRUE} (default), rank-normalization is
 #'                    applied to the posterior draws before computing R-hat and
 #'                    ESS. Note that the argument \code{rank} is always set to
@@ -679,25 +681,25 @@ mplus.bayes <- function(x,
       }
 
       # Bulk Effective Sample Size
-      x.b.ess <- .ess(x, split = split, rank = rank)
+      x.b.ess <- .ess(x, split = FALSE, rank = rank)
 
       # Tail Effective Sample Size
-      x.t.ess <- min(.ess(x <= quantile(x, ess.tail[1L]), split = split, rank = rank), .ess(x <= quantile(x, ess.tail[2L]), split = split, rank = rank))
+      x.t.ess <- min(.ess(x <= quantile(x, ess.tail[1L]), split = FALSE, rank = rank), .ess(x <= quantile(x, ess.tail[2L]), split = FALSE, rank = rank))
 
       # Bulk Monte Carlo Standard Error
       if (isTRUE(m.bulk)) {
 
-        x.b.mcse <- .mcse(x, quant = FALSE, split = split, rank = FALSE)
+        x.b.mcse <- .mcse(x, quant = FALSE, split = FALSE, rank = FALSE)
 
       } else {
 
-        x.b.mcse <- .mcse(x, quant = TRUE, prob = 0.50, split = split, rank = FALSE)
+        x.b.mcse <- .mcse(x, quant = TRUE, prob = 0.50, split = FALSE, rank = FALSE)
 
       }
 
       # Tail Monte Carlo Standard Error
-      x.t.mcse <- max(.mcse(x, quant = TRUE, prob = mcse.tail[1L], split = split, rank = FALSE),
-                      .mcse(x, quant = TRUE, prob = mcse.tail[2L], split = split, rank = FALSE))
+      x.t.mcse <- max(.mcse(x, quant = TRUE, prob = mcse.tail[1L], split = FALSE, rank = FALSE),
+                      .mcse(x, quant = TRUE, prob = mcse.tail[2L], split = FALSE, rank = FALSE))
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       ## Probability of Direction ####

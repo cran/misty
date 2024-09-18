@@ -275,6 +275,12 @@ blimp.print <- function(x,
   #
   # Main Function --------------------------------------------------------------
 
+  section <- c("ALGORITHMIC OPTIONS SPECIFIED:", "SIMULATED DATA SUMMARIES:", "VARIABLE ORDER IN SIMULATED DATA:",
+               "BURN-IN POTENTIAL SCALE REDUCTION (PSR) OUTPUT:", "METROPOLIS-HASTINGS ACCEPTANCE RATES:",
+               "DATA INFORMATION:", "VARIABLES IN IMPUTATION MODEL:", "MODEL INFORMATION:", "PARAMETER LABELS:",
+               "WARNING MESSAGES:", "MODEL FIT:", "CORRELATIONS AMONG RESIDUALS:", "OUTCOME MODEL ESTIMATES:",
+               "PREDICTOR MODEL ESTIMATES:", "GENERATED PARAMETERS:", "VARIABLE ORDER IN IMPUTED DATA:")
+
   #----------------------------------------
   # Blimp Output in Text File
   if (isTRUE(class(x) != "misty.object")) {
@@ -354,14 +360,13 @@ blimp.print <- function(x,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Extract Output Sections ####
 
-    section <- c("ALGORITHMIC OPTIONS SPECIFIED:", "SIMULATED DATA SUMMARIES:", "VARIABLE ORDER IN SIMULATED DATA:",
-                 "BURN-IN POTENTIAL SCALE REDUCTION (PSR) OUTPUT:", "METROPOLIS-HASTINGS ACCEPTANCE RATES:",
-                 "DATA INFORMATION:", "VARIABLES IN IMPUTATION MODEL:", "MODEL INFORMATION:", "PARAMETER LABELS:",
-                 "WARNING MESSAGES:", "MODEL FIT:", "CORRELATIONS AMONG RESIDUALS:", "OUTCOME MODEL ESTIMATES:",
-                 "PREDICTOR MODEL ESTIMATES:", "GENERATED PARAMETERS:", "VARIABLE ORDER IN IMPUTED DATA:")
-
     # Input objects
     algo.options <- simdat.summary <- order.simdat <- burnin.psr <- mh.accept <- data.info <- var.imp <- model.info <- param.label <- warn.mess <- fit <- cor.resid <- out.model <- pred.model <- gen.param <- order.impdat <- NULL
+
+    #...................
+    ### Multiple Imputation Within Subgroups ####
+
+    if (isTRUE(sum(run.val == "BURN-IN POTENTIAL SCALE REDUCTION (PSR) OUTPUT:") > 1L)) { stop("The Blimp print function does not support outputs from multiple imputation within subgroups.", call. = FALSE) }
 
     #...................
     ### ALGORITHMIC OPTIONS SPECIFIED ####
@@ -577,7 +582,9 @@ blimp.print <- function(x,
   }
 
   # Horizontal line
-  if (isTRUE(any(grepl("N_Eff", out)) && is.null(getOption("knitr.in.progress")))) {
+  if (isTRUE(any(grepl("N_Eff", print.object)) && is.null(getOption("knitr.in.progress")))) {
+
+    n <- sum(unlist(strsplit(unique(print.object[grep("N_Eff", print.object) + 1L]), "")) == "-")
 
     print.object <- gsub(paste0("                                ", paste(rep("-", times = n), collapse = "")),
                          paste0("                                   ", paste(rep("\u23AF", times = n + 13L), collapse = "")), print.object)
@@ -630,7 +637,7 @@ blimp.print <- function(x,
     # Print result sections
     if (isTRUE(!is.null(print.object))) {
 
-      cat(rep(" ", times = 17L), "Blimp", return.object$blimp, "\n\n ")
+      if (isTRUE(any(grepl("ALGORITHMIC OPTIONS SPECIFIED:", print.object)))) { cat(rep(" ", times = 17L), "Blimp", return.object$blimp, "\n\n ") }
 
       cat(print.object)
 

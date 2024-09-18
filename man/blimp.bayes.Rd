@@ -59,7 +59,9 @@ for the mean is computed. The default setting is
 for the median is computed.}
 
 \item{split}{logical: if \code{TRUE} (default), each MCMC chain is split
-in half before computing R-hat, ESS, and MCSE.}
+in half before computing R-hat. Note that the argument
+\code{split} is always set to \code{FALSE} when computing
+ESS.}
 
 \item{rank}{logical: if \code{TRUE} (default), rank-normalization is
 applied to the posterior draws before computing R-hat and
@@ -214,7 +216,7 @@ measures:
      distribution (i.e, efficiency of the posterior mean), and the Tail-ESS
      is useful measure for sampling efficiency in the tails of the distribution
      (e.g., efficiency of tail quantile estimates). Note that by default, the
-     Tail-ESS is the minimum of the effective sample sizes for 5\% and 95\%
+     Tail-ESS is the minimum of the effective sample sizes for 2.5\% and 97.5\%
      quantiles (\code{tail = c(0.025, 0.975)}). According to Kruschke (2015),
      a rank-normalized ESS greater than 400 is usually sufficient to get a
      stable estimate of the Monte Carlo standard error. However, a ESS of

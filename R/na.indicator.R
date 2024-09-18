@@ -1,23 +1,33 @@
 #' Missing Data Indicator Matrix
 #'
 #' This function creates a missing data indicator matrix \eqn{R} that denotes
-#' whether values are observed or missing, i.e., \eqn{r = 1} if a value is
-#' observed, and \eqn{r = 0} if a value is missing.
+#' whether values are observed or missing, i.e., \eqn{r = 0} if a value is
+#' observed, and \eqn{r = 1} if a value is missing.
 #'
-#' @param ...   a matrix or data frame with incomplete data, where missing
-#'              values are coded as \code{NA}. Alternatively, an expression
-#'              indicating the variable names in \code{data} e.g.,
-#'              \code{na.indicator(x1, x2, x3, data = dat)}. Note that the operators
-#'              \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-#'              and \code{!} can also be used to select variables, see 'Details'
-#'              in the \code{\link{df.subset}} function.
-#' @param data  a data frame when specifying one or more variables in the
-#'              argument \code{...}. Note that the argument is \code{NULL}
-#'              when specifying a matrix or data frame for the argument \code{...}.
-#' @param as.na a numeric vector indicating user-defined missing values,
-#'              i.e. these values are converted to \code{NA} before conducting
-#'              the analysis.
-#' @param check logical: if \code{TRUE} (default), argument specification is checked.
+#' @param ...    a matrix or data frame with incomplete data, where missing
+#'               values are coded as \code{NA}. Alternatively, an expression
+#'               indicating the variable names in \code{data} e.g.,
+#'               \code{na.indicator(x1, x2, x3, data = dat)}. Note that the operators
+#'               \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'               and \code{!} can also be used to select variables, see 'Details'
+#'               in the \code{\link{df.subset}} function.
+#' @param data   a data frame when specifying one or more variables in the
+#'               argument \code{...}. Note that the argument is \code{NULL}
+#'               when specifying a matrix or data frame for the argument \code{...}.
+#' @param na     an integer value specifying, i.e., either \code{1} for
+#'               \code{0 = observed} and \code{1 = missing}, or \code{0} (default)
+#'               for \code{1 = observed} and \code{0 = missing}.
+#' @param append logical: if \code{TRUE} (default), missing data indicator matrix
+#'               is appended to the data frame specified in the argument \code{data}.
+#' @param name   a character string indicating the  name suffix of indicator variables
+#'               By default, the indicator variables are named with the ending
+#'               \code{".i"} resulting in e.g. \code{"x1.i"} and \code{"x2.i"}.
+#'               Note that when selecting one single variable, the indicator variable
+#'               is named \code{x.i} by default or named after the argument \code{name}.
+#' @param as.na  a numeric vector indicating user-defined missing values,
+#'               i.e. these values are converted to \code{NA} before conducting
+#'               the analysis.
+#' @param check  logical: if \code{TRUE} (default), argument specification is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -48,7 +58,11 @@
 #'
 #' # Example 1b: Alternative specification using the 'data' argument
 #' na.indicator(., data = airquality)
-na.indicator <- function(..., data = NULL, as.na = NULL, check = TRUE) {
+#'
+#' # Example 2: Append missing data indicator matrix to the data frame
+#' na.indicator(., data = airquality)
+na.indicator <- function(..., data = NULL, na = 0, append = TRUE, name = ".i",
+                         as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -100,14 +114,74 @@ na.indicator <- function(..., data = NULL, as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
+  # Input Check ----------------------------------------------------------------
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+
+  if (isTRUE(check)) {
+
+    # Check input 'na'
+    if (isTRUE(na != 0L && na != 1L)) { stop("Please specify 0 or 1 for the argument 'na'.", call. = FALSE) }
+
+    # Check input 'append'
+    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
+
+    # Check input 'name'
+    if (isTRUE(!is.character(name) || length(name) != 1L)) { stop("Please specify a character string for the argument 'name'.", call. = FALSE) }
+
+  }
+
+  #_____________________________________________________________________________
+  #
   # Main Function --------------------------------------------------------------
 
-  object <- apply(x, 2L, function(y) as.numeric(!is.na(y)))
+  # Convert NA
+  if (isTRUE(na == 1L)) {
 
+    object <- apply(x, 2L, function(y) as.numeric(is.na(y)))
+
+  } else {
+
+    object <- apply(x, 2L, function(y) as.numeric(!is.na(y)))
+
+  }
+
+  # As data frame
   if (isTRUE(is.data.frame(x))) {
 
     object  <- as.data.frame(object, stringsAsFactors = FALSE)
     row.names(object) <- rownames(x)
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Append ####
+
+  if (isTRUE(!is.null(data) && append)) {
+
+    #...................
+    ### Variable names ####
+
+    if (isTRUE(ncol(object) == 1L)) {
+
+      if (isTRUE(name == ".i")) {
+
+        object <- setNames(as.data.frame(object), nm = "x.i")
+
+      } else {
+
+        object <- setNames(as.data.frame(object), nm = name)
+
+      }
+
+    } else {
+
+      object <- setNames(as.data.frame(object), nm = paste0(colnames(object), name))
+
+    }
+
+    object <- data.frame(data, object)
 
   }
 

@@ -7,7 +7,7 @@
 blimp.run(target = getwd(), recursive = FALSE,
           replace.out = c("always", "never", "modified"), posterior = FALSE,
           folder = "Posterior_", format = c("csv", "csv2", "xlsx", "rds", "RData"),
-          clear = TRUE, Blimp = detect.blimp(), check = TRUE)
+          clear = FALSE, Blimp = detect.blimp(), check = TRUE)
 }
 \arguments{
 \item{target}{a character string indicating the directory containing
@@ -45,7 +45,7 @@ posterior distributions, i.e., \code{"csv"} (default) for
 \code{"xlsx"} for \code{write.xlsx()}, \code{"rds"} for
 \code{saveRDS()}, and \code{"RData"} for \code{write()}.}
 
-\item{clear}{logical: if \code{TRUE} (default), the console is cleared
+\item{clear}{logical: if \code{TRUE}, the console is cleared
 after estimating each model.}
 
 \item{Blimp}{a character string for specifying the name or path of the

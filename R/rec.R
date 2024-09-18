@@ -425,7 +425,7 @@ rec <- function(..., data = NULL, spec, as.factor = FALSE, levels = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print cross table ####
 
-  if (isTRUE(is.null(dim(x)) && table)) { print(table(x, object, dnn = c("item", "recoded coded"))) }
+  if (isTRUE(is.null(dim(x)) && table)) { print(table(x, object, dnn = c("item", "recoded coded"), useNA = "always")) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####

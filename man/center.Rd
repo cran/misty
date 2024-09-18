@@ -5,8 +5,8 @@
 \title{Centering Predictor Variables in Single-Level and Multilevel Data}
 \usage{
 center(..., data = NULL, cluster = NULL, type = c("CGM", "CWC"),
-       cwc.mean = c("L2", "L3"), value = NULL, name = ".c",
-       append = TRUE, as.na = NULL, check = TRUE)
+       cwc.mean = c("L2", "L3"), value = NULL, append = TRUE, name = ".c",
+       as.na = NULL, check = TRUE)
 }
 \arguments{
 \item{...}{a numeric vector for centering a predictor variable, or a
@@ -49,6 +49,9 @@ variable at the level-3 cluster means.}
 Note that this option is only available when specifying a
 single-level predictor variable, i.e., \code{cluster = NULL}.}
 
+\item{append}{logical: if \code{TRUE} (default), centered variable(s) are
+appended to the data frame specified in the argument \code{data}.}
+
 \item{name}{a character string or character vector indicating the names of
 the centered predictor variables. By default, centered predictor
 variables are named with the ending \code{".c"} resulting in
@@ -56,9 +59,6 @@ e.g. \code{"x1.c"} and \code{"x2.c"}. Variable names can also
 be specified by using a character vector matching the number
 of variables specified in \code{...} (e.g.,
 \code{name = c("center.x1", "center.x2")}).}
-
-\item{append}{logical: if \code{TRUE} (default), centered variable(s) are
-appended to the data frame specified in the argument \code{data}.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values, i.e.
 these values are converted to \code{NA} before conducting the

@@ -68,7 +68,9 @@ is computed. The default setting is \code{m.bulk = FALSE}, i.e., the Monte Carlo
 standard error for the median is computed.}
 
 \item{split}{logical: if \code{TRUE} (default), each MCMC chain is split
-in half before computing R-hat, ESS, and MCSE.}
+in half before computing R-hat. Note that the argument
+\code{split} is always set to \code{FALSE} when computing
+ESS.}
 
 \item{rank}{logical: if \code{TRUE} (default), rank-normalization is
 applied to the posterior draws before computing R-hat and ESS. Note that
