@@ -4602,11 +4602,11 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           print(print.coverage[[i]], row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
 
-          cat("\n")
+          if (isTRUE(i != rev(seq_along(print.coverage))[1L])) { cat("\n") }
 
         }
 
-        ### Longitudinal measurement invariance ####
+      ### Longitudinal measurement invariance ####
       } else {
 
         #...................
@@ -4984,7 +4984,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           # Latent mean
           if (isTRUE(any(print.param$param %in% "latent mean"))) {
 
-            cat("\n   Latent Means\n")
+            cat("\n    Latent Means\n")
 
             print.mean <- print.param[print.param$group == i & print.param$param == "latent mean", ]
 
@@ -5096,7 +5096,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         # Latent mean
         if (isTRUE(any(print.param$param %in% "latent mean"))) {
 
-          cat("\n   Latent Means\n")
+          cat("\n    Latent Means\n")
 
           print.mean <- print.param[print.param$param == "latent mean", ]
 
@@ -6345,7 +6345,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       ##### Latent mean
       if (isTRUE(any(print.param.b$param %in% "latent mean"))) {
 
-        cat("\n   Latent Means\n")
+        cat("\n    Latent Means\n")
 
         print.mean <- print.param.b[print.param.b$param == "latent mean", ]
 
@@ -7889,7 +7889,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       ##### Latent mean
       if (isTRUE(any(print.param.b$param %in% "latent mean"))) {
 
-        cat("\n    Latent Means\n")
+        cat("\n     Latent Means\n")
 
         print.mean <- print.param.b[print.param.b$param == "latent mean", ]
 

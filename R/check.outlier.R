@@ -67,7 +67,7 @@ check.outlier <- function(model, check = TRUE, ...) {
   if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
 
   # Check if input 'model' is not 'lm'
-  if (isTRUE(!all(class(model) %in% "lm"))) { stop("Please specify an \"lm\" object for the argument 'model'.", call. = FALSE) }
+  if (isTRUE(!inherits(model, "lm"))) { stop("Please specify an \"lm\" object for the argument 'model'.", call. = FALSE) }
 
   # Check input 'check'
   if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }

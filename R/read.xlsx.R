@@ -122,12 +122,12 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
   # Check if file exists
   if (isTRUE(!file.exists(file))) { stop(paste0("Unable to open Excel data file: ", sQuote(file), " does not exist."), call. = FALSE) }
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
+
+  # Check input 'check'
+  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
 
   if (isTRUE(check)) {
 

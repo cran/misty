@@ -601,7 +601,7 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
           }
 
           # Breaks
-          if (isTRUE(class(breaks) == "waiver")) {
+          if (isTRUE(inherits(breaks, "waiver"))) {
 
             if (isTRUE(abs(limits.upp - limits.low) > 5L)) {
 

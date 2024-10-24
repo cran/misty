@@ -227,9 +227,9 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
   if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
 
   # Check if input 'model' is not 'lm'
-  if (isTRUE(class(model) != "lm")) { stop("Please specify an \"lm\" object for the argument 'model'.", call. = FALSE) }
+  if (isTRUE(!inherits(model, "lm"))) { stop("Please specify an \"lm\" object for the argument 'model'.", call. = FALSE) }
 
-  # Check if input 'model' has an interation term
+  # Check if input 'model' has an interaction term
   if (isTRUE(any(attr(terms(model), "order") > 1L) &&  all(type == "linear"))) { stop("Component-plus-residual plots are not available for models with interactions.", call. = FALSE) }
 
   #_____________________________________________________________________________

@@ -34,7 +34,7 @@
 #' \code{\link{write.xlsx}}, \code{\link{read.mplus}}, \code{\link{write.mplus}}
 #'
 #' @references
-#' Wickham H, Miller E, Smith D (2023). \emph{haven: Import and Export 'SPSS',
+#' Wickham H, Miller E, & Smith D (2023). \emph{haven: Import and Export 'SPSS',
 #' 'Stata' and 'SAS' Files}. R package version 2.5.3.
 #' \url{https://CRAN.R-project.org/package=haven}
 #'

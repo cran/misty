@@ -281,7 +281,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Chraacter string ####
+  ## Character string ####
 
   if (isTRUE(is.character(x))) {
 
@@ -297,7 +297,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## misty object ####
 
-  } else if (isTRUE(class(x) == "misty.object")) {
+  } else if (isTRUE(inherits(x, "misty.object"))) {
 
     if (isTRUE(x$type != "mplus")) { stop("Please specify a \"mplus\" object for the argument 'x'.", call. = FALSE) }
 
@@ -330,16 +330,16 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     if (isTRUE(!all(print %in% c("all", "input", "result")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"input\", or \"result\".", call. = FALSE) }
 
     # Check input 'input'
-    input.check <- input[which(!input %in% c("all", "default", input.all))]
-    if (isTRUE(length(input.check) != 0L)) { stop(paste0(if (isTRUE(length(input.check) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'input' is not permissible: ", paste(dQuote(input.check), collapse = ", ")), call. = FALSE) }
+    input[which(!input %in% c("all", "default", input.all))] |>
+      (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(if (isTRUE(length(y) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'input' is not permissible: ", paste(dQuote(y), collapse = ", ")), call. = FALSE) })()
 
     # Check input 'result'
-    result.check <- result[which(!result %in% c("all", "default", result.all))]
-    if (isTRUE(length(result.check) != 0L)) { stop(paste0(if (isTRUE(length(result.check) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'result' is not permissible: ", paste(dQuote(result.check), collapse = ", ")), call. = FALSE) }
+    result.check <- result[which(!result %in% c("all", "default", result.all))] |>
+      (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(if (isTRUE(length(y) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'result' is not permissible: ", paste(dQuote(y), collapse = ", ")), call. = FALSE) })()
 
     # Check input 'exclude'
-    exclude.check <- exclude[which(!exclude %in% c(input.all, result.all))]
-    if (isTRUE(length(exclude.check) != 0L)) { stop(paste0(if (isTRUE(length(exclude.check) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'exclude' is not permissible: ", paste(dQuote(exclude.check), collapse = ", ")), call. = FALSE) }
+    exclude.check <- exclude[which(!exclude %in% c(input.all, result.all))] |>
+      (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(if (isTRUE(length(y) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'exclude' is not permissible: ", paste(dQuote(y), collapse = ", ")), call. = FALSE) })()
 
     # Check input 'variable'
     if (isTRUE(!is.logical(variable))) { stop("Please specify TRUE or FALSE for the argument 'variable'.", call. = FALSE) }
@@ -453,7 +453,8 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
   #----------------------------------------
   # Mplus Output in Text File
-  if (isTRUE(class(x) != "misty.object")) {
+
+  if (isTRUE(!inherits(x, "misty.object"))) {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Read Output ####
@@ -468,6 +469,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Default Setting for the Result Argument ####
 
+    # Do not print model fit information when df = 0
     if (isTRUE(result.default && any(out == "Chi-Square Test of Model Fit"))) {
 
       if (isTRUE(as.numeric(misty::chr.trim(sub("Degrees of Freedom", "", out[which(out == "Chi-Square Test of Model Fit") + 3L]))) == 0L)) {
@@ -520,14 +522,14 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #...................
     ### Chi-Square Test of Model Fit for the Baseline Model ####
 
-    chisquare.base <- grep("Chi-Square Test of Model Fit for the Baseline Model", out)
-    if (isTRUE(length(chisquare.base) >= 1L)) { out <- out[-as.vector(sapply(chisquare.base, function(y) y:(y + 4L)))] }
+    grep("Chi-Square Test of Model Fit for the Baseline Model", out) |>
+      (\(y) if (isTRUE(length(y) >= 1L)) { assign("out", out[-as.vector(sapply(y, function(y) y:(y + 4L)))]) })()
 
     #...................
     ### Sample-Size Adjusted BIC ####
 
-    sabic <- grep("\\(n \\+ 2\\) / 24", out)
-    if (isTRUE(length(sabic) >= 1L)) { out <- out[-sabic] }
+    grep("\\(n \\+ 2\\) / 24", out) |>
+      (\(y) if (isTRUE(length(y) >= 1L)) { assign("out", out[-y]) })()
 
     #...................
     ### The chi-square value for MLM, MLMV, MLR, ULSMV, WLSM and WLSMV ####
@@ -554,32 +556,32 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #...................
     ### QUALITY OF NUMERICAL RESULTS ####
 
-    quality <- grep("QUALITY OF NUMERICAL RESULTS", out)
-    if (isTRUE(length(quality) != 0L)) { out <- out[-c(quality:(quality + 3L))] }
+    grep("QUALITY OF NUMERICAL RESULTS", out) |>
+      (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-as.vector(sapply(y, function(y) y:(y + 3L)))]) })()
 
     #...................
     ### MAXIMUM LOG-LIKELIHOOD VALUE FOR THE UNRESTRICTED ####
 
-    maximum <- grep("MAXIMUM LOG-LIKELIHOOD VALUE FOR THE UNRESTRICTED", out)
-    if (isTRUE(length(maximum) != 0L))  { out <- out[-maximum] }
+    grep("MAXIMUM LOG-LIKELIHOOD VALUE FOR THE UNRESTRICTED", out) |>
+      (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-y]) })()
 
     #...................
     ### Minimum Rotation Function Value ####
 
-    minimum <- grep("MINIMUM ROTATION FUNCTION VALUE", out)
-    if (isTRUE(length(minimum) != 0L)) { out <- out[-minimum] }
+    grep("MINIMUM ROTATION FUNCTION VALUE", out) |>
+      (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-y]) })()
 
     #...................
     ### Optimum Function Value ####
 
-    optimum <- grep("Optimum Function Value", out)
-    if (isTRUE(length(optimum) != 0L)) { out <- out[-c(optimum:(optimum + 3L))] }
+    grep("Optimum Function Value", out) |>
+      (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-c(y:(y + 3L))]) })()
 
     #...................
     ### DIAGRAM INFORMATION ####
 
-    diagram <- grep("DIAGRAM INFORMATION", out)
-    if (isTRUE(length(diagram) != 0L)) { out <- out[-c(diagram:(diagram + 6L))] }
+    grep("DIAGRAM INFORMATION", out) |>
+      (\(y) if (isTRUE(length(y) != 0L)) { assign("out", out[-c(y:(y + 6L))]) })()
 
     #...................
     ### Mplus Information ####
@@ -604,41 +606,13 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     # Run length 2
     run.length2 <- which(rle(out)$lengths >= 2L)
 
-    #...................
-    ### Internal Function for Determining Indices ####
-
-    .internal.ind.to <- function(x, cur.section, run = run.val, input = FALSE) {
-
-      # Input
-      if (isTRUE(input)) {
-
-        parse.text <- parse(text = paste0("min(unlist(sapply(x, function(z) if (isTRUE(any(grep(z, run)))) {
-                            sapply(grep(z, run), function(q) if (isTRUE(q > max(", paste0( sapply(cur.section, function(w) paste0("grep(", paste0("\"", w, "\""), ", run")), collapse = " | "), ")))) { q } else { length(run) + 1L })
-                            } )))"))
-
-      # Output
-      } else {
-
-        parse.text <- parse(text = paste0("min(unlist(sapply(x, function(z) if (isTRUE(any(run == z))) {
-                            sapply(which(run == z), function(q) if (isTRUE(q > max(which(", paste0(sapply(cur.section, function(w) paste0("run == ", paste0("\"", w, "\""))), collapse = " | "), ")))) { q } else { length(run) + 1L })
-                            })))"))
-
-      }
-
-      return(eval(parse.text) - 1L)
-
-    }
-
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Extract Input Commands ####
 
     if (isTRUE(any(run.val == "INPUT INSTRUCTIONS"))) {
 
       # Input section
-      input.section <- c("TITLE:", "DATA:", "DATA IMPUTATION:", "DATA WIDETOLONG:", "DATA LONGTOWIDE:", "DATA TWOPART:", "DATA MISSING:", "DATA SURVIVAL:", "DATA COHORT:",
-                         "VARIABLE:", "DEFINE:", "ANALYSIS:", "MODEL:", "MODEL INDIRECT:", "MODEL TEST:", "MODEL PRIORS:",
-                         "MONTECARLO:", "MODEL POPULATION:", "MODEL COVERAGE:", "MODEL MISSING:", "OUTPUT:", "SAVEDATA:", "PLOT:",
-                         "INPUT READING TERMINATED NORMALLY", " WARNING", " ERROR", " FATAL", "DEMO VERSION MAXIMUM EXCEEDED")
+      input.section <- c("TITLE:", "DATA:", "DATA IMPUTATION:", "DATA WIDETOLONG:", "DATA LONGTOWIDE:", "DATA TWOPART:", "DATA MISSING:", "DATA SURVIVAL:", "DATA COHORT:", "VARIABLE:", "DEFINE:", "ANALYSIS:", "MODEL:", "MODEL INDIRECT:", "MODEL TEST:", "MODEL PRIORS:", "MONTECARLO:", "MODEL POPULATION:", "MODEL COVERAGE:", "MODEL MISSING:", "OUTPUT:", "SAVEDATA:", "PLOT:", "INPUT READING TERMINATED NORMALLY", " WARNING", " ERROR", " FATAL", "DEMO VERSION MAXIMUM EXCEEDED")
 
       # Input objects
       version <- title <- data <- data.imp <- data.wl <- data.lw <- data.tp <- data.miss <- data.surv <- data.coh <- inpvariable <- define <- analysis <- model <- mod.ind <- mod.test <- mod.prior <- montecarlo <-  mod.pop <- mod.cov <- mod.miss <- inpoutput <- savedata <- plot <- message <- NULL
@@ -651,71 +625,74 @@ mplus.print <- function(x, print = c("all", "input", "result"),
       #...................
       ### TITLE ####
 
-      if (isTRUE(any(grepl("TITLE:", run.val.upp)))) { title <- min(grep("TITLE:", run.val.upp)[1L]):(.internal.ind.to(input.section, "TITLE:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("TITLE:", run.val.upp)))) { title <- min(grep("TITLE:", run.val.upp)[1L]):(.section.ind.from.to(input.section, "TITLE:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### DATA ####
 
-      if (isTRUE(any(grepl("DATA:", run.val.upp)))) { data <- min(grep("DATA:", run.val.upp)):(.internal.ind.to(input.section, "DATA:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("DATA:", run.val.upp)))) { data <- min(grep("DATA:", run.val.upp)):(.section.ind.from.to(input.section, "DATA:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### DATA IMPUTATION ####
 
-      if (isTRUE(any(grepl("DATA IMPUTATION:", run.val.upp)))) { data.imp <- min(grep("DATA IMPUTATION:", run.val.upp)):(.internal.ind.to(input.section, "DATA IMPUTATION:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("DATA IMPUTATION:", run.val.upp)))) { data.imp <- min(grep("DATA IMPUTATION:", run.val.upp)):(.section.ind.from.to(input.section, "DATA IMPUTATION:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### DATA WIDETOLONG ####
 
-      if (isTRUE(any(grepl("DATA WIDETOLONG:", run.val.upp)))) { data.wl <- min(grep("DATA WIDETOLONG:", run.val.upp)):(.internal.ind.to(input.section, "DATA WIDETOLONG:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("DATA WIDETOLONG:", run.val.upp)))) { data.wl <- min(grep("DATA WIDETOLONG:", run.val.upp)):(.section.ind.from.to(input.section, "DATA WIDETOLONG:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### DATA LONGTOWIDE ####
 
-      if (isTRUE(any(grepl("DATA LONGTOWIDE:", run.val.upp)))) { data.lw <- min(grep("DATA LONGTOWIDE:", run.val.upp)):(.internal.ind.to(input.section, "DATA LONGTOWIDE:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("DATA LONGTOWIDE:", run.val.upp)))) { data.lw <- min(grep("DATA LONGTOWIDE:", run.val.upp)):(.section.ind.from.to(input.section, "DATA LONGTOWIDE:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### DATA TWOPART ####
 
-      if (isTRUE(any(grepl("DATA TWOPART:", run.val.upp)))) { data.tp <- min(grep("DATA TWOPART:", run.val.upp)):(.internal.ind.to(input.section, "DATA TWOPART:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("DATA TWOPART:", run.val.upp)))) { data.tp <- min(grep("DATA TWOPART:", run.val.upp)):(.section.ind.from.to(input.section, "DATA TWOPART:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### DATA MISSING ####
 
-      if (isTRUE(any(grepl("DATA MISSING:", run.val.upp)))) { data.miss <- min(grep("DATA MISSING:", run.val.upp)):(.internal.ind.to(input.section, "DATA MISSING:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("DATA MISSING:", run.val.upp)))) { data.miss <- min(grep("DATA MISSING:", run.val.upp)):(.section.ind.from.to(input.section, "DATA MISSING:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### DATA SURVIVAL ####
 
-      if (isTRUE(any(grepl("DATA SURVIVAL:", run.val.upp)))) { data.surv <- min(grep("DATA SURVIVAL:", run.val.upp)):(.internal.ind.to(input.section, "DATA SURVIVAL:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("DATA SURVIVAL:", run.val.upp)))) { data.surv <- min(grep("DATA SURVIVAL:", run.val.upp)):(.section.ind.from.to(input.section, "DATA SURVIVAL:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### DATA COHORT ####
 
-      if (isTRUE(any(grepl("DATA COHORT:", run.val.upp)))) { data.coh <- min(grep("DATA COHORT:", run.val.upp)):(.internal.ind.to(input.section, "DATA COHORT:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("DATA COHORT:", run.val.upp)))) { data.coh <- min(grep("DATA COHORT:", run.val.upp)):(.section.ind.from.to(input.section, "DATA COHORT:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### VARIABLE ####
 
-      if (isTRUE(any(grepl("VARIABLE:", run.val.upp)))) { inpvariable <- min(grep("VARIABLE:", run.val.upp)):(.internal.ind.to(input.section, "VARIABLE:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("VARIABLE:", run.val.upp)))) { inpvariable <- min(grep("VARIABLE:", run.val.upp)):(.section.ind.from.to(input.section, "VARIABLE:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### DEFINE ####
 
-      if (isTRUE(any(grepl("DEFINE:", run.val.upp)))) { define <- min(grep("DEFINE:", run.val.upp)):(.internal.ind.to(input.section, "DEFINE:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("DEFINE:", run.val.upp)))) { define <- min(grep("DEFINE:", run.val.upp)):(.section.ind.from.to(input.section, "DEFINE:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### ANALYSIS ####
 
       if (isTRUE(any(grepl("ANALYSIS:", run.val.upp)))) {
 
-        analysis <- min(grep("ANALYSIS:", run.val.upp)):(.internal.ind.to(input.section, "ANALYSIS:", run = run.val.upp, input = TRUE))
+        analysis <- min(grep("ANALYSIS:", run.val.upp)):(.section.ind.from.to(input.section, "ANALYSIS:", run = run.val.upp, input = TRUE)) |>
+          # Mplus Demo Version maximum exceeded
+          (\(y) if (isTRUE(any(grepl("Mplus VERSION 8.6 DEMO", run.val[y])))) {
 
-        # Mplus Demo Version maximum exceeded
-        if (isTRUE(any(grepl("Mplus VERSION 8.6 DEMO", run.val[analysis])))) {
+            if (isTRUE(any(grepl("ANALYSIS:", run.val.upp[y])))) { NULL } else { min(grep("ANALYSIS:", run.val.upp)):(.section.ind.from.to(input.section, "ANALYSIS:", run = run.val.upp[-(which(run.val.upp == "DEMO VERSION MAXIMUM EXCEEDED"):length(run.val.upp))], input = TRUE)) }
 
-          if (isTRUE(any(grepl("ANALYSIS:", run.val.upp[analysis])))) { analysis <- NULL } else { analysis <- min(grep("ANALYSIS:", run.val.upp)):(.internal.ind.to(input.section, "ANALYSIS:", run = run.val.upp[-(which(run.val.upp == "DEMO VERSION MAXIMUM EXCEEDED"):length(run.val.upp))], input = TRUE)) }
+          } else {
 
-        }
+            y
+
+          })()
 
       }
 
@@ -724,66 +701,69 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
       if (isTRUE(any(grepl("MODEL:", run.val.upp)))) {
 
-        model <- min(grep("MODEL:", run.val.upp)):(.internal.ind.to(input.section, "MODEL:", run = run.val.upp, input = TRUE))
+        model <- min(grep("MODEL:", run.val.upp)):(.section.ind.from.to(input.section, "MODEL:", run = run.val.upp, input = TRUE)) |>
+          # Mplus Demo Version maximum exceeded
+          (\(y) if (isTRUE(any(grepl("Mplus VERSION 8.6 DEMO", run.val[model])))) {
 
-        # Mplus Demo Version maximum exceeded
-        if (isTRUE(any(grepl("Mplus VERSION 8.6 DEMO", run.val[model])))) {
+            if (isTRUE(any(grepl("MODEL:", run.val.upp[y])))) { NULL } else { min(grep("MODEL:", run.val.upp)):(.section.ind.from.to(input.section, "MODEL:", run = run.val.upp[-(which(run.val.upp == "DEMO VERSION MAXIMUM EXCEEDED"):length(run.val.upp))], input = TRUE)) }
 
-          if (isTRUE(any(grepl("MODEL:", run.val.upp[model])))) { model <- NULL } else { model <- min(grep("MODEL:", run.val.upp)):(.internal.ind.to(input.section, "MODEL:", run = run.val.upp[-(which(run.val.upp == "DEMO VERSION MAXIMUM EXCEEDED"):length(run.val.upp))], input = TRUE)) }
+          } else {
 
-        }
+            y
+
+          })()
 
       }
 
       #...................
       ### MODEL INDIRECT ####
 
-      if (isTRUE(any(grepl("MODEL INDIRECT:", run.val.upp)))) { mod.ind <- min(grep("MODEL INDIRECT:", run.val.upp)):(.internal.ind.to(input.section, "MODEL INDIRECT:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("MODEL INDIRECT:", run.val.upp)))) { mod.ind <- min(grep("MODEL INDIRECT:", run.val.upp)):(.section.ind.from.to(input.section, "MODEL INDIRECT:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### MODEL TEST ####
 
-      if (isTRUE(any(grepl("MODEL TEST:", run.val.upp)))) { mod.test <- min(grep("MODEL TEST:", run.val.upp)):(.internal.ind.to(input.section, "MODEL TEST:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("MODEL TEST:", run.val.upp)))) { mod.test <- min(grep("MODEL TEST:", run.val.upp)):(.section.ind.from.to(input.section, "MODEL TEST:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### MODEL PRIORS ####
 
-      if (isTRUE(any(grepl("MODEL PRIORS:", run.val.upp)))) { mod.prior <- min(grep("MODEL PRIORS:", run.val.upp)):(.internal.ind.to(input.section, "MODEL PRIORS:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("MODEL PRIORS:", run.val.upp)))) { mod.prior <- min(grep("MODEL PRIORS:", run.val.upp)):(.section.ind.from.to(input.section, "MODEL PRIORS:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### MONTECARLO ####
 
-      if (isTRUE(any(grepl("MONTECARLO:", run.val.upp)))) { montecarlo <- min(grep("MONTECARLO:", run.val.upp)):(.internal.ind.to(input.section, "MONTECARLO:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("MONTECARLO:", run.val.upp)))) { montecarlo <- min(grep("MONTECARLO:", run.val.upp)):(.section.ind.from.to(input.section, "MONTECARLO:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### MODEL POPULATION ####
 
-      if (isTRUE(any(grepl("MODEL POPULATION:", run.val.upp)))) { mod.pop <- min(grep("MODEL POPULATION:", run.val.upp)):(.internal.ind.to(input.section, "MODEL POPULATION:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("MODEL POPULATION:", run.val.upp)))) { mod.pop <- min(grep("MODEL POPULATION:", run.val.upp)):(.section.ind.from.to(input.section, "MODEL POPULATION:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### MODEL COVERAGE ####
 
-      if (isTRUE(any(grepl("MODEL COVERAGE:", run.val.upp)))) { mod.cov <- min(grep("MODEL COVERAGE:", run.val.upp)):(.internal.ind.to(input.section, "MODEL COVERAGE:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("MODEL COVERAGE:", run.val.upp)))) { mod.cov <- min(grep("MODEL COVERAGE:", run.val.upp)):(.section.ind.from.to(input.section, "MODEL COVERAGE:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### MODEL MISSING ####
 
-      if (isTRUE(any(grepl("MODEL MISSING:", run.val.upp)))) { mod.miss <- min(grep("MODEL MISSING:", run.val.upp)):(.internal.ind.to(input.section, "MODEL MISSING:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("MODEL MISSING:", run.val.upp)))) { mod.miss <- min(grep("MODEL MISSING:", run.val.upp)):(.section.ind.from.to(input.section, "MODEL MISSING:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### OUTPUT ####
 
-      if (isTRUE(any(grepl("OUTPUT:", run.val.upp)))) { inpoutput <- min(grep("OUTPUT:", run.val.upp)):(.internal.ind.to(input.section, "OUTPUT:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("OUTPUT:", run.val.upp)))) { inpoutput <- min(grep("OUTPUT:", run.val.upp)):(.section.ind.from.to(input.section, "OUTPUT:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### SAVEDATA ####
 
-      if (isTRUE(any(grepl("SAVEDATA:", run.val.upp)))) { savedata <- min(grep("SAVEDATA:", run.val.upp)):(.internal.ind.to(input.section, "SAVEDATA:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("SAVEDATA:", run.val.upp)))) { savedata <- min(grep("SAVEDATA:", run.val.upp)):(.section.ind.from.to(input.section, "SAVEDATA:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### PLOT ####
 
-      if (isTRUE(any(grepl("PLOT:", run.val.upp)))) { plot <- min(grep("PLOT:", run.val.upp)):(.internal.ind.to(input.section, "PLOT:", run = run.val.upp, input = TRUE)) }
+      if (isTRUE(any(grepl("PLOT:", run.val.upp)))) { plot <- min(grep("PLOT:", run.val.upp)):(.section.ind.from.to(input.section, "PLOT:", run = run.val.upp, input = TRUE)) }
 
       #...................
       ### Message ####
@@ -810,7 +790,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     ## Extract Output Sections ####
 
     #...................
-    ### Sections and Warnings ####
+    ### Sections ####
 
     section <- c("SUMMARY OF ANALYSIS", "SUMMARY OF DATA", "SUMMARY OF DATA FOR THE FIRST DATA SET", "SUMMARY OF DATA FOR THE FIRST REPLICATION",
                  "SUMMARY OF CENSORED LIMITS", "COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES", "CROSSTABS FOR CATEGORICAL VARIABLES",
@@ -824,9 +804,9 @@ mplus.print <- function(x, print = c("all", "input", "result"),
                  "     IN THE OPTIMIZATION, ONE OR MORE LOGIT THRESHOLDS APPROACHED EXTREME VALUES", "     THE ROBUST CHI-SQUARE COULD NOT BE COMPUTED.",
                  "SAMPLE STATISTICS", "SAMPLE STATISTICS FOR THE FIRST REPLICATION", "SAMPLE STATISTICS FOR THE FIRST DATA SET", "RESULTS FOR BASIC ANALYSIS", "UNIVARIATE SAMPLE STATISTICS",
                  "RANDOM STARTS RESULTS RANKED FROM THE BEST TO THE WORST FIT FUNCTION VALUES", "RANDOM STARTS RESULTS RANKED FROM THE BEST TO THE WORST LOGLIKELIHOOD VALUES",
-                 "SUMMARY OF MODEL FIT INFORMATION", "MODEL FIT INFORMATION", "FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES", "FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASS PATTERNS",
-                 "TRANSITION PROBABILITIES", "CLASSIFICATION QUALITY", "C-SPECIFIC CLASSIFICATION RESULTS", "LATENT CLASS INDICATOR MEANS AND PROBABILITIES", "MODEL RESULTS", "MODEL RESULTS USE THE LATENT CLASS VARIABLE ORDER", "FACTOR SCORE COMPARISON",
-                 "TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS", "TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS FOR LATENT RESPONSE VARIABLES",
+                 "SUMMARY OF MODEL FIT INFORMATION", "MODEL FIT INFORMATION", "FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASSES", "FINAL CLASS COUNTS AND PROPORTIONS FOR THE LATENT CLASS PATTERNS", "TRANSITION PROBABILITIES", "CLASSIFICATION QUALITY", "C-SPECIFIC CLASSIFICATION RESULTS",
+                 "LATENT CLASS INDICATOR MEANS AND PROBABILITIES", "MODEL RESULTS", "MODEL RESULTS FOR THE CONFIGURAL MODEL", "MODEL RESULTS FOR THE METRIC MODEL", "MODEL RESULTS FOR THE SCALAR MODEL",
+                 "MODEL RESULTS USE THE LATENT CLASS VARIABLE ORDER", "FACTOR SCORE COMPARISON", "TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS", "TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS FOR LATENT RESPONSE VARIABLES",
                  "TOTAL, INDIRECT, AND DIRECT EFFECTS BASED ON COUNTERFACTUALS (CAUSALLY-DEFINED EFFECTS)", "STANDARDIZED TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS",
                  "STANDARDIZED TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS FOR LATENT RESPONSE VARIABLES", "STANDARDIZED TOTAL, INDIRECT, AND DIRECT EFFECTS BASED ON COUNTERFACTUALS (CAUSALLY-DEFINED EFFECTS)",
                  "CONFIDENCE INTERVALS OF MODEL RESULTS", "CREDIBILITY INTERVALS OF MODEL RESULTS", "CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS",
@@ -839,6 +819,18 @@ mplus.print <- function(x, print = c("all", "input", "result"),
                  "LOGRANK OUTPUT", "BRANT WALD TEST FOR PROPORTIONAL ODDS", "TECHNICAL OUTPUT", "TECHNICAL 1 OUTPUT", "TECHNICAL 2 OUTPUT", "TECHNICAL 3 OUTPUT", "H1 TECHNICAL 3 OUTPUT", "TECHNICAL 4 OUTPUT", "TECHNICAL 5/6 OUTPUT", "TECHNICAL 7 OUTPUT",
                  "TECHNICAL 8 OUTPUT", "TECHNICAL 9 OUTPUT", "TECHNICAL 10 OUTPUT", "TECHNICAL 11 OUTPUT", "TECHNICAL 12", "TECHNICAL 13 OUTPUT", "TECHNICAL 14 OUTPUT", "TECHNICAL 15 OUTPUT", "TECHNICAL 16 OUTPUT", "SUMMARY OF FACTOR SCORES",
                  "FACTOR DETERMINACIES", "SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS)", "PLOT INFORMATION", "SAVEDATA INFORMATION")
+
+    # Invariance Testing
+    if (any(grepl("Invariance Testing", run.val.tech))) {
+
+      section <- section[-misty::chr.grep(misty::chr.omit(c("CONFIGURAL MODEL", "METRIC MODEL", "SCALAR MODEL"), omit = names(which.min(which(sapply(c("CONFIGURAL MODEL", "METRIC MODEL", "SCALAR MODEL"), function(y) any(grepl(y, run.val.tech))))))), section)]
+
+      if (isTRUE(result.default)) { result <- c(result, "tech9")}
+
+    }
+
+    #...................
+    ### Warnings ####
 
     warn <- c("MODEL ESTIMATION TERMINATED", "MODEL ESTIMATION DID NOT TERMINATE NORMALLY", "DEGREES OF FREEDOM FOR THIS MODEL ARE NEGATIVE", "MODEL CONTAINS A NON-ZERO CORRELATION",
               "     WARNING:  THE SAMPLE COVARIANCE OF THE INDEPENDENT VARIABLES", "STANDARD ERRORS OF THE MODEL PARAMETER", "MLR STANDARD ERRORS COULD NOT BE COMPUTED",
@@ -858,7 +850,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     if (isTRUE(any(run.val.tech == "SUMMARY OF ANALYSIS"))) {
 
       #### Long SUMMARY OF ANALYSIS
-      summary.analysis <- which(run.val.tech == "SUMMARY OF ANALYSIS"):(.internal.ind.to(section, "SUMMARY OF ANALYSIS"))
+      summary.analysis <- which(run.val.tech == "SUMMARY OF ANALYSIS"):(.section.ind.from.to(section, "SUMMARY OF ANALYSIS", run = run.val.tech))
 
       #### Short SUMMARY OF ANALYSIS
       summary.analysis.short <- which(run.val.tech == "SUMMARY OF ANALYSIS"):(grep("Number of dependent variables", run.val.tech) - 1L)
@@ -882,7 +874,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) {
 
       #### Long SUMMARY OF DATA
-      summary.data <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.internal.ind.to(section, temp.section))
+      summary.data <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.section.ind.from.to(section, temp.section, run = run.val.tech))
 
       #### Short SUMMARY OF DATA
       summary.data.short <- summary.data
@@ -955,48 +947,48 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
     temp.section <- c("UNIVARIATE PROPORTIONS AND COUNTS FOR CATEGORICAL VARIABLES", "UNIVARIATE PROPORTIONS AND COUNTS FOR CATEGORICAL VARIABLES FOR THE FIRST DATA", "UNIVARIATE PROPORTIONS AND COUNTS FOR CATEGORICAL VARIABLES FOR THE FIRST REPLICATION", "UNIVARIATE PROPORTIONS FOR CATEGORICAL VARIABLES", "UNIVARIATE PROPORTIONS FOR CATEGORICAL VARIABLES FOR THE FIRST DATA", "UNIVARIATE PROPORTIONS FOR CATEGORICAL VARIABLES FOR THE FIRST REPLICATION")
 
-    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { prop.count <- unlist(sapply(temp.section, function(z) which(run.val.tech == z))):(.internal.ind.to(section, temp.section)) }
+    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { prop.count <- unlist(sapply(temp.section, function(z) which(run.val.tech == z))):(.section.ind.from.to(section, temp.section, run = run.val.tech)) }
 
     #...................
     ### SUMMARY OF CENSORED LIMITS ####
 
-    if (isTRUE(any(run.val.tech == "SUMMARY OF CENSORED LIMITS"))) { summary.censor <- which(run.val.tech == "SUMMARY OF CENSORED LIMITS"):(.internal.ind.to(section, "SUMMARY OF CENSORED LIMITS")) }
+    if (isTRUE(any(run.val.tech == "SUMMARY OF CENSORED LIMITS"))) { summary.censor <- which(run.val.tech == "SUMMARY OF CENSORED LIMITS"):(.section.ind.from.to(section, "SUMMARY OF CENSORED LIMITS", run = run.val.tech)) }
 
     #...................
     ### COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES ####
 
-    if (isTRUE(any(run.val.tech == "COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES"))) { prop.zero <- which(run.val.tech == "COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES"):(.internal.ind.to(section, "COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES")) }
+    if (isTRUE(any(run.val.tech == "COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES"))) { prop.zero <- which(run.val.tech == "COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES"):(.section.ind.from.to(section, "COUNT PROPORTION OF ZERO, MINIMUM AND MAXIMUM VALUES", run = run.val.tech)) }
 
     #...................
     ### CROSSTABS FOR CATEGORICAL VARIABLES ####
 
-    if (isTRUE(any(run.val.tech == "CROSSTABS FOR CATEGORICAL VARIABLES"))) { crosstab <- min(which(run.val.tech == "CROSSTABS FOR CATEGORICAL VARIABLES")):(.internal.ind.to(section, "CROSSTABS FOR CATEGORICAL VARIABLES")) }
+    if (isTRUE(any(run.val.tech == "CROSSTABS FOR CATEGORICAL VARIABLES"))) { crosstab <- min(which(run.val.tech == "CROSSTABS FOR CATEGORICAL VARIABLES")):(.section.ind.from.to(section, "CROSSTABS FOR CATEGORICAL VARIABLES", run = run.val.tech)) }
 
     #...................
     ### SUMMARY OF MISSING DATA PATTERNS ####
 
     temp.section <- c("SUMMARY OF MISSING DATA PATTERNS", "SUMMARY OF MISSING DATA PATTERNS FOR THE FIRST DATA SET", "SUMMARY OF MISSING DATA PATTERNS FOR THE FIRST REPLICATION")
 
-    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { summary.miss <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.internal.ind.to(section, temp.section)) }
+    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { summary.miss <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.section.ind.from.to(section, temp.section, run = run.val.tech)) }
 
     #...................
     ### COVARIANCE COVERAGE OF DATA ####
 
     temp.section <- c("COVARIANCE COVERAGE OF DATA", "COVARIANCE COVERAGE OF DATA FOR THE FIRST DATA SET", "COVARIANCE COVERAGE OF DATA FOR THE FIRST REPLICATION")
 
-    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { coverage <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.internal.ind.to(section, temp.section)) }
+    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { coverage <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.section.ind.from.to(section, temp.section, run = run.val.tech)) }
 
     #...................
     ### RESULTS FOR BASIC ANALYSIS ####
 
-    if (isTRUE(any(run.val.tech == "RESULTS FOR BASIC ANALYSIS"))) { basic <- which(run.val.tech == "RESULTS FOR BASIC ANALYSIS"):(.internal.ind.to(section, "RESULTS FOR BASIC ANALYSIS")) }
+    if (isTRUE(any(run.val.tech == "RESULTS FOR BASIC ANALYSIS"))) { basic <- which(run.val.tech == "RESULTS FOR BASIC ANALYSIS"):(.section.ind.from.to(section, "RESULTS FOR BASIC ANALYSIS", run = run.val.tech)) }
 
     #...................
     ### SAMPLE STATISTICS ####
 
     temp.section <- c("SAMPLE STATISTICS", "SAMPLE STATISTICS FOR THE FIRST DATA SET", "SAMPLE STATISTICS FOR THE FIRST REPLICATION")
 
-    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { sample.stat <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.internal.ind.to(section, temp.section)) }
+    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { sample.stat <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.section.ind.from.to(section, temp.section, run = run.val.tech)) }
 
     #...................
     ### UNIVARIATE SAMPLE STATISTICS ####
@@ -1009,7 +1001,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
       } else {
 
-        uni.sample.stat <- which(run.val.tech == "UNIVARIATE SAMPLE STATISTICS"):(.internal.ind.to(section, "UNIVARIATE SAMPLE STATISTICS"))
+        uni.sample.stat <- which(run.val.tech == "UNIVARIATE SAMPLE STATISTICS"):(.section.ind.from.to(section, "UNIVARIATE SAMPLE STATISTICS", run = run.val.tech))
 
       }
 
@@ -1020,28 +1012,31 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
     temp.section <- c("RANDOM STARTS RESULTS RANKED FROM THE BEST TO THE WORST LOGLIKELIHOOD VALUES", "RANDOM STARTS RESULTS RANKED FROM THE BEST TO THE WORST FIT FUNCTION VALUES")
 
-    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { random.starts <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.internal.ind.to(section, temp.section)) }
+    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { random.starts <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.section.ind.from.to(section, temp.section, run = run.val.tech)) }
 
     #...................
     ### SUMMARY OF MODEL FIT INFORMATION ####
 
-    if (isTRUE(any(run.val.tech == "SUMMARY OF MODEL FIT INFORMATION"))) { summary.fit <- which(run.val.tech == "SUMMARY OF MODEL FIT INFORMATION"):(.internal.ind.to(section, "SUMMARY OF MODEL FIT INFORMATION")) }
+    if (isTRUE(any(run.val.tech == "SUMMARY OF MODEL FIT INFORMATION"))) { summary.fit <- which(run.val.tech == "SUMMARY OF MODEL FIT INFORMATION"):(.section.ind.from.to(section, "SUMMARY OF MODEL FIT INFORMATION", run = run.val.tech)) }
 
     #...................
     ### MODEL ESTIMATION ####
 
     if (isTRUE(any(c(sapply(warn, grepl, run.val.tech))))) {
 
-      warn.which <- unlist(sapply(warn, function(y) which(grepl(y, run.val.tech))))
-
-      mod.est <- min(warn.which):(run.length2[which(run.length2 > max(warn.which))[1L]])
+      mod.est <- unlist(sapply(warn, function(y) which(grepl(y, run.val.tech)))) |>
+        (\(y) min(y):(run.length2[which(run.length2 > max(y))[1L]]))()
 
     }
 
     #...................
     ### MODEL FIT INFORMATION ####
 
-    if (isTRUE(any(run.val.tech == "MODEL FIT INFORMATION") && all(!grepl("RESULTS FOR EXPLORATORY FACTOR ANALYSIS", run.val.tech)))) { fit <- which(run.val.tech == "MODEL FIT INFORMATION"):(.internal.ind.to(section, "MODEL FIT INFORMATION")) }
+    if (isTRUE(any(run.val.tech == "MODEL FIT INFORMATION") && all(!grepl("RESULTS FOR EXPLORATORY FACTOR ANALYSIS", run.val.tech)))) {
+
+      fit <- which(run.val.tech == "MODEL FIT INFORMATION"):(.section.ind.from.to(section, "MODEL FIT INFORMATION", run = run.val.tech))
+
+    }
 
     #...................
     ### FINAL CLASS COUNTS AND PROPORTIONS ####
@@ -1065,14 +1060,14 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #...................
     ### LATENT CLASS INDICATOR MEANS AND PROBABILITIES ####
 
-    if (isTRUE(any(run.val.tech == "LATENT CLASS INDICATOR MEANS AND PROBABILITIES"))) { ind.means <- which(run.val.tech == "LATENT CLASS INDICATOR MEANS AND PROBABILITIES"):(.internal.ind.to(section, "LATENT CLASS INDICATOR MEANS AND PROBABILITIES")) }
+    if (isTRUE(any(run.val.tech == "LATENT CLASS INDICATOR MEANS AND PROBABILITIES"))) { ind.means <- which(run.val.tech == "LATENT CLASS INDICATOR MEANS AND PROBABILITIES"):(.section.ind.from.to(section, "LATENT CLASS INDICATOR MEANS AND PROBABILITIES", run = run.val.tech)) }
 
     #...................
     ### TRANSITION PROBABILITIES ####
 
     if (isTRUE(any(run.val.tech == "LATENT TRANSITION PROBABILITIES BASED ON THE ESTIMATED MODEL"))) {
 
-      trans.prob <- which(run.val.tech == "LATENT TRANSITION PROBABILITIES BASED ON THE ESTIMATED MODEL"):(.internal.ind.to(section, "LATENT TRANSITION PROBABILITIES BASED ON THE ESTIMATED MODEL"))
+      trans.prob <- which(run.val.tech == "LATENT TRANSITION PROBABILITIES BASED ON THE ESTIMATED MODEL"):(.section.ind.from.to(section, "LATENT TRANSITION PROBABILITIES BASED ON THE ESTIMATED MODEL", run = run.val.tech))
 
       # Remove TRANSITION PROBABILITIES from FINAL CLASS COUNTS AND PROPORTIONS
       class.count <- setdiff(class.count, trans.prob)
@@ -1122,8 +1117,33 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
       if (isTRUE(all(!grepl("RESULTS FOR EXPLORATORY FACTOR ANALYSIS", run.val.tech)))) {
 
-        mod.result <- which(run.val.tech == "MODEL RESULTS"):(.internal.ind.to(section, "MODEL RESULTS"))
+        if (isTRUE(all(!grepl("Invariance Testing", run.val.tech)))) {
 
+          mod.result <- which(run.val.tech == "MODEL RESULTS"):(.section.ind.from.to(section, "MODEL RESULTS", run = run.val.tech))
+
+        #### Invariance Testing
+        } else {
+
+          # Configural model
+          if (any(grepl("CONFIGURAL MODEL", run.val.tech))) {
+
+            mod.result <- which(run.val.tech == "MODEL RESULTS FOR THE CONFIGURAL MODEL"):(.section.ind.from.to(section, "MODEL RESULTS FOR THE CONFIGURAL MODEL", run = run.val.tech))
+
+          # Metric model
+          } else if (any(grepl("METRIC MODEL", run.val.tech))) {
+
+            mod.result <- which(run.val.tech == "MODEL RESULTS FOR THE METRIC MODEL"):(.section.ind.from.to(section, "MODEL RESULTS FOR THE METRIC MODEL", run = run.val.tech))
+
+          # Scalar model
+          } else {
+
+            mod.result <- which(run.val.tech == "MODEL RESULTS FOR THE SCALAR MODEL"):(.section.ind.from.to(section, "MODEL RESULTS FOR THE SCALAR MODEL", run = run.val.tech))
+
+          }
+
+        }
+
+      #### Exploratory Factor Analysis
       } else {
 
         if (isTRUE(any(c(grepl("PLOT INFORMATION", run.val.tech), grepl("SAVEDATA INFORMATION", run.val.tech))))) {
@@ -1143,108 +1163,110 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #...................
     ### LOGISTIC REGRESSION ODDS RATIO RESULTS ####
 
-    if (isTRUE(any(run.val.tech == "LOGISTIC REGRESSION ODDS RATIO RESULTS"))) { odds.ratio <- which(run.val.tech == "LOGISTIC REGRESSION ODDS RATIO RESULTS"):(.internal.ind.to(section, "LOGISTIC REGRESSION ODDS RATIO RESULTS")) }
+    if (isTRUE(any(run.val.tech == "LOGISTIC REGRESSION ODDS RATIO RESULTS"))) { odds.ratio <- which(run.val.tech == "LOGISTIC REGRESSION ODDS RATIO RESULTS"):(.section.ind.from.to(section, "LOGISTIC REGRESSION ODDS RATIO RESULTS", run = run.val.tech)) }
 
     #...................
     ### RESULTS IN PROBABILITY SCALE ####
 
-    if (isTRUE(any(run.val.tech == "RESULTS IN PROBABILITY SCALE"))) { prob.scale <- which(run.val.tech == "RESULTS IN PROBABILITY SCALE"):(.internal.ind.to(section, "RESULTS IN PROBABILITY SCALE")) }
+    if (isTRUE(any(run.val.tech == "RESULTS IN PROBABILITY SCALE"))) { prob.scale <- which(run.val.tech == "RESULTS IN PROBABILITY SCALE"):(.section.ind.from.to(section, "RESULTS IN PROBABILITY SCALE", run = run.val.tech)) }
 
     #...................
     ### LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES ####
 
-    if (isTRUE(any(run.val.tech == "LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES"))) { ind.odds.ratio <- which(run.val.tech == "LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES"):(.internal.ind.to(section, "LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES")) }
+    if (isTRUE(any(run.val.tech == "LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES"))) { ind.odds.ratio <- which(run.val.tech == "LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES"):(.section.ind.from.to(section, "LATENT CLASS INDICATOR ODDS RATIOS FOR THE LATENT CLASSES", run = run.val.tech)) }
 
     #...................
     ### ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION ####
 
-    if (isTRUE(any(run.val.tech == "ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION"))) { alt.param <- min(which(run.val.tech == "ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION")):(.internal.ind.to(section, "ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION")) }
+    if (isTRUE(any(run.val.tech == "ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION"))) { alt.param <- min(which(run.val.tech == "ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION")):(.section.ind.from.to(section, "ALTERNATIVE PARAMETERIZATIONS FOR THE CATEGORICAL LATENT VARIABLE REGRESSION", run = run.val.tech)) }
 
     #...................
     ### IRT PARAMETERIZATION ####
 
-    if (isTRUE(any(grepl("IRT PARAMETERIZATION", run.val.tech)))) { irt.param <- which(run.val.tech == "IRT PARAMETERIZATION"):(.internal.ind.to(section, "IRT PARAMETERIZATION")) }
+    if (isTRUE(any(grepl("IRT PARAMETERIZATION", run.val.tech)))) { irt.param <- which(run.val.tech == "IRT PARAMETERIZATION"):(.section.ind.from.to(section, "IRT PARAMETERIZATION", run = run.val.tech)) }
 
     #...................
     ### BRANT WALD TEST FOR PROPORTIONAL ODDS ####
 
-    if (isTRUE(any(run.val.tech == "BRANT WALD TEST FOR PROPORTIONAL ODDS"))) { brant.wald <- which(run.val.tech == "BRANT WALD TEST FOR PROPORTIONAL ODDS"):(.internal.ind.to(section, "BRANT WALD TEST FOR PROPORTIONAL ODDS")) }
+    if (isTRUE(any(run.val.tech == "BRANT WALD TEST FOR PROPORTIONAL ODDS"))) { brant.wald <- which(run.val.tech == "BRANT WALD TEST FOR PROPORTIONAL ODDS"):(.section.ind.from.to(section, "BRANT WALD TEST FOR PROPORTIONAL ODDS", run = run.val.tech)) }
 
     #...................
     ### STANDARDIZED MODEL RESULTS ####
 
-    if (isTRUE(any(run.val.tech == "STANDARDIZED MODEL RESULTS"))) { std.mod.result <- which(run.val.tech == "STANDARDIZED MODEL RESULTS"):(.internal.ind.to(section, "STANDARDIZED MODEL RESULTS")) }
+    if (isTRUE(any(run.val.tech == "STANDARDIZED MODEL RESULTS"))) { std.mod.result <- which(run.val.tech == "STANDARDIZED MODEL RESULTS"):(.section.ind.from.to(section, "STANDARDIZED MODEL RESULTS", run = run.val.tech)) }
 
     #...................
     ### R-SQUARE ####
 
-    if (isTRUE(any(run.val.tech == "R-SQUARE"))) { rsquare <- which(run.val.tech == "R-SQUARE"):(.internal.ind.to(section, "R-SQUARE")) }
+    if (isTRUE(any(run.val.tech == "R-SQUARE"))) { rsquare <- which(run.val.tech == "R-SQUARE"):(.section.ind.from.to(section, "R-SQUARE", run = run.val.tech)) }
 
     #...................
     ### TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS ####
 
     temp.section <- c("TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS", "TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS FOR LATENT RESPONSE VARIABLES", "TOTAL, INDIRECT, AND DIRECT EFFECTS BASED ON COUNTERFACTUALS (CAUSALLY-DEFINED EFFECTS)")
 
-    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { total.indirect <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.internal.ind.to(section, temp.section)) }
+    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { total.indirect <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.section.ind.from.to(section, temp.section, run = run.val.tech)) }
 
     #...................
     ### STANDARDIZED TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS ####
 
     temp.section <- c("STANDARDIZED TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS", "STANDARDIZED TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS FOR LATENT RESPONSE VARIABLES", "STANDARDIZED TOTAL, INDIRECT, AND DIRECT EFFECTS BASED ON COUNTERFACTUALS (CAUSALLY-DEFINED EFFECTS)")
 
-    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { std.total.indirect <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.internal.ind.to(section, temp.section)) }
+    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { std.total.indirect <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.section.ind.from.to(section, temp.section, run = run.val.tech)) }
 
     #...................
     ### WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER ####
 
-    if (isTRUE(any(run.val.tech == "WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER 1"))) { std.mod.result.cluster <- which(run.val.tech == "WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER 1", run.val.tech):(.internal.ind.to(section, "WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER 1")) }
+    if (isTRUE(any(run.val.tech == "WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER 1"))) { std.mod.result.cluster <- which(run.val.tech == "WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER 1", run.val.tech):(.section.ind.from.to(section, "WITHIN-LEVEL STANDARDIZED MODEL RESULTS FOR CLUSTER 1", run = run.val.tech)) }
 
     #...................
     ### BETWEEN-LEVEL FACTOR SCORE COMPARISONS ####
 
-    if (isTRUE(any(run.val.tech == "BETWEEN-LEVEL FACTOR SCORE COMPARISONS"))) { fs.comparison <- which(run.val.tech == "BETWEEN-LEVEL FACTOR SCORE COMPARISONS"):(.internal.ind.to(section, "BETWEEN-LEVEL FACTOR SCORE COMPARISONS")) }
+    if (isTRUE(any(run.val.tech == "BETWEEN-LEVEL FACTOR SCORE COMPARISONS"))) { fs.comparison <- which(run.val.tech == "BETWEEN-LEVEL FACTOR SCORE COMPARISONS"):(.section.ind.from.to(section, "BETWEEN-LEVEL FACTOR SCORE COMPARISONS", run = run.val.tech)) }
 
     #...................
     ### CONFIDENCE INTERVALS OF MODEL RESULTS ####
 
-    if (isTRUE(any(run.val.tech == "CONFIDENCE INTERVALS OF MODEL RESULTS"))) { conf.mod.result <- which(run.val.tech == "CONFIDENCE INTERVALS OF MODEL RESULTS"):(.internal.ind.to(section, "CONFIDENCE INTERVALS OF MODEL RESULTS")) }
+    if (isTRUE(any(run.val.tech == "CONFIDENCE INTERVALS OF MODEL RESULTS"))) { conf.mod.result <- which(run.val.tech == "CONFIDENCE INTERVALS OF MODEL RESULTS"):(.section.ind.from.to(section, "CONFIDENCE INTERVALS OF MODEL RESULTS", run = run.val.tech)) }
 
     #...................
     ### CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS ####
 
-    if (isTRUE(any(run.val.tech == "CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS"))) { conf.std.conf <- which(run.val.tech == "CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS"):(.internal.ind.to(section, "CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS")) }
+    if (isTRUE(any(run.val.tech == "CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS"))) { conf.std.conf <- which(run.val.tech == "CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS"):(.section.ind.from.to(section, "CONFIDENCE INTERVALS OF STANDARDIZED MODEL RESULTS", run = run.val.tech)) }
 
     #...................
     ### CONFIDENCE INTERVALS OF TOTAL, INDIRECT, AND DIRECT EFFECTS ####
 
     temp.section <- c("CONFIDENCE INTERVALS OF TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS", "CONFIDENCE INTERVALS OF TOTAL, INDIRECT, AND DIRECT EFFECTS BASED ON COUNTERFACTUALS (CAUSALLY-DEFINED EFFECTS)", "CONFIDENCE INTERVALS OF TOTAL, TOTAL INDIRECT, SPECIFIC INDIRECT, AND DIRECT EFFECTS FOR LATENT RESPONSE VARIABLES")
 
-    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { conf.total.indirect <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.internal.ind.to(section, temp.section)) }
+    if (isTRUE(any(sapply(temp.section, function(z) run.val.tech == z)))) { conf.total.indirect <- min(unlist(sapply(temp.section, function(z) which(run.val.tech == z)))):(.section.ind.from.to(section, temp.section, run = run.val.tech)) }
 
     #...................
     ### CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS ####
 
-    if (isTRUE(any(run.val.tech == "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS"))) { conf.odds.ratio <- c(which(run.val.tech == "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS"), which(run.val.tech == "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS") + 1L, min(which(run.val.tech == "                  Lower .5%  Lower 2.5%    Lower 5%    Estimate    Upper 5%  Upper 2.5%   Upper .5%")), (which(run.val.tech == "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS") + 1L):(.internal.ind.to(section, "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS"))) }
+    if (isTRUE(any(run.val.tech == "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS"))) { conf.odds.ratio <- c(which(run.val.tech == "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS"), which(run.val.tech == "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS") + 1L, min(which(run.val.tech == "                  Lower .5%  Lower 2.5%    Lower 5%    Estimate    Upper 5%  Upper 2.5%   Upper .5%")), (which(run.val.tech == "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS") + 1L):(.section.ind.from.to(section, "CONFIDENCE INTERVALS FOR THE LOGISTIC REGRESSION ODDS RATIO RESULTS", run = run.val.tech))) }
 
     #...................
     ### MODEL MODIFICATION INDICES ####
 
-    if (isTRUE(any(run.val.tech == "MODEL MODIFICATION INDICES"))) { modind <- which(run.val.tech == "MODEL MODIFICATION INDICES"):(.internal.ind.to(section, "MODEL MODIFICATION INDICES")) }
+    if (isTRUE(any(run.val.tech == "MODEL MODIFICATION INDICES"))) { modind <- which(run.val.tech == "MODEL MODIFICATION INDICES"):(.section.ind.from.to(section, "MODEL MODIFICATION INDICES", run = run.val.tech)) }
 
     #...................
     ### RESIDUAL OUTPUT ####
 
-    if (isTRUE(any(run.val.tech == "RESIDUAL OUTPUT"))) { resid <- which(run.val.tech == "RESIDUAL OUTPUT"):(.internal.ind.to(section, "RESIDUAL OUTPUT")) }
+    if (isTRUE(any(run.val.tech == "RESIDUAL OUTPUT"))) { resid <- which(run.val.tech == "RESIDUAL OUTPUT"):(.section.ind.from.to(section, "RESIDUAL OUTPUT", run = run.val.tech)) }
 
     #...................
     ### LOGRANK OUTPUT ####
 
-    if (isTRUE(any(run.val.tech == "LOGRANK OUTPUT"))) { logrank <- which(run.val.tech == "LOGRANK OUTPUT"):(.internal.ind.to(section, "LOGRANK OUTPUT")) }
+    if (isTRUE(any(run.val.tech == "LOGRANK OUTPUT"))) { logrank <- which(run.val.tech == "LOGRANK OUTPUT"):(.section.ind.from.to(section, "LOGRANK OUTPUT", run = run.val.tech)) }
 
     #...................
     ### TECH RESULTS ####
 
     if (isTRUE(any(grepl("TECHNICAL", run.val)))) {
+
+      section <- misty::chr.omit(section, omit = c("THE MODEL ESTIMATION TERMINATED NORMALLY", "MODEL ESTIMATION DID NOT TERMINATE NORMALLY", "     WARNING:  THE SAMPLE COVARIANCE OF THE INDEPENDENT VARIABLES", "     THE STANDARD ERRORS OF THE MODEL PARAMETER ESTIMATES MAY NOT BE", "     THE STANDARD ERRORS OF THE MODEL PARAMETER ESTIMATES COULD NOT BE", "     WARNING:  THE LATENT VARIABLE COVARIANCE MATRIX (PSI) IS NOT POSITIVE", "     ONE OR MORE PARAMETERS WERE FIXED TO AVOID SINGULARITY OF THE", "     IN THE OPTIMIZATION, ONE OR MORE LOGIT THRESHOLDS APPROACHED EXTREME VALUES", "     THE ROBUST CHI-SQUARE COULD NOT BE COMPUTED."), check = FALSE)
 
       #### TECH outputs
       tech <- names(which(sapply(c(paste("TECHNICAL", c(1L:4L, 7L:16L), "OUTPUT"), "TECHNICAL 5/6 OUTPUT", "H1 TECHNICAL 3 OUTPUT"), function(z) any(run.val == z))))
@@ -1254,14 +1276,14 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
         if (isTRUE(i != "H1 TECHNICAL 3 OUTPUT")) {
 
-          assign(paste0("tech", gsub(".*?([0-9]+).*", "\\1", i)), which(run.val == i):(.internal.ind.to(section, i)))
+          assign(paste0("tech", gsub(".*?([0-9]+).*", "\\1", i)), which(run.val == i):(.section.ind.from.to(section, cur.section = i, run = run.val)))
 
           # Remove empty TECH output
-          if (isTRUE(length( misty::chr.omit(run.val[eval(parse(text = paste0("tech", gsub(".*?([0-9]+).*", "\\1", i))))], check = FALSE)) == 1L)) { assign(paste0("tech", gsub(".*?([0-9]+).*", "\\1", i)), NULL) }
+          if (isTRUE(length(misty::chr.omit(run.val[eval(parse(text = paste0("tech", gsub(".*?([0-9]+).*", "\\1", i))))], check = FALSE)) == 1L)) { assign(paste0("tech", gsub(".*?([0-9]+).*", "\\1", i)), NULL) }
 
         } else {
 
-          assign("h1.tech3", which(run.val == i):(.internal.ind.to(section, i)))
+          assign("h1.tech3", which(run.val == i):(.section.ind.from.to(section, cur.section = i, run = run.val)))
 
           # Remove empty H1 TECHNICAL 3 output
           if (isTRUE(length(misty::chr.omit(run.val[h1.tech3], check = FALSE)) == 1L)) { assign("h1.tech3", NULL) }
@@ -1275,32 +1297,32 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #...................
     ### MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES ####
 
-    if (isTRUE(any(run.val == "MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES"))) { svalues <- which(run.val == "MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES"):(.internal.ind.to(section, "MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES")) }
+    if (isTRUE(any(run.val == "MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES"))) { svalues <- which(run.val == "MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES"):(.section.ind.from.to(section, "MODEL COMMAND WITH FINAL ESTIMATES USED AS STARTING VALUES", run = run.val)) }
 
     #...................
     ### SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES ####
 
-    if (isTRUE(any(run.val == "SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES"))) { stat.fscores <- which(run.val == "SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES"):(.internal.ind.to(section, "SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES")) }
+    if (isTRUE(any(run.val == "SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES"))) { stat.fscores <- which(run.val == "SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES"):(.section.ind.from.to(section, "SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES", run = run.val)) }
 
     #...................
     ### SUMMARY OF FACTOR SCORES ####
 
-    if (isTRUE(any(run.val == "SUMMARY OF FACTOR SCORES"))) { summary.fscores <- which(run.val == "SUMMARY OF FACTOR SCORES"):(.internal.ind.to(section, "SUMMARY OF FACTOR SCORES")) }
+    if (isTRUE(any(run.val == "SUMMARY OF FACTOR SCORES"))) { summary.fscores <- which(run.val == "SUMMARY OF FACTOR SCORES"):(.section.ind.from.to(section, "SUMMARY OF FACTOR SCORES", run = run.val)) }
 
     #...................
     ### SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS) ####
 
-    if (isTRUE(any(run.val == "SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS)"))) { pv <- min(which(run.val == "SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS)")):(.internal.ind.to(section, "SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS)")) }
+    if (isTRUE(any(run.val == "SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS)"))) { pv <- min(which(run.val == "SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS)")):(.section.ind.from.to(section, "SUMMARIES OF PLAUSIBLE VALUES (N = NUMBER OF OBSERVATIONS * NUMBER OF IMPUTATIONS)", run = run.val)) }
 
     #...................
     ### PLOT Information ####
 
-    if (isTRUE(any(run.val == "PLOT INFORMATION"))) { plotinfo <- which(run.val == "PLOT INFORMATION"):(.internal.ind.to(section, "PLOT INFORMATION")) }
+    if (isTRUE(any(run.val == "PLOT INFORMATION"))) { plotinfo <- which(run.val == "PLOT INFORMATION"):(.section.ind.from.to(section, "PLOT INFORMATION", run = run.val)) }
 
     #...................
     ### SAVEDATA INFORMATION ####
 
-    if (isTRUE(any(run.val == "SAVEDATA INFORMATION"))) { saveinfo <- which(run.val == "SAVEDATA INFORMATION"):(.internal.ind.to(section, "SAVEDATA INFORMATION")) }
+    if (isTRUE(any(run.val == "SAVEDATA INFORMATION"))) { saveinfo <- which(run.val == "SAVEDATA INFORMATION"):(.section.ind.from.to(section, "SAVEDATA INFORMATION", run = run.val)) }
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Return Object ####
@@ -1414,6 +1436,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
   #----------------------------------------
   # Mplus Output in misty object
+
   } else {
 
     return.object <- x$result

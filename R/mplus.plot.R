@@ -587,7 +587,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## misty object ####
 
-  } else if (isTRUE(class(x) == "misty.object")) {
+  } else if (isTRUE(inherits(x, "misty.object"))) {
 
     if (isTRUE(x$type != "mplus")) { stop("Please specify a \"mplus\" object for the argument 'x'.", call. = FALSE) }
 
@@ -787,7 +787,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
   #----------------------------------------
   # Mplus Plot Data in GH5 File
-  if (isTRUE(class(x) != "misty.object")) {
+  if (isTRUE(!inherits(x, "misty.object"))) {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Read Mplus GH5 File ####
@@ -982,7 +982,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       if (isTRUE(is.null(ylab))) { ylab.trace <- "" } else { ylab.trace <- ylab }
 
       # 'xbreaks' argument
-      if (isTRUE(class(xbreaks) == "waiver")) {
+      if (isTRUE(inherits(xbreaks, "waiver"))) {
 
         if (isTRUE(burnin)) {
 
@@ -1010,10 +1010,10 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       ylim.trace <- ylim
 
       # 'xexpand' argument
-      if (isTRUE(class(xexpand) == "waiver")) { xexpand.trace <- c(0.02, 0L) } else { xexpand.trace <- xexpand }
+      if (isTRUE(inherits(xexpand, "waiver"))) { xexpand.trace <- c(0.02, 0L) } else { xexpand.trace <- xexpand }
 
       # 'yexpand' argument
-      if (isTRUE(class(yexpand) == "waiver")) { yexpand.trace <- c(0.02, 0L) } else { yexpand.trace <- yexpand }
+      if (isTRUE(inherits(yexpand, "waiver"))) { yexpand.trace <- c(0.02, 0L) } else { yexpand.trace <- yexpand }
 
       # 'plot.margin' argument
       if (isTRUE(is.null(plot.margin))) { plot.margin.trace <- c(4L, 15L, -10L, 0L) } else { plot.margin.trace <- plot.margin }
@@ -1082,10 +1082,10 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       ylim.post <- ylim
 
       # 'xexpand' argument
-      if (isTRUE(class(xexpand) == "waiver")) { xexpand.post <- c(0.02, 0L) } else { xexpand.post <- xexpand }
+      if (isTRUE(inherits(xexpand, "waiver"))) { xexpand.post <- c(0.02, 0L) } else { xexpand.post <- xexpand }
 
       # 'yexpand' argument
-      if (isTRUE(class(yexpand) == "waiver")) { yexpand.post <- ggplot2::expansion(mult = c(0L, 0.05)) } else { yexpand.post <- yexpand }
+      if (isTRUE(inherits(yexpand, "waiver"))) { yexpand.post <- ggplot2::expansion(mult = c(0L, 0.05)) } else { yexpand.post <- yexpand }
 
       # 'plot.margin' argument
       if (isTRUE(is.null(plot.margin))) { plot.margin.post <- c(4L, 15L, -4L, 4L) } else { plot.margin.post <- plot.margin }
@@ -1280,10 +1280,10 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       if (isTRUE(is.null(ylab))) { ylab.auto <- "Autocorrelation"  } else { ylab.auto <- ylab }
 
       # 'xbreaks' argument
-      if (isTRUE(class(xbreaks) == "waiver")) { xbreaks.auto <- seq(1L, 30L, by = 2L) } else { xbreaks.auto <- xbreaks }
+      if (isTRUE(inherits(xbreaks, "waiver"))) { xbreaks.auto <- seq(1L, 30L, by = 2L) } else { xbreaks.auto <- xbreaks }
 
       # 'ybreaks' argument
-      if (isTRUE(class(ybreaks) == "waiver")) { ybreaks.auto <- seq(-1L, 1L, by = 0.25) } else { ybreaks.auto <- ybreaks }
+      if (isTRUE(inherits(ybreaks, "waiver"))) { ybreaks.auto <- seq(-1L, 1L, by = 0.25) } else { ybreaks.auto <- ybreaks }
 
       # 'xlim' argument
       if (isTRUE(is.null(xlim))) { xlim.auto <- c(0L, 31) } else { xlim.auto <- xlim }
@@ -1292,10 +1292,10 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       if (isTRUE(is.null(ylim))) { ylim.auto <- c(-1L, 1L) } else { ylim.auto <- ylim }
 
       # 'xexpand' argument
-      if (isTRUE(class(xexpand) == "waiver")) { xexpand.auto <- c(0.02, 0L) } else { xexpand.auto <- xexpand }
+      if (isTRUE(inherits(xexpand, "waiver"))) { xexpand.auto <- c(0.02, 0L) } else { xexpand.auto <- xexpand }
 
       # 'yexpand' argument
-      if (isTRUE(class(yexpand) == "waiver")) { yexpand.auto <- c(0.02, 0L) } else { yexpand.auto <- yexpand }
+      if (isTRUE(inherits(yexpand, "waiver"))) { yexpand.auto <- c(0.02, 0L) } else { yexpand.auto <- yexpand }
 
       # 'plot.margin' argument
       if (isTRUE(is.null(plot.margin))) { plot.margin.auto <- c(4L, 15L, 4L, 4L) } else { plot.margin.auto <- plot.margin }
@@ -1336,10 +1336,10 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
         limits.max <- 5L*ceiling(max(unlist(ppc.data[, c("obs", "rep")])) / 5L)
 
         # 'xbreaks' argument
-        if (isTRUE(class(xbreaks) == "waiver")) { xbreaks.pcc.scatter <- seq(0L, limits.max, by = 5L) } else { xbreaks.pcc.scatter <- xbreaks }
+        if (isTRUE(inherits(xbreaks, "waiver"))) { xbreaks.pcc.scatter <- seq(0L, limits.max, by = 5L) } else { xbreaks.pcc.scatter <- xbreaks }
 
         # 'ybreaks' argument
-        if (isTRUE(class(ybreaks) == "waiver")) { ybreaks.pcc.scatter <- seq(0L, limits.max, by = 5L) } else { ybreaks.pcc.scatter <- ybreaks }
+        if (isTRUE(inherits(ybreaks, "waiver"))) { ybreaks.pcc.scatter <- seq(0L, limits.max, by = 5L) } else { ybreaks.pcc.scatter <- ybreaks }
 
         # 'xlim' argument
         if (isTRUE(is.null(xlim))) { xlim.pcc.scatter <- c(0L, limits.max) } else { xlim.pcc.scatter <- xlim }
@@ -1348,10 +1348,10 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
         if (isTRUE(is.null(ylim))) { ylim.pcc.scatter <- c(0L, limits.max) } else { ylim.pcc.scatter <- ylim }
 
         # 'xexpand' argument
-        if (isTRUE(class(xexpand) == "waiver")) { xexpand.ppc.scatter <- c(0.02, 0L) } else { xexpand.ppc.scatter <- xexpand }
+        if (isTRUE(inherits(xexpand, "waiver"))) { xexpand.ppc.scatter <- c(0.02, 0L) } else { xexpand.ppc.scatter <- xexpand }
 
         # 'yexpand' argument
-        if (isTRUE(class(yexpand) == "waiver")) { yexpand.ppc.scatter <- c(0.02, 0L) } else { yexpand.ppc.scatter <- yexpand }
+        if (isTRUE(inherits(yexpand, "waiver"))) { yexpand.ppc.scatter <- c(0.02, 0L) } else { yexpand.ppc.scatter <- yexpand }
 
         # 'plot.margin' argument
         if (isTRUE(is.null(plot.margin))) { plot.margin.ppc.scatter <- c(2L, 15L, 4L, 4L) } else { plot.margin.ppc.scatter <- plot.margin }
@@ -1385,10 +1385,10 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
         ylim.ppc.hist <- ylim
 
         # 'xexpand' argument
-        if (isTRUE(class(xexpand) == "waiver")) { xexpand.ppc.hist <- c(0.02, 0L) } else { xexpand.ppc.scatter <- xexpand }
+        if (isTRUE(inherits(xexpand, "waiver"))) { xexpand.ppc.hist <- c(0.02, 0L) } else { xexpand.ppc.scatter <- xexpand }
 
         # 'yexpand' argument
-        if (isTRUE(class(yexpand) == "waiver")) { yexpand.ppc.hist <- ggplot2::expansion(mult = c(0L, 0.05))  } else { yexpand.ppc.scatter <- yexpand }
+        if (isTRUE(inherits(yexpand, "waiver"))) { yexpand.ppc.hist <- ggplot2::expansion(mult = c(0L, 0.05))  } else { yexpand.ppc.scatter <- yexpand }
 
         # 'plot.margin' argument
         if (isTRUE(is.null(plot.margin))) { plot.margin.ppc.hist <- c(2L, 15L, 4L, 4L) } else { plot.margin.ppc.hist <- plot.margin }
@@ -1415,7 +1415,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
     } else {
 
-      plot.trace <- plot.post <- plot.auto <- plot.ppc <- post.wide <- post.long <- auto.wide <- auto.long <- ppc.data <- loop <- NULL
+      plot.trace <- plot.post <- plot.auto <- plot.ppc <- post <- post.wide <- post.long <- auto <- auto.wide <- auto.long <- ppc.data <- loop <- NULL
 
     }
 
@@ -1427,7 +1427,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       #...................
       ### No "bayesian_data" section ####
 
-      if (isTRUE(!"bayesian_data" %in% names(gh5))) { param <- "loop" }
+      if (isTRUE(!"bayesian_data" %in% names(gh5))) { plot <- "loop" }
 
       #...................
       ### Extract Data ####
@@ -1485,10 +1485,10 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       ylim.loop <- ylim
 
       # 'xexpand' argument
-      if (isTRUE(class(xexpand) == "waiver")) { xexpand.loop <- c(0.02, 0L) } else { xexpand.loop <- xexpand }
+      if (isTRUE(inherits(xexpand, "waiver"))) { xexpand.loop <- c(0.02, 0L) } else { xexpand.loop <- xexpand }
 
       # 'yexpand' argument
-      if (isTRUE(class(yexpand) == "waiver")) { yexpand.loop <- c(0.02, 0L) } else { yexpand.loop <- yexpand }
+      if (isTRUE(inherits(yexpand, "waiver"))) { yexpand.loop <- c(0.02, 0L) } else { yexpand.loop <- yexpand }
 
       # 'plot.margin' argument
       if (isTRUE(is.null(plot.margin))) { if (isTRUE(area)) { plot.margin.loop <- c(4L, 15L, -6L, 4L) } else { plot.margin.loop <- c(4L, 15L, 2L, 4L) } } else { plot.margin.loop <- plot.margin }

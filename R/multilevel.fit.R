@@ -132,7 +132,7 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check if model is a lavaan object ####
 
-  if (isTRUE(class(x) != "lavaan")) { stop("Please specify a fitted multilevel model of class \"lavaan\" in the argument 'x'.", call. = FALSE) }
+  if (isTRUE(!inherits(x, "lavaan"))) { stop("Please specify a fitted multilevel model of class \"lavaan\" in the argument 'x'.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check if model is a multilevel model ####

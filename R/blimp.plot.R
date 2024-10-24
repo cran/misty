@@ -416,7 +416,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## misty object ####
 
-  } else if (isTRUE(class(x) == "misty.object")) {
+  } else if (isTRUE(inherits(x, "misty.object"))) {
 
     if (isTRUE(x$type != "blimp")) { stop("Please specify a \"blimp\" object for the argument 'x'.", call. = FALSE) }
 
@@ -589,7 +589,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
   #----------------------------------------
   # Blimp Plot Data in CSV File
-  if (isTRUE(class(x) != "misty.object")) {
+  if (isTRUE(!inherits(x, "misty.object"))) {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Read Blimp Posterior File ####
@@ -720,7 +720,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
     if (isTRUE(is.null(ylab))) { ylab.trace <- "" } else { ylab.trace <- ylab }
 
     # 'xbreaks' argument
-    if (isTRUE(class(xbreaks) == "waiver")) {
+    if (isTRUE(inherits(xbreaks, "waiver"))) {
 
       if (isTRUE(burnin)) {
 
@@ -764,10 +764,10 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
     ylim.trace <- ylim
 
     # 'xexpand' argument
-    if (isTRUE(class(xexpand) == "waiver")) { xexpand.trace <- c(0.02, 0L) } else { xexpand.trace <- xexpand }
+    if (isTRUE(inherits(xexpand, "data.frame"))) { xexpand.trace <- c(0.02, 0L) } else { xexpand.trace <- xexpand }
 
     # 'yexpand' argument
-    if (isTRUE(class(yexpand) == "waiver")) { yexpand.trace <- c(0.02, 0L) } else { yexpand.trace <- yexpand }
+    if (isTRUE(inherits(yexpand, "data.frame"))) {  yexpand.trace <- c(0.02, 0L) } else { yexpand.trace <- yexpand }
 
     # 'plot.margin' argument
     if (isTRUE(is.null(plot.margin))) { plot.margin.trace <- c(4L, 15L, -10L, 0L) } else { plot.margin.trace <- plot.margin }
@@ -825,10 +825,10 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
     ylim.post <- ylim
 
     # 'xexpand' argument
-    if (isTRUE(class(xexpand) == "waiver")) { xexpand.post <- c(0.02, 0L) } else { xexpand.post <- xexpand }
+    if (isTRUE(inherits(xexpand, "waiver"))) { xexpand.post <- c(0.02, 0L) } else { xexpand.post <- xexpand }
 
     # 'yexpand' argument
-    if (isTRUE(class(yexpand) == "waiver")) { yexpand.post <- ggplot2::expansion(mult = c(0L, 0.05)) } else { yexpand.post <- yexpand }
+    if (isTRUE(inherits(yexpand, "waiver"))) { yexpand.post <- ggplot2::expansion(mult = c(0L, 0.05)) } else { yexpand.post <- yexpand }
 
     # 'plot.margin' argument
     if (isTRUE(is.null(plot.margin))) { plot.margin.post <- c(4L, 15L, -4L, 4L) } else { plot.margin.post <- plot.margin }

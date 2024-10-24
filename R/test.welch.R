@@ -274,7 +274,7 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
   group.var <- attr(terms(formula[-2L]), "term.labels")
 
   # Outcome variable
-  y.var <- var.formula[-grep(group.var, var.formula)]
+  y.var <- setdiff(var.formula, group.var)
 
   #_____________________________________________________________________________
   #

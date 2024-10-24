@@ -144,8 +144,7 @@ dominance <- function(model, print = c("all", "gen", "cond", "comp"), digits = 3
   if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
 
   # Check if input 'model' is not 'lm'
-  if (isTRUE(class(model) != "lm")) { stop("Please specify an \"lm\" object for the argument 'model'.", call. = FALSE) }
-
+  if (isTRUE(!inherits(model, "lm"))) { stop("Please specify an \"lm\" object for the argument 'model'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

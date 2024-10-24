@@ -188,7 +188,7 @@
 #' '
 #'
 #' # Run updated Blimp input
-#' mod3 <- blimp.update(mod1, update2, file = "Ex4.3_update2.imp")
+#' mod2 <- blimp.update(mod1, update2, file = "Ex4.3_update2.imp")
 #' }
 blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = FALSE,
                          replace.inp = TRUE, blimp.run = TRUE, posterior = FALSE,
@@ -205,7 +205,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
   # Initial Check --------------------------------------------------------------
 
   # Check if input 'x' is a misty.object
-  if (isTRUE(class(x) != "misty.object")) { stop("Please specify a misty.object for the argument 'x'", call. = FALSE) }
+  if (isTRUE(!inherits(x, "misty.object"))) { stop("Please specify a misty.object for the argument 'x'", call. = FALSE) }
 
   # Check if input 'x' is a misty.object
   if (isTRUE(x$type != "blimp")) { stop("Please specify a misty.object of type 'blimp' for the argument 'x'", call. = FALSE) }

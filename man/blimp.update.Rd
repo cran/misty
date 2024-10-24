@@ -218,7 +218,7 @@ CENTER: ---;
 '
 
 # Run updated Blimp input
-mod3 <- blimp.update(mod1, update2, file = "Ex4.3_update2.imp")
+mod2 <- blimp.update(mod1, update2, file = "Ex4.3_update2.imp")
 }
 }
 \references{

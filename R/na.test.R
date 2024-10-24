@@ -2,8 +2,7 @@
 #'
 #' This function performs Little's Missing Completely at Random (MCAR) test and
 #' Jamshidian and Jalalꞌs approach for testing the MCAR assumption. By default,
-#' the function performs the Jamshidian and Jalalꞌs
-#' approach.
+#' the function performs the Little's MCAR test.
 #'
 #' @param ...      a matrix or data frame with incomplete data, where missing
 #'                 values are coded as \code{NA}. Alternatively, an expression
@@ -17,8 +16,8 @@
 #'                 when specifying a matrix or data frame for the argument \code{...}.
 #' @param print    a character vector indicating which results to be printed on
 #'                 the console, i.e. \code{"all"} for Little's MCAR test and
-#'                 Jamshidian and Jalalꞌs approach, \code{"little"} for Little's
-#'                 MCAR test, and \code{"jamjal"} (default) for Jamshidian and
+#'                 Jamshidian and Jalalꞌs approach, \code{"little"} (defaut) for
+#'                 Little's MCAR test, and \code{"jamjal} for Jamshidian and
 #'                 Jalalꞌs approach.
 #' @param impdat   an object of class \code{mids} from the \pkg{mice} package to
 #'                 provide a data set multiply imputed in the \pkg{mice} package.
@@ -262,11 +261,14 @@
 #' # Example 1a: Perform Little's MCAR test and Jamshidian and Jalalꞌs approach
 #' na.test(airquality)
 #'
-#' # Example b: Alternative specification using the 'data' argument,
+#' # Example 1b: Alternative specification using the 'data' argument,
 #' na.test(., data = airquality)
 #'
+#' # Example 2: Perform Jamshidian and Jalalꞌs approach
+#' na.test(airquality, print = "jamjal")
+#'
 #' \dontrun{
-#' # Example 2: Write results into a text file
+#' # Example 3: Write results into a text file
 #' na.test(airquality, write = "NA_Test.txt")
 #' }
 na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
@@ -373,7 +375,7 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
       if (isTRUE(!nzchar(system.file(package = "mice")))) { stop("Package \"mice\" is needed for this function, please install the package.", call. = FALSE) }
 
       # mids object
-      if (isTRUE(class(impdat) != "mids")) { stop("Please specify a \"mids\" object from the mice package for the argument 'impdat'.", call. = FALSE) }
+      if (isTRUE(!inherits(impdat, "mids"))) { stop("Please specify a \"mids\" object from the mice package for the argument 'impdat'.", call. = FALSE) }
 
       # Variables in mids object
       if (isTRUE(any(!colnames(data) %in% colnames(mice::complete(impdat))))) { stop("Variables specified for the analysis are not all avaialble in the \"mids\" object in the argument 'impdat'.", call. = FALSE) }
@@ -381,7 +383,7 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
     }
 
     # Check input 'delete'
-    if (isTRUE(delete %% 1L != 0L || delete < 0L || delete < 2L)) { stop("Please specify a positive integer number greater than or equal 2 for the argument 'delete'.", call. = FALSE) }
+    if (isTRUE(delete %% 1L != 0L || delete < 0L || delete < 2L)) { stop("Please specify a positive integer number greater than 2 for the argument 'delete'.", call. = FALSE) }
 
     # Check input 'method'
     if (isTRUE(!all(method  %in% c("npar", "normal")))) { stop("Character string in the argument 'method' does not match with \"npar\", or \"normal\".", call. = FALSE) }
@@ -427,7 +429,7 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
 
   if (isTRUE(all(c("all", "little", "jamjal") %in% print))) {
 
-    print <- "jamjal"
+    print <- "little"
 
   } else if (isTRUE("all" %in% print)) {
 

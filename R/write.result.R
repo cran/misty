@@ -94,7 +94,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   # Check if input 'x' is a misty object
-  if (isTRUE(class(x) != "misty.object")) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
+  if (isTRUE(!inherits(x, "misty.object"))) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is supported by the function
   if (isTRUE(!x$type %in% c("blimp.bayes", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "result.lca", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "robust.coef", "std.coef"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }

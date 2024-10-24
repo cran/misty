@@ -20,9 +20,10 @@ in the \code{\link{df.subset}} function.}
 argument \code{...}. Note that the argument is \code{NULL}
 when specifying a matrix or data frame for the argument \code{...}.}
 
-\item{na}{an integer value specifying, i.e., either \code{1} for
-\code{0 = observed} and \code{1 = missing}, or \code{0} (default) for
-\code{1 = observed} and \code{0 = missing}.}
+\item{na}{an integer value specifying the value representing missing values,
+i.e., either \code{na = 0} (default) for \code{0 = missing} and
+\code{1 = observed}, or \code{na = 1} for \code{0} (observed)
+and \code{1 = missing}.}
 
 \item{append}{logical: if \code{TRUE} (default), missing data indicator matrix
 is appended to the data frame specified in the argument \code{data}.}
@@ -49,7 +50,7 @@ values are observed or missing, i.e., \eqn{r = 0} if a value is observed, and
 \eqn{r = 1} if a value is missing.
 }
 \examples{
-# Example 1a: Create missing data indicator matrix \eqn{R}
+# Example 1a: Create missing data indicator matrix
 na.indicator(airquality)
 
 # Example 1b: Alternative specification using the 'data' argument

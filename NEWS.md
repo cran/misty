@@ -1,4 +1,26 @@
-### misty 0.6.7 (2024-09-18)
+### misty 0.6.8 (2024-10-24)
+
+##### New features
+* New functions `na.satcor()`, `cfa.satcor()`, `sem.satcor()`, `growth.satcor()`, 
+and `lavaan.satcor()` to estimate a confirmatory factor analysis model, structural 
+equation model, growth curve model, or latent variable model in the `lavaan` package
+using full information maximum likelihood  (FIML) method to handle missing data 
+while automatically specifying a saturated correlates model to incorporate auxiliary 
+variables into a substantive model.
+* New function `read.data()` to read data files in CSV, DAT, TXT, SPSS, Excel, or
+Stata DTA format.
+
+##### User-visible changes
+* Changed the default setting of the argument `print` in the functions `na.test`, 
+to `little`.
+
+##### Bug fix
+* Fixed a bug in the function `mplus.plot()`, which caused an error message when 
+requesting a loop plot by specifying `plot = "loop"`.
+* Fixed a bug in the function `mplus.print()`, which caused an error message when 
+printing a Mplus output for an automatic testing of measurement invariance.
+
+### misty 0.6.7 (2024-09-10)
 
 ##### Minor features and improvements
 * The functions `mplus` and `blimp` do not require the `...;` specification 
@@ -10,6 +32,8 @@ labels in the facet labels.
 ##### User-visible changes
 * The function `na.auxiliary()` does not print full `NA` rows of the Cohen's d 
 matrix anymore.
+* The function `na.indicator()` creates a missing data indicator matrix with 
+`0 = observed` and `1 = missing`.
 * Added the arguments `na`, `append` and `name` to the function `na.indicator()`.
 
 ##### Bug fix

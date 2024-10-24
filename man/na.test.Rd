@@ -26,8 +26,8 @@ when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{print}{a character vector indicating which results to be printed on
 the console, i.e. \code{"all"} for Little's MCAR test and Jamshidian and
-Jalal's approach, \code{"little"} for Little's MCAR test, and \code{"jamjal"}
-(default) for Jamshidian and Jalal's approach.}
+Jalal's approach, \code{"little"} (default) for Little's MCAR test, and
+\code{"jamjal"} for Jamshidian and Jalal's approach.}
 
 \item{impdat}{an object of class \code{mids} from the \pkg{mice} package to
 provide a data set multiply imputed in the \pkg{mice} package.
@@ -126,8 +126,7 @@ entries:
 \description{
 This function performs Little's Missing Completely at Random (MCAR) test and
 Jamshidian and Jalal's approach for testing the MCAR assumption. By default,
-the function performs the Jamshidian and Jalal's
-approach.
+the function performs the Little's MCAR test.
 }
 \details{
 \describe{
@@ -250,11 +249,14 @@ Camden Jansen, and Mao Kobayashi (2024).
 # Example 1a: Perform Little's MCAR test and Jamshidian and Jalal's approach
 na.test(airquality)
 
-# Example b: Alternative specification using the 'data' argument,
+# Example 1b: Alternative specification using the 'data' argument,
 na.test(., data = airquality)
 
+# Example 2: Perform Jamshidian and Jalal's approach
+na.test(airquality, print = "jamjal")
+
 \dontrun{
-# Example 2: Write results into a text file
+# Example 3: Write results into a text file
 na.test(airquality, write = "NA_Test.txt")
 }
 }

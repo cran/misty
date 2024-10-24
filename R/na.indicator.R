@@ -14,9 +14,10 @@
 #' @param data   a data frame when specifying one or more variables in the
 #'               argument \code{...}. Note that the argument is \code{NULL}
 #'               when specifying a matrix or data frame for the argument \code{...}.
-#' @param na     an integer value specifying, i.e., either \code{1} for
-#'               \code{0 = observed} and \code{1 = missing}, or \code{0} (default)
-#'               for \code{1 = observed} and \code{0 = missing}.
+#' @param na     an integer value specifying the value representing missing values,
+#'               i.e., either \code{na = 0} (default) for \code{0 = missing} and
+#'               \code{1 = observed}, or \code{na = 1} for \code{0} (observed)
+#'               and \code{1 = missing}.
 #' @param append logical: if \code{TRUE} (default), missing data indicator matrix
 #'               is appended to the data frame specified in the argument \code{data}.
 #' @param name   a character string indicating the  name suffix of indicator variables
@@ -53,7 +54,7 @@
 #' @export
 #'
 #' @examples
-#' # Example 1a: Create missing data indicator matrix \eqn{R}
+#' # Example 1a: Create missing data indicator matrix
 #' na.indicator(airquality)
 #'
 #' # Example 1b: Alternative specification using the 'data' argument

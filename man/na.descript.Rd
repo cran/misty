@@ -108,7 +108,7 @@ na.descript(Demo.twolevel, cluster = "cluster")
 Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
                                              cluster3 = rep(1:10, each = 250))
 
-# Example 5: escriptive statistics for missing data
+# Example 5: Descriptive statistics for missing data
 na.descript(Demo.threelevel, cluster = c("cluster3", "cluster2"))
 
 #----------------------------------------------------------------------------

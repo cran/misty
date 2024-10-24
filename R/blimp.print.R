@@ -173,7 +173,7 @@ blimp.print <- function(x,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## misty object ####
 
-  } else if (isTRUE(class(x) == "misty.object")) {
+  } else if (isTRUE(inherits(x, "misty.object"))) {
 
     if (isTRUE(x$type != "blimp")) { stop("Please specify a \"blimp\" object for the argument 'x'.", call. = FALSE) }
 
@@ -283,7 +283,7 @@ blimp.print <- function(x,
 
   #----------------------------------------
   # Blimp Output in Text File
-  if (isTRUE(class(x) != "misty.object")) {
+  if (isTRUE(!inherits(x, "misty.object"))) {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Read Output ####

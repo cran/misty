@@ -136,10 +136,11 @@ mplus.run <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
 
     if (isTRUE(is.windows() && isFALSE(normalComplete) && isTRUE(killOnFail))) {
 
-      processList <- plyr::ldply(strsplit(shell("wmic process get caption, processid", intern=TRUE), split = "\\s+", perl = TRUE),
+      processList <- plyr::ldply(strsplit(shell("wmic process get caption, processid", intern = TRUE), split = "\\s+", perl = TRUE),
 
                            function(element) {
                              return(data.frame(procname = element[1L], pid = element[2L], stringsAsFactors = FALSE))
+
                            })
 
       if(isTRUE(length(grep("mplus.exe", processList$procname, ignore.case = TRUE)) > 0L)) {
