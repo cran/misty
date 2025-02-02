@@ -4,7 +4,7 @@
 \alias{std.coef}
 \title{Standardized Coefficients}
 \usage{
-std.coef(model, print = c("all", "stdx", "stdy", "stdyx"), digits = 3, p.digits = 4,
+std.coef(model, print = c("all", "stdx", "stdy", "stdyx"), digits = 3, p.digits = 3,
          write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
@@ -24,9 +24,11 @@ results.}
 \item{p.digits}{an integer value indicating the number of decimal places to be used for displaying the
 \emph{p}-value.}
 
-\item{write}{a character string naming a text file with file extension
-\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
-output into a text file.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extension \code{".xlsx"}
+(e.g., \code{"Output.xlsx"}). If the file name does not contain
+any file extension, an Excel file will be written.}
 
 \item{append}{logical: if \code{TRUE} (default), output will be appended
 to an existing text file with extension \code{.txt} specified
@@ -83,47 +85,41 @@ uses the product of standard deviations \eqn{SD(x)SD(x)} rather than the standar
 product \eqn{SD(x x)} for the quadratic term \eqn{x^2}.
 }
 \examples{
-dat <- data.frame(x1 = c(3, 2, 4, 9, 5, 3, 6, 4, 5, 6, 3, 5),
-                  x2 = c(1, 4, 3, 1, 2, 4, 3, 5, 1, 7, 8, 7),
-                  x3 = c(0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1),
-                  y = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8))
-
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Linear model
 
 # Example 1: Regression model with continuous predictors
-mod.lm1 <- lm(y ~ x1 + x2, data = dat)
+mod.lm1 <- lm(mpg ~ cyl + disp, data = mtcars)
 std.coef(mod.lm1)
 
 # Example 2: Print all standardized coefficients
 std.coef(mod.lm1, print = "all")
 
 # Example 3: Regression model with dichotomous predictor
-mod.lm2 <- lm(y ~ x3, data = dat)
+mod.lm2 <- lm(mpg ~ vs, data = mtcars)
 std.coef(mod.lm2)
 
 # Example 4: Regression model with continuous and dichotomous predictors
-mod.lm3 <- lm(y ~ x1 + x2 + x3, data = dat)
+mod.lm3 <- lm(mpg ~ disp + vs, data = mtcars)
 std.coef(mod.lm3)
 
 # Example 5: Regression model with continuous predictors and an interaction term
-mod.lm4 <- lm(y ~ x1*x2, data = dat)
+mod.lm4 <- lm(mpg ~ cyl*disp, data = mtcars)
+std.coef(mod.lm4)
 
 # Example 6: Regression model with a quadratic term
-mod.lm5 <- lm(y ~ x1 + I(x1^2), data = dat)
+mod.lm5 <- lm(mpg ~ cyl + I(cyl^2), data = mtcars)
 std.coef(mod.lm5)
 
-#-------------------------------------------------------------------------------
-# Example 7: Write Results into an Excel file
-
 \dontrun{
-mod.lm1 <- lm(y ~ x1 + x2, data = dat)
+#----------------------------------------------------------------------------
+# Example 7: Write Results into a Text of Excel file
 
-std.coef(mod.lm1, write = "Std_Coef.xlsx", output = FALSE)
+# Example 7a: Text file
+std.coef(mod.lm1, write = "Std_Coef.txt", output = FALSE, check = FALSE)
 
-result <- std.coef(mod.lm1, output = FALSE)
-write.result(result, "Std_Coef.xlsx")
-}
+# Example 7b: Excel file
+std.coef(mod.lm1, write = "Std_Coef.xlsx", output = FALSE, check = FALSE)}
 }
 \references{
 Muthen, B. O., Muthen, L. K., & Asparouhov, T. (2016). \emph{Regression and mediation analysis using Mplus}.

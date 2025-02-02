@@ -9,6 +9,9 @@
 #' for quantifying \strong{influence}.
 #'
 #' @param model  a fitted model of class \code{"lm"}.
+#' @param append logical: if \code{TRUE} (default), statistical measures for
+#'               leverage, distance, and influence are appended to the data frame
+#'               in \code{model$model}.
 #' @param check  logical: if \code{TRUE} (default), argument specification is checked.
 #' @param ...    further arguments to be passed to or from methods.
 #'
@@ -33,28 +36,27 @@
 #'
 #' @return
 #' Returns a data frame with following entries:
-#' \tabular{ll}{
-#' \code{idout} \tab ID variable \cr
-#' \code{mahal} \tab Mahalanobis distance \cr
-#' \code{hat} \tab hat values \cr
-#' \code{rstand} \tab standardized leverage-corrected residuals \cr
-#' \code{rstud} \tab studentized leverage-corrected residuals \cr
-#' \code{cook} \tab Cookꞌs distance \cr
-#' \code{Intercept.dfb} \tab DFBetas for the intercept \cr
-#' \code{pred1.dfb} \tab DFBetas for the slope of the predictor 'pred1' \cr
-#' \code{....dfb} \tab DFBetas for the slope of the predictor '...' \cr
-#' }
+#'
+#' \item{\code{idout}}{ID variabl}
+#' \item{\code{mahal}}{Mahalanobis distance}
+#' \item{\code{hat}}{hat values}
+#' \item{\code{rstand}}{standardized leverage-corrected residuals}
+#' \item{\code{rstud}}{studentized leverage-corrected residuals}
+#' \item{\code{cook}}{Cookꞌs distance}
+#' \item{\code{Intercept.dfb}}{DFBetas for the intercept}
+#' \item{\code{pred1.dfb}}{DFBetas for the slope of the predictor 'pred1'}
+#' \item{\code{....dfb}}{DFBetas for the slope of the predictor '...'}
 #'
 #' @export
 #'
 #' @examples
-#' # Example 1: Regression model and measures for leverage, distance, and influence
-#' mod.lm <- lm(mpg ~ cyl + disp + hp, data = mtcars)
-#' check.outlier(mod.lm)
+#' # Example 1: Statistical measures for leverage, distance, and influence
+#' check.outlier(lm(mpg ~ cyl + disp + hp, data = mtcars))
 #'
-#' # Merge result table with the data
-#' dat1 <- cbind(mtcars, check.outlier(mod.lm))
-check.outlier <- function(model, check = TRUE, ...) {
+#' # Example 2: Append statistical measures to the mtcars data frame
+#' cbind(mtcars,
+#'       check.outlier(lm(mpg ~ cyl + disp + hp, data = mtcars), append = FALSE))
+check.outlier <- function(model, append = TRUE, check = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
@@ -69,8 +71,12 @@ check.outlier <- function(model, check = TRUE, ...) {
   # Check if input 'model' is not 'lm'
   if (isTRUE(!inherits(model, "lm"))) { stop("Please specify an \"lm\" object for the argument 'model'.", call. = FALSE) }
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
+
+  # Check input 'append'
+  .check.input(logical = "append", envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -85,7 +91,7 @@ check.outlier <- function(model, check = TRUE, ...) {
   # Predictors
   mod.pred <- misty::chr.omit(mod.int.pred, "(Intercept)")
 
-  idout <- NULL
+  #idout <- NULL
 
   #_____________________________________________________________________________
   #
@@ -95,9 +101,7 @@ check.outlier <- function(model, check = TRUE, ...) {
   ## Leverage ####
 
   # Mahalanobis distance
-  mod.mahal <- mahalanobis(mod.dat[, mod.pred],
-                           center = colMeans(mod.dat[, mod.pred], na.rm = TRUE),
-                           cov = cov(mod.dat[, mod.pred], use = "pairwise.complete.obs"))
+  mod.mahal <- mahalanobis(mod.dat[, mod.pred], center = colMeans(mod.dat[, mod.pred], na.rm = TRUE), cov = cov(mod.dat[, mod.pred], use = "pairwise.complete.obs"))
 
   # Hat values
   mod.hat <- hatvalues(model)
@@ -118,24 +122,64 @@ check.outlier <- function(model, check = TRUE, ...) {
   mod.cook <- cooks.distance(model)
 
   # DfBetas
-  mod.dfbeta <- dfbetas(model)
-  colnames(mod.dfbeta) <- paste0(misty::chr.gsub(c("\\(", "\\)"), c("", ""), mod.int.pred), ".dfb")
+  mod.dfbeta <- setNames(as.data.frame(dfbetas(model)), nm = paste0(misty::chr.gsub(c("\\(", "\\)"), c("", ""), mod.int.pred), ".dfb"))
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Result table ####
 
-  result <- merge(data.frame(idout = row.names(mod.dat), mahal = mod.mahal),
-                  data.frame(idout = row.names(mod.dfbeta),
-                             hat = mod.hat, rstand = mod.rstand, rstud = mod.rstud, cook = mod.cook, mod.dfbeta),
-                  by = "idout", all.x = TRUE)
+  result <- merge(data.frame(idout = if (isTRUE(all(!is.na(suppressWarnings(as.numeric(row.names(mod.dat))))))) { as.numeric(row.names(mod.dat)) } else { row.names(mod.dat) }, mahal = mod.mahal),
+                  data.frame(idout = if (isTRUE(all(!is.na(suppressWarnings(as.numeric(row.names(mod.dfbeta))))))) { as.numeric(row.names(mod.dfbeta)) } else { row.names(mod.dfbeta) }, hat = mod.hat, rstand = mod.rstand, rstud = mod.rstud, cook = mod.cook, mod.dfbeta),
+                  by = "idout", sort = FALSE, all.x = TRUE)
 
   # Missing values
   if (isTRUE(length(model[[9L]]) != 0L)) {
 
-    result <- misty::df.sort(rbind(result,
-                                   data.frame(idout = unclass(model[[9L]]),
-                                              matrix(NA, ncol = ncol(result) - 1L, nrow = length(model[[9L]]),
-                                                     dimnames = list(NULL, colnames(result)[-1L])))), idout)
+    na <- model[[9L]]
+    insert <- sapply(colnames(result), function(z) z = NA)
+
+    idout <- result$idout
+    inerst.row <- names(na)
+
+    for (i in seq_along(na)) {
+
+      na.i <- seq(from = na[i], to = nrow(result))
+      result[na.i + 1L, ] <- result[na.i, ]
+      result[na[i], ] <- insert
+
+      idout[na.i + 1] <- idout[na.i]
+      idout[na[i]] <- inerst.row[i]
+
+    }
+
+    result$idout <- idout
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Append ####
+
+  if (isTRUE(append)) {
+
+    # Missing values
+    if (isTRUE(length(model[[9L]]) != 0L)) {
+
+      insert <- sapply(colnames(model$model), function(z) z = NA)
+
+      for (i in seq_along(na)) {
+
+        na.i <- seq(from = na[i], to = nrow(mod.dat))
+        mod.dat[na.i + 1L, ] <- mod.dat[na.i, ]
+        mod.dat[na[i], ] <- insert
+
+      }
+
+    }
+
+    object <- data.frame(idout = result$idout, mod.dat, result[, -grep("idout", colnames(result))], row.names = NULL)
+
+  } else {
+
+    object <- result
 
   }
 
@@ -143,6 +187,8 @@ check.outlier <- function(model, check = TRUE, ...) {
   #
   # Output ---------------------------------------------------------------------
 
-  return(result)
+  return(object)
 
 }
+
+#_______________________________________________________________________________

@@ -324,17 +324,15 @@ Jason Rights, Sonya Sterba, and Jessica Flake.
 }
 \examples{
 \dontrun{
+
 # Load misty, lme4, nlme, and ggplot2 package
-library(misty)
-library(lme4)
-library(nlme)
-library(ggplot2)
+libraries(misty, lme4, nlme, ggplot2)
 
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
 #----------------------------------------------------------------------------
-#'
+
 # Cluster mean centering, center() from the misty package
 Demo.twolevel$x2.c <- center(Demo.twolevel$x2, type = "CWC",
                              cluster = Demo.twolevel$cluster)
@@ -352,13 +350,13 @@ mod1b <- lme(y1 ~ x2.c + x2.b + w1, random = ~ 1 + x2.c | cluster, data = Demo.t
              method = "ML")
 
 #----------------------------------------------------------------------------
-#'
+
 # Example 1a: R-squared measures according to Rights and Sterba (2019)
 multilevel.r2(mod1a)
-#'
+
 # Example 1b: R-squared measures according to Rights and Sterba (2019)
 multilevel.r2(mod1b)
-#'
+
 # Example 1a: Write Results into a text file
 multilevel.r2(mod1a, write = "ML-R2.txt")
 

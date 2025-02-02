@@ -61,10 +61,10 @@
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' # Example 1a: Compute cluster means for 'y1' and expand to match the input 'y1'
+#' # Example 1: Compute cluster means for 'y1' and expand to match the input 'y1'
 #' cluster.scores(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' cluster.scores(y1, data = Demo.twolevel, cluster = "cluster")
 #'
 #' # Example 2: Compute standard deviation for each cluster
@@ -74,11 +74,11 @@
 #' # Example 3: Compute cluster means without expanding the vector
 #' cluster.scores(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, expand = FALSE)
 #'
-#' # Example 4a: Compute cluster means for 'y1' and 'y2' and append to 'Demo.twolevel'
+#' # Example 4: Compute cluster means for 'y1' and 'y2' and append to 'Demo.twolevel'
 #' cbind(Demo.twolevel,
 #'       cluster.scores(Demo.twolevel[, c("y1", "y2")], cluster = Demo.twolevel$cluster))
 #'
-#' # Example 4b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' cluster.scores(y1, y2, data = Demo.twolevel, cluster = "cluster")
 cluster.scores <- function(..., data = NULL, cluster,
                            fun = c("mean", "sum", "median", "var", "sd", "min", "max"),
@@ -95,9 +95,6 @@ cluster.scores <- function(..., data = NULL, cluster,
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
@@ -113,12 +110,11 @@ cluster.scores <- function(..., data = NULL, cluster,
 
   if (isTRUE(!is.null(data))) {
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+
     # Variable names
     var.names <- .var.names(..., data = data, check.chr = "a numeric vector, matrix, or data frame")
-
-    # Check if cluster variable is a character string and available in input 'data'
-    if (isTRUE(!is.character(cluster) || length(cluster) != 1L)) { stop("Please specify a character string for the argument 'cluster'.", call. = FALSE) }
-    if (isTRUE(!cluster %in% colnames(data))) { stop("Cluster variable specified in the argument 'cluster' was not found in 'data'.", call. = FALSE) }
 
     # Extract data
     x <- data[, var.names]
@@ -133,6 +129,9 @@ cluster.scores <- function(..., data = NULL, cluster,
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -160,16 +159,15 @@ cluster.scores <- function(..., data = NULL, cluster,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("expand", "append"),
+               m.character = list(fun = c("mean", "sum", "median", "var", "sd", "min", "max")), envir = environment(), input.check = check)
 
-  #----------------------------------------
-
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'x'
-    if (isTRUE(any(c(vapply(data.frame(x), mode, FUN.VALUE = character(1L)) != "numeric",
-                     vapply(data.frame(x), is.factor, FUN.VALUE = logical(1L)))))) {
+    if (isTRUE(any(c(vapply(data.frame(x), mode, FUN.VALUE = character(1L)) != "numeric", vapply(data.frame(x), is.factor, FUN.VALUE = logical(1L)))))) {
 
       if (isTRUE(is.null(dim(x)))) {
 
@@ -182,16 +180,6 @@ cluster.scores <- function(..., data = NULL, cluster,
       }
 
     }
-
-    # Check input 'fun'
-    if (isTRUE(!all(fun %in%  c("mean", "sum", "median", "var", "sd", "min", "max")))) {
-
-      stop("Character strings in the argument 'fun' dos not match with \"mean\", \"sum\", \"median\", \"var\", \"sd\", \"min\", or \"max\".", call. = FALSE)
-
-    }
-
-    # Check input 'expand'
-    if (isTRUE(!is.logical(expand))) { stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE) }
 
     # Check input 'name'
     if (isTRUE(!is.null(dim(x)))) {
@@ -274,15 +262,11 @@ cluster.scores <- function(..., data = NULL, cluster,
 
     if (isTRUE(expand)) {
 
-      object <- data.frame(vapply(x, misty::cluster.scores, cluster = cluster, fun = fun,
-                                  expand = expand, as.na = as.na, check = FALSE,
-                                  FUN.VALUE = double(nrow(x))))
+      object <- data.frame(vapply(x, misty::cluster.scores, cluster = cluster, fun = fun, expand = expand, as.na = as.na, check = FALSE, FUN.VALUE = double(nrow(x))))
 
     } else {
 
-      object <- data.frame(vapply(x, misty::cluster.scores, cluster = cluster, fun = fun,
-                                  expand = expand, as.na = as.na, check = FALSE,
-                                  FUN.VALUE = double(length(unique(cluster)))))
+      object <- data.frame(vapply(x, misty::cluster.scores, cluster = cluster, fun = fun, expand = expand, as.na = as.na, check = FALSE, FUN.VALUE = double(length(unique(cluster)))))
 
     }
 
@@ -334,3 +318,5 @@ cluster.scores <- function(..., data = NULL, cluster,
   return(object)
 
 }
+
+#_______________________________________________________________________________

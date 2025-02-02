@@ -424,7 +424,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Load data set "HolzingerSwineford1939" in the lavaan package
 #' data("HolzingerSwineford1939", package = "lavaan")
 #'
@@ -446,7 +445,7 @@
 #' # Example 1e: Alternative specification using the argument 'model'
 #' item.cfa(HolzingerSwineford1939, model = list(visual = c("x1", "x2", "x3")))
 #'
-#' # Example 1f: Alternative specification using the  'data' and 'model' argument
+#' # Example 1f: Alternative specification using the 'data' and 'model' argument
 #' item.cfa(., data = HolzingerSwineford1939, model = list(visual = c("x1", "x2", "x3")))
 #'
 #' #----------------------------------------------------------------------------
@@ -524,6 +523,7 @@
 #'
 #' lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 #'
+#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Write Results
 #'
@@ -531,11 +531,7 @@
 #' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.txt")
 #'
 #' # Example 9b: Write Results into a Excel file
-#' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.xlsx")
-#'
-#' result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
-#' write.result(result, "CFA.xlsx")
-#' }
+#' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.xlsx")}
 item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = FALSE,
                      meanstructure = TRUE, ident = c("marker", "var", "effect"),
                      parameterization = c("delta", "theta"), ordered = NULL, cluster = NULL,
@@ -557,9 +553,6 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   # Check if input 'model' is a character vector or list of character vectors
   if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
 
@@ -572,11 +565,11 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
 
     # Cluster variable
     if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
@@ -588,6 +581,10 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unlist(cluster) }
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -604,13 +601,19 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("hierarch", "meanstructure", "append", "output"),
+               numeric = list(mod.minval = 1L, resid.minval = 1L),
+               s.character = list(ident = c("marker", "var", "effect"),
+                                  parameterization = c("delta", "theta"),
+                                  estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML"),
+                                  missing = c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust")),
+               m.character = list(print = c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid")),
+               args = c("digits", "p.digits", "write2"),
+               package = "lavaan", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # R package lavaan
-    if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
 
     # Check input 'x'
     if (isTRUE(is.null(model) && ncol(data.frame(x)) < 3L)) { stop("Please specify at least three indicators for the measurement model in 'x'.", call. = FALSE) }
@@ -670,18 +673,6 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
 
     }
 
-    # Check input 'hierarch'
-    if (isTRUE(!is.logical(hierarch))) { stop("Please specify TRUE or FALSE for the argument 'hierarch'.", call. = FALSE) }
-
-    # Check input 'meanstructure'
-    if (isTRUE(!is.logical(meanstructure))) { stop("Please specify TRUE or FALSE for the argument 'meanstructure'.", call. = FALSE) }
-
-    # Check input 'ident'
-    if (isTRUE(!all(ident %in% c("marker", "var", "effect")))) { stop("Character string in the argument 'ident' does not match with \"marker\", \"var\", or \"effect\".", call. = FALSE) }
-
-    # Check input 'parameterization'
-    if (isTRUE(!all(parameterization %in% c("delta", "theta")))) { stop("Character string in the argument 'parameterization' does not match with \"delta\" or \"theta\".", call. = FALSE) }
-
     # Check input 'ordered'
     if (isTRUE(!is.null(ordered) && !is.logical(ordered))) {
 
@@ -707,33 +698,11 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
 
     }
 
-    #......
-    # Check input 'estimator'
-    if (isTRUE(!all(estimator %in% c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML")))) { stop("Character string in the argument 'estimator' does not match with \"ML\", \"MLM\", \"MLMV\", \"MLMVS\", \"MLF\", \"MLR\", \"GLS\", \"WLS\", \"DWLS\", \"WLSM\", \"WLSMV\", \"ULS\", \"ULSM\", \"ULSMV\", \"DLS\", or \"PML\".", call. = FALSE) }
-
-    # Check input 'missing'
-    if (isTRUE(!all(missing %in% c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust")))) { stop("Character string in the argument 'missing' does not match with \"listwise\", \"pairwise\", \"fiml\", \"two.stage\", \"robust.two.stage\", or \"doubly.robust\".", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid")))) { stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", \"modind\", or \"resid\".", call. = FALSE) }
-
     # Check input 'mod.minval'
     if (isTRUE(mod.minval <= 0L)) { stop("Please specify a value greater than 0 for the argument 'mod.minval'.", call. = FALSE) }
 
     ## Check input 'resid.minval'
     if (isTRUE(resid.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'resid.minval'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -796,6 +765,8 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
     }
 
   }
+
+  n.total <- nrow(x)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -1010,12 +981,23 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
   # Cases with missing on all variables
   if (isTRUE(missing %in% c("fiml", "two.stage", "robust.two.stage"))) {
 
-    x.na.prop <- misty::na.prop(x[, var])
-    if (any(x.na.prop == 1L)) {
+    misty::na.prop(x[, var]) |>
+      (\(y) if (isTRUE(any(y == 1L))) {
 
-      warning(paste("Data set contains", sum(x.na.prop == 1L), "cases with missing on all variables which were not included in the analysis."), call. = FALSE)
+        warning(paste("Data set contains", sum(y == 1L), "cases with missing on all variables which were not included in the analysis."), call. = FALSE)
 
-    }
+      })()
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data on the Cluster Variable ####
+
+  if (isTRUE(".cluster" %in% colnames(x) && any(is.na(x$.cluster)))) {
+
+    warning(paste0("Data contains missing values on the cluster variable, number of cases removed from the analysis: ", sum(is.na(x$.cluster))), call. = FALSE)
+
+    x <- x[!is.na(x$.cluster), ]
 
   }
 
@@ -1295,7 +1277,7 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
                                  ifelse(!is.null(cluster),
                                         length(unique(x[lavaan::lavInspect(model.fit, "case.idx"), ".cluster"])), 1L)),
                                ### Third column
-                               c(rep("", times = 14L), "Total", lavaan::lavInspect(model.fit, what = "norig"), ""),
+                               c(rep("", times = 14L), "Total", n.total, ""),
                                fix.empty.names = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1498,35 +1480,7 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
   #
   # Write Results --------------------------------------------------------------
 
-
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -1537,3 +1491,5 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

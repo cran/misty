@@ -39,17 +39,10 @@ package by Jeroen Ooms (2021).
 \examples{
 \dontrun{
 # Example 1: Write Excel file (.xlsx)
-dat <- data.frame(id = 1:5,
-                  gender = c(NA, 0, 1, 1, 0),
-                  age = c(16, 19, 17, NA, 16),
-                  status = c(1, 2, 3, 1, 4),
-                  score = c(511, 506, 497, 502, 491))
-
-write.xlsx(dat, file = "Excel.xlsx")
+write.xlsx(mtcars, file = "mtcars.xlsx")
 
 # Example 2: Write Excel file with multiple sheets (.xlsx)
-write.xlsx(list(cars = cars, mtcars = mtcars), file = "Excel_Sheets.xlsx")
-}
+write.xlsx(list(cars = cars, mtcars = mtcars), file = "Excel_Sheets.xlsx")}
 }
 \references{
 Jeroen O. (2021). \emph{writexl: Export Data Frames to Excel 'xlsx' Format}.

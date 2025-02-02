@@ -4,7 +4,7 @@
 \alias{df.move}
 \title{Move Variable(s) in a Data Frame}
 \usage{
-df.move(..., data = NULL, before = NULL, after = NULL, first = TRUE, check = FALSE)
+df.move(..., data = NULL, before = NULL, after = NULL, first = TRUE, check = TRUE)
 }
 \arguments{
 \item{...}{an expression indicating the variable names in \code{data} to

@@ -102,106 +102,33 @@ as well as moderate to larger samples(n > 30 in each sample) and with proportion
 Wald confidence intervals does not perform well unless the sample size is large (Fagerland, Lydersen & Laake, 2011).
 }
 \examples{
-dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
-                              1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2),
-                   group2 = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2,
-                              1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2),
-                   group3 = c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-                              1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2),
-                   x1 = c(0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, NA, 0, 0,
-                          1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0),
-                   x2 = c(0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1,
-                          1, 0, 1, 0, 1, 1, 1, NA, 1, 0, 0, 1, 1, 1),
-                   x3 = c(1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0,
-                          1, 0, 1, 1, 0, 1, 1, 1, 0, 1, NA, 1, 0, 1))
-
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Two-sample design
 
-# Example 1: Two-Sided 95% CI for x1 by group1
+# Example 1a: Two-Sided 95% CI for 'vs' by 'am'
 # Newcombes Hybrid Score interval
-ci.prop.diff(x1 ~ group1, data = dat1)
+ci.prop.diff(vs ~ am, data = mtcars)
 
-# Example 2: Two-Sided 95% CI for x1 by group1
+# Example 1b: Two-Sided 95% CI for 'vs' by 'am'
 # Wald CI
-ci.prop.diff(x1 ~ group1, data = dat1, method = "wald")
+ci.prop.diff(vs ~ am, data = mtcars, method = "wald")
 
-# Example 3: One-Sided 95% CI for x1 by group1
+# Example 1c: Two-Sided 95% CI for the difference in proportions
 # Newcombes Hybrid Score interval
-ci.prop.diff(x1 ~ group1, data = dat1, alternative = "less")
+ci.prop.diff(c(0, 1, 1, 0, 0, 1, 0, 1), c(1, 1, 1, 0, 0))
 
-# Example 4: Two-Sided 99% CI for x1 by group1
+#----------------------------------------------------------------------------
+# Paired-sample design
+
+dat.p <- data.frame(pre = c(0, 1, 1, 0, 1), post = c(1, 1, 0, 1, 1))
+
+# Example 2a: Two-Sided 95% CI for the difference in proportions 'pre' and 'post'
 # Newcombes Hybrid Score interval
-ci.prop.diff(x1 ~ group1, data = dat1, conf.level = 0.99)
+ci.prop.diff(dat.p$pre, dat.p$post, paired = TRUE)
 
-# Example 5: Two-Sided 95% CI for y1 by group1
-# Newcombes Hybrid Score interval, print results with 3 digits
-ci.prop.diff(x1 ~ group1, data = dat1, digits = 3)
-
-# Example 6: Two-Sided 95% CI for y1 by group1
-# Newcombes Hybrid Score interval, convert value 0 to NA
-ci.prop.diff(x1 ~ group1, data = dat1, as.na = 0)
-
-# Example 7: Two-Sided 95% CI for y1, y2, and y3 by group1
-# Newcombes Hybrid Score interval
-ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1)
-
-# Example 8: Two-Sided 95% CI for y1, y2, and y3 by group1
-# Newcombes Hybrid Score interval, listwise deletion for missing data
-ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, na.omit = TRUE)
-
-# Example 9: Two-Sided 95% CI for y1, y2, and y3 by group1
-# Newcombes Hybrid Score interval, analysis by group2 separately
-ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
-
-# Example 10: Two-Sided 95% CI for y1, y2, and y3 by group1
-# Newcombes Hybrid Score interval, analysis by group2 separately, sort by variables
-ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2,
-             sort.var = TRUE)
-
-# Example 11: Two-Sided 95% CI for y1, y2, and y3 by group1
-# split analysis by group2
-ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
-
-# Example 12: Two-Sided 95% CI for y1, y2, and y3 by group1
-# Newcombes Hybrid Score interval, analysis by group2 separately, split analysis by group3
-ci.prop.diff(cbind(x1, x2, x3) ~ group1, data = dat1,
-             group = dat1$group2, split = dat1$group3)
-
-#-----------------
-
-group1 <- c(0, 1, 1, 0, 0, 1, 0, 1)
-group2 <- c(1, 1, 1, 0, 0)
-
-# Example 13: Two-Sided 95% CI for the mean difference between group1 amd group2
-# Newcombes Hybrid Score interval
-ci.prop.diff(group1, group2)
-
-#-------------------------------------------------------------------------------
-# Paires-sample design
-
-dat2 <- data.frame(pre = c(0, 1, 1, 0, 1),
-                   post = c(1, 1, 0, 1, 1))
-
-# Example 14: Two-Sided 95% CI for the mean difference in x1 and x2
-# Newcombes Hybrid Score interval
-ci.prop.diff(dat2$pre, dat2$post, paired = TRUE)
-
-# Example 15: Two-Sided 95% CI for the mean difference in x1 and x2
+# Example 2b: Two-Sided 95% CI for the difference in proportions 'pre' and 'post'
 # Wald CI
-ci.prop.diff(dat2$pre, dat2$post, method = "wald", paired = TRUE)
-
-# Example 16: One-Sided 95% CI for the mean difference in x1 and x2
-# Newcombes Hybrid Score interval
-ci.prop.diff(dat2$pre, dat2$post, alternative = "less", paired = TRUE)
-
-# Example 17: Two-Sided 99% CI for the mean difference in x1 and x2
-# Newcombes Hybrid Score interval
-ci.prop.diff(dat2$pre, dat2$post, conf.level = 0.99, paired = TRUE)
-
-# Example 18: Two-Sided 95% CI for for the mean difference in x1 and x2
-# Newcombes Hybrid Score interval, print results with 3 digits
-ci.prop.diff(dat2$pre, dat2$post, paired = TRUE, digits = 3)
+ci.prop.diff(dat.p$pre, dat.p$post, method = "wald", paired = TRUE)
 }
 \references{
 Fagerland, M. W., Lydersen S., & Laake, P. (2011) Recommended confidence intervals for two independent binomial

@@ -161,9 +161,6 @@ lagged <- function(..., data = NULL, id = NULL, obs = NULL, day = NULL, lag = 1,
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -173,9 +170,11 @@ lagged <- function(..., data = NULL, id = NULL, obs = NULL, day = NULL, lag = 1,
 
   if (isTRUE(!is.null(data))) {
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+
     # Variable names
-    var.names <- .var.names(..., data = data, id = id, obs = obs, day = day, time = time,
-                            check.chr = "vector, matrix, or data frame")
+    var.names <- .var.names(..., data = data, id = id, obs = obs, day = day, time = time, check.chr = "vector, matrix, or data frame")
 
     # Extract variables
     x <- data[, var.names]
@@ -199,6 +198,9 @@ lagged <- function(..., data = NULL, id = NULL, obs = NULL, day = NULL, lag = 1,
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
     # Data, ID and time variables
     var.group <- .var.group(data = x, id = id, obs = obs, day = day, time = time)
@@ -238,8 +240,10 @@ lagged <- function(..., data = NULL, id = NULL, obs = NULL, day = NULL, lag = 1,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = "append",
+               numeric = list(lag = 1L),
+               s.character = list(units = c("secs", "mins", "hours", "days", "weeks")), envir = environment(), input.check = check)
 
   if (isTRUE(check)) {
 
@@ -255,22 +259,11 @@ lagged <- function(..., data = NULL, id = NULL, obs = NULL, day = NULL, lag = 1,
     # Check input 'time'
     if (isTRUE(!is.null(time) && !inherits(time, "POSIXct") && !inherits(time, "POSIXlt"))) { stop("Please specify a POSIXct or POSIXlt class for the argument 'time'.", call. = FALSE) }
 
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
     # Check input 'name'
-    if (isTRUE(all(name != ".lag"))) {
-
-      if (isTRUE(length(name) != ncol(as.data.frame(x)))) { stop("Length of the vector specified in 'name' does not match with the number of variables.", call. = FALSE) }
-
-    }
+    if (isTRUE(all(name != ".lag"))) { if (isTRUE(length(name) != ncol(as.data.frame(x)))) { stop("Length of the vector specified in 'name' does not match with the number of variables.", call. = FALSE) } }
 
     # Check input 'name.td'
-    if (isTRUE(all(name.td != ".td"))) {
-
-      if (isTRUE(length(name.td) != ncol(as.data.frame(x)))) { stop("Length of the vector specified in 'name.td' does not match with the number of variables.", call. = FALSE) }
-
-    }
+    if (isTRUE(all(name.td != ".td"))) { if (isTRUE(length(name.td) != ncol(as.data.frame(x)))) { stop("Length of the vector specified in 'name.td' does not match with the number of variables.", call. = FALSE) } }
 
   }
 
@@ -338,8 +331,7 @@ lagged <- function(..., data = NULL, id = NULL, obs = NULL, day = NULL, lag = 1,
 
     #...................
     ### Reassemble data frame ####
-    object <- data.frame(lagged = unsplit(lapply(res, function(x) x$x.lag), f = dat$id),
-                         timediff = unsplit(lapply(res, function(x) x$t.lag), f = dat$id))
+    object <- data.frame(lagged = unsplit(lapply(res, function(x) x$x.lag), f = dat$id), timediff = unsplit(lapply(res, function(x) x$t.lag), f = dat$id))
 
     if (all(is.na(object$timediff))) { object <- object$lagged }
 
@@ -354,8 +346,7 @@ lagged <- function(..., data = NULL, id = NULL, obs = NULL, day = NULL, lag = 1,
       object <- do.call("cbind", object)
 
       # Order variables
-      difftime.pos <- which(sapply(object, class) == "difftime")
-      object <- data.frame(object[, -difftime.pos], object[, difftime.pos])
+      object <- which(sapply(object, class) == "difftime") |> (\(y) data.frame(object[, -y], object[, y]) )()
 
     } else {
 
@@ -463,3 +454,5 @@ lagged <- function(..., data = NULL, id = NULL, obs = NULL, day = NULL, lag = 1,
   return(object)
 
 }
+
+#_______________________________________________________________________________

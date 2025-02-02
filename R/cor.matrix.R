@@ -108,13 +108,17 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{data} \tab data frame used for the current analysis \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{result} \tab result table \cr
-#' }
+#'
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame used for the current analysis}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{list with result tables, i.e., \code{cor} for the
+#'                      correlation matrix, \code{n} for a matrix with the sample
+#'                      sizes, \code{stat} for a matrix with the test statistics,
+#'                      \code{df} for a matrix with the degrees of freedom, and
+#'                      \code{p}-value for the matrix with the significance values
+#'                      (\emph{p}-values)}
 #'
 #' @note
 #' This function uses the \code{polychoric()} function in the \pkg{psych}
@@ -124,16 +128,16 @@
 #' @export
 #'
 #' @examples
-#' # Example 1a: Pearson product-moment correlation coefficient between 'Ozone' and 'Solar.R
+#' # Example 1: Pearson product-moment correlation coefficient between 'Ozone' and 'Solar.R
 #' cor.matrix(airquality[, c("Ozone", "Solar.R")])
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' cor.matrix(Ozone, Solar.R, data = airquality)
 #'
-#' # Example 2a: Pearson product-moment correlation matrix using pairwise deletion
+#' # Example 2: Pearson product-moment correlation matrix using pairwise deletion
 #' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")])
 #'
-#' # Example 2b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' cor.matrix(Ozone:Wind, data = airquality)
 #'
 #' # Example 3: Spearman's rank-order correlation matrix
@@ -160,23 +164,18 @@
 #' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], na.omit = TRUE,
 #'            print = "all", p.adj = "bonferroni")
 #'
-#' # Example 9a: Pearson product-moment correlation matrix for 'mpg', 'cyl', and 'disp'
+#' # Example 9: Pearson product-moment correlation matrix for 'mpg', 'cyl', and 'disp'
 #' # results for group "0" and "1" separately
 #' cor.matrix(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 #'
-#' # Example 9b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' cor.matrix(mpg:disp, data = mtcars, group = "vs")
 #'
-#' \dontrun{
 #' # Example 10a: Write Results into a text file
 #' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], print = "all", write = "Correlation.txt")
 #'
 #' # Example 10b: Write Results into a Excel file
 #' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], print = "all", write = "Correlation.xlsx")
-#'
-#' result <- cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], print = "all", output = FALSE)
-#' write.result(result, "Correlation.xlsx")
-#' }
 cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly"),
                        na.omit = FALSE, group = NULL, sig = FALSE, alpha = 0.05,
                        print = c("all", "cor", "n", "stat", "df", "p"),
@@ -195,9 +194,6 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -207,11 +203,11 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, group = group, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract variables
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, group = group, check.chr = "a matrix or data frame")]
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -223,6 +219,10 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    if (isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unlist(group) }
 
     # Data and group
     var.group <- .var.group(data = x, group = group)
@@ -236,9 +236,7 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data Frame ####
-
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
+  ## Grouping Variable ####
 
   # Convert 'group' into a vector
   if (isTRUE(!is.null(group))) { group <- unlist(group, use.names = FALSE) }
@@ -247,9 +245,13 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical =  c("na.omit", "sig", "continuity", "append", "output"),
+               s.character = list(method = c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly"), tri = c("both", "lower", "upper")),
+               m.character = list(print = c("all", "cor", "n", "stat", "df", "p")),
+               args = c("alpha", "p.adj", "digits", "p.digits"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'x'
@@ -264,12 +266,6 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
 
     }
 
-    # Check input 'method'
-    if (isTRUE(any(!method %in% c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly")))) { stop("Character string in the argument 'method' does not match with \"pearson\", \"spearman\", \"kendall-b\", \"kendall-c\", \"tetra\", or \"poly\".", call. = FALSE) }
-
-    # Check input 'na.omit'
-    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
-
     # Check input 'group'
     if (isTRUE(!is.null(group))) {
 
@@ -282,33 +278,6 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
       if (isTRUE(any(x.zero.var))) { stop(paste("Following variables specified in 'x' have zero variance in at least one of the groups specified in 'group': ", paste(names(which(apply(x.zero.var, 1, any))), collapse = ", ")), call. = FALSE) }
 
     }
-
-    # Check input 'sig'
-    if (isTRUE(!is.logical(sig))) { stop("Please specify TRUE or FALSE for the argument 'sig'.", call. = FALSE) }
-
-    # Check input 'alpha'
-    if (isTRUE(alpha >= 1L || alpha <= 0L)) { stop("Please specify a number between 0 and 1 for the argument 'alpha'.", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(any(!print %in% c("all", "cor", "n", "stat", "df", "p")))) { stop("Character string(s) in the argument 'print' does not match with \"all\", \"cor\", \"n\", \"stat\", \"df\", or \"p\".", call. = FALSE) }
-
-    # Check input 'tri'
-    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
-
-    # Check input 'p.adj'
-    if (isTRUE(any(!p.adj %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr")))) { stop("Character string in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
     # Check input 'x' for zero variance
     x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
@@ -353,7 +322,7 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Correlation coefficient ####
 
-  method <- ifelse(all(c("pearson", "spearman", "kendall-b", "kendall-c") %in% method), "pearson", method)
+  method <- ifelse(all(c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly") %in% method), "pearson", method)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print correlation, sample size or significance values ####
@@ -381,11 +350,11 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
 
     switch(method, "kendall-b" = {
 
-      stop("There are no degrees of freedom (df),  for testing the Kendall's Tau-b correlation coefficient.", call. = FALSE)
+      stop("There is no degrees of freedom (df) for testing the Kendall's Tau-b correlation coefficient.", call. = FALSE)
 
     }, "kendall-c" = {
 
-      stop("There are no degrees of freedom (df) for testing the Kendall-Stuart's Tau-c correlation coefficient.", call. = FALSE)
+      stop("There is no degrees of freedom (df) for testing the Kendall-Stuart's Tau-c correlation coefficient.", call. = FALSE)
 
     })
 
@@ -481,7 +450,6 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
       colnames(cor.mat) <- rownames(cor.mat) <- colnames(x)
 
     })
-
 
     #...................
     ### Sample size ####
@@ -585,14 +553,10 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
   object <- list(call = match.call(),
                  type = "cor.matrix",
                  data = x,
-                 args = list(method = method, na.omit = na.omit,
-                             sig = sig, alpha = alpha, print = print, tri = tri,
-                             p.adj = p.adj, continuity = continuity, digits = digits,
-                             p.digits = p.digits, as.na = as.na, write = write,
-                             append = append, check = check,voutput = output),
+                 args = list(method = method, na.omit = na.omit, sig = sig, alpha = alpha, print = print, tri = tri, p.adj = p.adj, continuity = continuity, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check,voutput = output),
                  result = if (isTRUE(!method %in% c("tetra", "poly"))) {
 
-                              list(cor = cor.mat, n = n.mat, stat = stat.mat, df = df.mat,p = p.mat)
+                             list(cor = cor.mat, n = n.mat, stat = stat.mat, df = df.mat,p = p.mat)
 
                            } else {
 
@@ -604,36 +568,9 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
 
   #_____________________________________________________________________________
   #
-  # Write results --------------------------------------------------------------
+  # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -644,3 +581,5 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

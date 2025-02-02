@@ -56,7 +56,6 @@ copied the function \code{combinations()} from the \code{gtools} package
 (Bolker, Warnes, & Lumley, 2022).
 }
 \examples{
-\dontrun{
 #----------------------------------------------------------------------------
 # Linear model
 
@@ -70,9 +69,10 @@ dominance(mod)
 # Example 1c: Dominance analysis, 'hp' predicted by 'mpg', 'cyl', and 'disp'
 dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]), out = "hp")
 
+\dontrun{
 # Example 1d: Write results into a text file
 dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]),
-                 write = "Dominance_Manual.txt")
+                 write = "Dominance_Manual.txt")}
 
 #----------------------------------------------------------------------------
 # Example 2: Structural equation modeling
@@ -156,10 +156,11 @@ dominance.manual(fit.cor$within)
 # Dominance analysis Between
 dominance.manual(fit.cor$cluster)
 
+\dontrun{
 #----------------------------------------------------------------------------
 # Example 5: Mplus
 #
-# In Mplus, the model-impied correlation matrix of the latent variables
+# In Mplus, the model-implied correlation matrix of the latent variables
 # can be requested by OUTPUT: TECH4 and imported into R by using the
 # MplusAuomtation package, for example:
 

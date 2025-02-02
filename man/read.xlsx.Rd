@@ -87,6 +87,7 @@ by Hadley Wickham and Jennifer Bryan (2019) to read an Excel file (.xlsx).
 }
 \examples{
 \dontrun{
+
 # Example 1: Read Excel file (.xlsx)
 read.xlsx("data.xlsx")
 

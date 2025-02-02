@@ -258,19 +258,17 @@
 #' @export
 #'
 #' @examples
-#' # Example 1a: Perform Little's MCAR test and Jamshidian and Jalalꞌs approach
+#' # Example 1: Perform Little's MCAR test and Jamshidian and Jalalꞌs approach
 #' na.test(airquality)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument,
+#' # Alternative specification using the 'data' argument,
 #' na.test(., data = airquality)
 #'
 #' # Example 2: Perform Jamshidian and Jalalꞌs approach
 #' na.test(airquality, print = "jamjal")
 #'
-#' \dontrun{
 #' # Example 3: Write results into a text file
 #' na.test(airquality, write = "NA_Test.txt")
-#' }
 na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
                     impdat = NULL, delete = 6, method = c("npar", "normal"),
                     m = 20, seed = 123, nrep = 10000, n.min = 30,
@@ -288,9 +286,6 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -300,11 +295,11 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, check.chr = "data frame")]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -313,6 +308,9 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
   }
 
@@ -327,14 +325,18 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## All Missing ####
 
-  prop.na <- misty::na.prop(x)
-  if (isTRUE(any(prop.na == 1L))) {
+  x <- misty::na.prop(x) |>
+    (\(y) if (isTRUE(any(y == 1L))) {
 
-    x <- x[-which(prop.na == 1L), ]
+      warning("Cases with missing on all variables were removed from the analysis: ", sum(y == 1L), call. = FALSE)
 
-    warning(sum(prop.na == 1L), " cases with missing on all variables were removed from the analysis.", call. = FALSE)
+      return(x[-which(y == 1L), ])
 
-  }
+    } else {
+
+      return(x)
+
+    })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## As data matrix ####
@@ -346,27 +348,25 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("append", "output"),
+               numeric = list(delete = 1L, m = 1L, seed = 1L, nrep = 1L, n.min = 1L, alpha = 1L),
+               s.character = list(method = c("npar", "normal"), pool = c("m", "med", "min", "max", "random")),
+               m.character = list(print = c("all", "little", "jamjal")),
+               args = c("digits", "p.digits", "alpha", "write1"),
+               package = "mvnmle", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # No missing values
     if (isTRUE(all(!is.na(x.matrix)))) { stop("There are no missing values (NA) in the matrix or data frame specified in 'x'.", call. = FALSE) }
 
     # Variables with completely missing
-    all.na <- apply(x.matrix, 2L, function(y) all(is.na(y)))
-    if (isTRUE(any(all.na))) { stop(paste("Following variables are completely missing:", paste(names(all.na)[which(all.na)], collapse = ", ")), call. = FALSE) }
+    apply(x.matrix, 2L, function(y) all(is.na(y))) |> (\(y) if (isTRUE(any(y))) { stop(paste("Following variables are completely missing:", paste(names(y)[which(y)], collapse = ", ")), call. = FALSE) })()
 
     # Variables without variance
-    var.0 <- apply(x.matrix, 2L, function(y) var(y, na.rm = TRUE) == 0L)
-    if (isTRUE(any(var.0))) { stop(paste("Following variables have no variance:", paste(names(var.0)[which(var.0)], collapse = ", ")), call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "little", "jamjal")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"little\", or \"jamjal\".", call. = FALSE) }
-
-    # R package 'mvnmle'
-    if (isTRUE(print %in% c("all", "little"))) { if (isTRUE(!nzchar(system.file(package = "mvnmle")))) { stop("Package \"mvnmle\" is needed for this function, please install the package.", call. = FALSE) } }
+    apply(x.matrix, 2L, function(y) var(y, na.rm = TRUE) == 0L) |> (\(y) if (isTRUE(any(y))) { stop(paste("Following variables have no variance:", paste(names(y)[which(y)], collapse = ", ")), call. = FALSE) })()
 
     # Check input 'impdat'
     if (isTRUE(!is.null(impdat))) {
@@ -385,9 +385,6 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
     # Check input 'delete'
     if (isTRUE(delete %% 1L != 0L || delete < 0L || delete < 2L)) { stop("Please specify a positive integer number greater than 2 for the argument 'delete'.", call. = FALSE) }
 
-    # Check input 'method'
-    if (isTRUE(!all(method  %in% c("npar", "normal")))) { stop("Character string in the argument 'method' does not match with \"npar\", or \"normal\".", call. = FALSE) }
-
     # Check input 'm'
     if (isTRUE(m %% 1L != 0L || m < 0L || m < 1L)) { stop("Please specify a positive integer number for the argument 'm'.", call. = FALSE) }
 
@@ -396,27 +393,6 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
 
     # Check input 'n.min'
     if (isTRUE(n.min %% 1L != 0L || n.min < 0L || n.min < 1L)) { stop("Please specify a positive integer number for the argument 'n.min'.", call. = FALSE) }
-
-    # Check input 'pool'
-    if (isTRUE(!all(pool %in% c("m", "med", "min", "max", "random")))) { stop("Character string in the argument 'pool' does not match with \"m\", \"med\", \"min\", \"max\", or \"random\".", call. = FALSE) }
-
-    # Check input 'alpha'
-    if (isTRUE(alpha <= 0L || alpha >= 1L)) { stop("Please specify a value between 0 aund 1 for the argument 'alpha'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -546,3 +522,5 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

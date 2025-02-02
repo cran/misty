@@ -83,39 +83,9 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check',
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Package haven installed?
-    if (isTRUE(!requireNamespace("haven", quietly = TRUE))) { stop("Package \"haven\" is needed for this function to work, please install it.", call. = FALSE ) }
-
-    # Check input 'use.value.labels'
-    if (isTRUE(!is.logical(use.value.labels))) { stop("Please specify TRUE or FALSE for the argument 'use.value.labels'.", call. = FALSE) }
-
-    # Check input 'use.missings'
-    if (isTRUE(!is.logical(use.missings))) { stop("Please specify TRUE or FALSE for the argument 'use.missings'.", call. = FALSE) }
-
-    # Check input 'formats'
-    if (isTRUE(!is.logical(formats))) { stop("Please specify TRUE or FALSE for the argument 'formats'.", call. = FALSE) }
-
-    # Check input 'label'
-    if (isTRUE(!is.logical(label))) { stop("Please specify TRUE or FALSE for the argument 'label'.", call. = FALSE) }
-
-    # Check input 'labels'
-    if (isTRUE(!is.logical(labels))) { stop("Please specify TRUE or FALSE for the argument 'labels'.", call. = FALSE) }
-
-    # Check input 'missing'
-    if (isTRUE(!is.logical(missing))) { stop("Please specify TRUE or FALSE for the argument 'missing'.", call. = FALSE) }
-
-    # Check input 'widths'
-    if (isTRUE(!is.logical(widths))) { stop("Please specify TRUE or FALSE for the argument 'widths'.", call. = FALSE) }
-
-    # Check input 'as.data.frame'
-    if (isTRUE(!is.logical(as.data.frame))) { stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("use.value.labels", "use.missings", "formats", "label", "labels", "missing", "widths", "as.data.frame"),
+               character = list(file = 1L), package = "haven", envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -253,3 +223,5 @@ read.sav <- function(file, use.value.labels = FALSE, use.missings = TRUE, format
   return(object)
 
 }
+
+#_______________________________________________________________________________

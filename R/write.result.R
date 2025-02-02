@@ -4,13 +4,14 @@
 #' into an Excel file.
 #'
 #' Currently the function supports result objects from the function
-#' \code{blimp.bayes}, \code{cor.matrix}, \code{crosstab}, \code{descript}, \code{dominance.manual},
-#' \code{dominance}, \code{effsize}, \code{freq}, \code{item.alpha}, \code{item.cfa},
-#' \code{item.invar}, \code{item.omega}, \code{result.lca}, \code{mplus.bayes},
-#' \code{multilevel.cfa}, \code{multilevel.cor}, \code{multilevel.descript},
-#' \code{multilevel.fit}, \code{multilevel.invar}, \code{multilevel.omega},
-#' \code{na.coverage}, \code{na.descript}, \code{na.pattern}, \code{robust.coef},
-#' and \code{std.coef}.
+#' \code{blimp.bayes}, \code{ci.cor}, \code{\link{ci.mean}}, \code{\link{ci.median}},
+#' \code{\link{ci.prop}}, \code{\link{ci.var}}, \code{\link{ci.sd}}, \code{cor.matrix},
+#' \code{crosstab}, \code{descript}, \code{dominance.manual}, \code{dominance},
+#' \code{effsize}, \code{freq}, \code{item.alpha}, \code{item.cfa}, \code{item.invar},
+#' \code{item.omega}, \code{result.lca}, \code{mplus.bayes}, \code{multilevel.cfa},
+#' \code{multilevel.cor}, \code{multilevel.descript}, \code{multilevel.fit},
+#' \code{multilevel.invar}, \code{multilevel.omega}, \code{na.coverage},
+#' \code{na.descript}, \code{na.pattern}, \code{robust.coef}, and \code{std.coef}.
 #'
 #' @param x          misty object (\code{misty.object}) resulting from a misty
 #'                   function supported by the \code{write.result} function (see
@@ -35,18 +36,21 @@
 #' @param ess.digits  an integer value indicating the number of decimal places
 #'                    to be used for displaying effective sample sizes.
 #' @param mcse.digits an integer value indicating the number of decimal places
-#'                    to be used for displaying monte carlo standard errors.
-#' @param check     logical: if \code{TRUE} (default), argument specification is
-#'                  checked.
+#'                    to be used for displaying Monte Carlo standard errors.
+#' @param check       logical: if \code{TRUE} (default), argument specification
+#'                    is checked.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{descript}},
-#' \code{\link{dominance.manual}}, \code{\link{dominance}}, \code{\link{effsize}},
-#' \code{\link{freq}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
-#' \code{\link{item.invar}}, \code{\link{item.omega}}, \code{\link{result.lca}},
+#' \code{\link{blimp.bayes}}, \code{\link{ci.cor}}, \code{\link{ci.mean}},
+#' \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
+#' \code{\link{ci.sd}}, \code{\link{cor.matrix}},
+#' \code{\link{crosstab}}, \code{\link{descript}}, \code{\link{dominance.manual}},
+#' \code{\link{dominance}}, \code{\link{effsize}}, \code{\link{freq}},
+#' \code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.invar}},
+#' \code{\link{item.omega}}, \code{\link{result.lca}},
 #' \code{\link{mplus.bayes}}, \code{\link{multilevel.cfa}},
 #' \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}},
 #' \code{\link{multilevel.fit}}, \code{\link{multilevel.invar}},
@@ -58,7 +62,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Example 1: item.cfa() function
 #'
@@ -77,7 +80,6 @@
 #' result <- multilevel.descript(y1:y3, data = Demo.twolevel, cluster = "cluster",
 #'                               output = FALSE)
 #' write.result(result, "Multilevel_Descript.xlsx")
-#' }
 write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
                          digits = x$args$digits, p.digits = x$args$p.digits, icc.digits = x$args$icc.digits,
                          r.digits = x$args$r.digits, ess.digits = x$args$ess.digits, mcse.digits = x$args$mcse.digits,
@@ -97,36 +99,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   if (isTRUE(!inherits(x, "misty.object"))) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is supported by the function
-  if (isTRUE(!x$type %in% c("blimp.bayes", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "result.lca", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "robust.coef", "std.coef"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
-
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  #_____________________________________________________________________________
-  #
-  # Input Check ----------------------------------------------------------------
-
-  if (isTRUE(check)) {
-
-    # Check input 'digits'
-    if (isTRUE(!is.null(digits))) { if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'", call. = FALSE) } }
-
-    # Check input 'p.digits'
-    if (isTRUE(!is.null(p.digits))) { if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'", call. = FALSE) } }
-
-    # Check input 'icc.digits'
-    if (isTRUE(!is.null(icc.digits))) { if (isTRUE(icc.digits %% 1L != 0L || icc.digits < 0L)) { stop("Specify a positive integer number for the argument 'icc.digits'", call. = FALSE) } }
-
-    # Check input 'r.digits'
-    if (isTRUE(!is.null(r.digits))) { if (isTRUE(r.digits %% 1L != 0L || r.digits < 0L)) { stop("Specify a positive integer number for the argument 'r.digits'", call. = FALSE) } }
-
-    # Check input 'ess.digits'
-    if (isTRUE(!is.null(ess.digits))) { if (isTRUE(ess.digits %% 1L != 0L || ess.digits < 0L)) { stop("Specify a positive integer number for the argument 'ess.digits'", call. = FALSE) } }
-
-    # Check input 'mcse.digits'
-    if (isTRUE(!is.null(mcse.digits))) { if (isTRUE(mcse.digits %% 1L != 0L || mcse.digits < 0L)) { stop("Specify a positive integer number for the argument 'mcse.digits'", call. = FALSE) } }
-
-  }
+  if (isTRUE(!x$type %in% c("blimp.bayes", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "result.lca", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "robust.coef", "std.coef"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -249,6 +222,826 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ## Write Object ####
 
     if (isTRUE(!is.null(note))) { write.object <- list(Summary = write.object, Note = note) }
+
+  #_____________________________________________________________________________
+  #
+  # Confidence Interval for the Correlation Coefficient, ci.cor() --------------
+  }, ci.cor = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No grouping ####
+
+    if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+      #...................
+      ### Remove Duplicated Values ####
+
+      write.object[duplicated(write.object$var1) , "var1"] <- ""
+
+      #...................
+      ### Column Names ####
+
+      switch(x$args$method, "pearson" = {
+
+        colnames(write.object) <- c("Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "r", "Low", "Upp")
+
+      }, "spearman" = {
+
+        colnames(write.object) <- c("Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "rs", "Low", "Upp")
+
+      }, "kendall-b" = {
+
+        colnames(write.object) <- c("Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-b", "Low", "Upp")
+
+      }, "kendall-c" = {
+
+        colnames(write.object) <- c("Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-c", "Low", "Upp")
+
+      })
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping ####
+
+    } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+      #...................
+      ### Format ####
+
+      # Remove duplicated values
+      write.object[duplicated(paste(write.object$group, write.object$var1)) , "var1"] <- ""
+      write.object[duplicated(write.object$group) , "group"] <- ""
+
+      #...................
+      ### Column Names ####
+
+      switch(x$args$method, "pearson" = {
+
+        colnames(write.object) <- c("Group", "Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "r", "Low", "Upp")
+
+      }, "spearman" = {
+
+        colnames(write.object) <- c("Group", "Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "rs", "Low", "Upp")
+
+      }, "kendall-b" = {
+
+        colnames(write.object) <- c("Group", "Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-b", "Low", "Upp")
+
+      }, "kendall-c" = {
+
+        colnames(write.object) <- c("Group", "Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-c", "Low", "Upp")
+
+      })
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Split ####
+
+    } else if (isTRUE(!is.null(x$data$split))) {
+
+      #...................
+      ### No Grouping ####
+
+      if (isTRUE(is.null(x$data$group))) {
+
+        for (i in names(write.object)) {
+
+          #### Round ####
+          write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+          #### Remove Duplicated Values ####
+          write.object[[i]][duplicated(write.object[[i]]$var1) , "var1"] <- ""
+
+          #### Column Names ####
+          switch(x$args$method, "pearson" = {
+
+            colnames(write.object[[i]]) <- c("Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "r", "Low", "Upp")
+
+          }, "spearman" = {
+
+            colnames(write.object[[i]]) <- c("Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "rs", "Low", "Upp")
+
+          }, "kendall-b" = {
+
+            colnames(write.object[[i]]) <- c("Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-b", "Low", "Upp")
+
+          }, "kendall-c" = {
+
+            colnames(write.object[[i]]) <- c("Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-c", "Low", "Upp")
+
+          })
+
+        }
+
+      #...................
+      ### Grouping ####
+
+      } else {
+
+        for (i in names(write.object)) {
+
+          #### Round ####
+          write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+          #### Remove Duplicated Values ####
+          write.object[[i]][duplicated(paste(write.object[[i]]$group, write.object$var1)) , "var1"] <- ""
+          write.object[[i]][duplicated(write.object[[i]]$group) , "group"] <- ""
+
+          #### Column Names ####
+          switch(x$args$method, "pearson" = {
+
+            colnames(write.object[[i]]) <- c("Group", "Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "r", "Low", "Upp")
+
+          }, "spearman" = {
+
+            colnames(write.object[[i]]) <- c("Group", "Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "rs", "Low", "Upp")
+
+          }, "kendall-b" = {
+
+            colnames(write.object[[i]]) <- c("Group", "Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-b", "Low", "Upp")
+
+          }, "kendall-c" = {
+
+            colnames(write.object[[i]]) <- c("Group", "Variable 1", "Variable 2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-c", "Low", "Upp")
+
+          })
+
+        }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note ####
+
+    #...................
+    ### No Bootstrapping ####
+
+    if (isTRUE(x$args$boot == "none")) {
+
+      note <- data.frame(c("Correlation Coefficient:", "Alternative Hypothesis:", "Confidence Level:", "Adjustment Method:", "Standard Error:"),
+                         c(switch(x$args$method,
+                                  "pearson" = "Pearson product-moment correlation coefficient",
+                                  "spearman" = "Spearman's rank-order correlation coefficient",
+                                  "kendall-b" = "Kendall's Tau-b correlation coefficient",
+                                  "kendall-c" = "Kendall-Stuart's Tau-c correlation coefficient"),
+                           x$args$alternative, x$args$conf.level,
+                           switch(x$args$adjust,
+                                  "none" = "Without non-normality adjustment",
+                                  "joint" = "Non-normality adjustment via sample joint moments method",
+                                  "approx" = "Non-normality adjustment via approximate distribution method"),
+                           switch(x$args$se,
+                                  "fisher" = "Fisher (1921) standard error",
+                                  "fieller" = "Fieller et al. (1957) standard error",
+                                  "bonett" = "Bonett and Wright (2000) standard error",
+                                  "rin" = "Rank-based inverse normal transformation")),
+                         fix.empty.names = FALSE)
+
+    #...................
+    ### Bootstrapping ####
+
+    } else {
+
+      note <- data.frame(c("Correlation Coefficient:", "Alternative Hypothesis:", "Confidence Level:", "Bootstrap Method:", "Replications:"),
+                         c(switch(x$args$method,
+                                  "pearson" = "Pearson product-moment correlation coefficient",
+                                  "spearman" = "Spearman's rank-order correlation coefficient",
+                                  "kendall-b" = "Kendall's Tau-b correlation coefficient",
+                                  "kendall-c" = "Kendall-Stuart's Tau-c correlation coefficient"),
+                           x$args$alternative, x$args$conf.level,
+                           switch(x$args$boot,
+                                  "norm" = "Bias-corrected normal approximation bootstrap CI",
+                                  "basic" = "Basic bootstrap CI",
+                                  "perc" = "Percentile bootstrap CI",
+                                  "bc" = "Bias-corrected (BC) percentile bootstrap CI",
+                                  "bca" = "Bias-corrected and accelerated (BCa) bootstrap CI"),
+                           x$args$R),
+                         fix.empty.names = FALSE)
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
+
+    if (isTRUE(is.data.frame(write.object))) {
+
+      write.object <- list("CI Cor" = write.object, Note = note)
+
+    } else {
+
+      write.object <- append(write.object, list(Note = note))
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Confidence Interval for the Mean, ci.mean() --------------------------------
+  }, ci.mean = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No grouping ####
+
+    if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+      #...................
+      ### Column Names ####
+
+      colnames(write.object) <- c("Variable", "n", "nNA", "pNA", "SD", "Skew", "Kurt", "M", "Low", "Upp")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping ####
+
+    } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+      #...................
+      ### Remove Duplicated Values ####
+
+      write.object[duplicated(write.object$group) , "group"] <- ""
+
+      #...................
+      ### Column Names ####
+
+      colnames(write.object) <- c("Group", "Variable", "n", "nNA", "pNA", "SD", "Skew", "Kurt", "M", "Low", "Upp")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Split ####
+
+    } else if (isTRUE(!is.null(x$data$split))) {
+
+      #...................
+      ### No Grouping ####
+
+      if (isTRUE(is.null(x$data$group))) {
+
+        for (i in names(write.object)) {
+
+          #### Round ####
+          write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+          #### Column Names ####
+          colnames(write.object[[i]]) <- c("Variable", "n", "nNA", "pNA", "SD", "Skew", "Kurt", "M", "Low", "Upp")
+
+        }
+
+      #...................
+      ### Grouping ####
+
+      } else {
+
+        for (i in names(write.object)) {
+
+          #### Round ####
+          write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+          #### Remove Duplicated Values ####
+          write.object[[i]][duplicated(write.object[[i]]$group) , "group"] <- ""
+
+          #### Column Names ####
+          colnames(write.object[[i]]) <- c("Group", "Variable", "n", "nNA", "pNA", "SD", "Skew", "Kurt", "M", "Low", "Upp")
+
+        }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note Bootstrapping ####
+
+    if (isTRUE(x$args$boot != "none")) {
+
+      note <- data.frame(c("Alternative Hypothesis:", "Confidence Level:", "Bootstrap Method:", "Replications:"),
+                         c(x$args$alternative, x$args$conf.level,
+                           switch(x$args$boot,
+                                  "norm" = "Bias-corrected normal approximation bootstrap CI",
+                                  "basic" = "Basic bootstrap CI",
+                                  "stud" = "Studentized bootstrap CI",
+                                  "perc" = "Percentile bootstrap CI",
+                                  "bc" = "Bias-corrected (BC) percentile bootstrap CI",
+                                  "bca" = "Bias-corrected and accelerated (BCa) bootstrap CI"),
+                           x$args$R),
+                         fix.empty.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
+
+      if (isTRUE(is.data.frame(write.object))) {
+
+        write.object <- list("CI Mean" = write.object, Note = note)
+
+      } else {
+
+        write.object <- append(write.object, list(Note = note))
+
+      }
+
+    } else {
+
+      if (isTRUE(is.data.frame(write.object))) {
+
+        write.object <- list("CI Mean" = write.object)
+
+      }
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Confidence Interval for the Median, ci.median() ----------------------------
+  }, ci.median = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No grouping ####
+
+    if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+      #...................
+      ### Column Names ####
+
+      colnames(write.object) <- c("Variable", "n", "nNA", "pNA", "SD", "IQR", "Skew", "Kurt", "Med", "Low", "Upp")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping ####
+
+    } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+      #...................
+      ### Remove Duplicated Values ####
+
+      write.object[duplicated(write.object$group) , "group"] <- ""
+
+      #...................
+      ### Column Names ####
+
+      colnames(write.object) <- c("Group", "Variable", "n", "nNA", "pNA", "SD", "IQR", "Skew", "Kurt", "Med", "Low", "Upp")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Split ####
+
+    } else if (isTRUE(!is.null(x$data$split))) {
+
+      #...................
+      ### No Grouping ####
+
+      if (isTRUE(is.null(x$data$group))) {
+
+        for (i in names(write.object)) {
+
+          #### Round ####
+          write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+          #### Column Names ####
+          colnames(write.object[[i]]) <- c("Variable", "n", "nNA", "pNA", "SD", "IQR", "Skew", "Kurt", "Med", "Low", "Upp")
+
+        }
+
+      #...................
+      ### Grouping ####
+
+      } else {
+
+        for (i in names(write.object)) {
+
+          #### Round ####
+          write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+          #### Remove Duplicated Values ####
+          write.object[[i]][duplicated(write.object[[i]]$group) , "group"] <- ""
+
+          #### Column Names ####
+          colnames(write.object[[i]]) <- c("Group", "Variable", "n", "nNA", "pNA", "SD", "IQR", "Skew", "Kurt", "Med", "Low", "Upp")
+
+        }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note Bootstrapping####
+
+    if (isTRUE(x$args$boot != "none")) {
+
+      note <- data.frame(c("Alternative Hypothesis:", "Confidence Level:", "Bootstrap Method:", "Replications:"),
+                         c(x$args$alternative, x$args$conf.level,
+                           switch(x$args$boot,
+                                  "norm" = "Bias-corrected normal approximation bootstrap CI",
+                                  "basic" = "Basic bootstrap CI",
+                                  "stud" = "Studentized bootstrap CI",
+                                  "perc" = "Percentile bootstrap CI",
+                                  "bc" = "Bias-corrected (BC) percentile bootstrap CI",
+                                  "bca" = "Bias-corrected and accelerated (BCa) bootstrap CI"),
+                           x$args$R),
+                         fix.empty.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
+
+      if (isTRUE(is.data.frame(write.object))) {
+
+        write.object <- list("CI Median" = write.object, Note = note)
+
+      } else {
+
+        write.object <- append(write.object, list(Note = note))
+
+      }
+
+    } else {
+
+      if (isTRUE(is.data.frame(write.object))) {
+
+        write.object <- list("CI Median" = write.object)
+
+      }
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Confidence Interval for the Proportion, ci.prop() --------------------------
+  }, ci.prop = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No grouping ####
+
+    if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+      #...................
+      ### Column Names ####
+
+      colnames(write.object) <- c("Variable", "n", "nNA", "pNA", "Freq", "Prop", "Low", "Upp")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping ####
+
+    } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+      #...................
+      ### Remove Duplicated Values ####
+
+      write.object[duplicated(write.object$group) , "group"] <- ""
+
+      #...................
+      ### Column Names ####
+
+      colnames(write.object) <- c("Group", "Variable", "n", "nNA", "pNA", "Freq", "Prop", "Low", "Upp")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Split ####
+
+    } else if (isTRUE(!is.null(x$data$split))) {
+
+      #...................
+      ### No Grouping ####
+
+      if (isTRUE(is.null(x$data$group))) {
+
+        for (i in names(write.object)) {
+
+          #### Round ####
+          write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+          #### Column Names ####
+          colnames(write.object[[i]]) <- c("Variable", "n", "nNA", "pNA", "Freq", "Prop", "Low", "Upp")
+
+        }
+
+      #...................
+      ### Grouping ####
+
+      } else {
+
+        for (i in names(write.object)) {
+
+          #### Round ####
+          write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+          #### Remove Duplicated Values ####
+          write.object[[i]][duplicated(write.object[[i]]$group) , "group"] <- ""
+
+          #### Column Names ####
+          colnames(write.object[[i]]) <- c("Group", "Variable", "n", "nNA", "pNA", "Freq", "Prop", "Low", "Upp")
+
+        }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note Bootstrapping ####
+
+    if (isTRUE(x$args$boot != "none")) {
+
+      note <- data.frame(c("Alternative Hypothesis:", "Confidence Level:", "Bootstrap Method:", "Replications:"),
+                         c(x$args$alternative, x$args$conf.level,
+                           switch(x$args$boot,
+                                  "perc" = "Percentile bootstrap CI",
+                                  "bc" = "Bias-corrected (BC) percentile bootstrap CI",
+                                  "bca" = "Bias-corrected and accelerated (BCa) bootstrap CI"),
+                           x$args$R),
+                         fix.empty.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
+
+      if (isTRUE(is.data.frame(write.object))) {
+
+        write.object <- list("CI Prop" = write.object, Note = note)
+
+      } else {
+
+        write.object <- append(write.object, list(Note = note))
+
+      }
+
+    } else {
+
+      if (isTRUE(is.data.frame(write.object))) {
+
+        write.object <- list("CI Prop" = write.object)
+
+      }
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Confidence Interval for the Variance, ci.var() -----------------------------
+  }, ci.var = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No grouping ####
+
+    if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+      #...................
+      ### Column Names ####
+
+      colnames(write.object) <- c("Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "Var", "Low", "Upp")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping ####
+
+    } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+      #...................
+      ### Remove Duplicated Values ####
+
+      write.object[duplicated(write.object$group) , "group"] <- ""
+
+      #...................
+      ### Column Names ####
+
+      colnames(write.object) <- c("Group", "Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "Var", "Low", "Upp")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Split ####
+
+    } else if (isTRUE(!is.null(x$data$split))) {
+
+      #...................
+      ### No Grouping ####
+
+      if (isTRUE(is.null(x$data$group))) {
+
+        for (i in names(write.object)) {
+
+          #### Round ####
+          write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+          #### Column Names ####
+          colnames(write.object[[i]]) <- c("Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "Var", "Low", "Upp")
+
+        }
+
+      #...................
+      ### Grouping ####
+
+      } else {
+
+        for (i in names(write.object)) {
+
+          #### Round ####
+          write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+          #### Remove Duplicated Values ####
+          write.object[[i]][duplicated(write.object[[i]]$group) , "group"] <- ""
+
+          #### Column Names ####
+          colnames(write.object[[i]]) <- c("Group", "Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "Var", "Low", "Upp")
+
+        }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note Bootstrapping ####
+
+    if (isTRUE(x$args$boot != "none")) {
+
+      note <- data.frame(c("Alternative Hypothesis:", "Confidence Level:", "Bootstrap Method:", "Replications:"),
+                         c(x$args$alternative, x$args$conf.level,
+                           switch(x$args$boot,
+                                  "perc" = "Percentile bootstrap CI",
+                                  "bc" = "Bias-corrected (BC) percentile bootstrap CI",
+                                  "bca" = "Bias-corrected and accelerated (BCa) bootstrap CI"),
+                           x$args$R),
+                         fix.empty.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
+
+      if (isTRUE(is.data.frame(write.object))) {
+
+        write.object <- list("CI Var" = write.object, Note = note)
+
+      } else {
+
+        write.object <- append(write.object, list(Note = note))
+
+      }
+
+    } else {
+
+      if (isTRUE(is.data.frame(write.object))) {
+
+        write.object <- list("CI Var" = write.object)
+
+      }
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Confidence Interval for the Standard Deviation, ci.sd() --------------------
+  }, ci.sd = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No grouping ####
+
+    if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+      #...................
+      ### Column Names ####
+
+      colnames(write.object) <- c("Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "SD", "Low", "Upp")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping ####
+
+    } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      write.object[, !sapply(write.object, is.character)] <- sapply(write.object[, !sapply(write.object, is.character)], round, digits = digits)
+
+      #...................
+      ### Remove Duplicated Values ####
+
+      write.object[duplicated(write.object$group) , "group"] <- ""
+
+      #...................
+      ### Column Names ####
+
+      colnames(write.object) <- c("Group", "Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "SD", "Low", "Upp")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Split ####
+
+    } else if (isTRUE(!is.null(x$data$split))) {
+
+      #...................
+      ### No Grouping ####
+
+      if (isTRUE(is.null(x$data$group))) {
+
+        for (i in names(write.object)) {
+
+          ### Round ####
+          write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+          ### Column Names ####
+          colnames(write.object[[i]]) <- c("Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "SD", "Low", "Upp")
+
+        }
+
+      #...................
+      ### Grouping ####
+
+      } else {
+
+        for (i in names(write.object)) {
+
+          ### Round ####
+          write.object[[i]][, !sapply(write.object[[i]], is.character)] <- sapply(write.object[[i]][, !sapply(write.object[[i]], is.character)], round, digits = digits)
+
+          ### Remove Duplicated Values ####
+          write.object[[i]][duplicated(write.object[[i]]$group) , "group"] <- ""
+
+          ### Column Names ####
+          colnames(write.object[[i]]) <- c("Group", "Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "SD", "Low", "Upp")
+
+        }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note Bootstrapping ####
+
+    if (isTRUE(x$args$boot != "none")) {
+
+      note <- data.frame(c("Alternative Hypothesis:", "Confidence Level:", "Bootstrap Method:", "Replications:"),
+                         c(x$args$alternative, x$args$conf.level,
+                           switch(x$args$boot,
+                                  "perc" = "Percentile bootstrap CI",
+                                  "bc" = "Bias-corrected (BC) percentile bootstrap CI",
+                                  "bca" = "Bias-corrected and accelerated (BCa) bootstrap CI"),
+                           x$args$R),
+                         fix.empty.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
+
+      if (isTRUE(is.data.frame(write.object))) {
+
+        write.object <- list("CI Sd" = write.object, Note = note)
+
+      } else {
+
+        write.object <- append(write.object, list(Note = note))
+
+      }
+
+    } else {
+
+      if (isTRUE(is.data.frame(write.object))) {
+
+        write.object <- list("CI SD" = write.object)
+
+      }
+
+    }
 
   #_____________________________________________________________________________
   #
@@ -2304,22 +3097,22 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
       write.object$d <- apply(write.object$d, 2L, round, digits = digits)
 
       # Diagonals
-      diag(print.object$cor) <- NA
+      diag(write.object$cor) <- NA
       diag(write.object$d) <- NA
 
       # Lower and/or upper triangular
       switch(tri, "lower" = {
 
-        print.object$cor[upper.tri(print.object$cor)] <- NA
+        write.object$cor[upper.tri(write.object$cor)] <- NA
 
       }, "upper" = {
 
-        print.object$cor[lower.tri(print.object$cor)] <- NA
+        write.object$cor[lower.tri(write.object$cor)] <- NA
 
       })
 
-      write.object$cor <- data.frame(colnames(write.object$cor), write.object$cor, fix.empty.names = FALSE)
-      write.object$d <- data.frame(colnames(write.object$d), write.object$d, fix.empty.names = FALSE)
+      write.object$cor <- data.frame(rownames(write.object$cor), write.object$cor, fix.empty.names = FALSE)
+      write.object$d <- data.frame(rownames(write.object$d), write.object$d, fix.empty.names = FALSE)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Semi-Partial Correlation Coefficients ####
@@ -2743,3 +3536,5 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   return(invisible(write.object))
 
 }
+
+#_______________________________________________________________________________

@@ -145,11 +145,7 @@ item.alpha(dat, ordered = TRUE)
 result <- item.alpha(dat, write = "Alpha.txt")
 
 # Example 9b: Write results into a Excel file
-result <- item.alpha(dat, write = "Alpha.xlsx")
-
-result <- item.alpha(dat, output = FALSE)
-write.result(result, "Alpha.xlsx")
-}
+result <- item.alpha(dat, write = "Alpha.xlsx")}
 }
 \references{
 Chalmers, R. P. (2018). On misconceptions and the limited usefulness of ordinal alpha.

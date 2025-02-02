@@ -27,6 +27,7 @@ This function loads and attaches multiple add-on packages at once.
 }
 \examples{
 \dontrun{
+
 # Example 1: Load packages using the names of the packages
 misty::libraries(misty, lme4, lmerTest)
 

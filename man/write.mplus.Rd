@@ -40,6 +40,7 @@ the data set. Missing data will be coded as a single numeric value.
 }
 \examples{
 \dontrun{
+
 # Example 1: Write Mplus Data File and a Mplus input template
 write.mplus(mtcars)
 

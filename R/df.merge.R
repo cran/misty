@@ -48,7 +48,7 @@
 #' ddat <- data.frame(id = 4,
 #'                    y4 = 6)
 #'
-#' # Example 1: Merge adat, bdat, cdat, and data by the variable id
+#' # Example 1: Merge 'adat', 'bdat', 'cdat', and 'ddat' by the variable 'id'
 #' df.merge(adat, bdat, cdat, ddat, by = "id")
 #'
 #' # Example 2: Do not show output on the console
@@ -104,13 +104,14 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'by'
-  if (isTRUE(missing(by))) { stop("Please specify a character string for the argument 'by'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("all", "output"), envir = environment(), input.check = check)
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
+  # Additional checks
   if (isTRUE(check)) {
+
+    # Check input 'by'
+    if (isTRUE(missing(by))) { stop("Please specify a character string for the argument 'by'.", call. = FALSE) }
 
     # Same matching variable in each data frame
     if (isTRUE(any(vapply(df, function(y) !by %in% names(y), FUN.VALUE = logical(1L))))) { stop("Data frames do not have the same matching variable specified in 'by'.", call. = FALSE) }
@@ -123,12 +124,6 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
 
     # Duplicated variable names across the data frames
     if (isTRUE(anyDuplicated(unlist(lapply(df, names))[unlist(lapply(df, names)) != by]) != 0L)) { stop("There are duplicated variable names across data frames.", call. = FALSE) }
-
-    # Check input 'all'
-    if (isTRUE(!is.logical(all))) { stop("Please specify TRUE or FALSE for the argument 'all'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -155,20 +150,17 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
   match.cases <- Reduce(function(xx, yy) misty::df.rbind(xx, yy), x = lapply(var.match, function(xx) data.frame(matrix(xx, ncol = length(xx), dimnames = list(NULL, xx)), stringsAsFactors = FALSE)))
 
   # Number of pattern
-  match.cases.table <- table(apply(ifelse(is.na(match.cases), 0L, 1L), 2L, paste, collapse = " "))
-
-  match.cases.table <- match.cases.table[rev(order(as.numeric(gsub(" ", "", names(match.cases.table)))))]
+  match.cases.table <- table(apply(ifelse(is.na(match.cases), 0L, 1L), 2L, paste, collapse = " ")) |>
+    (\(y) y[rev(order(as.numeric(gsub(" ", "", names(y)))))])()
 
   match.info <- data.frame(n = unname(unclass(match.cases.table)),
                            matrix(unlist(strsplit(names(match.cases.table), " ")), byrow = TRUE, ncol = no.dfs,
                            dimnames = list(NULL, df.names)),
                            stringsAsFactors = FALSE)
 
-  # Match data frames
-  object <- Reduce(function(xx, yy) merge(xx, yy, by = by, all = all), x = df)
-
-  # Sort by matching variable
-  object <- object[order(object[, by]), ]
+  # Match data frames and sort by matching variable
+  object <- Reduce(function(xx, yy) merge(xx, yy, by = by, all = all), x = df) |>
+    (\(y) y[order(y[, by]), ])()
 
   #_____________________________________________________________________________
   #
@@ -212,3 +204,5 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
   return(object)
 
 }
+
+#_______________________________________________________________________________

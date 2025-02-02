@@ -29,6 +29,8 @@
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
+#' @name script.open
+#'
 #' @seealso
 #' \code{\link{script.new}}, \code{\link{script.save}}, \code{\link{script.copy}},
 #' \code{\link{setsource}}
@@ -81,16 +83,14 @@ script.open <- function(path, line = 1, col = 1, cursor = TRUE, run = FALSE,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("cursor", "run", "echo", "spaced"),
+               character = list(path = 1L),
+               numeric = list(line = 1L, col = 1L, max.length = 1L),
+               package = "rstudioapi", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # rstudioapi package
-    if (isTRUE(!nzchar(system.file(package = "rstudioapi")))) { stop("Package \"rstudioapi\" is needed for this function, please install the package.", call. = FALSE) }
-
-    # Check input 'path'
-    if (isTRUE(!is.character(path))) { stop("Please specify a character vector for the argument 'path'.", call. = FALSE) }
 
     # Check input 'line'
     if (isTRUE(line %% 1L != 0L || line < 0L)) { stop("Specify a positive integer number for the argument 'line'.", call. = FALSE) }
@@ -98,20 +98,8 @@ script.open <- function(path, line = 1, col = 1, cursor = TRUE, run = FALSE,
     # Check input 'col'
     if (isTRUE(col %% 1L != 0L || col < 0L)) { stop("Specify a positive integer number for the argument 'col'.", call. = FALSE) }
 
-    # Check input 'cursor'
-    if (isTRUE(!is.logical(cursor))) { stop("Please specify TRUE or FALSE for the argument 'cursor'.", call. = FALSE) }
-
-    # Check input 'run'
-    if (isTRUE(!is.logical(run))) { stop("Please specify TRUE or FALSE for the argument 'run'.", call. = FALSE) }
-
-    # Check input 'echo'
-    if (isTRUE(!is.logical(echo))) { stop("Please specify TRUE or FALSE for the argument 'echo'.", call. = FALSE) }
-
     # Check input 'max.length'
     if (isTRUE(max.length %% 1L != 0L || max.length < 0L)) { stop("Specify a positive integer number for the argument 'max.length'.", call. = FALSE) }
-
-    # Check input 'spaced'
-    if (isTRUE(!is.logical(spaced))) { stop("Please specify TRUE or FALSE for the argument 'spaced'.", call. = FALSE) }
 
   }
 
@@ -141,18 +129,8 @@ script.close <- function(save = FALSE, check = TRUE) {
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # rstudioapi package
-    if (isTRUE(!nzchar(system.file(package = "rstudioapi")))) { stop("Package \"rstudioapi\" is needed for this function, please install the package.", call. = FALSE) }
-
-    # Check input 'save'
-    if (isTRUE(!is.logical(save))) { stop("Please specify TRUE or FALSE for the argument 'save'.", call. = FALSE) }
-
-  }
+  # Check input
+  .check.input(logical = "save", package = "rstudioapi")
 
   #_____________________________________________________________________________
   #
@@ -187,22 +165,8 @@ script.save <- function(all = FALSE, check = TRUE) {
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'all'
-    if (isTRUE(!is.logical(all))) { stop("Please specify TRUE or FALSE for the argument 'all'.", call. = FALSE) }
-
-  }
-
-  #_____________________________________________________________________________
-  #
-  # Package --------------------------------------------------------------------
-
-  # rstudioapi package
-  if (isTRUE(!nzchar(system.file(package = "rstudioapi")))) { stop("Package \"rstudioapi\" is needed for this function, please install the package.", call. = FALSE) }
+  # Check input
+  .check.input(logical = "all", package = "rstudioapi")
 
   #_____________________________________________________________________________
   #
@@ -231,3 +195,5 @@ script.save <- function(all = FALSE, check = TRUE) {
   }
 
 }
+
+#_______________________________________________________________________________

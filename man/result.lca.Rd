@@ -8,7 +8,7 @@ result.lca(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p = TRUE,
            plot = FALSE, group.ind = TRUE, ci = TRUE, conf.level = 0.95, adjust = TRUE,
            axis.title = 7, axis.text = 7, levels = NULL, labels = NULL,
            ylim = NULL, ylab = "Mean Value", breaks = ggplot2::waiver(),
-           error.width = 0.1, legend.title = 7, legend.text = 7, legend.key.size = 0.4,
+           errorbar.width = 0.1, legend.title = 7, legend.text = 7, legend.key.size = 0.4,
            gray = FALSE, start = 0.15, end = 0.85, dpi = 600,
            width = "n.ind", height = 4, digits = 1, p.digits = 3,
            write = NULL, append = TRUE, check = TRUE, output = TRUE)
@@ -63,7 +63,7 @@ y-axis.}
 \item{breaks}{a numeric vector specifying the points at which tick-marks
 are drawn at the y-axis.}
 
-\item{error.width}{a numeric vector specifying the width of the error bars.
+\item{errorbar.width}{a numeric vector specifying the width of the error bars.
 By default, the width of the error bars is 0.1 plus
 number of classes divided by 30.}
 
@@ -182,6 +182,7 @@ The result summary table comprises following entries:
 }
 \examples{
 \dontrun{
+
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 

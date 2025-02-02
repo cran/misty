@@ -88,36 +88,16 @@ blimp.run <- function(target = getwd(), recursive = FALSE,
                       replace.out = c("always", "never", "modified"),
                       posterior = FALSE, folder = "Posterior_",
                       format = c("csv", "csv2", "xlsx", "rds", "RData"),
-                      clear = FALSE, Blimp = detect.blimp(), check = TRUE) {
+                      clear = FALSE, Blimp = .detect.blimp(), check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'recursive'
-    if (isTRUE(!is.logical(recursive))) { stop("Please specify TRUE or FALSE for the argument 'recursive'.", call. = FALSE) }
-
-    # Check input 'replace.out'
-    if (isTRUE(!all(replace.out %in% c("always", "never", "modified")))) { stop("Character string in the argument 'replace.out' does not match with \"always\", \"never\", or \"modified\".", call. = FALSE) }
-
-    # Check input 'posterior'
-    if (isTRUE(!is.logical(posterior))) { stop("Please specify TRUE or FALSE for the argument 'posterior'.", call. = FALSE) }
-
-    # Check input 'folder'
-    if (isTRUE(!is.character(folder))) { stop("Please specify a character string for the argument 'folder'.", call. = FALSE) }
-
-    # Check input 'format'
-    if (isTRUE(!all(format %in% c("csv", "csv2", "xlsx", "rds", "RData")))) { stop("Character string in the argument 'format' does not match with \"csv\", \"csv2\", \"xlsx\", \"rds\", or \"RData\".", call. = FALSE) }
-
-    # Check input 'clear'
-    if (isTRUE(!is.logical(clear))) { stop("Please specify TRUE or FALSE for the argument 'clear'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("recursive", "posterior", "clear"),
+               character = list(folder = 1L, Blimp = 1L),
+               s.character = list(replace.out = c("always", "never", "modified"), format = c("csv", "csv2", "xlsx", "rds", "RData")), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -148,7 +128,7 @@ blimp.run <- function(target = getwd(), recursive = FALSE,
 
       target.imp <- names(which(!target.exists))
 
-      if (isTRUE(length(target.imp) == 0L)) { stop("There are no existing \".imp\" tiles specified in the argument 'target'.", call. = FALSE) }
+      if (isTRUE(length(target.imp) == 0L)) { stop("There are no existing \".imp\" files specified in the argument 'target'.", call. = FALSE) }
 
     } else {
 
@@ -233,3 +213,5 @@ blimp.run <- function(target = getwd(), recursive = FALSE,
     }))
 
 }
+
+#_______________________________________________________________________________

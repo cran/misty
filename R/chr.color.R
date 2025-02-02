@@ -20,6 +20,10 @@
 #' @author
 #' Takuya Yanagida
 #'
+#' @seealso
+#' \code{\link{chr.grep}}, \code{\link{chr.grepl}}, \code{\link{chr.gsub}},
+#' \code{\link{chr.omit}},  \code{\link{chr.trim}}, \code{\link{chr.trunc}}
+#'
 #' @references
 #' Csárdi G (2022). \emph{crayon: Colored Terminal Output}. R package version 1.5.2,
 #' https://CRAN.R-project.org/package=crayon
@@ -50,7 +54,7 @@
 #'
 #' }
 chr.color <- function(x,
-                      color = c("black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray",
+                      color = c("black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray1", "gray2", "gray3",
                                 "b.red", "b.green", "b.yellow", "b.blue", "b.violet", "b.cyan", "b.white"),
                       bg = c("none", "black", "red", "green", "yellow", "blue", "violet", "cyan", "white"),
                       style = c("regular", "bold", "italic", "underline"),
@@ -70,19 +74,17 @@ chr.color <- function(x,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs 'style'
+  .check.input(m.character = list(style = c("regular", "bold", "italic", "underline")), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'color'
-    if (isTRUE(!all(color %in% c("black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray", "b.red", "b.green", "b.yellow", "b.blue", "b.violet", "b.cyan", "b.white")))) { stop("Character string in the argument 'color' does not match with \"black\", \"red\", \"green\", \"yellow\", \"blue\", \"violet\", \"cyan\", \"white\", \"gray\" etc.", call. = FALSE) }
+    if (isTRUE(!all(color %in% c("black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray1", "gray2", "gray3", "b.red", "b.green", "b.yellow", "b.blue", "b.violet", "b.cyan", "b.white")))) { stop("Character string in the argument 'color' does not match with \"black\", \"red\", \"green\", \"yellow\", \"blue\", \"violet\", \"cyan\", \"white\", \"gray1\" etc.", call. = FALSE) }
 
     # Check input 'bg'
     if (isTRUE(!all(bg %in% c("none", "black", "red", "green", "yellow", "blue", "violet", "cyan", "white")))) { stop("Character string in the argument 'bg' does not match with \"black\", \"red\", \"green\", \"yellow\", \"blue\", \"violet\", \"cyan\", or \"white\".", call. = FALSE) }
-
-    # Check input 'style'
-    if (isTRUE(!all(style %in% c("regular", "bold", "italic", "underline")))) { stop("Character string in the argument 'style' does not match with \"regular\", \"bold\", \"italic\", or \"underline\".", call. = FALSE) }
 
   }
 
@@ -93,7 +95,7 @@ chr.color <- function(x,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## color Argument ####
 
-  if (isTRUE(all(c("black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray", "b.red", "b.green", "b.yellow", "b.blue", "b.violet", "b.cyan", "b.white") %in% color))) { color <- "black" }
+  if (isTRUE(all(c("black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray1", "gray2", "gray3", "b.red", "b.green", "b.yellow", "b.blue", "b.violet", "b.cyan", "b.white") %in% color))) { color <- "black" }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## bg Argument ####
@@ -121,7 +123,9 @@ chr.color <- function(x,
          violet =    { x[!is.na(x)] <- paste0("\033[35m", x[!is.na(x)], "\033[39m") },
          cyan =      { x[!is.na(x)] <- paste0("\033[36m", x[!is.na(x)], "\033[39m") },
          white =     { x[!is.na(x)] <- paste0("\033[37m", x[!is.na(x)], "\033[39m") },
-         gray =      { x[!is.na(x)] <- paste0("\033[90m", x[!is.na(x)], "\033[39m") },
+         gray1 =     { x[!is.na(x)] <- paste0("\033[90m", x[!is.na(x)], "\033[39m") },
+         gray2 =     { x[!is.na(x)] <- paste0("\033[0;37m", x[!is.na(x)], "\033[0m") },
+         gray3 =     { x[!is.na(x)] <- paste0("\033[0;97m", x[!is.na(x)], "\033[0m") },
          b.red =     { x[!is.na(x)] <- paste0("\033[91m", x[!is.na(x)], "\033[39m") },
          b.green =   { x[!is.na(x)] <- paste0("\033[92m", x[!is.na(x)], "\033[39m") },
          b.yellow =  { x[!is.na(x)] <- paste0("\033[93m", x[!is.na(x)], "\033[39m") },
@@ -161,3 +165,5 @@ chr.color <- function(x,
   return(x)
 
 }
+
+#_______________________________________________________________________________

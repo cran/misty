@@ -8,7 +8,8 @@ blimp.plot(x, plot = c("none", "trace", "post"), param = NULL, labels = TRUE,
            burnin = TRUE, point = c("all", "none", "m", "med", "map"),
            ci = c("none", "eti", "hdi"), conf.level = 0.95, hist = TRUE,
            density = TRUE, area = TRUE, alpha = 0.4, fill = "gray85",
-           nrow = NULL, ncol = NULL, scales = c("fixed", "free", "free_x", "free_y"),
+           facet.nrow = NULL, facet.ncol = NULL,
+           facet.scales = c("fixed", "free", "free_x", "free_y"),
            xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL,
            xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
            xexpand = ggplot2::waiver(), yexpand = ggplot2::waiver(),
@@ -72,7 +73,7 @@ i.e., \code{"all"} for all point estimates, \code{"none"}
 for not displaying any point estimates, \code{"m"}
 for the posterior mean estimate, \code{"med"} (default)
 for the posterior median estimate, and \code{"map"}
-for the maximum a posteriori estimate.}
+for the maximum a posterior estimate.}
 
 \item{ci}{a character string indicating the type of credible
 interval to be displayed in the posterior distribution
@@ -105,14 +106,14 @@ and \code{geom_histogram} function.}
 for the \code{annotate} and \code{geom_histogram}
 functions.}
 
-\item{nrow}{a numeric value indicating the \code{nrow} argument
+\item{facet.nrow}{a numeric value indicating the \code{nrow} argument
 (default is \code{NULL}) for the \code{facet_wrap}
 function.}
 
-\item{ncol}{a numeric value indicating the \code{ncol} argument
+\item{facet.ncol}{a numeric value indicating the \code{ncol} argument
 (default is \code{2}) for the \code{facet_wrap} function.}
 
-\item{scales}{a character string indicating the \code{scales} argument
+\item{facet.scales}{a character string indicating the \code{scales} argument
 (default is \code{"free"}) for the \code{facet_wrap}
 function.}
 
@@ -270,6 +271,7 @@ post-burn-in phase for all parameters saved in long format in a file called
 }
 \examples{
 \dontrun{
+
 #----------------------------------------------------------------------------
 # Blimp Example 4.3: Linear Regression
 

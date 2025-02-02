@@ -155,7 +155,7 @@
 #' data("Demo.twolevel", package = "lavaan")
 #'
 #' #----------------------------------------------------------------------------
-#' # Two-Level Models
+#' # Two-Level Data
 #'
 #' #..........
 #' # Cluster variable specification
@@ -166,7 +166,7 @@
 #' # Example 1b: Cluster variable 'cluster' not in '...'
 #' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 #'
-#' # Example 1c: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' multilevel.icc(y1, data = Demo.twolevel, cluster = "cluster")
 #'
 #' #..........
@@ -175,20 +175,20 @@
 #' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 #'
 #' # Example 3: ICC(2)
-#' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, type = 2)
+#' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, type = "2")
 #'
 #' # Example 4: ICC(1)
 #' # use lme() function in the lme4 package to estimate ICC
 #' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, method = "nlme")
 #'
-#' # Example 5a: ICC(1) for 'y1', 'y2', and 'y3'
+#' # Example 5: ICC(1) for 'y1', 'y2', and 'y3'
 #' multilevel.icc(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
 #'
-#' # Example 5b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' multilevel.icc(y1:y3, data = Demo.twolevel, cluster = "cluster")
 #'
 #' #----------------------------------------------------------------------------
-#' # Three-Level Models
+#' # Three-Level Data
 #'
 #' # Create arbitrary three-level data
 #' Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
@@ -204,7 +204,7 @@
 #' # Example 6b: Cluster variables 'cluster' not in '...'
 #' multilevel.icc(Demo.threelevel$y1, cluster = Demo.threelevel[, c("cluster3", "cluster2")])
 #'
-#' # Example 6c: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
 #'
 #' #----------------------------------------------------------------------------
@@ -234,9 +234,6 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
@@ -252,14 +249,11 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
 
   if (isTRUE(!is.null(data))) {
 
-    # Convert tibble to data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- data.frame(data) }
-
-    # Variable names
-    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
 
     # Cluster variable
     cluster <- data[, cluster]
@@ -272,20 +266,9 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
     # Extract data
     x <- eval(..., enclos = parent.frame())
 
-    # Convert tibble to data frame
-    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) {
-
-      if (isTRUE(ncol(cluster) == 1L)) {
-
-        cluster <- unlist(cluster)
-
-      } else {
-
-        cluster <- data.frame(cluster)
-
-      }
-
-    }
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- data.frame(x) } }
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- data.frame(cluster) } }
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -317,21 +300,8 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'type'
-    if (isTRUE(any(!type %in% c(c("1a", "1b", "2"))))) { stop("Please specify \"1a\", \"1b\", or \"2\" for the argument'type'.", call. = FALSE) }
-
-    # Check input 'method'
-    if (isTRUE(any(!method %in% c("aov", "lme4", "nlme")))) { stop("Character string in the argument 'method' does not match with \"aov\", \"lme4\", or \"nlme\".", call. = FALSE) }
-
-    # Check input 'REML'
-    if (isTRUE(!is.logical(REML))) { stop("Please specify TRUE or FALSE for the argument 'REML'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = "REML", s.character = list(type = c("1a", "1b", "2"), method = c("aov", "lme4", "nlme")), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -575,3 +545,5 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
   return(object)
 
 }
+
+#_______________________________________________________________________________

@@ -90,8 +90,7 @@ dat <- data.frame(group = c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4),
                   x3 = c(7, 3, 4, 2, 5, 6, 4, 2, 3, 5, 2, 8),
                   x4 = c("a", "b", "a", "c", "c", "c", "a", "b", "b", "c", "a", "c"),
                   y1 = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8),
-                  y2 = c(0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1),
-                  stringsAsFactors = TRUE)
+                  y2 = c(0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1), stringsAsFactors = TRUE)
 
 #-------------------------------------------------------------------------------
 # Linear model
@@ -122,38 +121,41 @@ mod.glm <- glm(y2 ~ x1 + x2 + x3, data = dat, family = "binomial")
 check.collin(mod.glm)
 
 \dontrun{
-#-------------------------------------------------------------------------------
+# Load lme4, nlme, and glmmTMB package
+libraries(lme4, nlme, glmmTMB)
+
+#----------------------------------------------------------------------------
 # Linear mixed-effects model
 
-# Estimate linear mixed-effects model with continuous predictors using lme4 package
-mod.lmer <- lme4::lmer(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
+# Estimate linear mixed-effects model using lme4 package
+mod.lmer <- lmer(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
 
 # Example 5: Tolerance, std. error, and variance inflation factor
 check.collin(mod.lmer)
 
-# Estimate linear mixed-effects model with continuous predictors using nlme package
-mod.lme <- nlme::lme(y1 ~ x1 + x2 + x3, random = ~ 1 | group, data = dat)
+# Estimate linear mixed-effects model using nlme package
+mod.lme <- lme(y1 ~ x1 + x2 + x3, random = ~ 1 | group, data = dat)
 
 # Example 6: Tolerance, std. error, and variance inflation factor
 check.collin(mod.lme)
 
-# Estimate linear mixed-effects model with continuous predictors using glmmTMB package
-mod.glmmTMB1 <- glmmTMB::glmmTMB(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
+# Estimate linear mixed-effects model using glmmTMB package
+mod.glmmTMB1 <- glmmTMB(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
 
 # Example 7: Tolerance, std. error, and variance inflation factor
 check.collin(mod.glmmTMB1)
 
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Generalized linear mixed-effects model
 
-# Estimate mixed-effects logistic regression model with continuous predictors using lme4 package
-mod.glmer <- lme4::glmer(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "binomial")
+# Estimate mixed-effects logistic regression model using lme4 package
+mod.glmer <- glmer(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "binomial")
 
 # Example 8: Tolerance, std. error, and variance inflation factor
 check.collin(mod.glmer)
 
-# Estimate mixed-effects logistic regression model with continuous predictors using glmmTMB package
-mod.glmmTMB2 <- glmmTMB::glmmTMB(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "binomial")
+# Estimate mixed-effects logistic regression model using glmmTMB package
+mod.glmmTMB2 <- glmmTMB(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "binomial")
 
 # Example 9: Tolerance, std. error, and variance inflation factor
 check.collin(mod.glmmTMB2)
@@ -161,7 +163,7 @@ check.collin(mod.glmmTMB2)
 #----------------------------------------------------------------------------
 # Write Results
 
-# Example 10: Write results into a text file
+# Example 10: Write Results into a text file
 check.collin(mod.lm1, write = "Diagnostics.txt")
 }
 }

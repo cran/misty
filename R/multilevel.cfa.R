@@ -123,18 +123,17 @@
 #'                     quasi-Newton method optimizer and \code{"em"} for the
 #'                     Expectation Maximization (EM) algorithm.
 #' @param missing      a character string indicating how to deal with missing data,
-#'                     i.e., \code{"listwise"} (default) for listwise deletion or
-#'                     \code{"fiml"} for full information maximum likelihood (FIML)
-#'                     method. Note that FIML method is only available when \code{estimator = "ML"},
-#'                     that it takes longer to estimate the model  using FIML, and
-#'                     that FIML is prone to convergence issues which might be
-#'                     resolved by switching to listwise deletion.
+#'                     i.e., \code{"listwise"} for listwise deletion or \code{"fiml"}
+#'                     (default) for full information maximum likelihood (FIML)
+#'                     method. Note that it takes longer to estimate the model
+#'                     using FIML, and that FIML is prone to convergence issues
+#'                     which might be resolved by switching to listwise deletion.
 #' @param print        a character string or character vector indicating which
 #'                     results to show on the console, i.e. \code{"all"} for all
 #'                     results, \code{"summary"} for a summary of the specification
 #'                     of the estimation method and missing data handling in lavaan,
 #'                     \code{"coverage"} for the variance-covariance coverage of
-#'                     the data, \code{"descript"} for descriptive statistics,
+#'                     the data, \cod e{"descript"} for descriptive statistics,
 #'                     \code{"fit"} for model fit,  \code{"est"} for parameter
 #'                     estimates, \code{"modind"} for modification indices, and
 #'                     \code{"resid"} for the residual correlation matrix and
@@ -406,9 +405,6 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
@@ -424,11 +420,11 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
 
     # Cluster variable
     cluster <- data[, cluster]
@@ -440,6 +436,10 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- as.data.frame(cluster) } }
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -456,13 +456,16 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("ls.fit", "append", "output"),
+               numeric = list(mod.minval = 1L, resid.minval = 1L),
+               s.character = list(const = c("within", "shared", "config", "shareconf"), ident = c("marker", "var", "effect"), estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"), missing = c("listwise", "fiml")),
+               m.character = list(print = c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid")),
+               args = c("digits", "p.digits", "write2"),
+               package = "lavaan", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # R package lavaan
-    if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
 
     # Check if input 'model' is a character vector or list of character vectors
     if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
@@ -479,24 +482,21 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
     # Model specification with 'model'
     if (isTRUE(!is.null(model))) {
 
-      var.model <- !unique(unlist(model)) %in% colnames(x)
-      if (isTRUE(any(var.model))) { stop(paste0("Variables specified in the argument 'model' were not found in 'x': ", paste(unique(unlist(model))[var.model], collapse = ", ")), call. = FALSE) }
+      (!unique(unlist(model)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'model' were not found in 'x': ", paste(unique(unlist(model))[y], collapse = ", ")), call. = FALSE) })()
 
     }
 
     # Model specification with 'model.w'
     if (isTRUE(!is.null(model.w))) {
 
-      var.model.w <- !unique(unlist(model.w)) %in% colnames(x)
-      if (isTRUE(any(var.model.w))) { stop(paste0("Variables specified in the argument 'model.w' were not found in 'x': ", paste(unique(unlist(model))[model.w], collapse = ", ")), call. = FALSE) }
+      (!unique(unlist(model.w)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'model.w' were not found in 'x': ", paste(unique(unlist(model))[model.w], collapse = ", ")), call. = FALSE) })()
 
     }
 
     # Model specification with 'model.b'
     if (isTRUE(!is.null(model.b))) {
 
-      var.model.b <- !unique(unlist(model.b)) %in% colnames(x)
-      if (isTRUE(any(var.model.b))) { stop(paste0("Variables specified in the argument 'model.b' were not found in 'x': ", paste(unique(unlist(model))[model.b], collapse = ", ")), call. = FALSE) }
+      (!unique(unlist(model.b)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'model.b' were not found in 'x': ", paste(unique(unlist(model))[model.b], collapse = ", ")), call. = FALSE) })()
 
     }
 
@@ -528,7 +528,7 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
         # Two variables for each residual covariance
         if (isTRUE(any(sapply(rescov.w, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov.w', where each element has two variable names", call. = FALSE) }
 
-          # Character vector of one residual covariance
+        # Character vector of one residual covariance
         } else {
 
           # Two variables for the residual covariance
@@ -547,7 +547,7 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
         # Two variables for each residual covariance
         if (isTRUE(any(sapply(rescov.b, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov.b', where each element has two variable names", call. = FALSE) }
 
-          # Character vector of one residual covariance
+        # Character vector of one residual covariance
         } else {
 
           # Two variables for the residual covariance
@@ -557,48 +557,14 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
 
     }
 
-    # Check input 'const'
-    if (isTRUE(!all(const %in% c("within", "shared", "config", "shareconf")))) { stop("Character string in the argument 'const' does not match with \"within\", \"shared\", \"config\", or \"shareconf\".", call. = FALSE) }
-
     # Check input 'fix.resid'
-    fix.resid.var <- !unique(fix.resid) %in% colnames(x)
-    if (isTRUE(any(fix.resid.var) &&  all(fix.resid != "all"))) { stop(paste0("Variables specified in the argument 'fix.resid' were not found in 'x': ", paste(fix.resid[fix.resid.var], collapse = ", ")), call. = FALSE) }
-
-    # Check input 'ident'
-    if (isTRUE(!all(ident %in% c("marker", "var", "effect")))) { stop("Character string in the argument 'ident' does not match with \"marker\", \"var\", or \"effect\".", call. = FALSE) }
-
-    # Check input 'ls.fit'
-    if (isTRUE(!is.logical(ls.fit))) { stop("Please specify TRUE or FALSE for the argument 'ls.fit'.", call. = FALSE) }
-
-    # Check input 'estimator'
-    if (isTRUE(!all(estimator %in% c("ML", "MLR")))) { stop("Character string in the argument 'estimator' does not match with \"ML\" or \"MLR\".", call. = FALSE) }
-
-    # Check input 'optim.method'
-    if (isTRUE(!all(optim.method  %in% c("nlminb", "em")))) { stop("Character string in the argument 'optim.method' does not match with \"nlminb\" or \"em\".", call. = FALSE) }
-
-    # Check input 'missing'
-    if (isTRUE(!all(missing %in% c("listwise", "fiml")))) { stop("Character string in the argument 'missing' does not match with \"listwise\" or \"fiml\".", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid")))) { stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", \"modind\", or \"resid\".", call. = FALSE) }
+    (!unique(fix.resid) %in% colnames(x)) |> (\(y) if (isTRUE(any(y) &&  all(fix.resid != "all"))) { stop(paste0("Variables specified in the argument 'fix.resid' were not found in 'x': ", paste(fix.resid[y], collapse = ", ")), call. = FALSE) })()
 
     # Check input 'mod.minval'
     if (isTRUE(mod.minval <= 0L)) { stop("Please specify a value greater than 0 for the argument 'mod.minval'.", call. = FALSE) }
 
     ## Check input 'resid.minval' ##
     if (isTRUE(resid.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'resid.minval'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -608,6 +574,7 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Manifest variables ####
+
   #...................
   ### Model specification with 'x' ####
   if (isTRUE(is.null(model) && is.null(model.w) && is.null(model.b))) {
@@ -632,6 +599,19 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
   ## Data frame with Cluster Variable ####
 
   x <- data.frame(x[, var], .cluster = cluster, stringsAsFactors = FALSE)
+
+  n.total <- nrow(x)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data on the Cluster Variable ####
+
+  if (isTRUE(any(is.na(x$.cluster)))) {
+
+    warning(paste0("Data contains missing values on the cluster variable, number of cases removed from the analysis: ", sum(is.na(x$.cluster))), call. = FALSE)
+
+    x <- x[!is.na(x$.cluster), ]
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -755,17 +735,16 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
 
     if (isTRUE(all(c("listwise", "fiml") %in% missing))) {
 
-      missing <- "listwise"
-
-    } else if (isTRUE(estimator == "MLR" && missing == "fiml")) {
-
-      warning("FIML method is currently not available for estimator = \"MLR\", argument 'estimator' switched to \"ML\".", call. = FALSE)
-
-      estimator <- "ML"
+      missing <- "fiml"
 
     }
 
   }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data on All Variable ####
+
+  (misty::na.prop(x[, var]) == 1L) |> (\(y) if (isTRUE(any(y) && missing == "fiml")) { warning(paste0("Data contains cases with missing values on all variables, number of cases removed from the analysis: ", sum(y)), call. = FALSE) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print ####
@@ -1563,16 +1542,15 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
                                                "two.stage" = "Two-Stage",
                                                "robust.two.stage" = "Robust Two-Stage"),
                                         # Missing data
-                                        ifelse(lavaan::lavInspect(model.fit, what = "nobs") != lavaan::lavInspect(model.fit, what = "norig"), "Listwise",
-                                               ifelse(lavaan::lavInspect(model.fit, what = "nobs") == lavaan::lavInspect(model.fit, what = "norig") && any(is.na(lavaan::lavInspect(model.fit, what = "data"))), "FIML", "None")),
+                                        ifelse(any(is.na(x[, var])), ifelse(missing == "listwise", "Listwise", "FIML"), "None"),
                                         # Identification
                                         switch(ident,
                                                "marker" = "Marker Variable",
                                                "var" = "Factor Variance",
                                                "effect" = "Effects Coding"), "",
-                                        # Numer of model parameters
+                                        # Number of model parameters
                                         npar, npar.l1, npar.l2,
-                                        # Numer of equality constraints
+                                        # Number of equality constraints
                                         npar.eq, "", "Used",
                                         # Number of observations
                                         lavaan::lavInspect(model.fit, what = "nobs"),
@@ -1581,7 +1559,7 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
                                         # Average cluster size
                                         lavaan::lavInspect(model.fit, what = "ncluster.size"))),
                                 # Third column
-                                c(rep("", times = 15L), "Total", lavaan::lavInspect(model.fit, what = "norig"), "", ""),
+                                c(rep("", times = 15L), "Total", n.total, "", ""),
                                 fix.empty.names = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1855,34 +1833,7 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -1893,3 +1844,5 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

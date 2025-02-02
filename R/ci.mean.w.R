@@ -106,13 +106,12 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{data} \tab data frame used for the current analysis \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{result} \tab result table \cr
-#' }
+#'
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame used for the current analysis}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{result table}
 #'
 #' @export
 #'
@@ -124,16 +123,14 @@
 #' # Example 1: Difference-adjusted Cousineau-Morey confidence intervals
 #' ci.mean.w(dat)
 #'
-#' # Example 1: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' ci.mean.w(., data = dat)
 #'
 #' # Example 2: Cousineau-Morey confidence intervals
 #' ci.mean.w(dat, adjust = FALSE)
 #'
-#' \dontrun{
 #' # Example 3: Write Results into a text file
 #' ci.mean.w(dat, write = "WS_Confidence_Interval.txt")
-#' }
 ci.mean.w <- function(..., data = NULL, adjust = TRUE,
                       alternative = c("two.sided", "less", "greater"),
                       conf.level = 0.95, na.omit = TRUE, digits = 2, as.na = NULL,
@@ -149,9 +146,6 @@ ci.mean.w <- function(..., data = NULL, adjust = TRUE,
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -163,6 +157,9 @@ ci.mean.w <- function(..., data = NULL, adjust = TRUE,
   ## Data using the argument 'data' ####
 
   if (isTRUE(!is.null(data))) {
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Variable names
     var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
@@ -176,7 +173,10 @@ ci.mean.w <- function(..., data = NULL, adjust = TRUE,
   } else {
 
     # Extract data
-    x <- eval(..., enclos = parent.frame())
+    x <- as.data.frame(eval(..., enclos = parent.frame()))
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
   }
 
@@ -226,36 +226,8 @@ ci.mean.w <- function(..., data = NULL, adjust = TRUE,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'adjust'
-    if (isTRUE(!is.logical(adjust))) { stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE) }
-
-    # Check input 'alternative'
-    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
-
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'na.omit'
-    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("adjust", "na.omit", "append", "output"), args = c("cof.level", "digits", "write1"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -374,3 +346,5 @@ ci.mean.w <- function(..., data = NULL, adjust = TRUE,
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

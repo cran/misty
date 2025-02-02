@@ -137,6 +137,7 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012). The internal func
 }
 \examples{
 \dontrun{
+
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
@@ -180,6 +181,7 @@ multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
                  cluster = Demo.twolevel$cluster, const = "config",
                  fix.resid = c("y1", "y2"), digits = 3)
 
+\dontrun{
 #----------------------------------------------------------------------------
 # Write results
 
@@ -196,7 +198,7 @@ mod <- multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
                         cluster = Demo.twolevel$cluster, output = FALSE)
 
 # Write results into an Excel file
-write.result(mod, "Multilevel_Omega.xlsx")
+write.result(mod, "Multilevel_Omega.xlsx")}
 }
 }
 \references{

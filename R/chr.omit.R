@@ -17,7 +17,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{chr.grep}}, \code{\link{chr.grepl}}, \code{\link{chr.gsub}}, \code{\link{chr.trim}}
+#' \code{\link{chr.color}}, \code{\link{chr.grep}}, \code{\link{chr.grepl}},
+#' \code{\link{chr.gsub}}, \code{\link{chr.trim}}, \code{\link{chr.trunc}}
 #'
 #' @return
 #' Returns a numeric vector, character vector or factor with values or strings
@@ -77,17 +78,15 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check input 'na.omit'
+  .check.input(logical = "na.omit", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'omit': Values in 'x'?
-    na.x <- vapply(omit, function(y) !y %in% x, FUN.VALUE = logical(1))
-    if (isTRUE(any(na.x))) { warning(paste0("Values specified in the argument 'omit' were not found in 'x': ", paste(omit[na.x], collapse = ", ")), call. = FALSE) }
-
-    # Check input 'na.omit'
-    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
+    (vapply(omit, function(y) !y %in% x, FUN.VALUE = logical(1L))) |>
+      (\(y) if (isTRUE(any(y))) { warning(paste0("Values specified in the argument 'omit' were not found in 'x': ", paste(omit[y], collapse = ", ")), call. = FALSE) })()
 
   }
 
@@ -123,3 +122,5 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
   return(object)
 
 }
+
+#_______________________________________________________________________________

@@ -101,8 +101,7 @@ read.mplus <- function(file, sep = "", input = NULL, na = -99, print = FALSE,
     #...................
     ### Extract variable names ####
 
-    varnames <- misty::chr.omit(unlist(strsplit(misty::chr.trim(gsub("VARIABLE:|variable:|Variable:|NAMES ARE|names ARE|Names ARE|NAMES are|names are|Names are|NAMES Are|names Are|Names Are|NAMES =|names =|Names =|NAMES=|names=|Names=|;|\n|\t|\r|\r\n", "",
-                                                                inp.variable)), " ")), check = FALSE)
+    varnames <- misty::chr.omit(unlist(strsplit(misty::chr.trim(gsub("VARIABLE:|variable:|Variable:|NAMES ARE|names ARE|Names ARE|NAMES are|names are|Names are|NAMES Are|names Are|Names Are|NAMES =|names =|Names =|NAMES=|names=|Names=|;|\n|\t|\r|\r\n", "", inp.variable)), " ")), check = FALSE)
 
     #...................
     ### Consecutive variable names ####
@@ -160,7 +159,6 @@ read.mplus <- function(file, sep = "", input = NULL, na = -99, print = FALSE,
 
   } else {
 
-
     #___________________________________________________________________________
     #
     # Input Check --------------------------------------------------------------
@@ -176,13 +174,6 @@ read.mplus <- function(file, sep = "", input = NULL, na = -99, print = FALSE,
     file <- ifelse(length(grep(".dat", file)) == 0L && length(grep(".txt", file)) == 0L && length(grep(".csv", file)) == 0L, file <- paste0(file, ".dat"), file)
 
     if (isTRUE(!file.exists(file))) { stop(paste0("Unable to open Mplus data file: ", sQuote(file), " does not exist."), call. = FALSE) }
-
-    #...................
-    ### Check input 'check' ####
-
-    if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-    #----------------------------------------
 
     if (isTRUE(check)) {
 
@@ -252,3 +243,5 @@ read.mplus <- function(file, sep = "", input = NULL, na = -99, print = FALSE,
   }
 
 }
+
+#_______________________________________________________________________________

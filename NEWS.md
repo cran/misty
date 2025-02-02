@@ -1,3 +1,59 @@
+### misty 0.7.0 (2025-02-02)
+
+##### New features
+* New function `ci.cor()` for computing and potting Fisher z' confidence interval 
+for the Pearson product-moment correlation coefficient adjusted via sample joint 
+moments method or via approximate distribution method (Bishara et al., 2018), 
+Spearman's rank-order correlation coefficient with Fieller et al. (1957) standard 
+error, Bonett and Wright (2000) standard error or rank-based inverse normal (RIN) 
+transformation, and Kendall's Tau-b, and Kendall-Stuart's Tau-c. The function also
+supports five types of bootstrap confidence intervals
+* New function `chr.trunc()` for truncating a character vector, so that the number 
+of characters of each element of the character vector is always less than or equal 
+to the specified width.
+* New function `df.head()` and `df.tail()` for printing the first or last rows
+of a data frame and displaying only as many columns as fit on the console.
+* New function `df.check()` which is a wrapper function around the functions 
+`dim()`, `names()`, `head()`, and `tail()`.
+
+##### Minor features and improvements
+* The functions `skewness` and `kurtosis` can also compute Mardia's multivariate
+skewness and kurtosis.
+* The functions `ci.mean`, `ci.median`, `ci.prop`, `ci.var`, and `ci.sd` can
+also compute and plot bootstrap confidence intervals.
+* Added the argument `sample` to the function `descript`.
+* Added the argument `append` to the function `check.outlier`.
+* Added the arguments `sep` and `dec` to the function `read.data`.
+* Added the options `gray1`, `gray2`, and `gray3` to the argument `color` of the 
+function `chr.color`.
+
+##### Bug fix
+* Fixed a bug in the function `blimp.print()`, function did print error messages.
+* Fixed bugs in functions that could not handle a tibble as input (thanks to David S. DeGarmo). 
+
+##### User-visible changes
+* Changed the arguments `nrow`, `ncol` and `scales` into `facet.nrow`, `facet.ncol`
+and `facet.scales` in the functions `blimp.plot()` and `mplus.plot()`.
+* Changed the argument `error.width` into `errorbar.width` in the functions 
+`aov.b()`, `aov.w()`, `result.lca()`, `test.t()` and `test.z()`.
+* Changed the argument `line.size` and `line.type` into `linewidth` and `linetype` 
+in the functions `test.t()` and `test.z()`.
+* Changed the arguments `line.color1`, `line.color2`, `line.type1`, `line.type2`,
+`line.width1`, `line.width2`, `bar.color`, `axis.size`, `strip.size`, `xlimits`,
+and `ylimits` into `line.col1`, `line.col2`, `linetype1`, `linetype2`,
+`linewidth1`, `linewidth2`, `bar.col`, `axis.text.size`, `strip.text.size`, `xlim`,
+and `ylim`  in the function `check.resid()`.
+* Changed the default setting of the argument `line` in the functions `aov.w()`, 
+to `FALSE`.
+* Merged help pages for the functions `size.mean`, `size.prop` and `size.cor` 
+into one help page.
+* Changed the default setting of the argument `missing` in the functions `multilevel.cfa()`, 
+to `"fiml"`.
+* Changed the default setting of the argument `estimator` in the functions `multilevel.cor()`, 
+to `"MLR"`.
+* Changed the default setting of the argument `na` in the functions `na.indicator()`, 
+to `1`.
+
 ### misty 0.6.8 (2024-10-24)
 
 ##### New features
@@ -11,7 +67,7 @@ variables into a substantive model.
 Stata DTA format.
 
 ##### User-visible changes
-* Changed the default setting of the argument `print` in the functions `na.test`, 
+* Changed the default setting of the argument `print` in the functions `na.test()`, 
 to `little`.
 
 ##### Bug fix

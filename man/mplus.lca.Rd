@@ -227,6 +227,7 @@ profile-varying (i.e., unequal variances and covariances across profiles).}
 }
 \examples{
 \dontrun{
+
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 

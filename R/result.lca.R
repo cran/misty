@@ -45,7 +45,7 @@
 #' @param ylab            a character string specifying the label of the y-axis.
 #' @param breaks          a numeric vector specifying the points at which tick-marks
 #'                        are drawn at the y-axis.
-#' @param error.width     a numeric vector specifying the width of the error bars.
+#' @param errorbar.width  a numeric vector specifying the width of the error bars.
 #'                        By default, the width of the error bars is 0.1 plus
 #'                        number of classes divided by 30.
 #' @param legend.title    a numeric value specifying the size of the legend title.
@@ -163,7 +163,7 @@
 #'
 #' # Run LCA with k = 1 to k = 6 classes
 #' mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
-#'           run.mplus = TRUE)
+#'           mplus.run = TRUE)
 #'
 #' # Example 1a: Read Mplus output files, create result table, write table, and save plots
 #' result.lca(write = "LCA.xlsx", plot = TRUE)
@@ -211,7 +211,7 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
                        plot = FALSE, group.ind = TRUE, ci = TRUE, conf.level = 0.95, adjust = TRUE,
                        axis.title = 7, axis.text = 7, levels = NULL, labels = NULL,
                        ylim = NULL, ylab = "Mean Value", breaks = ggplot2::waiver(),
-                       error.width = 0.1, legend.title = 7, legend.text = 7,
+                       errorbar.width = 0.1, legend.title = 7, legend.text = 7,
                        legend.key.size = 0.4, gray = FALSE, start = 0.15, end = 0.85,
                        dpi = 600, width = "n.ind", height = 4, digits = 1, p.digits = 3,
                        write = NULL, append = TRUE, check = TRUE, output = TRUE) {
@@ -220,49 +220,19 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("sort.p", "plot", "group.ind", "ci", "gray", "append", "output"),
+               numeric = list(axis.title = 1L, axis.text = 1L, errorbar.width = 1L, legend.title= 1L, legend.text = 1L, legend.key.size = 1L, start = 1L, end = 1L, dpi = 1L, height= 1L, ylim = 2L),
+               character = list(ylab = 1L), args = c("conf.level", "write2"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    ## Check input 'sort.p' ##
-    if (isTRUE(!is.logical(sort.p))) { stop("Please specify TRUE or FALSE for the argument 'sort.p'.", call. = FALSE) }
-
-    # Check input 'plot'
-    if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'.", call. = FALSE) }
-
-    # Check input 'group.ind'
-    if (isTRUE(!is.logical(group.ind))) { stop("Please specify TRUE or FALSE for the argument 'group.ind'.", call. = FALSE) }
-
-    # Check input 'ci'
-    if (isTRUE(!is.logical(ci))) { stop("Please specify TRUE or FALSE for the argument 'ci'.", call. = FALSE) }
-
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'adjust'
-    if (isTRUE(!is.logical(adjust))) { stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE) }
-
-    ## Check input 'digits' ##
-    if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'gray'
-    if (isTRUE(!is.logical(gray))) { stop("Please specify TRUE or FALSE for the argument 'gray'.", call. = FALSE) }
 
     # Check input 'start'
     if (isTRUE(start < 0L || start > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) }
 
     # Check input 'end'
     if (isTRUE(end < 0L || end > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'end'", call. = FALSE) }
-
-    # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    ## Check input 'output' ##
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -637,7 +607,7 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
                                legend.box.spacing = ggplot2::unit(-9L, "pt"))
 
           ##### Confidence intervals
-          if (isTRUE(ci)) { p <- p + ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = error.width + j / 30L, linewidth = 0.2, position = ggplot2::position_dodge(0.9)) }
+          if (isTRUE(ci)) { p <- p + ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = errorbar.width + j / 30L, linewidth = 0.2, position = ggplot2::position_dodge(0.9)) }
 
           ##### Gray color scales
           if (isTRUE(gray)) { p <- p + ggplot2::scale_fill_grey(start = end, end = start) }
@@ -671,7 +641,7 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
                  args = list(folder = folder, exclude = exclude, sort.n = sort.n, sort.p = sort.p,
                              plot = plot, ci = ci, conf.level = conf.level, adjust = adjust,
                              axis.title = axis.title, axis.text = axis.text, levels = levels, labels = labels,
-                             ylim = ylim, ylab = ylab, breaks = breaks, error.width = error.width,
+                             ylim = ylim, ylab = ylab, breaks = breaks, errorbar.width = errorbar.width,
                              legend.title = legend.title, legend.text = legend.text, legend.key.size = legend.key.size,
                              gray = gray, start = start, end = end, dpi = dpi,
                              width = width, height = height, digits = digits, p.digits = p.digits,
@@ -684,34 +654,7 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -722,3 +665,5 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

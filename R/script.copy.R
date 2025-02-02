@@ -65,30 +65,10 @@ script.copy <- function(file = NULL, folder = "_R_Script_Archive", create.folder
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # rstudioapi package
-    if (isTRUE(!nzchar(system.file(package = "rstudioapi")))) { stop("Package \"rstudioapi\" is needed for this function, please install the package.", call. = FALSE) }
-
-    # Check input 'file'
-    if (isTRUE(!is.null(file) && !is.character(file))) { stop("Please specify a character vector for the argument 'file'.", call. = FALSE) }
-
-    # Check input 'folder'
-    if (isTRUE(!is.character(folder))) { stop("Please specify a character vector for the argument 'folder'.", call. = FALSE) }
-
-    # Check input 'create.folder'
-    if (isTRUE(!is.logical(create.folder))) { stop("Please specify TRUE or FALSE for the argument 'create.folder'.", call. = FALSE) }
-
-    # Check input 'time'
-    if (isTRUE(!is.logical(time))) { stop("Please specify TRUE or FALSE for the argument 'time'.", call. = FALSE) }
-
-    # Check input 'overwrite'
-    if (isTRUE(!is.logical(overwrite))) { stop("Please specify TRUE or FALSE for the argument 'overwrite'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("create.folder", "time", "overwrite"),
+               character = list(file = 1L, folder = 1L),
+               package = "rstudioapi", envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -151,3 +131,5 @@ script.copy <- function(file = NULL, folder = "_R_Script_Archive", create.folder
   invisible(file.copy(path, to = paste0(folder, ifelse(!is.null(folder), "/", ""), file.name, ifelse(!is.null(file.time), "_", ""), file.time, ".R"), overwrite = overwrite))
 
 }
+
+#_______________________________________________________________________________

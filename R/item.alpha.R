@@ -54,9 +54,12 @@
 #' @param as.na      a numeric vector indicating user-defined missing values,
 #'                   i.e. these values are converted to \code{NA} before conducting
 #'                   the analysis.
-#' @param write      a character string for writing the results into a Excel file
-#'                   naming a file with or without file extension '.xlsx', e.g.,
-#'                   \code{"Results.xlsx"} or \code{"Results"}.
+#' @param write      a character string naming a file for writing the output into
+#'                   either a text file with file extension \code{".txt"} (e.g.,
+#'                   \code{"Output.txt"}) or Excel file with file extension
+#'                   \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'                   name does not contain any file extension, an Excel file will
+#'                   be written.
 #' @param check      logical: if \code{TRUE} (default), argument specification
 #'                   is checked.
 #' @param output     logical: if \code{TRUE} (default), output is shown.
@@ -104,13 +107,14 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{data} \tab data frame used for the current analysis \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{result} \tab list with result tables \cr
-#' }
+#'   \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame used for the current analysis}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{list with result tables, i.e., \code{alpha} for a table
+#'                      with coefficient alpha and \code{itemstat} for a table with
+#'                      item statistics}
+#'
 #'
 #' @export
 #'
@@ -120,10 +124,10 @@
 #'                   item3 = c(3, 2, 4, 2, 1, 3, 4, 1),
 #'                   item4 = c(4, 1, 2, 3, 2, 3, 4, 2))
 #'
-#' # Example 1a: Compute unstandardized coefficient alpha and item statistics
+#' # Example 1: Compute unstandardized coefficient alpha and item statistics
 #' item.alpha(dat)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' item.alpha(., data = dat)
 #'
 #' # Example 2: Compute standardized coefficient alpha and item statistics
@@ -151,16 +155,8 @@
 #' # Example 8: Compute ordinal coefficient alpha
 #' item.alpha(dat, ordered = TRUE)
 #'
-#' \dontrun{
 #' # Example 9a: Write Results into a text file
 #' result <- item.alpha(dat, write = "Alpha.xlsx")
-#'
-#' # Example 9b: Write Results into a Excel file
-#' result <- item.alpha(dat, write = "Alpha.xlsx")
-#'
-#' result <- item.alpha(dat, output = FALSE)
-#' write.result(result, "Alpha.xlsx")
-#' }
 item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = FALSE,
                        na.omit = FALSE, print = c("all", "alpha", "item"), digits = 2,
                        conf.level = 0.95, as.na = NULL, write = NULL, append = TRUE,
@@ -176,9 +172,6 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -188,11 +181,11 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a matrix, data frame, variance-covariance or correlation matrix")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract variables
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, check.chr = "a matrix, data frame, variance-covariance or correlation matrix")]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -201,6 +194,9 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
   }
 
@@ -253,11 +249,6 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
     std <- TRUE
 
   }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
-
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
@@ -335,9 +326,12 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("std", "ordered", "na.omit", "append", "output"),
+               s.character = list(print = c("all", "alpha", "item")),
+               args = c("conf.level", "write2"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Matrix or data frame for the argument 'x'?
@@ -349,39 +343,14 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
     # Check input 'x': Zero variance
     if (isTRUE(nrow(x) != ncol(x))) {
 
-      x.check <- vapply(as.data.frame(x, stringsAsFactors = FALSE), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
+      vapply(as.data.frame(x), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L)) |>
+        (\(y) if (isTRUE(any(y))) {
 
-      if (isTRUE(any(x.check))) {
+          stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(y)), collapse = ", ")), call. = FALSE)
 
-        stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE)
-
-      }
+        })()
 
     }
-
-    # Check input 'std'
-    if (isTRUE(!is.logical(std))) { stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE) }
-
-    # Check input 'ordered'
-    if (isTRUE(!is.logical(ordered))) { stop("Please specify TRUE or FALSE for the argument 'ordered'.", call. = FALSE) }
-
-    # Check input 'na.omit'
-    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "alpha", "item")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"alpha\", or \"item\".", call. = FALSE) }
-
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -427,7 +396,7 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
   # Define Coefficient alpha function
   alpha.function <- function(mat.sigma, p) {
 
-    return((p / (p - 1)) * (1L - sum(diag(as.matrix(mat.sigma))) / sum(as.matrix(mat.sigma))))
+    return((p / (p - 1L)) * (1L - sum(diag(as.matrix(mat.sigma))) / sum(as.matrix(mat.sigma))))
 
   }
 
@@ -437,13 +406,11 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
 
   if (isTRUE(x.raw)) {
 
-    alpha.x <- data.frame(n = nrow(x), items = ncol(mat.sigma), alpha = alpha.mat.sigma,
-                          stringsAsFactors = FALSE)
+    alpha.x <- data.frame(n = nrow(x), items = ncol(mat.sigma), alpha = alpha.mat.sigma)
 
   } else {
 
-    alpha.x <- data.frame(items = ncol(mat.sigma), alpha = alpha.mat.sigma,
-                          stringsAsFactors = FALSE)
+    alpha.x <- data.frame(items = ncol(mat.sigma), alpha = alpha.mat.sigma)
 
   }
 
@@ -467,7 +434,7 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
     alpha.low <- 1L - (1L - alpha.mat.sigma) * qf(1L - (1L - conf.level) / 2L, df1, df2)
     alpha.upp <- 1L - (1L - alpha.mat.sigma) * qf((1L - conf.level) / 2L, df1, df2)
 
-    alpha.x <- data.frame(alpha.x, low = alpha.low, upp = alpha.upp, stringsAsFactors = FALSE)
+    alpha.x <- data.frame(alpha.x, low = alpha.low, upp = alpha.upp)
 
   }
 
@@ -476,26 +443,22 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
 
   if (isTRUE(x.raw)) {
 
-    itemstat <- matrix(rep(NA, times = ncol(x)*2L), ncol = 2L,
-                       dimnames = list(NULL, c("it.cor", "alpha")))
+    itemstat <- matrix(rep(NA, times = ncol(x)*2L), ncol = 2L, dimnames = list(NULL, c("it.cor", "alpha")))
 
     for (i in seq_len(ncol(x))) {
 
       var <- colnames(x)[i]
 
-      itemstat[i, 1L] <- ifelse(ncol(x) > 2L, cor(x[, i], rowMeans(x[, -grep(var, colnames(x))], na.rm = TRUE),
-                                                  use = "pairwise.complete.obs"), NA)
+      itemstat[i, 1L] <- ifelse(ncol(x) > 2L, cor(x[, i], rowMeans(x[, -grep(var, colnames(x))], na.rm = TRUE), use = "pairwise.complete.obs"), NA)
 
       if (isTRUE(std)) {
 
-        itemstat[i, 2L] <- ifelse(ncol(x) > 2L, alpha.function(cor(x[, -grep(var, colnames(x))],
-                                                               use = "pairwise.complete.obs", method = "pearson"), p = (ncol(x) - 1L)), NA)
+        itemstat[i, 2L] <- ifelse(ncol(x) > 2L, alpha.function(cor(x[, -grep(var, colnames(x))], use = "pairwise.complete.obs", method = "pearson"), p = (ncol(x) - 1L)), NA)
 
 
       } else {
 
-        itemstat[i, 2L] <- ifelse(ncol(x) > 2L, alpha.function(cov(x[, -grep(var, colnames(x))],
-                                                               use = "pairwise.complete.obs", method = "pearson"), p = (ncol(x) - 1L)), NA)
+        itemstat[i, 2L] <- ifelse(ncol(x) > 2L, alpha.function(cov(x[, -grep(var, colnames(x))], use = "pairwise.complete.obs", method = "pearson"), p = (ncol(x) - 1L)), NA)
 
       }
 
@@ -504,10 +467,7 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
     #...................
     ### Descriptive statistics ####
 
-    itemstat <- data.frame(var = colnames(x),
-                           misty::descript(x, output = FALSE)$result[, c("n", "nNA", "pNA", "m", "sd", "min", "max")],
-                           itemstat,
-                           stringsAsFactors = FALSE)
+    itemstat <- data.frame(var = colnames(x), misty::descript(x, output = FALSE)$result[, c("n", "nNA", "pNA", "m", "sd", "min", "max")], itemstat)
 
   } else {
 
@@ -533,34 +493,7 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -571,3 +504,5 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

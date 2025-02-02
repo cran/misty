@@ -236,8 +236,8 @@
 #' # Example 1d: Print UNIVARIATE SAMPLE STATISTICS in addition to the default setting
 #' mplus.print("ex3.1.out", result = c("default", "uni.sample.stat"))
 #'
-#' # Example 1e: Exclude MODEL FIT INFORMATION section
-#' mplus.print("ex3.1.out", exclude = "fit")
+#' # Example 1e: Exclude MODEL RESULTS section
+#' mplus.print("ex3.1.out", exclude = "mod.result")
 #'
 #' # Example 1f: Print all result sections, but exclude MODEL FIT INFORMATION section
 #' mplus.print("ex3.1.out", result  = "all", exclude = "fit")
@@ -321,13 +321,12 @@ mplus.print <- function(x, print = c("all", "input", "result"),
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("variable", "not.input", "not.result", "append", "output"),
+               s.character = list(print = c("all", "input", "result")),
+               args = "write1", envir = environment(), input.check = check)
 
   if (isTRUE(check)) {
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "input", "result")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"input\", or \"result\".", call. = FALSE) }
 
     # Check input 'input'
     input[which(!input %in% c("all", "default", input.all))] |>
@@ -340,24 +339,6 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     # Check input 'exclude'
     exclude.check <- exclude[which(!exclude %in% c(input.all, result.all))] |>
       (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(if (isTRUE(length(y) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'exclude' is not permissible: ", paste(dQuote(y), collapse = ", ")), call. = FALSE) })()
-
-    # Check input 'variable'
-    if (isTRUE(!is.logical(variable))) { stop("Please specify TRUE or FALSE for the argument 'variable'.", call. = FALSE) }
-
-    # Check input 'not.input'
-    if (isTRUE(!is.logical(not.input))) { stop("Please specify TRUE or FALSE for the argument 'not.input'.", call. = FALSE) }
-
-    # Check input 'not.result'
-    if (isTRUE(!is.logical(not.result))) { stop("Please specify TRUE or FALSE for the argument 'not.result'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && !is.character(write))) { stop("Please specify a character string for the argument 'write'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -474,7 +455,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
 
       if (isTRUE(as.numeric(misty::chr.trim(sub("Degrees of Freedom", "", out[which(out == "Chi-Square Test of Model Fit") + 3L]))) == 0L)) {
 
-        result <- misty::chr.omit(result, omit = "fit")
+        result <- misty::chr.omit(result, omit = "fit", check = FALSE)
 
       }
 
@@ -1774,3 +1755,5 @@ mplus.print <- function(x, print = c("all", "input", "result"),
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

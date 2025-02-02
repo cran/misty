@@ -53,10 +53,10 @@
 #' @export
 #'
 #' @examples
-#' # Example 1a: Compute proportion of missing data for each case in the data frame
+#' # Example 1: Compute proportion of missing data for each case in the data frame
 #' na.prop(airquality)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument,
+#' # Alternative specification using the 'data' argument,
 #' # append proportions to the data frame 'airquality'
 #' na.prop(., data = airquality)
 na.prop <- function(..., data = NULL, digits = 2, append = TRUE, name = "na.prop",
@@ -72,9 +72,6 @@ na.prop <- function(..., data = NULL, digits = 2, append = TRUE, name = "na.prop
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -84,11 +81,11 @@ na.prop <- function(..., data = NULL, digits = 2, append = TRUE, name = "na.prop
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, check.chr = "a matrix or data frame")]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -97,6 +94,9 @@ na.prop <- function(..., data = NULL, digits = 2, append = TRUE, name = "na.prop
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
   }
 
@@ -110,21 +110,8 @@ na.prop <- function(..., data = NULL, digits = 2, append = TRUE, name = "na.prop
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Matrix or data frame for the argument 'x'?
-    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L | digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = "append", character = list(name = 1L), args = "digits", envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -148,3 +135,5 @@ na.prop <- function(..., data = NULL, digits = 2, append = TRUE, name = "na.prop
   return(object)
 
 }
+
+#_______________________________________________________________________________

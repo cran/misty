@@ -95,6 +95,15 @@
 #' \emph{Proceedings of the Social Statistics Section of the American Statistical
 #' Association (Part III)}, 777-780.
 #'
+#' @return
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries:
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame with variables used in the current analysis}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{result table}
+#'
 #' @note
 #' This function is based on modified copies of the functions \code{chisq_to_phi},
 #' \code{chisq_to_cramers_v}, \code{chisq_to_tschuprows_t}, \code{chisq_to_pearsons_c},
@@ -104,10 +113,10 @@
 #' @export
 #'
 #' @examples
-#' # Example 1a: Phi coefficient for 'vs' and 'am'
+#' # Example 1: Phi coefficient for 'vs' and 'am'
 #' effsize(mtcars[, c("vs", "am")])
 #'
-#' # Example 1a: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' effsize(vs, am, data = mtcars)
 #'
 #' # Example 2: Bias-corrected Cramer's V for 'gear' and 'carb'
@@ -122,19 +131,17 @@
 #' # Example 5: Fei for 'gear'
 #' effsize(gear, data = mtcars)
 #'
-#' # Example 6a: Bias-corrected Cramer's V for 'cyl' and 'vs', 'am', 'gear', and 'carb'
+#' # Example 6: Bias-corrected Cramer's V for 'cyl' and 'vs', 'am', 'gear', and 'carb'
 #' effsize(mtcars[, c("cyl", "vs", "am", "gear", "carb")])
 #'
-#' # Example 6b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' effsize(cyl, vs:carb, data = mtcars)
 #'
-#' \dontrun{
-#' # Example 7b: Write Results into a text file
+#' # Example 7a: Write Results into a text file
 #' effsize(cyl, vs:carb, data = mtcars, write = "Cramer.txt")
 #'
 #' # Example 7b: Write Results into a Excel file
 #' effsize(cyl, vs:carb, data = mtcars, write = "Cramer.xlsx")
-#' }
 effsize <- function(..., data = NULL, type = c("phi", "cramer", "tschuprow", "cont", "w", "fei"),
                     alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
                     adjust = TRUE, indep = TRUE, p = NULL, digits = 3, as.na = NULL,
@@ -150,9 +157,6 @@ effsize <- function(..., data = NULL, type = c("phi", "cramer", "tschuprow", "co
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -162,11 +166,11 @@ effsize <- function(..., data = NULL, type = c("phi", "cramer", "tschuprow", "co
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a vector, factor, matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract variables
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, check.chr = "a vector, factor, matrix or data frame")]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -175,6 +179,9 @@ effsize <- function(..., data = NULL, type = c("phi", "cramer", "tschuprow", "co
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
   }
 
@@ -187,25 +194,13 @@ effsize <- function(..., data = NULL, type = c("phi", "cramer", "tschuprow", "co
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("adjust", "indep", "append", "output"),
+               s.character = list(type = c("phi", "cramer", "tschuprow", "cont", "w", "fei")),
+               args = c("alternative", "conf.level", "digits", "write2"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # Check input 'type'
-    if (isTRUE(!all(type %in% c("phi", "cramer", "tschuprow", "cont", "w", "fei")))) { stop("Character string in the argument 'type' does not match with \"phi\", \"cramer\", \"tschuprow\", \"cont\", \"w\", or \"fei\".", call. = FALSE) }
-
-    # Check input 'alternative'
-    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
-
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'adjust'
-    if (isTRUE(!is.logical(adjust))) { stop("Please specify TRUE or FALSE for the argument 'adjust'.", call. = FALSE) }
-
-    # Check input 'indep'
-    if (isTRUE(!is.logical(indep))) { stop("Please specify TRUE or FALSE for the argument 'indep'.", call. = FALSE) }
 
     # Check input 'p'
     if (isTRUE(!is.null(p)) && (!indep || is.null(dim(x)))) {
@@ -217,18 +212,6 @@ effsize <- function(..., data = NULL, type = c("phi", "cramer", "tschuprow", "co
       if (isTRUE(sum(p) != 1L)) { stop("Expected proportions specified in 'p' do not add to 1.", call. = FALSE) }
 
     }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && !is.character(write))) { stop("Please specify a character string for the argument 'write'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -418,34 +401,7 @@ effsize <- function(..., data = NULL, type = c("phi", "cramer", "tschuprow", "co
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -456,3 +412,5 @@ effsize <- function(..., data = NULL, type = c("phi", "cramer", "tschuprow", "co
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

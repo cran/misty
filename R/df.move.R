@@ -51,8 +51,7 @@
 #'
 #' # Example 4: Move variables 'hp' and 'am' to the right-hand side of 'disp'
 #' df.move(hp, am, data = mtcars, after = "disp")
-df.move <- function(..., data = NULL, before = NULL, after = NULL,
-                    first = TRUE, check = FALSE) {
+df.move <- function(..., data = NULL, before = NULL, after = NULL, first = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -81,8 +80,8 @@ df.move <- function(..., data = NULL, before = NULL, after = NULL,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = "first", envir = environment(), input.check = check)
 
   if (isTRUE(check)) {
 
@@ -90,6 +89,7 @@ df.move <- function(..., data = NULL, before = NULL, after = NULL,
     if (isTRUE(!is.null(before))) {
 
       if (isTRUE(!is.character(before) || length(before) != 1L)) { stop("Please specify a character string for the argument 'before", call. = FALSE) }
+
       if (isTRUE(!before %in% colnames(data))) { stop("Variable specified in 'before' was not found in the data frame specified in 'data.", call. = FALSE) }
 
       if (isTRUE(before %in% var.names)) { stop("Variables to move specified in '...' cannot be specified in 'before'.", call. = FALSE) }
@@ -100,6 +100,7 @@ df.move <- function(..., data = NULL, before = NULL, after = NULL,
     if (isTRUE(!is.null(after))) {
 
       if (isTRUE(!is.character(after) || length(after) != 1L)) { stop("Please specify a character string for the argument 'after", call. = FALSE) }
+
       if (isTRUE(!after %in% colnames(data))) { stop("Variable specified in 'after' was not found in the data frame specified in 'data.", call. = FALSE) }
 
       if (isTRUE(after %in% var.names)) { stop("Variables to move specified in '...' cannot be specified in 'after'.", call. = FALSE) }
@@ -108,9 +109,6 @@ df.move <- function(..., data = NULL, before = NULL, after = NULL,
 
     # Check input 'before' and 'after'
     if (!is.null(before) && !is.null(after)) { stop("Please specify the argument 'before' or 'after', but not both arguments.", call. = FALSE) }
-
-    # Check input 'first'
-    if (isTRUE(!is.logical(first))) { stop("Please specify TRUE or FALSE for the argument 'first'.", call. = FALSE) }
 
   }
 
@@ -178,3 +176,5 @@ df.move <- function(..., data = NULL, before = NULL, after = NULL,
   return(object)
 
 }
+
+#_______________________________________________________________________________

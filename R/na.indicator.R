@@ -48,17 +48,17 @@
 #' van Buuren, S. (2018). \emph{Flexible imputation of missing data} (2nd ed.). Chapman & Hall.
 #'
 #' @return
-#' Returns a matrix or data frame with \eqn{r = 1} if a value is observed, and \eqn{r = 0}
+#' Returns a data frame with \eqn{r = 1} if a value is observed, and \eqn{r = 0}
 #' if a value is missing.
 #'
 #' @export
 #'
 #' @examples
-#' # Example 1a: Create missing data indicator matrix
+#' # Example 1: Create missing data indicator matrix
 #' na.indicator(airquality)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
-#' na.indicator(., data = airquality)
+#' # Alternative specification using the 'data' argument
+#' na.indicator(., data = airquality, append = FALSE)
 #'
 #' # Example 2: Append missing data indicator matrix to the data frame
 #' na.indicator(., data = airquality)
@@ -75,9 +75,6 @@ na.indicator <- function(..., data = NULL, na = 0, append = TRUE, name = ".i",
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -87,11 +84,11 @@ na.indicator <- function(..., data = NULL, na = 0, append = TRUE, name = ".i",
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- as.data.frame(data[, .var.names(..., data = data, check.chr = "a matrix or data frame"), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -101,12 +98,10 @@ na.indicator <- function(..., data = NULL, na = 0, append = TRUE, name = ".i",
     # Extract data
     x <- eval(..., enclos = parent.frame())
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+
   }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
-
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -117,19 +112,14 @@ na.indicator <- function(..., data = NULL, na = 0, append = TRUE, name = ".i",
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = "append", numeric = list(na = 1L), character = list(name = 1L), envir = environment(), input.check = check)
 
+  # Additional check
   if (isTRUE(check)) {
 
     # Check input 'na'
     if (isTRUE(na != 0L && na != 1L)) { stop("Please specify 0 or 1 for the argument 'na'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'name'
-    if (isTRUE(!is.character(name) || length(name) != 1L)) { stop("Please specify a character string for the argument 'name'.", call. = FALSE) }
 
   }
 
@@ -137,54 +127,28 @@ na.indicator <- function(..., data = NULL, na = 0, append = TRUE, name = ".i",
   #
   # Main Function --------------------------------------------------------------
 
-  # Convert NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert NA ####
+
   if (isTRUE(na == 1L)) {
 
-    object <- apply(x, 2L, function(y) as.numeric(is.na(y)))
+    object <- data.frame(apply(x, 2L, function(y) as.numeric(is.na(y))), row.names = rownames(x))
 
   } else {
 
-    object <- apply(x, 2L, function(y) as.numeric(!is.na(y)))
-
-  }
-
-  # As data frame
-  if (isTRUE(is.data.frame(x))) {
-
-    object  <- as.data.frame(object, stringsAsFactors = FALSE)
-    row.names(object) <- rownames(x)
+    object <- data.frame(apply(x, 2L, function(y) as.numeric(!is.na(y))), row.names = rownames(x))
 
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## One Column ####
+
+  if (isTRUE(ncol(object) == 1L && grepl("......", names(object)))) { object <- setNames(object, nm = "x") }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####
 
-  if (isTRUE(!is.null(data) && append)) {
-
-    #...................
-    ### Variable names ####
-
-    if (isTRUE(ncol(object) == 1L)) {
-
-      if (isTRUE(name == ".i")) {
-
-        object <- setNames(as.data.frame(object), nm = "x.i")
-
-      } else {
-
-        object <- setNames(as.data.frame(object), nm = name)
-
-      }
-
-    } else {
-
-      object <- setNames(as.data.frame(object), nm = paste0(colnames(object), name))
-
-    }
-
-    object <- data.frame(data, object)
-
-  }
+  if (isTRUE(!is.null(data) && append)) { object <- data.frame(data, setNames(as.data.frame(object), nm = paste0(colnames(object), name))) }
 
   #_____________________________________________________________________________
   #
@@ -193,3 +157,5 @@ na.indicator <- function(..., data = NULL, na = 0, append = TRUE, name = ".i",
   return(object)
 
 }
+
+#_______________________________________________________________________________

@@ -29,10 +29,10 @@ restart <- function() {
 
   #_____________________________________________________________________________
   #
-  # Package --------------------------------------------------------------------
+  # Input Check ----------------------------------------------------------------
 
-  # rstudioapi package
-  if (isTRUE(!nzchar(system.file(package = "rstudioapi")))) { stop("Package \"rstudioapi\" is needed for this function, please install the package.", call. = FALSE) }
+  # Check inputs
+  .check.input(package = "rstudioapi", envir = environment(), input.check = TRUE)
 
   #_____________________________________________________________________________
   #

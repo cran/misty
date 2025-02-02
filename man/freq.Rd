@@ -135,11 +135,7 @@ freq(mtcars, exclude = 5)
 freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE, write = "Frequencies.txt")
 
 # Example 8b: Write results into an Excel file
-freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE, write = "Frequencies.xlsx")
-
-result <- freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE, output = FALSE)
-write.result(result, "Frequencies.xlsx")
-}
+freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE, write = "Frequencies.xlsx")}
 }
 \references{
 Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New  S Language}.

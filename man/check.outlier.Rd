@@ -4,10 +4,13 @@
 \alias{check.outlier}
 \title{Statistical Measures for Leverage, Distance, and Influence}
 \usage{
-check.outlier(model, check = TRUE, ...)
+check.outlier(model, append = TRUE, check = TRUE, ...)
 }
 \arguments{
 \item{model}{a fitted model of class \code{"lm"}.}
+
+\item{append}{logical: logical: if \code{TRUE} (default), statistical measures for
+leverage, distance, and influence are appended to the data frame in \code{model$model}.}
 
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 
@@ -15,12 +18,13 @@ check.outlier(model, check = TRUE, ...)
 }
 \value{
 Returns a data frame with following entries:
-\item{\code{idout}}{ID variable}
+
+\item{\code{idout}}{ID variabl}
 \item{\code{mahal}}{Mahalanobis distance}
 \item{\code{hat}}{hat values}
 \item{\code{rstand}}{standardized leverage-corrected residuals}
 \item{\code{rstud}}{studentized leverage-corrected residuals}
-\item{\code{cook}}{Cook`s distance}
+\item{\code{cook}}{Cook's distance}
 \item{\code{Intercept.dfb}}{DFBetas for the intercept}
 \item{\code{pred1.dfb}}{DFBetas for the slope of the predictor pred1}
 \item{\code{....dfb}}{DFBetas for the slope of the predictor ...}
@@ -44,12 +48,12 @@ from the predicted value \eqn{\hat{Y}_i}, and (3) an observation has high
 intercept and/or slopes.
 }
 \examples{
-# Example 1: Regression model and measures for leverage, distance, and influence
-mod.lm <- lm(mpg ~ cyl + disp + hp, data = mtcars)
-check.outlier(mod.lm)
+# Example 1: Statistical measures for leverage, distance, and influence
+check.outlier(lm(mpg ~ cyl + disp + hp, data = mtcars))
 
-# Merge result table with the data
-dat1 <- cbind(mtcars, check.outlier(mod.lm))
+# Example 2: Append statistical measures to the mtcars data frame
+cbind(mtcars,
+      check.outlier(lm(mpg ~ cyl + disp + hp, data = mtcars), append = FALSE))
 }
 \references{
 Darlington, R. B., &, Hayes, A. F. (2017). \emph{Regression analysis and linear

@@ -78,7 +78,7 @@
 #'
 #' @examples
 #' #----------------------------------------------------------------------------
-#' # Numeric vector
+#' # Example 1: Numeric vector
 #' x.num <- c(1, 2, 4, 5, 6, 8, 12, 15, 19, 20)
 #'
 #' # Example 1a: Recode 5 = 50 and 19 = 190
@@ -94,7 +94,7 @@
 #' rec(x.num, spec = "5 = 50; 19 = 190", table = TRUE)
 #'
 #' #----------------------------------------------------------------------------
-#' # Character vector
+#' # Example 2: Character vector
 #' x.chr <- c("a", "c", "f", "j", "k")
 #'
 #' # Example 2a: Recode a to x
@@ -107,7 +107,7 @@
 #' rec(x.chr, spec = "'a' = 'X'", as.factor = TRUE)
 #'
 #' #----------------------------------------------------------------------------
-#' # Factor
+#' # Example 3: Factor
 #' x.fac <- factor(c("a", "b", "a", "c", "d", "d", "b", "b", "a"))
 #'
 #' # Example 3a: Recode a to x, factor levels ordered alphabetically
@@ -117,7 +117,7 @@
 #' rec(x.fac, spec = "'a' = 'x'", levels = c("x", "b", "c", "d"))
 #'
 #' #----------------------------------------------------------------------------
-#' # Multiple variables
+#' # Example 4: Multiple variables
 #' dat <- data.frame(x1.num = c(1, 2, 4, 5, 6),
 #'                   x2.num = c(5, 19, 2, 6, 3),
 #'                   x1.chr = c("a", "c", "f", "j", "k"),
@@ -126,16 +126,16 @@
 #'                   x2.fac = factor(c("b", "a", "d", "c", "e")))
 #'
 #' # Example 4a: Recode numeric vector and attach to 'dat'
-#' dat <- cbind(dat, rec(dat[, c("x1.num", "x2.num")], spec = "5 = 50; 19 = 190"))
+#' cbind(dat, rec(dat[, c("x1.num", "x2.num")], spec = "5 = 50; 19 = 190"))
 #'
-#' # Example 4b: Alternative specification using the 'data' argument,
+#' # Alternative specification using the 'data' argument,
 #' rec(x1.num, x2.num, data = dat, spec = "5 = 50; 19 = 190")
 #'
-#' # Example 4c: Recode character vector and attach to 'dat'
-#' dat <- cbind(dat, rec(dat[, c("x1.chr", "x2.chr")], spec = "'a' = 'X'"))
+#' # Example 4b: Recode character vector and attach to 'dat'
+#' cbind(dat, rec(dat[, c("x1.chr", "x2.chr")], spec = "'a' = 'X'"))
 #'
-#' # Example 4d: Recode factor vector and attach to 'dat'
-#' dat <- cbind(dat, rec(dat[, c("x1.fac", "x2.fac")], spec = "'a' = 'X'"))
+#' # Example 4c: Recode factor vector and attach to 'dat'
+#' cbind(dat, rec(dat[, c("x1.fac", "x2.fac")], spec = "'a' = 'X'"))
 rec <- function(..., data = NULL, spec, as.factor = FALSE, levels = NULL,
                 append = TRUE, name = ".e", as.na = NULL, table = FALSE,
                 check = TRUE) {
@@ -149,9 +149,6 @@ rec <- function(..., data = NULL, spec, as.factor = FALSE, levels = NULL,
 
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
-
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   # Check if input 'spec' is missing
   if (isTRUE(missing(spec))) { stop("Please specify a character string for the argument 'spec'.", call. = FALSE) }
@@ -168,6 +165,9 @@ rec <- function(..., data = NULL, spec, as.factor = FALSE, levels = NULL,
 
   if (isTRUE(!is.null(data))) {
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+
     # Variable names
     var.names <- .var.names(..., data = data, check.chr = "a vector, factor, matrix, array, data frame, or list")
 
@@ -182,6 +182,9 @@ rec <- function(..., data = NULL, spec, as.factor = FALSE, levels = NULL,
     # Extract data
     x <- eval(..., enclos = parent.frame())
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+
   }
 
   # Convert 'x' into a vector when only one variable specified in 'x'
@@ -194,13 +197,11 @@ rec <- function(..., data = NULL, spec, as.factor = FALSE, levels = NULL,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("as.factor", "table"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # Check input 'as.factor'
-    if (isTRUE(!is.logical(as.factor))) { stop("Please specify TRUE or FALSE for the argument 'as.factor'.", call. = FALSE) }
 
     # Check input 'name'
     if (isTRUE(!is.null(dim(x)))) {
@@ -211,16 +212,11 @@ rec <- function(..., data = NULL, spec, as.factor = FALSE, levels = NULL,
 
     }
 
-    # Check input 'table'
-    if (isTRUE(!is.logical(table))) { stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE) }
-
   }
 
   #_____________________________________________________________________________
   #
   # Arguments ------------------------------------------------------------------
-
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Define special values ####
@@ -404,8 +400,7 @@ rec <- function(..., data = NULL, spec, as.factor = FALSE, levels = NULL,
   ## Multiple variables ####
   } else {
 
-    object <- data.frame(lapply(x, misty::rec, spec = spec, as.factor = as.factor,
-                                levels = levels, as.na = as.na, check = FALSE))
+    object <- data.frame(lapply(x, misty::rec, spec = spec, as.factor = as.factor, levels = levels, as.na = as.na, check = FALSE))
 
     #...................
     ### Variable names ####
@@ -460,3 +455,5 @@ rec <- function(..., data = NULL, spec, as.factor = FALSE, levels = NULL,
   if (isTRUE(is.null(dim(x)) && table)) { return(invisible(object)) } else { return(object) }
 
 }
+
+#_______________________________________________________________________________

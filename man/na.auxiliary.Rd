@@ -88,15 +88,13 @@ overwritten.}
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-\tabular{ll}{
-\code{call} \tab function call \cr
-\code{type} \tab type of analysis \cr
-\code{data} \tab data frame used for the current analysis \cr
-\code{model} \tab lavaan model syntax for estimating the semi-partial correlations  \cr
-\code{model.fit} \tab fitted lavaan model for estimating the semi-partial correlations  \cr
-\code{args} \tab specification of function arguments \cr
-\code{result} \tab list with result tables \cr
-}
+\item{\code{call}}{function call}
+\item{\code{type}}{type of analysis}
+\item{\code{data}}{data frame used for the current analysis}
+\item{\code{model}}{lavaan model syntax for estimating the semi-partial correlations}
+\item{\code{model.fit}}{fitted lavaan model for estimating the semi-partial correlations}
+\item{\code{args}}{pecification of function arguments}
+\item{\code{result}}{list with result tables}
 }
 \description{
 This function computes (1) Pearson product-moment correlation matrix to identify
@@ -113,22 +111,24 @@ Note that non-numeric variables (i.e., factors, character vectors, and logical
 vectors) are excluded from to the analysis.
 }
 \examples{
-# Example 1a: Auxiliary variables
+# Example 1: Auxiliary variables
 na.auxiliary(airquality)
 
-# Example 1b: Alternative specification using the 'data' argument
+# Alternative specification using the 'data' argument
 na.auxiliary(., data = airquality)
 
-# Example 2a: Semi-partial correlation coefficients
+# Example 2: Semi-partial correlation coefficients
 na.auxiliary(airquality, model = "Ozone ~ Solar.R + Wind")
 
-# Example 2b: Alternative specification using the 'data' argument
+# Alternative specification using the 'data' argument
 na.auxiliary(Temp, Month, Day, data = airquality, model = "Ozone ~ Solar.R + Wind")
 
 \dontrun{
-# Example 3: Write Results into a text file
+# Example 3a: Write Results into a text file
 na.auxiliary(airquality, write = "NA_Auxiliary.txt")
-}
+
+# Example 3a: Write Results into an Excel file
+na.auxiliary(airquality, write = "NA_Auxiliary.xlsx")}
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.

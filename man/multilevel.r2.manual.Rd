@@ -132,9 +132,9 @@ Flake.
 }
 \examples{
 \dontrun{
-# Load misty, lme4, nlme, and ggplot2 package
-library(misty)
-library(lme4)
+
+# Load misty and lme4 package
+libraries(misty, lme4)
 
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")

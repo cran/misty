@@ -64,25 +64,25 @@
 #' # Example 1: Extract duplicated rows based on all variables
 #' df.duplicated(., data = dat)
 #'
-#' # Example 2: Extract duplicated rows based on x4
+#' # Example 2: Extract duplicated rows based on 'x4'
 #' df.duplicated(x4, data = dat)
 #'
-#' # Example 3: Extract duplicated rows based on x2 and x3
+#' # Example 3: Extract duplicated rows based on 'x2' and 'x3'
 #' df.duplicated(x2, x3, data = dat)
 #'
 #' # Example 4: Extract duplicated rows based on all variables
 #' # exclude first of identical rows
 #' df.duplicated(., data = dat, first = FALSE)
 #'
-#' # Example 5: Extract duplicated rows based on x2 and x3
+#' # Example 5: Extract duplicated rows based on 'x2' and 'x3'
 #' # do not return all variables
 #' df.duplicated(x2, x3, data = dat, keep.all = FALSE)
 #'
-#' # Example 6: Extract duplicated rows based on x4
+#' # Example 6: Extract duplicated rows based on 'x4'
 #' # consider duplication from the reversed side
 #' df.duplicated(x4, data = dat, first = FALSE, from.last = TRUE)
 #'
-#' # Example 7: Extract duplicated rows based on x2 and x3
+#' # Example 7: Extract duplicated rows based on 'x2' and 'x3'
 #' # set row names to NULL
 #' df.duplicated(x2, x3, data = dat, keep.row.names = FALSE)
 #'
@@ -92,24 +92,24 @@
 #' # Example 8: Extract unique rows based on all variables
 #' df.unique(., data = dat)
 #'
-#' # Example 9: Extract unique rows based on x4
+#' # Example 9: Extract unique rows based on 'x4'
 #' df.unique(x4, data = dat)
 #'
-#' # Example 10: Extract unique rows based on x1, x2, and x3
+#' # Example 10: Extract unique rows based on 'x1', 'x2', and 'x3'
 #' df.unique(x1, x2, x3, data = dat)
 #'
-#' # Example 11: Extract unique rows based on x2 and x3
+#' # Example 11: Extract unique rows based on 'x2' and 'x3'
 #' # do not return all variables
 #' df.unique(x2, x3, data = dat, keep.all = FALSE)
 #'
-#' # Example 12: Extract unique rows based on x4
+#' # Example 12: Extract unique rows based on 'x4'
 #' # consider duplication from the reversed side
 #' df.unique(x4, data = dat, from.last = TRUE)
 #'
-#' # Example 13: Extract unique rows based on x2 and x3
+#' # Example 13: Extract unique rows based on 'x2' and 'x3'
 #' # set row names to NULL
 #' df.unique(x2, x3, data = dat, keep.row.names = FALSE)
-df.duplicated <- function(..., data , first = TRUE, keep.all = TRUE,
+df.duplicated <- function(..., data, first = TRUE, keep.all = TRUE,
                           from.last = FALSE, keep.row.names = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
@@ -133,24 +133,8 @@ df.duplicated <- function(..., data , first = TRUE, keep.all = TRUE,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'first'
-    if (isTRUE(!is.logical(first))) { stop("Please specify TRUE or FALSE for the argument 'first'.", call. = FALSE) }
-
-    # Check input 'keep.all'
-    if (isTRUE(!is.logical(keep.all))) { stop("Please specify TRUE or FALSE for the argument 'keep.all'.", call. = FALSE) }
-
-    # Check input 'from.last'
-    if (isTRUE(!is.logical(from.last))) { stop("Please specify TRUE or FALSE for the argument 'from.last'.", call. = FALSE) }
-
-    # Check input 'keep.row.names'
-    if (isTRUE(!is.logical(keep.row.names))) { stop("Please specify TRUE or FALSE for the argument 'keep.row.names'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("first", "keep.all", "from.last", "keep.row.names"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -274,3 +258,5 @@ df.unique <- function(..., data = NULL, keep.all = TRUE, from.last = FALSE,
   return(object)
 
 }
+
+#_______________________________________________________________________________

@@ -55,13 +55,16 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{data} \tab matrix or data frame specified in \code{...} \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{result} \tab list with result tables \cr
-#' }
+#'
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{matrix or data frame specified in \code{...}}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{list with result tables, i.e., \code{crosstab} for the
+#'                      cross tabulation, \code{freq.a} for the absolute frequencies,
+#'                      \code{perc.r} for the row-wise percentages, \code{perc.c}
+#'                      for the column-wise percentages, \code{perc.t} for the total
+#'                      percentages}
 #'
 #' @export
 #'
@@ -69,10 +72,10 @@
 #' #----------------------------------------------------------------------------
 #' # Two-Dimensional Table
 #'
-#' # Example 1a: Cross Tabulation for 'vs' and 'am'
+#' # Example 1: Cross Tabulation for 'vs' and 'am'
 #' crosstab(mtcars[, c("vs", "am")])
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' crosstab(vs, am, data = mtcars)
 #'
 #' # Example 2: Cross Tabulation, print all percentages
@@ -93,10 +96,10 @@
 #' #----------------------------------------------------------------------------
 #' # Three-Dimensional Table
 #'
-#' # Example 7a: Cross Tabulation for 'vs', 'am', ane 'gear'
+#' # Example 7: Cross Tabulation for 'vs', 'am', ane 'gear'
 #' crosstab(mtcars[, c("vs", "am", "gear")])
 #'
-#' # Example 7b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' crosstab(vs:gear, data = mtcars)
 #'
 #' # Example 8: Cross Tabulation, print all percentages
@@ -105,16 +108,11 @@
 #' # Example 9: Cross Tabulation, print all percentages, split output table
 #' crosstab(mtcars[, c("vs", "am", "gear")], print = "all", split = TRUE)
 #'
-#' \dontrun{
 #' # Example 10a: Write Results into a text file
 #' crosstab(mtcars[, c("vs", "am")], print = "all", write = "Crosstab.txt")
 #'
 #' # Example 10b: Write Results into a Excel file
 #' crosstab(mtcars[, c("vs", "am")], print = "all", write = "Crosstab.xlsx")
-#'
-#' result <- crosstab(mtcars[, c("vs", "am")], print = "all", output = FALSE)
-#' write.result(result, "Crosstab.xlsx")
-#' }
 crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "total"),
                      freq = TRUE, split = FALSE, na.omit = TRUE, digits = 2,
                      as.na = NULL, write = NULL, append = TRUE, check = TRUE,
@@ -130,9 +128,6 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -142,11 +137,11 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, check.chr = "a matrix or data frame")]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -155,6 +150,9 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
   }
 
@@ -175,8 +173,10 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("freq", "na.omit", "append", "output"),
+               m.character = list(print = c("no", "all", "row", "col", "total")),
+               args = c("digits", "write2"), envir = environment(), input.check = check)
 
   if (isTRUE(check)) {
 
@@ -184,33 +184,11 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
     if (isTRUE(ncol(x.crosstab) > 3L || ncol(x.crosstab) < 2L)) { stop("Please specify a matrix or data frame with two or three columns.", call. = FALSE) }
 
     # Check input 'x'
-    x.zero.var <- vapply(x.crosstab, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1))
-    if (isTRUE(any(x.zero.var))) {
-
-      stop(paste0("Following variables have only one unique value: ", paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE)
-
-    }
-
-    # Check input 'print'
-    if (isTRUE(any(!print %in% c("no", "all", "row", "col", "total")))) { stop("Character strings in the argument 'print' do not match with \"no\", \"all\", \"row\", \"col\" or \"total\".", call. = FALSE) }
-
-    # Check input 'freq'
-    if (isTRUE(!is.logical(freq))) { stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE) }
+    vapply(x.crosstab, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L)) |>
+      (\(y) if (isTRUE(any(y))) { stop(paste0("Following variables have only one unique value: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
 
     # Check print = "no" and freq = FALSE
     if (isTRUE(all(print == "no") && isTRUE(!freq))) { stop("Please include either percentages (i.e., print != 'no') or absolute frequencies (i.e., freq = TRUE) in the cross tabulation.", call. = FALSE) }
-
-    # Check input 'na.omit'
-    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { warning("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -724,36 +702,9 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
 
   #_____________________________________________________________________________
   #
-  # write Result ---------------------------------------------------------------
+  # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -764,3 +715,5 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

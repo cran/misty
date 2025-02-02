@@ -230,6 +230,7 @@ The function uses the functions \code{lavTestLRT} provided in the R package
 }
 \examples{
 \dontrun{
+
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 

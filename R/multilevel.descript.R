@@ -167,7 +167,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
@@ -183,7 +182,7 @@
 #' # Example 1b: Cluster variable 'cluster' not in '...'
 #' multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 #'
-#' # Example 1c: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' multilevel.descript(y1, data = Demo.twolevel, cluster = "cluster")
 #'
 #' #---------------------------
@@ -205,7 +204,7 @@
 #' multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
 #'                       cluster = Demo.twolevel$cluster)
 #'
-#' # Example 6b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' multilevel.descript(y1:y3, w1, w2, data = Demo.twolevel, cluster = "cluster")
 #'
 #' #----------------------------------------------------------------------------
@@ -225,7 +224,7 @@
 #' # Example 7b: Cluster variables 'cluster' not in '...'
 #' multilevel.descript(Demo.threelevel$y1, cluster = Demo.threelevel[, c("cluster3", "cluster2")])
 #'
-#' # Example 7c: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' multilevel.descript(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
 #'
 #' #----------------------------------------------------------------------------
@@ -247,7 +246,6 @@
 #' result <- multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
 #'                               cluster = Demo.twolevel$cluster, output = FALSE)
 #' write.result(result, "Multilevel_Descript.xlsx")
-#' }
 multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
                                 method = c("aov", "lme4", "nlme"), print = c("all", "var", "sd"),
                                 REML = TRUE, digits = 2, icc.digits = 3, as.na = NULL,
@@ -262,9 +260,6 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
 
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
-
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
@@ -281,11 +276,11 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
 
     # Cluster variable
     cluster <- data[, cluster]
@@ -297,6 +292,10 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- as.data.frame(cluster) } }
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -349,9 +348,13 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("REML", "append", "output"),
+               s.character = list(type = c("1a", "1b"), method = c("aov", "lme4", "nlme")),
+               m.character = list(print = c("all", "var", "sd")),
+               args = c("digits", "icc.digits", "write2"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Package lme4 installed?
@@ -359,30 +362,6 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
 
     # Package nlme installed?
     if (isTRUE(method == "nlme")) { if (isTRUE(!nzchar(system.file(package = "nlme")))) { stop("Package \"nlme\" is needed for method = \"nlme\", please install the package or switch to a different method.", call. = FALSE) } }
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "var", "sd")))) { stop("Character strings in the argument 'print' do not all match with \"var\" or \"sd\".", call. = FALSE) }
-
-    # Check input 'type'
-    if (isTRUE(!all(type %in% c("1a", "1b")))) { stop("Character strings in the argument 'type' do not all match with \"1a\" or \"1b\".", call. = FALSE) }
-
-    # Check input 'method'
-    if (isTRUE(any(!method %in% c("aov", "lme4", "nlme")))) { stop("Character string in the argument 'method' does not match with \"aov\", \"lme4\", or \"nlme\".", call. = FALSE) }
-
-    # Check input 'REML'
-    if (isTRUE(!is.logical(REML))) { stop("Please specify TRUE or FALSE for the argument 'REML'", call. = FALSE) }
-
-    # Check digits argument
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE) }
-
-    # Check icc.digits argument
-    if (isTRUE(icc.digits %% 1L != 0L || icc.digits < 0L)) { stop("Specify a positive integer value for the argument 'icc.digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE) }
 
   }
 
@@ -994,36 +973,9 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
 
   #_____________________________________________________________________________
   #
-  # Write Result ---------------------------------------------------------------
+  # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -1034,3 +986,5 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

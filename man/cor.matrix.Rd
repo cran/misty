@@ -138,7 +138,7 @@ package by William Revelle to estimate tetrachoric and polychoric correlation
 coefficients.
 }
 \examples{
-# Example 1a: Pearson product-moment correlation coefficient between 'Ozone' and 'Solar.R#
+# Example 1a: Pearson product-moment correlation coefficient between 'Ozone' and 'Solar.R'
 cor.matrix(airquality[, c("Ozone", "Solar.R")])
 
 # Example 1b: Alternative specification using the 'data' argument
@@ -187,9 +187,6 @@ cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], print = "all", write = "
 
 # Example 10b: Write results into an Excel file
 cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], print = "all", write = "Correlation.xlsx")
-
-result <- cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], print = "all", output = FALSE)
-write.result(result, "Correlation.xlsx")
 }
 }
 \references{

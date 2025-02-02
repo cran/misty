@@ -11,7 +11,7 @@
 #'                  stored in the "label" attribute pf data. Must be <= 80
 #'                  characters.
 #' @param str.thres any character vector with a maximum length greater than
-#'                  \code{str.thre} bytes wil be stored as a long string
+#'                  \code{str.thre} bytes will be stored as a long string
 #'                  \code{strL} instead of a standard string \code{str}
 #'                  variable if \code{version} is greater or equal 13.
 #' @param adjust.tz this argument controls how the timezone of date-time values
@@ -40,10 +40,8 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Example 1: Write data frame 'mtcars' into the State data file 'mtcars.dta'
 #' write.dta(mtcars, "mtcars.dta")
-#' }
 write.dta <- function(x, file = "Stata_Data.dta", version = 14, label = NULL,
                       str.thres = 2045, adjust.tz = TRUE, check = TRUE) {
 
@@ -67,19 +65,14 @@ write.dta <- function(x, file = "Stata_Data.dta", version = 14, label = NULL,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = "adjust.tz", numeric = list(version = 1L), character = list(file = 1L), package = "haven", input.check = check, envir = environment())
 
+  # Additional check
   if (isTRUE(check)) {
-
-    # Package haven installed?
-    if (isTRUE(!requireNamespace("haven", quietly = TRUE))) { stop("Package \"haven\" is needed for this function to work, please install it.", call. = FALSE ) }
 
     # Check input 'version'
     if (isTRUE(version < 8L || version > 15L)) { stop("This function does not support the Stat file version specified in 'version'", call. = FALSE)}
-
-    # Check input 'adjust.tz'
-    if (isTRUE(!is.logical(adjust.tz))) { stop("Please specify TRUE or FALSE for the argument 'adjust.tz'.", call. = FALSE) }
 
   }
 
@@ -91,3 +84,5 @@ write.dta <- function(x, file = "Stata_Data.dta", version = 14, label = NULL,
   haven::write_dta(x, path = file, version = version, label = label, strl_threshold = str.thres, adjust_tz = adjust.tz)
 
 }
+
+#_______________________________________________________________________________

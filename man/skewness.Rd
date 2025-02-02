@@ -3,11 +3,13 @@
 \name{skewness}
 \alias{skewness}
 \alias{kurtosis}
-\title{Skewness and Kurtosis}
+\title{Univariate and Multivariate Skewness and Kurtosis}
 \usage{
-skewness(..., data = NULL, as.na = NULL, check = TRUE)
+skewness(..., data = NULL, sample = TRUE, digits = 2, p.digits,
+         as.na = NULL, check = TRUE, output = TRUE)
 
-kurtosis(..., data = NULL, as.na = NULL, check = TRUE)
+kurtosis(..., data = NULL, sample = TRUE, center = TRUE, digits = 2, p.digits,
+         as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{...}{a numeric vector. Alternatively, an expression indicating the
@@ -15,42 +17,115 @@ variable names in \code{data} e.g., \code{skewness(x1, data = dat)}. }
 
 \item{data}{a data frame when specifying the variable in the argument
 \code{...}. Note that the argument is \code{NULL} when specifying
-a numeric vector for the argument \code{...}.}
+a numeric vector, matrix, or data frame for the argument \code{...}.}
 
-\item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting
-the analysis.}
+\item{sample}{logical: if \code{TRUE} (default), the univariate sample skewness
+or kurtosis is computed, while the population skewness or kurtosis
+is computed when \code{sample = FALSE}.}
+
+\item{center}{logical: if \code{TRUE} (default), the univariate or multivariate
+kurtosis is centered, so that the expected kurtosis under
+univariate or multivariate normality is 0, while the expected
+kurtosis under univariate or multivariate normality is 3 when
+\code{center = FALSE}.}
+
+\item{digits}{an integer value indicating the number of decimal places to be
+used. Note that this argument only applied when computing
+multivariate skewness and kurtosis.}
+
+\item{p.digits}{an integer value indicating the number of decimal places
+to be used for displaying the \emph{p}-values.}
+
+\item{as.na}{a numeric vector indicating user-defined missing values, i.e.,
+these values are converted to \code{NA} before conducting the analysis.}
 
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.
+Note that this argument only applied when computing multivariate skewness and kurtosis.}
 }
 \value{
-Returns the estimated skewness or kurtosis of \code{x}.
+Returns univariate skewness or kurtosis of \code{x} or an object of class
+\code{misty.object}, which is a list with following entries:
+\item{\code{call}}{function call}
+\item{\code{type}}{type of analysis}
+\item{\code{data}}{list with the input specified in \code{...} }
+\item{\code{args}}{specification of function arguments}
+\item{\code{result}}{result table}
 }
 \description{
-The function \code{skewness} computes the skewness, the function \code{kurtosis}
-computes the kurtosis.
+The function \code{skewness} computes the univariate sample or population
+skewness and conduct's Mardia's test for multivariate skewness, while the
+function \code{kurtosis} computes the univariate sample or population (excess)
+kurtosis or the multivariate (excess) kurtosis and conduct's Mardia's test for
+multivariate kurtosis. By default, the function computes the sample univariate
+skewness or multivariate skewness and the univariate sample excess kurtosis or
+multivariate excess kurtosis.
 }
 \details{
-The same method for estimating skewness and kurtosis is used in SAS and SPSS.
-Missing values (\code{NA}) are stripped before the computation. Note that at
-least 3 observations are needed to compute skewness and at least 4 observations
-are needed to compute excess kurtosis.
+\describe{
+\item{\strong{Univariate Skewness and Kurtosis}}{Univariate skewness and kurtosis
+are computed based on the same formula as in SAS and SPSS:
+\itemize{
+      \item{\emph{Population Skewness}}
+      \deqn{\sqrt{n}\frac{\sum_{i=1}^{n}(X_i - \bar{X})^3}{(\sum_{i=1}^{n}(X_i - \bar{X})^2)^{3/2}}}
+      \item{\emph{Sample Skewness}}
+      \deqn{\frac{n\sqrt{n - 1}}{n-2}
+      \frac{\sum_{i=1}^{n}(X_i - \bar{X})^3}{(\sum_{i=1}^{n}(X_i - \bar{X})^2)^{3/2}}}
+      \item{\emph{Population Excess Kurtosis}}
+      \deqn{n\frac{\sum_{i=1}^{n}(X_i - \bar{X})^4}{(\sum_{i=1}^{n}(X_i - \bar{X})^2)^2} - 3}
+      \item{\emph{Sample Excess Kurtosis}}
+      \deqn{(n + 1)\frac{\sum_{i=1}^{n}(X_i - \bar{X})^4}{(\sum_{i=1}^{n}(X_i - \bar{X})^2)^2} - 3 + 6\frac{n - 1}{(n - 2)(n - 3)}}
+}
+Note that missing values (\code{NA}) are stripped before the computation and
+that at least 3 observations are needed to compute skewness and at least
+4 observations are needed to compute kurtosis.}
+
+\item{\strong{Multivariate Skewness and Kurtosis}}{Mardia's multivariate skewness
+and kurtosis compares the joint distribution of several variables against a
+multivariate normal distribution. The expected skewness is 0 for a multivariate
+normal distribution, while the expected kurtosis is \eqn{p(p + 2)} for a
+multivariate distribution of \eqn{p} variables. However, this function scales
+the multivariate kurtosis on \eqn{p(p + 2)} according to the default setting
+\code{center = TRUE} so that the expected kurtosis under multivariate normality
+is 0. Multivariate skewness and kurtosis are tested for statistical significance
+based on the chi-square distribution for skewness and standard normal distribution
+for the kurtosis. If at least one of the tests is statistically significant,
+the underlying joint population is inferred to be non-normal. Note that non-significance of
+these statistical tests do not imply multivariate normality.}
+}
+}
+\note{
+These functions implemented a modified copy of the \code{mardia()} function
+in the \pkg{psych} package by William Revelle (2024).
 }
 \examples{
-# Set seed of the random number generation
-set.seed(123)
-# Generate random numbers according to N(0, 1)
-x <- rnorm(100)
+# Example 1a: Compute univariate sample skewness
+skewness(mpg, data = mtcars)
 
-# Example 1: Compute skewness
-skewness(x)
+# Example 1b: Compute univariate sample excess kurtosis
+kurtosis(mpg, data = mtcars)
 
-# Example 2: Compute excess kurtosis
-kurtosis(x)
+# Example 2a: Compute multivariate skewness
+skewness(mtcars)
+
+# Example 2b: Compute multivariate excess kurtosis
+kurtosis(mtcars)
 }
 \references{
+Cain, M. K., Zhang, Z., & Yuan, KH. (2024). Univariate and multivariate skewness
+and kurtosis for measuring nonnormality: Prevalence, influence and estimation.
+\emph{Behavior Research Methods, 49}, 1716–1735. https://doi.org/10.3758/s13428-016-0814-1
+
+Mardia, K. V. (1970). Measures of multivariate skewness and kurtosis with applications.
+\emph{Biometrika, 57}(3), 519-530. https://doi.org/10.2307/2334770
+
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
-- Using R and SPSS}. New York: John Wiley & Sons.
+- Using R and SPSS}. John Wiley & Sons.
+
+William Revelle (2024). \emph{psych: Procedures for Psychological, Psychometric, and
+Personality Research}. Northwestern University, Evanston, Illinois.
+R package version 2.4.6, https://CRAN.R-project.org/package=psych.
 }
 \seealso{
 \code{\link{descript}}

@@ -6,11 +6,11 @@
 \usage{
 aov.b(formula, data, posthoc = FALSE, conf.level = 0.95, hypo = TRUE,
       descript = TRUE, effsize = FALSE, weighted = FALSE, correct = FALSE,
-      plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
+      plot = FALSE, point.size = 4, adjust = TRUE, errorbar.width = 0.1,
       xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
       jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
       jitter.height = 0, jitter.alpha = 0.1, title = "",
-      subtitle = "Confidence Interval", digits = 2, p.digits = 4,
+      subtitle = "Confidence Interval", digits = 2, p.digits = 3,
       as.na = NULL, write = NULL, append = TRUE, check = TRUE,
       output = TRUE, ...)
 }
@@ -55,7 +55,7 @@ the point representing the mean value.}
 \item{adjust}{logical: if \code{TRUE} (default), difference-adjustment
 for the confidence intervals is applied.}
 
-\item{error.width}{a numeric value indicating the horizontal bar width of
+\item{errorbar.width}{a numeric value indicating the horizontal bar width of
 the error bar.}
 
 \item{xlab}{a character string specifying the labels for the x-axis.}
@@ -81,10 +81,10 @@ for the jittered data points.}
 \item{jitter.alpha}{a numeric value indicating the opacity of the jittered
 data points.}
 
-\item{title}{a character string specifying the text for the title for
+\item{title}{a character string specifying the text for the title of
 the plot.}
 
-\item{subtitle}{a character string specifying the text for the subtitle for
+\item{subtitle}{a character string specifying the text for the subtitle of
 the plot.}
 
 \item{digits}{an integer value indicating the number of decimal places
@@ -120,8 +120,8 @@ entries:
   \item{\code{type}}{type of analysis}
   \item{\code{data}}{data frame with variables used in the current analysis}
   \item{\code{formula}}{formula of the current analysis}
-  \item{\code{plot}}{ggplot2 object for plotting the results}
   \item{\code{args}}{specification of function arguments}
+  \item{\code{plot}}{ggplot2 object for plotting the results}
   \item{\code{result}}{list with result tables, i.e., \code{descript} for descriptive
                        statistics, \code{test} for the ANOVA table, \code{posthoc}
                        for post hoc tests, and \code{aov} for the return object
@@ -172,7 +172,7 @@ aov.b(y ~ group, data = dat, descript = FALSE, hypo = FALSE)
 
 \dontrun{
 # Example 4: Write results into a text file
-aov.b(y ~ group, data = dat, write = "ANOVA.txt")
+aov.b(y ~ group, data = dat, write = "ANOVA.txt")}
 
 # Example 5: Between-subject ANOVA
 # plot results
@@ -181,8 +181,9 @@ aov.b(y ~ group, data = dat, plot = TRUE)
 # Load ggplot2 package
 library(ggplot2)
 
+\dontrun{
 # Example 6: Save plot, ggsave() from the ggplot2 package
-ggsave("Between-Subject_ANOVA.png", dpi = 600, width = 4.5, height = 6)
+ggsave("Between-Subject_ANOVA.png", dpi = 600, width = 4.5, height = 6)}
 
 # Example 7: Between-subject ANOVA
 # extract plot
@@ -198,9 +199,8 @@ ggplot(plotdat, aes(group, y)) +
   geom_point(stat = "summary", fun = "mean", size = 4) +
   stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
   scale_x_discrete(name = NULL) +
-  labs(subtitle = "Two-Sided 95% Confidence Interval") +
+  labs(subtitle = "Two-Sided Confidence Interval") +
   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
-}
 }
 \references{
 Baguley, T. S. (2012a). \emph{Serious stats: A guide to advanced statistics for

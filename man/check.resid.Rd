@@ -5,18 +5,15 @@
 \title{Residual Diagnostics}
 \usage{
 check.resid(model, type = c("linear", "homo", "normal"),
-            resid = c("unstand", "stand", "student"),
+            resid = c("unstand", "stand", "student"), plot = TRUE,
             point.shape = 21, point.fill = "gray80", point.size = 1,
-            line1 = TRUE, line2 = TRUE,
-            line.type1 = "solid", line.type2 = "dashed",
-            line.width1 = 1, line.width2 = 1,
-            line.color1 = "#0072B2", line.color2 = "#D55E00",
-            bar.width = NULL, bar.n = 30, bar.color = "black",
-            bar.fill = "gray95", strip.size = 11,
-            label.size = 10, axis.size = 10,
-            xlimits = NULL, ylimits = NULL,
+            line1 = TRUE, line2 = TRUE, linetype1 = "solid", linetype2 = "dashed",
+            linewidth1 = 1, linewidth2 = 1, line.col1 = "#0072B2",
+            line.col2 = "#D55E00", bar.width = NULL, bar.n = 30,
+            bar.col = "black", bar.fill = "gray95", strip.text.size = 11,
+            label.size = 10, axis.text.size = 10, xlim = NULL, ylim = NULL,
             xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
-            check = TRUE, plot = TRUE)
+            check = TRUE)
 }
 \arguments{
 \item{model}{a fitted model of class \code{lm}.}
@@ -36,11 +33,13 @@ for studentized residual. By default, studentized residuals
 are used for predicted values vs. residuals plot and unstandardized
 residuals are used for Q-Q plot and histogram.}
 
+\item{plot}{logical: if \code{TRUE} (default), a plot is drawn.}
+
 \item{point.shape}{a numeric value for specifying the argument \code{shape}
 in the \code{geom_point} function.}
 
-\item{point.fill}{a numeric value for specifying the argument \code{fill}
-in the \code{geom_point} function.}
+\item{point.fill}{a character string or numeric value for specifying the
+argument \code{fill} the \code{geom_point} function.}
 
 \item{point.size}{a numeric value for specifying the argument \code{size}
 in the \code{geom_point} function.}
@@ -56,26 +55,26 @@ in the partial (component-plus-residual) plots, loess smooth
 lines are drawn in the predicted values vs. residuals plot,
 and density curve is drawn in the histogram.}
 
-\item{line.type1}{a character string or numeric value for specifying the argument
+\item{linetype1}{a character string or numeric value for specifying the argument
 \code{linetype} in the \code{geom_smooth}, \code{geom_hline},
 or \code{stat_function} function.}
 
-\item{line.type2}{a character string or numeric value for specifying the argument
+\item{linetype2}{a character string or numeric value for specifying the argument
 \code{linetype} in the \code{geom_smooth} or \code{geom_density}
  function.}
 
-\item{line.width1}{a numeric value for specifying the argument \code{linewidth}
+\item{linewidth1}{a numeric value for specifying the argument \code{linewidth}
 in the \code{geom_smooth}, \code{geom_hline}, or \code{stat_function}
 function.}
 
-\item{line.width2}{a numeric value for specifying the argument \code{linewidth}
+\item{linewidth2}{a numeric value for specifying the argument \code{linewidth}
 in the \code{geom_smooth} or \code{geom_density} function.}
 
-\item{line.color1}{a character string or numeric value for specifying the argument
+\item{line.col1}{a character string or numeric value for specifying the argument
 \code{color} in the \code{geom_smooth}, \code{geom_hline},
 or \code{stat_function} function.}
 
-\item{line.color2}{a character string or numeric value for specifying the argument
+\item{line.col2}{a character string or numeric value for specifying the argument
 \code{color} in the \code{geom_smooth} or \code{geom_density}
  function.}
 
@@ -85,13 +84,13 @@ the \code{geom_bar} function.}
 \item{bar.n}{a numeric value for specifying the argument \code{bins} in
 the \code{geom_bar} function.}
 
-\item{bar.color}{a character string or numeric value for specifying the argument
+\item{bar.col}{a character string or numeric value for specifying the argument
 \code{color} in the \code{geom_bar} function.}
 
 \item{bar.fill}{a character string or numeric value for specifying the argument
 \code{fill} in the \code{geom_bar} function.}
 
-\item{strip.size}{a numeric value for specifying the argument \code{size} in
+\item{strip.text.size}{a numeric value for specifying the argument \code{size} in
 the \code{element_text} function of the \code{strip.text}
 argument within the \code{theme} function.}
 
@@ -99,25 +98,23 @@ argument within the \code{theme} function.}
 the \code{element_text} function of the \code{axis.title}
 argument within the \code{theme} function.}
 
-\item{axis.size}{a numeric value for specifying the argument \code{size} in
+\item{axis.text.size}{a numeric value for specifying the argument \code{size} in
 the \code{element_text} function of the \code{axis.text }
 argument within the \code{theme} function.}
 
-\item{xlimits}{a numeric value for specifying the argument \code{limits}
+\item{xlim}{a numeric vector with two elements for specifying the argument \code{limits}
 in the \code{scale_x_continuous} function.}
 
-\item{ylimits}{a numeric value for specifying the argument \code{limits}
+\item{ylim}{a numeric vector with two elements for specifying the argument \code{limits}
 in the \code{scale_y_continuous} function.}
 
-\item{xbreaks}{a numeric value for specifying the argument \code{breaks }
+\item{xbreaks}{a numeric vector for specifying the argument \code{breaks}
 in the \code{scale_x_continuous} function.}
 
-\item{ybreaks}{a numeric value for specifying the argument \code{breaks }
+\item{ybreaks}{a numeric vector for specifying the argument \code{breaks}
 in the \code{scale_y_continuous} function.}
 
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
-
-\item{plot}{logical: if \code{TRUE} (default), a plot is drawn.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -125,8 +122,8 @@ entries:
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
 \item{\code{model}}{model specified in \code{model}}
-\item{\code{plotdat}}{data frame used for the plot}
 \item{\code{args}}{specification of function arguments}
+\item{\code{plotdat}}{data frame used for the plot}
 \item{\code{plot}}{ggplot2 object for plotting the residuals}
 }
 \description{
@@ -219,6 +216,7 @@ values. The correlation is generally negligible unless the sample size is small.
 }
 \examples{
 \dontrun{
+
 #-------------------------------------------------------------------------------
 # Residual diagnostics for a linear model
 

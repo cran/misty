@@ -111,10 +111,10 @@ Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
 # Example 5: Descriptive statistics for missing data
 na.descript(Demo.threelevel, cluster = c("cluster3", "cluster2"))
 
+\dontrun{
 #----------------------------------------------------------------------------
 # Write Results
 
-\dontrun{
 # Example 6a: Write Results into a text file
 na.descript(airquality, table = TRUE, write = "NA_Descriptives.txt")
 
@@ -122,8 +122,7 @@ na.descript(airquality, table = TRUE, write = "NA_Descriptives.txt")
 na.descript(airquality, table = TRUE, write = "NA_Descriptives.xlsx")
 
 result <- na.descript(airquality, table = TRUE, output = FALSE)
-write.result(result, "NA_Descriptives.xlsx")
-}
+write.result(result, "NA_Descriptives.xlsx")}
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.

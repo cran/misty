@@ -5,7 +5,8 @@
 \title{Read Data File in Table format, SPSS, Excel, or Stata DTA File}
 \usage{
 read.data(file, sheet = NULL, header = TRUE, select = NULL, drop = NULL,
-          use.value.labels = FALSE, use.missings = TRUE, na.strings = "NA",
+          sep = "auto", dec = "auto", use.value.labels = FALSE,
+          use.missings = TRUE, na.strings = c("NA", ""),
           stringsAsFactors = FALSE, formats = FALSE, label = FALSE,
           labels = FALSE, missing = FALSE, widths = FALSE, as.data.frame = TRUE,
           encoding = c("unknown", "UTF-8", "Latin-1"), check = TRUE)
@@ -20,7 +21,7 @@ Note that the function will select an appropriate
 \item{sheet}{a character string indicating the name of a Excel sheet
 or a numeric value indicating the position of the Excel
 sheet to read. By default the first sheet will be read
-when reading an Excel file (\code{.xlsx}) .}
+when reading an Excel file (\code{.xlsx}).}
 
 \item{header}{logical: if \code{TRUE} (default), the first row is used
 as column names when reading an Excel file (\code{.xlsx}),
@@ -33,6 +34,16 @@ keep, drop the rest. See the help page of the
 
 \item{drop}{a character vector of column names or numeric vector
 to drop, keep the rest.}
+
+\item{sep}{a character string indicating the separator between
+columns for the \code{fread} function when reading data
+in CSV (\code{.csv}), DAT (\code{.dat}), or TXT (\code{.txt})
+format.}
+
+\item{dec}{a character string indicating the decimal separator
+for the \code{fread} function when reading data in CSV
+(\code{.csv}), DAT (\code{.dat}), or TXT (\code{.txt})
+format.}
 
 \item{use.value.labels}{logical: if \code{TRUE}, variables with value labels
 are converted into factors.}
@@ -85,6 +96,7 @@ package.
 }
 \examples{
 \dontrun{
+
 # Read CSV data file
 dat <- read.data("CSV_Data.csv")
 

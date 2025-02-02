@@ -91,12 +91,12 @@
 #'                          \code{"fill"} argument (default is \code{"gray85"})
 #'                          for the \code{annotate}, \code{geom_histogram},
 #'                          \code{geom_bar}, and \code{geom_point} functions.
-#' @param nrow              a numeric value indicating the \code{nrow} argument
+#' @param facet.nrow        a numeric value indicating the \code{nrow} argument
 #'                          (default is \code{NULL}) for the \code{facet_wrap}
 #'                          function.
-#' @param ncol              a numeric value indicating the \code{ncol} argument
+#' @param facet.ncol        a numeric value indicating the \code{ncol} argument
 #'                          (default is \code{2}) for the \code{facet_wrap} function.
-#' @param scales            a character string indicating the \code{scales} argument
+#' @param facet.scales      a character string indicating the \code{scales} argument
 #'                          (default is \code{"free"}) for the \code{facet_wrap}
 #'                          function.
 #' @param xlab              a character string indicating the \code{name} argument
@@ -273,7 +273,7 @@
 #' mplus.plot("ex3.18.gh5", param = "new")
 #'
 #' # Example 1e: Arrange panels in three columns
-#' mplus.plot("ex3.18.gh5", ncol = 3)
+#' mplus.plot("ex3.18.gh5", facet.ncol = 3)
 #'
 #' # Example 1f: Specify "Pastel 1" palette for the hcl.colors function
 #' mplus.plot("ex3.18.gh5", palette = "Pastel 1")
@@ -543,8 +543,8 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
                        point = c("all", "none", "m", "med", "map"),
                        ci = c("none", "eti", "hdi"), chain = 1, conf.level = 0.95,
                        hist = TRUE, density = TRUE, area = TRUE,
-                       alpha = 0.4, fill = "gray85", nrow = NULL, ncol = NULL,
-                       scales = c("fixed", "free", "free_x", "free_y"),
+                       alpha = 0.4, fill = "gray85", facet.nrow = NULL, facet.ncol = NULL,
+                       facet.scales = c("fixed", "free", "free_x", "free_y"),
                        xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL,
                        xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
                        xexpand = ggplot2::waiver(), yexpand = ggplot2::waiver(),
@@ -571,7 +571,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Chracter string ####
+  ## Character string ####
 
   if (isTRUE(is.character(x))) {
 
@@ -601,86 +601,23 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("burnin", "hist", "density", "area"),
+               numeric = list(chain = 1L, facet.nrow = 1L, facet.ncol = 1L,  xlim = 2L, ylim = 2L, shape = 1L, linewidth = 1L, bar.width = 1L, plot.margin = 4L, legend.title.size = 1L, legend.text.size = 1L, legend.box.margin = 4L, dpi = 1L),
+               character = list(file = 1L, file.plot = 5L, point.col = 3L),
+               s.character = list(plot = c("none", "trace", "post", "auto", "ppc", "loop"), param = c("all", "on", "by", "with", "inter", "var", "r2", "new"), ci = c("none", "eti", "hdi"), facet.scales = c("fixed", "free", "free_x", "free_y")),
+               m.character = list(std = c("all", "none", "stdyx", "stdy", "std"), point = c("all", "none", "m", "med", "map"), saveplot = c("all", "none", "trace", "post", "auto", "ppc", "loop")),
+               args = c("conf.level", "alpha", "linetype", "units"),
+               package = c("hdf5r", "ggplot2"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # R package hdf5r
-    if (isTRUE(!nzchar(system.file(package = "hdf5r")))) { stop("Package \"hdf5r\" is needed for this function, please install the package.", call. = FALSE) }
-
-    # R package ggplot2
-    if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed for this function, please install the package.", call. = FALSE) }
-
-    # Check input 'plot'
-    if (isTRUE(!all(plot %in% c("none", "trace", "post", "auto", "ppc", "loop")))) { stop("Character string in the argument 'plot' does not match with \"none\", \"trace\", \"post\", \"auto\", \"ppc\", or \"loop\".", call. = FALSE) }
-
-    if (isTRUE(!all(c("none", "trace", "post", "auto", "ppc", "loop") %in% plot) && length(plot) != 1L)) { stop("Please specify \"none\", \"trace\", \"post\", \"auto\", \"ppc\", or \"loop\" for the argument 'plot'.", call. = FALSE) }
-
-    # Check input 'param'
-    if (isTRUE(!all(param %in% c("all", "on", "by", "with", "inter", "var", "r2", "new")))) { stop("Character strings in the argument 'param' do not all match with \"all\", \"on\", \"by\", \"with\", \"inter\", \"var\", \"r2\", or \"new\".", call. = FALSE) }
-
-    # Check input 'std'
-    if (isTRUE(!all(std %in% c("all", "none", "stdyx", "stdy", "std")))) { stop("Character strings in the argument 'std' do not all match with \"all\", \"none\", \"stdyx\", \"stdy\", or \"std\".", call. = FALSE) }
-
-    # Check input 'burnin'
-    if (isTRUE(!is.logical(burnin))) { stop("Please specify TRUE or FALSE for the argument 'burnin'.", call. = FALSE) }
-
-    # Check input 'point'
-    if (isTRUE(!all(point %in% c("all", "none", "m", "med", "map")))) { stop("Character strings in the argument 'point' do not all match with \"all\", \"none\", \"m\", \"med\", or \"map\".", call. = FALSE) }
-
-    # Check input 'ci'
-    if (isTRUE(!all(ci %in% c("none", "eti", "hdi")))) { stop("Character string in the argument 'ci' does not match with \"none\", \"eti\", or \"hdi\".", call. = FALSE) }
-
-    if (isTRUE(!all(c("none", "eti", "hdi") %in% ci) && length(ci) != 1L)) { stop("Please specify \"none\", \"eti\", or \"hdi\" for the argument 'ci'.", call. = FALSE) }
 
     # Check input 'chain'
     if (isTRUE(chain %% 1L != 0L || chain < 0L)) { stop("Specify a positive integer number for the argument 'chain'.", call. = FALSE) }
 
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'hist'
-    if (isTRUE(!is.logical(hist))) { stop("Please specify TRUE or FALSE for the argument 'hist'.", call. = FALSE) }
-
-    # Check input 'density'
-    if (isTRUE(!is.logical(density))) { stop("Please specify TRUE or FALSE for the argument 'density'.", call. = FALSE) }
-
-    # Check input 'area'
-    if (isTRUE(!is.logical(area))) { stop("Please specify TRUE or FALSE for the argument 'area'.", call. = FALSE) }
-
-    # Check input 'alpha '
-    if (isTRUE(alpha  >= 1L || alpha  <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'alpha '.", call. = FALSE) }
-
-    # Check input 'nrow'
-    if (isTRUE(!is.null(nrow) && (nrow %% 1L != 0L || nrow < 0L))) { stop("Please specify  a positive integer number for the argument 'nrow'.", call. = FALSE) }
-
-    # Check input 'ncol'
-    if (isTRUE(!is.null(nrow) && (ncol %% 1L != 0L || ncol < 0L))) { stop("Please specify a positive integer number for the argument 'ncol'.", call. = FALSE) }
-
-    # Check input 'scales'
-    if (isTRUE(!all(scales %in% c("fixed", "free", "free_x", "free_y")))) { stop("Character strings in the argument 'scales' do not all match with \"fixed\", \"free\", \"free_x\", or \"free_y\".", call. = FALSE) }
-
     # Check input 'palette'
     if (isTRUE(!all(palette %in% hcl.pals()))) { stop("Character string in the argument 'palette' does not match with color palettes in hcl.pals().", call. = FALSE) }
-
-    # Check input 'point.col'
-    if (isTRUE(length(point.col) != 3L)) { stop("Please specify character vector with three elements for the argument 'point.col'.", call. = FALSE) }
-
-    # Check input 'plot.margin'
-    if (isTRUE(!is.null(plot.margin) && length(plot.margin) != 4L)) { stop("Please specify a numeric vector with four elements for the argument 'plot.margin'.", call. = FALSE) }
-
-    # Check input 'legend.box.margin'
-    if (isTRUE(!is.null(legend.box.margin) && length(legend.box.margin) != 4L)) { stop("Please specify numeric vector with four elements for the argument 'legend.box.margin'.", call. = FALSE) }
-
-    # Check input 'saveplot'
-    if (isTRUE(!all(saveplot %in% c("all", "none", "trace", "post", "auto", "ppc", "loop")))) { stop("Character strings in the argument 'saveplot' do not all match with \"all\", \"none\", \"trace\", \"post\", \"ppc\", or \"loop\".", call. = FALSE) }
-
-    # Check input 'file.plot'
-    if (isTRUE(length(file.plot) != 5L)) { stop("Please specify a character vector with five elements for the argument 'file.plot'.", call. = FALSE) }
-
-    # Check input 'units'
-    if (isTRUE(!all(units %in% c("in", "cm", "mm", "px")))) { stop("Character string in the argument 'units' does not match with \"in\", \"cm\", \"mm\", \"pdf\", or \"px\".", call. = FALSE) }
 
   }
 
@@ -746,10 +683,10 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
   if (isTRUE(all(c("none", "eti", "hdi") %in% ci))) { ci <- "eti" }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'scales' Argument ####
+  ## 'facet.scales' Argument ####
 
   # Default setting
-  if (isTRUE(all(c("free", "free_x", "free_y") %in% scales))) { scales <- "free" }
+  if (isTRUE(all(c("free", "free_x", "free_y") %in% facet.scales))) { facet.scales <- "free" }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'nrow' and 'ncol' Argument ####
@@ -969,11 +906,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       plotdat.trace$chain <- factor(plotdat.trace$chain)
 
       # Discard burn-in iterations
-      if (isTRUE(!burnin)) {
-
-        plotdat.trace <- plotdat.trace[which(!plotdat.trace$iter %in% seq_len(n.iterations / 2L)), ]
-
-      }
+      if (isTRUE(!burnin)) { plotdat.trace <- plotdat.trace[which(!plotdat.trace$iter %in% seq_len(n.iterations / 2L)), ] }
 
       # 'xlab' argument
       if (isTRUE(is.null(xlab))) { xlab.trace <- "Iteration" } else { xlab.trace <- xlab }
@@ -1023,7 +956,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
       # Plot
       plot.trace <- suppressMessages(ggplot2::ggplot(plotdat.trace, ggplot2::aes(x = iter, y = value, color = chain)) +
-                                      ggplot2::facet_wrap(~ param, nrow = nrow, ncol = ncol, scales = scales) +
+                                      ggplot2::facet_wrap(~ param, nrow = facet.nrow, ncol = facet.ncol, scales = facet.scales) +
                                       ggplot2::scale_x_continuous(name = xlab.trace, limits = xlim.trace, breaks = xbreaks.trace, expand = xexpand.trace) +
                                       ggplot2::scale_y_continuous(name = ylab.trace, limits = ylim.trace, breaks = ybreaks.trace, expand = yexpand.trace) +
                                       ggplot2::scale_colour_manual(name = "Chain", values = hcl.colors(n = n.chains, palette = palette)) +
@@ -1092,7 +1025,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
       # Plot
       plot.post <- suppressMessages(ggplot2::ggplot(plotdat.post, ggplot2::aes(x = value)) +
-                                     ggplot2::facet_wrap(~ param, nrow = nrow, ncol = ncol, scales = scales) +
+                                     ggplot2::facet_wrap(~ param, nrow = facet.nrow, ncol = facet.ncol, scales = facet.scales) +
                                      ggplot2::scale_x_continuous(name = xlab.post, limits = xlim.post, breaks = xbreaks.post, expand = xexpand.post) +
                                      ggplot2::scale_y_continuous(name = ylab.post, limits = ylim.post, breaks = ybreaks.post, expand = yexpand.post) +
                                      ggplot2::theme_bw() +
@@ -1204,10 +1137,10 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
           plot.post <- suppressMessages(plot.post +
                          ggplot2::geom_vline(data = data.frame(param = unique(plotdat.post$param),
-                                                               low = tapply(plotdat.post$value, plotdat.post$param, function(y) .hdi(y, conf.level = conf.level)$low)),
+                                                               low = tapply(plotdat.post$value, plotdat.post$param, function(y) .hdi(y, conf.level = conf.level)["low"])),
                                              ggplot2::aes(xintercept = low), color = line.col, linetype = linetype, linewidth = linewidth) +
                          ggplot2::geom_vline(data = data.frame(param = unique(plotdat.post$param),
-                                                               upp = tapply(plotdat.post$value, plotdat.post$param, function(y) .hdi(y, conf.level = conf.level)$upp)),
+                                                               upp = tapply(plotdat.post$value, plotdat.post$param, function(y) .hdi(y, conf.level = conf.level)["upp"])),
                                              ggplot2::aes(xintercept = upp), color = line.col, linetype = linetype, linewidth = linewidth) +
                          ggplot2::labs(caption = paste0(round(conf.level * 100L, digits = 2L), "% Highest Density Interval")) +
                          ggplot2::theme(plot.caption = ggplot2::element_text(hjust = 0.5, vjust = 7)))
@@ -1303,7 +1236,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
       # Plot
       plot.auto <- suppressMessages(ggplot2::ggplot(plotdat.auto, ggplot2::aes(x = lag, y = cor)) +
                      ggplot2::geom_bar(stat = "identity", color = bar.col, alpha = alpha, fill = fill, width = bar.width) +
-                     ggplot2::facet_wrap(~ param, nrow = nrow, ncol = ncol, scales = scales) +
+                     ggplot2::facet_wrap(~ param, nrow = facet.nrow, ncol = facet.ncol, scales = facet.scales) +
                      ggplot2::scale_x_continuous(name = xlab.auto, limits = xlim.auto, breaks = xbreaks.auto, expand = xexpand.auto) +
                      ggplot2::scale_y_continuous(name = ylab.auto, limits = ylim.auto, breaks = ybreaks.auto, expand = yexpand.auto) +
                      ggplot2::theme_bw() +
@@ -1547,8 +1480,8 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
                    args = list(plot = plot, param = param, std = std, burnin = burnin,
                                point = point, ci = ci, chain  = chain, conf.level = conf.level,
                                hist = hist, density = density, area = area,
-                               alpha = alpha, fill = fill, nrow = nrow, ncol = ncol,
-                               scales = scales, xlab = xlab, ylab = ylab,
+                               alpha = alpha, fill = fill, facet.nrow = facet.nrow, facet.ncol = facet.ncol,
+                               facet.scales = facet.scales, xlab = xlab, ylab = ylab,
                                xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks,
                                xexpand = xexpand, yexpand = yexpand,
                                palette = palette, binwidth = binwidth, bins = bins,

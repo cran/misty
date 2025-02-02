@@ -62,7 +62,8 @@ x.factor <- factor(letters[1:10])
 chr.omit(x.factor, omit = c("a", "c", "e", "g"))
 }
 \seealso{
-\code{\link{chr.grep}}, \code{\link{chr.grepl}}, \code{\link{chr.gsub}}, \code{\link{chr.trim}}
+\code{\link{chr.color}}, \code{\link{chr.grep}}, \code{\link{chr.grepl}},
+\code{\link{chr.gsub}}, \code{\link{chr.trim}}, \code{\link{chr.trunc}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

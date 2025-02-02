@@ -15,7 +15,7 @@
 #' @param sheet            a character string indicating the name of a Excel sheet
 #'                         or a numeric value indicating the position of the Excel
 #'                         sheet to read. By default the first sheet will be read
-#'                         when reading an Excel file (\code{.xlsx}) .
+#'                         when reading an Excel file (\code{.xlsx}).
 #' @param header           logical: if \code{TRUE} (default), the first row is used
 #'                         as column names when reading an Excel file (\code{.xlsx}),
 #'                         if \code{FALSE} default names are used. A character vector
@@ -25,6 +25,14 @@
 #'                         function in the \pkg{data.table} package.
 #' @param drop             a character vector of column names or numeric vector
 #'                         to drop, keep the rest.
+#' @param sep              a character string indicating the separator between
+#'                         columns for the \code{fread} function when reading data
+#'                         in CSV (\code{.csv}), DAT (\code{.dat}), or TXT (\code{.txt})
+#'                         format.
+#' @param dec              a character string indicating the decimal separator
+#'                         for the \code{fread} function when reading data in CSV
+#'                         (\code{.csv}), DAT (\code{.dat}), or TXT (\code{.txt})
+#'                         format.
 #' @param use.value.labels logical: if \code{TRUE}, variables with value labels
 #'                         are converted into factors.
 #' @param use.missings     logical: if \code{TRUE} (default), user-defined missing
@@ -94,8 +102,9 @@
 #' dat <- read.data("Stata_Data.dta")
 #' }
 read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = NULL,
-                      use.value.labels = FALSE, use.missings = TRUE, na.strings = "NA",
-                      stringsAsFactors = FALSE, formats = FALSE, label = FALSE, labels = FALSE,
+                      sep = "auto", dec = "auto", use.value.labels = FALSE,
+                      use.missings = TRUE, na.strings = c("NA", ""), stringsAsFactors = FALSE,
+                      formats = FALSE, label = FALSE, labels = FALSE,
                       missing = FALSE, widths = FALSE, as.data.frame = TRUE,
                       encoding = c("unknown", "UTF-8", "Latin-1"), check = TRUE) {
 
@@ -119,9 +128,12 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("header", "use.value.labels", "use.missings", "stringsAsFactors", "formats", "label", "labels", "missing", "widths", "as.data.frame"),
+               character = list(file = 1L, sep = 1L, dec = 1L),
+               s.character = list(encoding = c("unknown", "UTF-8", "Latin-1")), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     if (isTRUE(file.exten %in% c("csv", "dat", "txt"))) {
@@ -135,15 +147,6 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
       if (isTRUE(!requireNamespace("haven", quietly = TRUE))) { stop("Package \"haven\" is needed for this function to work, please install it.", call. = FALSE ) }
 
     }
-
-    # Check input 'stringsAsFactors'
-    if (isTRUE(!is.logical(stringsAsFactors))) { stop("Please specify TRUE or FALSE for the argument 'stringsAsFactors'.", call. = FALSE) }
-
-    # Check input 'as.data.frame'
-    if (isTRUE(!is.logical(as.data.frame))) { stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE) }
-
-    # Check input 'encoding'
-    if (isTRUE(!all(encoding %in% c("unknown", "UTF-8", "Latin-1")))) { stop("Character string in the argument 'fun' does not match with \"cfa\", \"sem\", \"growth\", or \"lavaan\".", call. = FALSE) }
 
   }
 
@@ -163,9 +166,32 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## CSV, DAT, or TXT file ####
 
-  if (file.exten %in% c("csv", "dat", "txt")) {
+  if (isTRUE(file.exten %in% c("csv", "dat", "txt"))) {
 
-    object <- data.table::fread(file = file, select = select, drop = drop, na.strings = na.strings, stringsAsFactors = stringsAsFactors, data.table = !as.data.frame, encoding = encoding)
+    if (isTRUE(sep == "auto" && dec == "auto")) {
+
+      # Separator ";"
+      if (isTRUE(all(grepl(";", readLines(file, n = 10L))))) {
+
+        object <- data.table::fread(file = file, sep = ";", dec = ",", select = select, drop = drop, na.strings = na.strings, stringsAsFactors = stringsAsFactors, data.table = !as.data.frame, encoding = encoding)
+
+      # Separator ","
+      } else if (isTRUE(all(grepl(",", readLines(file, n = 10L))))) {
+
+        object <- data.table::fread(file = file, sep = ",", dec = ".", select = select, drop = drop, na.strings = na.strings, stringsAsFactors = stringsAsFactors, data.table = !as.data.frame, encoding = encoding)
+
+      # Separator not ";" and ","
+      } else {
+
+        object <- data.table::fread(file = file, sep = sep, dec = dec, select = select, drop = drop, na.strings = na.strings, stringsAsFactors = stringsAsFactors, data.table = !as.data.frame, encoding = encoding)
+
+      }
+
+    } else {
+
+      object <- data.table::fread(file = file, sep = sep, dec = dec, select = select, drop = drop, na.strings = na.strings, stringsAsFactors = stringsAsFactors, data.table = !as.data.frame, encoding = encoding)
+
+    }
 
   } else {
 
@@ -174,14 +200,12 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
 
     switch(file.exten, "sav" = {
 
-      object <- misty::read.sav(file = file, use.value.labels = use.value.labels,  use.missings = use.missings, formats = formats, label = label, labels = labels, missing = missing, widths = widths, as.data.frame = as.data.frame, check = check)
+      object <- misty::read.sav(file = file, use.value.labels = use.value.labels, use.missings = use.missings, formats = formats, label = label, labels = labels, missing = missing, widths = widths, as.data.frame = as.data.frame, check = check)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Excel file ####
 
     }, "xlsx" =  {
-
-      if (isTRUE(na.strings == "NA")) { na.strings <- c("", "NA") }
 
       object <- misty::read.xlsx(file = file, sheet = sheet, header = header, na = na.strings, as.data.frame = as.data.frame, check = TRUE)
 
@@ -203,3 +227,5 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
   return(object)
 
 }
+
+#_______________________________________________________________________________

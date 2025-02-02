@@ -7,8 +7,9 @@
 descript(..., data = NULL,
         print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd",
                   "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
-        group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE, digits = 2,
-        as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
+        group = NULL, split = NULL, sample = FALSE, sort.var = FALSE, na.omit = FALSE,
+        digits = 2, as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+        output = TRUE)
 }
 \arguments{
 \item{...}{a numeric vector, matrix or data frame with numeric variables,
@@ -45,6 +46,10 @@ of the grouping variable in \code{data} can be specified.}
 Alternatively, a character string indicating the variable name
 of the split variable in \code{data} can be specified.}
 
+\item{sample}{logical: if \code{TRUE} (default), the univariate sample skewness
+or kurtosis is computed, while the population skewness or kurtosis
+is computed when \code{sample = FALSE}.}
+
 \item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when
 specifying \code{group}.}
 
@@ -78,67 +83,63 @@ overwritten.}
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-  \item{\code{call}}{function call}
-  \item{\code{type}}{type of analysis}
-  \item{\code{data}}{list with the input specified in \code{...}, \code{group},
-                     and \code{split}}
-  \item{\code{args}}{specification of function arguments}
-  \item{\code{result}}{result table(s)}
+
+\item{\code{call}}{function call}
+\item{\code{type}}{type of analysis}
+\item{\code{data}}{list with the input specified in \code{...}, \code{data}, \code{group}, and \code{split}}
+\item{\code{args}}{specification of function arguments}
+\item{\code{result}}{result table}
 }
 \description{
-This function computes summary statistics for one or more than one variables, optionally
+This function computes summary statistics for one or more than one variable, optionally
 by a grouping and/or split variable.
 }
 \examples{
-# Example 1a: Descriptive statistics for 'mpg'
-descript(mtcars$mpg)
+#----------------------------------------------------------------------------
+# Descriptive statistics
 
-# Example 1b: Alternative specification using the 'data' argument
-descript(mpg, data = mtcars)
+# Example 1a: Descriptive statistics for 'mpg', 'cyl', and 'hp'
+descript(mpg, cyl, hp, data = mtcars)
 
-# Example 2: Descriptive statistics, print results with 3 digits
-descript(mtcars$mpg, digits = 3)
+# Alternative specification using the 'data' argument
+descript(mtcars[, c("mpg", "cyl", "hp")])
 
-# Example 3a: Descriptive statistics for x1, print all available statistical measures
-descript(mtcars$mpg, print = "all")
+# Example 1b: Print all available statistical measures
+descript(mpg, cyl, hp, data = mtcars, print = "all")
 
-# Example 3b: Descriptive statistics for x1, print default plus median
-descript(mtcars$mpg, print = c("default", "med"))
+# Example 1c: Print default statistical measures plus median
+descript(mpg, cyl, hp, data = mtcars, print = c("default", "med"))
 
-# Example 4a: Descriptive statistics for 'mpg', 'cyl', and 'disp'
-descript(mtcars[, c("mpg", "cyl", "disp")])
+#----------------------------------------------------------------------------
+# Grouping and Split Variable
 
-# Example 4b: Alternative specification using the 'data' argument
-descript(mpg:disp, data = mtcars)
+# Example 2a: Grouping variable
+descript(mpg, cyl, hp, data = mtcars, group = "vs")
 
-# Example 5a: Descriptive statistics, analysis by 'vs' separately
-descript(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
+# Alternative specification
+descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs)
 
-# Example 5b: Alternative specification using the 'data' argument
-descript(mpg:disp, data = mtcars, group = "vs")
+# Example 2b: Split variable
+descript(mpg, cyl, hp, data = mtcars, split = "am")
 
-# Example 6: Descriptive statistics, analysis by 'vs' separately, sort by variables
-descript(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, sort.var = TRUE)
+# Alternative specification
+descript(mtcars[, c("mpg", "cyl", "hp")], split = mtcars$am)
 
-# Example 7: Descriptive statistics, split analysis by 'am'
-descript(mtcars[, c("mpg", "cyl", "disp")], split = mtcars$am)
+# Example 2c: Grouping and split variable
+descript(mpg, cyl, hp, data = mtcars, group = "vs", split = "am")
 
-# Example 8a: Descriptive statistics,analysis by 'vs' separately, split analysis by 'am'
-descript(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, split = mtcars$am)
-
-# Example 8b: Alternative specification using the 'data' argument
-descript(mpg:disp, data = mtcars, group = "vs", split = "am")
+# Alternative specification
+descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs, split = mtcars$am)
 
 \dontrun{
-# Example 11a: Write results into a text file
-descript(mtcars[, c("mpg", "cyl", "disp")], write = "Descript.txt")
+#----------------------------------------------------------------------------
+# Write Output
 
-# Example 11b: Write results into an Excel file
-descript(mtcars[, c("mpg", "cyl", "disp")], write = "Descript.xlsx")
+# Example 3a: Text file
+descript(mtcars, write = "Descript_Text.txt")
 
-result <- descript(mtcars[, c("mpg", "cyl", "disp")], output = FALSE)
-write.result(result, "Descript.xlsx")
-}
+# Example 3b: Excel file
+descript(mtcars, write = "Descript_Excel.xlsx")}
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology

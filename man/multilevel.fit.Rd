@@ -83,6 +83,7 @@ Yves Rosseel (2012).
 }
 \examples{
 \dontrun{
+
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 

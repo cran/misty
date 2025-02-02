@@ -105,6 +105,8 @@
 #' Springer. https://www.stats.ox.ac.uk/pub/MASS4/.
 #'
 #' @return
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries:
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
 #' \item{\code{data}}{data frame specified in \code{x} including the group variable
@@ -134,27 +136,27 @@
 #' # Cluster variable specification
 #'
 #' # Example 1a: Cluster variable 'cluster' in 'x'
-#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4", "cluster")], cluster = "cluster")
+#' multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4", "cluster")], cluster = "cluster")
 #'
 #' # Example 1b: Cluster variable 'cluster' not in 'x'
-#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
+#' multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
 #'
-#' # Example 1c: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' multilevel.omega(y1:y4, data = Demo.twolevel, cluster = "cluster")
 #'
 #' #----------------------------------------------------------------------------
 #' # Type of construct
 #'
 #' # Example 2a: Within-Cluster Construct
-#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#' multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")],
 #'                  cluster = Demo.twolevel$cluster, const = "within")
 #'
 #' # Example 2b: Shared Cluster-Level Construct
-#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#' multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")],
 #'                  cluster = Demo.twolevel$cluster, const = "shared")
 #'
 #' # Example 2c: Configural Construct
-#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#' multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")],
 #'                  cluster = Demo.twolevel$cluster, const = "config")
 #'
 #' #----------------------------------------------------------------------------
@@ -166,7 +168,7 @@
 #'                  rescov = c("y3", "y4"))
 #'
 #' # Example 3b: Residual variances of 'y1' at the Between level fixed at 0
-#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#' multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")],
 #'                  cluster = Demo.twolevel$cluster, const = "config",
 #'                  fix.resid = c("y1", "y2"), digits = 3)
 #'
@@ -174,11 +176,11 @@
 #' # Write results
 #'
 #' # Example 4a: Write results into a text file
-#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#' multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")],
 #'                  cluster = Demo.twolevel$cluster, write = "Multilevel_Omega.txt")
 #'
 #' # Example 4b: Write results into a Excel file
-#' multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+#' multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")],
 #'                  cluster = Demo.twolevel$cluster, write = "Multilevel_Omega.xlsx")
 #'
 #' # Example 4b: Assign results into an object and write results into an Excel file
@@ -206,9 +208,6 @@ multilevel.omega <- function(..., data = NULL, cluster, rescov = NULL,
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
@@ -224,14 +223,14 @@ multilevel.omega <- function(..., data = NULL, cluster, rescov = NULL,
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
 
     # Cluster variable
-    cluster <- data[, cluster]
+    cluster <- unlist(data[, cluster])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -240,6 +239,10 @@ multilevel.omega <- function(..., data = NULL, cluster, rescov = NULL,
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- as.data.frame(cluster) } }
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -252,39 +255,18 @@ multilevel.omega <- function(..., data = NULL, cluster, rescov = NULL,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Manifest variables ####
-
-  # Cluster variable in the data
-  if (isTRUE(length(cluster) == 1L)) { var <- colnames(x)[!colnames(x) %in% cluster] } else { var <- colnames(x) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data frame with Cluster Variable ####
-
-  # Cluster variable in the data
-  if (isTRUE(length(cluster) == 1L)) {
-
-    x <- data.frame(x[, var], .cluster = x[, cluster], stringsAsFactors = FALSE)
-
-    # Cluster variable specified in the argument 'cluster'
-  } else {
-
-    x <- data.frame(x[, var], .cluster = cluster, stringsAsFactors = FALSE)
-
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
-
-  if (isTRUE(!is.null(as.na))) { x[, var] <- .as.na(x[, var], na = as.na) }
-
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical =  c("append", "output"),
+               numeric = list(nrep = 1L, seed = 1L),
+               s.character = list(const = c("within", "shared", "config"), optim.method = c("nlminb", "em"), missing = c("listwise", "fiml")),
+               m.character = list(print = c("all", "omega", "item")),
+               args = c("conf.level", "digits", "write2"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'rescov'
@@ -296,8 +278,7 @@ multilevel.omega <- function(..., data = NULL, cluster, rescov = NULL,
       } else { if (isTRUE(length(rescov) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov'", call. = FALSE) } }
 
       # Variable in 'x'
-      rescov.var <- !unique(unlist(rescov)) %in% colnames(x)
-      if (isTRUE(any(rescov.var))) { stop(paste0("Variables specified in the argument 'rescov' were not found in 'x': ", paste(unique(unlist(rescov))[rescov.var], collapse = ", ")), call. = FALSE) }
+      (!unique(unlist(rescov)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'rescov' were not found in 'x': ", paste(unique(unlist(rescov))[y], collapse = ", ")), call. = FALSE) })()
 
     }
 
@@ -310,44 +291,18 @@ multilevel.omega <- function(..., data = NULL, cluster, rescov = NULL,
       } else { if (isTRUE(length(rescov) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov'", call. = FALSE) } }
 
       # Variable in 'x'
-      rescov.var <- !unique(unlist(rescov)) %in% colnames(x)
-      if (isTRUE(any(rescov.var))) { stop(paste0("Variables specified in the argument 'rescov' were not found in 'x': ", paste(unique(unlist(rescov))[rescov.var], collapse = ", ")), call. = FALSE) }
+      (!unique(unlist(rescov)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'rescov' were not found in 'x': ", paste(unique(unlist(rescov))[y], collapse = ", ")), call. = FALSE) })()
 
     }
 
-    # Check input 'const'
-    if (isTRUE(!all(const %in% c("within", "shared", "config")))) { stop("Character string in the argument 'const' does not match with \"within\", \"shared\", or \"config\".", call. = FALSE) }
-
     # Check input 'fix.resid'
-    fix.resid.var <- !unique(fix.resid) %in% colnames(x)
-    if (isTRUE(any(fix.resid.var) &&  all(fix.resid != "all"))) { stop(paste0("Variables specified in the argument 'fix.resid' were not found in 'x': ", paste(fix.resid[fix.resid.var], collapse = ", ")), call. = FALSE) }
-
-    # Check input 'optim.method'
-    if (isTRUE(!all(optim.method  %in% c("nlminb", "em")))) { stop("Character string in the argument 'optim.method' does not match with \"nlminb\" or \"em\".", call. = FALSE) }
-
-    # Check input 'missing'
-    if (isTRUE(!all(missing %in% c("listwise", "fiml")))) { stop("Character string in the argument 'missing' does not match with \"listwise\" or \"fiml\".", call. = FALSE) }
+    (!unique(fix.resid) %in% colnames(x)) |> (\(y) if (isTRUE(any(y) &&  all(fix.resid != "all"))) { stop(paste0("Variables specified in the argument 'fix.resid' were not found in 'x': ", paste(fix.resid[y], collapse = ", ")), call. = FALSE) })()
 
     # Check input 'nrep'
     if (isTRUE(mode(nrep) != "numeric" || nrep <= 1L)) { stop("Please specify a positive numeric value greater 1 for the argument 'nrep'.", call. = FALSE) }
 
     # Check input 'seed'
     if (isTRUE(mode(seed) != "numeric" && !is.null(seed))) { stop("Please specify a numeric value for the argument 'seed'.", call. = FALSE) }
-
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "omega", "item")))) { stop("Character strings in the argument 'print' do not all match with \"omega\", or \"item\".", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -356,35 +311,30 @@ multilevel.omega <- function(..., data = NULL, cluster, rescov = NULL,
   # Data and Arguments ---------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Internal function ####
+  ## Manifest variables ####
 
-  .internal.mvrnorm <- function (n = 1, mu, Sigma, tol = 1e-06, empirical = FALSE, EISPACK = FALSE) {
+  var <- colnames(x)
 
-    p <- length(mu)
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame with Cluster Variable ####
 
-    if (!all(dim(Sigma) == c(p, p)))  { stop("incompatible arguments") }
-    if (EISPACK)  { stop("'EISPACK' is no longer supported by R", domain = NA) }
+  x <- data.frame(x, .cluster = cluster, row.names = NULL)
 
-    eS <- eigen(Sigma, symmetric = TRUE)
-    ev <- eS$values
-    if (!all(ev >= -tol * abs(ev[1L])))  { stop("'Sigma' is not positive definite") }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data on the Cluster Variable ####
 
-    X <- matrix(rnorm(p * n), n)
-    if (empirical) {
-      X <- scale(X, TRUE, FALSE)
-      X <- X %*% svd(X, nu = 0)$v
-      X <- scale(X, FALSE, TRUE)
-    }
+  if (isTRUE(any(is.na(x$.cluster)))) {
 
-    X <- drop(mu) + eS$vectors %*% diag(sqrt(pmax(ev, 0)), p) %*% t(X)
-    nm <- names(mu)
+    warning(paste0("Data contains missing values on the cluster variable, number of cases removed from the analysis: ", sum(is.na(x$.cluster))), call. = FALSE)
 
-    if (is.null(nm) && !is.null(dn <- dimnames(Sigma))) { nm <- dn[[1L]] }
-
-    dimnames(X) <- list(nm, NULL)
-    if (n == 1) { drop(X) } else { t(X) }
+    x <- x[!is.na(x$.cluster), ]
 
   }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
+  if (isTRUE(!is.null(as.na))) { x[, var] <- .as.na(x[, var], na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Type of construct(s) ####
@@ -419,6 +369,11 @@ multilevel.omega <- function(..., data = NULL, cluster, rescov = NULL,
     }
 
   }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data on All Variable ####
+
+  (misty::na.prop(x[, var]) == 1L) |> (\(y) if (isTRUE(any(y) && missing == "fiml")) { warning(paste0("Data contains cases with missing values on all variables, number of cases removed from the analysis: ", sum(y)), call. = FALSE) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print ####
@@ -527,7 +482,7 @@ multilevel.omega <- function(..., data = NULL, cluster, rescov = NULL,
 
       }
 
-      # Model-implied variance-covariance matrix of the latent variables
+    # Model-implied variance-covariance matrix of the latent variables
     } else if (any(dim(lavaan::lavTech(model.fit$model.fit, what = "cov.lv")$within) != 0L)) {
 
       if (isTRUE(any(eigen(lavaan::lavTech(model.fit$model.fit, what = "cov.lv")$within, symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
@@ -613,13 +568,13 @@ multilevel.omega <- function(..., data = NULL, cluster, rescov = NULL,
          }, config = {
 
            # Omega Within
-           omega.w <- sum(load.w)^2L / (sum(load.w)^2 + sum(resid.w) + 2L*sum(rescov.w))
+           omega.w <- sum(load.w)^2L / (sum(load.w)^2L + sum(resid.w) + 2L*sum(rescov.w))
 
            # Omega Between
-           omega.b <- (sum(load.b)^2L * var.b) / (sum(load.b)^2 * (1L / hmean + var.b) + sum(resid.b) + ((sum(resid.w) + 2L*sum(rescov.w)) / hmean))
+           omega.b <- (sum(load.b)^2L * var.b) / (sum(load.b)^2L * (1L / hmean + var.b) + sum(resid.b) + ((sum(resid.w) + 2L*sum(rescov.w)) / hmean))
 
            # Overall Omega
-           omega.2l <- (sum(load.b)^2L * (1L + var.b)) / (sum(load.b)^2 * (1L + var.b) + sum(resid.b) + sum(resid.w) + 2L*sum(rescov.w))
+           omega.2l <- (sum(load.b)^2L * (1L + var.b)) / (sum(load.b)^2L * (1L + var.b) + sum(resid.b) + sum(resid.w) + 2L*sum(rescov.w))
 
          })
 
@@ -809,34 +764,7 @@ multilevel.omega <- function(..., data = NULL, cluster, rescov = NULL,
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -847,3 +775,5 @@ multilevel.omega <- function(..., data = NULL, cluster, rescov = NULL,
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

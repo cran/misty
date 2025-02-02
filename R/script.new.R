@@ -53,24 +53,11 @@ script.new <- function(text = "", type = c("r", "rmarkdown", "sql"),
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = "run", s.character = list(type = c("r", "rmarkdown", "sql")), package = "rstudioapi", envir = environment(), input.check = check)
 
-  if (isTRUE(check)) {
-
-    # rstudioapi package
-    if (isTRUE(!nzchar(system.file(package = "rstudioapi")))) { stop("Package \"rstudioapi\" is needed for this function, please install the package.", call. = FALSE) }
-
-    # Check input 'text'
-    if (isTRUE(!is.character(text))) { stop("Please specify a character vector for the argument 'text'.", call. = FALSE) }
-
-    # Check input 'type'
-    if (isTRUE(all(!type %in% c("r", "rmarkdown", "sql")))) { stop("Character string in the argument 'type' does not match with \"r\", \"rmarkdown\" or \"sql\".", call. = FALSE) }
-
-    # Check input 'run'
-    if (isTRUE(!is.logical(run))) { stop("Please specify TRUE or FALSE for the argument 'run'.", call. = FALSE) }
-
-  }
+  # Check input 'text'
+  if (isTRUE(check)) { if (isTRUE(!is.character(text))) { stop("Please specify a character vector for the argument 'text'.", call. = FALSE) } }
 
   #_____________________________________________________________________________
   #
@@ -83,7 +70,8 @@ script.new <- function(text = "", type = c("r", "rmarkdown", "sql"),
   # Main Function --------------------------------------------------------------
 
   # Open new R script
-  invisible(rstudioapi::documentNew(text = text, type = type, position = position,
-                                    execute = run))
+  invisible(rstudioapi::documentNew(text = text, type = type, position = position, execute = run))
 
 }
+
+#_______________________________________________________________________________

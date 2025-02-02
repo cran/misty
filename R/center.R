@@ -199,16 +199,16 @@
 #' #----------------------------------------------------------------------------
 #' # Predictor Variables in Single-Level Data
 #'
-#' # Example 1a: Center predictor 'disp' at the grand mean
+#' # Example 1: Center predictor 'disp' at the grand mean
 #' center(mtcars$disp)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' center(disp, data = mtcars)
 #'
-#' # Example 2a: Center predictors 'disp' and 'hp' at the grand mean and append to 'mtcars'
+#' # Example 2: Center predictors 'disp' and 'hp' at the grand mean and append to 'mtcars'
 #' cbind(mtcars, center(mtcars[, c("disp", "hp")]))
 #'
-#' # Example 2b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' center(disp, hp, data = mtcars)
 #'
 #' # Example 3: Center predictor 'disp' at the value 3
@@ -223,10 +223,10 @@
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' # Example 5a: Center L1 predictor 'y1' within cluster
+#' # Example 5: Center L1 predictor 'y1' within cluster
 #' center(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 #'
-#' # Example 5b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' center(y1, data = Demo.twolevel, cluster = "cluster")
 #'
 #' # Example 6: Center L2 predictor 'w2' at the grand mean
@@ -264,9 +264,6 @@ center <- function(..., data = NULL, cluster = NULL, type = c("CGM", "CWC"),
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -275,6 +272,9 @@ center <- function(..., data = NULL, cluster = NULL, type = c("CGM", "CWC"),
   ## Data using the argument 'data' ####
 
   if (isTRUE(!is.null(data))) {
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Variable names
     var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
@@ -292,6 +292,10 @@ center <- function(..., data = NULL, cluster = NULL, type = c("CGM", "CWC"),
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- as.data.frame(cluster) } }
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -322,7 +326,7 @@ center <- function(..., data = NULL, cluster = NULL, type = c("CGM", "CWC"),
 
       no.clust <- "two"
 
-    # One cluser variables
+    # One cluster variables
     } else {
 
       no.clust <- "one"
@@ -335,19 +339,11 @@ center <- function(..., data = NULL, cluster = NULL, type = c("CGM", "CWC"),
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = "append", numeric = list(value = 1L), s.character = list(type = c("CGM", "CWC"), cwc.mean = c("L2", "L3")), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # Check input 'type'
-    if (isTRUE(all(!type %in% c("CGM", "CWC")))) { stop("Character string in the argument 'type' does not match with \"CGM\" or \"CWC\".", call. = FALSE) }
-
-    # Check input 'cwc.mean'
-    if (isTRUE(all(!cwc.mean %in% c("L2", "L3")))) { stop("Character string in the argument 'cwc.mean' does not match with \"L2\" or \"L3\".", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
 
     # Check input 'name'
     if (isTRUE(!is.null(dim(x)))) {
@@ -649,3 +645,5 @@ center <- function(..., data = NULL, cluster = NULL, type = c("CGM", "CWC"),
   return(object)
 
 }
+
+#_______________________________________________________________________________

@@ -144,39 +144,28 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(x1 = c(3, 2, 4, 9, 5, 3, 6, 4, 5, 6, 3, 5),
-#'                   x2 = c(1, 4, 3, 1, 2, 4, 3, 5, 1, 7, 8, 7),
-#'                   x3 = c(0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1),
-#'                   y1 = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8),
-#'                   y2 = c(0, 1, 0, 2, 0, 1, 0, 0, 1, 2, 1, 0))
-#'
 #' #----------------------------------------------------------------------------
 #' # Example 1: Linear model
 #'
-#' mod1 <- lm(y1 ~ x1 + x2 + x3, data = dat)
-#' robust.coef(mod1)
+#' mod.lm <- lm(mpg ~ cyl + disp, data = mtcars)
+#' robust.coef(mod.lm)
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 2: Generalized linear model
 #'
-#' mod2 <- glm(y2 ~ x1 + x2 + x3, data = dat, family = poisson())
-#' robust.coef(mod2)
+#' mod.glm <- glm(carb ~ cyl + disp, data = mtcars, family = poisson())
+#' robust.coef(mod.glm)
 #'
-#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Write Results
 #'
 #' # Example 3a: Write results into a text file
-#' robust.coef(mod1, write = "Robust_Coef.txt", output = FALSE)
+#' robust.coef(mod.lm, write = "Robust_Coef.txt", output = FALSE)
 #'
 #' # Example 3b: Write results into a Excel file
-#' robust.coef(mod1, write = "Robust_Coef.xlsx", output = FALSE)
-#'
-#' result <- robust.coef(mod1, output = FALSE)
-#' write.result(result, "Robust_Coef.xlsx")
-#' }
+#' robust.coef(mod.lm, write = "Robust_Coef.xlsx", output = FALSE)
 robust.coef <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5"),
-                        digits = 3, p.digits = 4, write = NULL, append = TRUE, check = TRUE,
+                        digits = 3, p.digits = 3, write = NULL, append = TRUE, check = TRUE,
                         output = TRUE) {
 
   #_____________________________________________________________________________
@@ -197,27 +186,8 @@ robust.coef <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    ## Check input 'type' ##
-    if (isTRUE(!all(type %in% c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5")))) { stop("Character string in the argument 'estimator' does not match with \"HC0\", \"HC1\", \"HC2\", \"HC3\", \"HC4\", \"HC4m\", or \"HC5\".", call. = FALSE) }
-
-    ## Check input 'digits' ##
-    if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    ## Check input 'output' ##
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("append", "output"), s.character = list(type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5")), args = c("digits", "p.digits", "write2"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -277,34 +247,8 @@ robust.coef <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
   #_____________________________________________________________________________
   #
   # Output ---------------------------------------------------------------------
@@ -314,3 +258,5 @@ robust.coef <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

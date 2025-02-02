@@ -77,21 +77,21 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{data} \tab data frame used for the current analysis \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{result} \tab result table \cr
-#' }
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame used for the current analysis}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{list with result tables, i.e., \code{freq} for absolute
+#'                      frequencies, \code{perc} for percentages, and \code{v.perc}
+#'                      for valid percentages}
 #'
 #' @export
 #'
 #' @examples
-#' # Example 1a: Frequency table for 'cyl'
+#' # Example 1: Frequency table for 'cyl'
 #' freq(mtcars$cyl)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' freq(cyl, data = mtcars)
 #'
 #' # Example 2: Frequency table, values shown in columns
@@ -100,10 +100,10 @@
 #' # Example 3: Frequency table, use 3 digit for displaying percentages
 #' freq(mtcars$cyl, digits = 3)
 #'
-#' # Example 4a: Frequency table for 'cyl', 'gear', and 'carb'
+#' # Example 4: Frequency table for 'cyl', 'gear', and 'carb'
 #' freq(mtcars[, c("cyl", "gear", "carb")])
 #'
-#' # Example 4b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' freq(cyl, gear, carb, data = mtcars)
 #'
 #' # Example 5: Frequency table, with percentage frequencies
@@ -115,16 +115,11 @@
 #' # Example 7: Frequency table, exclude variables with more than 5 unique values
 #' freq(mtcars, exclude = 5)
 #'
-#' \dontrun{
 #' # Example 8a: Write Results into a text file
 #' freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE, write = "Frequencies.txt")
 #'
 #' # Example 8b: Write Results into a Excel file
 #' freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE, write = "Frequencies.xlsx")
-#'
-#' result <- freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE, output = FALSE)
-#' write.result(result, "Frequencies.xlsx")
-#' }
 freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
                  freq = TRUE, split = FALSE, labels = TRUE, val.col = FALSE,
                  round = 3, exclude = 15, digits = 2, as.na = NULL,
@@ -140,22 +135,6 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
-  #_____________________________________________________________________________
-  #
-  # Initial Check --------------------------------------------------------------
-
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
-
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
-
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -165,11 +144,11 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a vector, factor, matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, check.chr = "a vector, factor, matrix or data frame")]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -179,6 +158,9 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
     # Extract data
     x <- eval(..., enclos = parent.frame())
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+
   }
 
   # Check if input 'x' is not a list or an array
@@ -187,7 +169,7 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## As data frame ####
 
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
+  x <- as.data.frame(x)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -201,9 +183,13 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
   # Split message
   message.split <- FALSE
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("freq", "labels", "val.col", "append", "output"),
+               numeric = list(round = 1L, exclude = 1L),
+               s.character = list(print = c("no", "all", "perc", "v.perc")),
+               args = c("digits", "write2"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'x': All values missing
@@ -212,34 +198,21 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
     # Check input 'x': Exclude variables with all missing
     if (isTRUE(length(x) > 1L)) {
 
-      x.na <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L))
-      if (isTRUE(any(x.na))) {
+      x <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L)) |>
+        (\(y) if (isTRUE(any(y))) {
 
-        warning(paste0(ifelse(sum(x.na) == 1L, "Variable ", "Variables "),
-                       "with all values missing ",
-                       ifelse(sum(x.na) == 1L, "was ", "were "),
-                       "excluded from the analysis: ",
-                       paste(names(x)[x.na], collapse = ", ")), call. = FALSE)
+          warning(paste0(ifelse(sum(y) == 1L, "Variable ", "Variables "), "with all values missing ", ifelse(sum(y) == 1L, "was ", "were "), "excluded from the analysis: ", paste(names(x)[y], collapse = ", ")), call. = FALSE)
 
-        # Exclude variables with all values missing
-        x <- x[, !x.na, drop = FALSE]
+          # Exclude variables with all values missing
+          return(x[, !y, drop = FALSE])
 
-      }
+        } else {
 
-    }
+          return(x)
 
-    # Check input 'print'
-    if (isTRUE(any(!print %in% c("no", "all", "perc", "v.perc")))) { stop("Character string in the argument 'print' does not match with \"no\", \"all\", \"perc\", or \"v.perc\".", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(!all(c("no", "all", "perc", "v.perc") %in% print))) {
-
-      if (isTRUE(length(print) != 1L)) { stop("Please specify one of the character strings \"no\", \"all\", \"perc\", or \"v.perc\" for the argument 'print'.", call. = FALSE) }
+        })()
 
     }
-
-    # Check input 'freq'
-    if (isTRUE(!is.logical(freq))) { stop("Please specify TRUE or FALSE for the argument 'freq'.", call. = FALSE) }
 
     # No frequencies and percentages
     if (isTRUE(all(print == "no") && !isTRUE(freq))) { stop("Please specify \"all\", \"perc\", or \"v.perc\" for the argument 'print' when specifying freq = FALSE.", call. = FALSE) }
@@ -253,31 +226,6 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
       message.split <- TRUE
 
     }
-
-    # Check input 'labels'
-    if (isTRUE(!is.logical(labels))) { stop("Please specify TRUE or FALSE for the argument 'labels'.", call. = FALSE) }
-
-    # Check input 'val.col'
-    if (isTRUE(!is.logical(val.col))) { stop("Please specify TRUE or FALSE for the argument 'val.col'.", call. = FALSE) }
-
-    # Check input 'exclude'
-    if (isTRUE(!is.logical(exclude))) {
-
-      if (isTRUE(exclude %% 1L != 0L || exclude < 0L)) { stop("Specify a positive integer number for the argument 'exclude'.", call. = FALSE) }
-
-    }
-
-    # Check input 'round'
-    if (isTRUE(round %% 1L != 0L || round < 0L)) { stop("Specify a positive integer number for the argument 'round'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -580,37 +528,9 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Write Results --------------------------------------------------------------
 
-
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -626,3 +546,5 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

@@ -6,7 +6,7 @@
 \usage{
 mplus(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE,
       replace.inp = TRUE, mplus.run = TRUE, show.out = FALSE,
-      replace.out = c("always", "never", "modified"), Mplus = detect.mplus(),
+      replace.out = c("always", "never", "modified"), Mplus = .detect.mplus(),
       print = c("all", "input", "result"),
       input = c("all", "default", "data", "variable", "define", "analysis",
                 "model", "montecarlo", "mod.pop", "mod.cov", "mod.miss",
@@ -146,6 +146,7 @@ section used to assign names to the variables in the data set can be specified b
 }
 \examples{
 \dontrun{
+
 #----------------------------------------------------------------------------
 # Example 1: Write data, specify input, and run input
 

@@ -102,14 +102,14 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{data} \tab data frame used for the current analysis \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{model.fit} \tab fitted lavaan object \cr
-#' \code{result} \tab list with result tables \cr
-#' }
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame used for the current analysis}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
+#' \item{\code{result}}{list with result tables, i.e., \code{alpha} for a table
+#'                      with coefficient omega and \code{itemstat} for a table with
+#'                      item statistics}
 #'
 #' @note
 #' Computation of the hierarchical and categorical omega is based on the
@@ -119,7 +119,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
 #'                   item2 = c(5, 3, 3, 5, 2, 2, 5, 1),
 #'                   item3 = c(4, 2, 4, 5, 1, 3, 5, 1),
@@ -166,11 +165,7 @@
 #'
 #' # Example 11b: Write Results into a Excel file
 #' item.omega(dat, write = "Omega.xlsx")
-#'
-#' result <- item.omega(dat, output = FALSE)
-#' write.result(result, "Omega.xlsx")
-#' }
-item.omega <- function(..., data = NULL, rescov = NULL,
+ item.omega <- function(..., data = NULL, rescov = NULL,
                        type = c("omega", "hierarch", "categ"), exclude = NULL,
                        std = FALSE, na.omit = FALSE, print = c("all", "omega", "item"),
                        digits = 2, conf.level = 0.95, as.na = NULL, write = NULL,
@@ -186,9 +181,6 @@ item.omega <- function(..., data = NULL, rescov = NULL,
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   # Package 'mnormt' installed?
   if (isTRUE(ordered)) { if (isTRUE(!requireNamespace("mnormt", quietly = TRUE))) { stop("Package \"mnormt\" is needed for this function to work, please install it.", call. = FALSE) } }
 
@@ -201,11 +193,11 @@ item.omega <- function(..., data = NULL, rescov = NULL,
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a matrix, data frame, variance-covariance or correlation matrix")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract variables
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, check.chr = "a matrix, data frame, variance-covariance or correlation matrix")]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -215,12 +207,10 @@ item.omega <- function(..., data = NULL, rescov = NULL,
     # Extract data
     x <- eval(..., enclos = parent.frame())
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+
   }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
-
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
@@ -259,19 +249,21 @@ item.omega <- function(..., data = NULL, rescov = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
 
-  if (isTRUE(na.omit)) { x <- na.omit(x) }
+  if (isTRUE(any(is.na(x)) && na.omit)) { assign("x", na.omit(x)) |> (\(y) warning(paste("Listwise deletion of incomplete data, number of cases removed from the analysis:", length(attributes(y)$na.action)), call. = FALSE))() }
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("std", "na.omit", "append", "output"),
+               s.character = list(type = c("omega", "hierarch", "categ")),
+               m.character = list(print = c("all", "omega", "item")),
+               args = c("digits", "conf.level"),
+               package = "lavaan", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # Package 'lavaan' installed?
-    if (isTRUE(!requireNamespace("lavaan", quietly = TRUE))) { stop("Package \"lavaan\" is needed for this function to work, please install it.", call. = FALSE) }
 
     # Check input 'x': One or two item
     if (isTRUE(ncol(x) < 3L)) { stop("Please specify at least three items to compute coefficient omega", call. = FALSE) }
@@ -279,47 +271,23 @@ item.omega <- function(..., data = NULL, rescov = NULL,
     # Check input 'x': Zero variance
     if (isTRUE(nrow(x) != ncol(x))) {
 
-      x.check <- vapply(as.data.frame(x, stringsAsFactors = FALSE), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
+      vapply(as.data.frame(x, stringsAsFactors = FALSE), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L)) |>
+        (\(y) if (isTRUE(any(y))) { stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
 
-      if (isTRUE(any(x.check))) { stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE) }
 
     }
 
     # Check input 'rescov'
     if (isTRUE(!is.null(rescov))) {
 
-      rescov.items <- unique(unlist(rescov))
-      if (isTRUE(any(!rescov.items %in% colnames(x)))) {
+      unique(unlist(rescov)) |>
+        (\(y) if (isTRUE(any(!y %in% colnames(x)))) {
 
-        stop(paste0("Items specified in the argument 'rescov' were not found in 'x': ", paste(rescov.items[!rescov.items %in% colnames(x)], collapse = ", ")), call. = FALSE)
+          stop(paste0("Items specified in the argument 'rescov' were not found in 'x': ", paste(y[!y %in% colnames(x)], collapse = ", ")), call. = FALSE)
 
-      }
+        })()
 
     }
-
-    # Check input 'type'
-    if (isTRUE(!all(type %in% c("omega", "hierarch", "categ")))) { stop("Character strings in the argument 'type' do not all match with \"omega\", \"hierarch\", or \"categ\".", call. = FALSE) }
-
-    # Check input 'std'
-    if (isTRUE(!is.logical(std))) { stop("Please specify TRUE or FALSE for the argument 'std'.", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "omega", "item")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"omega\", or \"item\".", call. = FALSE) }
-
-    # Check input 'na.omit'
-    if (isTRUE(!is.logical(na.omit))) { stop("Please specify TRUE or FALSE for the argument 'na.omit'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -428,8 +396,7 @@ item.omega <- function(..., data = NULL, rescov = NULL,
       # Omega if item deleted
       if (isTRUE(ncol(x) > 3L)) {
 
-        itemstat[i, 2L] <- omega.function(y = x[, -grep(var, colnames(x))], y.rescov = NULL, y.type = "categ",
-                                          y.std = std, check = FALSE)$omega
+        itemstat[i, 2L] <- omega.function(y = x[, -grep(var, colnames(x))], y.rescov = NULL, y.type = "categ", y.std = std, check = FALSE)$omega
 
       } else {
 
@@ -469,34 +436,7 @@ item.omega <- function(..., data = NULL, rescov = NULL,
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -507,3 +447,5 @@ item.omega <- function(..., data = NULL, rescov = NULL,
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

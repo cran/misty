@@ -320,74 +320,10 @@ blimp.bayes <- function(x, param = NULL,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "default", "m", "med", "map", "sd", "mad", "skew", "kurt", "eti", "hdi", "rhat", "b.ess", "t.ess", "b.mcse", "t.mcse")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"default\", \"none\", \"m\", \"med\", \"map\", \"sd\", \"mad\", \"skew\", \"kurt\", \"eti\",  \"hdi\", \"rhat\", \"b.ess\", \"t.ess\", \"b.mcse\", or \"t.mcse\".", call. = FALSE) }
-
-    # Check input 'm.bulk'
-    if (isTRUE(!is.logical(m.bulk))) { stop("Please specify TRUE or FALSE for the argument 'm.bulk'.", call. = FALSE) }
-
-    # Check input 'split'
-    if (isTRUE(!is.logical(split))) { stop("Please specify TRUE or FALSE for the argument 'split'.", call. = FALSE) }
-
-    # Check input 'rank'
-    if (isTRUE(!is.logical(rank))) { stop("Please specify TRUE or FALSE for the argument 'rank'.", call. = FALSE) }
-
-    # Check input 'fold'
-    if (isTRUE(!is.logical(fold))) { stop("Please specify TRUE or FALSE for the argument 'fold'.", call. = FALSE) }
-
-    # Check input 'pd'
-    if (isTRUE(!is.logical(pd))) { stop("Please specify TRUE or FALSE for the argument 'pd'.", call. = FALSE) }
-
-    # Check input 'null'
-    if (isTRUE(!is.numeric(null) || length(null) != 1L)) { stop("Please specify a numeric value for the argument 'null'.", call. = FALSE) }
-
-    # Check input 'rope'
-    if (isTRUE(!is.null(rope) && (!is.numeric(rope) || length(rope) != 2L))) { stop("Please specify a numeric vector with two elements for the argument 'rope'.", call. = FALSE) }
-
-    if (isTRUE(rope[2L] - rope[1L] < 0L)) { stop("Please specify the lower and higher bounds of the ROPE for the argument 'rope'.", call. = FALSE) }
-
-    # Check input 'ess.tail'
-    if (isTRUE(any(ess.tail >= 1L | ess.tail <= 0L) || length(ess.tail) != 2L)) { stop("Please specify a numeric vector with two elements for the argument 'ess.tail'.", call. = FALSE) }
-
-    # Check input 'mcse.tail'
-    if (isTRUE(any(mcse.tail >= 1L | mcse.tail <= 0L) || length(mcse.tail) != 2L)) { stop("Please specify a numeric vector with two elements for the argument 'mcse.tail'.", call. = FALSE) }
-
-    # Check input 'alternative'
-    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
-
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'r.digits'
-    if (isTRUE(r.digits %% 1L != 0L || r.digits < 0L)) { stop("Please specify a positive integer number for the argument 'r.digits'.", call. = FALSE) }
-
-    # Check input 'ess.digits'
-    if (isTRUE(ess.digits %% 1L != 0L || ess.digits < 0L)) { stop("Please specify a positive integer number for the argument 'ess.digits'.", call. = FALSE) }
-
-    # Check input 'mcse.digits'
-    if (isTRUE(mcse.digits %% 1L != 0L || mcse.digits < 0L)) { stop("Please specify a positive integer number for the argument 'mcse.digits'.", call. = FALSE) }
-
-    # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && all(!misty::chr.grepl(c(".txt", ".xlsx"), write)))) { stop("Please specify a character string with file extenstion '.txt' or '.xlsx' for the argument 'write'.") }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("m.bulk", "split", "rank", "fold", "pd", "append", "output"), numeric = list(null = 1L, rope = 2L, ess.tail = 2L, mcse.tail = 2L),
+               m.character = list(print = c("all", "default", "m", "med", "map", "sd", "mad", "skew", "kurt", "eti", "hdi", "rhat", "b.ess", "t.ess", "b.mcse", "t.mcse")),
+               args = c("digits", "p.digits", "r.digits", "ess.digits", "mcse.digits", "conf.level", "alternative", "write2"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -652,8 +588,7 @@ blimp.bayes <- function(x, param = NULL,
                              digits = digits, r.digits = r.digits, ess.digits = ess.digits,
                              mcse.digits = mcse.digits, p.digits = p.digits,
                              write = write, append = append, check = check, output = output),
-                 data = postdat,
-                 result = result.table)
+                 data = postdat, result = result.table)
 
   class(object) <- "misty.object"
 
@@ -661,34 +596,7 @@ blimp.bayes <- function(x, param = NULL,
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -699,3 +607,5 @@ blimp.bayes <- function(x, param = NULL,
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

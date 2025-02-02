@@ -46,6 +46,8 @@
 #'                       many instances of Mplus may run in parallel and we wish
 #'                       to avoid collisions in temporary files among processes.
 #'                       Linux/Mac only.
+#' @param check          logical: if \code{TRUE} (default), argument specification is
+#'                       checked.
 #'
 #' @author
 #' Michael Hallquist and Joshua Wiley.
@@ -56,7 +58,8 @@
 #' \code{\link{mplus.bayes}}, \code{\link{mplus.lca}}
 #'
 #' @references
-#' Hallquist, M. N. & Wiley, J. F. (2018). MplusAutomation: An R package for facilitating
+#' Hallquist, M. N. & Wiley, J. F. (2018). MplusAutomation
+#' : An R package for facilitating
 #' large-scale latent variable analyses in Mplus. \emph{Structural Equation Modeling:
 #' A Multidisciplinary Journal, 25}, 621-638. https://doi.org/10.1080/10705511.2017.1402334.
 #'
@@ -78,20 +81,20 @@
 #' mplus.run(Mplus = "C:/Program Files/Mplus/Mplus.exe")
 #'
 #' # Example 2: Run Mplus models located nested within subdirectories
-#' mplus.run(recursive = TRUE,
-#'           Mplus = "C:/Program Files/Mplus/Mplus.exe")
+#' mplus.run(recursive = TRUE, Mplus = "C:/Program Files/Mplus/Mplus.exe")
 #' }
 mplus.run <- function(target = getwd(), recursive = FALSE, filefilter = NULL, show.out = FALSE,
                       replace.out = c("always", "never", "modified"), message = TRUE,
-                      logFile = NULL, Mplus = detect.mplus(),
-                      killOnFail = TRUE, local_tmpdir = FALSE) {
+                      logFile = NULL, Mplus = .detect.mplus(),
+                      killOnFail = TRUE, local_tmpdir = FALSE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'print'
-  if (isTRUE(!all(replace.out %in% c("always", "never", "modified")))) { stop("Character strings in the argument 'replace.out' do not all match with \"always\", \"never\", or \"modified\".", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("recursive", "show.out", "message", "killOnFail", "local_tmpdir"),
+               character = list(Mplus = 1L), s.character = list(replace.out = c("always", "never", "modified")), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -367,3 +370,5 @@ mplus.run <- function(target = getwd(), recursive = FALSE, filefilter = NULL, sh
   normalComplete <- TRUE
 
 }
+
+#_______________________________________________________________________________

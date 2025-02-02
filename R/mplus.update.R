@@ -31,7 +31,7 @@
 #'                    and \code{"modified"}, which only runs a model if the
 #'                    modified date for the input file is more recent than the
 #'                    output file modified date.
-#' @param print       a character vector indicating which results to show, i.e.
+#' @param print       a character string indicating which results to show, i.e.
 #'                    \code{"all"} (default) for all results \code{"input"} for
 #'                    input command sections, and \code{"result"} for result sections.
 #' @param input       a character vector specifying Mplus input command sections
@@ -139,6 +139,7 @@
 #' Note that comments are removed from the input text by default, i.e., \code{comment = FALSE}.
 #'}
 #'}
+#'}
 #'
 #' @author
 #' Takuya Yanagida
@@ -188,7 +189,7 @@
 #'
 #' # Update VARIABLE and MODEL section
 #' update1 <- '
-#' VARIABLE: ...
+#' VARIABLE: ...;
 #'           USEVARIABLES ARE y1 x1;
 #' MODEL:    y1 ON x1;
 #' '
@@ -262,9 +263,13 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("comment", "replace.inp", "mplus.run", "variable", "not.input", "not.result", "append", "output"),
+               character = list(file = 1L),
+               s.character = list(replace.out = c("always", "never", "modified"), print = c("all", "input", "result")),
+               args = "write1", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'update': ...; specification
@@ -286,21 +291,6 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
     # Check input 'file'
     if (isTRUE(!is.character(file) || length(file) != 1L)) { stop("Please specify a character string for the argument 'file',", call. = FALSE) }
 
-    # Check input 'comment'
-    if (isTRUE(!is.logical(comment))) { stop("Please specify TRUE or FALSE for the argument 'comment'.", call. = FALSE) }
-
-    # Check input 'replace.inp'
-    if (isTRUE(!is.logical(replace.inp))) { stop("Please specify TRUE or FALSE for the argument 'replace.inp'.", call. = FALSE) }
-
-    # Check input 'mplus.run'
-    if (isTRUE(!is.logical(mplus.run))) { stop("Please specify TRUE or FALSE for the argument 'mplus.run'.", call. = FALSE) }
-
-    # Check input 'replace.out'
-    if (isTRUE(!all(replace.out %in% c("always", "never", "modified")))) { stop("Character strings in the argument 'print' do not all match with \"always\", \"never\", or \"modified\".", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "input", "result")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"input\", or \"result\".", call. = FALSE) }
-
     # Check input 'input'
     input.check <- input[which(!input %in% c("all", "default", input.all))]
     if (isTRUE(length(input.check) != 0L)) { stop(paste0(if (isTRUE(length(input.check) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'input' is not permissible: ", paste(dQuote(input.check), collapse = ", ")), call. = FALSE) }
@@ -312,24 +302,6 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
     # Check input 'exclude'
     exclude.check <- exclude[which(!exclude %in% c(input.all, result.all))]
     if (isTRUE(length(exclude.check) != 0L)) { stop(paste0(if (isTRUE(length(exclude.check) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'exclude' is not permissible: ", paste(dQuote(exclude.check), collapse = ", ")), call. = FALSE) }
-
-    # Check input 'variable'
-    if (isTRUE(!is.logical(variable))) { stop("Please specify TRUE or FALSE for the argument 'variable'.", call. = FALSE) }
-
-    # Check input 'not.input'
-    if (isTRUE(!is.logical(not.input))) { stop("Please specify TRUE or FALSE for the argument 'not.input'.", call. = FALSE) }
-
-    # Check input 'not.result'
-    if (isTRUE(!is.logical(not.result))) { stop("Please specify TRUE or FALSE for the argument 'not.result'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && !is.character(write))) { stop("Please specify a character string for the argument 'write'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -797,3 +769,4 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
 
 }
 
+#_______________________________________________________________________________

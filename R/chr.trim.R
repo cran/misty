@@ -11,7 +11,8 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{chr.grep}}, \code{\link{chr.grepl}}, \code{\link{chr.gsub}}, \code{\link{chr.omit}}
+#' \code{\link{chr.color}}, \code{\link{chr.grep}}, \code{\link{chr.grepl}},
+#' \code{\link{chr.gsub}}, \code{\link{chr.omit}}, \code{\link{chr.trunc}}
 #'
 #' @return
 #' Returns a character vector with whitespaces removed from the vector specified
@@ -43,6 +44,16 @@ chr.trim <- function(x, side = c("both", "left", "right"), check = TRUE) {
 
   #_____________________________________________________________________________
   #
+  # Initial Check --------------------------------------------------------------
+
+  # Check input 'x'
+  if (isTRUE(missing(x))) { stop("Please specify a character vector for the argument 'x'", call. = FALSE) }
+
+  # Check if input 'x' is NULL
+  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
   # Data -----------------------------------------------------------------------
 
   # Convert 'x' into a vector
@@ -52,21 +63,8 @@ chr.trim <- function(x, side = c("both", "left", "right"), check = TRUE) {
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'x'
-  if (isTRUE(missing(x))) { stop("Please specify a character vector for the argument 'x'", call. = FALSE) }
-
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'x'
-    if (isTRUE(!is.character(x))) { stop("Please specify a character vector for the argument 'x'", call. = FALSE) }
-
-    # Check input 'side'
-    if (isTRUE(!side %in% c("both", "left", "right"))) { stop("Character string in the argument 'side' does not match with \"both\", \"left\", or \"right\".", call. = FALSE) }
-
-  }
+  # Check input 'x' and 'side'
+  .check.input(s.character = list(side = c("both", "left", "right")), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -91,3 +89,5 @@ chr.trim <- function(x, side = c("both", "left", "right"), check = TRUE) {
   return(object)
 
 }
+
+#_______________________________________________________________________________

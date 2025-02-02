@@ -2,159 +2,550 @@
 % Please edit documentation in R/ci.prop.R
 \name{ci.prop}
 \alias{ci.prop}
-\title{Confidence Interval for Proportions}
+\title{(Bootstrap) Confidence Intervals for Proportions}
 \usage{
 ci.prop(..., data = NULL, method = c("wald", "wilson"),
+        boot = c("none", "perc", "bc", "bca"), R = 1000, seed = NULL,
         alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
         group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-        digits = 3, as.na = NULL, write = NULL, append = TRUE, check = TRUE,
-        output = TRUE)
+        digits = 3, as.na = NULL, plot = c("none", "ci", "boot"),
+        point.size = 2.5, point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5,
+        hist = TRUE, binwidth = NULL, bins = NULL, alpha = 0.4, fill = "gray85",
+        density = TRUE, density.col = "#0072B2", density.linewidth = 0.5,
+        density.linetype = "solid", plot.point = TRUE, point.col = "#CC79A7",
+        point.linewidth = 0.6, point.linetype = "solid", plot.ci = TRUE,
+        ci.col = "black", ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE,
+        intercept = 0.5, linetype = "solid", line.col = "gray65", xlab = NULL,
+        ylab = NULL, xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(),
+        ybreaks = ggplot2::waiver(), axis.title.size = 11, axis.text.size = 10,
+        strip.text.size = 11, title = NULL, subtitle = NULL, group.col = NULL,
+        plot.margin = NA, legend.title = "",
+        legend.position = c("right", "top", "left", "bottom", "none"),
+        legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
+        facet.scales = "free_y", saveplot = NULL, width = NA, height = NA,
+        units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
+        check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a numeric vector, matrix or data frame with numeric variables
-with 0 and 1 values, i.e., factors and character variables
-are excluded from \code{x} before conducting the analysis.
-Alternatively, an expression indicating the variable
-names in \code{data} e.g., \code{ci.prop(x1, x2, x3, data = dat)}.
-Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+\item{...}{a numeric vector, matrix or data frame with numeric
+variables with 0 and 1 values, i.e., factors and
+character variables are excluded from \code{x} before
+conducting the analysis. Alternatively, an expression
+indicating the variable names in \code{data} e.g.,
+\code{ci.prop(x1, x2, x3, data = dat)}. Note that the
+operators \code{.}, \code{+}, \code{-}, \code{~},
+\code{:}, \code{::}, and \code{!} can also be used
+to select variables, see 'Details' in the
+\code{\link{df.subset}} function.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a numeric vector, matrix or data frame
-for the argument \code{...}.}
+\item{data}{a data frame when specifying one or more variables in
+the argument \code{...}. Note that the argument is
+\code{NULL} when specifying a numeric vector, matrix
+or data frame for the argument \code{...}.}
 
-\item{method}{a character string specifying the method for computing the confidence interval,
-must be one of \code{"wald"}, or \code{"wilson"} (default).}
+\item{method}{a character string specifying the method for computing
+the confidence interval, must be one of \code{"wald"},
+or \code{"wilson"} (default).}
 
-\item{alternative}{a character string specifying the alternative hypothesis, must be one of
-\code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
+\item{boot}{a character string specifying the type of bootstrap
+confidence intervals (CI), i.e., \code{"none"} (default)
+for not conducting bootstrapping, \code{"perc"}, for
+the percentile bootstrap CI \code{"bc"} (default) for
+the bias-corrected (BC) percentile bootstrap CI (without
+acceleration), and \code{"bca"} for the bias-corrected
+and accelerated (BCa) bootstrap CI, see 'Details' in
+the \code{\link{ci.cor}} function.}
 
-\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level of the interval.}
+\item{R}{a numeric value indicating the number of bootstrap
+replicates (default is 1000).}
 
-\item{group}{either a character string indicating the variable name of
-the grouping variable in \code{...} or \code{data}, or a vector
-representing the grouping variable.}
+\item{seed}{a numeric value specifying seeds of the pseudo-random
+numbers used in the bootstrap algorithm when conducting
+bootstrapping.}
 
-\item{split}{either a character string indicating the variable name of
-the split variable in \code{...} or \code{data}, or a vector
-representing the split variable.}
+\item{alternative}{a character string specifying the alternative hypothesis,
+must be one of \code{"two.sided"} (default),
+\code{"greater"} or \code{"less"}.}
 
-\item{sort.var}{logical: if \code{TRUE}, output table is sorted by variables when specifying \code{group}.}
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence
+level of the interval.}
 
-\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before conducting the analysis
-(i.e., listwise deletion) when specifying more than one outcome variable.}
+\item{group}{either a character string indicating the variable name
+of the grouping variable in \code{...} or \code{data},
+or a vector representing the grouping variable.}
 
-\item{digits}{an integer value indicating the number of decimal places to be used.}
+\item{split}{either a character string indicating the variable name
+of the split variable in \code{...} or \code{data},
+or a vector representing the split variable.}
 
-\item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting the analysis.
-Note that \code{as.na()} function is only applied to \code{x}, but
-not to \code{group} or \code{split}.}
+\item{sort.var}{logical: if \code{TRUE}, output table is sorted by
+variables when specifying \code{group}.}
 
-\item{write}{a character string naming a text file with file extension
-\code{".txt"} (e.g., \code{"Output.txt"}) for writing the
-output into a text file.}
+\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed
+before conducting the analysis (i.e., listwise deletion)
+when specifying more than one outcome variable.}
 
-\item{append}{logical: if \code{TRUE} (default), output will be appended
-to an existing text file with extension \code{.txt} specified
-in \code{write}, if \code{FALSE} existing text file will be
-overwritten.}
+\item{digits}{an integer value indicating the number of decimal
+places to be used.}
 
-\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+\item{as.na}{a numeric vector indicating user-defined missing
+values, i.e. these values are converted to \code{NA}
+before conducting the analysis. Note that \code{as.na()}
+function is only applied to \code{x}, but not to
+\code{group} or \code{split}.}
 
-\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
+\item{plot}{a character string indicating the type of the plot
+to display, i.e., \code{"none"} (default) for not
+displaying any plots, \code{"ci"} for displaying
+confidence intervals for the proportion, \code{"boot"}
+for displaying bootstrap samples with histograms and
+density curves when the argument \code{"boot"} is
+other than \code{"none"}.}
+
+\item{point.size}{a numeric value indicating the \code{size} argument
+in the \code{geom_point} function for controlling the
+size of points when plotting confidence intervals
+(\code{plot = "ci"}).}
+
+\item{point.shape}{a numeric value between 0 and 25 or a character string
+as plotting symbol indicating the \code{shape} argument
+in the \code{geom_point} function for controlling the
+symbols of points when plotting confidence intervals
+(\code{plot = "ci"}).}
+
+\item{errorbar.width}{a numeric value indicating the \code{width} argument
+in the \code{geom_errorbar} function for controlling
+the width of the whiskers in the \code{geom_errorbar}
+function when plotting confidence intervals
+(\code{plot = "ci"}).}
+
+\item{dodge.width}{a numeric value indicating the \code{width} argument
+controlling the width of the \code{geom} elements to
+be dodged when specifying a grouping variable using
+the argument \code{group} when plotting confidence
+intervals (\code{plot = "ci"}).}
+
+\item{hist}{logical: if \code{TRUE} (default), histograms are
+drawn when plotting bootstrap samples
+(\code{plot = "boot"}).}
+
+\item{binwidth}{a numeric value or a function for specifying the
+\code{binwidth} argument in the \code{geom_histogram}
+function for controlling the width of the bins when
+plotting bootstrap samples (\code{plot = "boot"}).}
+
+\item{bins}{a numeric value for specifying the \code{bins} argument
+in the \code{geom_histogram} function for controlling
+the number of bins when plotting bootstrap samples
+(\code{plot = "boot"}).}
+
+\item{alpha}{a numeric value between 0 and 1 for specifying the
+\code{alpha} argument in the \code{geom_histogram}
+function for controlling the opacity of the bars
+when plotting bootstrap samples (\code{plot = "boot"}).}
+
+\item{fill}{a character string specifying the \code{fill} argument
+in the \code{geom_histogram} function controlling the
+fill aesthetic when plotting bootstrap samples
+(\code{plot = "boot"}). Note that this argument applied
+only when no grouping variable was specified
+\code{group = NULL}.}
+
+\item{density}{logical: if \code{TRUE} (default), density curves are
+drawn when plotting bootstrap samples (\code{plot = "boot"}).}
+
+\item{density.col}{a character string specifying the \code{color} argument
+in the \code{geom_density} function controlling the
+color of the density curves when plotting bootstrap
+samples (\code{plot = "boot"}). Note that this argument
+applied only when no grouping variable was specified
+\code{group = NULL}.}
+
+\item{density.linewidth}{a numeric value specifying the \code{linewidth}
+argument in the \code{geom_density} function controlling
+the line width of the density curves when plotting
+bootstrap samples (\code{plot = "boot"}).}
+
+\item{density.linetype}{a numeric value or character string specifying the
+\code{linetype} argument in the \code{geom_density}
+function controlling the line type of the density
+curves when plotting bootstrap samples
+(\code{plot = "boot"}).}
+
+\item{plot.point}{logical: if \code{TRUE} (default), vertical lines
+representing the point estimate of the proportion
+are drawn when plotting bootstrap samples
+(\code{plot = "boot"}).}
+
+\item{point.col}{a character string specifying the \code{color} argument
+in the \code{geom_vline} function for controlling the
+color of the vertical line displaying the proportion
+when plotting bootstrap samples (\code{plot = "boot"}).
+Note that this argument applied only when no grouping
+variable was specified \code{group = NULL}.}
+
+\item{point.linewidth}{a numeric value specifying the \code{linewdith}
+argument in the \code{geom_vline} function for
+controlling the line width of the vertical line
+displaying proportions when plotting bootstrap
+samples (\code{plot = "boot"}).}
+
+\item{point.linetype}{a numeric value or character string specifying the
+\code{linetype} argument in the \code{geom_vline}
+function controlling the line type of the vertical
+line displaying proportions when plotting bootstrap
+samples (\code{plot = "boot"}).}
+
+\item{plot.ci}{logical: if \code{TRUE} (default), vertical lines
+representing the bootstrap confidence intervals of
+proportions are drawn when plotting bootstrap samples
+(\code{plot = "boot"}).}
+
+\item{ci.col}{character string specifying the \code{color} argument
+in the \code{geom_vline} function for controlling the
+color of the vertical line displaying bootstrap
+confidence intervals when plotting bootstrap samples
+(\code{plot = "boot"}). Note that this argument applied
+only when no grouping variable was specified
+\code{group = NULL}.}
+
+\item{ci.linewidth}{a numeric value specifying the \code{linewdith} argument
+in the \code{geom_vline} function for controlling the
+line width of the vertical line displaying bootstrap
+confidence intervals when plotting bootstrap samples
+(\code{plot = "boot"}).}
+
+\item{ci.linetype}{a numeric value or character string specifying the
+\code{linetype} argument in the \code{geom_vline}
+function controlling the line type of the vertical
+line displaying bootstrap confidence intervals when
+plotting bootstrap samples (\code{plot = "boot"}).}
+
+\item{line}{logical: if \code{TRUE}, a horizontal line
+is drawn when \code{plot = "ci"} or a vertical line
+is drawn when \code{plot = "boot"}}
+
+\item{intercept}{a numeric value indicating the \code{yintercept} or
+\code{xintercept} argument in the \code{geom_hline}
+or \code{geom_vline} function controlling the position
+of the horizontal or vertical line when \code{plot = "ci"}
+and \code{line = TRUE} or when \code{plot = "boot"}
+and \code{line = TRUE}. By default, the horizontal or
+vertical line is drawn at 0.}
+
+\item{linetype}{a character string indicating the \code{linetype}
+argument in the \code{geom_hline} or \code{geom_vline}
+function controlling the line type of the horizontal
+or vertical line (default is \code{linetype = "dashed"}).}
+
+\item{line.col}{a character string indicating the \code{color} argument
+in the \code{geom_hline} or \code{geom_vline} function
+for controlling the color of the horizontal or vertical
+line.}
+
+\item{xlab}{a character string indicating the \code{name} argument
+in the \code{scale_x_continuous} function for labeling
+the x-axis. The default setting is \code{xlab = NULL}
+when \code{plot = "ci"} and \code{xlab = "Proportion"}
+when \code{plot = "boot"}.}
+
+\item{ylab}{a character string indicating the \code{name} argument
+in the \code{scale_y_continuous} function for labeling
+the y-axis. The default setting is \code{ylab = "Proportion"}
+when \code{plot = "ci"} and
+\code{ylab = "Probability Density, f(x)"} when \code{plot = "boot"}.}
+
+\item{xlim}{a numeric vector with two elements indicating the
+\code{limits} argument in the \code{scale_x_continuous}
+function for controlling the scale range of the x-axis.
+The default setting is \code{xlim = NULL}
+when \code{plot = "ci"} and \code{xlim = c(0, 1)}
+when \code{plot = "boot"}.}
+
+\item{ylim}{a numeric vector with two elements indicating the
+\code{limits} argument in the \code{scale_y_continuous}
+function for controlling the scale range of the y-axis.
+The default setting is \code{ylim = c(0, 1)} when
+\code{plot = "ci"} and \code{xlim = NULL} when
+\code{plot = "boot"}.}
+
+\item{xbreaks}{a numeric vector indicating the \code{breaks} argument
+in the \code{scale_x_continuous} function for controlling
+the x-axis breaks. The default setting is
+\code{xbreaks = NULL} when \code{plot = "ci"}
+and \code{xbreaks = seq(-1, 1, by = 0.25)} when
+\code{plot = "boot"}.}
+
+\item{ybreaks}{a numeric vector indicating the \code{breaks} argument
+in the \code{scale_y_continuous} function for controlling
+the y-axis breaks. The default setting is
+\code{ybreaks = seq(-1, 1, by = 0.25)} when
+\code{plot = "ci"} and \code{ybreaks = NULL} when
+\code{plot = "boot"}.}
+
+\item{axis.title.size}{a numeric value indicating the \code{size} argument
+in the \code{element_text} function for specifying the
+function controlling the font size of the axis title,
+i.e., \code{theme(axis.title = element_text(size = axis.text.size))}.}
+
+\item{axis.text.size}{a numeric value indicating the \code{size} argument
+in the \code{element_text} function for specifying the
+function controlling the font size of the axis text,
+i.e., \code{theme(axis.text = element_text(size = axis.text.size))}.}
+
+\item{strip.text.size}{a numeric value indicating the \code{size} argument
+in the \code{element_text} function for specifying the
+function controlling the font size of the strip text,
+i.e., \code{theme(strip.text = element_text(size = strip.text.size))}.}
+
+\item{title}{a character string indicating the \code{title} argument
+in the \code{labs} function for the subtitle of the plot.}
+
+\item{subtitle}{a character string indicating the \code{subtite} argument
+in the \code{labs} function for the subtitle of the plot.}
+
+\item{group.col}{a character vector indicating the \code{color} argument
+in the \code{scale_color_manual} and \code{scale_fill_manual}
+functions when specifying a grouping variable using
+the argument \code{group}.}
+
+\item{plot.margin}{a numeric vector with four elements indicating the
+\code{plot.margin} argument in the \code{theme} function
+controlling the plot margins . The default setting
+is \code{c(5.5, 5.5, 5.5, 5.5)}, but switches
+to \code{c(5.5, 5.5, -2.5, 5.5)} when specifying a
+grouping variable using the argument \code{group}.}
+
+\item{legend.title}{a character string indicating the \code{color} argument
+in the \code{labs} function for specifying the legend
+title when specifying a grouping variable using the
+argument \code{group}.}
+
+\item{legend.position}{a character string indicating the \code{legend.position}
+in the \code{theme} argument for controlling the
+position of the legend  function when specifying a
+grouping variable using the argument \code{group}.
+By default, the legend is placed at the bottom the
+plot.}
+
+\item{legend.box.margin}{a numeric vector with four elements indicating the
+\code{legend.box.margin} argument in the \code{theme}
+function for controlling the margins around the full
+legend area when specifying a grouping variable using
+the argument \code{group}.}
+
+\item{facet.ncol}{a numeric value indicating the \code{ncol} argument
+in the \code{facet_wrap} function for controlling
+the number of columns when specifying a split variable
+using the argument \code{split}.}
+
+\item{facet.nrow}{a numeric value indicating the \code{nrow} argument
+in the \code{facet_wrap} function for controlling the
+number of rows when specifying a split variable using
+the argument \code{split}.}
+
+\item{facet.scales}{a character string indicating the \code{scales} argument
+in the \code{facet_wrap} function for controlling the
+scales shared across facets, i.e., \code{"fixed"},
+\code{"free_x"}, \code{"free_y"}, or \code{"free"}
+(default) when specifying a split variable using
+the argument \code{split}.}
+
+\item{saveplot}{a character string indicating the \code{filename}
+argument including the file extension in the \code{ggsave}
+function. Note that one of \code{".eps"}, \code{".ps"},
+\code{".tex"}, \code{".pdf"} (default),
+\code{".jpeg"}, \code{".tiff"}, \code{".png"},
+\code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+to be specified as file extension in the \code{file}
+argument. Note that plots can only be saved when
+\code{plot = "ci"} or \code{plot = "boot"}.}
+
+\item{width}{a numeric value indicating the \code{width} argument
+(default is the size of the current graphics device)
+in the \code{ggsave} function.}
+
+\item{height}{a numeric value indicating the \code{height} argument
+(default is the size of the current graphics device)
+in the \code{ggsave} function.}
+
+\item{units}{a character string indicating the \code{units} argument
+(default is \code{in}) in the \code{ggsave} function.}
+
+\item{dpi}{a numeric value indicating the \code{dpi} argument
+(default is \code{600}) in the \code{ggsave} function.}
+
+\item{write}{a character string naming a file for writing the output
+ into either a text file with file extension \code{".txt"}
+(e.g., \code{"Output.txt"}) or Excel file with file
+ extension \code{".xlsx"}  (e.g., \code{"Output.xlsx"}).
+ If the file name does not contain any file extension,
+ an Excel file will be written.}
+
+\item{append}{logical: if \code{TRUE} (default), output will be
+appended to an existing text file with extension
+\code{.txt} specified in \code{write}, if \code{FALSE}
+existing text file will be overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification
+is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on
+the console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-  \item{\code{call}}{function call}
-  \item{\code{type}}{type of analysis}
-  \item{\code{data}}{list with the input specified in \code{...}, \code{data},                           \code{group}, and \code{split}}
-  \item{\code{args}}{specification of function arguments}
-  \item{\code{result}}{result table}
+
+\item{\code{call}}{function call}
+\item{\code{type}}{type of analysis}
+\item{\code{data}}{list with the input specified in \code{...}, \code{data}, \code{group}, and \code{split}}
+\item{\code{args}}{specification of function arguments}
+\item{\code{boot}}{data frame with bootstrap replicates of the aproportion when bootstrapping was requested}
+\item{\code{plot}}{ggplot2 object for plotting the results and the data frame used for plotting}
+\item{\code{result}}{result table}
 }
 \description{
-This function computes a confidence interval for proportions for one or more variables, optionally
-by a grouping and/or split variable.
+This function computes and plots confidence intervals for proportions,
+optionally by a grouping and/or split variable. The function also
+supports three types of bootstrap confidence intervals (e.g., bias-corrected
+(BC) percentile bootstrap or bias-corrected and accelerated (BCa) bootstrap
+confidence intervals) and plots the bootstrap samples with histograms and
+density curves.
 }
 \details{
-The Wald confidence interval which is based on the normal approximation to the binomial distribution are
-computed by specifying \code{method = "wald"}, while the Wilson (1927) confidence interval (aka Wilson
-score interval) is requested by specifying \code{method = "wilson"}. By default, Wilson confidence
-interval is computed which have been shown to be reliable in small samples of n = 40 or less, and
-larger samples of n > 40 (Brown, Cai & DasGupta, 2001), while the Wald confidence intervals is
-inadequate in small samples and when \emph{p} is near 0 or 1 (Agresti & Coull, 1998).
+The Wald confidence interval which is based on the normal approximation to the
+binomial distribution are computed by specifying \code{method = "wald"}, while
+the Wilson (1927) confidence interval (aka Wilson score interval) is requested
+by specifying \code{method = "wilson"}. By default, Wilson confidence interval
+is computed which have been shown to be reliable in small samples of n = 40 or
+less, and larger samples of n > 40 (Brown, Cai & DasGupta, 2001), while the
+Wald confidence intervals is inadequate in small samples and when \emph{p} is
+near 0 or 1 (Agresti & Coull, 1998).
+}
+\note{
+Bootstrap confidence intervals are computed using the R package \code{boot}
+by Angelo Canty and Brain Ripley (2024).
 }
 \examples{
-# Example 1a: Two-Sided 95% CI for 'vs'
-ci.prop(mtcars$vs)
-#
-# Example 1b: Alternative specification using the 'data' argument
-ci.prop(vs, data = mtcars)
+#----------------------------------------------------------------------------
+# Confidence Interval (CI) forproportions
 
-# Example 2: Two-Sided 95% CI using Wald method
-ci.prop(mtcars$vs, method = "wald")
+# Example 1a: Two-Sided 95\% CI
+ci.prop(mtcars[, c("vs", "am")])
 
-# Example 3: One-Sided 95% CI
-ci.prop(mtcars$vs, alternative = "less")
+# Alternative specification
+ci.prop(vs, am, data = mtcars)
 
-# Example 4: Two-Sided 99% CI
-ci.prop(mtcars$vs, conf.level = 0.99)
+# Example 1b: One-Sided 95\% CI using Wald method
+ci.prop(mtcars[, c("vs", "am")], method = "wald", alternative = "less")
 
-# Example 5: Two-Sided 95% CI, print results with 4 digits
-ci.prop(mtcars$vs, digits = 4)
-
-# Example 6a: Two-Sided 95% CI for 'vs' and 'am',
-# listwise deletion for missing data
-ci.prop(mtcars[, c("vs", "am")], na.omit = TRUE)
-
-# Example 6b: Alternative specification using the 'data' argument
-# listwise deletion for missing data
-ci.prop(vs, am, data = mtcars, na.omit = TRUE)
-
-# Example 7a: Two-Sided 95% CI, analysis by 'gear' separately
-ci.prop(mtcars[, c("vs", "am")], group = mtcars$gear)
-
-# Example 7b: Alternative specification using the 'data' argument
-ci.prop(vs, am, data = mtcars, group = "gear")
-
-# Example 8: Two-Sided 95% CI, analysis by 'gear' separately, sort by variables
-ci.prop(mtcars[, c("vs", "am")], group = mtcars$gear, sort.var = TRUE)
-
-# Example 9: Two-Sided 95% CI, split analysis by 'cyl'
-ci.prop(mtcars[, c("vs", "am")], split = mtcars$cyl)
-
-# Example 10a: Two-Sided 95% CI, analysis by 'gear' separately, split by 'cyl'
-ci.prop(mtcars[, c("vs", "am")], group = mtcars$gear, split = mtcars$cyl)
-
-# Example 10b: Alternative specification using the 'data' argument
-ci.prop(vs, am, data = mtcars, group = "gear", split = "cyl")
+# Alternative specification
+ci.prop(vs, am, data = mtcars, method = "wald", alternative = "less")
 
 \dontrun{
-# Example 11: Write results into a text file
-ci.prop(vs, am, data = mtcars, group = "gear", split = "cyl", write = "Prop.txt")
+#----------------------------------------------------------------------------
+# Bootstrap Confidence Interval (CI)
+
+# Example 2a: Bias-corrected (BC) percentile bootstrap CI
+ci.prop(mtcars[, c("vs", "am")], boot = "bc")
+
+# Example 2b: Bias-corrected and accelerated (BCa) bootstrap CI,
+# 5000 bootstrap replications, set seed of the pseudo-random number generator
+ci.prop(mtcars[, c("vs", "am")], boot = "bca", R = 5000, seed = 123)
+
+#----------------------------------------------------------------------------
+# Grouping and Split Variable
+
+# Example 3a: Grouping variable
+ci.prop(vs, data = mtcars, group = "am")
+
+# Alternative specification
+ci.prop(mtcars[, "vs"], group = mtcars$am)
+
+# Example 3b: Split variable
+ci.prop(vs, data = mtcars, split = "am")
+
+# Alternative specification
+ci.prop(mtcars[, "vs"], split = mtcars$am)
+
+# Example 3c: Grouping and split variable
+ci.prop(vs, data = mtcars, group = "am", split = "cyl")
+
+# Alternative specification
+ci.prop(mtcars$vs,  group = mtcars$am, split = mtcars$cyl)
+
+#----------------------------------------------------------------------------
+# Write Output
+
+# Example 4a: Text file
+ci.prop(mtcars[, c("vs", "am")], write = "CI_Prop_Text.txt")
+
+# Example 4b: Excel file
+ci.prop(mtcars[, c("vs", "am")], write = "CI_Prop_Excel.xlsx")
+
+#----------------------------------------------------------------------------
+# Plot Confidence Intervals
+
+# Example 5a: Two-Sided 95\% CI
+ci.prop(vs, am, data = mtcars, plot = "ci")
+
+# Example 5b: Grouping variable
+ci.prop(vs, am, data = mtcars, group = "am", plot = "ci")
+
+# Example 5c: Split variable
+ci.prop(vs, am, data = mtcars, split = "am", plot = "ci")
+
+# Example 5d: Save plot as PDF file
+ci.prop(vs, am, data = mtcars, plot = "ci", saveplot = "CI_Prop.pdf",
+        width = 9, height = 6)
+
+# Example 5e: Save plot as PNG file
+ci.prop(vs, am, data = mtcars, plot = "ci", saveplot = "CI_Prop.png",
+        width = 9, height = 6)
+
+#----------------------------------------------------------------------------
+# Plot Bootstrap Samples
+
+# Example 6a: Two-Sided 95\% CI
+ci.prop(vs, am, data = mtcars, boot = "bc", plot = "boot")
+
+# Example 6b: Grouping variable
+ci.prop(vs, am, data = mtcars, group = "am", boot = "bc", plot = "boot")
+
+# Example 6c: Split variable
+ci.prop(vs, am, data = mtcars, split = "am", boot = "bc", plot = "boot")
+
+# Example 6d: Save plot as PDF file
+ci.prop(vs, am, data = mtcars, boot = "bc", plot = "boot",
+        saveplot = "CI_Prop_Boot.pdf", width = 9, height = 6)
+
+# Example 6e: Save plot as PNG file
+ci.prop(vs, am, data = mtcars, boot = "bc", plot = "boot",
+        saveplot = "CI_Prop_Boot.png", width = 9, height = 6)
 }
 }
 \references{
-Agresti, A. & Coull, B.A. (1998). Approximate is better than "exact" for interval estimation of binomial
-proportions. \emph{American Statistician, 52}, 119-126.
+Agresti, A. & Coull, B.A. (1998). Approximate is better than "exact" for
+interval estimation of binomial proportions. \emph{American Statistician, 52},
+119-126.
 
-Brown, L. D., Cai, T. T., & DasGupta, A., (2001). Interval estimation for a binomial proportion.
-\emph{Statistical Science, 16}, 101-133.
+Brown, L. D., Cai, T. T., & DasGupta, A., (2001). Interval estimation for a
+binomial proportion. \emph{Statistical Science, 16}, 101-133.
 
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-John Wiley & Sons.
+Canty, A., & Ripley, B. (2024). \emph{boot: Bootstrap R (S-Plus) Functions}.
+R package version 1.3-31.
 
-Wilson, E. B. (1927). Probable inference, the law of succession, and statistical inference.
-\emph{Journal of the American Statistical Association, 22}, 209-212.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. John Wiley & Sons.
+
+Wilson, E. B. (1927). Probable inference, the law of succession, and statistical
+inference. \emph{Journal of the American Statistical Association, 22}, 209-212.
 }
 \seealso{
-\code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},
-\code{\link{ci.prop.diff}}, \code{\link{ci.var}}, \code{\link{ci.sd}},
-\code{\link{descript}}
+\code{\link{ci.prop}}, \code{\link{ci.prop.diff}}, \code{\link{ci.median}},
+\code{\link{ci.prop.diff}}, \code{\link{ci.cor}}, \code{\link{ci.var}},
+\code{\link{ci.sd}}, \code{\link{descript}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -124,7 +124,7 @@
 #' #----------------------------------------------------------------------------
 #' # Example 1: Write data, specify input, and run input
 #'
-#' # Write Mplus Data File
+#' # Write Mplus data file
 #' write.mplus(ex3_1, file = "ex3_1.dat")
 #'
 #' # Specify Mplus input, specify NAMES option
@@ -141,6 +141,9 @@
 #' #----------------------------------------------------------------------------
 #' # Example 2: Alternative specification using the data argument
 #'
+#' # Read Mplus data file and set variables names
+#' ex3_1 <- setNames(read.table("ex3_1.dat"), nm = c("y1", "x1", "x3"))
+#'
 #' # Specify Mplus input, leave out the NAMES option
 #' input2 <- '
 #' DATA:     FILE IS ex3_1.dat;
@@ -153,7 +156,7 @@
 #' }
 mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, replace.inp = TRUE,
                   mplus.run = TRUE, show.out = FALSE, replace.out = c("always", "never", "modified"),
-                  Mplus = detect.mplus(), print = c("all", "input", "result"),
+                  Mplus = .detect.mplus(), print = c("all", "input", "result"),
                   input = c("all", "default", "data", "variable", "define", "analysis", "model",
                             "montecarlo", "mod.pop", "mod.cov", "mod.miss", "message"),
                   result = c("all", "default", "summary.analysis.short", "summary.data.short",
@@ -189,8 +192,10 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("comment", "replace.inp", "mplus.run", "variable", "not.input", "not.result", "append", "output"),
+               character = list(file = 1L), s.character = list(replace.out = c("always", "never", "modified"), print = c("all", "input", "result")),
+               args = "write1", envir = environment(), input.check = check)
 
   if (isTRUE(check)) {
 
@@ -203,12 +208,6 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
 
     }
 
-    # Check input 'file'
-    if (isTRUE(!is.character(file) || length(file) != 1L)) { stop("Please specify a character string for the argument 'file'.", call. = FALSE) }
-
-    # Check input 'comment'
-    if (isTRUE(!is.logical(comment))) { stop("Please specify TRUE or FALSE for the argument 'comment'.", call. = FALSE) }
-
     # Check input 'data'
     if (isTRUE(!is.null(data))) {
 
@@ -219,20 +218,6 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
       if (isTRUE(grepl("NAMES ARE|NAMES IS|NAMES =|NAMES  ARE|NAMES  IS|NAMES  =", toupper(x)))) { stop("Please do not specify the subection NAMES in the Mplus input text when using the argument 'data'.", call. = FALSE) }
 
     }
-
-    # Check input 'replace.inp'
-    if (isTRUE(!is.logical(replace.inp))) { stop("Please specify TRUE or FALSE for the argument 'replace.inp'.", call. = FALSE) }
-
-    # Check input 'mplus.run'
-    if (isTRUE(!is.logical(mplus.run))) { stop("Please specify TRUE or FALSE for the argument 'mplus.run'.", call. = FALSE) }
-
-    # Check input 'replace.out'
-    if (isTRUE(!all(replace.out %in% c("always", "never", "modified")))) { stop("Character strings in the argument 'print' do not all match with \"always\", \"never\", or \"modified\".", call. = FALSE) }
-
-    if (isTRUE(!all(c("always", "never", "modified") %in% replace.out) && length(replace.out) != 1L)) { stop("Please specify a character string for the argument 'replace.out'", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "input", "result")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"input\", or \"result\".", call. = FALSE) }
 
     # Check input 'input'
     input.check <- input[which(!input %in% c("all", "default", input.all))]
@@ -245,24 +230,6 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
     # Check input 'exclude'
     exclude.check <- exclude[which(!exclude %in% result.all)] |>
       (\(z) if (isTRUE(length(z) != 0L)) { stop(paste0(if (isTRUE(length(z) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'exclude' is not permissible: ", paste(dQuote(z), collapse = ", ")), call. = FALSE) })()
-
-    # Check input 'variable'
-    if (isTRUE(!is.logical(variable))) { stop("Please specify TRUE or FALSE for the argument 'variable'.", call. = FALSE) }
-
-    # Check input 'not.input'
-    if (isTRUE(!is.logical(not.input))) { stop("Please specify TRUE or FALSE for the argument 'not.input'.", call. = FALSE) }
-
-    # Check input 'not.result'
-    if (isTRUE(!is.logical(not.result))) { stop("Please specify TRUE or FALSE for the argument 'not.result'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && !is.character(write))) { stop("Please specify a character string for the argument 'write'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -691,3 +658,5 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

@@ -120,9 +120,8 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Load misty, lme4, nlme, and ggplot2 package
-#' library(misty)
-#' library(lme4)
+#' # Load misty and lme4 package
+#' libraries(misty, lme4)
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
@@ -212,13 +211,14 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("intercept", "center", "plot", "gray", "append", "output"),
+               numeric = list(start = 1L, end = 1L),
+               args = c("digits", "write1"),
+               package = "ggplot2", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # ggplot2 package
-    if (isTRUE(plot && !nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
 
     #......
     # Check input 'within'
@@ -227,12 +227,12 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
     if (isTRUE(is.character(within))) {
 
       # Check if level-1 predictors are in the data
-      var.data <- !within %in% colnames(data)
-      if (isTRUE(any(var.data))) {
+      (!within %in% colnames(data)) |>
+        (\(y) if (isTRUE(any(y))) {
 
-        stop(paste0("Predictors specified in the argument 'within' were not found in 'data': ", paste(within[which(var.data)], collapse = ", ")), call. = FALSE)
+          stop(paste0("Predictors specified in the argument 'within' were not found in 'data': ", paste(within[which(y)], collapse = ", ")), call. = FALSE)
 
-      }
+        })()
 
     } else {
 
@@ -251,12 +251,12 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
     if (isTRUE(is.character(between))) {
 
       # Check if level-2 predictors are in the data
-      var.data <- !between %in% colnames(data)
-      if (isTRUE(any(var.data))) {
+      (!between %in% colnames(data)) |>
+        (\(y) if (isTRUE(any(y))) {
 
-        stop(paste0("Predictors specified in the argument 'between' were not found in 'data': ", paste(between[which(var.data)], collapse = ", ")), call. = FALSE)
+          stop(paste0("Predictors specified in the argument 'between' were not found in 'data': ", paste(between[which(y)], collapse = ", ")), call. = FALSE)
 
-      }
+        })()
 
     } else {
 
@@ -273,12 +273,12 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
     if (isTRUE(is.character(between))) {
 
       # Check if level-1 predictors with random slopes are in 'within'
-      var.data <- !random %in% within
-      if (isTRUE(any(var.data))) {
+      (!random %in% within) |>
+        (\(y) if (isTRUE(any(y))) {
 
-        stop(paste0("Predictors specified in the argument 'random' were not found in 'within': ", paste(between[which(var.data)], collapse = ", ")), call. = FALSE)
+          stop(paste0("Predictors specified in the argument 'random' were not found in 'within': ", paste(between[which(y)], collapse = ", ")), call. = FALSE)
 
-      }
+        })()
 
     } else {
 
@@ -330,35 +330,11 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
     # Check input 'sigma2'
     if (isTRUE(length(sigma2) != 1L || !is.numeric(sigma2))) { stop("Please specify a numeric value for the argument 'sigma2'.", call. = FALSE) }
 
-    # Check input 'intercept'
-    if (isTRUE(!is.logical(intercept))) { stop("Please specify TRUE or FALSE for the argument 'intercept'", call. = FALSE) }
-
-    # Check input 'center'
-    if (isTRUE(!is.logical(center))) { stop("Please specify TRUE or FALSE for the argument 'center'", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'plot'
-    if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'", call. = FALSE) }
-
-    # Check input 'gray'
-    if (isTRUE(!is.logical(gray))) { stop("Please specify TRUE or FALSE for the argument 'gray'", call. = FALSE) }
-
     # Check input 'start'
     if (isTRUE(start < 0L || start > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) }
 
     # Check input 'end'
     if (isTRUE(end < 0L || end > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'end'", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE) }
 
   }
 
@@ -380,8 +356,7 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
   ## Internal functions from the r2mlm package ####
 
   #### r2mlm_manual() Function ####
-  r2mlm_manual <- function(data, within_covs, between_covs, random_covs,
-                           gamma_w, gamma_b, Tau, sigma2, has_intercept = TRUE, clustermeancentered = TRUE) {
+  r2mlm_manual <- function(data, within_covs, between_covs, random_covs, gamma_w, gamma_b, Tau, sigma2, has_intercept = TRUE, clustermeancentered = TRUE) {
 
     if (isTRUE(has_intercept)) {
 
@@ -854,3 +829,5 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

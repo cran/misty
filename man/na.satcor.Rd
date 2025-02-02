@@ -63,7 +63,6 @@ functions in the \pkg{semTools} package by Terrence D. Jorgensen et al.
 (2022).
 }
 \examples{
-\dontrun{
 # Load lavaan package
 library(lavaan)
 
@@ -82,7 +81,6 @@ mod.fit <- na.satcor(model, data = airquality, fun = "sem", aux = c("Temp", "Mon
 
 # Result summary
 summary(mod.fit)
-}
 }
 \references{
 Graham, J. W. (2003). Adding missing-data-relevant variables to FIML-based

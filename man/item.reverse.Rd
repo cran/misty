@@ -68,29 +68,29 @@ dat <- data.frame(item1 = c(1, 5, 3, 1, 4, 4, 1, 5),
                   item2 = c(1, 1.3, 1.7, 2, 2.7, 3.3, 4.7, 5),
                   item3 = c(4, 2, 4, 5, 1, 3, 5, -99))
 
-# Example 1a: Reverse code item1 and append to 'dat'
+# Example 1: Reverse code 'item1' and append to 'dat'
 dat$item1r <- item.reverse(dat$item1, min = 1, max = 5)
 
-# Example 1b: Alternative specification using the 'data' argument
+# Alternative specification using the 'data' argument
 item.reverse(item1, data = dat, min = 1, max = 5)
 
-# Example 2: Reverse code item3 while keeping the value -99
+# Example 2: Reverse code 'item3' while keeping the value -99
 dat$item3r <- item.reverse(dat$item3, min = 1, max = 5, keep = -99)
 
-# Example 3: Reverse code item3 while keeping the value -99 and check recoding
+# Example 3: Reverse code 'item3' while keeping the value -99 and check recoding
 dat$item3r <- item.reverse(dat$item3, min = 1, max = 5, keep = -99, table = TRUE)
 
-# Example 4a: Reverse code item1, item2, and item 3 and attach to 'dat'
+# Example 4: Reverse code 'item1', 'item2', and 'item3' and attach to 'dat'
 dat <- cbind(dat,
              item.reverse(dat[, c("item1", "item2", "item3")],
                           min = 1, max = 5, keep = -99))
 
-# Example 4b: Alternative specification using the 'data' argument
+# Alternative specification using the 'data' argument
 item.reverse(item1:item3, data = dat, min = 1, max = 5, keep = -99)
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
-- Using R and SPSS}. New York: John Wiley & Sons.
+- Using R and SPSS}. John Wiley & Sons.
 }
 \seealso{
 \code{\link{item.alpha}}, \code{\link{item.omega}}, \code{\link{rec}},

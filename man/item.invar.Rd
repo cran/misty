@@ -310,6 +310,7 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 }
 \examples{
 \dontrun{
+
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 

@@ -173,8 +173,7 @@ indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18, print = "asymp")
 
 \dontrun{
 # Example 4: Write results into a text file
-indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18, write = "Indirect.txt")
-}
+indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18, write = "Indirect.txt")}
 }
 \references{
 Aroian, L. A. (1947). The probability function of the product of two normally distributed variables.

@@ -79,8 +79,8 @@
 #'                     p. 164).
 #' @param group        either a character string indicating the variable name of
 #'                     the grouping variable in the matrix or data frame specified
-#'                     in \code{x} or a vector representing the groups
-#'                     for conducting multiple-group analysis to evaluate between-group
+#'                     in \code{x} or a vector representing the groups for
+#'                     conducting multiple-group analysis to evaluate between-group
 #'                     measurement invariance.
 #' @param long         logical: if \code{TRUE}, longitudinal measurement invariance
 #'                     evaluation is conducted. The longitudinal measurement model
@@ -438,9 +438,6 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   # Check if input 'model' is a character vector or list of character vectors
   if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
 
@@ -459,11 +456,11 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, group = group, cluster = cluster, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, group = group, cluster = cluster, check.chr = "a matrix or data frame")]
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -479,13 +476,18 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     # Extract data
     x <- eval(..., enclos = parent.frame())
 
-    # Data and group
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    if (isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unlist(group) }
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unlist(cluster) }
+
+    # Data, grouping, and cluster variable
     var.group <- .var.group(data = x, group = group, cluster = cluster)
 
     # Data
     if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
 
-    # Group variable
+    # Grouping variable
     if (isTRUE(!is.null(var.group$group))) { group <- var.group$group }
 
     # Cluster variable
@@ -497,13 +499,20 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("rescov.long", "long", "null.model", "append", "output"),
+               numeric = list(mod.minval = 1L, resid.minval = 1L),
+               s.character = list(invar = c("config", "metric", "scalar", "strict"),
+                                  ident = c("marker", "var", "effect"),
+                                  estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML"),
+                                  missing = c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust")),
+               m.character = list(print = c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid"),
+                                  print.fit = c("all", "standard", "scaled", "robust")),
+               args = c("digits", "p.digits", "write2"),
+               package = "lavaan", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    ## R package lavaan ##
-    if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
 
     ## Check input 'x' ##
     if (isTRUE(is.null(model))) {
@@ -589,9 +598,6 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
 
     }
 
-    ## Check input 'rescov.long' ##
-    if (isTRUE(!is.logical(rescov.long))) { stop("Please specify TRUE or FALSE for the argument 'rescov.long'.", call. = FALSE) }
-
     ## Check input 'group' ##
     if (isTRUE(!is.null(group))) {
 
@@ -616,9 +622,6 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
       }
 
     }
-
-    ## Check input 'long' ##
-    if (isTRUE(!is.logical(long))) { stop("Please specify TRUE or FALSE for the argument 'long'.", call. = FALSE) }
 
     if (isTRUE(long && !is.null(group))) { stop("Please specify the arguments for evaluating either between-group or longitudinal measurement invariance.", call. = FALSE) }
 
@@ -658,47 +661,8 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
 
     }
 
-    ## Check input 'invar' ##
-    if (isTRUE(!all(invar %in% c("config", "metric", "scalar", "strict")))) { stop("Character string in the argument 'invar' does not match with \"config\", \"metric\", \"scalar\", or \"scalar\".", call. = FALSE) }
-
     ## Check input 'partial' ##
     if (isTRUE(any(!sapply(partial, function(y) sapply(strsplit(y, split = ""), function(z) any(c("L", "T", "E") %in% z)))))) { warning("Character string(s) in the argument 'partial' need to match the labels of the parameters starting with \"L\", \"T\", or \"E\".", call. = FALSE) }
-
-    ## Check input 'ident' ##
-    if (isTRUE(!all(ident %in% c("marker", "var", "effect")))) { stop("Character string in the argument 'ident' does not match with \"marker\", \"var\", or \"effect\".", call. = FALSE) }
-
-    ## Check input 'estimator' ##
-    if (isTRUE(!all(estimator %in% c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR", "GLS", "WLS", "DWLS", "WLSM", "WLSMV", "ULS", "ULSM", "ULSMV", "DLS", "PML")))) { stop("Character string in the argument 'estimator' does not match with \"ML\", \"MLM\", \"MLMV\", \"MLMVS\", \"MLF\", \"MLR\", \"GLS\", \"WLS\", \"DWLS\", \"WLSM\", \"WLSMV\", \"ULS\", \"ULSM\", \"ULSMV\", \"DLS\", or \"PML\".", call. = FALSE) }
-
-    ## Check input 'missing' ##
-    if (isTRUE(!all(missing %in% c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust")))) { stop("Character string in the argument 'missing' does not match with \"listwise\", \"pairwise\", \"fiml\", \"two.stage\", \"robust.two.stage\", or \"doubly.robust\".", call. = FALSE) }
-
-    ## Check input 'null.model' ##
-    if (isTRUE(!is.logical(long))) { stop("Please specify TRUE or FALSE for the argument 'null.model'.", call. = FALSE) }
-
-    ## Check input 'print' ##
-    if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid")))) { stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", \"modind\", or \"resid\".", call. = FALSE) }
-
-    ## Check input 'print.fit' ##
-    if (isTRUE(!all(print.fit %in% c("all", "standard", "scaled", "robust")))) { stop("Character strings in the argument 'print.fit' do not all match with \"standard\", \"scaled\", or \"robust\".", call. = FALSE) }
-
-    ## Check input 'mod.minval' ##
-    if (isTRUE(mod.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'mod.minval'.", call. = FALSE) }
-
-    ## Check input 'resid.minval' ##
-    if (isTRUE(resid.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'resid.minval'.", call. = FALSE) }
-
-    ## Check input 'digits' ##
-    if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    ## Check input 'output' ##
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -735,10 +699,8 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     # Grouping variable
     if (isTRUE(!is.null(group))) {
 
-
       # Sort by group
-      x <- data.frame(x[, var.mod], .group = group, stringsAsFactors = FALSE) |>
-        (\(y) misty::df.sort(y, .group))()
+      x <- data.frame(x[, var.mod], .group = group) |> (\(y) misty::df.sort(y, .group))()
 
     # No grouping variable
     } else if (isTRUE(is.null(group))) {
@@ -780,13 +742,12 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
 
   if (isTRUE(!long)) {
 
-    check.var <- sapply(split(x, f = x$.group), function(y) apply(y[, var.mod], 2L, var, na.rm = TRUE))
+    sapply(split(x, f = x$.group), function(y) apply(y[, var.mod], 2L, var, na.rm = TRUE)) |>
+      (\(y) if (isTRUE(any(y == 0L | is.na(y)))) {
 
-    if (isTRUE(any(check.var == 0L | is.na(check.var)))) {
+        stop(paste0("There is no variance in group ", paste(names(which(apply(y, 2L, function(y) any(y == 0L | is.na(y))))), collapse = ", "), " for following variable: ", paste(names(which(apply(y, 1L, function(y) any(y == 0L | is.na(y))))), collapse = ", ")), call. = FALSE)
 
-      stop(paste0("There is no variance in group ", paste(names(which(apply(check.var, 2L, function(y) any(y == 0L | is.na(y))))), collapse = ", "), " for following variable: ", paste(names(which(apply(check.var, 1L, function(y) any(y == 0 | is.na(y))))), collapse = ", ")), call. = FALSE)
-
-    }
+      })()
 
   }
 
@@ -1012,12 +973,23 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   # Cases with missing on all variables
   if (isTRUE(missing %in% c("fiml", "two.stage", "robust.two.stage"))) {
 
-    x.na.prop <- misty::na.prop(x[, var.mod])
-    if (any(x.na.prop == 1L)) {
+    misty::na.prop(x[, var.mod]) |>
+      (\(y) if (any(y == 1L)) {
 
-      warning(paste("Data set contains", sum(x.na.prop == 1L), "cases with missing on all variables which were not included in the analysis."), call. = FALSE)
+        warning(paste("Data set contains", sum(y == 1L), "cases with missing on all variables which were not included in the analysis."), call. = FALSE)
 
-    }
+      })()
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data on the Cluster Variable ####
+
+  if (isTRUE(".cluster" %in% colnames(x) && any(is.na(x$.cluster)))) {
+
+    warning(paste0("Data contains missing values on the cluster variable, number of cases removed from the analysis: ", sum(is.na(x$.cluster))), call. = FALSE)
+
+    x <- x[!is.na(x$.cluster), ]
 
   }
 
@@ -3095,34 +3067,7 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -3133,3 +3078,5 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

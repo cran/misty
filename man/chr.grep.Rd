@@ -65,7 +65,8 @@ Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}
 Wadsworth & Brooks/Cole
 }
 \seealso{
-\code{\link{chr.gsub}}, \code{\link{chr.omit}}, \code{\link{chr.trim}}
+\code{\link{chr.color}}, \code{\link{chr.grepl}}, \code{\link{chr.gsub}},
+\code{\link{chr.omit}}, \code{\link{chr.trim}}, \code{\link{chr.trunc}}
 }
 \author{
 Takuya Yanagida

@@ -212,6 +212,7 @@ Yves Rosseel (2012).
 }
 \examples{
 \dontrun{
+
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
@@ -280,6 +281,7 @@ mod$model
 # Fitted lavaan object
 lavaan::summary(mod$model.fit, standardized = TRUE)
 
+\dontrun{
 #----------------------------------------------------------------------------
 # Write Results
 
@@ -295,7 +297,7 @@ multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
 
 result <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
                          cluster = Demo.twolevel$cluster, output = FALSE)
-write.result(result, "Multilevel_Correlation.xlsx")
+write.result(result, "Multilevel_Correlation.xlsx")}
 }
 }
 \references{

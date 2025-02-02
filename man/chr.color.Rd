@@ -5,8 +5,9 @@
 \title{Colored and Styled Terminal Output Text}
 \usage{
 chr.color(x, color = c("black", "red", "green", "yellow", "blue", "violet",
-                       "cyan", "white", "gray", "b.red", "b.green", "b.yellow",
-                       "b.blue", "b.violet", "b.cyan", "b.white"),
+                       "cyan", "white", "gray1", "gray2", "gray3",
+                       "b.red", "b.green", "b.yellow", "b.blue", "b.violet",
+                       "b.cyan", "b.white"),
           bg = c("none", "black", "red", "green", "yellow", "blue", "violet",
                  "cyan", "white"),
           style = c("regular", "bold", "italic", "underline"), check = TRUE)
@@ -61,6 +62,10 @@ cat(chr.color("Text in boldface and italic.", style = c("bold", "italic")))
 \references{
 Csárdi G (2022). \emph{crayon: Colored Terminal Output}. R package version 1.5.2,
 https://CRAN.R-project.org/package=crayon
+}
+\seealso{
+\code{\link{chr.grep}}, \code{\link{chr.grepl}}, \code{\link{chr.gsub}},
+\code{\link{chr.omit}},  \code{\link{chr.trim}}, \code{\link{chr.trunc}}
 }
 \author{
 Takuya Yanagida

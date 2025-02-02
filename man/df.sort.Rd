@@ -24,21 +24,17 @@ be coerced to a data frame.
 This function arranges a data frame in increasing or decreasing order according to one or more variables.
 }
 \examples{
-dat <- data.frame(x = c(5, 2, 5, 5, 7, 2),
-                  y = c(1, 6, 2, 3, 2, 3),
-                  z = c(2, 1, 6, 3, 7, 4))
+# Example 1: Sort data frame 'mtcars' by 'mpg' in increasing order
+df.sort(mtcars, mpg)
 
-# Example 1: Sort data frame 'dat' by "x" in increasing order
-df.sort(dat, x)
+# Example 2: Sort data frame 'mtcars' by 'mpg' in decreasing order
+df.sort(mtcars, mpg, decreasing = TRUE)
 
-# Example 2: Sort data frame 'dat' by "x" in decreasing order
-df.sort(dat, x, decreasing = TRUE)
+# Example 3: Sort data frame 'mtcars' by 'mpg' and 'cyl' in increasing order
+df.sort(mtcars, mpg, cyl)
 
-# Example 3: Sort data frame 'dat' by "x" and "y" in increasing order
-df.sort(dat, x, y)
-
-# Example 4: Sort data frame 'dat' by "x" and "y" in decreasing order
-df.sort(dat, x, y, decreasing = TRUE)
+# Example 4: Sort data frame 'mtcars' by 'mpg' and 'cyl' in decreasing order
+df.sort(mtcars, mpg, cyl, decreasing = TRUE)
 }
 \references{
 Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}. Wadsworth & Brooks/Cole.

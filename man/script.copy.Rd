@@ -52,6 +52,7 @@ Ritchie (2023).
 }
 \examples{
 \dontrun{
+
 # Example 1: Save copy current R script into the folder '_R_Script_Archive'
 script.copy()
 

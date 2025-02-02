@@ -127,8 +127,7 @@ ci.mean.w(dat, adjust = FALSE)
 
 \dontrun{
 # Example 3: Write results into a text file
-ci.mean.w(dat, write = "WS_Confidence_Interval.txt")
-}
+ci.mean.w(dat, write = "WS_Confidence_Interval.txt")}
 }
 \references{
 Baguley, T. (2012). Calculating and graphing within-subject confidence intervals

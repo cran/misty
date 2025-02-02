@@ -7,7 +7,7 @@
 blimp.run(target = getwd(), recursive = FALSE,
           replace.out = c("always", "never", "modified"), posterior = FALSE,
           folder = "Posterior_", format = c("csv", "csv2", "xlsx", "rds", "RData"),
-          clear = FALSE, Blimp = detect.blimp(), check = TRUE)
+          clear = FALSE, Blimp = .detect.blimp(), check = TRUE)
 }
 \arguments{
 \item{target}{a character string indicating the directory containing

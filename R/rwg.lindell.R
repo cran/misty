@@ -20,9 +20,8 @@
 #' deletion (\code{na.omit = TRUE}) needs to be applied.
 #'
 #' Examples for the application of r*wg(j) within-group agreement index for
-#' multi-item scales can be found in Bardach, Yanagida, Schober and Lueftenegger
-#' (2018), Bardach, Lueftenegger, Yanagida, Schober and Spiel (2018), and Bardach,
-#' Lueftenegger, Yanagida, Spiel and Schober (2019).
+#' multi-item scales can be found in Bardach et al. (2018), Bardach et al.
+#' (2019a), and Bardach et al. (2019b).
 #'
 #' @param ...     a numeric vector or data frame. Alternatively, an expression
 #'                indicating the variable names in \code{data} e.g.,
@@ -52,7 +51,7 @@
 #'                is expanded to match the input vector \code{x}.
 #' @param na.omit logical: if \code{TRUE}, incomplete cases are removed before
 #'                conducting the analysis (i.e., listwise deletion).
-#' @param append  logical: if \code{TRUE} (default),  a variable with the r*wg(j)
+#' @param append  logical: if \code{TRUE} (default), a variable with the r*wg(j)
 #'                within-group agreement index are appended to the data frame
 #'                specified in the argument \code{data}.
 #' @param name    a character string indicating the name of the variable appended
@@ -72,12 +71,12 @@
 #' \code{\link{cluster.scores}}
 #'
 #' @references
-#' Bardach, L., Lueftenegger, M., Yanagida, T., & Schober, B. (2019). Achievement
+#' Bardach, L., Lueftenegger, M., Yanagida, T., & Schober, B. (2019a). Achievement
 #' or agreement - Which comes first? Clarifying the temporal ordering of achievement
 #' and within-class consensus on classroom goal structures. \emph{Learning and
 #' Instruction, 61}, 72-83. https://doi.org/10.1016/j.learninstruc.2019.01.003
 #'
-#' Bardach, L., Lueftenegger, M., Yanagida, T., Schober, B. & Spiel, C. (2019).
+#' Bardach, L., Lueftenegger, M., Yanagida, T., Schober, B. & Spiel, C. (2019b).
 #' The role of within-class consensus on mastery goal structures in predicting
 #' socio-emotional outcomes. \emph{British Journal of Educational Psychology, 89},
 #' 239-258. https://doi.org/10.1111/bjep.12237
@@ -99,13 +98,10 @@
 #' Returns a numeric vector containing r*wg(j) agreement index for multi-item scales
 #' with the same length as \code{group} if \code{expand = TRUE} or a data frame with
 #' following entries if \code{expand = FALSE}:
-#'
-#' \tabular{ll}{
-#'   \code{cluster}          \tab cluster identifier \cr
-#'   \code{n}                \tab cluster size \code{x} \cr
-#'   \code{rwg.lindell}      \tab r*wg(j) estimate for each group \cr
-#'   \code{z.rwg.lindell}    \tab Fisher z-transformed r*wg(j) estimate for each cluster \cr
-#' }
+#' \item{\code{cluster}}{cluster identifier}
+#' \item{\code{n}}{cluster size}
+#' \item{\code{rwg.lindell}}{r*wg(j) estimate for each group}
+#' \item{\code{z.rwg.lindell}}{Fisher z-transformed r*wg(j) estimate for each cluster}
 #'
 #' @export
 #'
@@ -113,13 +109,13 @@
 #' dat <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
 #'                   cluster = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
 #'                   x1 = c(2, 3, 2, 1, 1, 2, 4, 3, 5),
-#'                   x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
+#'                   x2 = c(3, 2, NA, 1, 2, 1, 3, 2, 5),
 #'                   x3 = c(3, 1, 1, 2, 3, 3, 5, 5, 4))
 #'
-#' # Example 1a: Compute Fisher z-transformed r*wg(j) for a multi-item scale with A = 5 response options
+#' # Example 1: Compute Fisher z-transformed r*wg(j) for a multi-item scale with A = 5 response options
 #' rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, A = 5)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument,
+#' # Alternative specification using the 'data' argument,
 #' rwg.lindell(x1:x3, data = dat, cluster = "cluster", A = 5)
 #'
 #' # Example 2: Compute Fisher z-transformed r*wg(j) for a multi-item scale with a random variance of 2
@@ -145,14 +141,14 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
   # Check if input 'cluster' is NULL
   if (isTRUE(is.null(cluster))) { stop("Input specified for the argument 'cluster' is NULL.", call. = FALSE) }
+
+  # Check if input 'data' is a data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -163,11 +159,11 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "numeric vector or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
 
     # Cluster variable
     cluster <- data[, cluster]
@@ -180,41 +176,50 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
     # Extract data
     x <- eval(..., enclos = parent.frame())
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- data.frame(x) } }
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- data.frame(cluster) } }
+
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
 
     # Data
-    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
 
     # Cluster variable
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
 
-  # Convert 'cluster' into a vector
-  cluster <- unlist(cluster, use.names = FALSE)
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame ####
+
+  x <- data.frame(x, cluster = cluster)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise deletion ####
+
+  if (isTRUE(any(is.na(x)) && na.omit)) { assign("x", na.omit(x)) |> (\(y) warning(paste("Listwise deletion of incomplete data, number of cases removed from the analysis:", length(attributes(y)$na.action)), call. = FALSE))() }
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("z", "expand"), numeric = list(A = 1L, ranvar = 1L), character = list(name = 1L), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # Check input 'x'
-    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE) }
-
-    # Check input 'x'
-    if (isTRUE(ncol(x) == 1L)) { stop("Please specify a matrix or data frame with more than one column or variable for the argument 'x'.", call. = FALSE) }
-
-    # Numeric vector and cluster?
-    if (isTRUE(nrow(x) != length(cluster))) { stop("Number of rows in the matrix or data frame in 'x' does not match with the length of the vector in 'cluster'.", call. = FALSE) }
 
     # Check input 'A'
     if (isTRUE(!is.null(A))) {
 
+      # Check input 'x': Number of discrete responses
       if (isTRUE(length(na.omit(unique(unlist(x)))) > A)) { warning("There are more unique values in 'x' than the number of discrete response options specified in 'A'.", call. = FALSE) }
 
       # Check input 'x': Integer number
@@ -225,12 +230,6 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
     # Check input 'A' and 'ranvar'
     if (isTRUE((is.null(A) && is.null(ranvar)) || (!is.null(A) && !is.null(ranvar)))) { stop("Please specify the argument 'A' or the argument 'ranvar'.", call. = FALSE) }
 
-    # Check input 'z'
-    if (isTRUE(!is.logical(z))) { stop("Please specify TRUE or FALSE for the argument 'z'.", call. = FALSE) }
-
-    # Check input 'expand'
-    if (isTRUE(!is.logical(expand))) { stop("Please specify TRUE or FALSE for the argument 'expand'.", call. = FALSE) }
-
   }
 
   #_____________________________________________________________________________
@@ -238,51 +237,29 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
   # Data and Arguments ---------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
-
-  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data frame ####
-
-  df <- data.frame(x, cluster = cluster, stringsAsFactors = FALSE)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Random variance based on A ####
 
-  if (isTRUE(!is.null(A))) {
-
-    ranvar <- (A^2L - 1L) / 12L
-
-  }
+  if (isTRUE(!is.null(A))) { ranvar <- (A^2L - 1L) / 12L }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
 
-  if (isTRUE(na.omit && any(is.na(x)))) {
-
-    df <- na.omit(df)
-
-    warning(paste("Listwise deletion of incomplete data, number of cases removed from the analysis:",
-                  length(attributes(na.omit(df))$na.action)), call. = FALSE)
-
-  }
+  if (isTRUE(any(is.na(x)) && na.omit)) { assign("x", na.omit(x)) |> (\(y) warning(paste("Listwise deletion of incomplete data, number of cases removed from the analysis:", length(attributes(y)$na.action)), call. = FALSE))() }
 
   #_____________________________________________________________________________
   #
   # Main Function --------------------------------------------------------------
 
-  df.split <- split(df[, -grep("cluster", names(df))], df$cluster)
+  x.split <- split(x[, -grep("cluster", names(x))], x$cluster)
 
-  rwg <- misty::as.na(vapply(df.split, function(y) 1L - (mean(vapply(y, var, na.rm = TRUE, FUN.VALUE = double(1L)), na.rm = TRUE) / ranvar), FUN.VALUE = double(1L)),
-                      na = NaN, check = FALSE)
+  rwg <- misty::as.na(vapply(x.split, function(y) 1L - (mean(vapply(y, var, na.rm = TRUE, FUN.VALUE = double(1L)), na.rm = TRUE) / ranvar), FUN.VALUE = double(1L)), na = NaN, check = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Expand ####
 
   if (isTRUE(expand)) {
 
-    object <- rwg[match(cluster, names(rwg))]
+    object <- rwg[match(x$cluster, names(rwg))]
 
     #......
     # Fisher z-transformation
@@ -295,8 +272,8 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
   } else {
 
     object <- data.frame(cluster = names(rwg),
-                         n = vapply(df.split, function(y) sum(apply(y, 1, function(z) sum(is.na(z)) != length(z))), FUN.VALUE = 1L),
-                         rwg.lindell = rwg, z.rwg.lindell = ifelse(rwg == 1L | rwg == -1L, NA, atanh(rwg)), stringsAsFactors = FALSE)
+                         n = vapply(x.split, function(y) sum(apply(y, 1, function(z) sum(is.na(z)) != length(z))), FUN.VALUE = 1L),
+                         rwg.lindell = rwg, z.rwg.lindell = ifelse(rwg == 1L | rwg == -1L, NA, atanh(rwg)))
 
   }
 
@@ -313,3 +290,4 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
 
 }
 
+#_______________________________________________________________________________

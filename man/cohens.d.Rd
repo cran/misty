@@ -99,13 +99,13 @@ corresponding groups.}
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-  \item{\code{call}}{function call}
-  \item{\code{type}}{type of analysis}
-  \item{\code{sample}}{type of sample, i.e., one-, two-, or, paired-sample}
-  \item{\code{data}}{list with the input specified in \code{x}, \code{group},
-                     and \code{split}}
-  \item{\code{args}}{specification of function arguments}
-  \item{\code{result}}{result table}
+
+\item{\code{call}}{function call}
+\item{\code{type}}{type of analysis}
+\item{\code{sample}}{type of sample, i.e., one-, two-, or, paired-sample}
+\item{\code{data}}{matrix or data frame specified in \code{x}}
+\item{\code{args}}{specification of function arguments}
+\item{\code{result}}{result table}
 }
 \description{
 This function computes Cohen's d for one-sample, two-sample (i.e., between-subject design),
@@ -158,176 +158,112 @@ using \code{weighted = FALSE} and \code{cor = FALSE}. Corresponding Hedges' \eqn
 and \eqn{g_{av}} are computed when using \code{correct = TRUE} in addition.
 }
 \examples{
-dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2,
-                              1, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1),
-                   group2 = c(1, 2, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 2, 2,
-                              1, 2, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2),
-                   group3 = c(1, 2, 1, 2, 1, 2, 2, 2, 1, 2, 2, 1, 1, 1,
-                              1, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1),
-                   x1 = c(3, 2, 5, 3, 6, 3, 2, 4, 6, 5, 3, 3, 5, 4,
-                          4, 3, 5, 3, 2, 3, 3, 6, 6, 7, 5, 6, 6, 4),
-                   x2 = c(4, 4, 3, 6, 4, 7, 3, 5, 3, 3, 4, 2, 3, 6,
-                          3, 5, 2, 6, 8, 3, 2, 5, 4, 5, 3, 2, 2, 4),
-                   x3 = c(7, 6, 5, 6, 4, 2, 8, 3, 6, 1, 2, 5, 8, 6,
-                          2, 5, 3, 1, 6, 4, 5, 5, 3, 6, 3, 2, 2, 4))
-
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # One-sample design
 
-# Example 1: Cohen's d.z with two-sided 95% CI
+# Example 1a: Cohen's d.z with two-sided 95% CI
 # population mean = 3
-cohens.d(dat1$x1, mu = 3)
+cohens.d(mtcars$mpg, mu = 20)
 
-# Example 2: Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
+# Example 1b: Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
 # population mean = 3, with small sample correction factor
-cohens.d(dat1$x1, mu = 3, correct = TRUE)
+cohens.d(mtcars$mpg, mu = 20, correct = TRUE)
 
-# Example 3: Cohen's d.z for more than one variable with two-sided 95% CI
-# population mean = 3
-cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3)
+# Example 1c: Cohen's d.z with two-sided 95% CI
+# population mean = 3, by 'vs' separately
+cohens.d(mtcars$mpg, mu = 20, group = mtcars$vs)
 
-# Example 4: Cohen's d.z with two-sided 95% CI
-# population mean = 3, by group1 separately
-cohens.d(dat1$x1, mu = 3, group = dat1$group1)
+# Example 1d: Cohen's d.z with two-sided 95% CI
+# population mean = 20, split analysis by 'vs'
+cohens.d(mtcars$mpg, mu = 20, split = mtcars$vs)
 
-# Example 5: Cohen's d.z for more than one variable with two-sided 95% CI
-# population mean = 3, by group1 separately
-cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, group = dat1$group1)
+# Example 1e: Cohen's d.z with two-sided 95% CI
+# population mean = 3, by 'vs' separately, split by 'am'
+cohens.d(mtcars$mpg, mu = 20, group = mtcars$vs, split = mtcars$am)
 
-# Example 6: Cohen's d.z with two-sided 95% CI
-# population mean = 3, split analysis by group1
-cohens.d(dat1$x1, mu = 3, split = dat1$group1)
-
-# Example 7: Cohen's d.z for more than one variable with two-sided 95% CI
-# population mean = 3, split analysis by group1
-cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, split = dat1$group1)
-
-# Example 8: Cohen's d.z with two-sided 95% CI
-# population mean = 3, by group1 separately1, split by group2
-cohens.d(dat1$x1, mu = 3, group = dat1$group1, split = dat1$group2)
-
-# Example 9: Cohen's d.z for more than one variable with two-sided 95% CI
-# population mean = 3, by group1 separately1, split by group2
-cohens.d(dat1[, c("x1", "x2", "x3")], mu = 3, group = dat1$group1,
-         split = dat1$group2)
-
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Two-sample design
 
-# Example 10: Cohen's d.s with two-sided 95% CI
+# Example 2a: Cohen's d.s with two-sided 95% CI
 # weighted pooled SD
-cohens.d(x1 ~ group1, data = dat1)
+cohens.d(mpg ~ vs, data = mtcars)
 
-# Example 11: Cohen's d.s with two-sided 99% CI
+# Example 2b: Cohen's d.s with two-sided 99% CI
 # weighted pooled SD
-cohens.d(x1 ~ group1, data = dat1, conf.level = 0.99)
+cohens.d(mpg ~ vs, data = mtcars, conf.level = 0.99)
 
-# Example 12: Cohen's d.s with one-sided 99% CI
+# Example 2c: Cohen's d.s with one-sided 99% CI
 # weighted pooled SD
-cohens.d(x1 ~ group1, data = dat1, alternative = "greater")
+cohens.d(mpg ~ vs, data = mtcars, alternative = "greater", conf.level = 0.99)
 
-# Example 13: Cohen's d.s with two-sided 99% CI
+# Example 2d: Cohen's d.s for more than one variable with two-sided 95% CI
 # weighted pooled SD
-cohens.d(x1 ~ group1, data = dat1, conf.level = 0.99)
+cohens.d(cbind(mpg, disp, hp) ~ vs, data = mtcars)
 
-# Example 14: Cohen's d.s with one-sided 95%% CI
-# weighted pooled SD
-cohens.d(x1 ~ group1, data = dat1, alternative = "greater")
-
-# Example 15: Cohen's d.s for more than one variable with two-sided 95% CI
-# weighted pooled SD
-cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1)
-
-# Example 16: Cohen's d with two-sided 95% CI
+# Example 2e: Cohen's d with two-sided 95% CI
 # unweighted SD
-cohens.d(x1 ~ group1, data = dat1, weighted = FALSE)
+cohens.d(mpg ~ vs, data = mtcars, weighted = FALSE)
 
-# Example 17: Cohen's d.s (aka Hedges' g.s) with two-sided 95% CI
+# Example 2f: Cohen's d.s (aka Hedges' g.s) with two-sided 95% CI
 # weighted pooled SD, with small sample correction factor
-cohens.d(x1 ~ group1, data = dat1, correct = TRUE)
+cohens.d(mpg ~ vs, data = mtcars, correct = TRUE)
 
-# Example 18: Cohen's d (aka Hedges' g) with two-sided 95% CI
+# Example 2g: Cohen's d (aka Hedges' g) with two-sided 95% CI
 # Unweighted SD, with small sample correction factor
-cohens.d(x1 ~ group1, data = dat1, weighted = FALSE, correct = TRUE)
+cohens.d(mpg ~ vs, data = mtcars, weighted = FALSE, correct = TRUE)
 
-# Example 19: Cohen's d (aka Glass's delta) with two-sided 95% CI
+# Example 2h: Cohen's d (aka Glass's delta) with two-sided 95% CI
 # SD of reference group 1
-cohens.d(x1 ~ group1, data = dat1, ref = 1)
+cohens.d(mpg ~ vs, data = mtcars, ref = 0)
 
-# Example 20: Cohen's d.s with two-sided 95% CI
-# weighted pooled SD, by group2 separately
-cohens.d(x1 ~ group1, data = dat1, group = dat1$group2)
+# Example 2i: Cohen's d.s with two-sided 95% CI
+# weighted pooled SD, by 'am' separately
+cohens.d(mpg ~ vs, data = mtcars, group = mtcars$am)
 
-# Example 21: Cohen's d.s for more than one variable with two-sided 95% CI
-# weighted pooled SD, by group2 separately
-cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1, group = dat1$group2)
+# Example 2j: Cohen's d.s with two-sided 95% CI
+# weighted pooled SD, split analysis by 'am'
+cohens.d(mpg ~ vs, data = mtcars, split = mtcars$am)
 
-# Example 22: Cohen's d.s with two-sided 95% CI
-# weighted pooled SD, split analysis by group2
-cohens.d(x1 ~ group1, data = dat1, split = dat1$group2)
-
-# Example 23: Cohen's d.s for more than one variable with two-sided 95% CI
-# weighted pooled SD, split analysis by group2
-cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1, split = dat1$group2)
-
-# Example 24: Cohen's d.s with two-sided 95% CI
-# weighted pooled SD, by group2 separately, split analysis by group3
-cohens.d(x1 ~ group1, data = dat1,
-         group = dat1$group2, split = dat1$group3)
-
-# Example 25: Cohen's d.s for more than one variable with two-sided 95% CI
-# weighted pooled SD, by group2 separately, split analysis by group3
-cohens.d(cbind(x1, x2, x3) ~ group1, data = dat1,
-         group = dat1$group2, split = dat1$group3)
-
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Paired-sample design
 
-# Example 26: Cohen's d.z with two-sided 95% CI
+# Example 3a: Cohen's d.z with two-sided 95% CI
 # SD of the difference scores
-cohens.d(dat1$x1, dat1$x2, paired = TRUE)
+cohens.d(mtcars$drat, mtcars$wt, paired = TRUE)
 
-# Example 27: Cohen's d.z with two-sided 99% CI
+# Example 3b: Cohen's d.z with one-sided 99% CI
 # SD of the difference scores
-cohens.d(dat1$x1, dat1$x2, paired = TRUE, conf.level = 0.99)
+cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, alternative = "greater",
+         conf.level = 0.99)
 
-# Example 28: Cohen's d.z with one-sided 95% CI
-# SD of the difference scores
-cohens.d(dat1$x1, dat1$x2, paired = TRUE, alternative = "greater")
-
-# Example 29: Cohen's d.rm with two-sided 95% CI
+# Example 3c: Cohen's d.rm with two-sided 95% CI
 # controlling for the correlation between measures
-cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE)
+cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, weighted = FALSE)
 
-# Example 30: Cohen's d.av with two-sided 95% CI
+# Example 3d: Cohen's d.av with two-sided 95% CI
 # without controlling for the correlation between measures
-cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE, cor = FALSE)
+cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, weighted = FALSE, cor = FALSE)
 
-# Example 31: Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
+# Example 3e: Cohen's d.z (aka Hedges' g.z) with two-sided 95% CI
 # SD of the differnece scores
-cohens.d(dat1$x1, dat1$x2, paired = TRUE, correct = TRUE)
+cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, correct = TRUE)
 
-# Example 32: Cohen's d.rm (aka Hedges' g.rm) with two-sided 95% CI
+# Example 3f: Cohen's d.rm (aka Hedges' g.rm) with two-sided 95% CI
 # controlling for the correlation between measures
-cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE, correct = TRUE)
+cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, weighted = FALSE, correct = TRUE)
 
-# Example 33: Cohen's d.av (aka Hedges' g.av) with two-sided 95% CI
+# Example 3g: Cohen's d.av (aka Hedges' g.av) with two-sided 95% CI
 # without controlling for the correlation between measures
-cohens.d(dat1$x1, dat1$x2, paired = TRUE, weighted = FALSE, cor = FALSE,
+cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, weighted = FALSE, cor = FALSE,
          correct = TRUE)
 
-# Example 34: Cohen's d.z with two-sided 95% CI
-# SD of the difference scores, by group1 separately
-cohens.d(dat1$x1, dat1$x2, paired = TRUE, group = dat1$group1)
+# Example 3h: Cohen's d.z with two-sided 95% CI
+# SD of the difference scores, by 'vs' separately
+cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, group = mtcars$vs)
 
-# Example 35:  Cohen's d.z with two-sided 95% CI
-# SD of the difference scores, split analysis by group1
-cohens.d(dat1$x1, dat1$x2, paired = TRUE, split = dat1$group1)
-
-# Example 36: Cohen's d.z with two-sided 95% CI
-# SD of the difference scores, by group1 separately, split analysis by group2
-cohens.d(dat1$x1, dat1$x2, paired = TRUE,
-         group = dat1$group1, split = dat1$group2)
+# Example 3i:  Cohen's d.z with two-sided 95% CI
+# SD of the difference scores, split analysis by 'vs'
+cohens.d(mtcars$drat, mtcars$wt, paired = TRUE, split = mtcars$vs)
 }
 \references{
 Cohen, J. (1988). \emph{Statistical power analysis for the behavioral sciences} (2nd ed.).

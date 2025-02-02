@@ -30,6 +30,8 @@ export(chr.grepl)
 export(chr.gsub)
 export(chr.omit)
 export(chr.trim)
+export(chr.trunc)
+export(ci.cor)
 export(ci.mean)
 export(ci.mean.w)
 export(ci.mean.diff)
@@ -45,7 +47,9 @@ export(cohens.d)
 export(cor.matrix)
 export(crosstab)
 export(descript)
+export(df.check)
 export(df.duplicated)
+export(df.head)
 export(df.merge)
 export(df.move)
 export(df.rbind)
@@ -53,6 +57,7 @@ export(df.rename)
 export(df.sort)
 export(df.unique)
 export(df.subset)
+export(df.tail)
 export(dominance.manual)
 export(dominance)
 export(effsize)
@@ -129,10 +134,10 @@ export(write.xlsx)
 importFrom("stats", "aov", "as.formula", "chisq.test", "contr.helmert", 
            "contr.poly", "contr.sum", "contr.treatment", "coef", "coefficients", 
            "cooks.distance", "cor", "cor.test", "cov", "cov2cor", "density", "df", 
-           "dfbetas", "df.residual", "dt", "fft", "formula", "hatvalues", "IQR", "lag", "lm", 
-           "loess", "logLik", "mad", "mahalanobis", "median", "model.frame", "model.matrix", 
-           "na.omit", "nextn", "nobs", "oneway.test", "optimize", "dnorm", "integrate", "pnorm", 
-           "predict", "residuals", "rnorm", "rstandard", "rstudent", "setNames", "summary.lm",
+           "dfbetas", "df.residual", "dnorm", "dt", "fft", "formula", "hatvalues", "integrate", 
+           "IQR", "lag", "lm", "loess", "logLik", "mad", "mahalanobis", "median", "model.frame", "model.matrix", 
+           "na.omit", "nextn", "nobs", "oneway.test", "optim", "optimize", "pnorm", 
+           "predict", "residuals", "rnorm", "rstandard", "rstudent", "runif", "setNames", "summary.lm",
            "pchisq", "qbeta", "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", "reshape",
            "sd", "terms", "time", "t.test", "p.adjust", "pf", "pt", "uniroot", "update",
            "var", "vcov", "weights")

@@ -88,6 +88,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Select single variables
 #'
@@ -149,6 +150,7 @@
 #' # Example 9: Select variables with prefix 'x' and suffix '3', but exclude
 #' # variables from 'x2' to 'x3'
 #' df.subset(+x, -3, !x2:x3, data = anscombe)
+#' }
 df.subset <- function(..., data, subset = NULL, drop = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
@@ -172,17 +174,7 @@ df.subset <- function(..., data, subset = NULL, drop = TRUE, check = TRUE) {
   # Input Check ----------------------------------------------------------------
 
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'check'
-    if (isTRUE(!is.null(subset) && !is.character(subset))) { stop("Please specify a character string for the argument 'subset'.", call. = FALSE) }
-
-    # Check input 'drop'
-    if (isTRUE(!is.logical(drop))) { stop("Please specify TRUE or FALSE for the argument 'drop'.", call. = FALSE) }
-
-  }
+  .check.input(logical = "drop", character = list(subset = 1L), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -231,3 +223,5 @@ df.subset <- function(..., data, subset = NULL, drop = TRUE, check = TRUE) {
   return(object)
 
 }
+
+#_______________________________________________________________________________

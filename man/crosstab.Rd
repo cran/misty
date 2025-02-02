@@ -123,11 +123,7 @@ crosstab(mtcars[, c("vs", "am", "gear")], print = "all", split = TRUE)
 crosstab(mtcars[, c("vs", "am")], print = "all", write = "Crosstab.txt")
 
 # Example 10b: Write results into an Excel file
-crosstab(mtcars[, c("vs", "am")], print = "all", write = "Crosstab.xlsx")
-
-result <- crosstab(mtcars[, c("vs", "am")], print = "all", output = FALSE)
-write.result(result, "Crosstab.xlsx")
-}
+crosstab(mtcars[, c("vs", "am")], print = "all", write = "Crosstab.xlsx")}
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology

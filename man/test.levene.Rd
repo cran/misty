@@ -143,47 +143,44 @@ Levene's test by using the absolute deviations of observations from the median
 deviations of observations from the median.
 }
 \examples{
-dat <- data.frame(y = c(2, 3, 4, 5, 5, 7, 8, 4, 5, 2, 4, 3),
-                  group = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3))
+# Example 1: Levene's test based on the median
+test.levene(mpg ~ gear, data = mtcars)
 
-# Example 1: Levene's test based on the median with 95% confidence interval
-test.levene(y ~ group, data = dat)
-
-# Example 2: Levene's test based on the arithmetic mean  with 95% confidence interval
-test.levene(y ~ group, data = dat, method = "mean")
-
-# Example 3: Levene's test based on the median with 99% confidence interval
-test.levene(y ~ group, data = dat, conf.level = 0.99)
+# Example 2: Levene's test based on the arithmetic mean
+test.levene(mpg ~ gear, data = mtcars, method = "mean")
 
 \dontrun{
-# Example 4: Write results into a text file
-test.levene(y ~ group, data = dat, write = "Levene.txt")
+# Example 3: Write results into a text file
+test.levene(mpg ~ gear, data = mtcars, write = "Levene.txt")}
 
-# Example 5: Levene's test based on the median with 95% confidence interval
+# Example 4: Levene's test based on the median,
 # plot results
-test.levene(y ~ group, data = dat, plot = TRUE)
+test.levene(mpg ~ gear, data = mtcars, plot = TRUE)
 
 # Load ggplot2 package
 library(ggplot2)
 
+\dontrun{
 # Save plot, ggsave() from the ggplot2 package
-ggsave("Levene-test.png", dpi = 600, width = 5, height = 6)
+ggsave("Levene-test.png", dpi = 600, width = 5, height = 6)}
 
-# Levene's test based on the median with 95% confidence interval
+# Levene's test based on the median
 # extract plot
-p <- test.levene(y ~ group, data = dat, output = FALSE)$plot
+p <- test.levene(mpg ~ gear, data = mtcars, output = FALSE)$plot
 p
 
-# Example 6: Extract data
-plotdat <- test.levene(y ~ group, data = dat, output = FALSE)$data
-
+# Example 5: Levene's test based on the median
 # Draw violin and boxplots in line with the default setting of test.levene()
+
+# Extract data
+plotdat <- test.levene(mpg ~ gear, data = mtcars, output = FALSE)$data
+
+# Draw violin and boxplots
 ggplot(plotdat, aes(group, y, fill = group)) +
   geom_violin(alpha = 0.3, trim = FALSE) +
   geom_boxplot(alpha = 0.2, width = 0.2) +
   geom_jitter(alpha = 0.2, width = 0.05, size = 1.25) +
   theme_bw() + guides(fill = "none")
-}
 }
 \references{
 Brown, M. B., & Forsythe, A. B. (1974). Robust tests for the equality of

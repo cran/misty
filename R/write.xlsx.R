@@ -36,25 +36,17 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Example 1: Write Excel file (.xlsx)
-#' dat <- data.frame(id = 1:5,
-#'                   gender = c(NA, 0, 1, 1, 0),
-#'                   age = c(16, 19, 17, NA, 16),
-#'                   status = c(1, 2, 3, 1, 4),
-#'                   score = c(511, 506, 497, 502, 491))
-#'
-#' write.xlsx(dat, file = "Excel.xlsx")
+#' write.xlsx(mtcars, file = "mtcars.xlsx")
 #'
 #' # Example 2: Write Excel file with multiple sheets (.xlsx)
 #' write.xlsx(list(cars = cars, mtcars = mtcars), file = "Excel_Sheets.xlsx")
-#' }
 write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = FALSE,
                        use.zip64 = FALSE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Initial Check --------------------------------------------------------------
 
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix, data frame or list of matrices or data frames for the argument 'x'.", call. = FALSE) }
@@ -62,18 +54,12 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
   # Check if input 'x' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  #_____________________________________________________________________________
+  #
+  # Input Check ----------------------------------------------------------------
 
-  if (isTRUE(check)) {
-
-    # Check input 'col.names'
-    if (isTRUE(!is.logical(col.names))) { stop("Please specify TRUE or FALSE for the argument 'col.names'.", call. = FALSE) }
-
-    # Check input 'use.zip64'
-    if (isTRUE(!is.logical(use.zip64))) { stop("Please specify TRUE or FALSE for the argument 'use.zip64'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("col.names", "use.zip64"), character = list(file = 1L), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -109,3 +95,5 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
   writexl::write_xlsx(x = x, path = file, col_names = col.names, format_headers = format, use_zip64 = use.zip64)
 
 }
+
+#_______________________________________________________________________________

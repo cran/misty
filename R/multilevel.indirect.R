@@ -35,15 +35,15 @@
 #'            on the cluster or between-group level. In Mplus, \code{Estimate}
 #'            of the random slope \eqn{a} under \code{Means} at the
 #'            \code{Between Level}.}
-#'   \item{b}{Coefficient \eqn{a}, i.e., average effect of \eqn{M} on \eqn{Y}
+#'   \item{b}{Coefficient \eqn{b}, i.e., average effect of \eqn{M} on \eqn{Y}
 #'            on the cluster or between-group level. In Mplus, \code{Estimate}
 #'            of the random slope \eqn{b} under \code{Means} at the
 #'                   \code{Between Level}.}
 #'   \item{se.a}{Standard error of \code{a}. In Mplus, \code{S.E.}
 #'               of the random slope \eqn{a} under \code{Means} at the
 #'               \code{Between Level}.}
-#'   \item{se.a}{Standard error of \code{a}. In Mplus, \code{S.E.}
-#'               of the random slope \eqn{a} under \code{Means} at the
+#'   \item{se.b}{Standard error of \code{b}. In Mplus, \code{S.E.}
+#'               of the random slope \eqn{b} under \code{Means} at the
 #'               \code{Between Level}.}
 #'   \item{cov.ab}{Covariance between \eqn{a} and \eqn{b}. In Mplus, the
 #'                 estimated covariance matrix for the parameter estimates
@@ -97,6 +97,9 @@
 #'                    of the interval.
 #' @param digits      an integer value indicating the number of decimal places
 #'                    to be used for displaying
+#' @param write       a character string naming a text file with file extension
+#'                    \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                    output into a text file.
 #' @param check       logical: if \code{TRUE} (default), argument specification
 #'                    is checked.
 #' @param output      logical: if \code{TRUE} (default), output is shown on the
@@ -151,7 +154,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Example 1: Confidence Interval for the Indirect Effect
 #' multilevel.indirect(a = 0.25, b = 0.20, se.a = 0.11, se.b = 0.13,
 #'                     cov.ab = 0.01, cov.rand = 0.40, se.cov.rand = 0.02)
@@ -168,7 +170,6 @@
 #' multilevel.indirect(a = 0.25, b = 0.20, se.a = 0.11, se.b = 0.13,
 #'                     cov.ab = 0.01, cov.rand = 0.40, se.cov.rand = 0.02,
 #'                     write = "ML-Indirect.txt")
-#' }
 multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.rand,
                                 nrep = 100000, alternative = c("two.sided", "less", "greater"),
                                 seed = NULL, conf.level = 0.95, digits = 3, write = NULL,
@@ -178,9 +179,12 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("append", "output"),
+               numeric = list(cov.ab = 1L, nrep = 1L),
+               args = c("alterantive", "conf.level", "digits", "write1"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'a', 'b', 'se.a', 'se.b', cov.ab, cov.rand, and se.cov.rand
@@ -201,26 +205,8 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
     # Check input 'nrep'
     if (isTRUE(mode(nrep) != "numeric" || nrep <= 1L)) { stop("Please specify a positive numeric value greater 1 for the argument 'nrep'.", call. = FALSE) }
 
-    # Check input 'alternative'
-    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
-
     # Check input 'seed'
     if (isTRUE(mode(seed) != "numeric" && !is.null(seed))) { stop("Please specify a numeric value greater for the argument 'seed'.", call. = FALSE) }
-
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -344,3 +330,5 @@ multilevel.indirect <- function(a, b, se.a, se.b, cov.ab = 0, cov.rand, se.cov.r
    return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

@@ -6,8 +6,8 @@
 \usage{
 mplus.run(target = getwd(), recursive = FALSE, filefilter = NULL, show.out = FALSE,
           replace.out = c("always", "never", "modified"), message = TRUE,
-          logFile = NULL, Mplus = detect.mplus(), killOnFail = TRUE,
-          local_tmpdir = FALSE)
+          logFile = NULL, Mplus = .detect.mplus(), killOnFail = TRUE,
+          local_tmpdir = FALSE, check = TRUE)
 }
 \arguments{
 \item{target}{a character string indicating the directory containing
@@ -60,6 +60,9 @@ is set to the location of the \code{.inp file} prior to
 execution. This is useful in Monte Carlo studies where many
 instances of Mplus may run in parallel and we wish to avoid
 collisions in temporary files among processes. Linux/Mac only.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification, convergence
+and model identification is checked.}
 }
 \value{
 None.
@@ -74,6 +77,7 @@ This function is a copy of the \code{runModels()} function in the
 }
 \examples{
 \dontrun{
+
 # Example 1: Run Mplus models located within a single directory
 mplus.run(Mplus = "C:/Program Files/Mplus/Mplus.exe")
 

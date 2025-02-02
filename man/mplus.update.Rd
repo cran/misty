@@ -53,7 +53,7 @@ and \code{"modified"}, which only runs a model if the
 modified date for the input file is more recent than the
 output file modified date.}
 
-\item{print}{a character vector indicating which results to show, i.e.
+\item{print}{a character string indicating which results to show, i.e.
 \code{"all"} (default) for all results \code{"input"} for
 input command sections, and \code{"result"} for result sections.}
 
@@ -193,6 +193,7 @@ section:
 }
 \examples{
 \dontrun{
+
 #----------------------------------------------------------------------------
 # Example 1: Update VARIABLE and MODEL section
 

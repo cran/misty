@@ -8,12 +8,12 @@ aov.w(formula, data, print = c("all", "none", "LB", "GG", "HF"),
       posthoc = FALSE, conf.level = 0.95,
       p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
       hypo = TRUE, descript = TRUE, epsilon = TRUE, effsize = FALSE,
-      na.omit = TRUE, plot = FALSE, point.size = 4, adjust = TRUE,
-      error.width = 0.1, xlab = NULL, ylab = NULL, ylim = NULL,
-      breaks = ggplot2::waiver(), jitter = TRUE, line = TRUE,
+      na.omit = TRUE, plot = FALSE, adjust = TRUE, point.size = 4,
+      errorbar.width = 0.1, xlab = NULL, ylab = NULL, ylim = NULL,
+      breaks = ggplot2::waiver(), jitter = TRUE, line = FALSE,
       jitter.size = 1.25, jitter.width = 0.05, jitter.height = 0,
       jitter.alpha = 0.1, title = "", subtitle = "Confidence Interval",
-      digits = 2, p.digits = 4, as.na = NULL, write = NULL, append = TRUE,
+      digits = 2, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
       check = TRUE, output = TRUE, ...)
 }
 \arguments{
@@ -68,14 +68,14 @@ before conducting the analysis (i.e., listwise deletion).}
 \item{plot}{logical: if \code{TRUE}, a plot showing error bars for
 confidence intervals is drawn.}
 
-\item{point.size}{a numeric value indicating the \code{size} aesthetic for
-the point representing the mean value.}
-
 \item{adjust}{logical: if \code{TRUE} (default), difference-adjustment
 for the Cousineau-Morey within-subject confidence
 intervals is applied.}
 
-\item{error.width}{a numeric value indicating the horizontal bar width of
+\item{point.size}{a numeric value indicating the \code{size} aesthetic for
+the point representing the mean value.}
+
+\item{errorbar.width}{a numeric value indicating the horizontal bar width of
 the error bar.}
 
 \item{xlab}{a character string specifying the labels for the x-axis.}
@@ -143,8 +143,8 @@ entries:
   \item{\code{type}}{type of analysis}
   \item{\code{data}}{list with the data (\code{data}) in wide-format (\code{wide}), reshaped data in long-format (\code{long}), and within-subject confidence intervals (\code{ci})}
   \item{\code{formula}}{formula of the current analysis}
-  \item{\code{plot}}{ggplot2 object for plotting the results}
   \item{\code{args}}{specification of function arguments}
+  \item{\code{plot}}{ggplot2 object for plotting the results}
   \item{\code{result}}{list with result tables, i.e., \code{descript} for descriptive
                        statistics, \code{epsilon} for a table with indices of sphericity,
                        \code{test} for the ANOVA table (\code{none} for no sphericity
@@ -247,7 +247,7 @@ aov.w(cbind(time1, time2, time3) ~ 1, data = dat, descript = FALSE, hypo = FALSE
 
 \dontrun{
 # Example 5: Write results into a text file
-aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.txt")
+aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.txt")}
 
 # Example 6: Repeated measures ANOVA
 # plot results
@@ -256,8 +256,9 @@ aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE)
 # Load ggplot2 package
 library(ggplot2)
 
+\dontrun{
 # Save plot, ggsave() from the ggplot2 package
-ggsave("Repeated_measures_ANOVA.png", dpi = 600, width = 4.5, height = 4)
+ggsave("Repeated_measures_ANOVA.png", dpi = 600, width = 4.5, height = 4)}
 
 # Example 7: Repeated measures ANOVA
 # extract plot
@@ -277,10 +278,9 @@ geom_point(data = plotdat$ci, aes(variable, m), stat = "identity", size = 4) +
 stat_summary(aes(time, y), fun = mean, geom = "line") +
 geom_errorbar(data = plotdat$ci, aes(variable, m, ymin = low, ymax = upp), width = 0.1) +
 theme_bw() + xlab(NULL) +
-labs(subtitle = "Two-Sided 95% Confidence Interval") +
+labs(subtitle = "Two-Sided Confidence Interval") +
 theme(plot.subtitle = element_text(hjust = 0.5),
      plot.title = element_text(hjust = 0.5))
-}
 }
 \references{
 Abdi, H. (2010). The Greenhouse-Geisser correction. In N. J. Salkind (Ed.)

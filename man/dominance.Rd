@@ -105,6 +105,7 @@ package (Luchman, 2023).
 #----------------------------------------------------------------------------
 # Example 1: Dominance analysis for a linear model
 
+# Example 1
 mod <- lm(mpg ~ cyl + disp + hp, data = mtcars)
 dominance(mod)
 
@@ -113,18 +114,13 @@ dominance(mod, print = "all")
 
 \dontrun{
 #----------------------------------------------------------------------------
-# Example 2: Write results into a text file
+# Write results into a Text or Excel file
 
+# Example 2a: Text file
 dominance(mod, write = "Dominance.txt", output = FALSE)
 
-#----------------------------------------------------------------------------
-# Example 3: Write results into an Excel file
-
-dominance(mod, write = "Dominance.xlsx", output = FALSE)
-
-result <- dominance(mod, print = "all", output = FALSE)
-write.result(result, "Dominance.xlsx")
-}
+# Example 2b: Excel file
+dominance(mod, write = "Dominance.xlsx", output = FALSE)}
 }
 \references{
 Azen, R., & Budescu, D. V. (2003). The dominance analysis approach for comparing

@@ -7,10 +7,10 @@
 blimp(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE, replace.inp = TRUE,
       blimp.run = TRUE, posterior = FALSE, folder = "Posterior_",
       format = c("csv", "csv2", "excel", "rds", "workspace"), clear = TRUE,
-      replace.out = c("always", "never", "modified"), Blimp = detect.blimp(),
+      replace.out = c("always", "never", "modified"), Blimp = .detect.blimp(),
       result = c("all", "default", "algo.options", "data.info", "model.info",
-                 "warn.mess", "out.model", "gen.param"),
-      exclude = NULL, color = c("none", "blue", "violet"),
+                 "warn.mess", "error.mess", "out.model", "gen.param"),
+      exclude = NULL, color = c("none", "blue", "green"),
       style = c("bold", "regular"), not.result = TRUE, write = NULL,
       append = TRUE, check = TRUE, output = TRUE)
 }
@@ -152,6 +152,7 @@ the \code{data} argument:
 }
 \examples{
 \dontrun{
+
 #----------------------------------------------------------------------------
 # Example 1: Write data, specify input without VARIABLES section, and run input
 

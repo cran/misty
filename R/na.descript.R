@@ -69,13 +69,11 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{data} \tab data frame used for the current analysis \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{result} \tab list with result tables \cr
-#' }
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame used for the current analysis}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{list with results}
 #'
 #' @export
 #'
@@ -83,10 +81,10 @@
 #' #----------------------------------------------------------------------------
 #' # Single-Level Data
 #'
-#' # Example 1a: Descriptive statistics for missing data
+#' # Example 1: Descriptive statistics for missing data
 #' na.descript(airquality)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' na.descript(., data = airquality)
 #'
 #' # Example 2: Descriptive statistics for missing data, print results with 3 digits
@@ -101,7 +99,7 @@
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' # Example 4: escriptive statistics for missing data
+#' # Example 4: Descriptive statistics for missing data
 #' na.descript(Demo.twolevel, cluster = "cluster")
 #'
 #' #----------------------------------------------------------------------------
@@ -117,7 +115,6 @@
 #' #----------------------------------------------------------------------------
 #' # Write Results
 #'
-#' \dontrun{
 #' # Example 6a: Write Results into a text file
 #' na.descript(airquality, table = TRUE, write = "NA_Descriptives.txt")
 #'
@@ -126,7 +123,6 @@
 #'
 #' result <- na.descript(airquality, table = TRUE, output = FALSE)
 #' write.result(result, "NA_Descriptives.xlsx")
-#' }
 na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits = 2,
                         as.na = NULL, write = NULL, append = TRUE, check = TRUE,
                         output = TRUE) {
@@ -141,9 +137,6 @@ na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits 
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -153,11 +146,8 @@ na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits 
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
-
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
 
     # Cluster variable
     if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
@@ -169,6 +159,10 @@ na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits 
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- as.data.frame(cluster) } }
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -205,7 +199,7 @@ na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits 
 
       no.clust <- "two"
 
-    # One cluser variables
+    # One cluster variables
     } else {
 
       no.clust <- "one"
@@ -218,21 +212,8 @@ na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits 
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'table'
-    if (isTRUE(!is.logical(table))) { stop("Please specify TRUE or FALSE for the argument 'table'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("table", "append", "output"), args = c("digits", "write2"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -622,36 +603,9 @@ na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits 
 
   #_____________________________________________________________________________
   #
-  # Write results --------------------------------------------------------------
+  # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -662,3 +616,5 @@ na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits 
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

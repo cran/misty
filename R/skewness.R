@@ -1,50 +1,129 @@
-#' Skewness and Kurtosis
+#' Univariate and Multivariate Skewness and Kurtosis
 #'
-#' The function \code{skewness} computes the skewness, the function \code{kurtosis}
-#' computes the kurtosis.
+#' The function \code{skewness} computes the univariate sample or population
+#' skewness and conduct's Mardia's test for multivariate skewness, while the
+#' function \code{kurtosis} computes the univariate sample or population (excess)
+#' kurtosis or the multivariate (excess) kurtosis and conduct's Mardia's test for
+#' multivariate kurtosis. By default, the function computes the sample univariate
+#' skewness or multivariate skewness and the univariate sample excess kurtosis or
+#' multivariate excess kurtosis.
 #'
-#' The same method for estimating skewness and kurtosis is used in SAS and SPSS.
-#' Missing values (\code{NA}) are stripped before the computation. Note that at
-#' least 3 observations are needed to compute skewness and at least 4 observations
-#' are needed to compute excess kurtosis.
+#' @param ...      a numeric vector. Alternatively, an expression indicating the
+#'                 variable names in \code{data} e.g., \code{skewness(x1, data = dat)}.
+#' @param data     a data frame when specifying the variable in the argument
+#'                 \code{...}. Note that the argument is \code{NULL} when specifying
+#'                 a numeric vector, matrix, or data frame for the argument \code{...}.
+#' @param sample   logical: if \code{TRUE} (default), the univariate sample skewness
+#'                 or kurtosis is computed, while the population skewness or kurtosis
+#'                 is computed when \code{sample = FALSE}.
+#' @param center   logical: if \code{TRUE} (default), the univariate or multivariate
+#'                 kurtosis is centered, so that the expected kurtosis under
+#'                 univariate or multivariate normality is 0, while the expected
+#'                 kurtosis under univariate or multivariate normality is 3 when
+#'                 \code{center = FALSE}.
+#' @param digits   an integer value indicating the number of decimal places to be
+#'                 used. Note that this argument only applied when computing
+#'                 multivariate skewness and kurtosis.
+#' @param p.digits an integer value indicating the number of decimal places
+#'                 to be used for displaying the \emph{p}-values.
+#' @param as.na    a numeric vector indicating user-defined missing values, i.e.,
+#'                 these values are converted to \code{NA} before conducting the
+#'                 analysis.
+#' @param check    logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output   logical: if \code{TRUE} (default), output is shown on the console.
+#'                 Note that this argument only applied when computing multivariate
+#'                 skewness and kurtosis.
 #'
-#' @param ...   a numeric vector. Alternatively, an expression indicating the
-#'              variable names in \code{data} e.g., \code{skewness(x1, data = dat)}.
-#' @param data  a data frame when specifying the variable in the argument
-#'              \code{...}. Note that the argument is \code{NULL} when specifying
-#'              a numeric vector for the argument \code{...}.
-#' @param as.na a numeric vector indicating user-defined missing values,
-#'              i.e. these values are converted to \code{NA} before conducting
-#'              the analysis.
-#' @param check logical: if \code{TRUE} (default), argument specification is checked.
+#' @details
+#' \describe{
+#' \item{\strong{Univariate Skewness and Kurtosis}}{Univariate skewness and kurtosis
+#' are computed based on the same formula as in SAS and SPSS:
+#'
+#' \itemize{
+#'      \item{\emph{Population Skewness}}
+#'      \deqn{\sqrt{n}\frac{\sum_{i=1}^{n}(X_i - \bar{X})^3}{(\sum_{i=1}^{n}(X_i - \bar{X})^2)^{3/2}}}
+#'
+#'      \item{\emph{Sample Skewness}}
+#'      \deqn{\frac{n\sqrt{n - 1}}{n-2}\frac{\sum_{i=1}^{n}(X_i - \bar{X})^3}{(\sum_{i=1}^{n}(X_i - \bar{X})^2)^{3/2}}}
+#'
+#'      \item{\emph{Population Excess Kurtosis}}
+#'      \deqn{n\frac{\sum_{i=1}^{n}(X_i - \bar{X})^4}{(\sum_{i=1}^{n}(X_i - \bar{X})^2)^2} - 3}
+#'
+#'      \item{\emph{Sample Excess Kurtosis}}
+#'      \deqn{(n + 1)\frac{\sum_{i=1}^{n}(X_i - \bar{X})^4}{(\sum_{i=1}^{n}(X_i - \bar{X})^2)^2} - 3 + 6\frac{n - 1}{(n - 2)(n - 3)}}
+#'
+#' }
+#'
+#' Note that missing values (\code{NA}) are stripped before the computation and
+#' that at least 3 observations are needed to compute skewness and at least
+#' 4 observations are needed to compute kurtosis.}
+#' \item{\strong{Multivariate Skewness and Kurtosis}}{Mardia's multivariate skewness
+#' and kurtosis compares the joint distribution of several variables against a
+#' multivariate normal distribution. The expected skewness is 0 for a multivariate
+#' normal distribution, while the expected kurtosis is \eqn{p(p + 2)} for a
+#' multivariate distribution of \eqn{p} variables. However, this function scales
+#' the multivariate kurtosis on \eqn{p(p + 2)} according to the default setting
+#' \code{center = TRUE} so that the expected kurtosis under multivariate normality
+#' is 0. Multivariate skewness and kurtosis are tested for statistical significance
+#' based on the chi-square distribution for skewness and standard normal distribution
+#' for the kurtosis. If at least one of the tests is statistically significant,
+#' the underlying joint population is inferred to be non-normal. Note that
+#' non-significance of these statistical tests do not imply multivariate normality.}
+#' }
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
+#' @name skewness
+#'
 #' @seealso
-#' \code{\link{des.nascript}}
+#' \code{\link{descript}}
 #'
 #' @references
+#' Cain, M. K., Zhang, Z., & Yuan, KH. (2024). Univariate and multivariate skewness
+#' and kurtosis for measuring nonnormality: Prevalence, influence and estimation.
+#' \emph{Behavior Research Methods, 49}, 1716–1735. https://doi.org/10.3758/s13428-016-0814-1
+#'
+#' Mardia, K. V. (1970). Measures of multivariate skewness and kurtosis with applications.
+#' \emph{Biometrika, 57}(3), 519-530. https://doi.org/10.2307/2334770
+#'
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
-#' - Using R and SPSS}. New York: John Wiley & Sons.
+#' - Using R and SPSS}. John Wiley & Sons.
+#'
+#' William Revelle (2024). \emph{psych: Procedures for Psychological, Psychometric, and
+#' Personality Research}. Northwestern University, Evanston, Illinois.
+#' R package version 2.4.6, https://CRAN.R-project.org/package=psych.
 #'
 #' @return
-#' Returns the estimated skewness or kurtosis of \code{x}.
+#' Returns univariate skewness or kurtosis of \code{x} or an object of class
+#' \code{misty.object}, which is a list with following entries:
+#'
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{list with the input specified in \code{...} }
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{result table}
+#'
+#' @note
+#' These functions implemented a modified copy of the \code{mardia()} function
+#' in the \pkg{psych} package by William Revelle (2024).
 #'
 #' @export
 #'
 #' @examples
-#' # Set seed of the random number generation
-#' set.seed(123)
-#' # Generate random numbers according to N(0, 1)
-#' x <- rnorm(100)
+#' # Example 1a: Compute univariate sample skewness
+#' skewness(mpg, data = mtcars)
 #'
-#' # Example 1: Compute skewness
-#' skewness(x)
+#' # Example 1b: Compute univariate sample excess kurtosis
+#' kurtosis(mpg, data = mtcars)
 #'
-#' # Example 2: Compute excess kurtosis
-#' kurtosis(x)
-skewness <- function(..., data = NULL, as.na = NULL, check = TRUE) {
+#' # Example 2a: Compute multivariate skewness
+#' skewness(mtcars)
+#'
+#' # Example 2b: Compute multivariate excess kurtosis
+#' kurtosis(mtcars)
+skewness <- function(..., data = NULL, sample = TRUE, digits = 2, p.digits = 3,
+                     as.na = NULL, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -55,6 +134,9 @@ skewness <- function(..., data = NULL, as.na = NULL, check = TRUE) {
 
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+
+  # Check if input 'data' is a data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data ####
@@ -63,90 +145,142 @@ skewness <- function(..., data = NULL, as.na = NULL, check = TRUE) {
   ### Data using the argument 'data' ####
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a numeric vector")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
-    # Extract variables
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, check.chr = "a numeric vector, matrix, or data frame")]
 
   #...................
   ### Data without using the argument 'data' ####
   } else {
 
-    # Extract data
     x <- eval(..., enclos = parent.frame())
 
   }
 
-  # Check if only one variable specified in the input 'x'
-  if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.", call. = FALSE) }
-
-  # Convert 'x' into a vector
-  x <- unlist(x, use.names = FALSE)
-
   # Convert user-missing values into NA
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  # Omit missing values
-  if (isTRUE(any(is.na(x)))) {
+  #_____________________________________________________________________________
+  #
+  # Univariate -----------------------------------------------------------------
 
+  if (isTRUE(ncol(as.data.frame(x)) == 1L)) {
+
+    # Omit missing values
     x <- na.omit(x)
 
-  }
+    if (isTRUE(!is.null(attributes(x)$na.action))) { warning(paste0("Number of observations removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE) }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Input Check ####
+
+    # Check inputs
+    .check.input(logical = "sample", args = c("digits", "p.digits"), envir = environment(), input.check = check)
+
+    # Additional checks
+    if (isTRUE(check)) {
+
+      # Numeric vector for the argument 'x'?
+      if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
+
+      # Check input 'x': Zero variance
+      if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE) }
+
+      # At least 3 observations
+      if (isTRUE(length(x) < 3L)) { stop("At least 3 observations are needed to compute skewness.", call. = FALSE) }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Main Function ####
+
+    # Number of observations
+    n <- length(x)
+
+    # Skewness
+    object <- (mean((x - mean(x))^3L) / mean((x - mean(x))^2L)^(3L/2L)) |>
+      (\(y) if (isTRUE(sample)) { y * sqrt(n * (n - 1L)) / (n - 2L) } else { y })() |>
+      (\(z) ifelse(is.nan(z), NA, z))()
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Output ####
+
+    return(object)
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
-
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check if input 'x' is missing
-    if (isTRUE(all(is.na(x)))) { stop("Vector specified in the argument 'x' is is completely missing.", call. = FALSE) }
-
-    # Numeric vector for the argument 'x'?
-    if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
-
-    # Check input 'x': Yero variance
-    if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE) }
-
-  }
-
-  #_____________________________________________________________________________
-  #
-  # Main Function --------------------------------------------------------------
-
-  n <- length(x)
-
-  if (isTRUE(n >= 3L)) {
-
-    object <- (mean((x - mean(x))^3L) / mean((x - mean(x))^2)^(3/2)) * sqrt(n * (n - 1L)) / (n - 2L)
-
-    object <- ifelse(is.nan(object), NA, object )
+  # Multivariate -----------------------------------------------------------------
 
   } else {
 
-    warning("At least 3 observations are needed to compute skewness.", call. = FALSE)
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Missing Data ####
 
-    object <- NA
+    # Omit complete missing columns
+    x <- x[, misty::na.prop(t(x)) != 1L]
+
+    # Listwise deletion
+    x <- na.omit(x)
+
+    if (isTRUE(!is.null(attributes(x)$na.action))) { warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE) }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Input Check ####
+
+    # Check inputs
+    .check.input(logical = "output", args = c("digits", "p.digits"), envir = environment(), input.check = check)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Main Function ####
+
+    # Number of rows
+    n <- nrow(x)
+
+    # Number of columns
+    p <- ncol(x)
+
+    # Multivariate skewness
+    skew <- scale(x, center = TRUE, scale = FALSE) |>
+      (\(y) sum((y %*% solve(cov(y)) %*% t(y))^3L) / n^2L)()
+
+    # Test statistic
+    chi2 <- n * skew / 6L
+
+    # Degrees of freedom
+    df <- p * (p + 1L) * (p + 2L) / 6L
+
+    # Result table
+    result <- data.frame(n = n, var = p, skew = skew, chi2 = chi2, df = df, pval = pchisq(chi2, df = df, lower.tail = FALSE))
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Return Object ####
+
+    object <- list(call = match.call(),
+                   type = "skewness",
+                   data = x,
+                   args = list(digits = digits, p.digits = p.digits, as.na = as.na, check = check, output = output),
+                   result = result)
+
+    class(object) <- "misty.object"
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Output ####
+
+    if (isTRUE(output)) { print(object, check = FALSE) }
+
+    return(invisible(object))
 
   }
 
-  #_____________________________________________________________________________
-  #
-  # Return Object --------------------------------------------------------------
-
-  return(object)
-
 }
 
-#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
+#_____________________________________________________________________________
+#_____________________________________________________________________________
 
 #' @rdname kurtosis
-kurtosis <- function(..., data = NULL, as.na = NULL, check = TRUE) {
+kurtosis <- function(..., data = NULL, sample = TRUE, center = TRUE, digits = 2,
+                     p.digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -157,6 +291,9 @@ kurtosis <- function(..., data = NULL, as.na = NULL, check = TRUE) {
 
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+
+  # Check if input 'data' is a data frame
+  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -167,84 +304,136 @@ kurtosis <- function(..., data = NULL, as.na = NULL, check = TRUE) {
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a numeric vector")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
-    # Extract variables
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, check.chr = "a numeric vector, matrix, or data frame")]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
     x <- eval(..., enclos = parent.frame())
 
   }
 
-  # Check if only one variable specified in the input 'x'
-  if (ncol(data.frame(x)) != 1L) { stop("More than one variable specified for the argument 'x'.", call. = FALSE) }
-
-  # Convert 'x' into a vector
-  x <- unlist(x, use.names = FALSE)
-
-  #_____________________________________________________________________________
-  #
-  # Input Check ----------------------------------------------------------------
-
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'x': Missing
-    if (isTRUE(all(is.na(x)))) { stop("Vector specified in the argument 'x' is  is completely missing.", call. = FALSE) }
-
-    # Check input 'x': Numeric vector
-    if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
-
-    #.......
-    if (isTRUE(length(x) > 1L)) { if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE) } }
-
-  }
-
-  #_____________________________________________________________________________
-  #
-  # Data and Arguments ---------------------------------------------------------
-
   # Convert user-missing values into NA
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  # Omit missing values
-  if (isTRUE(any(is.na(x)))) { x <- na.omit(x) }
+  #_____________________________________________________________________________
+  #
+  # Univariate -----------------------------------------------------------------
+
+  if (isTRUE(ncol(as.data.frame(x)) == 1L)) {
+
+    # Omit missing values
+    x <- na.omit(x)
+
+    if (isTRUE(!is.null(attributes(x)$na.action))) { warning(paste0("Number of observations removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE) }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Input Check ####
+
+    # Check inputs
+    .check.input(logical = c("sample", "center"), args = c("digits", "p.digits"), envir = environment(), input.check = check)
+
+    # Additional checks
+    if (isTRUE(check)) {
+
+      # Numeric vector for the argument 'x'?
+      if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
+
+      # Check input 'x': Zero variance
+      if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE) }
+
+      # At least 4 observations
+      if (isTRUE(length(x) < 4L)) { stop("At least 4 observations are needed to compute kurtosis.", call. = FALSE) }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Main Function ####
+
+    # Number of observations
+    n <- length(x)
+
+    # Kurtosis
+    object <- (n * sum((x - mean(x))^4L) / (sum((x - mean(x))^2)^2)) |>
+      (\(y) if (isTRUE(center)) { y - 3L } else { y })() |>
+      (\(z) if (isTRUE(sample)) { ((n + 1L) * z + 6L) * (n - 1L) / ((n - 2L) * (n - 3L)) } else { z })() |>
+      (\(w) ifelse(is.nan(w), NA, w))()
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Output ####
+
+    return(object)
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
-
-  n <- length(x)
-
-  if (isTRUE(n >= 4L)) {
-
-    m <- n * sum((x - mean(x))^4L) / (sum((x - mean(x))^2)^2)
-
-    object <- ((n + 1L) * (m - 3L) + 6L) * (n - 1L) / ((n - 2L) * (n - 3L))
-
-    object <- ifelse(is.nan(object), NA, object )
+  # Multivariate -----------------------------------------------------------------
 
   } else {
 
-    warning("At least 4 observations are needed to compute excess kurtosis.", call. = FALSE)
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Missing Data ####
 
-    object <- NA
+    # Omit complete missing columns
+    x <- x[, misty::na.prop(t(x)) != 1L]
+
+    # Listwise deletion
+    x <- na.omit(x)
+
+    if (isTRUE(!is.null(attributes(x)$na.action))) { warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(x)$na.action)), call. = FALSE) }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Input Check ####
+
+    # Check inputs
+    .check.input(logical = c("center", "output"), args = c("digits", "p.digits"), envir = environment(), input.check = check)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Main Function ####
+
+    # Number of rows
+    n <- nrow(x)
+
+    # Number of columns
+    p <- ncol(x)
+
+    # Multivariate kurtosis
+    kurt <- scale(x, center = TRUE, scale = FALSE) |>
+      (\(y) sum(diag(y %*% solve(cov(y)) %*% t(y))^2L) / n)()
+
+    # Test statistic
+    z <- (kurt - p * (p + 2L)) / sqrt(8L * p * (p + 2L) / nrow(x))
+
+    # Center multivariate kurtosis on p(p + 2)
+    if (isTRUE(center)) { kurt <- kurt - p*(p + 2L) }
+
+    # Result table
+    result <- data.frame(n = nrow(x), var = p, kurt = kurt, z = z, pval = pnorm(-abs(z)) * 2L)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Return Object ####
+
+    object <- list(call = match.call(),
+                   type = "kurtosis",
+                   data = x,
+                   args = list(center = center, digits = digits, p.digits = p.digits, as.na = as.na, check = check, output = output),
+                   result = result)
+
+    class(object) <- "misty.object"
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Output ####
+
+    if (isTRUE(output)) { print(object, check = FALSE) }
+
+    return(invisible(object))
 
   }
 
-  #_____________________________________________________________________________
-  #
-  # Output ---------------------------------------------------------------------
-
-  return(object)
-
 }
+
+#_______________________________________________________________________________

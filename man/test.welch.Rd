@@ -7,11 +7,11 @@
 test.welch(formula, data, alternative = c("two.sided", "less", "greater"),
            posthoc = FALSE, conf.level = 0.95, hypo = TRUE, descript = TRUE,
            effsize = FALSE, weighted = FALSE, ref = NULL, correct = FALSE,
-           plot = FALSE, point.size = 4, adjust = TRUE, error.width = 0.1,
+           plot = FALSE, adjust = TRUE, point.size = 4, errorbar.width = 0.1,
            xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
            jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
            jitter.height = 0, jitter.alpha = 0.1, title = "",
-           subtitle = "Confidence Interval", digits = 2, p.digits = 4,
+           subtitle = "Confidence Interval", digits = 2, p.digits = 3,
            as.na = NULL, write = NULL, append = TRUE, check = TRUE,
            output = TRUE, ...)
 }
@@ -61,13 +61,13 @@ bias in small samples is used.}
 \item{plot}{logical: if \code{TRUE}, a plot showing error bars for
 confidence intervals is drawn.}
 
-\item{point.size}{a numeric value indicating the \code{size} aesthetic for
-the point representing the mean value.}
-
 \item{adjust}{logical: if \code{TRUE} (default), difference-adjustment for the
 confidence intervals is applied.}
 
-\item{error.width}{a numeric value indicating the horizontal bar width of
+\item{point.size}{a numeric value indicating the \code{size} aesthetic for
+the point representing the mean value.}
+
+\item{errorbar.width}{a numeric value indicating the horizontal bar width of
 the error bar.}
 
 \item{xlab}{a character string specifying the labels for the x-axis.}
@@ -128,14 +128,15 @@ the plot.}
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-  \item{\code{call}}{function call}
-  \item{\code{type}}{type of analysis}
-  \item{\code{sample}}{type of sample, i.e., two- or multiple sample}
-  \item{\code{formula}}{formula of the current analysis}
-  \item{\code{data}}{data frame specified in \code{data}}
-  \item{\code{plot}}{ggplot2 object for plotting the results}
-  \item{\code{args}}{specification of function arguments}
-  \item{\code{result}}{result table}
+
+\item{\code{call}}{function call}
+\item{\code{type}}{type of analysis}
+\item{\code{sample}}{type of sample, i.e., one-, two-, or paired sample}
+\item{\code{formula}}{formula}
+\item{\code{data}}{data frame with the outcome and grouping variable}
+\item{\code{args}}{specification of function arguments}
+\item{\code{plot}}{ggplot2 object for plotting the results}
+\item{\code{result}}{result table}
 }
 \description{
 This function performs Welch's two-sample t-test and Welch's ANOVA including
@@ -154,119 +155,87 @@ specifying \code{weighted = TRUE}.}
 }
 }
 \examples{
-dat1 <- data.frame(group1 = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
-                   group2 = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3),
-                   y = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 6, 3, NA))
-
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Two-Sample Design
 
 # Example 1a: Two-sided two-sample Welch-test
-test.welch(y ~ group1, data = dat1)
+test.welch(mpg ~ vs, data = mtcars)
 
 # Example 1b: One-sided two-sample Welch-test
-test.welch(y ~ group1, data = dat1, alternative = "greater")
+test.welch(mpg ~ vs, data = mtcars, alternative = "greater")
 
 # Example 1c: Two-sided two-sample Welch-test
 # print Cohen's d with weighted pooled SD
-test.welch(y ~ group1, data = dat1, effsize = TRUE)
+test.welch(mpg ~ vs, data = mtcars, effsize = TRUE)
 
 # Example 1d: Two-sided two-sample Welch-test
-# print Cohen's d with unweighted pooled SD
-test.welch(y ~ group1, data = dat1, effsize = TRUE, weighted = FALSE)
-
-# Example 1e: Two-sided two-sample Welch-test
-# print Cohen's d with weighted pooled SD and
-# small sample correction factor
-test.welch(y ~ group1, data = dat1, effsize = TRUE, correct = TRUE)
-
-# Example 1f: Two-sided two-sample Welch-test
-# print Cohen's d with SD of the reference group 1
-test.welch(y ~ group1, data = dat1, effsize = TRUE,
-           ref = 1)
-
-# Example 1g: Two-sided two-sample Welch-test
-# print Cohen's d with weighted pooled SD and
-# small sample correction factor
-test.welch(y ~ group1, data = dat1, effsize = TRUE,
-           correct = TRUE)
-
-# Example 1h: Two-sided two-sample Welch-test
-# do not print hypotheses and descriptive statistics,
-test.welch(y ~ group1, data = dat1, descript = FALSE, hypo = FALSE)
-
-# Example 1i: Two-sided two-sample Welch-test
-# print descriptive statistics with 3 digits and p-value with 5 digits
-test.welch(y ~ group1, data = dat1, digits = 3, p.digits = 5)
-
-\dontrun{
-# Example 1j: Two-sided two-sample Welch-test
 # plot results
-test.welch(y ~ group1, data = dat1, plot = TRUE)
+test.welch(mpg ~ vs, data = mtcars, plot = TRUE)
 
 # Load ggplot2 package
 library(ggplot2)
 
+\dontrun{
 # Save plot, ggsave() from the ggplot2 package
-ggsave("Two-sample_Welch-test.png", dpi = 600, width = 4, height = 6)
+ggsave("Two-sample_Welch-test.png", dpi = 600, width = 4, height = 6)}
 
-# Example 1k: Two-sided two-sample Welch-test
+# Example 1e: Two-sided two-sample Welch-test
 # extract plot
-p <- test.welch(y ~ group1, data = dat1, output = FALSE)$plot
+p <- test.welch(mpg ~ vs, data = mtcars, output = FALSE)$plot
 p
 
-# Extract data
-plotdat <- test.welch(y ~ group1, data = dat1, output = FALSE)$data
-
+# Example 1f: Two-sided two-sample Welch-test
 # Draw plot in line with the default setting of test.welch()
+
+# Extract data
+plotdat <- test.welch(mpg ~ vs, data = mtcars, output = FALSE)$data
+
+# Draw plot
 ggplot(plotdat, aes(factor(group), y)) +
   geom_point(stat = "summary", fun = "mean", size = 4) +
   stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
   scale_x_discrete(name = NULL) +
-  labs(subtitle = "Two-Sided 95% Confidence Interval") +
+  labs(subtitle = "Two-Sided Confidence Interval") +
   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
-}
-#-------------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------
 # Multiple-Sample Design
 
 # Example 2a: Welch's ANOVA
-test.welch(y ~ group2, data = dat1)
+test.welch(mpg ~ gear, data = mtcars)
 
 # Example 2b: Welch's ANOVA
 # print eta-squared and omega-squared
-test.welch(y ~ group2, data = dat1, effsize = TRUE)
+test.welch(mpg ~ gear, data = mtcars, effsize = TRUE)
 
-# Example 2c: Welch's ANOVA
-# do not print hypotheses and descriptive statistics,
-test.welch(y ~ group2, data = dat1, descript = FALSE, hypo = FALSE)
-
-\dontrun{
-# Example 2d: Welch's ANOVA
-# plot results
-test.welch(y ~ group2, data = dat1, plot = TRUE)
+# Example 2c: Welch's ANOVA, plot results
+test.welch(mpg ~ gear, data = mtcars, plot = TRUE)
 
 # Load ggplot2 package
 library(ggplot2)
 
+\dontrun{
 # Save plot, ggsave() from the ggplot2 package
-ggsave("Multiple-sample_Welch-test.png", dpi = 600, width = 4.5, height = 6)
+ggsave("Multiple-sample_Welch-test.png", dpi = 600, width = 4.5, height = 6)}
 
 # Example 2e: Welch's ANOVA
 # extract plot
-p <- test.welch(y ~ group2, data = dat1, output = FALSE)$plot
+p <- test.welch(mpg ~ gear, data = mtcars, output = FALSE)$plot
 p
 
-# Extract data
-plotdat <- test.welch(y ~ group2, data = dat1, output = FALSE)$data
-
+# Example 2e: Welch's ANOVA
 # Draw plot in line with the default setting of test.welch()
+
+# Extract data
+plotdat <- test.welch(mpg ~ gear, data = mtcars, output = FALSE)$data
+
+# Draw plot
 ggplot(plotdat, aes(group, y)) +
   geom_point(stat = "summary", fun = "mean", size = 4) +
   stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
   scale_x_discrete(name = NULL) +
-  labs(subtitle = "Two-Sided 95% Confidence Interval") +
+  labs(subtitle = "Two-Sided Confidence Interval") +
   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
-}
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology

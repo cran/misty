@@ -257,70 +257,30 @@ mplus.lca <- function(x, ind = NULL,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("replace.inp", "mplus.run"),
+               character = list(file = 1L, folder = 6L, estimator = 1L, Mplus = 1L),
+               numeric = list(classes = 1L, starts = 2L, stiterations = 1L, lrtbootstrap = 1L, lrtstarts = 4L, processors = 2L),
+               s.character = list(type = c("continuous", "count", "categorical", "nominal"), replace.out = c("always", "never", "modified")),
+               m.character = list(write = c("all", "folder", "data", "input"), output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14")), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check 'ind' in 'x'
     if (isTRUE(any(!ind %in% colnames(x)))) { stop(paste0("Variables specified in 'ind' were not all found in the matrix or data frame specified in 'x': ", paste0(ind[which(!ind %in% colnames(x))], collapse = ", ")), call. = FALSE) }
 
-    # Check 'type'
-    if (isTRUE(!all(type %in% c("continuous", "count", "categorical", "nominal")))) { stop("Character string in the argument 'type' does not match with \"continuous\", \"count\", \"categorical\", or \"nominal\".", call. = FALSE) }
-
     # Check 'cluster' in 'x'
     if (isTRUE(!cluster %in% colnames(x))) { stop("Cluster variable specified in 'cluster' was not found in the matrix or data frame specified in 'x'.", call. = FALSE) }
 
-    # Check 'folder'
-    if (isTRUE(length(folder) != 6L || !is.character(folder))) { stop("Please specify a character vector with six entries for the argument 'folder'.", call. = FALSE) }
-
-    # Check 'file'
-    if (isTRUE(length(file) != 1L || !is.character(file))) { stop("Please specify a character string for the argument 'file'.", call. = FALSE) }
-
-    # Check 'write'
-    if (isTRUE(!all(write %in% c("all", "folder", "data", "input")))) { stop("Character string in the argument 'write' does not match with \"folder\", \"data\", or \"input\".", call. = FALSE) }
-
-    # Check 'missing'
-    if (isTRUE(length(missing) != 1L)) { stop("Please specify a numeric value or character string for the argument 'missing'.", call. = FALSE) }
-
-    # Check 'classes'
-    if (isTRUE(length(classes) != 1L || classes %% 1L != 0L)) { stop("Please specify a numeric value for the argument 'classes'.", call. = FALSE) }
-
-    # Check 'starts'
-    if (isTRUE(length(starts) != 2L) || any(starts %% 1L != 0L)) { stop("Please specify a vector with two integer values for the argument 'starts'.", call. = FALSE) }
-
     # Check 'starts'
     if (isTRUE(starts[2L] > starts[1L])) { stop("The second value must be less than or equal the first value in the argument 'starts'.", call. = FALSE) }
-
-    # Check 'stiterations'
-    if (isTRUE(length(stiterations) != 1L || stiterations %% 1L != 0L)) { stop("Please specify an integer value for the argument 'stiterations'.", call. = FALSE) }
-
-    # Check 'lrtbootstrap'
-    if (isTRUE(length(lrtbootstrap) != 1L || lrtbootstrap %% 1L != 0L)) { stop("Please specify an integer value for the argument 'lrtbootstrap'.", call. = FALSE) }
-
-    # Check 'lrtstarts'
-    if (isTRUE(length(lrtstarts) != 4L || any(lrtstarts %% 1L != 0L))) { stop("Please specify a vector with four integer values for the argument 'lrtstarts'.", call. = FALSE) }
 
     # Check 'lrtstarts'
     if (isTRUE(lrtstarts[2L] > lrtstarts[1L])) { stop("The second value must be less than or equal the first value in the argument 'lrtstarts'.", call. = FALSE) }
 
     # Check 'lrtstarts'
     if (isTRUE(lrtstarts[4L] > lrtstarts[3L])) { stop("The fourth value must be less than or equal the third value in the argument 'lrtstarts'.", call. = FALSE) }
-
-    # Check 'processors'
-    if (isTRUE(!length(processors) %in% c(1L, 2L) || any(processors %% 1L != 0L))) { stop("Please specify a vector with one or two integer values for the argument 'processors'.", call. = FALSE) }
-
-    # Check input 'print' ##
-    if (isTRUE(!all(output %in% c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14")))) { stop("Character string in the argument 'output' does not match with \"SVALUES\", \"CINTERVAL\", \"TECH7\", \"TECH8\", \"TECH11\", or \"TECH14\".", call. = FALSE) }
-
-    # Check input 'replace.inp' ##
-    if (isTRUE(!is.logical(replace.inp))) { stop("Please specify TRUE or FALSE for the argument 'replace.inp '.", call. = FALSE) }
-
-    # Check input 'mplus.run' ##
-    if (isTRUE(!is.logical(mplus.run))) { stop("Please specify TRUE or FALSE for the argument 'mplus.run '.", call. = FALSE) }
-
-    # Check input 'replace.out' ##
-    if (isTRUE(!all(replace.out %in% c("always", "never", "modified")))) { stop("Character string in the argument 'replace.out ' does not match with \"always\", \"never\",  or \"modified\".", call. = FALSE) }
 
   }
 
@@ -813,3 +773,5 @@ mplus.lca <- function(x, ind = NULL,
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

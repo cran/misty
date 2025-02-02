@@ -10,8 +10,8 @@ mplus.plot(x, plot = c("none", "trace", "post", "auto", "ppc", "loop"),
            point = c("all", "none", "m", "med", "map"),
            ci = c("none", "eti", "hdi"), chain = 1, conf.level = 0.95,
            hist = TRUE, density = TRUE, area = TRUE, alpha = 0.4,
-           fill = "gray85", nrow = NULL, ncol = NULL,
-           scales = c("fixed", "free", "free_x", "free_y"),
+           fill = "gray85", facet.nrow = NULL, facet.ncol = NULL,
+           facet.scales = c("fixed", "free", "free_x", "free_y"),
            xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL,
            xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
            xexpand = ggplot2::waiver(), yexpand = ggplot2::waiver(),
@@ -123,14 +123,14 @@ argument (default is \code{0.4}) for the \code{annotate},
 for the \code{annotate}, \code{geom_histogram},
 \code{geom_bar}, and \code{geom_point} functions.}
 
-\item{nrow}{a numeric value indicating the \code{nrow} argument
+\item{facet.nrow}{a numeric value indicating the \code{nrow} argument
 (default is \code{NULL}) for the \code{facet_wrap}
 function.}
 
-\item{ncol}{a numeric value indicating the \code{ncol} argument
+\item{facet.ncol}{a numeric value indicating the \code{ncol} argument
 (default is \code{2}) for the \code{facet_wrap} function.}
 
-\item{scales}{a character string indicating the \code{scales} argument
+\item{facet.scales}{a character string indicating the \code{scales} argument
 (default is \code{"free"}) for the \code{facet_wrap}
 function.}
 
@@ -316,6 +316,7 @@ section is available in the Mplus GH5 file.
 }
 \examples{
 \dontrun{
+
 #----------------------------------------------------------------------------
 # Mplus Example 3.18: Moderated Mediation with a Plot of the Indirect Effect
 

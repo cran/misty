@@ -88,7 +88,7 @@ of missing values (\code{na.descript()} function).}
 \item{...}{further arguments passed to or from other methods.}
 }
 \description{
-This function prints the \code{misty.object} object
+This function prints an \code{misty.object} object.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

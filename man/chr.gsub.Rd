@@ -4,7 +4,7 @@
 \alias{chr.gsub}
 \title{Multiple Pattern Matching And Replacements}
 \usage{
-chr.gsub(pattern, replacement, x, recycle = FALSE, ...)
+chr.gsub(pattern, replacement, x, recycle = FALSE, check = TRUE, ...)
 }
 \arguments{
 \item{pattern}{a character vector with character strings to be matched.}
@@ -15,6 +15,8 @@ length one which are a replacement for matched patterns.}
 \item{x}{a character vector where matches and replacements are sought.}
 
 \item{recycle}{logical: if \code{TRUE}, replacement is recycled if lengths differ.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 
 \item{...}{additional arguments to pass to the \code{regexpr} or \code{sub}
 function.}
@@ -49,7 +51,8 @@ Mark Ewing (2019). \emph{mgsub: Safe, Multiple, Simultaneous String Substitution
 R package version 1.7.1. https://CRAN.R-project.org/package=mgsub
 }
 \seealso{
-\code{\link{chr.grep}}, \code{\link{chr.grepl}}, \code{\link{chr.omit}}, \code{\link{chr.trim}}
+\code{\link{chr.color}}, \code{\link{chr.grep}}, \code{\link{chr.grepl}},
+\code{\link{chr.omit}}, \code{\link{chr.trim}}, \code{\link{chr.trunc}}
 }
 \author{
 Mark Ewing

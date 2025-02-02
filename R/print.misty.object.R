@@ -1,6 +1,6 @@
 #' Print misty.object object
 #'
-#' This function prints the \code{misty.object} object
+#' This function prints an \code{misty.object} object.
 #'
 #' @param x           \code{misty.object} object.
 #' @param print       a character string or character vector indicating which
@@ -82,9 +82,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(args = c("digits", "p.digits", "icc.digits"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'tri'
@@ -105,15 +106,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     # Check input 'effsize'
     if (isTRUE(!is.null(effsize))) { if (isTRUE(!is.logical(effsize))) { stop("Please specify TRUE or FALSE for the argument 'effsize'.", call. = FALSE) } }
 
-    # Check input 'digits'
-    if (isTRUE(!is.null(digits))) { if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'", call. = FALSE) } }
-
-    # Check input 'p.digits'
-    if (isTRUE(!is.null(p.digits))) { if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'", call. = FALSE) } }
-
-    # Check input 'icc.digits'
-    if (isTRUE(!is.null(icc.digits))) { if (isTRUE(icc.digits %% 1L != 0L || icc.digits < 0L)) { stop("Specify a positive integer number for the argument 'icc.digits'", call. = FALSE) } }
-
     # Check input 'sort.var'
     if (isTRUE(!is.null(sort.var))) { if (isTRUE(!is.logical(sort.var))) { stop("Please specify TRUE or FALSE for the argument 'sort.var'.", call. = FALSE) } }
 
@@ -133,28 +125,20 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Round ####
 
-    print.object[["descript"]][, c("m", "sd", "low", "upp")] <- vapply(print.object[["descript"]][, c("m", "sd", "low", "upp")], formatC,
-                                                                       digits = digits, format = "f",
-                                                                       zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["descript"]])))
+    print.object[["descript"]][, c("m", "low", "upp", "sd", "skew", "kurt")] <- vapply(print.object[["descript"]][, c("m", "low", "upp", "sd", "skew", "kurt")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["descript"]])))
 
-    print.object[["test"]][, c("sum.sq", "mean.sq", "F", "eta.sq", "omega.sq")] <- vapply(print.object[["test"]][, c("sum.sq", "mean.sq", "F", "eta.sq", "omega.sq")], formatC,
-                                                                                          digits = digits, format = "f",
-                                                                                          zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]])))
+    print.object[["test"]][, c("sum.sq", "mean.sq", "F", "eta.sq", "omega.sq")] <- vapply(print.object[["test"]][, c("sum.sq", "mean.sq", "F", "eta.sq", "omega.sq")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]])))
 
-    print.object[["test"]][, "pval"] <- formatC(print.object[["test"]][, "pval"], digits = p.digits, format = "f",
-                                                zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+    print.object[["test"]][, "pval"] <- formatC(print.object[["test"]][, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
-    print.object[["posthoc"]][, c("m.diff", "m.low", "m.upp", "d", "d.low", "d.upp")] <- vapply(print.object[["posthoc"]][, c("m.diff", "m.low", "m.upp", "d", "d.low", "d.upp")], formatC,
-                                                                                                digits = digits, format = "f",
-                                                                                                zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["posthoc"]])))
+    print.object[["posthoc"]][, c("m.diff", "m.low", "m.upp", "d", "d.low", "d.upp")] <- vapply(print.object[["posthoc"]][, c("m.diff", "m.low", "m.upp", "d", "d.low", "d.upp")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["posthoc"]])))
 
-    print.object[["posthoc"]][, "pval"] <- formatC(print.object[["posthoc"]][, "pval"], digits = p.digits, format = "f",
-                                                   zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+    print.object[["posthoc"]][, "pval"] <- formatC(print.object[["posthoc"]][, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Format ####
 
-    print.object[["descript"]] <- rbind(c("Group", "n", "nNA", "M", "SD", "Low", "Upp"), print.object[["descript"]])
+    print.object[["descript"]] <- rbind(c("Group", "n", "nNA", "M", "Low", "Upp", "SD", "Skew", "Kurt"), print.object[["descript"]])
     print.object[["test"]] <- rbind(c("Source", "Sum Sq", "df", "Mean Sq", "F", "pval", "et", "om"), print.object[["test"]])
     print.object[["posthoc"]] <- rbind(c("Group1", "Group2", "M.diff", "Low", "Upp", "pval", "d", "Low", "Upp"), print.object[["posthoc"]])
 
@@ -254,63 +238,46 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     ## Round ####
 
     # Descriptive statistics
-    print.object[["descript"]][, c("m", "sd", "low", "upp")] <- vapply(print.object[["descript"]][, c("m", "sd", "low", "upp")], formatC,
-                                                                       digits = digits, format = "f",
-                                                                       zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["descript"]])))
+    print.object[["descript"]][, c("m", "low", "upp", "sd", "skew", "kurt")] <- vapply(print.object[["descript"]][, c("m", "low", "upp", "sd", "skew", "kurt")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["descript"]])))
 
     # Box Index of Sphericity
     print.object[["epsilon"]][, "ep"] <- formatC(print.object[["epsilon"]][, "ep"] , digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
     # ANOVA tables
-    print.object[["test"]][["none"]][, c("Sum Sq", "Mean Sq", "F", "et", "et.p", "om", "om.p")] <- vapply(print.object[["test"]][["none"]][, c("Sum Sq", "Mean Sq", "F", "et", "et.p", "om", "om.p")], formatC,
-                                                                                                          digits = digits, format = "f",
-                                                                                                          zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]][["none"]])))
+    print.object[["test"]][["none"]][, c("Sum Sq", "Mean Sq", "F", "et", "et.p", "om", "om.p")] <- vapply(print.object[["test"]][["none"]][, c("Sum Sq", "Mean Sq", "F", "et", "et.p", "om", "om.p")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]][["none"]])))
 
     print.object[["test"]][["none"]][, "df"] <- formatC(print.object[["test"]][["none"]][, "df"], digits = 0L, mode = "integer")
 
-    print.object[["test"]][["none"]][, "pval"] <- formatC(print.object[["test"]][["none"]][, "pval"], digits = p.digits, format = "f",
-                                                          zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+    print.object[["test"]][["none"]][, "pval"] <- formatC(print.object[["test"]][["none"]][, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
     ##
 
-    print.object[["test"]][["lb"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")] <- vapply(print.object[["test"]][["lb"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")], formatC,
-                                                                                                              digits = digits, format = "f",
-                                                                                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]][["lb"]])))
+    print.object[["test"]][["lb"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")] <- vapply(print.object[["test"]][["lb"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]][["lb"]])))
 
-    print.object[["test"]][["lb"]][, "pval"] <- formatC(print.object[["test"]][["lb"]][, "pval"], digits = p.digits, format = "f",
-                                                        zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+    print.object[["test"]][["lb"]][, "pval"] <- formatC(print.object[["test"]][["lb"]][, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
     ##
 
-    print.object[["test"]][["gg"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")] <- vapply(print.object[["test"]][["gg"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")], formatC,
-                                                                                                              digits = digits, format = "f",
-                                                                                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]][["gg"]])))
+    print.object[["test"]][["gg"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")] <- vapply(print.object[["test"]][["gg"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]][["gg"]])))
 
-    print.object[["test"]][["gg"]][, "pval"] <- formatC(print.object[["test"]][["gg"]][, "pval"], digits = p.digits, format = "f",
-                                                        zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+    print.object[["test"]][["gg"]][, "pval"] <- formatC(print.object[["test"]][["gg"]][, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
 
     ###
 
-    print.object[["test"]][["hf"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")] <- vapply(print.object[["test"]][["hf"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")], formatC,
-                                                                                                              digits = digits, format = "f",
-                                                                                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]][["hf"]])))
+    print.object[["test"]][["hf"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")] <- vapply(print.object[["test"]][["hf"]][, c("Sum Sq", "df", "Mean Sq", "F", "et", "et.p", "om", "om.p")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["test"]][["hf"]])))
 
-    print.object[["test"]][["hf"]][, "pval"] <- formatC(print.object[["test"]][["hf"]][, "pval"], digits = p.digits, format = "f",
-                                                        zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+    print.object[["test"]][["hf"]][, "pval"] <- formatC(print.object[["test"]][["hf"]][, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
     # Post hoc tests
-    print.object[["posthoc"]][, c("m.diff", "t", "d", "d.low", "d.upp")] <- vapply(print.object[["posthoc"]][, c("m.diff", "t", "d", "d.low", "d.upp")], formatC,
-                                                                                   digits = digits, format = "f",
-                                                                                   zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["posthoc"]])))
+    print.object[["posthoc"]][, c("m.diff", "t", "d", "d.low", "d.upp")] <- vapply(print.object[["posthoc"]][, c("m.diff", "t", "d", "d.low", "d.upp")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["posthoc"]])))
 
-    print.object[["posthoc"]][, "pval"] <- formatC(print.object[["posthoc"]][, "pval"], digits = p.digits, format = "f",
-                                                   zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+    print.object[["posthoc"]][, "pval"] <- formatC(print.object[["posthoc"]][, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Format ####
 
-    print.object[["descript"]] <- rbind(c("Variable", "n", "nNA", "M", "SD", "Low", "Upp"), print.object[["descript"]])
+    print.object[["descript"]] <- rbind(c("Variable", "n", "nNA", "M", "Low", "Upp", "SD", "Skew", "Kurt"), print.object[["descript"]])
     print.object[["epsilon"]] <- rbind(c("Box Index of Sphericity", "ep"), print.object[["epsilon"]])
     print.object[["test"]] <- lapply(print.object[["test"]], function(y) rbind(c("Source", "Sum Sq", "df", "Mean Sq", "F", "pval", "et", "et.p", "om", "om.p"), y))
     print.object[["posthoc"]] <- rbind(c("Variable1", "Variable2", "M.diff", "t", "df", "pval", "d", "Low", "Upp"), print.object[["posthoc"]])
@@ -505,7 +472,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     }
 
-  #____________________--_______________________________________________________
+  #_____________________________________________________________________________
   #
   # Blimp Object ---------------------------------------------------------------
   }, blimp = {
@@ -646,23 +613,1819 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
+  # Confidence Interval for the Correlation Coefficient ------------------------
+  }, ci.cor = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No grouping ####
+
+    if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      if (isTRUE(all(print.object$nNA == 0L))) {
+
+        print.object[, c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")] <- sapply(c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      } else {
+
+        print.object[, c("pNA", "skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")] <- sapply(c("pNA", "skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      }
+
+      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+
+      #...................
+      ### Column Names ####
+
+      switch(x$args$method, "pearson" = {
+
+        print.object <- rbind(c("Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "r", "Low", "Upp"), print.object)
+
+      }, "spearman" = {
+
+        print.object <- rbind(c("Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "rs", "Low", "Upp"), print.object)
+
+      }, "kendall-b" = {
+
+        print.object <- rbind(c("Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-b", "Low", "Upp"), print.object)
+
+      }, "kendall-c" = {
+
+        print.object <- rbind(c("Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-c", "Low", "Upp"), print.object)
+
+      })
+
+      #...................
+      ### Format ####
+
+      # Remove duplicated values
+      print.object[duplicated(print.object$var1) , "var1"] <- ""
+
+      # Justify left and right
+      col.format <- which(colnames(print.object) %in% c("var1", "var2"))
+
+      # Justify left and right
+      print.object[, col.format] <- format(print.object[, col.format], justify = "left")
+      print.object[, -col.format] <- apply(print.object[, -col.format], 2L, format, justify = "right")
+
+      # Add blank space
+      print.object[, "var1"] <- c(paste0("  ", print.object[1L, "var1"]), paste0("   ", print.object[-1L, "var1"]))
+      print.object[, "var2"] <- c(paste0("", print.object[1L, "var2"]), paste0(" ", print.object[-1L, "var2"]))
+
+      print.object[, "var1"] <- format(c(print.object[1L, "var1"], misty::chr.trim(print.object[-1L, "var1"], side = "right")), justify = "left")
+      print.object[, "var2"] <- format(c(print.object[1L, "var2"], misty::chr.trim(print.object[-1L, "var2"], side = "right")), justify = "left")
+
+      # Missing values, NA
+      print.object[, c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")] <- data.frame(apply(print.object[, c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 switch(x$args$method,
+                        "pearson" = "Pearson Product-Moment Correlation Coefficient\n\n",
+                        "spearman" = "Spearman's Rank-Order Correlation Coefficient\n\n",
+                        "kendall-b" = "Kendall's Tau-b\n\n",
+                        "kendall-c" = "Kendall-Stuart's Tau-c\n\n")))
+
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping ####
+
+    } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      if (isTRUE(all(print.object$nNA == 0L))) {
+
+        print.object[, c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")] <- sapply(c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      } else {
+
+        print.object[, c("pNA", "skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")] <- sapply(c("pNA", "skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      }
+
+      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+
+      #...................
+      ### Column Names ####
+
+      switch(x$args$method, "pearson" = {
+
+        print.object <- rbind(c("Group", "Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "r", "Low", "Upp"), print.object)
+
+      }, "spearman" = {
+
+        print.object <- rbind(c("Group", "Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "rs", "Low", "Upp"), print.object)
+
+      }, "kendall-b" = {
+
+        print.object <- rbind(c("Group", "Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-b", "Low", "Upp"), print.object)
+
+      }, "kendall-c" = {
+
+        print.object <- rbind(c("Group", "Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-c", "Low", "Upp"), print.object)
+
+      })
+
+      #...................
+      ### Format ####
+
+      # Remove duplicated values
+      print.object[duplicated(paste(print.object$group, print.object$var1)) , "var1"] <- ""
+      print.object[duplicated(print.object$group) , "group"] <- ""
+
+      # Justify left and right
+      col.format <- which(colnames(print.object) %in% c("group", "var1", "var2"))
+
+      # Justify left and right
+      print.object[, col.format] <- format(print.object[, col.format], justify = "left")
+      print.object[, -col.format] <- apply(print.object[, -col.format], 2L, format, justify = "right")
+
+      # Add blank space
+      print.object[, "group"] <- c(paste0("  ", print.object[1L, "group"]), paste0("   ", print.object[-1L, "group"]))
+      print.object[, "var1"] <- c(paste0("", print.object[1L, "var1"]), paste0(" ", print.object[-1L, "var1"]))
+      print.object[, "var2"] <- c(paste0("", print.object[1L, "var2"]), paste0(" ", print.object[-1L, "var2"]))
+
+      print.object[, "group"] <- format(c(print.object[1L, "group"], misty::chr.trim(print.object[-1L, "group"], side = "right")), justify = "left")
+      print.object[, "var1"] <- format(c(print.object[1L, "var1"], misty::chr.trim(print.object[-1L, "var1"], side = "right")), justify = "left")
+      print.object[, "var2"] <- format(c(print.object[1L, "var2"], misty::chr.trim(print.object[-1L, "var2"], side = "right")), justify = "left")
+
+      # Missing values, NA
+      print.object[, c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")] <- data.frame(apply(print.object[, c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 switch(x$args$method,
+                        "pearson" = "Pearson Product-Moment Correlation Coefficient\n\n",
+                        "spearman" = "Spearman's Rank-Order Correlation Coefficient\n\n",
+                        "kendall-b" = "Kendall's Tau-b\n\n",
+                        "kendall-c" = "Kendall-Stuart's Tau-c\n\n")))
+
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Split ####
+
+    } else if (isTRUE(!is.null(x$data$split))) {
+
+      # No grouping
+      if (isTRUE(is.null(x$data$group))) {
+
+        for (i in names(print.object)) {
+
+          #...................
+          ### Round ####
+
+          if (isTRUE(all(print.object[[i]]$nNA == 0L))) {
+
+            print.object[[i]][, c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")] <- sapply(c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          } else {
+
+            print.object[[i]][, c("pNA", "skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")] <- sapply(c("pNA", "skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          }
+
+          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
+
+          #...................
+          ### Column Names ####
+
+          switch(x$args$method, "pearson" = {
+
+            print.object[[i]] <- rbind(c("Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "r", "Low", "Upp"), print.object[[i]])
+
+          }, "spearman" = {
+
+            print.object[[i]] <- rbind(c("Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "rs", "Low", "Upp"), print.object[[i]])
+
+          }, "kendall-b" = {
+
+            print.object[[i]] <- rbind(c("Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-b", "Low", "Upp"), print.object[[i]])
+
+          }, "kendall-c" = {
+
+            print.object[[i]] <- rbind(c("Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-c", "Low", "Upp"), print.object[[i]])
+
+          })
+
+          #...................
+          ### Format ####
+
+          # Remove duplicated values
+          print.object[[i]][duplicated(print.object[[i]]$var1) , "var1"] <- ""
+
+          # Justify left and right
+          col.format <- which(colnames(print.object[[i]]) %in% c("var1", "var2"))
+
+          # Justify left and right
+          print.object[[i]][, col.format] <- format(print.object[[i]][, col.format], justify = "left")
+          print.object[[i]][, -col.format] <- apply(print.object[[i]][, -col.format], 2L, format, justify = "right")
+
+          # Add blank space
+          print.object[[i]][, "var1"] <- c(paste0("   ", print.object[[i]][1L, "var1"]), paste0("    ", print.object[[i]][-1L, "var1"]))
+          print.object[[i]][, "var2"] <- c(paste0("", print.object[[i]][1L, "var2"]), paste0(" ", print.object[[i]][-1L, "var2"]))
+
+          print.object[[i]][, "var1"] <- format(c(print.object[[i]][1L, "var1"], misty::chr.trim(print.object[[i]][-1L, "var1"], side = "right")), justify = "left")
+          print.object[[i]][, "var2"] <- format(c(print.object[[i]][1L, "var2"], misty::chr.trim(print.object[[i]][-1L, "var2"], side = "right")), justify = "left")
+
+          # Missing values, NA
+          print.object[[i]][, c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")] <- data.frame(apply(print.object[[i]][, c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+        }
+
+      # Grouping
+      } else {
+
+        for (i in names(print.object)) {
+
+          #...................
+          ### Round ####
+
+          if (isTRUE(all(print.object[[i]]$nNA == 0L))) {
+
+            print.object[[i]][, c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")] <- sapply(c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          } else {
+
+            print.object[[i]][, c("pNA", "skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")] <- sapply(c("pNA", "skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          }
+
+          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
+
+          #...................
+          ### Column Names ####
+
+          switch(x$args$method, "pearson" = {
+
+            print.object[[i]] <- rbind(c("Group", "Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "r", "Low", "Upp"), print.object[[i]])
+
+          }, "spearman" = {
+
+            print.object[[i]] <- rbind(c("Group", "Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "rs", "Low", "Upp"), print.object[[i]])
+
+          }, "kendall-b" = {
+
+            print.object[[i]] <- rbind(c("Group", "Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-b", "Low", "Upp"), print.object[[i]])
+
+          }, "kendall-c" = {
+
+            print.object[[i]] <- rbind(c("Group", "Var1", "Var2", "n", "nNA", "pNA", "Skew1", "Kurt1", "Skew2", "Kurt2", "Tau-c", "Low", "Upp"), print.object[[i]])
+
+          })
+
+          #...................
+          ### Format ####
+
+          # Remove duplicated values
+          print.object[[i]][duplicated(paste(print.object[[i]]$group, print.object[[i]]$var1)) , "var1"] <- ""
+          print.object[[i]][duplicated(print.object[[i]]$group) , "group"] <- ""
+
+          # Justify left and right
+          col.format <- which(colnames(print.object[[i]]) %in% c("group", "var1", "var2"))
+
+          # Justify left and right
+          print.object[[i]][, col.format] <- format(print.object[[i]][, col.format], justify = "left")
+          print.object[[i]][, -col.format] <- apply(print.object[[i]][, -col.format], 2L, format, justify = "right")
+
+          # Add blank space
+          print.object[[i]][, "group"] <- c(paste0("   ", print.object[[i]][1L, "group"]), paste0("    ", print.object[[i]][-1L, "group"]))
+          print.object[[i]][, "var1"] <- c(paste0("", print.object[[i]][1L, "var1"]), paste0(" ", print.object[[i]][-1L, "var1"]))
+          print.object[[i]][, "var2"] <- c(paste0("", print.object[[i]][1L, "var2"]), paste0(" ", print.object[[i]][-1L, "var2"]))
+
+          print.object[[i]][, "group"] <- format(c(print.object[[i]][1L, "group"], misty::chr.trim(print.object[[i]][-1L, "group"], side = "right")), justify = "left")
+          print.object[[i]][, "var1"] <- format(c(print.object[[i]][1L, "var1"], misty::chr.trim(print.object[[i]][-1L, "var1"], side = "right")), justify = "left")
+          print.object[[i]][, "var2"] <- format(c(print.object[[i]][1L, "var2"], misty::chr.trim(print.object[[i]][-1L, "var2"], side = "right")), justify = "left")
+
+          # Missing values, NA
+          print.object[[i]][, c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")] <- data.frame(apply(print.object[[i]][, c("skew1", "kurt1", "skew2", "kurt2", "cor", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+        }
+
+      }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 switch(x$args$method,
+                        "pearson" = "Pearson Product-Moment Correlation Coefficient\n\n",
+                        "spearman" = "Spearman's Rank-Order Correlation Coefficient\n\n",
+                        "kendall-b" = "Kendall's Tau-b\n\n",
+                        "kendall-c" = "Kendall-Stuart's Tau-c\n\n")))
+
+      for (i in names(print.object)) {
+
+        cat("  Split Group:", i, "\n")
+
+        write.table(print.object[[i]], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note ####
+
+    #...................
+    ### No Bootstrapping ####
+
+    if (isTRUE(x$args$boot == "none")) {
+
+      switch(x$args$method, "pearson" = {
+
+        cat(paste0("\n  Note. ", switch(x$args$adjust,
+                                        "none" = "Without non-normality adjustment.\n",
+                                        "joint" = "Non-normality adjustment via sample joint moments method.\n",
+                                        "approx" = "Non-normality adjustment via approximate distribution method.\n")))
+
+      }, "spearman" = {
+
+        cat(paste0("\n  Note. ", switch(x$args$se,
+                                        "fisher" = "Fisher (1921) standard error.\n",
+                                        "fieller" = "Fieller et al. (1957) standard error.\n",
+                                        "bonett" = "Bonett and Wright (2000) standard error.\n",
+                                        "rin" = "Rank-based inverse normal transformation.\n")))
+
+      }, "kendall-b" = {
+
+        cat("\n  Note. Fieller et al. (1957) standard error.\n")
+
+      }, "kendall-b" = {
+
+        cat("\n  Note. Fieller et al. (1957) standard error.\n")
+
+      })
+
+    #...................
+    ### Bootstrapping ####
+
+    } else {
+
+      cat(paste0("\n  Note. ",
+                 switch(x$args$boot,
+                        "norm" = "Bias-corrected normal approximation bootstrap CI, ",
+                        "basic" = "Basic bootstrap CI, ",
+                        "perc" = "Percentile bootstrap CI, ",
+                        "bc" = "Bias-corrected (BC) percentile bootstrap CI, ",
+                        "bca" = "Bias-corrected and accelerated (BCa) bootstrap CI, "),
+                 x$args$R, " replications."))
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Confidence Interval for the Arithmetic Mean --------------------------------
+  }, ci.mean = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No grouping ####
+
+    if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      if (isTRUE(all(print.object$nNA == 0L))) {
+
+        print.object[, c("sd", "skew", "kurt", "m", "low", "upp")] <- sapply(c("sd", "skew", "kurt", "m", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      } else {
+
+        print.object[, c("pNA", "sd", "skew", "kurt", "m", "low", "upp")] <- sapply(c("pNA", "sd", "skew", "kurt", "m", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      }
+
+      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+
+      #...................
+      ### Column Names ####
+
+      print.object <- rbind(c("Variable", "n", "nNA", "pNA", "SD", "Skew", "Kurt", "M", "Low", "Upp"), print.object)
+
+      #...................
+      ### Format ####
+
+      # Justify left and right
+      col.format <- which(colnames(print.object) %in% "variable")
+
+      # Justify left and right
+      print.object[, col.format] <- format(print.object[, col.format], justify = "left")
+      print.object[, -col.format] <- apply(print.object[, -col.format], 2L, format, justify = "right")
+
+      # Add blank space
+      print.object[, "variable"] <- c(paste0("  ", print.object[1L, "variable"]), paste0("   ", print.object[-1L, "variable"]))
+      print.object[, "variable"] <- format(c(print.object[1L, "variable"], misty::chr.trim(print.object[-1L, "variable"], side = "right")), justify = "left")
+
+      # Missing values, NA
+      print.object[, c("sd", "skew", "kurt", "m", "low", "upp")] <- data.frame(apply(print.object[, c("sd", "skew", "kurt", "m", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+      #...................
+      ### One Variable ####
+
+      if (isTRUE(length(unique(x$result$variable)) == 1L)) {
+
+        print.object <- print.object[, -1L]
+
+        # First column "n"
+        print.object[, "n"] <- c(paste0("  ", print.object[1L, "n"]), paste0("  ", print.object[-1L, "n"]))
+        print.object[, "n"] <- format(c(print.object[1L, "n"], misty::chr.trim(print.object[-1L, "n"], side = "right")), justify = "right")
+
+      }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Arithmetic Mean\n\n"))
+
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping ####
+
+    } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      if (isTRUE(all(print.object$nNA == 0L))) {
+
+        print.object[, c("sd", "skew", "kurt", "m", "low", "upp")] <- sapply(c("sd", "skew", "kurt", "m", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      } else {
+
+        print.object[, c("pNA", "sd", "skew", "kurt", "m", "low", "upp")] <- sapply(c("pNA", "sd", "skew", "kurt", "m", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      }
+
+      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+
+      #...................
+      ### Column Names ####
+
+      print.object <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "SD", "Skew", "Kurt", "M", "Low", "Upp"), print.object)
+
+      #...................
+      ### Format ####
+
+      # Remove duplicated values
+      print.object[duplicated(print.object$group) , "group"] <- ""
+
+      # Justify left and right
+      col.format <- which(colnames(print.object) %in% c("group", "variable"))
+
+      # Justify left and right
+      print.object[, col.format] <- format(print.object[, col.format], justify = "left")
+      print.object[, -col.format] <- apply(print.object[, -col.format], 2L, format, justify = "right")
+
+      # Add blank space
+      print.object[, "group"] <- c(paste0("  ", print.object[1L, "group"]), paste0("   ", print.object[-1L, "group"]))
+      print.object[, "variable"] <- c(paste0("", print.object[1L, "variable"]), paste0(" ", print.object[-1L, "variable"]))
+
+      print.object[, "group"] <- format(c(print.object[1L, "group"], misty::chr.trim(print.object[-1L, "group"], side = "right")), justify = "left")
+      print.object[, "variable"] <- format(c(print.object[1L, "variable"], misty::chr.trim(print.object[-1L, "variable"], side = "right")), justify = "left")
+
+      # Missing values, NA
+      print.object[, c("sd", "skew", "kurt", "m", "low", "upp")] <- data.frame(apply(print.object[, c("sd", "skew", "kurt", "m", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+      #...................
+      ### One Variable ####
+
+      if (isTRUE(length(unique(x$result$variable)) == 1L)) { print.object <- print.object[, -2L] }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Arithmetic Mean\n\n"))
+
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Split ####
+
+    } else if (isTRUE(!is.null(x$data$split))) {
+
+      # No grouping
+      if (isTRUE(is.null(x$data$group))) {
+
+        for (i in names(print.object)) {
+
+          #...................
+          ### Round ####
+
+          if (isTRUE(all(print.object[[i]]$nNA == 0L))) {
+
+            print.object[[i]][, c("sd", "skew", "kurt", "m", "low", "upp")] <- sapply(c("sd", "skew", "kurt", "m", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          } else {
+
+            print.object[[i]][, c("pNA", "sd", "skew", "kurt", "m", "low", "upp")] <- sapply(c("pNA", "sd", "skew", "kurt", "m", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          }
+
+          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
+
+          #...................
+          ### Column Names ####
+
+          print.object[[i]] <- rbind(c("Variable", "n", "nNA", "pNA", "SD", "Skew", "Kurt", "M", "Low", "Upp"), print.object[[i]])
+
+          #...................
+          ### Format ####
+
+          # Justify left and right
+          col.format <- which(colnames(print.object[[i]]) %in% "variable")
+
+          # Justify left and right
+          print.object[[i]][, col.format] <- format(print.object[[i]][, col.format], justify = "left")
+          print.object[[i]][, -col.format] <- apply(print.object[[i]][, -col.format], 2L, format, justify = "right")
+
+          # Add blank space
+          print.object[[i]][, "variable"] <- c(paste0("   ", print.object[[i]][1L, "variable"]), paste0("    ", print.object[[i]][-1L, "variable"]))
+          print.object[[i]][, "variable"] <- format(c(print.object[[i]][1L, "variable"], misty::chr.trim(print.object[[i]][-1L, "variable"], side = "right")), justify = "left")
+
+          # Missing values, NA
+          print.object[[i]][, c("sd", "skew", "kurt", "m", "low", "upp")] <- data.frame(apply(print.object[[i]][, c("sd", "skew", "kurt", "m", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+          #...................
+          ### One Variable ####
+
+          if (isTRUE(length(unique(x$result[[1L]]$variable)) == 1L)) {
+
+            print.object[[i]] <- print.object[[i]][, -1L]
+
+            print.object[[i]][, "n"] <- c(paste0("   ", print.object[[i]][1L, "n"]), paste0("   ", print.object[[i]][-1L, "n"]))
+            print.object[[i]][, "n"] <- format(c(print.object[[i]][1L, "n"], misty::chr.trim(print.object[[i]][-1L, "n"], side = "right")), justify = "left")
+
+          }
+
+        }
+
+      # Grouping
+      } else {
+
+        for (i in names(print.object)) {
+
+          #...................
+          ### Round ####
+
+          if (isTRUE(all(print.object[[i]]$nNA == 0L))) {
+
+            print.object[[i]][, c("sd", "skew", "kurt", "m", "low", "upp")] <- sapply(c("sd", "skew", "kurt", "m", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          } else {
+
+            print.object[[i]][, c("pNA", "sd", "skew", "kurt", "m", "low", "upp")] <- sapply(c("pNA", "sd", "skew", "kurt", "m", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          }
+
+          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
+
+          #...................
+          ### Column Names ####
+
+          print.object[[i]] <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "SD", "Skew", "Kurt", "M", "Low", "Upp"), print.object[[i]])
+
+          #...................
+          ### Format ####
+
+          # Remove duplicated values
+          print.object[[i]][duplicated(paste(print.object[[i]]$group, print.object[[i]]$variable)) , "variable"] <- ""
+          print.object[[i]][duplicated(print.object[[i]]$group) , "group"] <- ""
+
+          # Justify left and right
+          col.format <- which(colnames(print.object[[i]]) %in% c("group", "variable"))
+
+          # Justify left and right
+          print.object[[i]][, col.format] <- format(print.object[[i]][, col.format], justify = "left")
+          print.object[[i]][, -col.format] <- apply(print.object[[i]][, -col.format], 2L, format, justify = "right")
+
+          # Add blank space
+          print.object[[i]][, "group"] <- c(paste0("   ", print.object[[i]][1L, "group"]), paste0("    ", print.object[[i]][-1L, "group"]))
+          print.object[[i]][, "variable"] <- c(paste0("", print.object[[i]][1L, "variable"]), paste0(" ", print.object[[i]][-1L, "variable"]))
+
+          print.object[[i]][, "group"] <- format(c(print.object[[i]][1L, "group"], misty::chr.trim(print.object[[i]][-1L, "group"], side = "right")), justify = "left")
+          print.object[[i]][, "variable"] <- format(c(print.object[[i]][1L, "variable"], misty::chr.trim(print.object[[i]][-1L, "variable"], side = "right")), justify = "left")
+
+          # Missing values, NA
+          print.object[[i]][, c("sd", "skew", "kurt", "m", "low", "upp")] <- data.frame(apply(print.object[[i]][, c("sd", "skew", "kurt", "m", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+          #...................
+          ### One Variable ####
+
+          if (isTRUE(length(unique(x$result[[1L]]$variable)) == 1L)) { print.object[[i]] <- print.object[[i]][, -2L] }
+
+        }
+
+      }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                  round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                  "Arithmetic Mean\n\n"))
+
+      for (i in names(print.object)) {
+
+        cat("  Split Group:", i, "\n")
+
+        write.table(print.object[[i]], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note ####
+
+    #...................
+    ### Bootstrapping ####
+
+    if (isTRUE(x$args$boot != "none")) {
+
+      cat(paste0("\n  Note. ",
+                 switch(x$args$boot,
+                        "norm" = "Bias-corrected normal approximation bootstrap CI, ",
+                        "basic" = "Basic bootstrap CI, ",
+                        "stud" = "Studentized bootstrap CI, ",
+                        "perc" = "Percentile bootstrap CI, ",
+                        "bc" = "Bias-corrected (BC) percentile bootstrap CI, ",
+                        "bca" = "Bias-corrected and accelerated (BCa) bootstrap CI, "),
+                 x$args$R, " replications."))
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Confidence Interval for the Median -----------------------------------------
+  }, ci.median = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No grouping ####
+
+    if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      if (isTRUE(all(print.object$nNA == 0L))) {
+
+        print.object[, c("sd", "iqr", "skew", "kurt", "med", "low", "upp")] <- sapply(c("sd", "iqr", "skew", "kurt", "med", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      } else {
+
+        print.object[, c("pNA", "sd", "iqr", "skew", "kurt", "med", "low", "upp")] <- sapply(c("pNA", "sd", "iqr", "skew", "kurt", "med", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      }
+
+      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+
+      #...................
+      ### Column Names ####
+
+      print.object <- rbind(c("Variable", "n", "nNA", "pNA", "SD", "IQR", "Skew", "Kurt", "Med", "Low", "Upp"), print.object)
+
+      #...................
+      ### Format ####
+
+      # Justify left and right
+      col.format <- which(colnames(print.object) %in% "variable")
+
+      # Justify left and right
+      print.object[, col.format] <- format(print.object[, col.format], justify = "left")
+      print.object[, -col.format] <- apply(print.object[, -col.format], 2L, format, justify = "right")
+
+      # Add blank space
+      print.object[, "variable"] <- c(paste0("  ", print.object[1L, "variable"]), paste0("   ", print.object[-1L, "variable"]))
+      print.object[, "variable"] <- format(c(print.object[1L, "variable"], misty::chr.trim(print.object[-1L, "variable"], side = "right")), justify = "left")
+
+      # Missing values, NA
+      print.object[, c("sd", "iqr", "skew", "kurt", "med", "low", "upp")] <- data.frame(apply(print.object[, c("sd", "iqr", "skew", "kurt", "med", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+      #...................
+      ### One Variable ####
+
+      if (isTRUE(length(unique(x$result$variable)) == 1L)) {
+
+        print.object <- print.object[, -1L]
+
+        # First column "n"
+        print.object[, "n"] <- c(paste0("  ", print.object[1L, "n"]), paste0("  ", print.object[-1L, "n"]))
+        print.object[, "n"] <- format(c(print.object[1L, "n"], misty::chr.trim(print.object[-1L, "n"], side = "right")), justify = "right")
+
+      }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Median\n\n"))
+
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping ####
+
+    } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      if (isTRUE(all(print.object$nNA == 0L))) {
+
+        print.object[, c("sd", "iqr", "skew", "kurt", "med", "low", "upp")] <- sapply(c("sd", "iqr", "skew", "kurt", "med", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      } else {
+
+        print.object[, c("pNA", "iqr", "sd", "skew", "kurt", "med", "low", "upp")] <- sapply(c("pNA", "sd", "iqr", "skew", "kurt", "med", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      }
+
+      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+
+      #...................
+      ### Column Names ####
+
+      print.object <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "SD", "IQR", "Skew", "Kurt", "Med", "Low", "Upp"), print.object)
+
+      #...................
+      ### Format ####
+
+      # Remove duplicated values
+      print.object[duplicated(print.object$group) , "group"] <- ""
+
+      # Justify left and right
+      col.format <- which(colnames(print.object) %in% c("group", "variable"))
+
+      # Justify left and right
+      print.object[, col.format] <- format(print.object[, col.format], justify = "left")
+      print.object[, -col.format] <- apply(print.object[, -col.format], 2L, format, justify = "right")
+
+      # Add blank space
+      print.object[, "group"] <- c(paste0("  ", print.object[1L, "group"]), paste0("   ", print.object[-1L, "group"]))
+      print.object[, "variable"] <- c(paste0("", print.object[1L, "variable"]), paste0(" ", print.object[-1L, "variable"]))
+
+      print.object[, "group"] <- format(c(print.object[1L, "group"], misty::chr.trim(print.object[-1L, "group"], side = "right")), justify = "left")
+      print.object[, "variable"] <- format(c(print.object[1L, "variable"], misty::chr.trim(print.object[-1L, "variable"], side = "right")), justify = "left")
+
+      # Missing values, NA
+      print.object[, c("sd", "iqr", "skew", "kurt", "med", "low", "upp")] <- data.frame(apply(print.object[, c("sd", "iqr", "skew", "kurt", "med", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+      #...................
+      ### One Variable ####
+
+      if (isTRUE(length(unique(x$result$variable)) == 1L)) { print.object <- print.object[, -2L] }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Median\n\n"))
+
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Split ####
+
+    } else if (isTRUE(!is.null(x$data$split))) {
+
+      # No grouping
+      if (isTRUE(is.null(x$data$group))) {
+
+        for (i in names(print.object)) {
+
+          #...................
+          ### Round ####
+
+          if (isTRUE(all(print.object[[i]]$nNA == 0L))) {
+
+            print.object[[i]][, c("sd", "iqr", "skew", "kurt", "med", "low", "upp")] <- sapply(c("sd", "iqr", "skew", "kurt", "med", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          } else {
+
+            print.object[[i]][, c("pNA", "iqr", "sd", "skew", "kurt", "med", "low", "upp")] <- sapply(c("pNA", "sd", "iqr", "skew", "kurt", "med", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          }
+
+          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
+
+          #...................
+          ### Column Names ####
+
+          print.object[[i]] <- rbind(c("Variable", "n", "nNA", "pNA", "SD", "IQR", "Skew", "Kurt", "Med", "Low", "Upp"), print.object[[i]])
+
+          #...................
+          ### Format ####
+
+          # Justify left and right
+          col.format <- which(colnames(print.object[[i]]) %in% "variable")
+
+          # Justify left and right
+          print.object[[i]][, col.format] <- format(print.object[[i]][, col.format], justify = "left")
+          print.object[[i]][, -col.format] <- apply(print.object[[i]][, -col.format], 2L, format, justify = "right")
+
+          # Add blank space
+          print.object[[i]][, "variable"] <- c(paste0("   ", print.object[[i]][1L, "variable"]), paste0("    ", print.object[[i]][-1L, "variable"]))
+          print.object[[i]][, "variable"] <- format(c(print.object[[i]][1L, "variable"], misty::chr.trim(print.object[[i]][-1L, "variable"], side = "right")), justify = "left")
+
+          # Missing values, NA
+          print.object[[i]][, c("sd", "iqr", "skew", "kurt", "med", "low", "upp")] <- data.frame(apply(print.object[[i]][, c("sd", "iqr", "skew", "kurt", "med", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+          #...................
+          ### One Variable ####
+
+          if (isTRUE(length(unique(x$result[[1L]]$variable)) == 1L)) {
+
+            print.object[[i]] <- print.object[[i]][, -1L]
+
+            print.object[[i]][, "n"] <- c(paste0("   ", print.object[[i]][1L, "n"]), paste0("   ", print.object[[i]][-1L, "n"]))
+            print.object[[i]][, "n"] <- format(c(print.object[[i]][1L, "n"], misty::chr.trim(print.object[[i]][-1L, "n"], side = "right")), justify = "left")
+
+          }
+
+        }
+
+      # Grouping
+      } else {
+
+        for (i in names(print.object)) {
+
+          #...................
+          ### Round ####
+
+          if (isTRUE(all(print.object[[i]]$nNA == 0L))) {
+
+            print.object[[i]][, c("sd", "iqr", "skew", "kurt", "med", "low", "upp")] <- sapply(c("sd", "iqr", "skew", "kurt", "med", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          } else {
+
+            print.object[[i]][, c("pNA", "iqr", "sd", "skew", "kurt", "med", "low", "upp")] <- sapply(c("pNA", "sd", "iqr", "skew", "kurt", "med", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          }
+
+          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
+
+          #...................
+          ### Column Names ####
+
+          print.object[[i]] <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "SD", "IQR", "Skew", "Kurt", "Med", "Low", "Upp"), print.object[[i]])
+
+          #...................
+          ### Format ####
+
+          # Remove duplicated values
+          print.object[[i]][duplicated(paste(print.object[[i]]$group, print.object[[i]]$variable)) , "variable"] <- ""
+          print.object[[i]][duplicated(print.object[[i]]$group) , "group"] <- ""
+
+          # Justify left and right
+          col.format <- which(colnames(print.object[[i]]) %in% c("group", "variable"))
+
+          # Justify left and right
+          print.object[[i]][, col.format] <- format(print.object[[i]][, col.format], justify = "left")
+          print.object[[i]][, -col.format] <- apply(print.object[[i]][, -col.format], 2L, format, justify = "right")
+
+          # Add blank space
+          print.object[[i]][, "group"] <- c(paste0("   ", print.object[[i]][1L, "group"]), paste0("    ", print.object[[i]][-1L, "group"]))
+          print.object[[i]][, "variable"] <- c(paste0("", print.object[[i]][1L, "variable"]), paste0(" ", print.object[[i]][-1L, "variable"]))
+
+          print.object[[i]][, "group"] <- format(c(print.object[[i]][1L, "group"], misty::chr.trim(print.object[[i]][-1L, "group"], side = "right")), justify = "left")
+          print.object[[i]][, "variable"] <- format(c(print.object[[i]][1L, "variable"], misty::chr.trim(print.object[[i]][-1L, "variable"], side = "right")), justify = "left")
+
+          # Missing values, NA
+          print.object[[i]][, c("sd", "iqr", "skew", "kurt", "med", "low", "upp")] <- data.frame(apply(print.object[[i]][, c("sd", "iqr", "skew", "kurt", "med", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+          #...................
+          ### One Variable ####
+
+          if (isTRUE(length(unique(x$result[[1L]]$variable)) == 1L)) { print.object[[i]] <- print.object[[i]][, -2L] }
+
+        }
+
+      }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Median\n\n"))
+
+      for (i in names(print.object)) {
+
+        cat("  Split Group:", i, "\n")
+
+        write.table(print.object[[i]], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note ####
+
+    #...................
+    ### Bootstrapping ####
+
+    if (isTRUE(x$args$boot != "none")) {
+
+      cat(paste0("\n  Note. ",
+                 switch(x$args$boot,
+                        "norm" = "Bias-corrected normal approximation bootstrap CI, ",
+                        "basic" = "Basic bootstrap CI, ",
+                        "stud" = "Studentized bootstrap CI, ",
+                        "perc" = "Percentile bootstrap CI, ",
+                        "bc" = "Bias-corrected (BC) percentile bootstrap CI, ",
+                        "bca" = "Bias-corrected and accelerated (BCa) bootstrap CI, "),
+                 x$args$R, " replications."))
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Confidence Interval for the Propotion --------------------------------------
+  }, ci.prop = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No grouping ####
+
+    if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      if (isTRUE(all(print.object$nNA == 0L))) {
+
+        print.object[, c("prop", "low", "upp")] <- sapply(c("prop", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      } else {
+
+        print.object[, c("prop", "low", "upp")] <- sapply(c("prop", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+        print.object[, "pNA"] <- formatC(print.object[, "pNA"], digits = ifelse(digits - 1L < 0L, 0L, digits - 1L), format = "f", zero.print = ifelse(ifelse(digits - 1L < 0L, 0L, digits - 1L) > 0L, paste0("0.", paste(rep(0, times = ifelse(digits - 1L < 0L, 0L, digits - 1L)), collapse = "")), "0"))
+
+      }
+
+      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+
+      #...................
+      ### Column Names ####
+
+      print.object <- rbind(c("Variable", "n", "nNA", "pNA", "Freq", "Prop", "Low", "Upp"), print.object)
+
+      #...................
+      ### Format ####
+
+      # Justify left and right
+      col.format <- which(colnames(print.object) %in% "variable")
+
+      # Justify left and right
+      print.object[, col.format] <- format(print.object[, col.format], justify = "left")
+      print.object[, -col.format] <- apply(print.object[, -col.format], 2L, format, justify = "right")
+
+      # Add blank space
+      print.object[, "variable"] <- c(paste0("  ", print.object[1L, "variable"]), paste0("   ", print.object[-1L, "variable"]))
+      print.object[, "variable"] <- format(c(print.object[1L, "variable"], misty::chr.trim(print.object[-1L, "variable"], side = "right")), justify = "left")
+
+      # Missing values, NA
+      print.object[, c("freq", "prop", "low", "upp")] <- data.frame(apply(print.object[, c("freq", "prop", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+      #...................
+      ### One Variable ####
+
+      if (isTRUE(length(unique(x$result$variable)) == 1L)) {
+
+        print.object <- print.object[, -1L]
+
+        # First column "n"
+        print.object[, "n"] <- c(paste0("  ", print.object[1L, "n"]), paste0("  ", print.object[-1L, "n"]))
+        print.object[, "n"] <- format(c(print.object[1L, "n"], misty::chr.trim(print.object[-1L, "n"], side = "right")), justify = "right")
+
+      }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Proportion\n\n"))
+
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping ####
+
+    } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      if (isTRUE(all(print.object$nNA == 0L))) {
+
+        print.object[, c("prop", "low", "upp")] <- sapply(c("prop", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      } else {
+
+        print.object[, c("prop", "low", "upp")] <- sapply(c("prop", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+        print.object[, "pNA"] <- formatC(print.object[, "pNA"], digits = ifelse(digits - 1L < 0L, 0L, digits - 1L), format = "f", zero.print = ifelse(ifelse(digits - 1L < 0L, 0L, digits - 1L) > 0L, paste0("0.", paste(rep(0, times = ifelse(digits - 1L < 0L, 0L, digits - 1L)), collapse = "")), "0"))
+
+      }
+
+      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+
+      #...................
+      ### Column Names ####
+
+      print.object <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "Freq", "Prop", "Low", "Upp"), print.object)
+
+      #...................
+      ### Format ####
+
+      # Remove duplicated values
+      print.object[duplicated(print.object$group) , "group"] <- ""
+
+      # Justify left and right
+      col.format <- which(colnames(print.object) %in% c("group", "variable"))
+
+      # Justify left and right
+      print.object[, col.format] <- format(print.object[, col.format], justify = "left")
+      print.object[, -col.format] <- apply(print.object[, -col.format], 2L, format, justify = "right")
+
+      # Add blank space
+      print.object[, "group"] <- c(paste0("  ", print.object[1L, "group"]), paste0("   ", print.object[-1L, "group"]))
+      print.object[, "variable"] <- c(paste0("", print.object[1L, "variable"]), paste0(" ", print.object[-1L, "variable"]))
+
+      print.object[, "group"] <- format(c(print.object[1L, "group"], misty::chr.trim(print.object[-1L, "group"], side = "right")), justify = "left")
+      print.object[, "variable"] <- format(c(print.object[1L, "variable"], misty::chr.trim(print.object[-1L, "variable"], side = "right")), justify = "left")
+
+      # Missing values, NA
+      print.object[, c("freq", "prop", "low", "upp")] <- data.frame(apply(print.object[, c("freq", "prop", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+      #...................
+      ### One Variable ####
+
+      if (isTRUE(length(unique(x$result$variable)) == 1L)) { print.object <- print.object[, -2L] }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Proportion\n\n"))
+
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Split ####
+
+    } else if (isTRUE(!is.null(x$data$split))) {
+
+      # No grouping
+      if (isTRUE(is.null(x$data$group))) {
+
+        for (i in names(print.object)) {
+
+          #...................
+          ### Round ####
+
+          if (isTRUE(all(print.object[[i]]$nNA == 0L))) {
+
+            print.object[[i]][, c("prop", "low", "upp")] <- sapply(c("prop", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          } else {
+
+            print.object[[i]][, c("prop", "low", "upp")] <- sapply(c("prop", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+            print.object[[i]][, "pNA"] <- formatC(print.object[[i]][, "pNA"], digits = ifelse(digits - 1L < 0L, 0L, digits - 1L), format = "f", zero.print = ifelse(ifelse(digits - 1L < 0L, 0L, digits - 1L) > 0L, paste0("0.", paste(rep(0, times = ifelse(digits - 1L < 0L, 0L, digits - 1L)), collapse = "")), "0"))
+
+          }
+
+          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
+
+          #...................
+          ### Column Names ####
+
+          print.object[[i]] <- rbind(c("Variable", "n", "nNA", "pNA", "Freq", "Prop", "Low", "Upp"), print.object[[i]])
+
+          #...................
+          ### Format ####
+
+          # Justify left and right
+          col.format <- which(colnames(print.object[[i]]) %in% "variable")
+
+          # Justify left and right
+          print.object[[i]][, col.format] <- format(print.object[[i]][, col.format], justify = "left")
+          print.object[[i]][, -col.format] <- apply(print.object[[i]][, -col.format], 2L, format, justify = "right")
+
+          # Add blank space
+          print.object[[i]][, "variable"] <- c(paste0("   ", print.object[[i]][1L, "variable"]), paste0("    ", print.object[[i]][-1L, "variable"]))
+          print.object[[i]][, "variable"] <- format(c(print.object[[i]][1L, "variable"], misty::chr.trim(print.object[[i]][-1L, "variable"], side = "right")), justify = "left")
+
+          # Missing values, NA
+          print.object[[i]][, c("freq", "prop", "low", "upp")] <- data.frame(apply(print.object[[i]][, c("freq", "prop", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+          #...................
+          ### One Variable ####
+
+          if (isTRUE(length(unique(x$result[[1L]]$variable)) == 1L)) {
+
+            print.object[[i]] <- print.object[[i]][, -1L]
+
+            print.object[[i]][, "n"] <- c(paste0("   ", print.object[[i]][1L, "n"]), paste0("   ", print.object[[i]][-1L, "n"]))
+            print.object[[i]][, "n"] <- format(c(print.object[[i]][1L, "n"], misty::chr.trim(print.object[[i]][-1L, "n"], side = "right")), justify = "left")
+
+          }
+
+        }
+
+      # Grouping
+      } else {
+
+        for (i in names(print.object)) {
+
+          #...................
+          ### Round ####
+
+          if (isTRUE(all(print.object[[i]]$nNA == 0L))) {
+
+            print.object[[i]][, c("prop", "low", "upp")] <- sapply(c("prop", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          } else {
+
+            print.object[[i]][, c("prop", "low", "upp")] <- sapply(c("prop", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+            print.object[[i]][, "pNA"] <- formatC(print.object[[i]][, "pNA"], digits = ifelse(digits - 1L < 0L, 0L, digits - 1L), format = "f", zero.print = ifelse(ifelse(digits - 1L < 0L, 0L, digits - 1L) > 0L, paste0("0.", paste(rep(0, times = ifelse(digits - 1L < 0L, 0L, digits - 1L)), collapse = "")), "0"))
+
+          }
+
+          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
+
+          #...................
+          ### Column Names ####
+
+          print.object[[i]] <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "Freq", "Prop", "Low", "Upp"), print.object[[i]])
+
+          #...................
+          ### Format ####
+
+          # Remove duplicated values
+          print.object[[i]][duplicated(paste(print.object[[i]]$group, print.object[[i]]$variable)) , "variable"] <- ""
+          print.object[[i]][duplicated(print.object[[i]]$group) , "group"] <- ""
+
+          # Justify left and right
+          col.format <- which(colnames(print.object[[i]]) %in% c("group", "variable"))
+
+          # Justify left and right
+          print.object[[i]][, col.format] <- format(print.object[[i]][, col.format], justify = "left")
+          print.object[[i]][, -col.format] <- apply(print.object[[i]][, -col.format], 2L, format, justify = "right")
+
+          # Add blank space
+          print.object[[i]][, "group"] <- c(paste0("   ", print.object[[i]][1L, "group"]), paste0("    ", print.object[[i]][-1L, "group"]))
+          print.object[[i]][, "variable"] <- c(paste0("", print.object[[i]][1L, "variable"]), paste0(" ", print.object[[i]][-1L, "variable"]))
+
+          print.object[[i]][, "group"] <- format(c(print.object[[i]][1L, "group"], misty::chr.trim(print.object[[i]][-1L, "group"], side = "right")), justify = "left")
+          print.object[[i]][, "variable"] <- format(c(print.object[[i]][1L, "variable"], misty::chr.trim(print.object[[i]][-1L, "variable"], side = "right")), justify = "left")
+
+          # Missing values, NA
+          print.object[[i]][, c("prop", "low", "upp")] <- data.frame(apply(print.object[[i]][, c("prop", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+          #...................
+          ### One Variable ####
+
+          if (isTRUE(length(unique(x$result[[1L]]$variable)) == 1L)) { print.object[[i]] <- print.object[[i]][, -2L] }
+
+        }
+
+      }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Proportion\n\n"))
+
+      for (i in names(print.object)) {
+
+        cat("  Split Group:", i, "\n")
+
+        write.table(print.object[[i]], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note ####
+
+    #...................
+    ### Bootstrapping ####
+
+    if (isTRUE(x$args$boot != "none")) {
+
+      cat(paste0("\n  Note. ",
+                 switch(x$args$boot,
+                        "perc" = "Percentile bootstrap CI, ",
+                        "bc" = "Bias-corrected (BC) percentile bootstrap CI, ",
+                        "bca" = "Bias-corrected and accelerated (BCa) bootstrap CI, "),
+                 x$args$R, " replications."))
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Confidence Interval for the Variance ---------------------------------------
+  }, ci.var = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No grouping ####
+
+    if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      if (isTRUE(all(print.object$nNA == 0L))) {
+
+        print.object[, c("skew", "kurt", "m", "var", "low", "upp")] <- sapply(c("skew", "kurt", "m", "var", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      } else {
+
+        print.object[, c("pNA", "skew", "kurt", "m", "var", "low", "upp")] <- sapply(c("pNA", "skew", "kurt", "m", "var", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      }
+
+      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+
+      #...................
+      ### Column Names ####
+
+      print.object <- rbind(c("Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "Var", "Low", "Upp"), print.object)
+
+      #...................
+      ### Format ####
+
+      # Justify left and right
+      col.format <- which(colnames(print.object) %in% "variable")
+
+      # Justify left and right
+      print.object[, col.format] <- format(print.object[, col.format], justify = "left")
+      print.object[, -col.format] <- apply(print.object[, -col.format], 2L, format, justify = "right")
+
+      # Add blank space
+      print.object[, "variable"] <- c(paste0("  ", print.object[1L, "variable"]), paste0("   ", print.object[-1L, "variable"]))
+      print.object[, "variable"] <- format(c(print.object[1L, "variable"], misty::chr.trim(print.object[-1L, "variable"], side = "right")), justify = "left")
+
+      # Missing values, NA
+      print.object[, c("skew", "kurt", "m", "var", "low", "upp")] <- data.frame(apply(print.object[, c("skew", "kurt", "m", "var", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+      #...................
+      ### One Variable ####
+
+      if (isTRUE(length(unique(x$result$variable)) == 1L)) {
+
+        print.object <- print.object[, -1L]
+
+        # First column "n"
+        print.object[, "n"] <- c(paste0("  ", print.object[1L, "n"]), paste0("  ", print.object[-1L, "n"]))
+        print.object[, "n"] <- format(c(print.object[1L, "n"], misty::chr.trim(print.object[-1L, "n"], side = "right")), justify = "right")
+
+      }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Variance\n\n"))
+
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping ####
+
+    } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      if (isTRUE(all(print.object$nNA == 0L))) {
+
+        print.object[, c("skew", "kurt", "m", "var", "low", "upp")] <- sapply(c("skew", "kurt", "m", "var", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      } else {
+
+        print.object[, c("pNA", "skew", "kurt", "m", "var", "low", "upp")] <- sapply(c("pNA", "skew", "kurt", "m", "var", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      }
+
+      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+
+      #...................
+      ### Column Names ####
+
+      print.object <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "Var", "Low", "Upp"), print.object)
+
+      #...................
+      ### Format ####
+
+      # Remove duplicated values
+      print.object[duplicated(print.object$group) , "group"] <- ""
+
+      # Justify left and right
+      col.format <- which(colnames(print.object) %in% c("group", "variable"))
+
+      # Justify left and right
+      print.object[, col.format] <- format(print.object[, col.format], justify = "left")
+      print.object[, -col.format] <- apply(print.object[, -col.format], 2L, format, justify = "right")
+
+      # Add blank space
+      print.object[, "group"] <- c(paste0("  ", print.object[1L, "group"]), paste0("   ", print.object[-1L, "group"]))
+      print.object[, "variable"] <- c(paste0("", print.object[1L, "variable"]), paste0(" ", print.object[-1L, "variable"]))
+
+      print.object[, "group"] <- format(c(print.object[1L, "group"], misty::chr.trim(print.object[-1L, "group"], side = "right")), justify = "left")
+      print.object[, "variable"] <- format(c(print.object[1L, "variable"], misty::chr.trim(print.object[-1L, "variable"], side = "right")), justify = "left")
+
+      # Missing values, NA
+      print.object[, c("skew", "kurt", "m", "var", "low", "upp")] <- data.frame(apply(print.object[, c("skew", "kurt", "m", "var", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+      #...................
+      ### One Variable ####
+
+      if (isTRUE(length(unique(x$result$variable)) == 1L)) { print.object <- print.object[, -2L] }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Variance\n\n"))
+
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Split ####
+
+    } else if (isTRUE(!is.null(x$data$split))) {
+
+      # No grouping
+      if (isTRUE(is.null(x$data$group))) {
+
+        for (i in names(print.object)) {
+
+          #...................
+          ### Round ####
+
+          if (isTRUE(all(print.object[[i]]$nNA == 0L))) {
+
+            print.object[[i]][, c("skew", "kurt", "m", "var", "low", "upp")] <- sapply(c("skew", "kurt", "m", "var", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          } else {
+
+            print.object[[i]][, c("pNA", "skew", "kurt", "m", "var", "low", "upp")] <- sapply(c("pNA", "skew", "kurt", "m", "var", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          }
+
+          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
+
+          #...................
+          ### Column Names ####
+
+          print.object[[i]] <- rbind(c("Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "Var", "Low", "Upp"), print.object[[i]])
+
+          #...................
+          ### Format ####
+
+          # Justify left and right
+          col.format <- which(colnames(print.object[[i]]) %in% "variable")
+
+          # Justify left and right
+          print.object[[i]][, col.format] <- format(print.object[[i]][, col.format], justify = "left")
+          print.object[[i]][, -col.format] <- apply(print.object[[i]][, -col.format], 2L, format, justify = "right")
+
+          # Add blank space
+          print.object[[i]][, "variable"] <- c(paste0("   ", print.object[[i]][1L, "variable"]), paste0("    ", print.object[[i]][-1L, "variable"]))
+          print.object[[i]][, "variable"] <- format(c(print.object[[i]][1L, "variable"], misty::chr.trim(print.object[[i]][-1L, "variable"], side = "right")), justify = "left")
+
+          # Missing values, NA
+          print.object[[i]][, c("skew", "kurt", "m", "var", "low", "upp")] <- data.frame(apply(print.object[[i]][, c("skew", "kurt", "m", "var", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+          #...................
+          ### One Variable ####
+
+          if (isTRUE(length(unique(x$result[[1L]]$variable)) == 1L)) {
+
+            print.object[[i]] <- print.object[[i]][, -1L]
+
+            print.object[[i]][, "n"] <- c(paste0("   ", print.object[[i]][1L, "n"]), paste0("   ", print.object[[i]][-1L, "n"]))
+            print.object[[i]][, "n"] <- format(c(print.object[[i]][1L, "n"], misty::chr.trim(print.object[[i]][-1L, "n"], side = "right")), justify = "left")
+
+          }
+
+        }
+
+      # Grouping
+      } else {
+
+        for (i in names(print.object)) {
+
+          #...................
+          ### Round ####
+
+          if (isTRUE(all(print.object[[i]]$nNA == 0L))) {
+
+            print.object[[i]][, c("skew", "kurt", "m", "var", "low", "upp")] <- sapply(c("skew", "kurt", "m", "var", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          } else {
+
+            print.object[[i]][, c("pNA", "skew", "kurt", "m", "var", "low", "upp")] <- sapply(c("pNA", "skew", "kurt", "m", "var", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          }
+
+          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
+
+          #...................
+          ### Column Names ####
+
+          print.object[[i]] <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "Var", "Low", "Upp"), print.object[[i]])
+
+          #...................
+          ### Format ####
+
+          # Remove duplicated values
+          print.object[[i]][duplicated(paste(print.object[[i]]$group, print.object[[i]]$variable)) , "variable"] <- ""
+          print.object[[i]][duplicated(print.object[[i]]$group) , "group"] <- ""
+
+          # Justify left and right
+          col.format <- which(colnames(print.object[[i]]) %in% c("group", "variable"))
+
+          # Justify left and right
+          print.object[[i]][, col.format] <- format(print.object[[i]][, col.format], justify = "left")
+          print.object[[i]][, -col.format] <- apply(print.object[[i]][, -col.format], 2L, format, justify = "right")
+
+          # Add blank space
+          print.object[[i]][, "group"] <- c(paste0("   ", print.object[[i]][1L, "group"]), paste0("    ", print.object[[i]][-1L, "group"]))
+          print.object[[i]][, "variable"] <- c(paste0("", print.object[[i]][1L, "variable"]), paste0(" ", print.object[[i]][-1L, "variable"]))
+
+          print.object[[i]][, "group"] <- format(c(print.object[[i]][1L, "group"], misty::chr.trim(print.object[[i]][-1L, "group"], side = "right")), justify = "left")
+          print.object[[i]][, "variable"] <- format(c(print.object[[i]][1L, "variable"], misty::chr.trim(print.object[[i]][-1L, "variable"], side = "right")), justify = "left")
+
+          # Missing values, NA
+          print.object[[i]][, c("skew", "kurt", "m", "var", "low", "upp")] <- data.frame(apply(print.object[[i]][, c("skew", "kurt", "m", "var", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+          #...................
+          ### One Variable ####
+
+          if (isTRUE(length(unique(x$result[[1L]]$variable)) == 1L)) { print.object[[i]] <- print.object[[i]][, -2L] }
+
+        }
+
+      }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Variance\n\n"))
+
+      for (i in names(print.object)) {
+
+        cat("  Split Group:", i, "\n")
+
+        write.table(print.object[[i]], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note ####
+
+    #...................
+    ### Bootstrapping ####
+
+    if (isTRUE(x$args$boot != "none")) {
+
+      cat(paste0("\n  Note. ",
+                 switch(x$args$boot,
+                        "perc" = "Percentile bootstrap CI, ",
+                        "bc" = "Bias-corrected (BC) percentile bootstrap CI, ",
+                        "bca" = "Bias-corrected and accelerated (BCa) bootstrap CI, "),
+                 x$args$R, " replications."))
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Confidence Interval for the Standard Deviation -----------------------------
+  }, ci.sd = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## No grouping ####
+
+    if (isTRUE(is.null(x$data$group) && is.null(x$data$split))) {
+
+      #...................
+      ### Round ####
+
+      if (isTRUE(all(print.object$nNA == 0L))) {
+
+        print.object[, c("skew", "kurt", "m", "sd", "low", "upp")] <- sapply(c("skew", "kurt", "m", "sd", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      } else {
+
+        print.object[, c("pNA", "skew", "kurt", "m", "sd", "low", "upp")] <- sapply(c("pNA", "skew", "kurt", "m", "sd", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      }
+
+      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+
+      #...................
+      ### Column Names ####
+
+      print.object <- rbind(c("Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "SD", "Low", "Upp"), print.object)
+
+      #...................
+      ### Format ####
+
+      # Justify left and right
+      col.format <- which(colnames(print.object) %in% "variable")
+
+      # Justify left and right
+      print.object[, col.format] <- format(print.object[, col.format], justify = "left")
+      print.object[, -col.format] <- apply(print.object[, -col.format], 2L, format, justify = "right")
+
+      # Add blank space
+      print.object[, "variable"] <- c(paste0("  ", print.object[1L, "variable"]), paste0("   ", print.object[-1L, "variable"]))
+      print.object[, "variable"] <- format(c(print.object[1L, "variable"], misty::chr.trim(print.object[-1L, "variable"], side = "right")), justify = "left")
+
+      # Missing values, NA
+      print.object[, c("skew", "kurt", "m", "sd", "low", "upp")] <- data.frame(apply(print.object[, c("skew", "kurt", "m", "sd", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+      #...................
+      ### One Variable ####
+
+      if (isTRUE(length(unique(x$result$variable)) == 1L)) {
+
+        print.object <- print.object[, -1L]
+
+        # First column "n"
+        print.object[, "n"] <- c(paste0("  ", print.object[1L, "n"]), paste0("  ", print.object[-1L, "n"]))
+        print.object[, "n"] <- format(c(print.object[1L, "n"], misty::chr.trim(print.object[-1L, "n"], side = "right")), justify = "right")
+
+      }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Standard Deviation\n\n"))
+
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Grouping ####
+
+    } else if (isTRUE(!is.null(x$data$group) && is.null(x$data$split))) {
+
+      if (isTRUE(all(print.object$nNA == 0L))) {
+
+        print.object[, c("skew", "kurt", "m", "sd", "low", "upp")] <- sapply(c("skew", "kurt", "m", "sd", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      } else {
+
+        print.object[, c("pNA", "skew", "kurt", "m", "sd", "low", "upp")] <- sapply(c("pNA", "skew", "kurt", "m", "sd", "low", "upp"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+      }
+
+      print.object[, "pNA"] <- paste0(print.object[, "pNA"], "%")
+
+      #...................
+      ### Column Names ####
+
+      print.object <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "SD", "Low", "Upp"), print.object)
+
+      #...................
+      ### Format ####
+
+      # Remove duplicated values
+      print.object[duplicated(print.object$group) , "group"] <- ""
+
+      # Justify left and right
+      col.format <- which(colnames(print.object) %in% c("group", "variable"))
+
+      # Justify left and right
+      print.object[, col.format] <- format(print.object[, col.format], justify = "left")
+      print.object[, -col.format] <- apply(print.object[, -col.format], 2L, format, justify = "right")
+
+      # Add blank space
+      print.object[, "group"] <- c(paste0("  ", print.object[1L, "group"]), paste0("   ", print.object[-1L, "group"]))
+      print.object[, "variable"] <- c(paste0("", print.object[1L, "variable"]), paste0(" ", print.object[-1L, "variable"]))
+
+      print.object[, "group"] <- format(c(print.object[1L, "group"], misty::chr.trim(print.object[-1L, "group"], side = "right")), justify = "left")
+      print.object[, "variable"] <- format(c(print.object[1L, "variable"], misty::chr.trim(print.object[-1L, "variable"], side = "right")), justify = "left")
+
+      # Missing values, NA
+      print.object[, c("skew", "kurt", "m", "sd", "low", "upp")] <- data.frame(apply(print.object[, c("skew", "kurt", "m", "sd", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+      #...................
+      ### One Variable ####
+
+      if (isTRUE(length(unique(x$result$variable)) == 1L)) { print.object <- print.object[, -2L] }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Standard Deviation\n\n"))
+
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Split ####
+
+    } else if (isTRUE(!is.null(x$data$split))) {
+
+      # No grouping
+      if (isTRUE(is.null(x$data$group))) {
+
+        for (i in names(print.object)) {
+
+          #...................
+          ### Round ####
+
+          if (isTRUE(all(print.object[[i]]$nNA == 0L))) {
+
+            print.object[[i]][, c("skew", "kurt", "m", "sd", "low", "upp")] <- sapply(c("skew", "kurt", "m", "sd", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          } else {
+
+            print.object[[i]][, c("pNA", "skew", "kurt", "m", "sd", "low", "upp")] <- sapply(c("pNA", "skew", "kurt", "m", "sd", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          }
+
+          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
+
+          #...................
+          ### Column Names ####
+
+          print.object[[i]] <- rbind(c("Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "SD", "Low", "Upp"), print.object[[i]])
+
+          #...................
+          ### Format ####
+
+          # Justify left and right
+          col.format <- which(colnames(print.object[[i]]) %in% "variable")
+
+          # Justify left and right
+          print.object[[i]][, col.format] <- format(print.object[[i]][, col.format], justify = "left")
+          print.object[[i]][, -col.format] <- apply(print.object[[i]][, -col.format], 2L, format, justify = "right")
+
+          # Add blank space
+          print.object[[i]][, "variable"] <- c(paste0("   ", print.object[[i]][1L, "variable"]), paste0("    ", print.object[[i]][-1L, "variable"]))
+          print.object[[i]][, "variable"] <- format(c(print.object[[i]][1L, "variable"], misty::chr.trim(print.object[[i]][-1L, "variable"], side = "right")), justify = "left")
+
+          # Missing values, NA
+          print.object[[i]][, c("skew", "kurt", "m", "sd", "low", "upp")] <- data.frame(apply(print.object[[i]][, c("skew", "kurt", "m", "sd", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+          #...................
+          ### One Variable ####
+
+          if (isTRUE(length(unique(x$result[[1L]]$variable)) == 1L)) {
+
+            print.object[[i]] <- print.object[[i]][, -1L]
+
+            print.object[[i]][, "n"] <- c(paste0("   ", print.object[[i]][1L, "n"]), paste0("   ", print.object[[i]][-1L, "n"]))
+            print.object[[i]][, "n"] <- format(c(print.object[[i]][1L, "n"], misty::chr.trim(print.object[[i]][-1L, "n"], side = "right")), justify = "left")
+
+          }
+
+        }
+
+      # Grouping
+      } else {
+
+        for (i in names(print.object)) {
+
+          #...................
+          ### Round ####
+
+          if (isTRUE(all(print.object[[i]]$nNA == 0L))) {
+
+            print.object[[i]][, c("skew", "kurt", "m", "sd", "low", "upp")] <- sapply(c("skew", "kurt", "m", "sd", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          } else {
+
+            print.object[[i]][, c("pNA", "skew", "kurt", "m", "sd", "low", "upp")] <- sapply(c("pNA", "skew", "kurt", "m", "sd", "low", "upp"), function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+
+          }
+
+          print.object[[i]][, "pNA"] <- paste0(print.object[[i]][, "pNA"], "%")
+
+          #...................
+          ### Column Names ####
+
+          print.object[[i]] <- rbind(c("Group", "Variable", "n", "nNA", "pNA", "Skew", "Kurt", "M", "SD", "Low", "Upp"), print.object[[i]])
+
+          #...................
+          ### Format ####
+
+          # Remove duplicated values
+          print.object[[i]][duplicated(paste(print.object[[i]]$group, print.object[[i]]$variable)) , "variable"] <- ""
+          print.object[[i]][duplicated(print.object[[i]]$group) , "group"] <- ""
+
+          # Justify left and right
+          col.format <- which(colnames(print.object[[i]]) %in% c("group", "variable"))
+
+          # Justify left and right
+          print.object[[i]][, col.format] <- format(print.object[[i]][, col.format], justify = "left")
+          print.object[[i]][, -col.format] <- apply(print.object[[i]][, -col.format], 2L, format, justify = "right")
+
+          # Add blank space
+          print.object[[i]][, "group"] <- c(paste0("   ", print.object[[i]][1L, "group"]), paste0("    ", print.object[[i]][-1L, "group"]))
+          print.object[[i]][, "variable"] <- c(paste0("", print.object[[i]][1L, "variable"]), paste0(" ", print.object[[i]][-1L, "variable"]))
+
+          print.object[[i]][, "group"] <- format(c(print.object[[i]][1L, "group"], misty::chr.trim(print.object[[i]][-1L, "group"], side = "right")), justify = "left")
+          print.object[[i]][, "variable"] <- format(c(print.object[[i]][1L, "variable"], misty::chr.trim(print.object[[i]][-1L, "variable"], side = "right")), justify = "left")
+
+          # Missing values, NA
+          print.object[[i]][, c("skew", "kurt", "m", "sd", "low", "upp")] <- data.frame(apply(print.object[[i]][, c("skew", "kurt", "m", "sd", "low", "upp")], 2L, function(y) gsub("NA", "  ", as.character(y))))
+
+          #...................
+          ### One Variable ####
+
+          if (isTRUE(length(unique(x$result[[1L]]$variable)) == 1L)) { print.object[[i]] <- print.object[[i]][, -2L] }
+
+        }
+
+      }
+
+      #...................
+      ### Print Output ####
+
+      cat(paste0(switch(x$args$alternative, two.sided = " Two-Sided ", less = " One-Sided ", greater = " One-Sided "),
+                 round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
+                 "Standard Deviation\n\n"))
+
+      for (i in names(print.object)) {
+
+        cat("  Split Group:", i, "\n")
+
+        write.table(print.object[[i]], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Note ####
+
+    #...................
+    ### Bootstrapping ####
+
+    if (isTRUE(x$args$boot != "none")) {
+
+      cat(paste0("\n  Note. ",
+                 switch(x$args$boot,
+                        "perc" = "Percentile bootstrap CI, ",
+                        "bc" = "Bias-corrected (BC) percentile bootstrap CI, ",
+                        "bca" = "Bias-corrected and accelerated (BCa) bootstrap CI, "),
+                 x$args$R, " replications."))
+
+    }
+
+  #_____________________________________________________________________________
+  #
   # Confidence intervals -------------------------------------------------------
   }, ci = {
 
     #......
     # Variables to round
     print.round <- switch(x$ci,
-                          mean = c("m", "sd", "low", "upp"),
                           mean.w = c("m", "sd", "se", "low", "upp"),
                           mean.diff.o = c("m", "sd", "mu", "m.diff", "low", "upp"),
                           mean.diff.i = c("m", "sd", "m.diff", "low", "upp"),
                           mean.diff.p = c("m1", "sd1", "m2", "sd2", "m.diff", "sd.diff", "low", "upp"),
                           prop.diff.i = c("p", "p.diff", "low", "upp"),
-                          prop.diff.p = c("p1", "p2", "p.diff", "low", "upp"),
-                          median = c("med", "iqr", "low", "upp"),
-                          prop = c("prop", "low", "upp"),
-                          var = c("m", "var", "low", "upp"),
-                          sd = c("m", "sd", "low", "upp"))
+                          prop.diff.p = c("p1", "p2", "p.diff", "low", "upp"))
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## No grouping ####
@@ -672,23 +2435,16 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #......
       # Print names
       print.names <- switch(x$ci,
-                            mean = c("Variable", "n", "nNA", "pNA", "M", "SD", "Low", "Upp"),
                             mean.w = c("Variable", "n", "nNA", "pNA", "M", "SD",  "SE", "Low", "Upp"),
                             mean.diff.o = c("Variable", "n", "nNA", "M", "SD", "Mu", "M.Diff", "Low", "Upp"),
                             mean.diff.i = c("Variable", "Between", "n", "nNA", "M", "SD", "M.Diff", "Low", "Upp"),
                             mean.diff.p = c("Variable", "n", "nNA", "M1", "SD1", "M2", "SD2", "M.Diff", "SD.Diff", "Low", "Upp"),
                             prop.diff.i = c("Variable", "Between", "n", "nNA", "p", "p.Diff", "Low", "Upp"),
-                            prop.diff.p = c("Variable", "n", "nNA", "p1", "p2", "p.Diff", "Low", "Upp"),
-                            median = c("Variable", "n", "nNA", "pNA", "Med", "IQR", "Low", "Upp"),
-                            prop = c("Variable", "n", "nNA", "pNA", "Prop", "Low", "Upp"),
-                            var = c("Variable", "n", "nNA", "pNA", "M", "Var", "Low", "Upp"),
-                            sd = c("Variable", "n", "nNA", "pNA", "M", "SD", "Low", "Upp"))
+                            prop.diff.p = c("Variable", "n", "nNA", "p1", "p2", "p.Diff", "Low", "Upp"))
 
       #......
       # Round
-      print.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[, y]),
-                                                                            formatC(print.object[, y], digits = digits, format = "f",
-                                                                                    zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
+      print.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0, times = digits), collapse = "")), "0")), NA))
 
       #......
       # Percentages
@@ -705,6 +2461,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       #......
       # Format
+
       # Remove duplicated values
       print.object[duplicated(print.object$variable) , "variable"] <- ""
 
@@ -736,7 +2493,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print.object <- print.object[, -1L]
 
         # First column "n"
-        if (isTRUE(x$ci %in% c("mean", "mean.diff.o", "mean.diff.p", "prop.diff.p", "median", "prop", "var", "sd"))) {
+        if (isTRUE(x$ci %in% c("mean.diff.o", "mean.diff.p", "prop.diff.p"))) {
 
           print.object[, "n"] <- c(paste0("  ", print.object[1L, "n"]), paste0("  ", print.object[-1L, "n"]))
           print.object[, "n"] <- format(c(print.object[1L, "n"], misty::chr.trim(print.object[-1L, "n"], side = "right")), justify = "right")
@@ -759,17 +2516,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                 paste0(round(x$args$conf.level * 100L, digits = 2L), "%"),
                 ifelse(x$ci == "mean.w", "Within-Subject Confidence Intervals:", "Confidence Interval:"),
                 switch(x$ci,
-                       mean = "Arithmetic Mean\n\n",
                        mean.w = "Arithmetic Mean\n\n",
                        mean.diff.o = "Difference in Means from a Population Value\n\n",
                        mean.diff.i = "Difference in Means from Independent Samples\n\n",
                        mean.diff.p = "Difference in Means from Paired Samples\n\n",
                        prop.diff.i = "Difference in Proportions from Independent Samples\n\n",
-                       prop.diff.p = "Difference in Proportions from Paired Samples\n\n",
-                       median = "Median\n\n",
-                       prop = "Proportion\n\n",
-                       var = "Variance\n\n",
-                       sd = "Standard Deviation\n\n")))
+                       prop.diff.p = "Difference in Proportions from Paired Samples\n\n")))
 
       write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
@@ -847,15 +2599,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #......
       # Print names
       print.names <- switch(x$ci,
-                            mean = c("Group", "Variable", "n", "nNA", "pNA", "M", "SD", "Low", "Upp"),
                             mean.diff.i = c("Group", "Variable", "Between", "n", "nNA", "M", "SD", "M.Diff", "Low", "Upp"),
                             mean.diff.p = c("Group", "Variable", "n", "nNA", "M1", "SD1", "M2", "SD2", "M.Diff", "SD.Diff", "Low", "Upp"),
                             prop.diff.i = c("Group", "Variable", "Between", "n", "nNA", "p", "p.Diff", "Low", "Upp"),
-                            prop.diff.p = c("Group", "Variable", "n", "nNA", "p1", "p2", "p.Diff", "Low", "Upp"),
-                            median = c("Group", "Variable", "n", "nNA", "pNA", "Med", "IQR", "Low", "Upp"),
-                            prop = c("Group", "Variable", "n", "nNA", "pNA", "Prop", "Low", "Upp"),
-                            var = c("Group", "Variable", "n", "nNA", "pNA", "M", "Var", "Low", "Upp"),
-                            sd = c("Group", "Variable", "n", "nNA", "pNA", "M", "SD", "Low", "Upp"))
+                            prop.diff.p = c("Group", "Variable", "n", "nNA", "p1", "p2", "p.Diff", "Low", "Upp"))
 
       #......
       # Sort by variables
@@ -867,9 +2614,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       #......
       # Round
-      print.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[, y]),
-                                                                            formatC(print.object[, y], digits = digits, format = "f",
-                                                                                    zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = ""))), NA))
+      print.object[, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = ""))), NA))
 
       #......
       # Percentages
@@ -930,15 +2675,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                        greater = " One-Sided"),
                 paste0(round(x$args$conf.level * 100L, digits = 2L), "%"), "Confidence Interval:",
                 switch(x$ci,
-                       mean = "Arithmetic Mean\n\n",
                        mean.diff.i = "Difference in Means from Independent Samples\n\n",
                        mean.diff.p = "Difference in Means from Paired Samples\n\n",
                        prop.diff.i = "Difference in Proportions from Independent Samples\n\n",
-                       prop.diff.p = "Difference in Proportions from Paired Samples\n\n",
-                       median = "Median\n\n",
-                       prop = "Proportion\n\n",
-                       var = "Variance\n\n",
-                       sd = "Standard Deviation\n\n")))
+                       prop.diff.p = "Difference in Proportions from Paired Samples\n\n")))
 
       write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
@@ -968,21 +2708,14 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           #......
           # Print names
           print.names <- switch(x$ci,
-                                mean = c("Variable", "n", "nNA", "pNA", "M", "SD", "Low", "Upp"),
                                 mean.diff.i = c("Variable", "Between", "n", "nNA", "M", "SD", "M.Diff", "Low", "Upp"),
                                 mean.diff.p = c("Variable", "n", "nNA", "M1", "SD1", "M2", "SD2", "M.Diff", "SD.Diff", "Low", "Upp"),
                                 prop.diff.i = c("Variable", "Between", "n", "nNA", "p", "p.Diff", "Low", "Upp"),
-                                prop.diff.p = c("Variable", "n", "nNA", "p1", "p2", "p.Diff", "Low", "Upp"),
-                                median = c("Variable", "n", "nNA", "pNA", "Med", "IQR", "Low", "Upp"),
-                                prop = c("Variable", "n", "nNA", "pNA", "Prop", "Low", "Upp"),
-                                var = c("Variable", "n", "nNA", "pNA", "M", "Var", "Low", "Upp"),
-                                sd = c("Variable", "n", "nNA", "pNA", "M", "SD", "Low", "Upp"))
+                                prop.diff.p = c("Variable", "n", "nNA", "p1", "p2", "p.Diff", "Low", "Upp"))
 
           #......
           # Round
-          print.object[[i]][, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[[i]][, y]),
-                                                                                     formatC(print.object[[i]][, y], digits = digits, format = "f",
-                                                                                             zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+          print.object[[i]][, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
 
           #......
           # Percentages
@@ -1057,15 +2790,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           #......
           # Print names
           print.names <- switch(x$ci,
-                                mean = c("Group", "Variable", "n", "nNA", "pNA", "M", "SD", "Low", "Upp"),
                                 mean.diff.i = c("Group", "Variable", "Between", "n", "nNA", "M", "SD", "M.Diff", "Low", "Upp"),
                                 mean.diff.p = c("Group", "Variable", "n", "nNA", "M1", "SD1", "M2", "SD2", "M.Diff", "SD.Diff", "Low", "Upp"),
                                 prop.diff.i = c("Group", "Variable", "Beween", "n", "nNA", "p", "p.Diff", "Low", "Upp"),
-                                prop.diff.p = c("Group", "Variable", "n", "nNA", "p1", "p2", "p.Diff", "Low", "Upp"),
-                                median = c("Group", "Variable", "n", "nNA", "pNA", "Med", "IQR", "Low", "Upp"),
-                                prop = c("Group", "Variable", "n", "nNA", "pNA", "Prop", "Low", "Upp"),
-                                var = c("Group", "Variable", "n", "nNA", "pNA", "M", "Var", "Low", "Upp"),
-                                sd = c("Group", "Variable", "n", "nNA", "pNA", "M", "SD", "Low", "Upp"))
+                                prop.diff.p = c("Group", "Variable", "n", "nNA", "p1", "p2", "p.Diff", "Low", "Upp"))
 
           #......
           # Sort by variables
@@ -1077,9 +2805,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           #......
           # Round
-          print.object[[i]][, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[[i]][, y]),
-                                                                                     formatC(print.object[[i]][, y], digits = digits, format = "f",
-                                                                                             zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+          print.object[[i]][, print.round] <- sapply(print.round, function(y) ifelse(!is.na(print.object[[i]][, y]), formatC(print.object[[i]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
           #......
           # Percentages
           if (isTRUE(!x$ci %in% c("mean.diff.i", "mean.diff.p", "prop.diff.i", "prop.diff.p"))) {
@@ -1142,15 +2869,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                        greater = " One-Sided"),
                 paste0(round(x$args$conf.level * 100L, digits = 2L), "%"), "Confidence Interval:",
                 switch(x$ci,
-                       mean = "Arithmetic Mean\n\n",
                        mean.diff.i = "Difference in Means from Independent Samples\n\n",
                        mean.diff.p = "Difference in Means from Paired Samples\n\n",
                        prop.diff.i = "Difference in Proportions from Independent Samples\n\n",
-                       prop.diff.p = "Difference in Proportions from Paired Samples\n\n",
-                       median = "Median\n\n",
-                       prop = "Proportion\n\n",
-                       var = "Variance\n\n",
-                       sd = "Standard Deviation\n\n")))
+                       prop.diff.p = "Difference in Proportions from Paired Samples\n\n")))
 
       for (i in names(print.object)) {
 
@@ -3167,13 +4889,13 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     if (isTRUE("var" %in% colnames(print.object))) {
 
-      print.object <- rbind(c("Variable", "n", switch(x$args$type, phi = "Phi", cramer = "V", tschuprow = "T", cont = "C", w = "w", fei = "Feo"), "Low", "Upp"), print.object)
+      print.object <- rbind(c("Variable", "n", switch(x$args$type, phi = "Phi", cramer = "V", tschuprow = "T", cont = "C", w = "w", fei = "Fei"), "Low", "Upp"), print.object)
 
       print.object[, 1L] <- format(print.object[, 1L], justify = "left")
 
     } else {
 
-      print.object <- rbind(c("n", switch(x$args$type, phi = "Phi", cramer = "V", tschuprow = "T", cont = "C", w = "w", fei = "Feo"), "Low", "Upp"), print.object)
+      print.object <- rbind(c("n", switch(x$args$type, phi = "Phi", cramer = "V", tschuprow = "T", cont = "C", w = "w", fei = "Fei"), "Low", "Upp"), print.object)
 
     }
 
@@ -3411,8 +5133,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      ####################################################################################
-      # Output
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ## Output ####
 
       if (!isTRUE(split)) {
 
@@ -3620,8 +5342,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         }
 
-        ####################################################################################
-        # Output
+        #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        ## Output ####
 
         #..................
         # Absolute frequencies
@@ -5029,7 +6751,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         }
 
-        ##### Longitudinal measurement invariance ####
+      ##### Longitudinal measurement invariance ####
       } else {
 
         ##### Factor loadings
@@ -5611,6 +7333,39 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
+  # Multivariate Kurtosis ------------------------------------------------------
+  }, kurtosis = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Round ####
+
+    print.object[, c("kurt", "z")] <- sapply(c("kurt", "z"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+    print.object$pval <- formatC(print.object$pval, digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Row Names ####
+
+    print.object <- rbind(c("n", "Var", "Kurt", "z", "pval"), print.object)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Format ####
+
+    # Justify right
+    print.object <- apply(print.object, 2L, function(y) format(y, justify = "right"))
+
+    # Add blank space
+    print.object[, "n"] <- paste0("  ", print.object[, "n"])
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Print Output ####
+
+    if (isTRUE(x$args$center)) { cat(" Multivariate Excess Kurtosis\n\n") } else { cat(" Multivariate Kurtosis\n\n") }
+
+    write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+  #_____________________________________________________________________________
+  #
   # Mplus Object ---------------------------------------------------------------
   }, mplus = {
 
@@ -5644,7 +7399,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     print.object[, "rope"] <- ifelse(!is.na(print.object[, "rope"]), formatC(print.object[, "rope"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ##  Row Names ####
+    ## Row Names ####
 
     print.object <- rbind(c("Parameter", "M", "Med", "MAP", "SD", "MAD", "Skew", "Kurt", "ETI.Low", "ETI.Upp", "HDI.Low", "HDI.Upp", "R-hat", "B.ESS", "T.ESS", "B.MCSE", "T.MCSE", "pd", "ROPE"), print.object)
 
@@ -5896,7 +7651,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           # p.digits
           print.fit[c(13L, 23L), -1L] <- sapply(print.fit[c(13L, 23L), -1L], function(y) ifelse(!is.na(y), formatC(as.numeric(y), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA))
 
-          #### Robust maximum likelihood
+        #### Robust maximum likelihood
         } else {
 
           # Fit indices
@@ -5922,7 +7677,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                              print.fit[19L:27L, ],
                              make.row.names = FALSE)
 
-          #### Robust maximum likelihood
+        #### Robust maximum likelihood
         } else {
 
           print.fit <- rbind(print.fit[1L:11L, ], c("", "Standard", "Scaled", ""),
@@ -6501,7 +8256,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat(paste0("\n   No modification indices above the minimum value ", round(x$args$mod.minval, digits = 2L), " at the Between Level.\n"))
 
-          #### Modification indices
+        #### Modification indices
         } else {
 
           # Round
@@ -6564,7 +8319,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("\n  Modification indices for parameter constraints are not available.\n")
 
-        #### Score tests available
+      #### Score tests available
       } else {
 
         cat("\n  Modification Indices for Parameter Constraints\n\n")
@@ -6579,7 +8334,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat(paste0("   No modification indices for parameter constraints above the minimum value ", round(x$args$mod.minval, digits = 2L), ".\n"))
 
-          #### Score test
+        #### Score test
         } else {
 
           ##### Column names
@@ -6624,7 +8379,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("   Residual correlation matrix is not available.")
 
-        ### Residual correlation matrix available
+      ### Residual correlation matrix available
       } else {
 
         #### Numbers and unicode
@@ -6632,7 +8387,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         unicode <- c("\U1D7CE", "\U1D7CF", "\U1D7D0", "\U1D7EF", "\U1D7F0", "\U1D7F1", "\U1D7F2", "\U1D7F3", "\U1D7F4", "\U1D7F5")
 
         #### Round
-        print.resid <- lapply(print.resid, function(y) ifelse(!is.na(y), formatC(y, digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA))
+        print.resid <- lapply(print.resid, function(y) ifelse(!is.na(y), formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
 
         #### Lower triangular
         for (i in seq_along(print.resid)) { print.resid[[i]][upper.tri(print.resid[[i]])] <- "" }
@@ -8007,7 +9762,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat(paste0("\n    No modification indices above the minimum value ", round(x$args$mod.minval, digits = 2L), " at the Within Level.\n"))
 
-          #### Modification indices
+        #### Modification indices
         } else {
 
           # Round
@@ -8063,7 +9818,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat(paste0("\n    No modification indices above the minimum value ", round(x$args$mod.minval, digits = 2L), " at the Between Level.\n"))
 
-          #### Modification indices
+        #### Modification indices
         } else {
 
           # Round
@@ -8392,8 +10147,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     }
 
-    ####################################################################################
-    # Output
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Output ####
 
     cat(" R-Squared Measures for Multilevel and Linear Mixed Effects Models\n\n")
 
@@ -9131,61 +10886,39 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Polychoric Correlation Matrix ----------------------------------------------------------
-  }, cor.poly = {
+  # Multivariate Skewness ------------------------------------------------------
+  }, skewness = {
 
-    ####################################################################################
-    # Data and Arguments
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Round ####
 
-    #----------------------------------------
-    # Print object
+    print.object[, c("skew", "chi2")] <- sapply(c("skew", "chi2"), function(y) ifelse(!is.na(print.object[, y]), formatC(print.object[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
 
-    print.object <- x$result$cor
+    print.object$pval <- formatC(print.object$pval, digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
-    #----------------------------------------
-    # Print triangular
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Row Names ####
 
-    tri <- ifelse(all(c("both", "lower", "upper") %in% tri), "lower", tri)
+    print.object <- rbind(c("n", "Var", "Skew", "Chi2", "df", "pval"), print.object)
 
-    #----------------------------------------
-    # Print object
+    # R Markdown in progress
+    if (isTRUE(is.null(getOption("knitr.in.progress")))) { print.object[1L, "chi2"] <- "\u03C7\u00B2" }
 
-    print.object <- formatC(print.object, digits = digits, format = "f",
-                            zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Format ####
 
-    row.names(print.object) <- paste(" ", row.names(print.object))
+    # Justify right
+    print.object <- apply(print.object, 2L, function(y) format(y, justify = "right"))
 
+    # Add blank space
+    print.object[, "n"] <- paste0("  ", print.object[, "n"])
 
-    # Empty matrix diagonal
-    diag(print.object) <- ""
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Print Output ####
 
-    #----------------------------------------
-    # Lower and/or upper triangular
+    cat(" Multivariate Skewness\n\n")
 
-    switch(tri, "lower" = {
-
-      print.object[upper.tri(print.object)] <- ""
-
-    }, "upper" = {
-
-      print.object[lower.tri(print.object)] <- ""
-
-    })
-
-    #----------------------------------------
-    # Row names
-    if (isTRUE(!is.null(rownames(print.object)))) {
-
-      row.names(print.object) <- format(row.names(print.object), justify = "left")
-
-    }
-
-    ####################################################################################
-    # Output
-
-    cat(" Polychoric Correlation Matrix\n\n")
-
-    print(print.object, quote = FALSE, right = TRUE, max = 99999L)
+    write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
   #_____________________________________________________________________________
   #
@@ -9557,15 +11290,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     # descript object
 
     # Round
-    print.object[["descript"]][, c("m", "sd", "var", "low", "upp")] <- sapply(c("m", "sd", "var", "low", "upp"),
-                                                                              function(y) ifelse(!is.na(print.object[["descript"]][, y]),
-                                                                                                 formatC(print.object[["descript"]][, y], digits = digits, format = "f",
-                                                                                                         zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
-
-    print.object[["descript"]] <- print.object[["descript"]][, -2L]
+    print.object[["descript"]][, c("m", "sd", "var", "low", "upp", "skew", "kurt")] <- sapply(c("m", "sd", "var", "low", "upp", "skew", "kurt"), function(y) ifelse(!is.na(print.object[["descript"]][, y]), formatC(print.object[["descript"]][, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
 
     # Col names
-    print.object[["descript"]] <- rbind(c("Group", "n", "nNA", "M", "SD", "Var", "Low", "Upp"), print.object[["descript"]])
+    print.object[["descript"]] <- rbind(c("Group", "n", "nNA", "M", "SD", "Var", "Low", "Upp", "Skew", "Kurt"), print.object[["descript"]])
 
     # Format
     print.object[["descript"]][, 1L] <- format(print.object[["descript"]][, 1L], justify = "left")
@@ -9585,14 +11313,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     #.....................................
     # Round
 
-    print.object[["test"]][, "Sum Sq"] <- formatC(print.object[["test"]][, "Sum Sq"], digits = digits, format = "f",
-                                                  zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-    print.object[["test"]][, "Mean Sq"] <- formatC(print.object[["test"]][, "Mean Sq"], digits = digits, format = "f",
-                                                   zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-    print.object[["test"]][1L, "F value"] <- formatC(print.object[["test"]][1L, "F value"], digits = digits, format = "f",
-                                                     zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-    print.object[["test"]][1L, "Pr(>F)"] <- formatC(print.object[["test"]][1L, "Pr(>F)"], digits = p.digits, format = "f",
-                                                    zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+    print.object[["test"]][, "Sum Sq"] <- formatC(print.object[["test"]][, "Sum Sq"], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+    print.object[["test"]][, "Mean Sq"] <- formatC(print.object[["test"]][, "Mean Sq"], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+    print.object[["test"]][1L, "F value"] <- formatC(print.object[["test"]][1L, "F value"], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+    print.object[["test"]][1L, "Pr(>F)"] <- formatC(print.object[["test"]][1L, "Pr(>F)"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
     #.....................................
     # Format
@@ -9608,8 +11332,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     #---------------------------------------------------------
     # Print output
 
-    cat(" Levene's Test based on the", switch(x$args$method, median = "Median\n\n",
-                                              mean = "Arithmetic Mean\n\n"))
+    cat(" Levene's Test based on the", switch(x$args$method, median = "Median\n\n", mean = "Arithmetic Mean\n\n"))
 
     # Print hypotheses
     if (isTRUE(hypo)) {
@@ -9781,9 +11504,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #.....................................
       # Round
 
-      print.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "d", "d.low", "d.upp")] <- vapply(print.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "d", "d.low", "d.upp")], formatC,
-                                                                                                           digits = digits, format = "f",
-                                                                                                           zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(2L))
+      print.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "d", "d.low", "d.upp")] <- apply(print.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "d", "d.low", "d.upp")], 2L, formatC,
+                                                                                                          digits = digits, format = "f",
+                                                                                                          zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
       print.object[, "pval"] <- formatC(print.object[, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
@@ -10088,9 +11811,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #.....................................
       # Round
 
-      print.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "df", "d", "d.low", "d.upp")] <- vapply(print.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "df", "d", "d.low", "d.upp")], formatC,
-                                                                                                                 digits = digits, format = "f",
-                                                                                                                 zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(2L))
+      print.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "df", "d", "d.low", "d.upp")] <- vapply(print.object[, c("m", "sd", "m.diff", "se", "m.low", "m.upp", "t", "df", "d", "d.low", "d.upp")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(2L))
 
       print.object[, "pval"] <- formatC(print.object[, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
@@ -10165,11 +11886,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       }
 
       # Print Cohen's d
-      if (!isTRUE(effsize)) {
-
-        print.object <- print.object[, -which(colnames(print.object) %in% c("d", "low", "upp"))]
-
-      }
+      if (!isTRUE(effsize)) { print.object <- print.object[, -which(colnames(print.object) %in% c("d", "d.low", "d.upp"))] }
 
       # Print descriptive statistics
       if (!isTRUE(descript)) {
@@ -10225,28 +11942,20 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #.....................................
       # Round
 
-      print.object[["descript"]][, c("m", "sd", "low", "upp")] <- vapply(print.object[["descript"]][, c("m", "sd", "low", "upp")], formatC,
-                                                                         digits = digits, format = "f",
-                                                                         zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["descript"]])))
+      print.object[["descript"]][, c("m", "low", "upp", "sd", "skew", "kurt")] <- vapply(print.object[["descript"]][, c("m", "low", "upp", "sd", "skew", "kurt")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["descript"]])))
 
-      print.object[["test"]][, c("F", "df2", "eta.sq", "omega.sq")] <- vapply(print.object[["test"]][, c(c("F", "df2", "eta.sq", "omega.sq"))], formatC,
-                                                                              digits = digits, format = "f",
-                                                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(1L))
+      print.object[["test"]][, c("F", "df2", "eta.sq", "omega.sq")] <- vapply(print.object[["test"]][, c(c("F", "df2", "eta.sq", "omega.sq"))], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(1L))
 
-      print.object[["test"]][, "pval"] <- formatC(print.object[["test"]][, "pval"], digits = p.digits, format = "f",
-                                                  zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+      print.object[["test"]][, "pval"] <- formatC(print.object[["test"]][, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
-      print.object[["posthoc"]][, c("m.diff", "se", "m.low", "m.upp", "t", "df", "d", "d.low", "d.upp")] <- vapply(print.object[["posthoc"]][, c("m.diff", "se", "m.low", "m.upp", "t", "df", "d", "d.low", "d.upp")], formatC,
-                                                                                                                   digits = digits, format = "f",
-                                                                                                                   zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["posthoc"]])))
+      print.object[["posthoc"]][, c("m.diff", "se", "m.low", "m.upp", "t", "df", "d", "d.low", "d.upp")] <- vapply(print.object[["posthoc"]][, c("m.diff", "se", "m.low", "m.upp", "t", "df", "d", "d.low", "d.upp")], formatC, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"), FUN.VALUE = character(nrow(print.object[["posthoc"]])))
 
-      print.object[["posthoc"]][, "pval"] <- formatC(print.object[["posthoc"]][, "pval"], digits = p.digits, format = "f",
-                                                     zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+      print.object[["posthoc"]][, "pval"] <- formatC(print.object[["posthoc"]][, "pval"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
       #.....................................
       # Format
 
-      print.object[["descript"]] <- rbind(c("Group", "n", "nNA", "M", "SD", "Low", "Upp"), print.object[["descript"]])
+      print.object[["descript"]] <- rbind(c("Group", "n", "nNA", "M", "Low", "Upp", "SD", "Skew", "Kurt"), print.object[["descript"]])
       print.object[["test"]] <- rbind(c("F", "df1", "df2", "pval", "et", "om"), print.object[["test"]])
       print.object[["posthoc"]] <- rbind(c("Group1", "Group2", "M.diff", "SE", "Low", "Upp", "t", "df", "pval", "d", "Low", "Upp"), print.object[["posthoc"]])
 
@@ -10273,7 +11982,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       cat(paste0(" Welch's ANOVA\n\n"))
 
-      ###
       # Print hypotheses
       if (isTRUE(hypo)) {
 
@@ -10292,7 +12000,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      ###
       # Print descriptive statistics
       if (isTRUE(descript)) {
 
@@ -10302,7 +12009,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      ###
       # Print effects size
       if (!isTRUE(effsize)) {
 
@@ -10315,7 +12021,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       cat(paste(print.object[["test"]][1L, ], collapse = " "), "\n")
       write.table(print.object[["test"]][-1L, , drop = FALSE], quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
 
-      ###
       # Print post-hoc test
       if (isTRUE(posthoc)) {
 
@@ -10660,7 +12365,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      write.table(print.object, quote = TRUE, row.names = FALSE, col.names = FALSE, na = "")
+      write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
 
     })
 

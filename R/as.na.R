@@ -30,6 +30,8 @@
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
+#' @name as.na
+#'
 #' @seealso
 #' \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
 #' \code{\link{na.indicator}}, \code{\link{na.pattern}}, \code{\link{na.prop}},
@@ -119,19 +121,19 @@
 #'                  x2 = c(2, 1, 3),
 #'                  x3 = c(3, 1, 2))
 #'
-#' # Example 15a: Replace 1 with NA
+#' # Example 15: Replace 1 with NA
 #' as.na(df, na = 1)
 #'
-#' # Example 15b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' as.na(., data = df, na = 1)
 #'
 #' # Example 16: Replace 1 and 3 with NA
 #' as.na(df, na = c(1, 3))
 #'
-#' # Example 17a: Replace 1 with NA in 'x2'
+#' # Example 17: Replace 1 with NA in 'x2'
 #' as.na(df$x2, na = 1)
 #'
-#' # Example 17b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' as.na(x2, data = df, na = 1)
 #'
 #' # Example 18: Replace 1 with NA in 'x2' and 'x3'
@@ -176,6 +178,9 @@ as.na <- function(..., data = NULL, na, replace = TRUE, check = TRUE) {
 
   if (isTRUE(!is.null(data))) {
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+
     # Variable names
     var.names <- .var.names(..., data = data, check.chr = "a vector, factor, matrix, array, data frame, or list")
 
@@ -190,15 +195,19 @@ as.na <- function(..., data = NULL, na, replace = TRUE, check = TRUE) {
     # Extract data
     x <- eval(..., enclos = parent.frame())
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+
   }
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check input 'replace'
+  .check.input(logical = "replace", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -216,11 +225,7 @@ as.na <- function(..., data = NULL, na, replace = TRUE, check = TRUE) {
 
     }
 
-    if (isTRUE(any(na.x))) {
-
-      warning(paste0(ifelse(sum(na.x) == 1L, "Value specified in the argument 'na' was not found in 'x': ", "Values specified in the argument 'na' were not found in 'x': "), paste(na[na.x], collapse = ", ")), call. = FALSE)
-
-    }
+    if (isTRUE(any(na.x))) { warning(paste0(ifelse(sum(na.x) == 1L, "Value specified in the argument 'na' was not found in 'x': ", "Values specified in the argument 'na' were not found in 'x': "), paste(na[na.x], collapse = ", ")), call. = FALSE) }
 
   }
 
@@ -324,6 +329,9 @@ na.as <- function(..., data = NULL, na, replace = TRUE, as.na = NULL, check = TR
 
   if (isTRUE(!is.null(data))) {
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+
     # Variable names
     var.names <- .var.names(..., data = data, check.chr = "a vector, factor, matrix, array, data frame, or list")
 
@@ -337,6 +345,9 @@ na.as <- function(..., data = NULL, na, replace = TRUE, as.na = NULL, check = TR
 
     x <- eval(..., enclos = parent.frame())
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+
   }
 
   # Convert user-missing values into NA
@@ -346,9 +357,10 @@ na.as <- function(..., data = NULL, na, replace = TRUE, as.na = NULL, check = TR
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check input 'replace'
+  .check.input(logical = "replace", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Vector, factor, matrix or data frame for the argument 'x'?
@@ -436,3 +448,5 @@ na.as <- function(..., data = NULL, na, replace = TRUE, as.na = NULL, check = TR
   return(object)
 
 }
+
+#_______________________________________________________________________________

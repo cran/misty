@@ -197,10 +197,8 @@
 #' # Example 3: Asymptotic Normal Method
 #' indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18, print = "asymp")
 #'
-#' \dontrun{
 #' # Example 4: Write Results into a text file
 #' indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18, write = "Indirect.txt")
-#' }
 indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
                      se = c("sobel", "aroian", "goodman"), nrep = 100000,
                      alternative = c("two.sided", "less", "greater"), seed = NULL,
@@ -211,9 +209,13 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("append", "output"),
+               numeric = list(nrep = 1L, seed = 1L),
+               s.character = list(print = c("all", "asymp", "dop", "mc"), se = c("sobel", "aroian", "goodman")),
+               args = c("alternative", "conf.level", "digits", "write1"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'a', 'b', 'se.a', and 'se.b'
@@ -224,36 +226,6 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
     if (isTRUE(mode(se.a) != "numeric" || se.a <= 0L)) { stop("Please specify a positive numeric value for the argument 'se.a'.", call. = FALSE) }
 
     if (isTRUE(mode(se.b) != "numeric" || se.a <= 0L)) { stop("Please specify a positive numeric value for the argument 'se.b'.", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(any(!print %in% c("all", "asymp", "dop", "mc")))) { stop("Character string(s) in the argument 'print' does not match with \"all\", \"asymp\", \"dop\", or \"mc\".", call. = FALSE) }
-
-    # Check input 'se'
-    if (isTRUE(any(!se %in% c("sobel", "aroian", "goodman")))) { stop("Character string(s) in the argument 'se' does not match with \"sobel\", \"aroian\", or \"goodman\".", call. = FALSE) }
-
-    # Check input 'nrep'
-    if (isTRUE(mode(nrep) != "numeric" || nrep <= 1L)) { stop("Please specify a positive numeric value greater 1 for the argument 'nrep'.", call. = FALSE) }
-
-    # Check input 'alternative'
-    if (isTRUE(!all(alternative %in% c("two.sided", "less", "greater")))) { stop("Character string in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) }
-
-    # Check input 'seed'
-    if (isTRUE(mode(seed) != "numeric" && !is.null(seed))) { stop("Please specify a numeric value for the argument 'seed'.", call. = FALSE) }
-
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -559,3 +531,5 @@ indirect <- function(a, b, se.a, se.b, print = c("all", "asymp", "dop", "mc"),
    return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

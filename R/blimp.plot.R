@@ -50,7 +50,7 @@
 #'                          for not displaying any point estimates, \code{"m"}
 #'                          for the posterior mean estimate, \code{"med"} (default)
 #'                          for the posterior median estimate, and \code{"map"}
-#'                          for the maximum a posteriori estimate.
+#'                          for the maximum a posterior estimate.
 #' @param ci                a character string indicating the type of credible
 #'                          interval to be displayed in the posterior distribution
 #'                          plots, i.e., \code{"none"} for not displaying any
@@ -75,12 +75,12 @@
 #'                          \code{"fill"} argument (default is \code{"gray85"})
 #'                          for the \code{annotate} and \code{geom_histogram}
 #'                          functions.
-#' @param nrow              a numeric value indicating the \code{nrow} argument
+#' @param facet.nrow        a numeric value indicating the \code{nrow} argument
 #'                          (default is \code{NULL}) for the \code{facet_wrap}
 #'                          function.
-#' @param ncol              a numeric value indicating the \code{ncol} argument
+#' @param facet.ncol        a numeric value indicating the \code{ncol} argument
 #'                          (default is \code{2}) for the \code{facet_wrap} function.
-#' @param scales            a character string indicating the \code{scales} argument
+#' @param facet.scales      a character string indicating the \code{scales} argument
 #'                          (default is \code{"free"}) for the \code{facet_wrap}
 #'                          function.
 #' @param xlab              a character string indicating the \code{name} argument
@@ -232,7 +232,7 @@
 #' blimp.plot("Posterior_Ex4.3", param = 2:5)
 #'
 #' # Example 1e: Arrange panels in three columns
-#' blimp.plot("Posterior_Ex4.3", ncol = 3)
+#' blimp.plot("Posterior_Ex4.3", facet.ncol = 3)
 #'
 #' # Example 1f: Specify "Pastel 1" palette for the hcl.colors function
 #' blimp.plot("Posterior_Ex4.3", palette = "Pastel 1")
@@ -355,15 +355,15 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
                        burnin = TRUE, point = c("all", "none", "m", "med", "map"),
                        ci = c("none", "eti", "hdi"), conf.level = 0.95, hist = TRUE,
                        density = TRUE, area = TRUE, alpha = 0.4, fill = "gray85",
-                       nrow = NULL, ncol = NULL, scales = c("fixed", "free", "free_x", "free_y"),
+                       facet.nrow = NULL, facet.ncol = NULL,
+                       facet.scales = c("fixed", "free", "free_x", "free_y"),
                        xlab = NULL, ylab = NULL, xlim = NULL, ylim = NULL,
                        xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
                        xexpand = ggplot2::waiver(), yexpand = ggplot2::waiver(),
                        palette = "Set 2", binwidth = NULL, bins = NULL,
                        density.col = "#0072B2", shape = 21,
                        point.col = c("#CC79A7", "#D55E00", "#009E73"),
-                       linewidth = 0.6, linetype = "dashed",
-                       line.col = "black",
+                       linewidth = 0.6, linetype = "dashed", line.col = "black",
                        plot.margin = NULL, legend.title.size = 10, legend.text.size = 10,
                        legend.box.margin = NULL, saveplot = c("all", "none", "trace", "post"),
                        file = "Blimp_Plot.pdf", file.plot = c("_TRACE", "_POST"),
@@ -430,79 +430,13 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("labels", "burnin", "hist", "density", "area"), numeric = list(facet.nrow = 1L, facet.ncol = 1L, xlim = 2L, ylim = 2L, xexpand = 2L, yexpand = 2L, binwidth = 1L, bins = 1L, shape = 1L, linewidth = 1L, plot.margin = 4L, legend.title.size = 1L, legend.text.size = 1L, legend.box.margin = 4L, width = 1L, height = 1L, dpi = 1L),
+               character = list(xlab = 1L, ylab = 1L, file = 1L, point.col = 3L, file.plot = 2L), m.character = list(point = c("all", "none", "m", "med", "map"), saveplot = c("all", "none", "trace", "post")), s.character = list(plot = c("none", "trace", "post"), ci = c("none", "eti", "hdi"), facet.scales = c("fixed", "free", "free_x", "free_y")), args = c("alpha", "conf.level", "units"),
+               package = "ggplot2", envir = environment(), input.check = check)
 
-  if (isTRUE(check)) {
-
-    # R package ggplot2
-    if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed for this function, please install the package.", call. = FALSE) }
-
-    # Check input 'plot'
-    if (isTRUE(!all(plot %in% c("none", "trace", "post")))) { stop("Character string in the argument 'plot' does not match with \"none\", \"trace\", \"post\", \"auto\", \"ppc\", or \"loop\".", call. = FALSE) }
-
-    if (isTRUE(!all(c("none", "trace", "post") %in% plot) && length(plot) != 1L)) { stop("Please specify \"none\", \"trace\", \"post\", \"auto\", \"ppc\", or \"loop\" for the argument 'plot'.", call. = FALSE) }
-
-    # Check input 'labels'
-    if (isTRUE(!is.logical(labels))) { stop("Please specify TRUE or FALSE for the argument 'labels'.", call. = FALSE) }
-
-    # Check input 'burnin'
-    if (isTRUE(!is.logical(burnin))) { stop("Please specify TRUE or FALSE for the argument 'burnin'.", call. = FALSE) }
-
-    # Check input 'point'
-    if (isTRUE(!all(point %in% c("all", "none", "m", "med", "map")))) { stop("Character strings in the argument 'point' do not all match with \"all\", \"none\", \"m\", \"med\", or \"map\".", call. = FALSE) }
-
-    # Check input 'ci'
-    if (isTRUE(!all(ci %in% c("none", "eti", "hdi")))) { stop("Character string in the argument 'ci' does not match with \"none\", \"eti\", or \"hdi\".", call. = FALSE) }
-
-    if (isTRUE(!all(c("none", "eti", "hdi") %in% ci) && length(ci) != 1L)) { stop("Please specify \"none\", \"eti\", or \"hdi\" for the argument 'ci'.", call. = FALSE) }
-
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L || conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'hist'
-    if (isTRUE(!is.logical(hist))) { stop("Please specify TRUE or FALSE for the argument 'hist'.", call. = FALSE) }
-
-    # Check input 'density'
-    if (isTRUE(!is.logical(density))) { stop("Please specify TRUE or FALSE for the argument 'density'.", call. = FALSE) }
-
-    # Check input 'area'
-    if (isTRUE(!is.logical(area))) { stop("Please specify TRUE or FALSE for the argument 'area'.", call. = FALSE) }
-
-    # Check input 'alpha '
-    if (isTRUE(alpha  >= 1L || alpha  <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'alpha '.", call. = FALSE) }
-
-    # Check input 'nrow'
-    if (isTRUE(!is.null(nrow) && (nrow %% 1L != 0L || nrow < 0L))) { stop("Please specify  a positive integer number for the argument 'nrow'.", call. = FALSE) }
-
-    # Check input 'ncol'
-    if (isTRUE(!is.null(nrow) && (ncol %% 1L != 0L || ncol < 0L))) { stop("Please specify a positive integer number for the argument 'ncol'.", call. = FALSE) }
-
-    # Check input 'scales'
-    if (isTRUE(!all(scales %in% c("fixed", "free", "free_x", "free_y")))) { stop("Character strings in the argument 'scales' do not all match with \"fixed\", \"free\", \"free_x\", or \"free_y\".", call. = FALSE) }
-
-    # Check input 'palette'
-    if (isTRUE(!all(palette %in% hcl.pals()))) { stop("Character string in the argument 'palette' does not match with color palettes in hcl.pals().", call. = FALSE) }
-
-    # Check input 'point.col'
-    if (isTRUE(length(point.col) != 3L)) { stop("Please specify character vector with three elements for the argument 'point.col'.", call. = FALSE) }
-
-    # Check input 'plot.margin'
-    if (isTRUE(!is.null(plot.margin) && length(plot.margin) != 4L)) { stop("Please specify a numeric vector with four elements for the argument 'plot.margin'.", call. = FALSE) }
-
-    # Check input 'legend.box.margin'
-    if (isTRUE(!is.null(legend.box.margin) && length(legend.box.margin) != 4L)) { stop("Please specify numeric vector with four elements for the argument 'legend.box.margin'.", call. = FALSE) }
-
-    # Check input 'saveplot'
-    if (isTRUE(!all(saveplot %in% c("all", "none", "trace", "post")))) { stop("Character strings in the argument 'saveplot' do not all match with \"all\", \"none\", \"trace\", or \"post\".", call. = FALSE) }
-
-    # Check input 'file.plot'
-    if (isTRUE(length(file.plot) != 2L)) { stop("Please specify a character vector with two elements for the argument 'file.plot'.", call. = FALSE) }
-
-    # Check input 'units'
-    if (isTRUE(!all(units %in% c("in", "cm", "mm", "px")))) { stop("Character string in the argument 'units' does not match with \"in\", \"cm\", \"mm\", \"pdf\", or \"px\".", call. = FALSE) }
-
-  }
+  # Check input 'palette'
+  if (isTRUE(check)) { if (isTRUE(!all(palette %in% hcl.pals()))) { stop("Character string in the argument 'palette' does not match with color palettes in hcl.pals().", call. = FALSE) } }
 
   #_____________________________________________________________________________
   #
@@ -554,7 +488,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
   ## 'scales' Argument ####
 
   # Default setting
-  if (isTRUE(all(c("free", "free_x", "free_y") %in% scales))) { scales <- "free" }
+  if (isTRUE(all(c("free", "free_x", "free_y") %in% facet.scales))) { facet.scales <- "free" }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'nrow' and 'ncol' Argument ####
@@ -777,7 +711,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
     # Plot
     plot.trace <- suppressMessages(ggplot2::ggplot(plotdat.trace, ggplot2::aes(x = iter, y = value, color = chain)) +
-                                     ggplot2::facet_wrap(~ label, nrow = nrow, ncol = ncol, scales = scales) +
+                                     ggplot2::facet_wrap(~ label, nrow = facet.nrow, ncol = facet.ncol, scales = facet.scales) +
                                      ggplot2::scale_x_continuous(name = xlab.trace, limits = xlim.trace, breaks = xbreaks.trace, expand = xexpand.trace) +
                                      ggplot2::scale_y_continuous(name = ylab.trace, limits = ylim.trace, breaks = ybreaks.trace, expand = yexpand.trace) +
                                      ggplot2::scale_colour_manual(name = "Chain", values = hcl.colors(n = n.chains, palette = palette)) +
@@ -835,7 +769,7 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
 
     # Plot
     plot.post <- suppressMessages(ggplot2::ggplot(plotdat.post, ggplot2::aes(x = value)) +
-                                    ggplot2::facet_wrap(~ label, nrow = nrow, ncol = ncol, scales = scales) +
+                                    ggplot2::facet_wrap(~ label, nrow = facet.nrow, ncol = facet.ncol, scales = facet.scales) +
                                     ggplot2::scale_x_continuous(name = xlab.post, limits = xlim.post, breaks = xbreaks.post, expand = xexpand.post) +
                                     ggplot2::scale_y_continuous(name = ylab.post, limits = ylim.post, breaks = ybreaks.post, expand = yexpand.post) +
                                     ggplot2::theme_bw() +
@@ -969,9 +903,10 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
                    args = list(plot = plot, param = param, labels = labels, burnin = burnin,
                                point = point, ci = ci, conf.level = conf.level,
                                hist = hist, density = density, area = area,
-                               alpha = alpha, fill = fill, nrow = nrow, ncol = ncol,
-                               scales = scales, xlab = xlab, ylab = ylab,
-                               xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks,
+                               alpha = alpha, fill = fill, facet.nrow = facet.nrow,
+                               facet.ncol = facet.ncol, facet.scales = facet.scales,
+                               xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim,
+                               xbreaks = xbreaks, ybreaks = ybreaks,
                                xexpand = xexpand, yexpand = yexpand,
                                palette = palette, binwidth = binwidth, bins = bins,
                                density.col = density.col, shape = shape, point.col = point.col,
@@ -1056,3 +991,5 @@ blimp.plot <- function(x, plot = c("none", "trace", "post"), param = NULL, label
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

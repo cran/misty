@@ -51,6 +51,7 @@ that by default \code{-99} in the Mplus data file is replaced with to \code{NA}.
 }
 \examples{
 \dontrun{
+
 # Example 1: Read Mplus data file and variable names extracted from the Mplus input file
 dat <- read.mplus("Mplus_Data.dat", input = "Mplus_Input.inp")
 

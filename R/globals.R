@@ -1,1 +1,1 @@
-utils::globalVariables(c("digits", "conf.level", "lmerControl", "VarCorr", "lme", "y"))
+utils::globalVariables(c("check", "digits", "conf.level", "lmerControl", "VarCorr", "lme", "y"))

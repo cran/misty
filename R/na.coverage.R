@@ -55,33 +55,26 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{data} \tab data frame used for the current analysis \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{result} \tab result table \cr
-#' }
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame used for the current analysis}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{result table}
 #'
 #' @export
 #'
 #' @examples
-#' # Example 1a: Compute variance-covariance coverage
+#' # Example 1: Compute variance-covariance coverage
 #' na.coverage(airquality)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' na.coverage(., data = airquality)
 #'
-#' \dontrun{
 #' # Example 2a: Write Results into a text file
 #' na.coverage(airquality, write = "Coverage.txt")
 #'
 #' # Example 2b: Write Results into a Excel file
 #' na.coverage(airquality, write = "Coverage.xlsx")
-#'
-#' result <- na.coverage(airquality, output = FALSE)
-#' write.result(result, "Coverage.xlsx")
-#' }
 na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), digits = 2,
                         as.na = NULL, write = NULL, append = TRUE, check = TRUE,
                         output = TRUE) {
@@ -96,9 +89,6 @@ na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), dig
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -108,11 +98,11 @@ na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), dig
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, check.chr = "a matrix or data frame")]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -121,6 +111,9 @@ na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), dig
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
   }
 
@@ -138,24 +131,8 @@ na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), dig
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'tri'
-    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("append", "output"), s.character = list(tri = c("both", "lower", "upper")), args = c("digits", "write2"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -203,36 +180,9 @@ na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), dig
 
   #_____________________________________________________________________________
   #
-  # Write results --------------------------------------------------------------
+  # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to text file
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -243,3 +193,5 @@ na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), dig
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

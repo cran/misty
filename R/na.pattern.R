@@ -124,11 +124,11 @@
 #' @export
 #'
 #' @examples
-#' # Example 1a: Compute a summary of missing data patterns
+#' # Example 1: Compute a summary of missing data patterns
 #' dat.pattern <- na.pattern(airquality)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
-#' dat.pattern <- na.pattern(., data = airquality)
+#' # Alternative specification using the 'data' argument
+#' na.pattern(., data = airquality)
 #'
 #' # Example 2a: Compute and plot a summary of missing data patterns
 #' na.pattern(airquality, plot = TRUE)
@@ -138,24 +138,19 @@
 #'
 #' # Example 3: Vector of missing data pattern for each case
 #' dat.pattern$pattern
-#
-#' # Data frame without cases with missing data pattern 2 and 4
-#' airquality[!dat.pattern$pattern %in% c(2, 4), ]
 #'
-#' \dontrun{
+#' # Data frame without cases with missing data pattern 2 and 4
+#' airquality[!dat.pattern$pattern == 2, ]
+#'
 #' # Example 4a: Write Results into a text file
-#' result <- na.pattern(airquality, write = "NA_Pattern.xlsx")
+#' na.pattern(airquality, write = "NA_Pattern.xlsx")
 #'
 #' # Example 4b: Write Results into a Excel file
-#' result <- na.pattern(airquality, write = "NA_Pattern.xlsx")
-#'
-#' result <- 4c.pattern(dat, output = FALSE)
-#' write.result(result, "NA_Pattern.xlsx")
-#' }
+#' na.pattern(airquality, write = "NA_Pattern.xlsx")
 na.pattern <- function(..., data = NULL, order = FALSE, n.pattern = NULL, plot = FALSE,
                        square = TRUE, rotate = FALSE, fill.col = c("#B61A51B3", "#006CC2B3"),
                        alpha = 0.6, plot.margin = c(4, 16, 0, 4), legend.box.margin = c(-8, 6, 6, 6),
-                       legend.key.size = 12, legend.text.size = 9, saveplot = FALSE, file = "NA_Patternt.pdf",
+                       legend.key.size = 12, legend.text.size = 9, saveplot = FALSE, file = "NA_Pattern.pdf",
                        width = NA, height = NA, units = c("in", "cm", "mm", "px"), dpi = 600,
                        digits = 2, as.na = NULL, write = NULL, append = TRUE, check = TRUE,
                        output = TRUE) {
@@ -170,9 +165,6 @@ na.pattern <- function(..., data = NULL, order = FALSE, n.pattern = NULL, plot =
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -182,11 +174,11 @@ na.pattern <- function(..., data = NULL, order = FALSE, n.pattern = NULL, plot =
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, check.chr = "a matrix or data frame")]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -195,6 +187,9 @@ na.pattern <- function(..., data = NULL, order = FALSE, n.pattern = NULL, plot =
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
   }
 
@@ -212,63 +207,22 @@ na.pattern <- function(..., data = NULL, order = FALSE, n.pattern = NULL, plot =
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("order", "plot", "rotate", "square", "saveplot", "append", "output"),
+               numeric = list(n.pattern = 1L, plot.margin = 4L, legend.box.margin = 4L, legend.key.size = 1L, legend.text.size = 1L, dpi = 1L),
+               character = list(file = 1L), args = c("alpha", "units", "digits", "write2"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # Check input 'order'
-    if (isTRUE(!is.logical(order))) { stop("Please specify TRUE or FALSE for the argument 'order'.", call. = FALSE) }
 
     # Check input 'n.pattern'
     if (isTRUE(n.pattern %% 1L != 0L || n.pattern < 0L)) { stop("Please specify a positive integer value for the argument 'n.pattern'.", call. = FALSE) }
 
-    # Check input 'plot'
-    if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'.", call. = FALSE) }
+    # Check input 'fill.col'
+    if (isTRUE(length(fill.col) != 2L)) { stop("Please specify character vector with two elements for the argument 'fill.col'.", call. = FALSE) }
 
-    if (isTRUE(plot)) {
-
-      # Check input 'rotate'
-      if (isTRUE(!is.logical(rotate))) { stop("Please specify TRUE or FALSE for the argument 'rotate'.", call. = FALSE) }
-
-      # Check input 'square'
-      if (isTRUE(!is.logical(square))) { stop("Please specify TRUE or FALSE for the argument 'square'.", call. = FALSE) }
-
-      # Check input 'fill.col'
-      if (isTRUE(length(fill.col) != 2L)) { stop("Please specify character vector with two elements for the argument 'fill.col'.", call. = FALSE) }
-
-      # Check input 'alpha'
-      if (isTRUE(alpha <= 0L || alpha > 1L)) { stop("Please specify a value between 0 aund 1 for the argument 'alpha'.", call. = FALSE) }
-
-      # Check input 'plot.margin'
-      if (isTRUE(length(plot.margin) != 4L)) { stop("Please specify a numeric vector with four elements for the argument 'plot.margin'.", call. = FALSE) }
-
-      # Check input 'legend.box.margin'
-      if (isTRUE(length(legend.box.margin) != 4L)) { stop("Please specify a numeric vector with four elements for the argument 'legend.box.margin'.", call. = FALSE) }
-
-    }
-
-    # Check input 'saveplot'
-    if (isTRUE(!is.logical(saveplot))) { stop("Please specify TRUE or FALSE for the argument 'saveplot'.", call. = FALSE) }
-
-    if (isTRUE(saveplot)) {
-
-      # Check input 'file'
-      if (isTRUE(!grepl(".", file) || !rev(unlist(strsplit(file, "\\.")))[1L] %in% c("eps", "ps", "tex", "pdf", "jpeg", "tiff", "png", "bmp", "svg", "wmf"))) { stop("Please specify a character string including the file extension (e.g., \".pdf\" or \".png\") for the argument 'file'.", call. = FALSE) }
-
-      # Check input 'units'
-      if (isTRUE(!all(units %in% c("in", "cm", "mm", "px")))) { stop("Character string in the argument 'units' does not match with \"in\", \"cm\", \"mm\", \"pdf\", or \"px\".", call. = FALSE) }
-
-    }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer value for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
+    # Check input 'file'
+    if (isTRUE(!grepl(".", file) || !rev(unlist(strsplit(file, "\\.")))[1L] %in% c("eps", "ps", "tex", "pdf", "jpeg", "tiff", "png", "bmp", "svg", "wmf"))) { stop("Please specify a character string including the file extension (e.g., \".pdf\" or \".png\") for the argument 'file'.", call. = FALSE) }
 
   }
 
@@ -467,39 +421,9 @@ na.pattern <- function(..., data = NULL, order = FALSE, n.pattern = NULL, plot =
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Write Results --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Write results ####
-
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Output ####
@@ -509,3 +433,5 @@ na.pattern <- function(..., data = NULL, order = FALSE, n.pattern = NULL, plot =
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

@@ -53,18 +53,18 @@
 #' @param exclude     a character vector specifying Blimp input command or result
 #'                    sections excluded from the output (see 'Details' in the
 #'                    \code{\link{blimp.print}} function).
-#' @param color      a character vector with two elements indicating the colors
-#'                   used for the main headers (e.g., \code{"ALGORITHMIC OPTIONS SPECIFIED:"}),
-#'                   and for the headers \code{Outcome Variable:} and
-#'                   \code{Missing predictor:}, \code{Complete variable:},
-#'                   \code{Latent Variable:}, and \code{Covariance Matrix:}
-#'                   including variables names.
-#' @param style      a character vector with two elements indicating the style
-#'                   used for headers (e.g., \code{"ALGORITHMIC OPTIONS SPECIFIED:"}),
-#'                   and for the main headers (e.g., \code{"ALGORITHMIC OPTIONS SPECIFIED:"}),
-#'                   and for the headers \code{Outcome Variable:} and
-#'                   \code{Missing predictor:}, \code{Complete variable:},
-#'                   \code{Latent Variable:}, and \code{Covariance Matrix:}
+#' @param color       a character vector with two elements indicating the colors
+#'                    used for the main headers (e.g., \code{"ALGORITHMIC OPTIONS SPECIFIED:"}),
+#'                    and for the headers \code{Outcome Variable:} and
+#'                    \code{Missing predictor:}, \code{Complete variable:},
+#'                    \code{Latent Variable:}, and \code{Covariance Matrix:}
+#'                    including variables names.
+#' @param style       a character vector with two elements indicating the style
+#'                    used for headers (e.g., \code{"ALGORITHMIC OPTIONS SPECIFIED:"}),
+#'                    and for the main headers (e.g., \code{"ALGORITHMIC OPTIONS SPECIFIED:"}),
+#'                    and for the headers \code{Outcome Variable:} and
+#'                    \code{Missing predictor:}, \code{Complete variable:},
+#'                    \code{Latent Variable:}, and \code{Covariance Matrix:}
 #' @param not.result  logical: if \code{TRUE} (default), character vector indicating
 #'                    the result sections not requested are shown on the console.
 #' @param write       a character string naming a file for writing the output into
@@ -203,10 +203,10 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
                   replace.inp = TRUE, blimp.run = TRUE, posterior = FALSE,
                   folder = "Posterior_", format = c("csv", "csv2", "excel", "rds", "workspace"),
                   clear = TRUE, replace.out = c("always", "never", "modified"),
-                  Blimp = detect.blimp(),
+                  Blimp = .detect.blimp(),
                   result = c("all", "default", "algo.options", "data.info",
-                             "model.info", "warn.mess", "out.model", "gen.param"),
-                  exclude = NULL, color = c("none", "blue", "violet"), style = c("bold", "regular"),
+                             "model.info", "warn.mess", "error.mess", "out.model", "gen.param"),
+                  exclude = NULL, color = c("none", "blue", "green"), style = c("bold", "regular"),
                   not.result = TRUE, write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
@@ -227,15 +227,19 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
   # Result Argument ------------------------------------------------------------
 
   # All result options
-  result.all <- c("algo.options", "simdat.summary", "simdat.summary", "order.simdat", "burnin.psr", "mh.accept", "data.info", "var.imp", "model.info", "param.label", "warn.mess", "fit", "cor.resid", "out.model", "pred.model", "gen.param", "order.impdat")
+  result.all <- c("algo.options", "simdat.summary", "simdat.summary", "order.simdat", "burnin.psr", "mh.accept", "data.info", "var.imp", "model.info", "param.label", "warn.mess", "error.mess", "fit", "cor.resid", "out.model", "pred.model", "gen.param", "order.impdat")
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("comment", "replace.inp", "blimp.run", "posterior", "clear", "not.result", "append", "output"),
+               character = list(file = 1L, folder = 1L, Blimp = 1L, style = 2L),
+               s.character = list(format = c("csv", "csv2", "excel", "rds", "workspace"), replace.out = c("always", "never", "modified"), style = c("regular", "bold", "italic", "underline")),
+               args = "write1", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'x'
@@ -246,9 +250,6 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
         (\(z) if (isTRUE(z != ";" || is.na(z))) { stop("Please include the semicolon ; when using the \"...;\" specification.", call. = FALSE)} )()
 
     }
-
-    # Check input 'file'
-    if (isTRUE(!is.character(file) || length(file) != 1L)) { stop("Please specify a character string for the argument 'file'.", call. = FALSE) }
 
     # Check input 'data'
     if (isTRUE(!is.null(data))) {
@@ -261,32 +262,6 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
 
     }
 
-    # Check input 'comment'
-    if (isTRUE(!is.logical(comment))) { stop("Please specify TRUE or FALSE for the argument 'comment'.", call. = FALSE) }
-
-    # Check input 'replace.inp'
-    if (isTRUE(!is.logical(replace.inp))) { stop("Please specify TRUE or FALSE for the argument 'replace.inp'.", call. = FALSE) }
-
-    # Check input 'blimp.run'
-    if (isTRUE(!is.logical(blimp.run))) { stop("Please specify TRUE or FALSE for the argument 'blimp.run'.", call. = FALSE) }
-
-    # Check input 'posterior'
-    if (isTRUE(!is.logical(posterior))) { stop("Please specify TRUE or FALSE for the argument 'posterior'.", call. = FALSE) }
-
-    # Check input 'folder'
-    if (isTRUE(!is.character(folder))) { stop("Please specify a character string for the argument 'folder'.", call. = FALSE) }
-
-    # Check input 'format'
-    if (isTRUE(!all(format %in% c("csv", "csv2", "excel", "rds", "workspace")))) { stop("Character string in the argument 'format' does not match with \"csv\", \"csv2\", \"excel\", \"rds\", or \"workspace\".", call. = FALSE) }
-
-    # Check input 'clear'
-    if (isTRUE(!is.logical(clear))) { stop("Please specify TRUE or FALSE for the argument 'clear'.", call. = FALSE) }
-
-    # Check input 'replace.out'
-    if (isTRUE(!all(replace.out %in% c("always", "never", "modified")))) { stop("Character strings in the argument 'print' do not all match with \"always\", \"never\", or \"modified\".", call. = FALSE) }
-
-    if (isTRUE(!all(c("always", "never", "modified") %in% replace.out) && length(replace.out) != 1L)) { stop("Please specify a character string for the argument 'replace.out'", call. = FALSE) }
-
     # Check input 'result'
     result[which(!result %in% c("all", "default", result.all))] |>
       (\(z) if (isTRUE(length(z) != 0L)) { stop(paste0(if (isTRUE(length(z) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'result' is not permissible: ", paste(dQuote(z), collapse = ", ")), call. = FALSE) } )()
@@ -298,24 +273,7 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
     # Check input 'color'
     if (isTRUE(!all(color %in% c("none", "black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray", "b.red", "b.green", "b.yellow", "b.blue", "b.violet", "b.cyan", "b.white")))) { stop(paste0(if (isTRUE(length(color) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'color' is not permissible."), call. = FALSE) }
 
-    if (isTRUE(!all(c("none", "blue", "violet") %in% color))) { if (isTRUE(length(color) != 2L)) { stop("Please specify a vector with two elements for the argument 'color'.", call. = FALSE) } }
-
-    # Check input 'style'
-    if (isTRUE(!all(style %in% c("regular", "bold", "italic", "underline")))) { stop("Character vector in the argument 'style' does not match with \"regular\", \"bold\", \"italic\", or \"underline\".", call. = FALSE) }
-
-    if (isTRUE(length(style) != 2L)) { stop("Please specify a vector with two elements for the argument 'style'.", call. = FALSE) }
-
-    # Check input 'not.result'
-    if (isTRUE(!is.logical(not.result))) { stop("Please specify TRUE or FALSE for the argument 'not.result'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && !is.character(write))) { stop("Please specify a character string for the argument 'write'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
+    if (isTRUE(!all(c("none", "blue", "green") %in% color))) { if (isTRUE(length(color) != 2L)) { stop("Please specify a vector with two elements for the argument 'color'.", call. = FALSE) } }
 
   }
 
@@ -359,6 +317,31 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
       stop("Please specify either \"csv\" or \"csv2\" for the argument 'format'.", call. = FALSE)
 
     }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'result' Argument ####
+
+  # Default setting
+  if (isTRUE(all(c("all", "default", "algo.options", "data.info", "model.info", "warn.mess", "error.mess", "out.model", "gen.param") %in% result))) {
+
+    result <- result[!result %in% c("all", "default")]
+
+  # All result sections
+  } else if (isTRUE("all" %in% result)) {
+
+    result <- result.all
+
+  # Default setting with additional result sections
+  } else if (isTRUE("default" %in% result & length(result > 1L))) {
+
+    result <- result.all[result.all %in% misty::chr.omit(union(c("all", "default", "algo.options", "data.info", "model.info", "warn.mess", "error.mess", "out.model", "gen.param"), result), "default", check = FALSE)]
+
+  # Manual default setting
+  } else if (isTRUE("default" %in% result & length(result == 1L))) {
+
+    result <- c("all", "default", "algo.options", "data.info", "model.info", "warn.mess", "error.mess", "out.model", "gen.param")
 
   }
 
@@ -772,3 +755,5 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

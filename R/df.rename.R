@@ -26,15 +26,11 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(a = c(3, 1, 6),
-#'                   b = c(4, 2, 5),
-#'                   c = c(7, 3, 1))
+#' # Example 1: Rename 'cyl' in 'mtcars' to 'cylinder'
+#' df.rename(mtcars, from = "cyl", to = "cylinder")
 #'
-#' # Example 1: Rename variable b in the data frame 'dat' to y
-#' df.rename(dat, from = "b", to = "y")
-#'
-#' # Example 2: Rename variable a, b, and c in the data frame 'dat' to x, y, and z
-#' df.rename(dat, from = c("a", "b", "c"), to = c("x", "y", "z"))
+#' # Example 2: Rename 'cyl' and 'wt' in 'mtcars' to 'cylinder' and 'weight'
+#' df.rename(mtcars, from = c("cyl", "wt"), to = c("cylinder", "weight"))
 df.rename <- function(x, from, to, check = TRUE) {
 
   #_____________________________________________________________________________
@@ -53,13 +49,14 @@ df.rename <- function(x, from, to, check = TRUE) {
   # Check input 'to'
   if (isTRUE(missing(to))) { stop("Please specify a character string or character vector for the argument 'to'.", call. = FALSE) }
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
+  # Check input 'check'
+  .check.input(envir = environment(), input.check = check)
+
+  # Additional checks
   if (isTRUE(check)) {
 
     # Character string or vector for the argument 'from'?
@@ -125,3 +122,5 @@ df.rename <- function(x, from, to, check = TRUE) {
   return(x)
 
 }
+
+#_______________________________________________________________________________

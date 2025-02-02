@@ -122,6 +122,7 @@
 #' specified, i.e., \code{---} without the semicolon \code{;} will result in an
 #' error message.
 #' }
+#' }
 #'
 #' @author
 #' Takuya Yanagida
@@ -194,7 +195,7 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
                          replace.inp = TRUE, blimp.run = TRUE, posterior = FALSE,
                          folder = "Posterior_", format = c("csv", "csv2", "xlsx", "rds", "RData"),
                          clear = TRUE, replace.out = c("always", "never", "modified"),
-                         Blimp = detect.blimp(),
+                         Blimp = .detect.blimp(),
                          result = c("all", "default", "algo.options", "data.info",
                                     "model.info", "warn.mess", "out.model", "gen.param"),
                          exclude = NULL, color = c("none", "blue", "violet"), style = c("bold", "regular"),
@@ -230,9 +231,12 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("comment", "replace.inp", "blimp.run", "posterior", "clear", "not.result", "append", "output"),
+               character = list(file = 1L, folder = 1L, write = 1L, Blimp = 1L, style = 2L),
+               m.character = list(format = c("csv", "csv2", "xlsx", "rds", "RData"), replace.out = c("always", "never", "modified"), style = c("regular", "bold", "italic", "underline")), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'update': ...; specification
@@ -251,57 +255,18 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
 
     }
 
-    # Check input 'file'
-    if (isTRUE(!is.character(file) || length(file) != 1L)) { stop("Please specify a character string for the argument 'file',", call. = FALSE) }
-
-    # Check input 'comment'
-    if (isTRUE(!is.logical(comment))) { stop("Please specify TRUE or FALSE for the argument 'comment'.", call. = FALSE) }
-
-    # Check input 'replace.inp'
-    if (isTRUE(!is.logical(replace.inp))) { stop("Please specify TRUE or FALSE for the argument 'replace.inp'.", call. = FALSE) }
-
-    # Check input 'blimp.run'
-    if (isTRUE(!is.logical(blimp.run))) { stop("Please specify TRUE or FALSE for the argument 'blimp.run'.", call. = FALSE) }
-
-    # Check input 'posterior'
-    if (isTRUE(!is.logical(posterior))) { stop("Please specify TRUE or FALSE for the argument 'posterior'.", call. = FALSE) }
-
-    # Check input 'folder'
-    if (isTRUE(!is.character(folder))) { stop("Please specify a character string for the argument 'folder'.", call. = FALSE) }
-
-    # Check input 'format'
-    if (isTRUE(!all(format %in% c("csv", "csv2", "xlsx", "rds", "RData")))) { stop("Character string in the argument 'format' does not match with \"csv\", \"csv2\", \"xlsx\", \"rds\", or \"RData\".", call. = FALSE) }
-
-    # Check input 'clear'
-    if (isTRUE(!is.logical(clear))) { stop("Please specify TRUE or FALSE for the argument 'clear'.", call. = FALSE) }
-
     # Check input 'result'
-    result.check <- result[which(!result %in% c("all", "default", result.all))]
-    if (isTRUE(length(result.check) != 0L)) { stop(paste0(if (isTRUE(length(result.check) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'result' is not permissible: ", paste(dQuote(result.check), collapse = ", ")), call. = FALSE) }
+    result[which(!result %in% c("all", "default", result.all))] |>
+      (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(if (isTRUE(length(y) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'result' is not permissible: ", paste(dQuote(y), collapse = ", ")), call. = FALSE) })()
 
     # Check input 'exclude'
-    exclude.check <- exclude[which(!exclude %in% result.all)]
-    if (isTRUE(length(exclude.check) != 0L)) { stop(paste0(if (isTRUE(length(exclude.check) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'exclude' is not permissible: ", paste(dQuote(exclude.check), collapse = ", ")), call. = FALSE) }
+    exclude[which(!exclude %in% result.all)] |>
+      (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(if (isTRUE(length(y) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'exclude' is not permissible: ", paste(dQuote(y), collapse = ", ")), call. = FALSE) })()
 
     # Check input 'color'
     if (isTRUE(!all(color %in% c("none", "black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray", "b.red", "b.green", "b.yellow", "b.blue", "b.violet", "b.cyan", "b.white")))) { stop(paste0(if (isTRUE(length(color) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'color' is not permissible."), call. = FALSE) }
 
     if (isTRUE(!all(c("none", "blue", "violet") %in% color))) { if (isTRUE(length(color) != 2L)) { stop("Please specify a vector with two elements for the argument 'color'.", call. = FALSE) } }
-
-    # Check input 'style'
-    if (isTRUE(!all(style %in% c("regular", "bold", "italic", "underline")))) { stop("Character vector in the argument 'style' does not match with \"regular\", \"bold\", \"italic\", or \"underline\".", call. = FALSE) }
-
-    # Check input 'not.result'
-    if (isTRUE(!is.logical(not.result))) { stop("Please specify TRUE or FALSE for the argument 'not.result'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && !is.character(write))) { stop("Please specify a character string for the argument 'write'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -740,3 +705,5 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

@@ -38,26 +38,30 @@ to be used for displaying R-hat values.}
 to be used for displaying effective sample sizes.}
 
 \item{mcse.digits}{an integer value indicating the number of decimal places
-to be used for displaying monte carlo standard errors.}
+to be used for displaying Monte Carlo standard errors.}
 
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \description{
 This function writes the results of a misty object (\code{misty.object})
-into a Excel file.
+into an Excel file.
 }
 \details{
 Currently the function supports result objects from the function
-\code{blimp.bayes}, \code{cor.matrix}, \code{crosstab}, \code{descript}, \code{dominance.manual},
-\code{dominance}, \code{effsize}, \code{freq}, \code{item.alpha}, \code{item.cfa},
-\code{item.invar}, \code{item.omega}, \code{result.lca}, \code{multilevel.cfa},
-\code{multilevel.cor}, \code{multilevel.descript}, \code{mplus.bayes},
-\code{multilevel.fit}, \code{multilevel.invar}, \code{multilevel.omega},
-\code{\link{na.auxiliary}}, \code{na.coverage}, \code{na.descript}, \code{na.pattern},
-\code{robust.coef}, and \code{std.coef}.
+\code{blimp.bayes}, \code{ci.cor}, \code{\link{ci.mean}},
+\code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
+\code{\link{ci.sd}}, \code{cor.matrix}, \code{crosstab}, \code{descript},
+\code{dominance.manual}, \code{dominance}, \code{effsize}, \code{freq},
+\code{item.alpha}, \code{item.cfa}, \code{item.invar}, \code{item.omega},
+\code{result.lca}, \code{multilevel.cfa}, \code{multilevel.cor},
+\code{multilevel.descript}, \code{mplus.bayes}, \code{multilevel.fit},
+\code{multilevel.invar}, \code{multilevel.omega}, \code{\link{na.auxiliary}},
+\code{na.coverage}, \code{na.descript}, \code{na.pattern}, \code{robust.coef},
+and \code{std.coef}.
 }
 \examples{
 \dontrun{
+
 #----------------------------------------------------------------------------
 # Example 1: item.cfa() function
 
@@ -79,14 +83,17 @@ write.result(result, "Multilevel_Descript.xlsx")
 }
 }
 \seealso{
-\code{\link{blimp.bayes}}, \code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{descript}},
-\code{\link{dominance.manual}}, \code{\link{dominance}}, \code{\link{effsize}},
-\code{\link{freq}}, \code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.invar}},
-\code{\link{item.omega}}, \code{\link{result.lca}}, \code{\link{mplus.bayes}}, \code{\link{multilevel.cfa}},
-\code{\link{multilevel.cor}}, \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
-\code{\link{multilevel.invar}}, \code{\link{multilevel.omega}}, \code{\link{na.auxiliary}},
-\code{\link{na.coverage}}, \code{\link{na.descript}}, \code{\link{na.pattern}},
-\code{\link{robust.coef}}, \code{\link{std.coef}}
+\code{\link{blimp.bayes}}, \code{\link{ci.cor}}, \code{\link{ci.mean}},
+\code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
+\code{\link{ci.sd}},\code{\link{cor.matrix}}, \code{\link{crosstab}},
+\code{\link{descript}}, \code{\link{dominance.manual}},
+\code{\link{dominance}}, \code{\link{effsize}}, \code{\link{freq}},
+\code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.invar}},
+\code{\link{item.omega}}, \code{\link{result.lca}}, \code{\link{mplus.bayes}},
+\code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}},
+\code{\link{multilevel.fit}}, \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}},
+\code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
+\code{\link{na.pattern}}, \code{\link{robust.coef}}, \code{\link{std.coef}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

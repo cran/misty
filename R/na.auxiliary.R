@@ -52,8 +52,8 @@
 #' @param correct   logical: if \code{TRUE}, correction factor for Cohen's d to
 #'                  remove positive bias in small samples is used.
 #' @param digits    integer value indicating the number of decimal places digits
-#'                  to be used for displaying correlation coefficients and Cohen's d
-#'                  estimates.
+#'                  to be used for displaying correlation coefficients and Cohen's
+#'                  d estimates.
 #' @param p.digits  an integer value indicating the number of decimal places
 #'                  to be used for displaying the \emph{p}-value.
 #' @param as.na     a numeric vector indicating user-defined missing values,
@@ -69,8 +69,10 @@
 #'                  to an existing text file with extension \code{.txt} specified
 #'                  in \code{write}, if \code{FALSE} existing text file will be
 #'                  overwritten.
-#' @param check     logical: if \code{TRUE} (default), argument specification is checked.
-#' @param output    logical: if \code{TRUE} (default), output is shown on the console.
+#' @param check     logical: if \code{TRUE} (default), argument specification is
+#'                  checked.
+#' @param output    logical: if \code{TRUE} (default), output is shown on the
+#'                  console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -98,35 +100,34 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{data} \tab data frame used for the current analysis \cr
-#' \code{model} \tab lavaan model syntax for estimating the semi-partial correlations  \cr
-#' \code{model.fit} \tab fitted lavaan model for estimating the semi-partial correlations  \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{result} \tab list with result tables \cr
-#' }
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame used for the current analysis}
+#' \item{\code{model}}{lavaan model syntax for estimating the semi-partial correlations}
+#' \item{\code{model.fit}}{fitted lavaan model for estimating the semi-partial correlations}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{list with result tables}
 #'
 #' @export
 #'
 #' @examples
-#' # Example 1a: Auxiliary variables
+#' # Example 1: Auxiliary variables
 #' na.auxiliary(airquality)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' na.auxiliary(., data = airquality)
 #'
-#' # Example 2a: Semi-partial correlation coefficients
+#' # Example 2: Semi-partial correlation coefficients
 #' na.auxiliary(airquality, model = "Ozone ~ Solar.R + Wind")
 #'
-#' # Example 2b: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' na.auxiliary(Temp, Month, Day, data = airquality, model = "Ozone ~ Solar.R + Wind")
 #'
-#' \dontrun{
-#' # Example 3: Write Results into a text file
+#' # Example 3a: Write Results into a text file
 #' na.auxiliary(airquality, write = "NA_Auxiliary.txt")
-#' }
+#'
+#' # Example 3a: Write Results into an Excel file
+#' na.auxiliary(airquality, write = "NA_Auxiliary.xlsx")
 na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "MLR"),
                          missing = c("fiml", "two.stage", "robust.two.stage", "doubly.robust"),
                          tri = c("both", "lower", "upper"), weighted = FALSE, correct = FALSE,
@@ -143,9 +144,6 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -155,11 +153,11 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, check.chr = "a matrix or data frame")]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -168,6 +166,9 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
   }
 
@@ -199,9 +200,12 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("weighted", "correct", "append", "output"),
+               s.character = list(estimator = c("ML", "MLR"), missing = c("fiml", "two.stage", "robust.two.stage", "doubly.robust"), tri = c("both", "lower", "upper")),
+               args = c("digits", "p.digits", "write2"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'model'
@@ -216,34 +220,6 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
       if (isTRUE(all(!is.na(x)))) { stop("There are no missing values (NA) in the matrix or data frame specified in '...'.", call. = FALSE) }
 
     }
-
-    #......
-    # Check input 'estimator'
-    if (isTRUE(!all(estimator %in% c("ML", "MLR")))) { stop("Character string in the argument 'estimator' does not match with \"ML\" or \"MLR\".", call. = FALSE) }
-
-    # Check input 'missing'
-    if (isTRUE(!all(missing %in% c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust")))) { stop("Character string in the argument 'missing' does not match with \"fiml\", \"two.stage\", \"robust.two.stage\", or \"doubly.robust\".", call. = FALSE) }
-
-    # Check input 'tri'
-    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
-
-    # Check input 'weighted'
-    if (isTRUE(!is.logical(weighted))) { stop("Please specify TRUE or FALSE for the argument 'weighted'.", call. = FALSE) }
-
-    # Check input 'correct'
-    if (isTRUE(!is.logical(correct))) { stop("Please specify TRUE or FALSE for the argument 'correct'.", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L | digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -462,34 +438,7 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to text file
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -500,3 +449,5 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

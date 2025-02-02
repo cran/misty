@@ -233,7 +233,7 @@
 #' # Example 1b: Cluster variable 'cluster' not in 'x'
 #' multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
 #'
-#' # Example 1c: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' multilevel.invar(y1:y4, data = Demo.twolevel, cluster = "cluster")
 #'
 #' #----------------------------------------------------------------------------
@@ -331,9 +331,6 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
@@ -349,14 +346,14 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
 
     # Cluster variable
-    cluster <- data[, cluster]
+    cluster <- unlist(data[, cluster])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -365,6 +362,10 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- as.data.frame(cluster) } }
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -381,13 +382,16 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("append", "output"),
+               numeric = list(mod.minval = 1L, resid.minval = 1L),
+               s.character = list(invar = c("config", "metric", "scalar"), ident = c("marker", "var", "effect"), estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"), missing = c("listwise", "fiml")),
+               m.character = list(print = c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid"), print.fit = c("all", "standard", "scaled", "robust")),
+               args = c("digits", "p.digits", "write2"),
+               package = "lavaan", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # R package lavaan
-    if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
 
     # Check if input 'model' is a character vector or list of character vectors
     if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
@@ -414,30 +418,9 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
 
     }
 
-    # Check input 'invar'
-    if (isTRUE(!all(invar %in%c("config", "metric", "scalar")))) { stop("Character string in the argument 'invar' does not match with \"config\", \"metric\", or \"scalar\".", call. = FALSE) }
-
-    # Check input 'ident'
-    if (isTRUE(!all(ident %in% c("marker", "var", "effect")))) { stop("Character string in the argument 'ident' does not match with \"marker\", \"var\", or \"effect\".", call. = FALSE) }
-
     # Check input 'fix.resid'
     fix.resid.var <- !unique(fix.resid) %in% colnames(x)
     if (isTRUE(any(fix.resid.var) &&  all(fix.resid != "all"))) { stop(paste0("Variables specified in the argument 'fix.resid' were not found in 'x': ", paste(fix.resid[fix.resid.var], collapse = ", ")), call. = FALSE) }
-
-    # Check input 'estimator'
-    if (isTRUE(!all(estimator %in% c("ML", "MLR")))) { stop("Character string in the argument 'estimator' does not match with \"ML\" or \"MLR\".", call. = FALSE) }
-
-    # Check input 'optim.method'
-    if (isTRUE(!all(optim.method  %in% c("nlminb", "em")))) { stop("Character string in the argument 'optim.method' does not match with \"nlminb\" or \"em\".", call. = FALSE) }
-
-    # Check input 'missing'
-    if (isTRUE(!all(missing %in% c("listwise", "fiml")))) { stop("Character string in the argument 'missing' does not match with \"listwise\" or \"fiml\".", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid")))) { stop("Character strings in the argument 'print' do not all match with \"summary\", \"coverage\", \"descript\", \"fit\", \"est\", \"modind\", or \"resid\".", call. = FALSE) }
-
-    # Check input 'print.fit'
-    if (isTRUE(!all(print.fit %in% c("all", "standard", "scaled", "robust")))) { stop("Character strings in the argument 'print.fit' do not all match with \"standard\", \"scaled\", or \"robust\".", call. = FALSE) }
 
     # Check input 'mod.minval'
     if (isTRUE(mod.minval <= 0L)) { stop("Please specify a value greater than 0 for the argument 'mod.minval'.", call. = FALSE) }
@@ -445,23 +428,11 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
     ## Check input 'resid.minval'
     if (isTRUE(resid.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'resid.minval'.", call. = FALSE) }
 
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
-
   }
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data and Arguments ------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Manifest variables ####
@@ -470,8 +441,7 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   ### Model specification with 'x' ####
   if (isTRUE(is.null(model))) {
 
-    # Cluster variable in the data
-    if (isTRUE(length(cluster) == 1L)) { var <- colnames(x)[!colnames(x) %in% cluster] } else { var <- colnames(x) }
+    var <- colnames(x)
 
   #...................
   ### Model specification with 'model' ####
@@ -484,15 +454,16 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data frame with Cluster Variable ####
 
-  # Cluster variable in the data
-  if (isTRUE(length(cluster) == 1L)) {
+  x <- data.frame(x, .cluster = cluster, row.names = NULL)
 
-    x <- data.frame(x[, var], .cluster = x[, cluster], stringsAsFactors = FALSE)
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data on the Cluster Variable ####
 
-  # Cluster variable specified in the argument 'cluster'
-  } else {
+  if (isTRUE(any(is.na(x$.cluster)))) {
 
-    x <- data.frame(x[, var], .cluster = cluster, stringsAsFactors = FALSE)
+    warning(paste0("Data contains missing values on the cluster variable, number of cases removed from the analysis: ", sum(is.na(x$.cluster))), call. = FALSE)
+
+    x <- x[!is.na(x$.cluster), ]
 
   }
 
@@ -500,7 +471,6 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x[, var] <- .as.na(x[, var], na = as.na) }
-
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Factor labels ####
 
@@ -509,7 +479,7 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   if (isTRUE(!is.null(model))) {
 
     # 'model' is a list
-    if (is.list(model)) {
+    if (isTRUE(is.list(model))) {
 
       # List elements not all named
       if (isTRUE(is.null(names(model)) || any(names(model) == ""))) { names(model) <- paste0("f", seq_along(model)) }
@@ -588,6 +558,11 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
     }
 
   }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data on All Variable ####
+
+  (misty::na.prop(x[, var]) == 1L) |> (\(y) if (isTRUE(any(y) && missing == "fiml")) { warning(paste0("Data contains cases with missing values on all variables, number of cases removed from the analysis: ", sum(y)), call. = FALSE) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print ####
@@ -1073,34 +1048,7 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -1111,3 +1059,5 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

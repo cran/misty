@@ -2,26 +2,42 @@
 % Please edit documentation in R/size.mean.R
 \name{size.mean}
 \alias{size.mean}
-\title{Sample Size Determination for Testing Arithmetic Means}
+\alias{size.prop}
+\alias{size.cor}
+\title{Sample Size Determination}
 \usage{
 size.mean(delta, sample = c("two.sample", "one.sample"),
           alternative = c("two.sided", "less", "greater"),
           alpha = 0.05, beta = 0.1, write = NULL, append = TRUE,
           check = TRUE, output = TRUE)
+
+size.prop(pi = 0.5, delta, sample = c("two.sample", "one.sample"),
+          alternative = c("two.sided", "less", "greater"),
+          alpha = 0.05, beta = 0.1, correct = FALSE, write = NULL,
+          append = TRUE, check = TRUE, output = TRUE)
+
+size.cor(rho, delta,
+         alternative = c("two.sided", "less", "greater"),
+         alpha = 0.05, beta = 0.1, write = NULL, append = TRUE,
+         check = TRUE, output = TRUE)
 }
 \arguments{
-\item{delta}{a numeric value indicating the relative minimum difference
-to be detected, \eqn{\delta}.}
+\item{delta}{a numeric value indicating the minimum mean difference to
+be detected, \eqn{\delta}.}
 
-\item{sample}{a character string specifying one- or two-sample t-test,
-must be one of \code{"two.sample"} (default) or \code{"one.sample"}.}
+\item{sample}{a character string specified in the function \code{size.mean}
+or \code{size.prop} specifying a one- or two-sample t-test
+or a proportion test, i.e., \code{"two.sample"} (default)
+for a two-sample test and \code{"one.sample"} for a one-sample
+test.}
 
 \item{alternative}{a character string specifying the alternative hypothesis,
-must be one of \code{"two.sided"} (default), \code{"greater"} or \code{"less"}.}
+must be one of \code{"two.sided"} (default), \code{"greater"}
+or \code{"less"}.}
 
-\item{alpha}{type-I-risk, \eqn{\alpha}.}
+\item{alpha}{a numeric value indicating the type-I-risk, \eqn{\alpha}.}
 
-\item{beta}{type-II-risk, \eqn{\beta}.}
+\item{beta}{a numeric value indicating the type-II-risk, \eqn{\beta}.}
 
 \item{write}{a character string naming a text file with file extension
 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
@@ -32,65 +48,83 @@ to an existing text file with extension \code{.txt} specified
 in \code{write}, if \code{FALSE} existing text file will be
 overwritten.}
 
-\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification
+is checked.}
 
 \item{output}{logical: if \code{TRUE} (default), output is shown.}
+
+\item{pi}{a numeric value specified in the function \code{size.prop}
+indicating the true value of the probability under the null
+hypothesis in the one-sample test \eqn{\pi}.0 or a number
+indicating the true value of the probability in group 1 in
+the two-sample test \eqn{\pi}.1.}
+
+\item{rho}{a numeric value specified in the function \code{size.cor}
+indicating the correlation coefficient under the null
+hypothesis \eqn{\rho}.0.}
+
+\item{correct}{logical: if \code{TRUE}, continuity correction is applied.}
 }
-\value{
-Returns an object of class \code{misty.object}, which is a list with following
-entries:
-  \item{\code{call}}{function call}
-  \item{\code{type}}{type of analysis}
-  \item{\code{data}}{matrix or data frame specified in \code{x}}
-  \item{\code{args}}{specification of function arguments}
-  \item{\code{result}}{list with the result, i.e., optimal sample size}
-}
+
 \description{
-This function performs sample size computation for the one-sample and two-sample t-test
-based on precision requirements (i.e., type-I-risk, type-II-risk and an effect size).
+This function performs sample size determination the one-sample and two-sample
+t-tests, proportions, and Pearson product-moment correlation coefficients
+based on precision requirements (i.e., type-I-risk, type-II-risk and an effect
+size).
 }
 \examples{
-#-------------------------------------------------------------------------------
-# Example 1: Two-sided one-sample test
+#----------------------------------------------------------------------------
+# Example 1: One- and two-sample t-test
+
+# Example 1a: One-sample t-test
 # H0: mu = mu.0, H1: mu != mu.0
 # alpha = 0.05, beta = 0.2, delta = 0.5
-
 size.mean(delta = 0.5, sample = "one.sample",
           alternative = "two.sided", alpha = 0.05, beta = 0.2)
 
-#-------------------------------------------------------------------------------
-# Example 2: One-sided one-sample test
-# H0: mu <= mu.0, H1: mu > mu.0
-# alpha = 0.05, beta = 0.2, delta = 0.5
-
-size.mean(delta = 0.5, sample = "one.sample",
-          alternative = "greater", alpha = 0.05, beta = 0.2)
-
-#-------------------------------------------------------------------------------
-# Example 3: Two-sided two-sample test
-# H0: mu.1 = mu.2, H1: mu.1 != mu.2
+# Example 1b: One-sided two-sample test
+# H0: mu.1 >= mu.2, H1: mu.1 < mu.2
 # alpha = 0.01, beta = 0.1, delta = 1
-
 size.mean(delta = 1, sample = "two.sample",
-          alternative = "two.sided", alpha = 0.01, beta = 0.1)
+          alternative = "less", alpha = 0.01, beta = 0.1)
 
-#-------------------------------------------------------------------------------
-# Example 4: One-sided two-sample test
-# H0: mu.1 <= mu.2, H1: mu.1 > mu.2
-# alpha = 0.01, beta = 0.1, delta = 1
+#----------------------------------------------------------------------------
+# Example 2: One- and two-sample test for proportions
 
-size.mean(delta = 1, sample = "two.sample",
+# Example 2a: Two-sided one-sample test
+# H0: pi = 0.5, H1: pi != 0.5
+# alpha = 0.05, beta = 0.2, delta = 0.2
+size.prop(pi = 0.5, delta = 0.2, sample = "one.sample",
+          alternative = "two.sided", alpha = 0.05, beta = 0.2)
+
+# Example 2b: One-sided two-sample test
+# H0: pi.1 <=  pi.1 = 0.5, H1: pi.1 > pi.2
+# alpha = 0.01, beta = 0.1, delta = 0.2
+size.prop(pi = 0.5, delta = 0.2, sample = "two.sample",
           alternative = "greater", alpha = 0.01, beta = 0.1)
+
+#----------------------------------------------------------------------------
+# Example 3: Testing the Pearson product-moment correlation coefficient
+
+# H0: rho = 0.3, H1: rho != 0.3
+# alpha = 0.05, beta = 0.2, delta = 0.2
+size.cor(rho = 0.3, delta = 0.2, alpha = 0.05, beta = 0.2)
+
+# H0: rho <= 0.3, H1: rho > 0.3
+# alpha = 0.05, beta = 0.2, delta = 0.2
+size.cor(rho = 0.3, delta = 0.2,
+         alternative = "greater", alpha = 0.05, beta = 0.2)
 }
 \references{
-Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology - Using R and SPSS}.
-New York: John Wiley & Sons.
+Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
+- Using R and SPSS}. John Wiley & Sons.
 
 Rasch, D., Pilz, J., Verdooren, L. R., & Gebhardt, G. (2011).
-\emph{Optimal experimental design with R}. Boca Raton: Chapman & Hall/CRC.
+\emph{Optimal experimental design with R}.Chapman & Hall/CRC.
 }
 \seealso{
-\code{\link{size.prop}}, \code{\link{size.cor}}
+\code{\link{test.t}}, \code{\link{prop.test}}, \code{\link{cor.test}},
+\code{\link{cor.matrix}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at},

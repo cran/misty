@@ -1,8 +1,211 @@
 #_______________________________________________________________________________
 #
-# Internatl Functions
+# Internal Functions
 #
-# Colletion of internal function used within functions of the misty package
+# Collection of internal function used within functions of the misty package
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Check Argument Specification -------------------------------------------------
+
+.check.input <- function(logical = NULL, numeric = NULL, character = NULL, m.character = NULL, s.character = NULL, args = NULL, package = NULL, envir = environment(), input.check = check) {
+
+  # Check input 'input.check'
+  if (isTRUE(!is.null(dim(input.check)) || length(input.check) != 1L || !is.logical(input.check) || is.na(input.check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+
+  # Check inputs
+  if (isTRUE(input.check)) {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Check TRUE/FALSE Input ####
+
+    if (isTRUE(!is.null(logical))) { invisible(sapply(logical, function(y) { eval(parse(text = y), envir = envir) |> (\(z) if (isTRUE(!is.null(dim(z)) || length(z) != 1L || !is.logical(z) || is.na(z))) { stop(paste0("Please specify TRUE or FALSE for the argument '", y,  "'."), call. = FALSE) })() })) }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Check Numeric Input ####
+
+    if (isTRUE(!is.null(numeric))) {
+
+      invisible(sapply(names(numeric), function(y) {
+
+        eval(parse(text = y), envir = envir) |> (\(z) if (isTRUE(!all(is.na(z)) && !is.null(z) && (!is.numeric(z) || length(z) != numeric[[y]]))) {
+
+          if (isTRUE(numeric[[y]] == 1L)) {
+
+            stop(paste0("Please specify a numeric value for the argument '", y,  "'."), call. = FALSE)
+
+          } else {
+
+            stop(paste0("Please specify a numeric vector with ", switch(as.character(numeric[[y]]), "1" = "one", "2" = "two", "3" = "three",  "4" = "four"),  " elements for the argument '", y,  "'."), call. = FALSE)
+
+          }
+
+          })()
+
+        }))
+
+      }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Check Character Input ####
+
+    if (isTRUE(!is.null(character))) {
+
+      invisible(sapply(names(character), function(y) {
+
+        eval(parse(text = y), envir = envir) |> (\(z) if (isTRUE(!is.null(z) && (!is.character(z) || length(z) != character[[y]]))) {
+
+          if (isTRUE(character[[y]] == 1L)) {
+
+            stop(paste0("Please specify a character string for the argument '", y,  "'."), call. = FALSE)
+
+          } else {
+
+            stop(paste0("Please specify a character vector with ", switch(as.character(character[[y]]), "1" = "one", "2" = "two", "3" = "three", "4" = "four", "5" = "five", "6" = "six"), " elements for the argument '", y,  "'."), call. = FALSE)
+
+          }
+
+        })()
+
+      }))
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Check Multiple Character Input ####
+
+    if (isTRUE(!is.null(m.character))) {
+
+      invisible(sapply(names(m.character), function(y) { if (isTRUE(any(!eval(parse(text = y), envir = envir) %in% m.character[[y]]))) {
+
+        if (isTRUE(length(eval(parse(text = y), envir = envir)) == 1L)) {
+
+          stop(paste0("Character string specified in the argument '", y , "' does not all match with ",  paste0(paste(unlist(m.character[y]) |> (\(z) paste(sapply(z[-length(z)], dQuote, q = FALSE)))(), collapse = ", "), ", or ", dQuote(rev(unlist(m.character[y]))[1L], q = FALSE)), "."), call. = FALSE)
+
+        } else {
+
+          stop(paste0("Character strings specified in the argument '", y , "' do not all match with ",  paste0(paste(unlist(m.character[y]) |> (\(z) paste(sapply(z[-length(z)], dQuote, q = FALSE)))(), collapse = ", "), ", or ", dQuote(rev(unlist(m.character[y]))[1L], q = FALSE)), "."), call. = FALSE)
+
+        }
+
+        }}))
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Check Single Character Input ####
+
+    if (isTRUE(!is.null(s.character))) {
+
+      invisible(sapply(names(s.character), function(y) eval(parse(text = y), envir = envir) |> (\(z) if (isTRUE(!is.character(z) || any(!z %in% s.character[[y]]) || (!all(z %in% s.character[[y]]) && length(z) != 1L))) {
+
+            stop(paste0("Please specify ", paste0(paste(unlist(s.character[y]) |> (\(z) paste(sapply(z[-length(z)], dQuote, q = FALSE)))(), collapse = ", "), ", or ", dQuote(rev(unlist(s.character[y]))[1L], q = FALSE)), " for the argument ", sQuote(y, q = FALSE), "."), call. = FALSE)
+
+          })()))
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Check Additional Arguments ####
+
+    if (isTRUE(!is.null(args))) {
+
+      # Check input 'digits'
+      if (isTRUE("digits" %in% args)) { eval(parse(text = "digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) })() }
+
+      # Check input 'p.digits'
+      if (isTRUE("p.digits" %in% args)) { eval(parse(text = "p.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) })() }
+
+      # Check input 'icc.digits'
+      if (isTRUE("icc.digits" %in% args)) { eval(parse(text = "icc.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'icc.digits'.", call. = FALSE) })() }
+
+      # Check input 'r.digits'
+      if (isTRUE("r.digits" %in% args)) { eval(parse(text = "r.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'r.digits'.", call. = FALSE) })() }
+
+      # Check input 'ess.digits'
+      if (isTRUE("ess.digits" %in% args)) { eval(parse(text = "ess.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'ess.digits'.", call. = FALSE) })() }
+
+      # Check input 'mcse.digits'
+      if (isTRUE("mcse.digits" %in% args)) { eval(parse(text = "mcse.digits"), envir = envir) |> (\(y) if (isTRUE(!!is.null(y) && (is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'mcse.digits'.", call. = FALSE) })() }
+
+      # Check input 'conf.level'
+      if (isTRUE("conf.level" %in% args)) { eval(parse(text = "conf.level"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) })() }
+
+      # Check input 'alpha'
+      if (isTRUE("alpha" %in% args)) { eval(parse(text = "alpha"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'alpha '.", call. = FALSE) })() }
+
+      # Check input 'R'
+      if (isTRUE("R" %in% args)) { eval(parse(text = "R"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'R'.", call. = FALSE) })() }
+
+      # Check input 'alternative'
+      if (isTRUE("alternative" %in% args)) { eval(parse(text = "alternative"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("two.sided", "less", "greater") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("two.sided", "less", "greater"))))) { stop("Character string specified in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) })() }
+
+      # Check input 'p.adj'
+      if (isTRUE("p.adj" %in% args)) { eval(parse(text = "p.adj"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr"))))) { stop("Character string specified in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".", call. = FALSE) })() }
+
+      # Check input 'linetype'
+      if (isTRUE("linetype" %in% args)) { eval(parse(text = "linetype"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.character(y) || any(!y %in% c("twodash", "solid", "longdash", "dotted", "dotdash", "dashed"))))) { stop("Character string specified in the argument 'linetype' does not match with \"twodash\", \"solid\", \"longdash\", \"dotted\", \"ldotdash\", or \"dashed\".", call. = FALSE) })() }
+
+      # Check input 'units'
+      if (isTRUE("units" %in% args)) { eval(parse(text = "units"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("in", "cm", "mm", "px") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("in", "cm", "mm", "px"))))) { stop("Character string specified in the argument 'units' does not match with \"in\", \"cm\", \"mm\", or \"px\".", call. = FALSE) })() }
+
+      # Check input 'facet.scales'
+      if (isTRUE("facet.scales" %in% args)) { eval(parse(text = "facet.scales"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("fixed", "free_x", "free_y", "free") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("fixed", "free_x", "free_y", "free"))))) { stop("Character string specified in the argument 'facet.scales' does not match with \"fixed\", \"free_x\", \"free_y\", or \"free\".", call. = FALSE) })() }
+
+      # Check input 'legend.position'
+      if (isTRUE("legend.position" %in% args)) { eval(parse(text = "legend.position"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("right", "top", "left", "bottom", "none") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("right", "top", "left", "bottom", "none"))))) { stop("Character string specified in the argument 'legend.position' does not match with \"right\", \"top\", \"left\", \"bottom\", or \"none\".", call. = FALSE) })() }
+
+      # Check input 'write' text file
+      if (isTRUE("write1" %in% args)) { eval(parse(text = "write"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.null(y) && (!is.character(y) || !grepl(".txt", y))))) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") })() }
+
+      # Check input 'write' text and Excel file
+      if (isTRUE("write2" %in% args)) { eval(parse(text = "write"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.null(y) && (!is.character(y) || all(!misty::chr.grepl(c(".txt", ".xlsx"), y)))))) { stop("Please specify a character string with file extenstion '.txt' or '.xlsx' for the argument 'write'.") })() }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Check Packages ####
+
+    if (isTRUE(!is.null(package))) { invisible(sapply(package, function(y) { if (isTRUE(!requireNamespace(y, quietly = TRUE))) { stop(paste0("Package \"",  y ,"\" is needed for this function to work, please install it."), call. = FALSE) } })) }
+
+  }
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Write Results ----------------------------------------------------------------
+
+.write.result <- function(object, write, append) {
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Text file ####
+
+  if (isTRUE(grepl("\\.txt", write))) {
+
+    # Send R output to text file
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Excel file ####
+
+  } else {
+
+    misty::write.result(object, file = write)
+
+  }
+
+}
 
 #_______________________________________________________________________________
 #_______________________________________________________________________________
@@ -12,6 +215,17 @@
 .var.names <- function(..., data, group = NULL, split = NULL, cluster = NULL,
                        id = NULL, obs = NULL, day = NULL, time = NULL,
                        check.chr = NULL) {
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Check if input 'data' is data frame ####
+
+  # Check if input 'data' is data frame
+  if (isTRUE(!is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert tibble into data frame ####
+
+  if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- data.frame(data) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Elements in the '...' Argument ####
@@ -170,12 +384,12 @@
       # Variable names
       var.i <- misty::chr.omit(var.names[[i]], omit = ":", check = FALSE)
 
-      check.var.i <- setdiff(misty::chr.omit(var.i, omit = "!", check = FALSE), colnames(data))
-      if (isTRUE(length(check.var.i) != 0L)) {
+      setdiff(misty::chr.omit(var.i, omit = "!", check = FALSE), colnames(data)) |>
+        (\(y) if (isTRUE(length(y) != 0L)) {
 
-        stop(paste0(ifelse(length(check.var.i) == 1L, "Variable name involved in the : operator was not found in 'data': ", "Variable names involved in the : operator were not found in 'data': "), paste0(check.var.i, collapse = ", ")), call. = FALSE)
+          stop(paste0(ifelse(length(y) == 1L, "Variable name involved in the : operator was not found in 'data': ", "Variable names involved in the : operator were not found in 'data': "), paste0(y, collapse = ", ")), call. = FALSE)
 
-      }
+        })()
 
       # No complement !
       if (isTRUE(!"!" %in% var.i)) {
@@ -314,24 +528,24 @@
     } else {
 
       # Cluster variable in 'data'
-      check.cluster <- !cluster %in% colnames(data)
-      if (isTRUE(any(check.cluster))) {
+      (!cluster %in% colnames(data)) |>
+        (\(y) if (isTRUE(any(y))) {
 
-        if (isTRUE(sum(check.cluster) == 1L)) {
+          if (isTRUE(sum(y) == 1L)) {
 
-          stop(paste0("Cluster variable specifed in 'cluster' was not found in 'data': ", cluster[which(check.cluster)]),  call. = FALSE)
+            stop(paste0("Cluster variable specifed in 'cluster' was not found in 'data': ", cluster[which(y)]),  call. = FALSE)
 
-        } else {
+          } else {
 
-          stop("Cluster variables specifed in 'cluster' were not found in 'data'.",  call. = FALSE)
+            stop("Cluster variables specifed in 'cluster' were not found in 'data'.",  call. = FALSE)
 
-        }
+          }
 
-      }
+        })()
 
       # Order of cluster variables
-      check.cluster <- suppressWarnings(tapply(data[, cluster[2L]], data[, cluster[1L]], var, na.rm = TRUE))
-      if (isTRUE(all(check.cluster == 0) || all(is.na(check.cluster)))) { stop("Please specify the Level 3 cluster variable first, e.g., cluster = c(\"level3\", \"level2\").", call. = FALSE) }
+      suppressWarnings(tapply(data[, cluster[2L]], data[, cluster[1L]], var, na.rm = TRUE)) |>
+        (\(y) if (isTRUE(all(y == 0) || all(is.na(y)))) { stop("Please specify the Level 3 cluster variable first, e.g., cluster = c(\"level3\", \"level2\").", call. = FALSE) })()
 
     }
 
@@ -392,24 +606,24 @@
   if (isTRUE(!is.null(var.exclude))) { var.names <- setdiff(var.names, var.exclude) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Check if Variables in '...' are Available in 'data' ####
+  ## Check if Variables in '...' are available in 'data' ####
 
   if (isTRUE(!is.null(data) && !is.null(check.chr))) {
 
-    var.diff <- setdiff(var.names, colnames(data))
-    if (isTRUE(length(var.diff) != 0L)) {
+    setdiff(var.names, colnames(data)) |>
+      (\(y) if (isTRUE(length(y) != 0L)) {
 
-      if (isTRUE(any(c("$", "[", "subset(", "df.subset(") %in% var.names))) {
+        if (isTRUE(any(c("$", "[", "subset(", "df.subset(") %in% var.names))) {
 
-        stop(paste0("Please do not specify the argument 'data' when specifying ", check.chr, " for the argument '...'."), call. = FALSE)
+          stop(paste0("Please do not specify the argument 'data' when specifying ", check.chr, " for the argument '...'."), call. = FALSE)
 
-      } else {
+        } else {
 
-        stop(paste0(ifelse(length(var.diff) == 1L, "Variable specified in '...' was not found in 'data': ", "Variables specified in '...' were not found in 'data': "), paste(var.diff, collapse = ", ")), call. = FALSE)
+          stop(paste0(ifelse(length(y) == 1L, "Variable specified in '...' was not found in 'data': ", "Variables specified in '...' were not found in 'data': "), paste(y, collapse = ", ")), call. = FALSE)
 
-      }
+        }
 
-    }
+      })()
 
   }
 
@@ -473,7 +687,7 @@
     if (isTRUE(all(is.na(group)))) { stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE) }
 
     ##### Check if only one group represented in the grouping variable
-    if (isTRUE(length(unique(na.omit(group))) == 1L)) { stop("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE) }
+    if (isTRUE(length(unique(na.omit(unlist(group)))) == 1L)) { stop("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE) }
 
   }
 
@@ -519,7 +733,7 @@
     if (isTRUE(all(is.na(split)))) { stop("The split variable specified in 'split' is completely missing.", call. = FALSE) }
 
     ##### Check if only one group represented in the split variable
-    if (isTRUE(length(unique(na.omit(split))) == 1L)) { stop("There is only one split represented in the grouping variable specified in 'split'.", call. = FALSE) }
+    if (isTRUE(length(unique(na.omit(unlist(split)))) == 1L)) { stop("There is only one split represented in the grouping variable specified in 'split'.", call. = FALSE) }
 
   }
 
@@ -549,16 +763,16 @@
         } else {
 
           # Cluster variable in 'data'
-          cluster.diff <- setdiff(cluster, colnames(data))
-          if (isTRUE(length(cluster.diff) == 1L)) {
+          setdiff(cluster, colnames(data)) |>
+            (\(y) if (isTRUE(length(y) == 1L)) {
 
-            stop(paste0("Cluster variable \"", cluster.diff, "\" specifed in 'cluster' was not found in '...'."), call. = FALSE)
+              stop(paste0("Cluster variable \"", y, "\" specifed in 'cluster' was not found in '...'."), call. = FALSE)
 
-          } else {
+            } else {
 
-            stop("Cluster variables specifed in 'cluster' were not found in '...'.", call. = FALSE)
+              stop("Cluster variables specifed in 'cluster' were not found in '...'.", call. = FALSE)
 
-          }
+            })()
 
           # Order of cluster variables
           if (isTRUE(length(unique(data[, cluster[, 2L]])) < length(unique(data[, cluster[, 1L]])))) { stop("Please specify the Level 3 cluster variable first, e.g., cluster = c(\"level3\", \"level2\").", call. = FALSE) }
@@ -621,20 +835,20 @@
     # Two cluster variables
     } else {
 
-      cluster.na <- sapply(cluster, function(y) all(is.na(y)))
-      if (isTRUE(any(cluster.na))) {
+      sapply(cluster, function(y) all(is.na(y))) |>
+        (\(y) if (isTRUE(any(y))) {
 
-        if (isTRUE(sum(cluster.na)) == 1L) {
+          if (isTRUE(sum(y)) == 1L) {
 
-          stop(paste0("A cluster variable specified in 'cluster' is completely missing.: ", names(which(cluster.na))), call. = FALSE)
+            stop(paste0("A cluster variable specified in 'cluster' is completely missing.: ", names(which(y))), call. = FALSE)
 
-        } else {
+          } else {
 
-          stop("Cluster variables specified in 'cluster' are completely missing.", call. = FALSE)
+            stop("Cluster variables specified in 'cluster' are completely missing.", call. = FALSE)
 
-        }
+          }
 
-      }
+        })()
 
     }
 
@@ -648,20 +862,20 @@
     # Two cluster variables
     } else {
 
-      cluster.unique <- sapply(cluster, function(y) length(unique(na.omit(y))) == 1L)
-      if (isTRUE(any(cluster.unique))) {
+      sapply(cluster, function(y) length(unique(na.omit(unlist(y)))) == 1L) |>
+        (\(y) if (isTRUE(any(y))) {
 
-        if (isTRUE(sum(cluster.unique)) == 1L) {
+          if (isTRUE(sum(y)) == 1L) {
 
-          stop(paste0("There is only one group represented in a cluster variable specified in 'cluster': ", names(which(cluster.unique))), call. = FALSE)
+            stop(paste0("There is only one group represented in a cluster variable specified in 'cluster': ", names(which(y))), call. = FALSE)
 
-        } else {
+          } else {
 
-          stop("There is only one group represented in both cluster variables specified in 'cluster'.", call. = FALSE)
+            stop("There is only one group represented in both cluster variables specified in 'cluster'.", call. = FALSE)
 
-        }
+          }
 
-      }
+        })()
 
     }
 
@@ -793,7 +1007,7 @@
 
     } else {
 
-      ##### Check if lenght of day number variable matching with the number of rows in 'data'
+      ##### Check if length of day number variable matching with the number of rows in 'data'
       if (isTRUE(nrow(as.data.frame(day)) != nrow(as.data.frame(data)))) { stop("Day number variable specified in 'day' does not match with the number of rows in '...'.", call. = FALSE) }
 
     }
@@ -1002,7 +1216,19 @@
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Run Command ####
 
-  tryCatch(system(cmd, ignore.stderr = TRUE), error = function(y) { stop("Running Blimp failed.", call. = FALSE) })
+  out <- tryCatch(system(cmd), error = function(y) { stop("Running Blimp failed.", call. = FALSE) })
+
+  # ERROR message
+  if (isTRUE(out != 0)) {
+
+    sink(file.path(dirnam, paste0(base, ".blimp-out")), append = TRUE)
+
+    cat("ERROR:\n\n",
+        suppressWarnings(system(cmd, intern = TRUE)) |> (\(y) paste("", sub("ERROR: ", "", y)))())
+
+    sink()
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Post-Process Posterior Data ####
@@ -1105,14 +1331,14 @@
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Clear Console ####
 
-  if (isTRUE(clear && .Platform$GUI == "RStudio")) { clear() }
+  if (isTRUE(clear && .Platform$GUI == "RStudio")) { misty::clear() }
 
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Detect Blimp Location ####
 
-detect.blimp <- function(exec = "blimp") {
+.detect.blimp <- function(exec = "blimp") {
 
   env_r_blimp <- Sys.getenv("R_BLIMP", unset = NA)
 
@@ -1473,6 +1699,2435 @@ detect.blimp <- function(exec = "blimp") {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
+# Internal functions for the chr.gsub() function -------------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Fast escape replace ####
+#
+# Fast escape function for limited case where only one pattern
+# provided actually matches anything
+#
+# Argument string: a character vector where replacements are sought
+# Argument pattern: a character string to be matched in the given character vector
+# Argument replacement: Character string equal in length to pattern or of length
+#                       one which are a replacement for matched pattern.
+# Argument ...: arguments to pass to gsub()
+.fastReplace <- function(string, pattern, replacement, ...) {
+
+  for (i in seq_along(pattern)) {
+
+    string <- gsub(pattern[i], replacement[i], string, ...)
+
+  }
+
+  return(string)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Filter overlaps from matches ####
+#
+# Helper function used to identify which results from gregexpr()
+# overlap other matches and filter out shorter, overlapped results
+#
+# Argument x: a matrix of gregexpr() results, 4 columns, index of column matched,
+#             start of match, length of match, end of match. Produced exclusively from
+#             a .worker function in chr.gsub
+.filterOverlap <- function(x) {
+
+  for (i in nrow(x):2L) {
+
+    s <- x[i, 2L]
+    ps <- x[1L:(i - 1L), 2L]
+    e <- x[i, 4]
+    pe <- x[1L:(i - 1L), 4L]
+
+    if (any(ps <= s & pe >= s)){
+
+      x <- x[-i, ]
+      next
+
+    }
+
+    if (any(ps <= e & pe >= e)) {
+
+      x <- x[-i,]
+
+      next
+
+    }
+
+  }
+
+  return(matrix(x, ncol = 4L))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Get all matches ####
+#
+# Helper function to be used in a loop to check each pattern
+# provided for matches
+#
+# Argument string: a character vector where replacements are sought
+# Argument pattern: a character string to be matched in the given character vector
+# Argument i: an iterator provided by a looping function
+# Argument ...: arguments to pass to gregexpr()
+.getMatches <- function(string ,pattern, i, ...){
+
+  tmp <- gregexpr(pattern[i], string,...)
+  start <- tmp[[1L]]
+  length <- attr(tmp[[1L]], "match.length")
+  return(matrix(cbind(i, start, length, start + length - 1L), ncol = 4L))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## chr.gsub() .worker ####
+#
+# Argument string: a character vector where replacements are sought
+# Argument pattern: a character string to be matched in the given character vector
+# Argument replacement: a character string equal in length to pattern or of length
+#                       one which are a replacement for matched pattern.
+# Argument ...: arguments to pass to regexpr family
+.worker <- function(string, pattern, replacement,...){
+
+  x0 <- do.call(rbind, lapply(seq_along(pattern), .getMatches, string = string, pattern = pattern, ...))
+  x0 <- matrix(x0[x0[, 2L] != -1L, ], ncol = 4L)
+
+  uid <- unique(x0[, 1L])
+  if (nrow(x0) == 0L) {
+
+    return(string)
+
+  }
+
+  if (length(unique(x0[, 1])) == 1L) {
+
+    return(.fastReplace(string, pattern[uid], replacement[uid], ...))
+
+  }
+
+  if (nrow(x0) > 1L) {
+
+    x <- x0[order(x0[, 3L], decreasing = TRUE), ]
+    x <- .filterOverlap(x)
+    uid <- unique(x[, 1L])
+
+    if (length(uid) == 1L) {
+
+      return(.fastReplace(string, pattern[uid], replacement[uid], ...))
+
+    }
+
+    x <- x[order(x[, 2L]), ]
+  }
+
+  for (i in nrow(x):1L){
+
+    s <- x[i, 2L]
+    e <- x[i, 4L]
+    p <- pattern[x[i, 1L]]
+    r <- replacement[x[i, 1L]]
+
+    pre <- if (s > 1L) { substr(string, 1L, s - 1L) } else { "" }
+    r0 <- sub(p,r,substr(string, s, e), ...)
+    end <- if (e < nchar(string)) { substr(string, e + 1, nchar(string)) } else { "" }
+    string <- paste0(pre, r0, end)
+
+  }
+
+  return(string)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the ci.cor() function ---------------------------------
+#
+# - .multsolvefun
+# - .sqerrVMc
+# - .sqerrVMintr
+# - .VMparstomoms
+# - .Tf2fun
+# - .smpmomvecfun
+# - .smpmjkfun
+# - .zciofrfun
+# - .estskkufun
+# - .ci.pearson.cor.adjust
+# - .ci.spearman.cor.adjust
+# - .ci.kendall.b
+# - .ci.kendall.c
+# - .ci.kendall.c.estimate
+# - .norm.inter
+# - .boot.func.cor
+# - .ci.boot.cor
+#
+# Bishara et al. (2018) Supporting Information
+# https://bpspsychub.onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Fbmsp.12113&file=bmsp12113-sup-0002-DataS2.txt
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Multiple attempts to find 3rd order polynomial parameters ####
+
+.multsolvefun <- function(xskku, yskku, obsr, seed = NULL, maxtol = 0.0001, nudge = 0.01, tryrndpars = 5L) {
+
+  if (isTRUE(!is.null(seed))) { set.seed(seed) }
+
+  failsolve <- FALSE
+  failcountvec <- nudgesmadevec <- rep(0L, 3L)
+  xskku.small <- xskku
+  yskku.small <- yskku
+  obsr.small <- obsr
+
+  Xmod <- try(stats::optim(c(1L, 0L, 0L), .sqerrVMc, sk = xskku[1L], ku = xskku[2L], method = "N"))
+
+  if (isTRUE(Xmod$value > maxtol)) { failsolve <- TRUE }
+
+  while (isTRUE(failsolve)) {
+
+    failcountvec <- failcountvec + c(1L, 0L, 0L)
+    randpars <- (stats::runif(3L) - 0.5)*c(3L, 1L, 0.5)
+    if (isTRUE((failcountvec[1L] %% tryrndpars == 1L) & (failcountvec[1L] > 1L))) {
+
+      nudgesmadevec <- nudgesmadevec + c(1L, 0L, 0L)
+      nudgemult <- 1L - nudge*nudgesmadevec[1L]
+      xskku.small <- xskku*nudgemult
+
+    }
+
+    Xmod <- try(optim(randpars, .sqerrVMc, sk = xskku.small[1L], ku = xskku.small[2L], method = "N"))
+    if(isTRUE((Xmod$value < maxtol) | (nudgesmadevec[1L] >= 100L))) { failsolve <- FALSE }
+
+  }
+
+  Ymod <- try(optim(c(1L, 0L, 0L), .sqerrVMc, sk = yskku[1L], ku = yskku[2L], method = "N"))
+  if (isTRUE(Ymod$value > maxtol)) { failsolve <- TRUE }
+
+  while (isTRUE(failsolve)) {
+
+    failcountvec <- failcountvec + c(0L, 1L, 0L)
+    randpars <- (runif(3L) - 0.5)*c(3L, 1L, 0.5)
+    if (isTRUE((failcountvec[2] %% tryrndpars == 1) & (failcountvec[2] > 1))) {
+
+      nudgesmadevec <- nudgesmadevec + c(0L, 1L, 0L)
+      nudgemult <- 1L - nudge*nudgesmadevec[2L]
+      yskku.small <- yskku*nudgemult
+
+    }
+
+    Ymod <- try(optim(randpars, .sqerrVMc, sk = yskku.small[1L], ku = yskku.small[2L], method = "N"))
+    if (isTRUE((Ymod$value < maxtol) | (nudgesmadevec[2L] >= 100L))) { failsolve <- FALSE }
+
+  }
+
+  estconstvec <- c(Xmod$par,Ymod$par)
+  if (isTRUE(nudgesmadevec[1L] >= 100)) { estconstvec[1L:3L] <- c(1L, 0L, 0L) }
+  if (isTRUE(nudgesmadevec[2L] >= 100)) { estconstvec[4L:6L] <- c(1L, 0L, 0L) }
+
+  intrmod <- try(optimize(.sqerrVMintr, cpars = estconstvec, obsr = obsr, interval = c(-1L, 1L)))
+  if (isTRUE(intrmod$objective > maxtol)) { failsolve <- TRUE }
+
+  while (isTRUE(failsolve)) {
+
+    failcountvec <- failcountvec + c(0L, 0L, 1L)
+    nudgesmadevec <- nudgesmadevec + c(0L, 0L, 1L)
+    nudgemult <- 1L - nudge*nudgesmadevec[3L]
+    obsr.small <- obsr*nudgemult
+    intrmod <- try(optimize(.sqerrVMintr, cpars = estconstvec, obsr = obsr.small, interval = c(-1L, 1L)))
+    if (isTRUE((intrmod$objective < maxtol) | (nudgesmadevec[3L] >= 100L))) { failsolve <- FALSE }
+
+  }
+
+  if (isTRUE(nudgesmadevec[3L] < 100L)) {
+
+    intr <- intrmod$minimum
+
+  } else {
+
+    intr <- 0L
+
+  }
+
+  estconstmat <- rbind(estconstvec[1L:3L], estconstvec[4L:6L])
+  rownames(estconstmat) <- c("X","Y")
+  colnames(estconstmat) <- c("b","c","d")
+
+  return(list(estxyc = estconstmat, intr = intr, totsqerr = Xmod$value + Ymod$value + intrmod$objective, failed = failcountvec, nudgesmade = nudgesmadevec))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Squared error of 3rd order polynomial parameters ####
+
+.sqerrVMc <- function(trypars, sk, ku) {
+
+  devvec <- rep(NA, 3L)
+  b  <- trypars[1L]
+  c1 <- trypars[2L]
+  d  <- trypars[3L]
+
+  devvec[1L] <- b^2L + 6L*b*d + 2L*c1^2L + 15L*d^2L - 1L
+  devvec[2L] <- 2L*c1*(b^2L + 24L*b*d + 105L*d^2L + 2L) - sk
+  devvec[3L] <- 24L*(b*d + c1^2L*(1 + b^2L + 28L*b*d) + d^2L*(12L + 48L*b*d + 141L*c1^2L + 225L*d^2L)) - ku
+
+  return(sum(devvec^2L))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Squared error for intermediate correlation parameter ####
+
+.sqerrVMintr <- function(tryintr, cpars, obsr) {
+
+  b1 <- cpars[1L]
+  c1 <- cpars[2L]
+  d1 <- cpars[3L]
+  b2 <- cpars[4L]
+  c2 <- cpars[5L]
+  d2 <- cpars[6L]
+
+  return((((b1*b2 + 3L*b1*d2 + 3L*d1*b2 + 9L*d1*d2)*tryintr) + ((2L*c1*c2)*tryintr^2L) + ((6L*d1*d2)*tryintr^3L) - obsr)^2L)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Third order polynomial parameters to analytically solve ####
+
+.VMparstomoms <- function(consX, consY, intr) {
+
+  Power <- function(g, h) { g^h }
+
+  b1 <- consX[1L]
+  c1 <- consX[2L]
+  d1 <- consX[3L]
+  b2 <- consY[1L]
+  c2 <- consY[2L]
+  d2 <- consY[3L]
+  r <- intr
+
+  VMm22 <- Power(b1, 2L)*Power(b2, 2L) +
+    2L*Power(r, 2L)*Power(b1, 2L)*Power(b2, 2L) +
+    2L*Power(b2, 2L)*Power(c1, 2L) +
+    8L*Power(r, 2L)*Power(b2, 2L)*Power(c1, 2L) +
+    16L*r*b1*b2*c1*c2 +
+    24L*Power(r, 3L)*b1*b2*c1*c2 +
+    2L*Power(b1, 2L)*Power(c2, 2L) +
+    8L*Power(r, 2L)*Power(b1, 2L)*Power(c2, 2L) +
+    4L*Power(c1, 2L)*Power(c2, 2L) +
+    32L*Power(r, 2L)*Power(c1, 2L)*Power(c2, 2L) +
+    24L*Power(r, 4L)*Power(c1, 2L)*Power(c2, 2L) +
+    6L*b1*Power(b2, 2L)*d1 +
+    24L*Power(r, 2L)*b1*Power(b2, 2L)*d1 +
+    96L*r*b2*c1*c2*d1 +
+    216L*Power(r, 3L)*b2*c1*c2*d1 +
+    12L*b1*Power(c2, 2L)*d1 +
+    96L*Power(r, 2L)*b1*Power(c2, 2L)*d1 +
+    48L*Power(r, 4L)*b1*Power(c2, 2L)*d1 +
+    15L*Power(b2, 2L)*Power(d1, 2L) +
+    90L*Power(r, 2L)*Power(b2, 2L)*Power(d1, 2L) +
+    30L*Power(c2, 2L)*Power(d1, 2L) +
+    360L*Power(r, 2L)*Power(c2, 2L)*Power(d1, 2L) +
+    360L*Power(r, 4L)*Power(c2, 2L)*Power(d1, 2L) +
+    6L*Power(b1, 2L)*b2*d2 +
+    24L*Power(r, 2L)*Power(b1, 2L)*b2*d2 +
+    12L*b2*Power(c1, 2L)*d2 +
+    96L*Power(r, 2L)*b2*Power(c1, 2L)*d2 +
+    48L*Power(r, 4L)*b2*Power(c1, 2L)*d2 +
+    96L*r*b1*c1*c2*d2 +
+    216L*Power(r, 3L)*b1*c1*c2*d2 +
+    36L*b1*b2*d1*d2 +
+    288L*Power(r, 2L)*b1*b2*d1*d2 +
+    96L*Power(r, 4L)*b1*b2*d1*d2 +
+    576L*r*c1*c2*d1*d2 +
+    1944L*Power(r, 3L)*c1*c2*d1*d2 +
+    480L*Power(r, 5L)*c1*c2*d1*d2 +
+    90L*b2*Power(d1, 2L)*d2 +
+    1080L*Power(r, 2L)*b2*Power(d1, 2L)*d2 +
+    720L*Power(r, 4L)*b2*Power(d1, 2L)*d2 +
+    15L*Power(b1, 2L)*Power(d2, 2L) +
+    90L*Power(r, 2L)*Power(b1, 2L)*Power(d2, 2L) +
+    30L*Power(c1, 2L)*Power(d2, 2L) +
+    360L*Power(r, 2L)*Power(c1, 2L)*Power(d2, 2L) +
+    360L*Power(r, 4L)*Power(c1, 2L)*Power(d2, 2L) +
+    90L*b1*d1*Power(d2, 2L) +
+    1080L*Power(r, 2L)*b1*d1*Power(d2, 2L) +
+    720L*Power(r, 4L)*b1*d1*Power(d2, 2L) +
+    225L*Power(d1, 2L)*Power(d2, 2L) +
+    4050L*Power(r, 2L)*Power(d1, 2L)*Power(d2, 2L) +
+    5400L*Power(r, 4L)*Power(d1, 2L)*Power(d2, 2L) +
+    720L*Power(r, 6L)*Power(d1, 2L)*Power(d2, 2L)
+
+  VMm13 <- 3L*r*b1*Power(b2, 3L) +
+    30L*Power(r, 2L)*Power(b2, 2L)*c1*c2 +
+    30L*r*b1*b2*Power(c2, 2L) +
+    60L*Power(r, 2L)*c1*Power(c2, 3L) +
+    9L*r*Power(b2, 3L)*d1 +
+    6L*Power(r, 3L)*Power(b2, 3L)*d1 +
+    90L*r*b2*Power(c2, 2L)*d1 +
+    144L*Power(r, 3L)*b2*Power(c2, 2L)*d1 +
+    45L*r*b1*Power(b2, 2L)*d2 +
+    468L*Power(r, 2L)*b2*c1*c2*d2 +
+    234L*r*b1*Power(c2, 2L)*d2 +
+    135L*r*Power(b2, 2L)*d1*d2 +
+    180L*Power(r, 3L)*Power(b2, 2L)*d1*d2 +
+    702L*r*Power(c2, 2L)*d1*d2 +
+    1548L*Power(r, 3L)*Power(c2, 2L)*d1*d2 +
+    315L*r*b1*b2*Power(d2, 2L) +
+    2250L*Power(r, 2L)*c1*c2*Power(d2, 2L) +
+    945L*r*b2*d1*Power(d2, 2L) +
+    1890L*Power(r, 3L)*b2*d1*Power(d2, 2L) +
+    945L*r*b1*Power(d2, 3L) +
+    2835L*r*d1*Power(d2, 3L) +
+    7560L*Power(r, 3L)*d1*Power(d2, 3L)
+
+  VMm31 <- 3L*r*Power(b1, 3L)*b2 +
+    30L*r*b1*b2*Power(c1, 2L) +
+    30L*Power(r, 2L)*Power(b1, 2L)*c1*c2 +
+    60L*Power(r, 2L)*Power(c1, 3L)*c2 +
+    45L*r*Power(b1, 2L)*b2*d1 +
+    234L*r*b2*Power(c1, 2L)*d1 +
+    468L*Power(r, 2L)*b1*c1*c2*d1 +
+    315L*r*b1*b2*Power(d1, 2L) +
+    2250L*Power(r, 2L)*c1*c2*Power(d1, 2L) +
+    945L*r*b2*Power(d1, 3L) +
+    9L*r*Power(b1, 3L)*d2 +
+    6L*Power(r, 3L)*Power(b1, 3L)*d2 +
+    90L*r*b1*Power(c1, 2L)*d2 +
+    144L*Power(r, 3L)*b1*Power(c1, 2L)*d2 +
+    135L*r*Power(b1, 2L)*d1*d2 +
+    180L*Power(r, 3L)*Power(b1, 2L)*d1*d2 +
+    702L*r*Power(c1, 2L)*d1*d2 +
+    1548L*Power(r, 3L)*Power(c1, 2L)*d1*d2 +
+    945L*r*b1*Power(d1, 2L)*d2 +
+    1890L*Power(r, 3L)*b1*Power(d1, 2L)*d2 +
+    2835L*r*Power(d1, 3L)*d2 +
+    7560L*Power(r, 3L)*Power(d1, 3L)*d2
+
+  VMm40 <- 936L*b1*c1^2L*d1 + 60L*b1^2L*c1^2L + 60L*b1^3L*d1 + 630L*b1^2L*d1^2L + 3780L*b1*d1^3L + 3L*b1^4L + 4500L*c1^2L*d1^2L + 60L*c1^4L + 10395L*d1^4L
+  VMm04 <- 936L*b2*c2^2L*d2 + 60L*b2^2L*c2^2L + 60L*b2^3L*d2 + 630L*b2^2L*d2^2L + 3780L*b2*d2^3L + 3L*b2^4L + 4500L*c2^2L*d2^2L + 60L*c2^4L + 10395L*d2^4L
+
+  return(c(VMmu04 = VMm04, VMmu13 = VMm13, VMmu22 = VMm22, VMmu31 = VMm31, VMmu40 = VMm40))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Hawkins (1989) tau_f^2 term ####
+
+.Tf2fun <- function(rho, mujkvec)  {
+
+  m04 <- mujkvec[1L]
+  m13 <- mujkvec[2L]
+  m22 <- mujkvec[3L]
+  m31 <- mujkvec[4L]
+  m40 <- mujkvec[5L]
+
+  return(unname((((1L - rho^2L)^(-2L))*0.25)*((m40 + 2L*m22 + m04)*(rho^2L) - 4L*(m31 + m13)*rho + 4L*m22)))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Vector of relevant sample joint moments ####
+
+.smpmomvecfun <- function(x, y) {
+
+  momvec <- rep(NA, 5L)
+  xcent <- x - mean(x)
+  ycent <- y - mean(y)
+  xstand <- scale(x)
+  ystand <- scale(y)
+
+  for (i in 0L:4L) {
+
+    momvec[i + 1L] <- .smpmjkfun(xstand, ystand, i, 4L - i)
+    names(momvec)[i + 1L] <- paste0("m", i, 4L - i)
+
+  }
+
+  return(momvec)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Sample joint moment ####
+
+.smpmjkfun <- function(x, y, j, k) {
+
+  (1L / length(x))*sum((x^j)*(y^k))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## CI of correlation using mean and standard error of z ####
+
+.zciofrfun <- function(z, zsd, alternative, conf.level) {
+
+  if (isTRUE(alternative == "two.sided")) {
+
+    alphavec <- c((1L - conf.level) / 2L,  (1L + conf.level) / 2L)
+
+  } else {
+
+    alphavec <- c((1L - conf.level), conf.level)
+
+  }
+
+  object <- tanh(z + c(qnorm(alphavec[1L]), qnorm(alphavec[2L]))*zsd)
+
+  if (isTRUE(alternative != "two.sided")) { switch(alternative, less = { object[1L] <- -1L }, greater = { object[2L] <- 1L }) }
+
+  return(object)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Skewness and kurtosis in a sample ####
+
+.estskkufun <- function(x, sample = TRUE, center = TRUE) {
+
+  return(c(g1 = misty::skewness(x, sample = sample, check = FALSE), g2 = misty::kurtosis(x, sample = sample, center = center, check = FALSE)))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Main function to estimate confidence intervals for Pearson correlation ####
+
+.ci.pearson.cor.adjust <- function(x, y, adjust = c("none", "joint", "approx"), alternative = c("two.sided", "less", "greater"),
+                                   conf.level = 0.95, sample = TRUE, center = TRUE, seed = NULL, maxtol = 0.00001, nudge = 0.001) {
+
+  xy <- na.omit(data.frame(x, y))
+
+  x1 <- xy$x
+  x2 <- xy$y
+
+  n <- nrow(xy)
+  nNA <- length(x) - n
+  pNA <- (nNA / (n + nNA)) * 100
+
+  adjmethnames <- c("none", "joint", "approx")
+  boundsmat <- matrix(NA, nrow = 2L, ncol = 3L, dimnames = list(c("low", "upp"), adjmethnames))
+
+  sdzvec <- setNames(rep(NA, length(adjmethnames)), nm = adjmethnames)
+
+  #...................
+  ### At least n = 4 and Variance Unequal 0 ####
+
+  if (isTRUE(n >= 4L && var(x1) != 0L && var(x2) != 0L)) {
+
+    r <- cor(x1, x2)
+    r.z <- atanh(r)
+
+    #...................
+    ### Unadjusted Standard Error ####
+
+    if (isTRUE("none" %in% adjust)) {
+
+      sdzvec[1L] <- 1L / sqrt(n - 3L)
+
+    } else {
+
+      sdzvec[1L] <- NA
+
+    }
+
+    #...................
+    ### Adjusted by Sample Joint Moments ####
+
+    if (isTRUE("joint" %in% adjust)) {
+
+      smpmomvec <- .smpmomvecfun(x1, x2)
+      jointmomTf2 <- .Tf2fun(rho = r, mujkvec = smpmomvec)
+      sdzvec[2L] <- sqrt(jointmomTf2 / (n - 3L))
+
+    } else {
+
+      smpmomvec <- jointmomTf2 <- NA
+
+    }
+
+    #...................
+    ### Adjusted by Approximate Distributing using Marginal Skewness and Kurtosis ####
+
+    XYg12mat <- matrix(c(.estskkufun(x1, sample = sample, center = center), .estskkufun(x2, sample = sample, center = center)),
+                       nrow = 2L, ncol = 2L, byrow = TRUE, dimnames = list(c("X", "Y"), c("g1", "g2")))
+
+    if (isTRUE("approx" %in% adjust)) {
+
+      VMparlist <- .multsolvefun(xskku = XYg12mat[1L, ], yskku = XYg12mat[2L, ], obsr = r, maxtol = maxtol, nudge = nudge)
+
+      # Optimization succeeded
+      if (isTRUE(is.list(VMparlist))) {
+
+        VMmoms <- .VMparstomoms(VMparlist$estxyc[1, ], VMparlist$estxyc[2L, ], VMparlist$intr)
+        nudgedrho <- r*(1L - 0.01*VMparlist$nudgesmade[3L])
+
+        ApproxDistTf2 <- .Tf2fun(rho = nudgedrho, mujkvec = VMmoms)
+
+        sdzvec[3L] <- sqrt(ApproxDistTf2 / (n - 3L))
+
+        # Optimization failed
+      } else {
+
+        VMmoms <- setNames(rep(NA, 5L), nm = c("VMmu04", "VMmu13", "VMmu22", "VMmu31", "VMmu40"))
+        sdzvec[3L] <- ApproxDistTf2 <- NA
+
+      }
+
+    } else {
+
+      VMmoms <- setNames(rep(NA, 5L), nm = c("VMmu04", "VMmu13", "VMmu22", "VMmu31", "VMmu40"))
+      sdzvec[3L] <- ApproxDistTf2 <- NA
+
+    }
+
+    #...................
+    ### Confidence intervals ####
+
+    for (curadj in seq_len(length(adjmethnames))) {
+
+      boundsmat[, curadj] <- .zciofrfun(r.z, sdzvec[curadj], alternative = alternative, conf.level = conf.level)
+
+    }
+
+    #...................
+    ### Return Object ####
+
+    object <- list(alternative = alternative, conf.level = conf.level, n = n,  nNA = nNA, pNA = pNA, skew1 = XYg12mat[1L, "g1"], kurt1 = XYg12mat[1L, "g2"], skew2 = XYg12mat[2L, "g1"],  kurt2 = XYg12mat[2L, "g2"],
+                   cor = r, adjust = adjust, se = sdzvec, ci = boundsmat, skew.kurt = XYg12mat, joint.moments = smpmomvec, approx.moments = VMmoms, joint.tau2.f = jointmomTf2, approx.tau2.f = ApproxDistTf2)
+
+    #...................
+    ### Number of Cases n < 4 or Variance Equal 0 ####
+
+  } else {
+
+    #...................
+    ### Return Object ####
+
+    object <- list(alternative = alternative, conf.level = conf.level, n = n,  nNA = nNA, pNA = pNA,  skew1 = NA, kurt1 = NA,  skew2 = NA, kurt2 = NA,
+                   cor = if (isTRUE(nrow(xy) == 3L && var(x1) != 0L && var(x2) != 0L)) { suppressWarnings(cor(x1, x2)) } else { NA }, adjust = adjust, se = sdzvec, ci = boundsmat, skew.kurt = NA, joint.moments = NA, approx.moments = NA, joint.tau2.f = NA, approx.tau2.f = NA)
+
+
+  }
+
+  return(object)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## CI for the Spearman Correlation with Fieller et al (1957), Bonett and Wright (2000), and RIN Standard Error ####
+#
+# Bishara and Hittner (2017) Supplementary Materials A
+# https://static-content.springer.com/esm/art%3A10.3758%2Fs13428-016-0702-8/MediaObjects/13428_2016_702_MOESM1_ESM.pdf
+#
+# RIN transformation
+# https://rpubs.com/seriousstats/616206
+
+.ci.spearman.cor.se <- function(x, y, se = c("fisher", "fieller", "bonett", "rin"), sample = TRUE, alternative = c("two.sided", "less", "greater"), conf.level = 0.95) {
+
+  xy <- na.omit(data.frame(x, y))
+
+  x1 <- xy$x
+  x2 <- xy$y
+
+  n <- nrow(xy)
+  nNA <- length(x) - n
+  pNA <- (nNA / (n + nNA)) * 100
+
+  #...................
+  ### At least n = 4 and Variance Unequal 0 ####
+
+  if (isTRUE(n >= 4L && var(x1) != 0L && var(x2) != 0L)) {
+
+    rs <- cor(x1, x2, method = "spearman")
+
+    if (isTRUE(se %in% c("fieller", "bonett"))) {
+
+      if (isTRUE(alternative == "two.sided")) {
+
+        alphavec <- c((1L - conf.level) / 2L, (1L + conf.level) / 2L)
+
+      } else {
+
+        alphavec <- c((1L - conf.level), conf.level)
+
+      }
+
+      ci <- tanh(atanh(rs) + c(qnorm(alphavec[1L]), qnorm(alphavec[2L])) * switch(se, "fisher" = { sqrt(1 / (n - 3L)) }, "fieller" = { sqrt(1.06 / (n - 3L)) }, "bonett" = { sqrt((1L + (rs^2L) / 2L) / (n - 3L)) }))
+
+      if (isTRUE(alternative != "two.sided")) { switch(alternative, less = { ci[1L] <- -1L }, greater = { ci[2L] <- 1L }) }
+
+    } else {
+
+      RIN <- function(y) { qnorm((rank(y) - 0.5) / (length(rank(y)))) }
+
+      ci <- cor.test(RIN(x1), RIN(x2), alternative = alternative, conf.level = conf.level)$conf.int
+
+    }
+
+    object <- list(se = se, sample = sample, alternative = alternative, conf.level = conf.level, n = n,  nNA = nNA, pNA = pNA, skew1 = misty::skewness(x1, sample = sample, check = FALSE), kurt1 = misty::kurtosis(x1, sample = sample, check = FALSE), skew2 = misty::skewness(x2, sample = sample, check = FALSE), kurt2 = misty::kurtosis(x2, sample = sample, check = FALSE), cor = rs, ci = ci)
+
+    #...................
+    ### Number of Cases n < 4 or Variance Equal 0 ####
+
+  } else {
+
+    object <- list(se = se, sample = sample, alternative = alternative, conf.level = conf.level, n = n,  nNA = nNA, pNA = pNA, skew1 = NA, kurt1 = NA, skew2 = NA, kurt2 = NA, cor = if (isTRUE(nrow(xy) == 3L && var(x1) != 0L && var(x2) != 0L)) { suppressWarnings(cor(x1, x2, method = "spearman")) } else { NA }, ci = c(NA, NA))
+
+  }
+
+  return(object)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .ci.kendall.b Function ####
+
+.ci.kendall.b <- function(x, y, sample = TRUE, alternative = c("two.sided", "less", "greater"), conf.level = 0.95) {
+
+  xy <- na.omit(data.frame(x, y))
+
+  x1 <- xy$x
+  x2 <- xy$y
+
+  n <- nrow(xy)
+  nNA <- length(x) - n
+  pNA <- (nNA / (n + nNA)) * 100
+
+  #...................
+  ### At least n = 4 and Variance Unequal 0 ####
+
+  if (isTRUE(n >= 4L && var(x1) != 0L && var(x2) != 0L)) {
+
+    #...................
+    ### Significance Testing ####
+
+    # Test for Association
+    test.tau.b <- cor.test(x1, x2, method = "kendall", alternative = alternative, exact = FALSE, continuity = FALSE)
+
+    # Kendall's tau b
+    tau <- unname(test.tau.b$estimate)
+
+    # Fieler et al. (1957) standard error
+    tau.se <- sqrt(0.437 / (length(x) - 4L))
+
+    #...................
+    ### Confidence Interval ####
+
+    if (isTRUE(alternative == "two.sided")) {
+
+      alphavec <- c((1L - conf.level) / 2L, (1L + conf.level) / 2L)
+
+    } else {
+
+      alphavec <- c((1L - conf.level), conf.level)
+
+    }
+
+    if (isTRUE(!is.na(tau.se))) {
+
+      ci <- tanh(atanh(tau) + c(qnorm(alphavec[1L]), qnorm(alphavec[2L]))*tau.se)
+
+      if (isTRUE(alternative != "two.sided")) { switch(alternative, less = { ci[1L] <- -1L }, greater = { ci[2L] <- 1L }) }
+
+    } else {
+
+      ci <- c(NA, NA)
+
+    }
+
+    #...................
+    ### Return Object ####
+
+    object <- list(alternative = alternative, conf.level = conf.level, n = n, nNA = nNA, pNA = pNA, skew1 = misty::skewness(x1, sample = sample, check = FALSE), kurt1 = misty::kurtosis(x1, sample = sample, check = FALSE), skew2 = misty::skewness(x2, sample = sample, check = FALSE), kurt2 = misty::kurtosis(x2, sample = sample, check = FALSE),
+                   stat = test.tau.b$statistic, tau = tau, se = tau.se, pval = test.tau.b$p.value, ci = ci)
+
+    #...................
+    ### Number of Cases n < 4 or Variance Equal 0 ####
+
+  } else {
+
+    #...................
+    ### Return Object ####
+
+    object <- list(alternative = alternative, conf.level = conf.level, n = n, nNA = nNA, pNA = pNA, skew1 = NA, kurt1 = NA, skew2 = NA, kurt2 = NA,
+                   stat = NA, tau = if (isTRUE(nrow(xy) == 3L && var(x1) != 0L && var(x2) != 0L)) { suppressWarnings(cor(x1, x2, method = "kendall")) } else { NA }, se = NA, pval = NA, ci = c(NA, NA))
+
+  }
+
+  return(object)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .ci.kendall.c.estimate Function ####
+
+.ci.kendall.c.estimate <- function(x, y) {
+
+  # Contingency table
+  x.table <- table(x, y)
+
+  # Number of rows
+  x.nrow <- nrow(x.table)
+
+  # Number of columns
+  x.ncol <- ncol(x.table)
+
+  # Sample size
+  x.n <- sum(x.table)
+
+  # Minimum of number of rows/columns
+  x.m <- min(dim(x.table))
+
+  pi.c <- pi.d <- matrix(0L, nrow = x.nrow, ncol = x.ncol)
+
+  x.col <- col(x.table)
+  x.row <- row(x.table)
+
+  for (i in seq_len(x.nrow)) {
+
+    for (j in seq_len(x.ncol)) {
+
+      pi.c[i, j] <- sum(x.table[x.row < i & x.col < j]) + sum(x.table[x.row > i & x.col > j])
+      pi.d[i, j] <- sum(x.table[x.row < i & x.col > j]) + sum(x.table[x.row > i & x.col < j])
+
+    }
+
+  }
+
+  # Concordant
+  x.con <- sum(pi.c * x.table) / 2L
+
+  # Discordant
+  x.dis <- sum(pi.d * x.table) / 2L
+
+  #...................
+  ### Kendall Tau-c ####
+
+  tau <- (x.m*2L * (x.con - x.dis)) / (x.n^2L * (x.m - 1L))
+
+  #...................
+  ### Return Object ####
+
+  return(tau)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .ci.kendall.c Function ####
+
+.ci.kendall.c <- function(x, y, sample = TRUE, alternative = c("two.sided", "less", "greater"), conf.level = 0.95) {
+
+  xy <- na.omit(data.frame(x, y))
+
+  x1 <- xy$x
+  x2 <- xy$y
+
+  n <- nrow(xy)
+  nNA <- length(x) - n
+  pNA <- (nNA / (n + nNA)) * 100
+
+  #...................
+  ### At least n = 4 and Variance Unequal 0 ####
+
+  if (isTRUE(n >= 4L && var(x1) != 0L && var(x2) != 0L)) {
+
+    #...................
+    ### Kendall Tau-c ####
+
+    tau <- .ci.kendall.c.estimate(x1, x2)
+
+    # Fieler et al. (1957) standard error
+    tau.se <- sqrt(0.437 / (length(x) - 4L))
+
+    # Test statistic
+    z <- tau / tau.se
+
+    # p-value
+    switch(alternative, "two.sided" = {
+
+      pval <- pnorm(abs(z), lower.tail = FALSE)*2L
+
+    }, "less" = {
+
+      pval <- ifelse(z < 0L, pnorm(abs(z), lower.tail = FALSE), 1 - pnorm(abs(z), lower.tail = FALSE))
+
+    }, "greater" = {
+
+      pval <- ifelse(z > 0L, pnorm(abs(z), lower.tail = FALSE), 1 - pnorm(abs(z), lower.tail = FALSE))
+
+    })
+
+    #...................
+    ### Confidence Interval ####
+
+    if (isTRUE(alternative == "two.sided")) {
+
+      alphavec <- c((1L - conf.level) / 2L, (1L + conf.level) / 2L)
+
+    } else {
+
+      alphavec <- c((1L - conf.level), conf.level)
+
+    }
+
+    ci <- tanh(atanh(tau) + c(qnorm(alphavec[1L]), qnorm(alphavec[2L]))*tau.se)
+
+    if (isTRUE(alternative != "two.sided")) { switch(alternative, less = { ci[1L] <- -1L }, greater = { ci[2L] <- 1L }) }
+
+    #...................
+    ### Return Object ####
+
+    return(list(alternative = alternative, conf.level = conf.level, n = n, nNA = nNA, pNA = pNA, skew1 = misty::skewness(x, sample = sample, check = FALSE), kurt1 = misty::kurtosis(x, sample = sample, check = FALSE), skew2 = misty::skewness(y, sample = sample, check = FALSE), kurt2 = misty::kurtosis(y, sample = sample, check = FALSE),
+                tau = tau, se = tau.se, stat = z, pval = pval, ci = ci))
+
+    #...................
+    ### Number of Cases n < 4 or Variance Equal 0 ####
+
+  } else {
+
+    #...................
+    ### Return Object ####
+
+    object <- list(alternative = alternative, conf.level = conf.level, n = n, nNA = nNA, pNA = pNA, skew1 = NA, kurt1 = NA, skew2 = NA, kurt2 = NA,
+                   tau = if (isTRUE(nrow(xy) == 3L && var(x1) != 0L && var(x2) != 0L)) { suppressWarnings(.ci.kendall.c.estimate(x1, x2)) } else { NA }, se = NA, stat = NA, pval = NA, ci = c(NA, NA))
+
+  }
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Interpolation on the Normal Quantile Scale ####
+# Equation 5.8 of Davison and Hinkley (1997)
+#
+# .norm.inter from the R package 'boot'
+# see: https://github.com/cran/boot/blob/master/R/bootfuns.q
+
+.norm.inter <- function(t, alpha) {
+
+  t <- t[is.finite(t)]
+  R <- length(t)
+  rk <- (R + 1L)*alpha
+  k <- trunc(rk)
+  inds <- seq_along(k)
+  out <- inds
+  kvs <- k[k > 0L & k < R]
+
+  tstar <- sort(t, partial = sort(union(c(1L, R), c(kvs, kvs + 1L))))
+
+  ints <- (k == rk)
+
+  if (isTRUE(any(ints))) { out[inds[ints]] <- tstar[k[inds[ints]]] }
+
+  out[k == 0L] <- tstar[1L]
+  out[k == R] <- tstar[R]
+
+  not <- function(v) { xor(rep(TRUE,length(v)), v) }
+  temp <- inds[not(ints) & k != 0L & k != R]
+
+  temp1 <- qnorm(alpha[temp])
+  temp2 <- qnorm(k[temp] / (R + 1L))
+  temp3 <- qnorm((k[temp] + 1L)/(R + 1L))
+
+  tk <- tstar[k[temp]]
+  tk1 <- tstar[k[temp] + 1L]
+
+  out[temp] <- tk + (temp1 - temp2) / (temp3 - temp2)*(tk1 - tk)
+
+  return(out)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Bootstrap Function Correlation Coefficient ####
+
+.boot.func.cor <- function(data, ind, method) {
+
+  data.boot <- data[ind, ]
+
+  if (isTRUE(method != "kendall-c")) { cor <- cor(data.boot[, 1L], data.boot[, 2L], method = method) } else { cor <- .ci.kendall.c.estimate(data.boot[, 1L], data.boot[, 2L]) }
+
+  return(cor = cor)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Nonparametric Bootstrap Confidence Intervals for the Correlation Coefficient ####
+
+.ci.boot.cor <- function(data, x, y, method, statistic = .boot.func.cor, R = 1000, min.n = 10,
+                         boot = c("norm", "basic", "perc", "bc", "bca"),
+                         fisher = TRUE, sample = TRUE, alternative = c("two.sided", "less", "greater"),
+                         conf.level = 0.95, seed = NULL) {
+
+  #...................
+  ### Correlation Coefficient ####
+
+  method <- ifelse(isTRUE(method == "kendall-b"), "kendall", method)
+
+  #...................
+  ### Fisher-z transformation ####
+
+  if (isTRUE(fisher)) { h <- function(t) atanh(t); hinv <- function(t) tanh(t) } else { h <- function(t) t; hinv <- function(t) t }
+
+  #...................
+  ### Adjust Confidence Level ####
+
+  if (isTRUE(alternative %in% c("less", "greater"))) { conf.level.alter <- conf.level - (1 - conf.level) } else { conf.level.alter <- conf.level }
+
+  #...................
+  ### Data ####
+
+  xy <- na.omit(data.frame(x = data[, x], y = data[, y]))
+
+  x1 <- xy$x
+  x2 <- xy$y
+
+  n <- nrow(xy)
+  nNA <- nrow(data) - n
+  pNA <- (nNA / (n + nNA)) * 100L
+
+  #...................
+  ### At least n = min.n Cases and Variance Unequal 0 ####
+
+  if (isTRUE(n >= min.n && var(x1) != 0L && var(x2) != 0L)) {
+
+    #...................
+    ### Bootstrap Replicates ####
+
+    if (isTRUE(!is.null(seed))) { set.seed(seed) }
+
+    boot.repli <- suppressWarnings(boot::boot(xy, statistic = statistic, method = method, R = R))
+
+    #...................
+    ### Bootstrap Confidence Interval ####
+
+    switch(boot, "norm" = {
+
+      result <- suppressWarnings(boot::boot.ci(boot.repli, type = "norm", conf = conf.level.alter, h = h, hinv = hinv)) |>
+        (\(y) data.frame(low = y$normal[2L], upp = y$normal[3L]))()
+
+    }, "basic" = {
+
+      result <- suppressWarnings(boot::boot.ci(boot.repli, type = "basic", conf = conf.level.alter, h = h, hinv = hinv)) |>
+        (\(y) data.frame(low = y$basic[4L], upp = y$basic[5L]))()
+
+    }, "perc" = {
+
+      result <- suppressWarnings(boot::boot.ci(boot.repli, type = "perc", conf = conf.level.alter)) |>
+        (\(y) data.frame(low = y$perc[4L], upp = y$perc[5L]))()
+
+    }, "bc" = {
+
+      result <- qnorm(mean(boot.repli$t < boot.repli$t0, na.rm = TRUE)) |>
+        (\(y) suppressWarnings(.norm.inter(boot.repli$t[, 1L], pnorm(y + (y + qnorm((1L + c(-conf.level.alter, conf.level.alter)) / 2L))))))() |>
+        (\(z) data.frame(low = z[1L], upp = z[2L]))()
+
+    }, "bca" = {
+
+      result <- suppressWarnings(boot::boot.ci(boot.repli, type = "bca", method = method, conf = conf.level.alter)) |>
+        (\(y) data.frame(low = y$bca[4L], upp = y$bca[5L]))()
+
+    })
+
+    #...................
+    ### Adjust Lower or Upper Bound ####
+
+    switch(alternative, "less" = { result$low <- -1 }, "greater" = { result$upp <- 1 })
+
+    #...................
+    ### Return Object ####
+
+    object <- list(n = n, nNA = nNA, pNA = pNA, skew1 = misty::skewness(x1, sample = sample, check = FALSE), kurt1 = misty::kurtosis(x1, sample = sample, check = FALSE), skew2 = misty::skewness(x2, sample = sample, check = FALSE), kurt2 = misty::kurtosis(x2, sample = sample, check = FALSE),
+                   cor = boot.repli$t0, t = as.vector(boot.repli$t), ci = result)
+
+    #...................
+    ### Number of Cases n < min.n or Variance Equal 0 ####
+
+  } else {
+
+    #...................
+    ### Return Object ####
+
+    object <- list(n = n, nNA = nNA, pNA = pNA, skew1 = NA, kurt1 = NA, skew2 = NA, kurt2 = NA,
+                   cor = if (isTRUE(nrow(xy) == 3L && var(x1) != 0L && var(x2) != 0L)) {
+
+                     if (isTRUE(method != "kendall-c")) {
+
+                       suppressWarnings(cor(x1, x2, method = ifelse(isTRUE(method == "kendall-b"), "kendall", method)))
+
+                     } else {
+
+                       suppressWarnings(.ci.kendall.c.estimate(x1, x2))
+
+                     }
+
+                   } else {
+
+                     NA
+
+                   }, t = rep(NA, times = R), ci = c(NA, NA))
+
+  }
+
+  return(object)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the ci._() functions ----------------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Nonparametric Bootstrap Confidence Intervals ####
+
+.ci.boot <- function(data, statistic, R = 1000, min.n = 10, boot = c("norm", "basic", "stud", "perc", "bc", "bca"),
+                     sample = TRUE, alternative = c("two.sided", "less", "greater"), conf.level = 0.95, seed = NULL) {
+
+  #...................
+  ### Adjust Confidence Level ####
+
+  if (isTRUE(alternative %in% c("less", "greater"))) { conf.level.alter <- conf.level - (1 - conf.level) } else { conf.level.alter <- conf.level }
+
+  #...................
+  ### Data ####
+
+  x <- na.omit(data)
+
+  n <- length(x)
+  nNA <- length(data) - n
+  pNA <- (nNA / (n + nNA)) * 100L
+
+  #...................
+  ### At least n = min.n Cases and Variance Unequal 0 ####
+
+  if (isTRUE(n >= min.n && var(x) != 0L)) {
+
+    #...................
+    ### Bootstrap Replicates ####
+
+    if (isTRUE(!is.null(seed))) { set.seed(seed) }
+
+    boot.repli <- suppressWarnings(boot::boot(x, statistic = statistic, R = R))
+
+    #...................
+    ### Bootstrap Confidence Interval ####
+
+    switch(boot, "norm" = {
+
+      result <- suppressWarnings(boot::boot.ci(boot.repli, type = "norm", conf = conf.level.alter)) |>
+        (\(y) data.frame(low = y$normal[2L], upp = y$normal[3L]))()
+
+    }, "basic" = {
+
+      result <- suppressWarnings(boot::boot.ci(boot.repli, type = "basic", conf = conf.level.alter)) |>
+        (\(y) data.frame(low = y$basic[4L], upp = y$basic[5L]))()
+
+    }, "stud" = {
+
+      result <- suppressWarnings(boot::boot.ci(boot.repli, type = "stud", conf = conf.level.alter)) |>
+        (\(y) data.frame(low = y$student[4L], upp = y$student[5L]))()
+
+    }, "perc" = {
+
+      result <- suppressWarnings(boot::boot.ci(boot.repli, type = "perc", conf = conf.level.alter)) |>
+        (\(y) data.frame(low = y$perc[4L], upp = y$perc[5L]))()
+
+    }, "bc" = {
+
+      result <- qnorm(mean(boot.repli$t[, 1L] < boot.repli$t0[1L], na.rm = TRUE)) |>
+        (\(y) suppressWarnings(.norm.inter(boot.repli$t[, 1L], pnorm(y + (y + qnorm((1L + c(-conf.level.alter, conf.level.alter)) / 2L))))))() |>
+        (\(z) data.frame(low = z[1L], upp = z[2L]))()
+
+    }, "bca" = {
+
+      result <- suppressWarnings(boot::boot.ci(boot.repli, type = "bca", conf = conf.level.alter)) |>
+        (\(y) data.frame(low = y$bca[4L], upp = y$bca[5L]))()
+
+    })
+
+    #...................
+    ### Adjust Lower or Upper Bound ####
+
+    switch(alternative, "less" = { result$low <- -1 }, "greater" = { result$upp <- 1 })
+
+    #...................
+    ### Return Object ####
+
+    object <- list(n = n, nNA = nNA, pNA = pNA, m = mean(x), sd = sd(x), iqr = IQR(x), freq = sum(x == 1), skew = suppressWarnings(misty::skewness(x, sample = sample, check = FALSE)), kurt = suppressWarnings(misty::kurtosis(x, sample = sample, check = FALSE)), t0 = boot.repli$t0[1L], t = as.vector(boot.repli$t[, 1L]), ci = result)
+
+  #...................
+  ### Number of Cases n < min.n or Variance Equal 0 ####
+
+  } else {
+
+    #...................
+    ### Return Object ####
+
+    object <- list(n = n, nNA = nNA, pNA = pNA, m = if (isTRUE(length(x) >= 2L && var(x) != 0L)) { mean(x) } else { NA }, sd = if (isTRUE(length(x) >= 2L && var(x) != 0L)) { sd(x) } else { NA }, iqrt = if (isTRUE(length(x) >= 2L && var(x) != 0L)) { IQR(x) } else { NA }, freq = if (isTRUE(length(x) >= 1L)) { sum(x == 1, na.rm = TRUE) } else { NA },
+                   skew = if (isTRUE(length(x) >= 3L && var(x) != 0L)) { suppressWarnings(misty::skewness(x, sample = sample, check = FALSE)) } else { NA }, kurt = if (isTRUE(length(x) >= 4L && var(x) != 0L)) { suppressWarnings(misty::kurtosis(x, sample = sample, check = FALSE))} else { NA }, t0 = NA, t = rep(NA, times = R), ci = c(NA, NA)) }
+
+  return(object)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the ci.mean() function --------------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Confidence interval for the mean ####
+
+.m.conf <- function(x, sigma, adjust, alternative, conf.level, side) {
+
+  # Data
+  x <- na.omit(x)
+
+  # Difference-adjustment factor
+  adjust.factor <- ifelse(isTRUE(adjust), sqrt(2L) / 2L, 1L)
+
+  # One observation or SD = 0
+  if (isTRUE(length(x) <= 1L || sd(x) == 0L)) {
+
+    ci <- c(NA, NA)
+
+  # More than one observation
+  } else {
+
+    x.m <- mean(x)
+
+    #...................
+    ### Known population standard deviation ####
+
+    if (isTRUE(!is.null(sigma))) {
+
+      crit <- qnorm(switch(alternative,
+                           two.sided = 1L - (1L - conf.level) / 2L,
+                           less = conf.level,
+                           greater = conf.level))
+
+      se <- sigma / sqrt(length(na.omit(x)))
+
+    #...................
+    ### Unknown population standard deviation ####
+    } else {
+
+      crit <- qt(switch(alternative,
+                        two.sided = 1L - (1L - conf.level) / 2L,
+                        less = conf.level,
+                        greater = conf.level), df = length(x) - 1L)
+
+      se <- sd(x) / sqrt(length(x))
+
+    }
+
+    #...................
+    ### Confidence interval ####
+    ci <- switch(alternative,
+                 two.sided = c(low = x.m - adjust.factor * crit * se,
+                               upp = x.m + adjust.factor * crit * se),
+                 less = c(low = -Inf,
+                          upp = x.m + adjust.factor * crit * se),
+                 greater = c(low = x.m - adjust.factor * crit * se,
+                             upp = Inf))
+
+  }
+
+  #...................
+  ### Return object ####
+  object <- switch(side, both = ci, low = ci[1L], upp = ci[2L])
+
+  return(object)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Bootstrap Function Arithmetic Mean ####
+
+.boot.func.mean <- function(data, ind) { return(c(mean(data[ind], na.rm = TRUE), var(data[ind], na.rm = TRUE) / length(na.omit(data[ind])))) }
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the ci.median() function ------------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Confidence interval for the median ####
+
+.med.conf <- function(x, alternative, conf.level, side) {
+
+  # Data
+  x <- na.omit(x)
+
+  n <- length(x)
+
+  # Number of observations less than 6 observations
+  if (isTRUE(n < 6L)) {
+
+    ci <- c(NA, NA)
+
+  # At least six observations
+  } else {
+
+    #...................
+    ### Confidence interval ####
+
+    # Two-sided CI
+    switch(alternative, two.sided = {
+
+      k <- qbinom((1L - conf.level)/2L, size = n, prob = 0.5, lower.tail = TRUE)
+
+      ci <- sort(x)[c(k, n - k + 1L)]
+
+    # One-sided CI: less
+    }, less = {
+
+      k <- qbinom(1L - 2L * (1L - conf.level), size = n, prob = 0.5, lower.tail = TRUE)
+
+      ci <- c(-Inf, sort(x)[k])
+
+    # One-sided CI: greater
+    }, greater = {
+
+      k <- qbinom(1L - 2L * (1L - conf.level), size = n, prob = 0.5, lower.tail = FALSE)
+
+      ci <- c(sort(x)[k], Inf)
+
+    })
+
+  }
+
+  #...................
+  ### Return object ####
+
+  # Lower or upper limit
+  object <- switch(side, both = ci, low = ci[1L], upp = ci[2L])
+
+  return(object)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Bootstrap Function Median ####
+
+.boot.func.median <- function(data, ind) { return(c(median(data[ind], na.rm = TRUE), (pi / 2L) * var(data[ind], na.rm = TRUE) / length(na.omit(data[ind])))) }
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the ci.prop() function ------------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Confidence interval for the proportion ####
+
+.prop.conf <- function(x, method, alternative, conf.level, side) {
+
+  # Data
+  x <- na.omit(x)
+
+  n <- length(x)
+
+  # Number of observations
+  if (isTRUE(n <= 1L)) {
+
+    ci <- c(NA, NA)
+
+  } else {
+
+    s <- sum(x)
+
+    p <- s / n
+    q <- 1L - p
+
+    z <- switch(alternative,
+                two.sided = qnorm(1L - (1 - conf.level)/2L),
+                less = qnorm(1L - (1L - conf.level)),
+                greater = qnorm(1L - (1L - conf.level)))
+
+    #...................
+    ### Wald method ####
+    if (isTRUE(method == "wald")) {
+
+      term <- z * sqrt(p * q) / sqrt(n)
+
+      ci <- switch(alternative,
+                   two.sided = c(low = max(0L, p - term), upp = min(1L, p + term)),
+                   less = c(low = 0L, upp = min(1, p + term)),
+                   greater = c(low = max(0L, p - term), upp = 1L))
+
+    #...................
+    ### Wilson method ####
+    } else if (isTRUE(method == "wilson")) {
+
+      term1 <- (s + z^2 / 2L) / (n + z^2L)
+      term2 <- z * sqrt(n) / (n + z^2L) * sqrt(p * q + z^2L / (4L * n))
+
+      ci <- switch(alternative,
+                   two.sided = c(low = max(0L, term1 - term2), upp = min(1L, term1 + term2)),
+                   less = c(0L, upp = min(1L, term1 + term2)),
+                   greater = c(low = max(0L, term1 - term2), upp = 1L))
+
+    }
+
+  }
+
+  # Lower or upper limit
+  object <- switch(side, both = ci, low = ci[1L], upp = ci[2L])
+
+  return(object)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the ci.var() function ---------------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Confidence interval for the variance ####
+
+.var.conf <- function(x, method, alternative, conf.level, side) {
+
+  # Data
+  x <- na.omit(x)
+  x.var <- var(x)
+
+  # Number of observations
+  if (isTRUE((length(x) < 2L && method == "chisq") || (length(x) < 4L && method == "bonett"))) {
+
+    ci <- c(NA, NA)
+
+  } else {
+
+    #...................
+    ### Chi square method ####
+    if (isTRUE(method == "chisq")) {
+
+      df <- length(x) - 1L
+
+      # Two-sided CI
+      switch(alternative, two.sided = {
+
+        crit.low <- qchisq((1L - conf.level)/2L, df = df, lower.tail = FALSE)
+        crit.upp <- qchisq((1L - conf.level)/2L, df = df, lower.tail = TRUE)
+
+        ci <- c(low = df*x.var / crit.low, upp = df*x.var / crit.upp)
+
+        # One-sided CI: less
+      }, less = {
+
+        crit.upp <- qchisq((1L - conf.level), df = df, lower.tail = TRUE)
+
+        ci <- c(low = 0L, upp = df*x.var / crit.upp)
+
+        # One-sided CI: greater
+      }, greater = {
+
+        crit.low <- qchisq((1L - conf.level), df = df, lower.tail = FALSE)
+
+        ci <- c(low = df*x.var / crit.low, upp = Inf)
+
+      })
+
+    #...................
+    ### Bonett method ####
+    } else if (isTRUE(method == "bonett")) {
+
+      n <- length(x)
+
+      z <- switch(alternative,
+                  two.sided = qnorm(1L - (1L - conf.level)/2L),
+                  less = qnorm(1L - (1L - conf.level)),
+                  greater = qnorm(1L - (1L - conf.level)))
+
+      cc <- n/(n - z)
+
+      gam4 <- n * sum((x - mean(x, trim = 1L / (2L * (n - 4L)^0.5)))^4L) / (sum((x - mean(x))^2L))^2L
+
+      se <- cc * sqrt((gam4 - (n - 3L)/n) / (n - 1L))
+
+      ci <- switch(alternative,
+                   two.sided = c(low = exp(log(cc * x.var) - z * se), upp = exp(log(cc * x.var) + z * se)),
+                   less = c(low = 0L, upp = exp(log(cc * x.var) + z * se)),
+                   greater = c(low = exp(log(cc * x.var) - z * se), upp = Inf))
+
+    }
+
+  }
+
+  # Lower or upper limit
+  object <- switch(side, both = ci, low = ci[1], upp = ci[2L])
+
+  return(object)
+
+}
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Bootstrap Function Variance ####
+
+.boot.func.var <- function(data, ind) { return(var(data[ind], na.rm = TRUE)) }
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the ci.sd() function ----------------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Confidence interval for the standard deviation ####
+
+.sd.conf <- function(x, method, alternative, conf.level, side) {
+
+  # Data
+  x <- na.omit(x)
+  x.var <- var(x)
+
+  # Number of observations
+  if (isTRUE((length(x) < 2L && method == "chisq") || (length(x) < 4L && method == "bonett"))) {
+
+    ci <- c(NA, NA)
+
+  } else {
+
+    #...................
+    ### Chi square method ####
+    if (isTRUE(method == "chisq")) {
+
+      df <- length(x) - 1L
+
+      # Two-sided CI
+      switch(alternative, two.sided = {
+
+        crit.low <- qchisq((1L - conf.level)/2L, df = df, lower.tail = FALSE)
+        crit.upp <- qchisq((1L - conf.level)/2L, df = df, lower.tail = TRUE)
+
+        ci <- sqrt(c(low = df*x.var / crit.low, upp = df*x.var / crit.upp))
+
+      # One-sided CI: less
+      }, less = {
+
+        crit.upp <- qchisq((1L - conf.level), df = df, lower.tail = TRUE)
+
+        ci <- c(low = 0L, upp = sqrt(df*x.var / crit.upp))
+
+      # One-sided CI: greater
+      }, greater = {
+
+        crit.low <- qchisq((1L - conf.level), df = df, lower.tail = FALSE)
+
+        ci <- c(low = sqrt(df*x.var / crit.low), upp = Inf)
+
+      })
+
+    #...................
+    ### Bonett ####
+    } else if (isTRUE(method == "bonett")) {
+
+      n <- length(x)
+
+      z <- switch(alternative,
+                  two.sided = qnorm(1L - (1L - conf.level)/2L),
+                  less = qnorm(1L - (1L - conf.level)),
+                  greater = qnorm(1L - (1L - conf.level)))
+
+      cc <- n/(n - z)
+
+      gam4 <- n * sum((x - mean(x, trim = 1L / (2L * (n - 4L)^0.5)))^4L) / (sum((x - mean(x))^2))^2L
+
+      se <- cc * sqrt((gam4 - (n - 3L)/n) / (n - 1L))
+
+      ci <- switch(alternative,
+                   two.sided = sqrt(c(low = exp(log(cc * x.var) - z * se), upp = exp(log(cc * x.var) + z * se))),
+                   less = c(low = 0, upp = sqrt(exp(log(cc * x.var) + z * se))),
+                   greater = c(low = sqrt(exp(log(cc * x.var) - z * se)), upp = Inf))
+
+    }
+
+  }
+
+  # Lower or upper limit
+  object <- switch(side, both = ci, low = ci[1L], upp = ci[2L])
+
+  return(object)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Bootstrap Function Standard Deviation ####
+
+.boot.func.sd <- function(data, ind) { return(sd(data[ind], na.rm = TRUE)) }
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the ci.mean.diff() function ---------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Confidence interval for the difference of arithmetic means ####
+
+.m.diff.conf <- function(x, y, sigma, var.equal, alternative, paired, conf.level, side) {
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Independent samples ####
+  if (!isTRUE(paired)) {
+
+    #...................
+    ### Data ####
+
+    x <- na.omit(x)
+    y <- na.omit(y)
+
+    x.n <- length(x)
+    y.n <- length(y)
+
+    yx.mean <- mean(y) - mean(x)
+
+    x.var <- var(x)
+    y.var <- var(y)
+
+    # At least 2 observations for x and y
+    if (isTRUE(x.n >= 2L && y.n >= 2L & (x.var != 0L && y.var != 0L))) {
+
+      #### Known Population SD ####
+      if (isTRUE(!is.null(sigma))) {
+
+        se <- sqrt((sigma[1L]^2L / x.n) + (sigma[2L]^2L / y.n))
+
+        crit <- qnorm(switch(alternative,
+                             two.sided = 1L - (1L - conf.level) / 2L,
+                             less = conf.level,
+                             greater = conf.level))
+
+        term <- crit*se
+
+      #### Unknown Population SD ####
+      } else {
+
+        #### Equal variance ####
+        if (isTRUE(var.equal)) {
+
+          se <- sqrt(((x.n - 1L)*x.var + (y.n - 1L)*y.var) / (x.n + y.n - 2L)) * sqrt(1 / x.n + 1L / y.n)
+
+          crit <- qt(switch(alternative,
+                            two.sided = 1L - (1L - conf.level) / 2L,
+                            less = conf.level,
+                            greater = conf.level), df = sum(x.n, y.n) - 2L)
+
+          term <- crit*se
+
+        #### Unequal variance ####
+        } else {
+
+          se <- sqrt(x.var / x.n + y.var / y.n)
+
+          df <- (x.var / x.n + y.var / y.n)^2L / (((x.var / x.n)^2L / (x.n - 1L)) + ((y.var / y.n)^2L / (y.n - 1L)))
+
+          crit <- qt(switch(alternative,
+                            two.sided = 1L - (1L - conf.level) / 2L,
+                            less = conf.level,
+                            greater = conf.level), df = df)
+
+          term <- crit*se
+
+        }
+
+      }
+
+      #...................
+      ### Confidence interval ####
+      ci <- switch(alternative,
+                   two.sided = c(low = yx.mean - term, upp = yx.mean + term),
+                   less = c(low = -Inf, upp = yx.mean + term),
+                   greater = c(low = yx.mean - term, upp = Inf))
+
+      # Less than  2 observations for x and y
+    } else {
+
+      ci <- c(NA, NA)
+
+    }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Dependent samples ####
+  } else {
+
+    xy.dat <- na.omit(data.frame(x = x, y = y, stringsAsFactors = FALSE))
+
+    xy.diff <- xy.dat$y - xy.dat$x
+
+    xy.diff.mean <- mean(xy.diff)
+
+    xy.diff.sd <- sd(xy.diff)
+
+    xy.diff.n <- nrow(xy.dat)
+
+    # At least 2 observations for x
+    if (isTRUE(xy.diff.n >= 2L && xy.diff.sd != 0L)) {
+
+      #...................
+      ### Known Population SD ####
+      if (isTRUE(!is.null(sigma))) {
+
+        se <- sigma / sqrt(xy.diff.n)
+
+        crit <- qnorm(switch(alternative,
+                             two.sided = 1L - (1L - conf.level) / 2L,
+                             less = conf.level,
+                             greater = conf.level))
+
+        term <- crit*se
+
+      #...................
+      ### Unknown Population SD ####
+      } else {
+
+        se <- xy.diff.sd / sqrt(xy.diff.n)
+
+        crit <- qt(switch(alternative,
+                          two.sided = 1L - (1L - conf.level) / 2L,
+                          less = conf.level,
+                          greater = conf.level), df = xy.diff.n - 1L)
+
+        term <- crit*se
+
+      }
+
+      ci <- switch(alternative,
+                   two.sided = c(low = xy.diff.mean - term, upp = xy.diff.mean + term),
+                   less = c(low = -Inf, upp = xy.diff.mean + term),
+                   greater = c(low = xy.diff.mean - term, upp = Inf))
+
+    # Less than 2 observations for x
+    } else {
+
+      ci <- c(NA, NA)
+
+    }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Return Object ####
+  object <- switch(side, both = ci, low = ci[1L], upp = ci[2L])
+
+  return(object)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the ci.prop.diff() function ---------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Confidence interval for the difference of proportions ####
+
+.prop.diff.conf <- function(x, y, method, alternative, paired, conf.level, side) {
+
+  crit <- qnorm(switch(alternative,
+                       two.sided = 1L - (1L - conf.level) / 2L,
+                       less = conf.level,
+                       greater = conf.level))
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Independent samples ####
+
+  if (!isTRUE(paired)) {
+
+    #.................
+    # Data
+    x <- na.omit(x)
+    y <- na.omit(y)
+
+    x.n <- length(x)
+    y.n <- length(y)
+
+    p1 <- sum(x) / x.n
+    p2 <- sum(y) / y.n
+
+    p.diff <- p2 - p1
+
+    #...................
+    ### Wald confidence interval ####
+    if (isTRUE(method == "wald")) {
+
+      #......
+      # At least 2 observations for x or y
+      if (isTRUE((x.n >= 2L || y.n >= 2L) && (var(x) != 0L || var(y) != 0L))) {
+
+        term <- crit * sqrt(p1*(1 - p1) / x.n + p2*(1 - p2) / y.n)
+
+        # Confidence interval
+        ci <- switch(alternative,
+                     two.sided = c(low = max(-1L, p.diff - term), upp = min(1L, p.diff + term)),
+                     less = c(low = -1, upp = min(1, p.diff + term)),
+                     greater = c(low = max(-1L, p.diff - term), upp = 1L))
+
+        # Less than 2 observations for x or y
+      } else {
+
+        ci <- c(NA, NA)
+
+      }
+
+    #...................
+    ### Newcombes Hybrid Score interval ####
+    } else if (isTRUE(method == "newcombe")) {
+
+      # At least 1 observations for x and y
+      if (isTRUE((x.n >= 1L && y.n >= 1L))) {
+
+        if (isTRUE(alternative == "two.sided")) {
+
+          x.ci.wilson <- misty::ci.prop(x, method = "wilson", conf.level = conf.level, output = FALSE)$result
+          y.ci.wilson <- misty::ci.prop(y, method = "wilson", conf.level = conf.level, output = FALSE)$result
+
+        } else if (isTRUE(alternative == "less")) {
+
+          x.ci.wilson <- misty::ci.prop(x, method = "wilson", alternative = "greater", conf.level = conf.level, output = FALSE)$result
+          y.ci.wilson <- misty::ci.prop(y, method = "wilson", alternative = "less", conf.level = conf.level, output = FALSE)$result
+
+        } else if (isTRUE(alternative == "greater")) {
+
+          x.ci.wilson <- misty::ci.prop(x, method = "wilson", alternative = "less", conf.level = conf.level, output = FALSE)$result
+          y.ci.wilson <- misty::ci.prop(y, method = "wilson", alternative = "greater", conf.level = conf.level, output = FALSE)$result
+
+        }
+
+        # Confidence interval
+        ci <- switch(alternative,
+                     two.sided = c(p.diff - crit * sqrt((x.ci.wilson$upp*(1 - x.ci.wilson$upp) / x.n) + (y.ci.wilson$low*(1 - y.ci.wilson$low) / y.n)),
+                                   p.diff + crit * sqrt((x.ci.wilson$low*(1 - x.ci.wilson$low) / x.n) + (y.ci.wilson$upp*(1 - y.ci.wilson$upp) / y.n))),
+                     less = c(-1, p.diff + crit * sqrt((x.ci.wilson$low*(1 - x.ci.wilson$low) / x.n) + (y.ci.wilson$upp*(1 - y.ci.wilson$upp) / y.n))),
+                     greater = c(p.diff - crit * sqrt((x.ci.wilson$upp*(1 - x.ci.wilson$upp) / x.n) + (y.ci.wilson$low*(1 - y.ci.wilson$low) / y.n)), 1))
+
+        # Less than 1 observations for x or y
+      } else {
+
+        ci <- c(NA, NA)
+
+      }
+
+    }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Dependent samples ####
+  } else {
+
+    xy.dat <- na.omit(data.frame(x = x, y = y, stringsAsFactors = FALSE))
+
+    x.p <- mean(xy.dat$x)
+    y.p <- mean(xy.dat$y)
+
+    xy.diff.mean <- y.p - x.p
+
+    xy.diff.n <- nrow(xy.dat)
+
+    a <- as.numeric(sum(xy.dat$x == 1 & xy.dat$y == 1))
+    b <- as.numeric(sum(xy.dat$x == 1 & xy.dat$y == 0))
+    c <- as.numeric(sum(xy.dat$x == 0 & xy.dat$y == 1))
+    d <- as.numeric(sum(xy.dat$x == 0 & xy.dat$y == 0))
+
+    #...................
+    ### Wald confidence interval ####
+    if (isTRUE(method == "wald")) {
+
+      #......
+      # At least 2 observations for x or y
+      if (isTRUE(xy.diff.n >= 2 && (var(xy.dat$x) != 0 || var(xy.dat$y) != 0))) {
+
+        term <- crit * sqrt((b + c) - (b - c)^2 / xy.diff.n) / xy.diff.n
+
+        #......
+        # Confidence interval
+        ci <- switch(alternative,
+                     two.sided = c(low = max(-1, xy.diff.mean - term), upp = min(1, xy.diff.mean + term)),
+                     less = c(low = -1, upp = min(1, xy.diff.mean + term)),
+                     greater = c(low = max(-1, xy.diff.mean - term), upp = 1))
+
+      } else {
+
+        ci <- c(NA, NA)
+
+      }
+
+    #...................
+    ### Newcombes Hybrid Score interval ####
+    } else if (isTRUE(method == "newcombe")) {
+
+      # At least 1 observations for x and y
+      if (isTRUE(xy.diff.n >= 1L)) {
+
+        if (isTRUE(alternative == "two.sided")) {
+
+          x.ci.wilson <- misty::ci.prop(x, method = "wilson", conf.level = conf.level, output = FALSE)$result
+          y.ci.wilson <- misty::ci.prop(y, method = "wilson", conf.level = conf.level, output = FALSE)$result
+
+        } else if (isTRUE(alternative == "less")) {
+
+          x.ci.wilson <- misty::ci.prop(x, method = "wilson", alternative = "greater", conf.level = conf.level, output = FALSE)$result
+          y.ci.wilson <- misty::ci.prop(y, method = "wilson", alternative = "less", conf.level = conf.level, output = FALSE)$result
+
+        } else if (isTRUE(alternative == "greater")) {
+
+          x.ci.wilson <- misty::ci.prop(x, method = "wilson", alternative = "less", conf.level = conf.level, output = FALSE)$result
+          y.ci.wilson <- misty::ci.prop(y, method = "wilson", alternative = "greater", conf.level = conf.level, output = FALSE)$result
+
+        }
+
+        A <- (a + b) * (c + d) * (a + c) * (b + d)
+
+        as.numeric(a)
+
+        if (isTRUE(A == 0L)) {
+
+          phi <- 0L
+
+        } else {
+
+          phi <- (a * d - b * c) / sqrt(A)
+
+        }
+
+        ci <- switch(alternative,
+                     two.sided = c(xy.diff.mean - sqrt((y.p - y.ci.wilson$low)^2 - 2L * phi * (y.p - y.ci.wilson$low) * (x.ci.wilson$upp - x.p) + (x.ci.wilson$upp - x.p)^2L),
+                                   xy.diff.mean + sqrt((x.p - x.ci.wilson$low)^2 - 2L * phi * (x.p - x.ci.wilson$low) * (y.ci.wilson$upp - y.p) + (y.ci.wilson$upp - y.p)^2L)),
+                     less = c(-1L, xy.diff.mean + sqrt((x.p - x.ci.wilson$low)^2 - 2L * phi * (x.p - x.ci.wilson$low) * (y.ci.wilson$upp - y.p) + (y.ci.wilson$upp - y.p)^2L)),
+                     greater = c(xy.diff.mean - sqrt((y.p - y.ci.wilson$low)^2 - 2L * phi * (y.p - y.ci.wilson$low) * (x.ci.wilson$upp - x.p) + (x.ci.wilson$upp - x.p)^2), 1L))
+
+      } else {
+
+        ci <- c(NA, NA)
+
+      }
+
+    }
+
+  }
+
+  # Return object
+  object <- switch(side, both = ci, low = ci[1L], upp = ci[2L])
+
+  return(object)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for Plotting Confidence Intervals -------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Plot Function Confidence Interval ####
+
+.plot.ci <- function(result, stat, group = NULL, split = NULL, point.size, point.shape, errorbar.width, dodge.width,
+                     line, intercept, linetype, line.col, xlab, ylab, xlim , ylim, xbreaks, ybreaks,
+                     axis.title.size, axis.text.size, strip.text.size, title, subtitle, group.col, plot.margin,
+                     legend.title, legend.position, legend.box.margin, facet.ncol, facet.nrow, facet.scales) {
+
+  low <- upp <- x <- NULL
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, No Split ####
+
+  if (isTRUE(is.null(group) && is.null(split))) {
+
+    #...................
+    ### Plot Data ####
+
+    # Correlation coefficient
+    if (isTRUE(stat == "cor")) {
+
+      plotdat <- data.frame(x = paste(result$var1, result$var2, sep = "\n"), y = result$cor, low = result$low, upp = result$upp)
+
+    # Mean, Median, Proportion, SD, Variance
+    } else {
+
+      plotdat <- data.frame(x = factor(result$variable, levels = unique(result$variable)), y = result[, stat], low = result$low, upp = result$upp)
+
+    }
+
+    #...................
+    ### Create ggplot ####
+
+    p <- ggplot2::ggplot(plotdat, ggplot2::aes(x, y))
+
+    #...................
+    ### Horizontal Line ####
+
+    if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = intercept, linetype = linetype, color = line.col) }
+
+    #...................
+    ### Error Bars  ####
+
+    p <- p + ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = errorbar.width) +
+      ggplot2::geom_point(size = point.size, shape = point.shape) +
+      ggplot2::scale_x_discrete(name = xlab) +
+      ggplot2::scale_y_continuous(name = ylab, limits = ylim, breaks = ybreaks) +
+      ggplot2::labs(title = title, subtitle = subtitle) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
+                     plot.title = ggplot2::element_text(hjust = 0.5),
+                     plot.margin = ggplot2::unit(c(plot.margin[1L], plot.margin[2L], plot.margin[3L], plot.margin[4L]), "pt"),
+                     axis.text = ggplot2::element_text(size = axis.text.size),
+                     axis.title = ggplot2::element_text(size = axis.title.size))
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping, No Split ####
+
+  } else if (isTRUE(!is.null(group) && is.null(split))) {
+
+    #...................
+    ### Plot Data ####
+
+    # Correlation coefficient
+    if (isTRUE(stat == "cor")) {
+
+      plotdat <- data.frame(group = result$group, x = paste(result$var1, result$var2, sep = "\n"), y = result$cor, low = result$low, upp = result$upp)
+
+    # Mean, Median, Proportion, SD, Variance
+    } else {
+
+      plotdat <- data.frame(group = result$group, x = factor(result$variable, levels = unique(result$variable)), y = result[, stat], low = result$low, upp = result$upp)
+
+    }
+
+    #...................
+    ### Create ggplot ####
+
+    p <- ggplot2::ggplot(plotdat, ggplot2::aes(x, y, group = group, color = group))
+
+    #...................
+    ### Horizontal Line ####
+
+    if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = intercept, linetype = linetype, color = line.col) }
+
+    #...................
+    ### Error Bars  ####
+
+    p <- p +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = errorbar.width,
+                             position = ggplot2::position_dodge(dodge.width)) +
+      ggplot2::geom_point(size = point.size, shape = point.shape, position = ggplot2::position_dodge(dodge.width)) +
+      ggplot2::scale_x_discrete(name = xlab) +
+      ggplot2::scale_y_continuous(name = ylab, limits = ylim, breaks = ybreaks) +
+      ggplot2::labs(title = title, subtitle = subtitle, color = legend.title) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
+                     plot.title = ggplot2::element_text(hjust = 0.5),
+                     plot.margin = ggplot2::unit(c(plot.margin[1L], plot.margin[2L], plot.margin[3L], plot.margin[4L]), "pt"),
+                     axis.text = ggplot2::element_text(size = axis.text.size),
+                     axis.title = ggplot2::element_text(size = axis.title.size),
+                     legend.position = legend.position,
+                     legend.box.background = ggplot2::element_blank(),
+                     legend.box.margin = ggplot2::margin(legend.box.margin[1L], legend.box.margin[2L], legend.box.margin[3L], legend.box.margin[4L]))
+
+    #...................
+    ### Manual Colors ####
+
+    if (isTRUE(!is.null(group.col))) { p <- p + ggplot2::scale_color_manual(values = group.col) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, Split ####
+
+  } else if (isTRUE(is.null(group) && !is.null(split))) {
+
+    #...................
+    ### Plot Data ####
+
+    # Correlation coefficient
+    if (isTRUE(stat == "cor")) {
+
+      plotdat <- data.frame(split = as.vector(sapply(result, nrow) |> (\(y) unlist(sapply(seq_len(length(result)), function(z) rep(names(y)[z], times = y[z]))))()),
+                            do.call("rbind", result)) |> (\(y) data.frame(split = y$split, x = paste(y$var1, y$var2, sep = "\n"), y = y$cor, low = y$low, upp = y$upp))()
+
+    # Mean, Median, Proportion, SD, Variance
+    } else {
+
+      plotdat <- data.frame(split = as.vector(sapply(result, nrow) |> (\(y) unlist(sapply(seq_len(length(result)), function(z) rep(names(y)[z], times = y[z]))))()), do.call("rbind", result)) |>
+        (\(z) data.frame(split = z$split, x = factor(z$variable, levels = unique(z$variable)), y = z[, stat], low = z$low, upp = z$upp))()
+
+    }
+
+    #...................
+    ### Create ggplot ####
+
+    p <- ggplot2::ggplot(plotdat, ggplot2::aes(x, y))
+
+    #...................
+    ### Horizontal Line ####
+
+    if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = intercept, linetype = linetype, color = line.col) }
+
+    #...................
+    ### Error Bars  ####
+
+    p <- p + ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = errorbar.width) +
+      ggplot2::geom_point(size = point.size, shape = point.shape) +
+      ggplot2::scale_x_discrete(name = xlab) +
+      ggplot2::scale_y_continuous(name = ylab, limits = ylim, breaks = ybreaks) +
+      ggplot2::facet_wrap(~ split, ncol = facet.ncol, nrow = facet.nrow) +
+      ggplot2::labs(title = title, subtitle = subtitle) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
+                     plot.title = ggplot2::element_text(hjust = 0.5),
+                     plot.margin = ggplot2::unit(c(plot.margin[1L], plot.margin[2L], plot.margin[3L], plot.margin[4L]), "pt"),
+                     axis.text = ggplot2::element_text(size = axis.text.size),
+                     axis.title = ggplot2::element_text(size = axis.title.size))
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping, Split ####
+
+  } else if (isTRUE(!is.null(group) && !is.null(split))) {
+
+    #...................
+    ### Plot Data ####
+
+    # Correlation coefficient
+    if (isTRUE(stat == "cor")) {
+
+      plotdat <- data.frame(split = as.vector(sapply(result, nrow) |> (\(y) unlist(sapply(seq_len(length(result)), function(z) rep(names(y)[z], times = y[z]))))()),
+                            do.call("rbind", result)) |> (\(y) data.frame(group = y$group, split = y$split, x = paste(y$var1, y$var2, sep = "\n"), y = y$cor, low = y$low, upp = y$upp))()
+
+    # Mean, Median, Proportion, SD, Variance
+    } else {
+
+      plotdat <- data.frame(split = as.vector(sapply(result, nrow) |> (\(y) unlist(sapply(seq_len(length(result)), function(z) rep(names(y)[z], times = y[z]))))()), do.call("rbind", result)) |>
+        (\(z) data.frame(group = z$group, split = z$split, x = factor(z$variable, levels = unique(z$variable)), y = z[, stat], low = z$low, upp = z$upp))()
+
+    }
+
+    #...................
+    ### Create ggplot ####
+
+    p <- ggplot2::ggplot(plotdat, ggplot2::aes(x, y, group = group, color = group))
+
+    #...................
+    ### Horizontal Line ####
+
+    if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = intercept, linetype = linetype, color = line.col) }
+
+    #...................
+    ### Error Bars  ####
+
+    p <- p +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = errorbar.width,
+                             position = ggplot2::position_dodge(dodge.width)) +
+      ggplot2::geom_point(size = point.size, shape = point.shape, position = ggplot2::position_dodge(dodge.width)) +
+      ggplot2::scale_x_discrete(name = xlab) +
+      ggplot2::scale_y_continuous(name = ylab, limits = ylim, breaks = ybreaks) +
+      ggplot2::facet_wrap(~ split, ncol = facet.ncol, nrow = facet.nrow) +
+      ggplot2::labs(title = title, subtitle = subtitle, color = legend.title) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
+                     plot.title = ggplot2::element_text(hjust = 0.5),
+                     plot.margin = ggplot2::unit(c(plot.margin[1L], plot.margin[2L], plot.margin[3L], plot.margin[4L]), "pt"),
+                     axis.text = ggplot2::element_text(size = axis.text.size),
+                     axis.title = ggplot2::element_text(size = axis.title.size),
+                     legend.position = legend.position,
+                     legend.box.margin = ggplot2::margin(legend.box.margin[1L], legend.box.margin[2L], legend.box.margin[3L], legend.box.margin[4L]))
+
+    #...................
+    ### Manual Colors ####
+
+    if (isTRUE(!is.null(group.col))) { p <- p + ggplot2::scale_color_manual(values = group.col) }
+
+  }
+
+  return(list(p = p, plotdat = plotdat))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Plot Function Bootstrap Samples ####
+
+.plot.boot <- function(result, boot.sample, stat, group = NULL, split = NULL, hist, binwidth, bins, alpha, fill,
+                       density, density.col, density.linewidth, density.linetype, plot.point, point.col, point.linewidth, point.linetype,
+                       plot.ci, ci.col, ci.linewidth, ci.linetype, line, intercept, linetype, line.col,
+                       xlab, ylab, xlim, ylim, xbreaks, ybreaks, axis.title.size, axis.text.size, strip.text.size, title, subtitle, group.col,
+                       plot.margin, legend.title, legend.position, legend.box.margin, facet.ncol, facet.nrow, facet.scales) {
+
+  point <- low <- upp <- NULL
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, No Split ####
+
+  if (isTRUE(is.null(group) && is.null(split))) {
+
+    #...................
+    ### Plot Data ####
+
+    # Correlation coefficient
+    if (isTRUE(stat == "cor")) {
+
+      plotdat <- merge(data.frame(x = paste(boot.sample$var1, boot.sample$var2, sep = " - "), y = boot.sample$cor),
+                       data.frame(x = paste(result$var1, result$var2, sep = " - "), point = result$cor, low = result$low, upp = result$upp), by = "x")
+
+    # Mean, Median, Proportion, SD, Variance
+    } else {
+
+      plotdat <- merge(data.frame(x = factor(boot.sample$variable, levels = unique(result$variable)), y = boot.sample[, stat]),
+                       data.frame(x = factor(result$variable, levels = unique(result$variable)), point = result[, stat], low = result$low, upp = result$upp), by = "x")
+
+    }
+
+    #...................
+    ### Create ggplot ####
+
+    p <- ggplot2::ggplot(plotdat, ggplot2::aes(y)) +
+      ggplot2::facet_wrap(~ x, scales = facet.scales) +
+      ggplot2::scale_x_continuous(name = xlab, expand = c(0.02, 0), limits = xlim, breaks = xbreaks) +
+      ggplot2::scale_y_continuous(name = ylab, expand = ggplot2::expansion(mult = c(0L, 0.05))) +
+      ggplot2::labs(title = title, subtitle = subtitle) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
+                     strip.text = ggplot2::element_text(size = strip.text.size),
+                     plot.title = ggplot2::element_text(hjust = 0.5),
+                     plot.margin = ggplot2::unit(c(plot.margin[1L], plot.margin[2L], plot.margin[3L], plot.margin[4L]), "pt"),
+                     axis.text = ggplot2::element_text(size = axis.text.size),
+                     axis.title = ggplot2::element_text(size = axis.title.size))
+
+    #...................
+    ### Histogram ####
+
+    if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density)), binwidth = binwidth, bins = bins, color = "black", alpha = alpha, fill = fill) }
+
+    #...................
+    ### Density Curve ####
+
+    if (isTRUE(density)) { p <- p + ggplot2::geom_density(color = density.col, linewidth = density.linewidth, linetype = density.linetype) }
+
+    #...................
+    ### Vertical Line ####
+
+    if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = intercept, linetype = linetype, color = line.col) }
+
+    #...................
+    ### Point Estimate ####
+
+    if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = point), color = point.col, linetype = point.linetype, linewidth = point.linewidth) }
+
+    #...................
+    ### Confidence Interval ####
+
+    if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low), color = ci.col, linetype = ci.linetype, linewidth = ci.linewidth) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp), color = ci.col, linetype = ci.linetype , linewidth = ci.linewidth) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping, No Split ####
+
+  } else if (isTRUE(!is.null(group) && is.null(split))) {
+
+    #...................
+    ### Plot Data ####
+
+    # Correlation coefficient
+    if (isTRUE(stat == "cor")) {
+
+      plotdat <- merge(data.frame(by = factor(paste(boot.sample$group, boot.sample$var1, boot.sample$var2, sep = " - ")), x = paste(boot.sample$var1, boot.sample$var2, sep = " - "), group = factor(boot.sample$group, levels = unique(result$group)), y = boot.sample$cor),
+                       data.frame(by = factor(paste(result$group, result$var1, result$var2, sep = " - ")), point = result$cor, low = result$low, upp = result$upp),  by = "by") |> (\(y) y[, -grep("by", colnames(y))])()
+
+    # Mean, Median, Proportion, SD, Variance
+    } else {
+
+      plotdat <- merge(data.frame(by = factor(paste(boot.sample$group, boot.sample$variable, sep = " - ")), x = factor(boot.sample$variable, levels = unique(result$variable)), group = factor(boot.sample$group, levels = unique(result$group)), y = boot.sample[, stat]),
+                       data.frame(by = factor(paste(result$group, result$variable, sep = " - ")), point = result[, stat], low = result$low, upp = result$upp), by = "by") |> (\(y) y[, -grep("by", colnames(y))])()
+
+    }
+
+    #...................
+    ### Create ggplot ####
+
+    p <- ggplot2::ggplot(plotdat, ggplot2::aes(y, group = group, color = group)) +
+      ggplot2::facet_wrap(~ x, scales = facet.scales) +
+      ggplot2::scale_x_continuous(name = xlab, expand = c(0.02, 0), limits = xlim, breaks = xbreaks) +
+      ggplot2::scale_y_continuous(name = ylab, expand = ggplot2::expansion(mult = c(0L, 0.05))) +
+      ggplot2::labs(title = title, subtitle = subtitle, color = legend.title, fill = legend.title) +
+      ggplot2::guides(color = "none") +
+      ggplot2::theme_bw() +
+      ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
+                     strip.text = ggplot2::element_text(size = strip.text.size),
+                     plot.title = ggplot2::element_text(hjust = 0.5),
+                     plot.margin = ggplot2::unit(c(plot.margin[1L], plot.margin[2L], plot.margin[3L], plot.margin[4L]), "pt"),
+                     axis.text = ggplot2::element_text(size = axis.text.size),
+                     axis.title = ggplot2::element_text(size = axis.title.size),
+                     legend.position = legend.position,
+                     legend.box.background = ggplot2::element_blank(),
+                     legend.box.margin = ggplot2::margin(legend.box.margin[1L], legend.box.margin[2L], legend.box.margin[3L], legend.box.margin[4L]))
+
+    #...................
+    ### Histogram ####
+
+    if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density), fill = group), position = "identity", binwidth = binwidth, bins = bins, color = "black", alpha = alpha) }
+
+    #...................
+    ### Density Curve ####
+
+    if (isTRUE(density)) { p <- suppressMessages(p + ggplot2::geom_density(alpha = alpha, linewidth = density.linewidth, linetype = density.linetype)) }
+
+    #...................
+    ### Vertical Line ####
+
+    if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = intercept, linetype = linetype, color = line.col) }
+
+    #...................
+    ### Point Estimate ####
+
+    if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = point, color = group), linetype = point.linetype, linewidth = point.linewidth) }
+
+    #...................
+    ### Confidence Interval ####
+
+    if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low, color = group), linetype = ci.linetype, linewidth = ci.linewidth) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp, color = group), linetype = ci.linetype, linewidth = ci.linewidth) }
+
+    #...................
+    ### Manual Colors ####
+
+    if (isTRUE(!is.null(group.col))) { p <- p + ggplot2::scale_color_manual(values = group.col) + ggplot2::scale_fill_manual(values = group.col) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## No Grouping, Split ####
+
+  } else if (isTRUE(is.null(group) && !is.null(split))) {
+
+    #...................
+    ### Plot Data ####
+
+    # Correlation coefficient
+    if (isTRUE(stat == "cor")) {
+
+      plotdat <- merge(data.frame(by = factor(paste(boot.sample$split, boot.sample$var1, boot.sample$var2, sep = " - ")), x = paste(boot.sample$var1, boot.sample$var2, sep = " - "), split = factor(boot.sample$split, levels = names(result)), y = boot.sample$cor),
+                       data.frame(split = rep(names(result), each = unique(sapply(result, nrow))), do.call("rbind", result)) |> (\(y) data.frame(by = factor(paste(y$split, y$var1, y$var2, sep = " - ")), point = y$cor, low = y$low, upp = y$upp))(),  by = "by") |> (\(z) z[, -grep("by", names(z))])()
+
+    # Mean, Median, Proportion, SD, Variance
+    } else {
+
+      plotdat <- merge(data.frame(by = factor(paste(boot.sample$split, boot.sample$variable, sep = " - ")), x = factor(boot.sample$variable, levels = unique(do.call("rbind", result)$variable)), split = factor(boot.sample$split, levels = names(result)), y = boot.sample[, stat]),
+                       data.frame(split = rep(names(result), each = unique(sapply(result, nrow))), do.call("rbind", result)) |> (\(y) data.frame(by = factor(paste(y$split, y$variable, sep = " - ")), point = y[, stat], low = y$low, upp = y$upp))(),  by = "by") |> (\(z) z[, -grep("by", names(z))])()
+
+    }
+
+    #...................
+    ### Create ggplot ####
+
+    p <- ggplot2::ggplot(plotdat, ggplot2::aes(y)) +
+      ggplot2::facet_wrap(~ x + split, scales = facet.scales) +
+      ggplot2::scale_x_continuous(name = xlab, expand = c(0.02, 0), limits = xlim, breaks = xbreaks) +
+      ggplot2::scale_y_continuous(name = ylab, expand = ggplot2::expansion(mult = c(0L, 0.05))) +
+      ggplot2::labs(title = title, subtitle = subtitle) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
+                     strip.text = ggplot2::element_text(size = strip.text.size),
+                     plot.title = ggplot2::element_text(hjust = 0.5),
+                     plot.margin = ggplot2::unit(c(plot.margin[1L], plot.margin[2L], plot.margin[3L], plot.margin[4L]), "pt"),
+                     axis.text = ggplot2::element_text(size = axis.text.size),
+                     axis.title = ggplot2::element_text(size = axis.title.size))
+
+    #...................
+    ### Histogram ####
+
+    if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density)), binwidth = binwidth, bins = bins, color = "black", alpha = alpha, fill = fill) }
+
+    #...................
+    ### Density Curve ####
+
+    if (isTRUE(density)) { p <- p + ggplot2::geom_density(color = density.col, linewidth = density.linewidth, linetype = density.linetype) }
+
+    #...................
+    ### Vertical Line ####
+
+    if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = intercept, linetype = linetype, color = line.col) }
+
+    #...................
+    ### Point Estimate ####
+
+    if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = point), color = point.col, linetype = point.linetype, linewidth = point.linewidth) }
+
+    #...................
+    ### Confidence Interval ####
+
+    if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low), color = ci.col, linetype = ci.linetype, linewidth = ci.linewidth) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp), color = ci.col, linetype = ci.linetype, linewidth = ci.linewidth) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Grouping, Split ####
+
+  } else if (isTRUE(!is.null(group) && !is.null(split))) {
+
+    #...................
+    ### Plot Data ####
+
+    # Correlation coefficient
+    if (isTRUE(stat == "cor")) {
+
+      plotdat <- merge(data.frame(by = factor(paste(boot.sample$split, boot.sample$group, boot.sample$var1, boot.sample$var2, sep = " - ")), x = paste(boot.sample$var1, boot.sample$var2, sep = " - "), split = factor(boot.sample$split, levels = names(result)), group = factor(boot.sample$group, levels = unique(do.call("rbind", result)$group)), y = boot.sample$cor),
+                       data.frame(split = rep(names(result), each = unique(sapply(result, nrow))), do.call("rbind", result)) |> (\(y) data.frame(by = factor(paste(y$split, y$group, y$var1, y$var2, sep = " - ")), point = y$cor, low = y$low, upp = y$upp))(),  by = "by") |> (\(z) z[, -grep("by", names(z))])()
+
+    # Mean, Median, Proportion, SD, Variance
+    } else {
+
+      plotdat <- merge(data.frame(by = factor(paste(boot.sample$split, boot.sample$group, boot.sample$variable, sep = " - ")), x = factor(boot.sample$variable, levels = unique(do.call("rbind", result)$variable)), split = factor(boot.sample$split, levels = names(result)), group = factor(boot.sample$group, levels = unique(do.call("rbind", result)$group)), y = boot.sample[, stat]),
+                       data.frame(split = rep(names(result), each = unique(sapply(result, nrow))), do.call("rbind", result)) |> (\(y) data.frame(by = factor(paste(y$split, y$group, y$variable, sep = " - ")), point = y[, stat], low = y$low, upp = y$upp))(),  by = "by") |> (\(z) z[, -grep("by", names(z))])()
+
+    }
+
+    #...................
+    ### Create ggplot ####
+
+    p <- ggplot2::ggplot(plotdat, ggplot2::aes(y, group = group, color = group)) +
+      ggplot2::facet_wrap(~ x + split, scales = facet.scales) +
+      ggplot2::scale_x_continuous(name = xlab, expand = c(0.02, 0), limits = xlim, breaks = xbreaks) +
+      ggplot2::scale_y_continuous(name = ylab, expand = ggplot2::expansion(mult = c(0L, 0.05))) +
+      ggplot2::labs(title = title, subtitle = subtitle, color = legend.title, fill = legend.title) +
+      ggplot2::guides(color = "none") +
+      ggplot2::theme_bw() +
+      ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
+                     strip.text = ggplot2::element_text(size = strip.text.size),
+                     plot.title = ggplot2::element_text(hjust = 0.5),
+                     plot.margin = ggplot2::unit(c(plot.margin[1L], plot.margin[2L], plot.margin[3L], plot.margin[4L]), "pt"),
+                     axis.text = ggplot2::element_text(size = axis.text.size),
+                     axis.title = ggplot2::element_text(size = axis.title.size),
+                     legend.position = legend.position,
+                     legend.box.background = ggplot2::element_blank(),
+                     legend.box.margin = ggplot2::margin(legend.box.margin[1L], legend.box.margin[2L], legend.box.margin[3L], legend.box.margin[4L]))
+
+    #...................
+    ### Histogram ####
+
+    if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density), fill = group), position = "identity", binwidth = binwidth, bins = bins, color = "black", alpha = alpha) }
+
+    #...................
+    ### Density Curve ####
+
+    if (isTRUE(density)) { p <- p + ggplot2::geom_density(alpha = alpha, linewidth = density.linewidth, linetype = density.linetype) }
+
+    #...................
+    ### Vertical Line ####
+
+    if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = intercept, linetype = linetype, color = line.col) }
+
+    #...................
+    ### Point Estimate ####
+
+    if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(plotdat, ggplot2::aes(xintercept = point, color = group), linetype = point.linetype, linewidth = point.linewidth) }
+
+    #...................
+    ### Confidence Interval ####
+
+    if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low, color = group), linetype = ci.linetype, linewidth = ci.linewidth) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp, color = group), linetype = ci.linetype, linewidth = ci.linewidth) }
+
+    #...................
+    ### Manual Colors ####
+
+    if (isTRUE(!is.null(group.col))) { p <- p + ggplot2::scale_color_manual(values = group.col) }
+
+  }
+
+  return(list(p = p, plotdat = plotdat))
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
 # Internal functions for the coding() function ---------------------------------
 #
 # - .contr.sum
@@ -1497,62 +4152,477 @@ detect.blimp <- function(exec = "blimp") {
 ## Modified contr.sum Function from the stats Package ####
 
 .contr.sum <- function(n, omitted) {
+
   cont <- structure(diag(1L, length(n), length(n)), dimnames = list(n, n))
   cont <- cont[, -omitted, drop = FALSE]
   cont[omitted, ] <- -1L
+
   return(cont)
+
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Modified contr.wec Function from the wec Package ####
 
 .contr.wec <- function (x, omitted) {
+
   frequ <- table(x)
   omitted <- which(names(frequ) == omitted)
   cont <- contr.treatment(length(frequ), base = omitted)
-  cont[omitted, ] <- -1L * frequ[-omitted]/frequ[omitted]
+  cont[omitted, ] <- -1L * frequ[-omitted] / frequ[omitted]
   colnames(cont) <- names(frequ[-omitted])
+
   return(cont)
+
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Modified contr.sdif Function from the MASS Package ####
 
 .contr.repeat <- function(n) {
+
   n.length <- length(n)
   cont <- col(matrix(nrow = n.length, ncol = n.length - 1L))
   upper.tri <- !lower.tri(cont)
   cont[upper.tri] <- cont[upper.tri] - n.length
-  cont <- structure(cont/n.length, dimnames = list(n, n[-1L]))
+  cont <- structure(cont / n.length, dimnames = list(n, n[-1L]))
+
   return(cont)
+
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Modified code_helmert_forward Function from the codingMatrices Package ####
 
 .forward.helmert <- function(n) {
+
   n.length <- length(n)
   cont <- rbind(diag(n.length:2L - 1L), 0)
   cont[lower.tri(cont)] <- -1L
-  cont <- cont/rep(n.length:2L, each = n.length)
+  cont <- cont / rep(n.length:2L, each = n.length)
   dimnames(cont) <- list(n, n[1L:ncol(cont)])
+
   return(cont)
+
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Modified contr_code_helmert Function from the faux Package ####
 
 .reverse.helmert <- function(n) {
+
   n.length <- length(n)
   cont <- contr.helmert(n.length)
   for (i in 1L:(n.length - 1L)) {
-    cont[, i] <- cont[, i]/(i + 1L)
+    cont[, i] <- cont[, i] / (i + 1L)
   }
   comparison <- lapply(1L:(n.length - 1L), function(y) {
     paste(n[1L:y], collapse = ".")
   })
   dimnames(cont) <- list(n, n[-1L])
+
   return(cont)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the cohens.d() function -------------------------------
+
+.internal.d.function <- function(x, y, mu, paired, weighted, cor, ref, correct,
+                                 alternative, conf.level) {
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## One-sample ####
+  if (isTRUE(is.null(y))) {
+
+    # Unstandardized mean difference
+    yx.diff <- mean(x, na.rm = TRUE) - mu
+
+    # Standard deviation
+    sd.group <- x.sd <- sd(x, na.rm = TRUE)
+
+    # Sample size
+    x.n <- length(na.omit(x))
+
+    #...................
+    ### Cohen's d ####
+
+    d <- yx.diff / sd.group
+
+    #...................
+    ### Correction factor ####
+
+    # Bias-corrected Cohen's d
+    if (isTRUE(correct)) {
+
+      v <- x.n - 1
+
+      # Correction factor based on gamma function
+      corr.factor <- gamma(0.5*v) / ((sqrt(v / 2L)) * gamma(0.5 * (v - 1L)))
+
+      # Correction factor based on approximation method
+      if (isTRUE(is.na(corr.factor) || is.nan(corr.factor) || is.infinite(corr.factor))) {
+
+        corr.factor <- (1L - (3L / (4L * v - 1L)))
+
+      }
+
+      d <- d*corr.factor
+
+    }
+
+    #...................
+    ### Confidence interval ####
+
+    # Standard error
+    d.se <- sqrt((x.n / (x.n / 2L)^2L) + 0.5*(d^2L / x.n))
+
+    # Noncentrality parameter
+    t <- yx.diff / (x.sd / sqrt(x.n))
+    df <- x.n - 1
+
+    conf1 <- ifelse(alternative == "two.sided", (1L + conf.level) / 2L, conf.level)
+    conf2 <- ifelse(alternative == "two.sided", (1L - conf.level) / 2L, 1L - conf.level)
+
+    st <- max(0.1, abs(t))
+
+    ###
+
+    end1 <- t
+    while(suppressWarnings(pt(q = t, df = df, ncp = end1)) < conf1) { end1 <- end1 - st }
+
+    ncp1 <- uniroot(function(x) conf1 - suppressWarnings(pt(q = t, df = df, ncp = x)), c(end1, 2*t - end1))$root
+
+    ###
+
+    end2 <- t
+    while(suppressWarnings(pt(q = t, df = df, ncp = end2)) > conf2) { end2 <- end2 + st }
+
+    ncp2 <- uniroot(function(x) conf2 - suppressWarnings(pt(q = t, df = df, ncp = x)), c(2*t - end2, end2))$root
+
+    # Confidence interval around ncp
+    conf.int <- switch(alternative,
+                       two.sided = c(low = ncp1 / sqrt(df), upp = ncp2 / sqrt(df)),
+                       less = c(low = -Inf, upp = ncp2 / sqrt(df)),
+                       greater = c(low = ncp1 / sqrt(df), upp = Inf))
+
+    # With correction factor
+    if(isTRUE(correct)) {
+
+      conf.int <- conf.int*corr.factor
+
+    }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Two-sample ####
+  } else if (!isTRUE(paired)) {
+
+    #...................
+    ### Data ####
+
+    # x and y
+    x <- na.omit(x)
+    y <- na.omit(y)
+
+    # Sample size for x and y
+    x.n <- length(x)
+    y.n <- length(y)
+
+    # Total sample size
+    xy.n <- sum(c(x.n, y.n))
+
+    # Unstandardized mean difference
+    yx.diff <- mean(y) - mean(x)
+
+    # Variance
+    x.var <- var(x)
+    y.var <- var(y)
+
+    # Standard deviation
+    x.sd <- sd(x)
+    y.sd <- sd(y)
+
+    # At least 2 observations for x/y and variance in x/y
+    if (isTRUE((x.n >= 2L && y.n >= 2L) && (x.var != 0L && y.var != 0L))) {
+
+      #...................
+      ### Standard deviation ####
+
+      # Pooled standard deviation
+      if (isTRUE(is.null(ref))) {
+
+        # Weighted pooled standard deviation, Cohen's d.s
+        if (isTRUE(weighted)) {
+
+          sd.group <- sqrt(((x.n - 1L)*x.var + (y.n - 1L)*y.var) / (xy.n - 2L))
+
+          # Unweighted pooled standard deviation
+        } else {
+
+          sd.group <- sqrt(sum(c(x.var, y.var)) / 2L)
+
+        }
+
+      # Standard deviation from reference group x or y, Glass's delta
+      } else {
+
+        sd.group <- ifelse(ref == "x", x.sd, y.sd)
+
+      }
+
+      #...................
+      ### Cohen's d ####
+
+      d <- yx.diff / sd.group
+
+      #...................
+      ### Correction factor ####
+
+      # Bias-corrected Cohen's d, i.e., Hedges' g
+      if (isTRUE(correct)) {
+
+        # Degrees of freedom
+        v <- xy.n - 2L
+
+        # Correction factor based on gamma function
+        corr.factor <- gamma(0.5*v) / ((sqrt(v / 2L)) * gamma(0.5 * (v - 1L)))
+
+        # Correction factor based on approximation method
+        if (isTRUE(is.na(corr.factor) || is.nan(corr.factor) || is.infinite(corr.factor))) {
+
+          corr.factor <- (1L - (3L / (4L * v - 1L)))
+
+        }
+
+        # Applying correction factor
+        d <- d*corr.factor
+
+      }
+
+      #...................
+      ### Confidence interval ####
+
+      # No reference group
+      if (isTRUE(is.null(ref))) {
+
+        # Cohen's d.s
+
+        # Pooled standard deviation
+        if (isTRUE(weighted)) {
+
+          d.se <- sd.group * sqrt(1 / x.n + 1 / y.n)
+          df <- xy.n - 2
+
+          # Unpooled standard deviation
+        } else {
+
+          d.se <- sqrt(sqrt(x.sd^2 / x.n)^2 + sqrt(y.sd^2 / y.n)^2)
+          df <- d.se^4 / ( sqrt(x.sd^2 / x.n)^4 / (x.n - 1) + sqrt(y.sd^2 / y.n)^4 / (y.n - 1))
+
+        }
+
+        t <- yx.diff / d.se
+        hn <- sqrt(1 / x.n + 1 / y.n)
+
+        # Reference group
+      } else {
+
+        d.se <- sqrt(sd(c(x, y))^2*(1 / x.n + 1 / y.n))
+        df <- x.n + y.n - 2
+
+        t <- yx.diff / d.se
+        hn <- sqrt(1 / x.n + 1 / y.n)
+
+      }
+
+      conf1 <- ifelse(alternative == "two.sided", (1 + conf.level) / 2, conf.level)
+      conf2 <- ifelse(alternative == "two.sided", (1 - conf.level) / 2, 1 - conf.level)
+
+      # Noncentrality parameter
+      st <- max(0.1, abs(t))
+
+      ###
+
+      end1 <- t
+      while(suppressWarnings(pt(q = t, df = df, ncp = end1)) < conf1) { end1 <- end1 - st }
+
+      ncp1 <- uniroot(function(x) conf1 - suppressWarnings(pt(q = t, df = df, ncp = x)), c(end1, 2*t - end1))$root
+
+      ###
+
+      end2 <- t
+      while(suppressWarnings(pt(q = t, df = df, ncp = end2)) > conf2) { end2 <- end2 + st }
+
+      ncp2 <- uniroot(function(x) conf2 - suppressWarnings(pt(q = t, df = df, ncp = x)), c(2*t - end2, end2))$root
+
+      # Confidence interval around ncp
+      conf.int <- switch(alternative,
+                         two.sided = c(low = ncp1 * hn, upp = ncp2 * hn),
+                         less = c(low = -Inf, upp = ncp2 * hn),
+                         greater = c(low = ncp1 * hn, upp = Inf))
+
+      # With correction factor
+      if(isTRUE(correct)) {
+
+        conf.int <- conf.int*corr.factor
+
+      }
+
+    # Not at least 2 observations for x/y and variance in x/y
+    } else {
+
+      d <- d.se <- sd.group <- NA
+      conf.int <- c(NA, NA)
+
+    }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Paired-sample ####
+  } else if (isTRUE(paired)) {
+
+    #...................
+    ### Data ####
+
+    xy.dat <- na.omit(data.frame(x = x, y = y, stringsAsFactors = FALSE))
+
+    x <- xy.dat$x
+    y <- xy.dat$y
+
+    # Standard deviation of x and y
+    x.sd <- sd(x)
+    y.sd <- sd(y)
+
+    # Unstandardized mean difference
+    yx.diff <- mean(y - x)
+
+    # Sample size
+    xy.n <- nrow(xy.dat)
+
+    #...................
+    ### Standard deviation ####
+
+    # SD of difference score, Cohen's d.z
+    if (isTRUE(weighted)) {
+
+      sd.group <- sd(y - x)
+
+    } else {
+
+      # Controlling correlation, Cohen's d.rm
+      if (isTRUE(cor)) {
+
+        # Variance of x and y
+        x.var <- var(x)
+        y.var <- var(y)
+
+        # Sum of the variances
+        xy.var.sum <- sum(c(x.var, y.var))
+
+        # Correlation between x and y
+        xy.r <- cor(x, y)
+
+        sd.group <- sqrt(xy.var.sum - 2L * xy.r * prod(c(sqrt(x.var), sqrt(y.var))))
+
+        # Ignoring correlation, Cohen's d.av
+      } else {
+
+        sd.group <- (x.sd + y.sd) / 2
+
+      }
+
+    }
+
+    #...................
+    ### Cohen's d ####
+
+    # Cohen's d.rm
+    if (isTRUE(cor && !isTRUE(weighted))) {
+
+      d <- yx.diff / sd.group * sqrt(2L*(1L -xy.r))
+
+      # Cohen's d.z, d.av, and Glass's delta
+    } else {
+
+      d <- yx.diff / sd.group
+
+    }
+
+    #...................
+    ### Correction factor ####
+
+    # Degrees of freedom
+    v <- xy.n - 1
+
+    # Correction factor based on gamma function
+    corr.factor <- gamma(0.5*v) / ((sqrt(v / 2L)) * gamma(0.5 * (v - 1L)))
+
+    # Correction factor based on approximation method
+    if (isTRUE(is.na(corr.factor) || is.nan(corr.factor) || is.infinite(corr.factor))) {
+
+      corr.factor <- 1L - 3L / (4L * v - 1L)
+
+    }
+
+    # Bias-corrected Cohen's d
+    if (isTRUE(correct)) {
+
+      d <- d*corr.factor
+
+    }
+
+    #...................
+    ### Confidence interval ####
+
+    # Standard error
+    d.se <- sqrt((xy.n / (xy.n / 2)^2) + 0.5*(d^2 / xy.n))
+
+    # Noncentrality parameter
+    t <- yx.diff / (sd.group / sqrt(xy.n))
+    df <- xy.n - 1
+
+    conf1 <- ifelse(alternative == "two.sided", (1L + conf.level) / 2L, conf.level)
+    conf2 <- ifelse(alternative == "two.sided", (1L - conf.level) / 2L, 1L - conf.level)
+
+    st <- max(0.1, abs(t))
+
+    ###
+
+    end1 <- t
+    while(suppressWarnings(pt(q = t, df = df, ncp = end1)) < conf1) { end1 <- end1 - st }
+
+    ncp1 <- uniroot(function(x) conf1 - suppressWarnings(pt(q = t, df = df, ncp = x)), c(end1, 2*t - end1))$root
+
+    ###
+
+    end2 <- t
+    while(suppressWarnings(pt(q = t, df = df, ncp = end2)) > conf2) { end2 <- end2 + st }
+
+    ncp2 <- uniroot(function(x) conf2 - suppressWarnings(pt(q = t, df = df, ncp = x)), c(2*t - end2, end2))$root
+
+    # Confidence interval around ncp
+    conf.int <- switch(alternative,
+                       two.sided = c(low = ncp1 / sqrt(df), upp = ncp2 / sqrt(df)),
+                       less = c(low = -Inf, upp = ncp2 / sqrt(df)),
+                       greater = c(low = ncp1 / sqrt(df), upp = Inf))
+
+    # With correction factor
+    if(isTRUE(correct)) {
+
+      conf.int <- conf.int*corr.factor
+
+    }
+
+  }
+
+  # Return object
+  object <- data.frame(m.diff = yx.diff, sd = sd.group,
+                       d = d, se = d.se,
+                       low = conf.int[1L], upp = conf.int[2], row.names = NULL)
+
+  return(object)
+
 }
 
 #_______________________________________________________________________________
@@ -1560,11 +4630,97 @@ detect.blimp <- function(exec = "blimp") {
 #
 # Internal functions for the cor.matrix() function -----------------------------
 #
-# - .internal.tau.c
 # - .internal.cor.test.pearson
 # - .internal.cor.test.spearman
 # - .internal.cor.test.kendall.b
+# - .internal.tau.c
 # - .internal.polychoric
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .internal.cor.test.pearson Function ####
+
+.internal.cor.test.pearson <- function(x, y) {
+
+  # At least three cases
+  if (isTRUE(nrow(na.omit(data.frame(x = x, y = y))) >= 3L)) {
+
+    object <- suppressWarnings(cor.test(x, y, method = "pearson")) |> (\(y) list(stat = y$statistic, df = y$parameter, pval = y$p.value))()
+
+  # Less than three cases
+  } else {
+
+    object <- list(stat = NA, df = NA, pval = NA)
+
+  }
+
+  return(object)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .internal.cor.test.spearman Function ####
+
+.internal.cor.test.spearman <- function(x, y, continuity) {
+
+  # Complete data
+  xy.dat <- na.omit(data.frame(x = x, y = y))
+
+  # Number of cases
+  n <- nrow(xy.dat)
+
+  # At least three cases
+  if (isTRUE(n >= 3L)) {
+
+    # Correlation coefficient
+    r <- cor(xy.dat[, c("x", "y")], method = "spearman")[1L, 2L]
+
+    # Continuity correction
+    if (isTRUE(continuity)) { r <- 1L - ((n^3L - n) * (1L - r) / 6L) / (((n * (n^2L - 1)) / 6L) + 1L) }
+
+    # Test statistic
+    stat <- r * sqrt((n - 2L) / (1L - r^2L))
+
+    # Degrees of freedom
+    df <- n - 2L
+
+    # p-value
+    pval <- min(pt(stat, df = df), pt(stat, df = df, lower.tail = FALSE))*2L
+
+    # Return object
+    object <- list(stat = stat, df = df, pval = pval)
+
+  # Less than three cases
+  } else {
+
+    # Return object
+    object <- list(stat = NA, df = NA, pval = NA)
+
+  }
+
+  return(object)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .internal.cor.test.kendall.b Function ####
+
+.internal.cor.test.kendall.b <- function(x, y, continuity) {
+
+  # At least three cases
+  if (isTRUE(nrow(na.omit(data.frame(x = x, y = y))) >= 3L)) {
+
+    object <- suppressWarnings(cor.test(x, y, method = "kendall", exact = FALSE, continuity = FALSE)) |> (\(y) list(stat = y$statistic, df = y$parameter, pval = y$p.value))()
+
+  # Less than three cases
+  } else {
+
+    object <- list(stat = NA, df = NA, pval = NA)
+
+  }
+
+  return(object)
+
+}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## .internal.tau.c Function ####
@@ -1645,126 +4801,6 @@ detect.blimp <- function(exec = "blimp") {
   return(object)
 
 }
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## .internal.cor.test.pearson Function ####
-
-.internal.cor.test.pearson <- function(x, y) {
-
-  # At least three cases
-  if (isTRUE(nrow(na.omit(data.frame(x = x, y = y))) >= 3L)) {
-
-    result.cor.test <- suppressWarnings(cor.test(x, y, method = "pearson"))
-
-    object <- list(stat = result.cor.test$statistic, df = result.cor.test$parameter, pval = result.cor.test$p.value)
-
-  # Less than three cases
-  } else {
-
-    object <- list(stat = NA, df = NA, pval = NA)
-
-  }
-
-  return(object)
-
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## .internal.cor.test.spearman Function ####
-
-.internal.cor.test.spearman <- function(x, y, continuity) {
-
-  # Complete data
-  xy.dat <- na.omit(data.frame(x = x, y = y))
-
-  # Number of cases
-  n <- nrow(xy.dat)
-
-  # At least three cases
-  if (isTRUE(n >= 3L)) {
-
-    # Correlation coefficient
-    r <- cor(xy.dat[, c("x", "y")], method = "spearman")[1L, 2L]
-
-    # Continuity correction
-    if (isTRUE(continuity)) { r <- 1L - ((n^3L - n) * (1L - r) / 6L) / (((n * (n^2L - 1)) / 6L) + 1L) }
-
-    # Test statistic
-    stat <- r * sqrt((n - 2L) / (1L - r^2L))
-
-    # Degrees of freedom
-    df <- n - 2L
-
-    # p-value
-    pval <- min(pt(stat, df = df), pt(stat, df = df, lower.tail = FALSE))*2L
-
-    # Return object
-    object <- list(stat = stat, df = df, pval = pval)
-
-  # Less than three cases
-  } else {
-
-    # Return object
-    object <- list(stat = NA, df = NA, pval = NA)
-
-  }
-
-  return(object)
-
-}
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## .internal.cor.test.kendall.b Function ####
-
-.internal.cor.test.kendall.b <- function(x, y, continuity) {
-
-  # Complete data
-  xy.dat <- na.omit(data.frame(x = x, y = y))
-
-  # Number of cases
-  n <- nrow(xy.dat)
-
-  # At least three cases
-  if (isTRUE(n >= 3L)) {
-
-    # Correlation coefficient
-    r <- cor(xy.dat[, c("x","y")], method = "kendall")[1L, 2L]
-
-    xties <- table(x[duplicated(x)]) + 1L
-    yties <- table(y[duplicated(y)]) + 1L
-    T0 <- n * (n - 1L)/2L
-    T1 <- sum(xties * (xties - 1L))/2L
-    T2 <- sum(yties * (yties - 1L))/2L
-    S <- r * sqrt((T0 - T1) * (T0 - T2))
-    v0 <- n * (n - 1L) * (2L * n + 5L)
-    vt <- sum(xties * (xties - 1L) * (2L * xties + 5L))
-    vu <- sum(yties * (yties - 1L) * (2L * yties + 5L))
-    v1 <- sum(xties * (xties - 1L)) * sum(yties * (yties - 1L))
-    v2 <- sum(xties * (xties - 1L) * (xties - 2)) * sum(yties * (yties - 1L) * (yties - 2L))
-
-    var_S <- (v0 - vt - vu) / 18L + v1 / (2L * n * (n - 1L)) + v2 / (9L * n * (n - 1L) * (n - 2L))
-
-    # Continuity correction
-    if (isTRUE(continuity)) { S <- sign(S) * (abs(S) - 1L) }
-
-    # Test statistic
-    stat <- S / sqrt(var_S)
-
-    # p-value
-    pval <-  min(pnorm(stat), pnorm(stat, lower.tail = FALSE))*2L
-
-    object <- list(stat = stat, df = NA, pval = pval)
-
-  # Less than three cases
-  } else {
-
-    object <- list(stat = NA, df = NA, pval = NA)
-  }
-
-  return(object)
-
-}
-
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## .internal.polychoric Function ####
@@ -2096,7 +5132,7 @@ detect.blimp <- function(exec = "blimp") {
 
     }
 
-    pmin <- apply(p, 2, function(x) min(x, na.rm = TRUE))
+    pmin <- apply(p, 2L, function(x) min(x, na.rm = TRUE))
     minx <- min(pmin)
     p <- t(t(p) - pmin + 1L)
 
@@ -2352,7 +5388,335 @@ detect.blimp <- function(exec = "blimp") {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the eff.categ() function ------------------------------
+# Internal functions for the dominance() function ------------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Dominance analysis supporting formula-based modeling functions ####
+
+.domin <- function(formula_overall, reg, fitstat, sets = NULL, all = NULL,
+                  conditional = TRUE, complete = TRUE, consmodel = NULL, reverse = FALSE, ...) {
+
+  # Input check
+  if (isTRUE(!inherits(formula_overall, "formula"))) { stop(paste(formula_overall, "is not a 'formula' class object."), call. = FALSE) }
+
+  if (isTRUE(!is.null(attr(stats::terms(formula_overall), "offset")))) { stop("'offset()' terms not allowed in formula object.", call. = FALSE) }
+
+  if (isTRUE(!is.list(fitstat))) { stop("fitstat is not a list.", call. = FALSE) }
+
+  if (isTRUE(length(sets) > 0L & !is.list(sets))) { stop("sets is not a list.", call. = FALSE) }
+
+  if (isTRUE(is.list(all))) { stop("all is a list.  Please submit it as a vector.", call. = FALSE) }
+
+  if (isTRUE(!attr(stats::terms(formula_overall), "response"))) { stop(paste(deparse(formula_overall), "missing a response."), call. = FALSE) }
+
+  if (isTRUE(any(attr(stats::terms(formula_overall), "order") > 1L))) { warning(paste(deparse(formula_overall), "contains second or higher order terms, fsunction may not handle them correctly."), call. = FALSE) }
+
+  if (isTRUE(length(fitstat) < 2L)) { stop("fitstat requires at least two elements.", call. = FALSE) }
+
+  # Process variable lists
+  Indep_Vars <- attr(stats::terms(formula_overall), "term.labels")
+
+  intercept <- as.logical(attr(stats::terms(formula_overall), "intercept"))
+
+  if (isTRUE(length(sets) > 0L)) {
+
+    set_aggregated <- sapply(sets, paste0, collapse = " + ")
+
+    Indep_Vars <- append(Indep_Vars, set_aggregated)
+
+  }
+
+  Dep_Var <- attr(stats::terms(formula_overall), "variables")[[2L]]
+
+  Total_Indep_Vars <- length(Indep_Vars)
+
+  # IV-based exit conditions
+  if (isTRUE(Total_Indep_Vars < 2L)) { stop(paste("Total of", Total_Indep_Vars, "independent variables or sets. At least 2 needed for useful dominance analysis."), call. = FALSE) }
+
+  # Create independent variable/set combination list
+  Combination_Matrix <- expand.grid(lapply(1:Total_Indep_Vars, function(x) c(FALSE, TRUE)), KEEP.OUT.ATTRS = FALSE)[-1L, ]
+
+  Total_Models_to_Estimate <- 2L**Total_Indep_Vars - 1L
+
+  # Define function to call regression models
+  doModel_Fit <- function(Indep_Var_Combin_lgl, Indep_Vars, Dep_Var, reg, fitstat, all = NULL, consmodel = NULL, intercept, ...) {
+
+    Indep_Var_Combination <- Indep_Vars[Indep_Var_Combin_lgl]
+
+    formula_to_use <- stats::reformulate(c(Indep_Var_Combination, all, consmodel), response = Dep_Var, intercept = intercept)
+
+    Model_Result <- list(do.call(reg, list(formula_to_use, ...)))
+
+    if (isTRUE(length(fitstat) > 2L)) { Model_Result <- append(Model_Result, fitstat[3L:length(fitstat)]) }
+
+    Fit_Value <- do.call(fitstat[[1L]], Model_Result)
+
+    return( Fit_Value[[ fitstat[[2L]]]])
+
+  }
+
+  # Constant model adjustments
+  Cons_Result <- NULL
+  FitStat_Adjustment <- 0L
+  if (isTRUE(length(consmodel) > 0L)) {
+
+    FitStat_Adjustment <- Cons_Result <- doModel_Fit(NULL, Indep_Vars, Dep_Var, reg, fitstat, consmodel = consmodel, intercept = intercept, ...)
+
+  }
+
+  # All subsets adjustment
+  All_Result <- NULL
+  if (isTRUE(length(all) > 0L)) {
+
+    FitStat_Adjustment <- All_Result <- doModel_Fit(NULL, Indep_Vars, Dep_Var, reg, fitstat, all = all, consmodel = consmodel, intercept = intercept, ...)
+
+  }
+
+  # Obtain all subsets regression results
+  Ensemble_of_Models <- sapply(1L:nrow(Combination_Matrix), function(x) { doModel_Fit(unlist(Combination_Matrix[x, ]), Indep_Vars, Dep_Var, reg, fitstat, all = all, consmodel = consmodel, intercept = intercept, ...) },
+                               simplify = TRUE, USE.NAMES = FALSE)
+
+  # Conditional dominance statistics
+  Conditional_Dominance <- NULL
+  if (isTRUE(conditional)) {
+
+    Conditional_Dominance <- matrix(nrow = Total_Indep_Vars, ncol = Total_Indep_Vars)
+
+    Combination_Matrix_Anti <-!Combination_Matrix
+
+    IVs_per_Model <- rowSums(Combination_Matrix)
+
+    Combins_at_Order <- sapply(IVs_per_Model, function(x) choose(Total_Indep_Vars, x), simplify = TRUE, USE.NAMES = FALSE)
+
+    Combins_at_Order_Prev <- sapply(IVs_per_Model, function(x) choose(Total_Indep_Vars - 1L, x), simplify = TRUE, USE.NAMES = FALSE)
+
+    Weighted_Order_Ensemble <- ((Combination_Matrix*(Combins_at_Order - Combins_at_Order_Prev))**-1L)*Ensemble_of_Models
+
+    Weighted_Order_Ensemble <- replace(Weighted_Order_Ensemble, Weighted_Order_Ensemble == Inf, 0L)
+
+    Weighted_Order_Ensemble_Anti <- ((Combination_Matrix_Anti*Combins_at_Order_Prev)**-1L)*Ensemble_of_Models
+
+    Weighted_Order_Ensemble_Anti <- replace(Weighted_Order_Ensemble_Anti, Weighted_Order_Ensemble_Anti == Inf, 0L)
+
+    for (order in seq_len(Total_Indep_Vars)) {
+
+      Conditional_Dominance[, order] <- t(colSums(Weighted_Order_Ensemble[IVs_per_Model == order, ]) - colSums(Weighted_Order_Ensemble_Anti[IVs_per_Model == (order - 1L), ]))
+
+    }
+
+    Conditional_Dominance[, 1L] <- Conditional_Dominance[, 1L] - FitStat_Adjustment
+
+  }
+
+  # Complete dominance statistics
+  Complete_Dominance <- NULL
+  if (isTRUE(complete)) {
+
+    Complete_Dominance <- matrix(data = NA, nrow = Total_Indep_Vars, ncol = Total_Indep_Vars)
+
+    Complete_Combinations <- utils::combn(seq_len(Total_Indep_Vars), 2L)
+
+    for (pair in 1L:ncol(Complete_Combinations)) {
+
+      Focal_Cols <- Complete_Combinations[, pair]
+
+      NonFocal_Cols <- setdiff(1:Total_Indep_Vars, Focal_Cols)
+
+      Select_2IVs <- cbind(Combination_Matrix, 1L:nrow(Combination_Matrix))[rowSums(Combination_Matrix[, Focal_Cols]) == 1L, ]
+
+      Sorted_2IVs <- Select_2IVs[do.call("order", as.data.frame(Select_2IVs[,c(NonFocal_Cols, Focal_Cols)])), ]
+
+      Compare_2IVs <- cbind(Ensemble_of_Models[Sorted_2IVs[(1L:nrow(Sorted_2IVs) %% 2L) == 0L, ncol(Sorted_2IVs)]], Ensemble_of_Models[Sorted_2IVs[(1L:nrow(Sorted_2IVs) %% 2) == 1L, ncol(Sorted_2IVs)]])
+
+      Complete_Designation <- ifelse(all(Compare_2IVs[, 1L] > Compare_2IVs[, 2L]), FALSE, ifelse(all(Compare_2IVs[, 1L] < Compare_2IVs[, 2L]), TRUE, NA))
+
+      Complete_Dominance[Focal_Cols[[2L]], Focal_Cols[[1L]]] <- Complete_Designation
+
+      Complete_Dominance[Focal_Cols[[1L]], Focal_Cols[[2L]]] <- !Complete_Designation
+
+    }
+
+  }
+
+  if (isTRUE(reverse)) { Complete_Dominance <- !Complete_Dominance }
+
+  # General dominance statistics
+  General_Dominance <- rowMeans(Conditional_Dominance)
+  if (isTRUE(!conditional)) {
+
+    Combination_Matrix_Anti <-!Combination_Matrix
+
+    IVs_per_Model <- rowSums(Combination_Matrix)
+
+    Combins_at_Order <- sapply(IVs_per_Model, function(x) choose(Total_Indep_Vars, x), simplify = TRUE, USE.NAMES = FALSE)
+
+    Combins_at_Order_Prev <- sapply(IVs_per_Model, function(x) choose(Total_Indep_Vars - 1L, x), simplify = TRUE, USE.NAMES = FALSE)
+
+    Indicator_Weight <- Combination_Matrix*(Combins_at_Order - Combins_at_Order_Prev)
+
+    Indicator_Weight_Anti <- (Combination_Matrix_Anti*Combins_at_Order_Prev)*-1L
+
+    Weight_Matrix <- ((Indicator_Weight + Indicator_Weight_Anti)*Total_Indep_Vars)^-1L
+
+    General_Dominance <- colSums(Ensemble_of_Models*Weight_Matrix)
+
+    General_Dominance <- General_Dominance - FitStat_Adjustment/Total_Indep_Vars
+
+  }
+
+  # Overall fit statistic and ranks
+  FitStat <- sum(General_Dominance) + FitStat_Adjustment
+
+  if (isTRUE(!reverse)) { General_Dominance_Ranks <- rank(-General_Dominance) } else { General_Dominance_Ranks <- rank(General_Dominance) }
+
+  # Return values and attributes
+  if (isTRUE(length(sets) == 0L)) IV_Labels <- { attr(stats::terms(formula_overall), "term.labels") } else { IV_Labels <- c( attr(stats::terms(formula_overall), "term.labels"), paste0("set", 1:length(sets))) }
+
+  names(General_Dominance) <- IV_Labels
+  names(General_Dominance_Ranks) <- IV_Labels
+  if (isTRUE(conditional)) { dimnames(Conditional_Dominance) <- list(IV_Labels, paste0("IVs_", seq_along(Indep_Vars))) }
+
+  if (isTRUE(complete)) { dimnames(Complete_Dominance) <- list(paste0("Dmnates_", IV_Labels),  paste0("Dmnated_", IV_Labels)) }
+
+  if (isTRUE(!reverse)) { Standardized <- General_Dominance / (FitStat - ifelse(length(Cons_Result) > 0L, Cons_Result, 0L)) } else { Standardized <- -General_Dominance / -(FitStat - ifelse(length(Cons_Result) > 0L, Cons_Result, 0L)) }
+
+  # Return object
+  return_list <- list(General_Dominance = General_Dominance,
+                      Standardized = Standardized,
+                      Ranks = General_Dominance_Ranks,
+                      Conditional_Dominance = Conditional_Dominance,
+                      Complete_Dominance = Complete_Dominance,
+                      Fit_Statistic_Overall = FitStat,
+                      Fit_Statistic_All_Subsets = All_Result - ifelse(is.null(Cons_Result), 0, Cons_Result),
+                      Fit_Statistic_Constant_Model = Cons_Result,
+                      Call = match.call(),
+                      Subset_Details = list(Full_Model = stats::reformulate(c(Indep_Vars, all, consmodel), response = Dep_Var, intercept = intercept),
+                                            Formula = attr(stats::terms(formula_overall), "term.labels"),
+                                            All = all, Sets = sets, Constant = consmodel))
+
+  class(return_list) <- c("domin", "list")
+
+  return(return_list)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the dominance.manual() function -----------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Enumerate the Combinations or Permutation of the ELements of a Vector ####
+
+# combinations() from the gtools package
+.combinations <- function(n, r, v = 1:n, set = TRUE, repeats.allowed = FALSE) {
+
+  if (isTRUE(mode(n) != "numeric" || length(n) != 1L || n < 1L || (n %% 1) != 0L)) { stop("bad value of n") }
+  if (isTRUE(mode(r) != "numeric" || length(r) != 1L || r < 1L || (r %% 1) != 0L)) { stop("bad value of r") }
+
+  if (isTRUE(!is.atomic(v) || length(v) < n)) { stop("v is either non-atomic or too short") }
+
+  if (isTRUE((r > n) & !repeats.allowed)) { stop("r > n and repeats.allowed = FALSE", call. = FALSE) }
+
+  if (isTRUE(set)) {
+
+    v <- unique(sort(v))
+    if (length(v) < n) stop("Too few different elements", call. = FALSE)
+
+  }
+
+  v0 <- vector(mode(v), 0L)
+
+  ## Inner workhorse
+  if (repeats.allowed) {
+
+    sub <- function(n, r, v) {
+
+      if (isTRUE(r == 0L)) { v0 } else if (isTRUE(r == 1L)) { matrix(v, n, 1) } else if (isTRUE(n == 1L)) { matrix(v, 1L, r) } else { rbind(cbind(v[1L], Recall(n, r - 1L, v)), Recall(n - 1L, r, v[-1L])) }
+
+    }
+
+  } else {
+
+    sub <- function(n, r, v) {
+
+      if (isTRUE(r == 0L)) { v0 } else if (isTRUE(r == 1L)) { matrix(v, n, 1) } else if (isTRUE(r == n)) { matrix(v, 1L, n) } else { rbind(cbind(v[1], Recall(n - 1L, r - 1L, v[-1L])), Recall(n - 1L, r, v[-1L])) }
+
+    }
+
+    return(sub(n, r, v[1L:n]))
+
+  }
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Dominance analysis functions ####
+
+.DA <- function(cormat, index = NULL) {
+
+  # Correlation matrix of the predictors
+  Px <- cormat[-1L, -1L]
+
+  # Correlation vector
+  rx <- cormat[-1L, 1L]
+
+  if (isTRUE(is.null(index))) { index = as.list(1:length(rx)) }
+
+  # Number of predictors or groups of predictors
+  J <- length(index)
+
+  # R2 for model with subset xi
+  R2 <- function(xi) {
+
+    xi <- unlist(index[xi])
+
+    R2 <- t(rx[xi])%*%solve(Px[xi, xi])%*%rx[xi]
+
+  }
+
+  # Average R2 change for a subset model with k size
+
+  # Possible subset models before adding a predictor
+  submodel <- function(k) {
+
+    temp0 <- lapply(1L:J, function(i) .combinations(J - 1L, k, (1L:J)[-i]))
+
+    # Possible subset models after adding a predictor
+    temp1 <- lapply(1:J, function(i) t(apply(temp0[[i]], 1L, function(x) c(x, i))))
+
+    # R2 before adding a predictor
+    R0 <- lapply(temp0, function(y) apply(y, 1L, R2))
+
+    # R2 after adding a predictor
+    R1 <- lapply(temp1, function(y) apply(y, 1L, R2))
+
+    # R2 change
+    deltaR2 <- mapply(function(x, y) x - y, R1, R0)
+
+    # Average R2 change
+    adeltaR2 <- apply(matrix(deltaR2, ncol = J), 2L, mean)
+
+    return(adeltaR2)
+
+  }
+
+  # Different model size k
+  R2matrix <- t(sapply(1L:(J - 1L), submodel))
+
+  R2matrix <- rbind(sapply(1L:J, R2), R2matrix)
+
+  # Overall average
+  DA <- apply(R2matrix, 2L, mean)
+
+  return(DA)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the effsize() function --------------------------------
 #
 # - .phi
 # - .cramer
@@ -3143,7 +6507,7 @@ os <- function() {
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Detect the location/name of the Mplus command ####
 
-detect.mplus <- function() {
+.detect.mplus <- function() {
 
   ostype <- os()
 
@@ -3582,6 +6946,41 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
+# Internal functions for the multilevel.omega() function -----------------------
+#
+# - .internal.mvrnorm
+
+.internal.mvrnorm <- function (n = 1, mu, Sigma, tol = 1e-06, empirical = FALSE, EISPACK = FALSE) {
+
+  p <- length(mu)
+
+  if (!all(dim(Sigma) == c(p, p)))  { stop("incompatible arguments") }
+  if (EISPACK)  { stop("'EISPACK' is no longer supported by R", domain = NA) }
+
+  eS <- eigen(Sigma, symmetric = TRUE)
+  ev <- eS$values
+  if (!all(ev >= -tol * abs(ev[1L])))  { stop("'Sigma' is not positive definite") }
+
+  X <- matrix(rnorm(p * n), n)
+  if (empirical) {
+    X <- scale(X, TRUE, FALSE)
+    X <- X %*% svd(X, nu = 0)$v
+    X <- scale(X, FALSE, TRUE)
+  }
+
+  X <- drop(mu) + eS$vectors %*% diag(sqrt(pmax(ev, 0)), p) %*% t(X)
+  nm <- names(mu)
+
+  if (is.null(nm) && !is.null(dn <- dimnames(Sigma))) { nm <- dn[[1L]] }
+
+  dimnames(X) <- list(nm, NULL)
+  if (n == 1L) { drop(X) } else { t(X) }
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
 # Internal functions for the na.test() function --------------------------------
 #
 # - .LittleMCAR
@@ -3929,7 +7328,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
   }
 
   #### Return object ####
-  restab <- list(dat.analysis = dataused, dat.ordered =  y, case.order = caseorder, g = g, pattern = patused,  n.pattern = patcnt,
+  restab <- list(dat.analysis = dataused, dat.ordered =  y, case.order = caseorder, g = g, pattern = patused, n.pattern = patcnt,
                  t.hawkins = pvalsn, ts.hawkins = ts.hawkins, tsa.hawkins = tsa.hawkins, p.hawkins = p.hawkins, pa.hawkins = pa.hawkins,
                  t.anderson = adistar, ts.anderson = ts.anderson, tsa.anderson = tsa.anderson, p.anderson = p.anderson, pa.anderson = pa.anderson)
 
@@ -4847,7 +8246,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
     cnames <- c("Estimate", "Std. Error", "z value", "Pr(>|z|)")
     mthd <- "z"
 
-    # Linear Model
+  # Linear Model
   } else {
 
     pval <- 2L * pt(abs(stat), df = df, lower.tail = FALSE)
@@ -5082,3 +8481,5 @@ splitFilePath <- function(filepath, normalize = FALSE) {
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

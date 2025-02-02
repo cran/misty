@@ -95,8 +95,7 @@
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{print}}{print objects}
 #' \item{\code{notprint}}{character vectors indicating the result sections not requested}
-#' \item{\code{result}}{list with Blimp version (\code{blimp}) and result sections
-#'                      (\code{result})}
+#' \item{\code{result}}{list with Blimp version (\code{blimp}) and result sections (\code{result})}
 #'
 #' @export
 #'
@@ -141,8 +140,8 @@
 #' }
 blimp.print <- function(x,
                         result = c("all", "default", "algo.options", "data.info",
-                                   "model.info", "warn.mess", "out.model", "gen.param"),
-                        exclude = NULL, color = c("none", "blue", "violet"),
+                                   "model.info", "warn.mess", "error.mess", "out.model", "gen.param"),
+                        exclude = NULL, color = c("none", "blue", "green"),
                         style = c("bold", "regular"), not.result = TRUE,
                         write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
@@ -188,46 +187,28 @@ blimp.print <- function(x,
   # Result Arguments -----------------------------------------------------------
 
   # All result options
-  result.all <- c("algo.options", "simdat.summary", "simdat.summary", "order.simdat", "burnin.psr", "mh.accept", "data.info", "var.imp", "model.info", "param.label", "warn.mess", "fit", "cor.resid", "out.model", "pred.model", "gen.param", "order.impdat")
+  result.all <- c("algo.options", "simdat.summary", "simdat.summary", "order.simdat", "burnin.psr", "mh.accept", "data.info", "var.imp", "model.info", "param.label", "warn.mess", "error.mess", "fit", "cor.resid", "out.model", "pred.model", "gen.param", "order.impdat")
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs 'not.result', 'append', 'output', and 'write'
+  .check.input(logical = c("not.result", "append", "output"), character = list(style = 2L), m.character = list(style = c("regular", "bold", "italic", "underline")), args = "write1", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
-    # Check input 'not.result'
-    if (isTRUE(!is.logical(not.result))) { stop("Please specify TRUE or FALSE for the argument 'not.result'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && !is.character(write))) { stop("Please specify a character string for the argument 'write'.", call. = FALSE) }
-
     # Check input 'result'
-    result[which(!result %in% c("all", "default", result.all))] |>
-      (\(z) if (isTRUE(length(z) != 0L)) { stop(paste0(if (isTRUE(length(z) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'result' is not permissible: ", paste(dQuote(z), collapse = ", ")), call. = FALSE) })()
+    result[which(!result %in% c("all", "default", result.all))] |> (\(z) if (isTRUE(length(z) != 0L)) { stop(paste0(if (isTRUE(length(z) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'result' is not permissible: ", paste(dQuote(z), collapse = ", ")), call. = FALSE) })()
 
     # Check input 'exclude'
-    exclude[which(!exclude %in% result.all)] |>
-      (\(z) if (isTRUE(length(z) != 0L)) { stop(paste0(if (isTRUE(length(z) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'exclude' is not permissible: ", paste(dQuote(z), collapse = ", ")), call. = FALSE) })()
+    exclude[which(!exclude %in% result.all)] |> (\(z) if (isTRUE(length(z) != 0L)) { stop(paste0(if (isTRUE(length(z) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'exclude' is not permissible: ", paste(dQuote(z), collapse = ", ")), call. = FALSE) })()
 
     # Check input 'color'
     if (isTRUE(!all(color %in% c("none", "black", "red", "green", "yellow", "blue", "violet", "cyan", "white", "gray", "b.red", "b.green", "b.yellow", "b.blue", "b.violet", "b.cyan", "b.white")))) { stop(paste0(if (isTRUE(length(color) == 1L)) { "Character string " } else { "Character vector " }, "specified in the argument 'color' is not permissible."), call. = FALSE) }
 
-    if (isTRUE(!all(c("none", "blue", "violet") %in% color))) { if (isTRUE(length(color) != 2L)) { stop("Please specify a vector with two elements for the argument 'color'.", call. = FALSE) } }
-
-    # Check input 'style'
-    if (isTRUE(!all(style %in% c("regular", "bold", "italic", "underline")))) { stop("Character vector in the argument 'style' does not match with \"regular\", \"bold\", \"italic\", or \"underline\".", call. = FALSE) }
-
-    if (isTRUE(length(style) != 2L)) { stop("Please specify a vector with two elements for the argument 'style'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
+    if (isTRUE(!all(c("none", "blue", "green") %in% color))) { if (isTRUE(length(color) != 2L)) { stop("Please specify a vector with two elements for the argument 'color'.", call. = FALSE) } }
 
   }
 
@@ -239,7 +220,7 @@ blimp.print <- function(x,
   ## 'result' Argument ####
 
   # Default setting
-  if (isTRUE(all(c("all", "default", "algo.options", "data.info", "model.info", "warn.mess", "out.model", "gen.param") %in% result))) {
+  if (isTRUE(all(c("all", "default", "algo.options", "data.info", "model.info", "warn.mess", "error.mess", "out.model", "gen.param") %in% result))) {
 
     result <- result[!result %in% c("all", "default")]
 
@@ -251,12 +232,12 @@ blimp.print <- function(x,
   # Default setting with additional result sections
   } else if (isTRUE("default" %in% result & length(result > 1L))) {
 
-    result <- result.all[result.all %in% misty::chr.omit(union(c("all", "default", "algo.options", "data.info", "model.info", "warn.mess", "out.model", "gen.param"), result), "default", check = FALSE)]
+    result <- result.all[result.all %in% misty::chr.omit(union(c("all", "default", "algo.options", "data.info", "model.info", "warn.mess", "error.mess", "out.model", "gen.param"), result), "default", check = FALSE)]
 
   # Manual default setting
   } else if (isTRUE("default" %in% result & length(result == 1L))) {
 
-    result <- c("all", "default", "algo.options", "data.info", "model.info", "warn.mess", "out.model", "gen.param")
+    result <- c("all", "default", "algo.options", "data.info", "model.info", "warn.mess", "error.mess", "out.model", "gen.param")
 
   }
 
@@ -269,7 +250,7 @@ blimp.print <- function(x,
   ## 'color' Argument ####
 
   # Default setting
-  if (isTRUE(all(c("none", "blue", "violet") %in% color))) { color <- c("blue", "violet") }
+  if (isTRUE(all(c("none", "blue", "green") %in% color))) { color <- c("blue", "green") }
 
   #_____________________________________________________________________________
   #
@@ -278,7 +259,7 @@ blimp.print <- function(x,
   section <- c("ALGORITHMIC OPTIONS SPECIFIED:", "SIMULATED DATA SUMMARIES:", "VARIABLE ORDER IN SIMULATED DATA:",
                "BURN-IN POTENTIAL SCALE REDUCTION (PSR) OUTPUT:", "METROPOLIS-HASTINGS ACCEPTANCE RATES:",
                "DATA INFORMATION:", "VARIABLES IN IMPUTATION MODEL:", "MODEL INFORMATION:", "PARAMETER LABELS:",
-               "WARNING MESSAGES:", "MODEL FIT:", "CORRELATIONS AMONG RESIDUALS:", "OUTCOME MODEL ESTIMATES:",
+               "WARNING MESSAGES:", "ERROR:", "MODEL FIT:", "CORRELATIONS AMONG RESIDUALS:", "OUTCOME MODEL ESTIMATES:",
                "PREDICTOR MODEL ESTIMATES:", "GENERATED PARAMETERS:", "VARIABLE ORDER IN IMPUTED DATA:")
 
   #----------------------------------------
@@ -361,7 +342,7 @@ blimp.print <- function(x,
     ## Extract Output Sections ####
 
     # Input objects
-    algo.options <- simdat.summary <- order.simdat <- burnin.psr <- mh.accept <- data.info <- var.imp <- model.info <- param.label <- warn.mess <- fit <- cor.resid <- out.model <- pred.model <- gen.param <- order.impdat <- NULL
+    algo.options <- simdat.summary <- order.simdat <- burnin.psr <- mh.accept <- data.info <- var.imp <- model.info <- param.label <- warn.mess <- error.mess <- fit <- cor.resid <- out.model <- pred.model <- gen.param <- order.impdat <- NULL
 
     #...................
     ### Multiple Imputation Within Subgroups ####
@@ -421,7 +402,7 @@ blimp.print <- function(x,
       # Extract section
       warn.mess <- run.val[which(run.val == "WARNING MESSAGES:"):(.internal.ind.to(section, "WARNING MESSAGES:"))]
 
-      # Higehst PSR exceeding 1.05
+      # Highest PSR exceeding 1.05
       if (isTRUE(any(run.val == "BURN-IN POTENTIAL SCALE REDUCTION (PSR) OUTPUT:"))) {
 
         if (isTRUE(suppressWarnings(min(na.omit(as.numeric(unlist(strsplit(burnin.psr, " ")))))) > 1.05)) {
@@ -441,6 +422,11 @@ blimp.print <- function(x,
       }
 
     }
+
+    #...................
+    ### ERROR MESSAGE ####
+
+    if (isTRUE(any(run.val == "ERROR:"))) { error.mess <- run.val[which(run.val == "ERROR:"):(.internal.ind.to(section, "ERROR:"))] }
 
     #...................
     ### MODEL FIT ####
@@ -501,7 +487,7 @@ blimp.print <- function(x,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Remove Last Space ####
 
-    for (i in c("algo.options", "simdat.summary", "order.simdat", "burnin.psr", "mh.accept", "data.info", "var.imp", "model.info", "param.label", "warn.mess", "fit", "cor.resid", "out.model", "pred.model", "gen.param", "order.impdat")) {
+    for (i in c("algo.options", "simdat.summary", "order.simdat", "burnin.psr", "mh.accept", "data.info", "var.imp", "model.info", "param.label", "warn.mess", "error.mess", "fit", "cor.resid", "out.model", "pred.model", "gen.param", "order.impdat")) {
 
       if (isTRUE(!is.null(eval(parse(text = i))))) {
 
@@ -525,7 +511,7 @@ blimp.print <- function(x,
                           # Output sections
                           result = list(algo.options = algo.options, simdat.summary = simdat.summary, order.simdat = order.simdat,
                                         burnin.psr = burnin.psr, mh.accept = mh.accept, data.info = data.info, var.imp = var.imp,
-                                        model.info = model.info, param.label = param.label, warn.mess = warn.mess, fit = fit,
+                                        model.info = model.info, param.label = param.label, warn.mess = warn.mess, error.mess = error.mess, fit = fit,
                                         cor.resid = cor.resid, out.model = out.model, pred.model = pred.model, gen.param = gen.param, order.impdat = order.impdat))
 
   #----------------------------------------
@@ -566,12 +552,21 @@ blimp.print <- function(x,
 
   if (isTRUE(any(color != "none") && is.null(getOption("knitr.in.progress")))) {
 
-    print.object <- misty::chr.gsub(section, misty::chr.color(section, color = color[1L], style = style[1L]), result.object)
+    # Main Headers
+    print.object <- misty::chr.gsub(section[-grep("ERROR:", section)], misty::chr.color(section[-grep("ERROR:", section)], color = color[1L], style = style[1L], check = FALSE), result.object)
 
-    if (isTRUE(any(misty::chr.grepl(c("Outcome Variable:", "Missing predictor:", "Complete variable:", "Latent Variable:", "Covariance Matrix:"), print.object)))) {
+    # Sub-Header
+    if (isTRUE(any(misty::chr.grepl(c("Outco me Variable:", "Missing predictor:", "Complete variable:", "Latent Variable:", "Covariance Matrix:"), print.object)))) {
 
       print.object <- misty::chr.grep(c("Outcome Variable:", "Missing predictor:", "Complete variable:", "Latent Variable:", "Covariance Matrix:"), print.object) |>
         (\(z) misty::chr.gsub(print.object[z], chr.color(print.object[z], color = color[2L], style = style[2L]), print.object))()
+
+    }
+
+    # Error Message
+    if (isTRUE(!is.null(return.object$result$error.mess))) {
+
+      print.object <- misty::chr.grep("ERROR:", print.object) |> (\(z) misty::chr.gsub(print.object[z], chr.color(print.object[z], color = "red", style = style[1L]), print.object))()
 
     }
 
@@ -587,7 +582,7 @@ blimp.print <- function(x,
     n <- sum(unlist(strsplit(unique(print.object[grep("N_Eff", print.object) + 1L]), "")) == "-")
 
     print.object <- gsub(paste0("                                ", paste(rep("-", times = n), collapse = "")),
-                         paste0("                                   ", paste(rep("\u23AF", times = n + 13L), collapse = "")), print.object)
+                         paste0("                                   ", paste(rep("\u23AF", times = n + 10L), collapse = "")), print.object)
 
   }
 
@@ -644,7 +639,7 @@ blimp.print <- function(x,
     }
 
     # Print not requested result sections
-    if (isTRUE(not.result)) {
+    if (isTRUE(not.result && is.null(return.object$result$error.mess))) {
 
       if (isTRUE(!is.null(result.not.print))) {
 
@@ -719,11 +714,8 @@ blimp.print <- function(x,
   object <- list(call = match.call(),
                  type = "blimp",
                  x = x,
-                 args = list(result = result, exclude = exclude, color = color,
-                             style = style, not.result = not.result, write = write,
-                             append = append, check = check, output = output),
-                 print = result.object, notprint = result.not,
-                 result = return.object)
+                 args = list(result = result, exclude = exclude, color = color, style = style, not.result = not.result, write = write, append = append, check = check, output = output),
+                 print = result.object, notprint = result.not, result = return.object)
 
   class(object) <- "misty.object"
 
@@ -734,3 +726,5 @@ blimp.print <- function(x,
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

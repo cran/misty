@@ -23,9 +23,11 @@
 #' @param write    a character string for writing the results into a Excel file
 #'                 naming a file with or without file extension '.xlsx', e.g.,
 #'                 \code{"Results.xlsx"} or \code{"Results"}.
-#' @param write    a character string naming a text file with file extension
-#'                 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
-#'                 output into a text file.
+#' @param write    a character string naming a file for writing the output into
+#'                 either a text file with file extension \code{".txt"} (e.g.,
+#'                 \code{"Output.txt"}) or Excel file with file extension \code{".xlsx"}
+#'                 (e.g., \code{"Output.xlsx"}). If the file name does not contain
+#'                 any file extension, an Excel file will be written.
 #' @param append   logical: if \code{TRUE} (default), output will be appended
 #'                 to an existing text file with extension \code{.txt} specified
 #'                 in \code{write}, if \code{FALSE} existing text file will be
@@ -85,59 +87,53 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{model} \tab model specified in \code{model} \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{result} \tab list of result table \cr
-#' }
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{model}}{model specified in \code{model} }
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{result}}{list with result tables, i.e., \code{coef} for the regression
+#'                     table including standardized coefficients and \code{sd}
+#'                     for the standard deviation of the outcome and predictor(s)}
 #'
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(x1 = c(3, 2, 4, 9, 5, 3, 6, 4, 5, 6, 3, 5),
-#'                   x2 = c(1, 4, 3, 1, 2, 4, 3, 5, 1, 7, 8, 7),
-#'                   x3 = c(0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1),
-#'                   y = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8))
-#'
 #' #----------------------------------------------------------------------------
 #' # Linear model
 #'
 #' # Example 1: Regression model with continuous predictors
-#' mod.lm1 <- lm(y ~ x1 + x2, data = dat)
+#' mod.lm1 <- lm(mpg ~ cyl + disp, data = mtcars)
 #' std.coef(mod.lm1)
 #'
 #' # Example 2: Print all standardized coefficients
 #' std.coef(mod.lm1, print = "all")
 #'
 #' # Example 3: Regression model with dichotomous predictor
-#' mod.lm2 <- lm(y ~ x3, data = dat)
+#' mod.lm2 <- lm(mpg ~ vs, data = mtcars)
 #' std.coef(mod.lm2)
 #'
 #' # Example 4: Regression model with continuous and dichotomous predictors
-#' mod.lm3 <- lm(y ~ x1 + x2 + x3, data = dat)
+#' mod.lm3 <- lm(mpg ~ disp + vs, data = mtcars)
 #' std.coef(mod.lm3)
 #'
 #' # Example 5: Regression model with continuous predictors and an interaction term
-#' mod.lm4 <- lm(y ~ x1*x2, data = dat)
+#' mod.lm4 <- lm(mpg ~ cyl*disp, data = mtcars)
+#' std.coef(mod.lm4)
 #'
 #' # Example 6: Regression model with a quadratic term
-#' mod.lm5 <- lm(y ~ x1 + I(x1^2), data = dat)
+#' mod.lm5 <- lm(mpg ~ cyl + I(cyl^2), data = mtcars)
 #' std.coef(mod.lm5)
 #'
 #' #----------------------------------------------------------------------------
-#' # Example 7: Write Results into a Excel file
-#' \dontrun{
-#' mod.lm1 <- lm(y ~ x1 + x2, data = dat)
+#' # Example 7: Write Results into a Text or Excel file
 #'
-#' std.coef(mod.lm1, write = "Std_Coef.xlsx", output = FALSE)
+#' # Example 7a: Text file
+#' std.coef(mod.lm1, write = "Std_Coef.txt", output = FALSE, check = FALSE)
 #'
-#' result <- std.coef(mod.lm1, output = FALSE)
-#' write.result(result, "Std_Coef.xlsx")
-#' }
+#' # Example 7b: Excel file
+#' std.coef(mod.lm1, write = "Std_Coef.xlsx", output = FALSE, check = FALSE)
 std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
-                     digits = 3, p.digits = 4, write = NULL, append = TRUE,
+                     digits = 3, p.digits = 3, write = NULL, append = TRUE,
                      check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
@@ -153,34 +149,14 @@ std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
   # Check if input 'model' is not 'lm'
   if (isTRUE(!inherits(model, "lm"))) { stop("Please specify an \"lm\" object for the argument 'model'.", call. = FALSE) }
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
-  if (isTRUE(check)) {
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in% c("all", "stdx", "stdy", "stdyx")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"stdx\", \"stdy\", or \"stdyx\".", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("append", "output"),
+               m.character = list(print = c("all", "stdx", "stdy", "stdyx")),
+               args = c("digits", "p.digits", "write2"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -321,23 +297,7 @@ std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
   #
   # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    # Send R output to textfile
-    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-    if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-    # Print object
-    print(object, check = FALSE)
-
-    # Close file connection
-    sink()
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -348,3 +308,5 @@ std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

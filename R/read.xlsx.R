@@ -126,21 +126,11 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Package readxl installed?
-    if (isTRUE(!requireNamespace("readxl", quietly = TRUE))) { stop("Package \"readxl\" is needed for this function to work, please install it.", call. = FALSE ) }
-
-    # Check input 'trim'
-    if (isTRUE(!is.logical(trim))) { stop("Please specify TRUE or FALSE for the argument 'trim'.", call. = FALSE) }
-
-    # Check input 'as.data.frame'
-    if (isTRUE(!is.logical(as.data.frame))) { stop("Please specify TRUE or FALSE for the argument 'as.data.frame'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("trim", "as.data.frame"),
+               numeric = list(skip = 1L, nmax = 1L, guessmax = 1L),
+               character = list(file = 1L, sheet = 1L, range = 1L, name.repair = 1L),
+               package = "readxl", envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -188,3 +178,5 @@ read.xlsx <- function(file, sheet = NULL, header = TRUE, range = NULL,
   return(object)
 
 }
+
+#_______________________________________________________________________________

@@ -366,10 +366,7 @@
 #' @examples
 #' \dontrun{
 #' # Load misty, lme4, nlme, and ggplot2 package
-#' library(misty)
-#' library(lme4)
-#' library(nlme)
-#' library(ggplot2)
+#' libraries(misty, lme4, nlme, ggplot2)
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
@@ -486,40 +483,20 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("plot", "gray", "append", "output"),
+               numeric = list(start = 1L, end = 1L),
+               s.character = list(print = c("all", "RB", "SB", "NS", "RS")),
+               args = "write1", package = "ggplot2", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    # ggplot2 package
-    if (isTRUE(plot && !nzchar(system.file(package = "ggplot2"))))  { stop("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(!all(print %in%  c("all", "RB", "SB", "NS", "RS")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"RB\", \"SB\", \"NS\", or \"RS\".", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer value for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'plot'
-    if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'", call. = FALSE) }
-
-    # Check input 'gray'
-    if (isTRUE(!is.logical(gray))) { stop("Please specify TRUE or FALSE for the argument 'gray'", call. = FALSE) }
 
     # Check input 'start'
     if (isTRUE(start < 0L || start > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) }
 
     # Check input 'end'
     if (isTRUE(end < 0L || end > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'end'", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'", call. = FALSE) }
 
   }
 
@@ -1492,3 +1469,5 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

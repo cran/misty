@@ -246,10 +246,10 @@ function in the \pkg{MissMech} package by Mortaza Jamshidian, Siavash Jalal,
 Camden Jansen, and Mao Kobayashi (2024).
 }
 \examples{
-# Example 1a: Perform Little's MCAR test and Jamshidian and Jalal's approach
+# Example 1: Perform Little's MCAR test and Jamshidian and Jalal's approach
 na.test(airquality)
 
-# Example 1b: Alternative specification using the 'data' argument,
+# Alternative specification using the 'data' argument,
 na.test(., data = airquality)
 
 # Example 2: Perform Jamshidian and Jalal's approach
@@ -257,8 +257,7 @@ na.test(airquality, print = "jamjal")
 
 \dontrun{
 # Example 3: Write results into a text file
-na.test(airquality, write = "NA_Test.txt")
-}
+na.test(airquality, write = "NA_Test.txt")}
 }
 \references{
 Beaujean, A. A. (2012). \emph{BaylorEdPsych: R Package for Baylor University

@@ -82,6 +82,7 @@ Thorsten Henke (2019).
 }
 \examples{
 \dontrun{
+
 dat <- data.frame(id = 1:5,
                   gender = c(NA, 0, 1, 1, 0),
                   age = c(16, 19, 17, NA, 16),
@@ -109,7 +110,7 @@ attr <- data.frame(# Variable names
                               "1 = Austria; 2 = former Yugoslavia; 3 = Turkey; 4 = other",
                               ""),
                    # User-missing values
-                   missing = c("", "-99", "-99", "-99", "-99"), stringsAsFactors = FALSE)
+                   missing = c("", "-99", "-99", "-99", "-99"))
 
 # Example 4: Write SPSS file with variable attributes using the haven package
 write.sav(dat, file = "Dataframe_haven_Attr.sav", var.attr = attr)

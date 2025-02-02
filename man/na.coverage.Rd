@@ -74,11 +74,7 @@ na.coverage(., data = airquality)
 na.coverage(airquality, write = "Coverage.txt")
 
 # Example 2b: Write Results into an Excel file
-na.coverage(airquality, write = "Coverage.xlsx")
-
-result <- na.coverage(airquality, output = FALSE)
-write.result(result, "Coverage.xlsx")
-}
+na.coverage(airquality, write = "Coverage.xlsx")}
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.

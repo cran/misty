@@ -122,7 +122,7 @@ dat <- data.frame(subject = rep(1:2, each = 6),
                     pos = c(6, 7, 5, 8, NA, 7, 4, NA, 5, 4, 5, 3),
                     neg = c(2, 3, 2, 5, 3, 4, 6, 4, 6, 4, NA, 8))
 
-# Example 1a: Lagged variable for 'pos'
+# Example 1: Lagged variable for 'pos'
 lagged(dat$pos, id = dat$subject, day = dat$day)
 
 # Example 1b: Alternative specification

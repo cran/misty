@@ -6,8 +6,8 @@
 \usage{
 blimp.print(x,
             result = c("all", "default", "algo.options", "data.info",
-                       "model.info", "warn.mess", "out.model", "gen.param"),
-            exclude = NULL, color = c("none", "blue", "violet"),
+            "model.info", "warn.mess", "error.mess", "out.model", "gen.param"),
+            exclude = NULL, color = c("none", "blue", "green"),
             style = c("bold", "regular"), not.result = TRUE,
             write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
@@ -110,6 +110,7 @@ to exclude result sections from the output (e.g., \code{exclude = "algo.options"
 }
 \examples{
 \dontrun{
+
 #----------------------------------------------------------------------------
 # Blimp Example 4.3: Linear Regression
 

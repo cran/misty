@@ -48,18 +48,8 @@ setsource <- function(path = TRUE, check = TRUE) {
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # rstudioapi package
-    if (isTRUE(!nzchar(system.file(package = "rstudioapi")))) { stop("Package \"rstudioapi\" is needed for this function, please install the package.", call. = FALSE) }
-
-    # Check input 'path'
-    if (isTRUE(!is.logical(path))) { stop("Please specify TRUE or FALSE for the argument 'path'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = "path", package = "rstudioapi", envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -84,3 +74,5 @@ setsource <- function(path = TRUE, check = TRUE) {
   return(invisible(path.source))
 
 }
+
+#_______________________________________________________________________________

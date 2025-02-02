@@ -69,7 +69,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Linear model
 #'
@@ -169,10 +168,11 @@
 #' # Dominance analysis Between
 #' dominance.manual(fit.cor$cluster)
 #'
+#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Example 5: Mplus
 #' #
-#' # In Mplus, the model-impied correlation matrix of the latent variables
+#' # In Mplus, the model-implied correlation matrix of the latent variables
 #' # can be requested by OUTPUT: TECH4 and imported into R by using the
 #' # MplusAuomtation package, for example:
 #'
@@ -197,16 +197,14 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
   # Check if input 'model' is NULL
   if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
 
-  # Matrix or data frame for the argument 'x'
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("append", "output"), character = list(out = 1L), args = c("digits", "write2"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Symmetric matrix or data frame for the argument 'x'
@@ -220,15 +218,6 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
 
     ## Check input 'out' ##
     if (isTRUE(!is.null(out) & !out %in% colnames(x))) { stop("Variable name specified in the argument 'out' was not found in 'x'.", call. = FALSE) }
-
-    ## Check input 'digits' ##
-    if (isTRUE(digits %% 1L != 0L || digits < 0L || digits == 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    ## Check input 'output' ##
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -250,124 +239,11 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
 
   if (isTRUE(!is.null(out))) {
 
-    x <- x[c(which(colnames(x) == out), which(colnames(x) != out)),
-           c(which(colnames(x) == out), which(colnames(x) != out))]
+    x <- x[c(which(colnames(x) == out), which(colnames(x) != out)), c(which(colnames(x) == out), which(colnames(x) != out))]
 
   } else {
 
     out <- colnames(x)[1L]
-
-  }
-
-  #_____________________________________________________________________________
-  #
-  # Internal Functions ---------------------------------------------------------
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Enumerate the Combinations or Permutation of the ELements of a Vector ####
-
-  # combinations() from the gtools package
-  combinations <- function(n, r, v = 1:n, set = TRUE, repeats.allowed = FALSE) {
-
-    if (isTRUE(mode(n) != "numeric" || length(n) != 1L || n < 1L || (n %% 1) != 0L)) { stop("bad value of n") }
-    if (isTRUE(mode(r) != "numeric" || length(r) != 1L || r < 1L || (r %% 1) != 0L)) { stop("bad value of r") }
-
-    if (isTRUE(!is.atomic(v) || length(v) < n)) { stop("v is either non-atomic or too short") }
-
-    if (isTRUE((r > n) & !repeats.allowed)) { stop("r > n and repeats.allowed = FALSE", call. = FALSE) }
-
-    if (isTRUE(set)) {
-
-      v <- unique(sort(v))
-      if (length(v) < n) stop("Too few different elements", call. = FALSE)
-
-    }
-
-    v0 <- vector(mode(v), 0L)
-
-    ## Inner workhorse
-    if (repeats.allowed) {
-
-      sub <- function(n, r, v) {
-
-        if (isTRUE(r == 0L)) { v0 } else if (isTRUE(r == 1L)) { matrix(v, n, 1) } else if (isTRUE(n == 1L)) { matrix(v, 1L, r) } else { rbind(cbind(v[1L], Recall(n, r - 1L, v)), Recall(n - 1L, r, v[-1L])) }
-
-      }
-
-    } else {
-
-      sub <- function(n, r, v) {
-
-        if (isTRUE(r == 0L)) { v0 } else if (isTRUE(r == 1L)) { matrix(v, n, 1) } else if (isTRUE(r == n)) { matrix(v, 1L, n) } else { rbind(cbind(v[1], Recall(n - 1L, r - 1L, v[-1L])), Recall(n - 1L, r, v[-1L])) }
-
-      }
-
-      return(sub(n, r, v[1L:n]))
-
-    }
-
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Dominance analysis functions ####
-
-  DA <- function(cormat, index = NULL) {
-
-    # Correlation matrix of the predictors
-    Px <- cormat[-1L, -1L]
-
-    # Correlation vector
-    rx <- cormat[-1L, 1L]
-
-    if (isTRUE(is.null(index))) { index = as.list(1:length(rx)) }
-
-    # Number of predictors or groups of predictors
-    J <- length(index)
-
-    # R2 for model with subset xi
-    R2 <- function(xi) {
-
-      xi <- unlist(index[xi])
-
-      R2 <- t(rx[xi])%*%solve(Px[xi, xi])%*%rx[xi]
-
-    }
-
-    # Average R2 change for a subset model with k size
-
-    # Possible subset models before adding a predictor
-    submodel <- function(k) {
-
-      temp0 <- lapply(1L:J, function(i) combinations(J - 1L, k, (1L:J)[-i]))
-
-      # Possible subset models after adding a predictor
-      temp1 <- lapply(1:J, function(i) t(apply(temp0[[i]], 1L, function(x) c(x, i))))
-
-      # R2 before adding a predictor
-      R0 <- lapply(temp0, function(y) apply(y, 1L, R2))
-
-      # R2 after adding a predictor
-      R1 <- lapply(temp1, function(y) apply(y, 1L, R2))
-
-      # R2 change
-      deltaR2 <- mapply(function(x, y) x - y, R1, R0)
-
-      # Average R2 change
-      adeltaR2 <- apply(matrix(deltaR2, ncol = J), 2L, mean)
-
-      return(adeltaR2)
-
-    }
-
-    # Different model size k
-    R2matrix <- t(sapply(1L:(J - 1L), submodel))
-
-    R2matrix <- rbind(sapply(1L:J, R2), R2matrix)
-
-    # Overall average
-    DA <- apply(R2matrix, 2L, mean)
-
-    return(DA)
 
   }
 
@@ -378,7 +254,7 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dominance analysis ####
 
-  domin.res <- DA(x)
+  domin.res <- .DA(x)
 
   #_____________________________________________________________________________
   #
@@ -387,11 +263,9 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## General dominance ####
 
-  gen.res <- data.frame(r2 = domin.res,
-                        perc = domin.res / sum(domin.res)  * 100,
-                        rank = rank(-domin.res))
+  gen.res <- data.frame(r2 = domin.res, perc = domin.res / sum(domin.res)  * 100, rank = rank(-domin.res)) |>
+    (\(y) rbind(y, c(sum(y[, "r2"]), sum(y[, "perc"]), NA)))()
 
-  gen.res <- rbind(gen.res, c(sum(gen.res[, "r2"]), sum(gen.res[, "perc"]), NA))
   row.names(gen.res) <- c(colnames(x)[-1L], "Total")
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -400,8 +274,7 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
   object <- list(call = match.call(),
                  type = "dominance.manual",
                  x = x,
-                 args = list(out = out, digits = digits, write = write,
-                             append = append, check = check, output = output),
+                 args = list(out = out, digits = digits, write = write, append = append, check = check, output = output),
                  result = gen.res)
 
   class(object) <- "misty.object"
@@ -410,35 +283,7 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
   #
   # Write Results --------------------------------------------------------------
 
-
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -449,3 +294,5 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

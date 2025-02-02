@@ -30,21 +30,17 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(x = c(5, 2, 5, 5, 7, 2),
-#'                   y = c(1, 6, 2, 3, 2, 3),
-#'                   z = c(2, 1, 6, 3, 7, 4))
+#' # Example 1: Sort data frame 'mtcars' by 'mpg' in increasing order
+#' df.sort(mtcars, mpg)
 #'
-#' # Example 1: Sort data frame 'dat' by "x" in increasing order
-#' df.sort(dat, x)
+#' # Example 2: Sort data frame 'mtcars' by 'mpg' in decreasing order
+#' df.sort(mtcars, mpg, decreasing = TRUE)
 #'
-#' # Example 2: Sort data frame 'dat' by "x" in decreasing order
-#' df.sort(dat, x, decreasing = TRUE)
+#' # Example 3: Sort data frame 'mtcars' by 'mpg' and 'cyl' in increasing order
+#' df.sort(mtcars, mpg, cyl)
 #'
-#' # Example 3: Sort data frame 'dat' by "x" and "y" in increasing order
-#' df.sort(dat, x, y)
-#'
-#' # Example 4: Sort data frame 'dat' by "x" and "y" in decreasing order
-#' df.sort(dat, x, y, decreasing = TRUE)
+#' # Example 4: Sort data frame 'mtcars' by 'mpg' and 'cyl' in decreasing order
+#' df.sort(mtcars, mpg, cyl, decreasing = TRUE)
 df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
 
   #_____________________________________________________________________________
@@ -68,40 +64,35 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
   if (isTRUE(!is.data.frame(x))) { stop("Please specify a data frame for the argument 'x'.", call. = FALSE) }
 
   # Check input '...'
-  var.names.check <- !var.names %in% colnames(x)
-  if (isTRUE(any(var.names.check))) {
+  (!var.names %in% colnames(x)) |>
+    (\(y) if (isTRUE(any(y))) {
 
-    stop(paste0("Variables specified in '...' were not all found in 'x': ", paste0(var.names[var.names.check], collapse = ", ")), call. = FALSE)
+      stop(paste0("Variables specified in '...' were not all found in 'x': ", paste0(var.names[y], collapse = ", ")), call. = FALSE)
 
-  }
-
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+    })()
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
-  if (isTRUE(check)) {
-
-    # Check input 'decreasing'
-    if (isTRUE(!is.logical(decreasing))) { stop("Please specify TRUE or FALSE for the argument 'decreasing'.", call. = FALSE) }
-
-  }
+  # Check input
+  .check.input(logical = "decreasing", envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
   # Main Function --------------------------------------------------------------
 
-  x.order <- eval(substitute(order(..., decreasing = decreasing)), envir = x, enclos = parent.frame())
+  object <- eval(substitute(order(..., decreasing = decreasing)), envir = x, enclos = parent.frame()) |>
+    (\(y) if (isTRUE(length(y) != nrow(x))) {
 
-  if (isTRUE(length(x.order) != nrow(x))) {
+      stop("Length of ordering vectors does not match with the number of rows in 'x'.", call. = FALSE)
 
-    stop("Length of ordering vectors does not match with the number of rows in 'x'.", call. = FALSE)
+    } else {
 
-  }
+      return(x[y, , drop = FALSE])
 
-  object <- x[x.order, , drop = FALSE]
+    })()
+
   row.names(object) <- NULL
 
   #_____________________________________________________________________________
@@ -111,3 +102,5 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
   return(object)
 
 }
+
+#_______________________________________________________________________________

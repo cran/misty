@@ -97,38 +97,29 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{formula} \tab formula (\code{formula}) \cr
-#' \code{data} \tab data frame with the outcome and grouping variable \cr
-#' \code{plot} \tab ggplot2 object for plotting the results \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{result} \tab list of result table \cr
-#' }
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{formula}}{formula}
+#' \item{\code{data}}{data frame with the outcome and grouping variable}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{plot}}{ggplot2 object for plotting the results}
+#' \item{\code{result}}{result table}
 #'
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(y = c(2, 3, 4, 5, 5, 7, 8, 4, 5, 2, 4, 3),
-#'                   group = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3))
+#' # Example 1: Levene's test based on the median
+#' test.levene(mpg ~ gear, data = mtcars)
 #'
-#' # Example 1: Levene's test based on the median with 95% confidence interval
-#' test.levene(y ~ group, data = dat)
+#' # Example 2: Levene's test based on the arithmetic mean
+#' test.levene(mpg ~ gear, data = mtcars, method = "mean")
 #'
-#' # Example 2: Levene's test based on the arithmetic mean  with 95% confidence interval
-#' test.levene(y ~ group, data = dat, method = "mean")
+#' # Example 3: Write results into a text file
+#' test.levene(mpg ~ gear, data = mtcars, write = "Levene.txt")
 #'
-#' # Example 3: Levene's test based on the median with 99% confidence interval
-#' test.levene(y ~ group, data = dat, conf.level = 0.99)
-#'
-#' \dontrun{
-#' # Example 4: Write results into a text file
-#' test.levene(y ~ group, data = dat, write = "Levene.txt")
-#'
-#' # Example 5: Levene's test based on the median with 95% confidence interval
+#' # Example 4: Levene's test based on the median,
 #' # plot results
-#' test.levene(y ~ group, data = dat, plot = TRUE)
+#' test.levene(mpg ~ gear, data = mtcars, plot = TRUE)
 #'
 #' # Load ggplot2 package
 #' library(ggplot2)
@@ -136,21 +127,23 @@
 #' # Save plot, ggsave() from the ggplot2 package
 #' ggsave("Levene-test.png", dpi = 600, width = 5, height = 6)
 #'
-#' # Levene's test based on the median with 95% confidence interval
+#' # Levene's test based on the median
 #' # extract plot
-#' p <- test.levene(y ~ group, data = dat, output = FALSE)$plot
+#' p <- test.levene(mpg ~ gear, data = mtcars, output = FALSE)$plot
 #' p
 #'
-#' # Example 6: Extract data
-#' plotdat <- test.levene(y ~ group, data = dat, output = FALSE)$data
-#'
+#' # Example 5: Levene's test based on the median
 #' # Draw violin and boxplots in line with the default setting of test.levene()
+#'
+#' # Extract data
+#' plotdat <- test.levene(mpg ~ gear, data = mtcars, output = FALSE)$data
+#'
+#' # Draw violin and boxplots
 #' ggplot(plotdat, aes(group, y, fill = group)) +
 #'   geom_violin(alpha = 0.3, trim = FALSE) +
 #'   geom_boxplot(alpha = 0.2, width = 0.2) +
 #'   geom_jitter(alpha = 0.2, width = 0.05, size = 1.25) +
 #'   theme_bw() + guides(fill = "none")
-#' }
 test.levene <- function(formula, data, method = c("median", "mean"),
                         conf.level = 0.95, hypo = TRUE, descript = TRUE,
                         plot = FALSE, violin.alpha = 0.3, violin.trim = FALSE,
@@ -159,7 +152,7 @@ test.levene <- function(formula, data, method = c("median", "mean"),
                         jitter.height = 0, jitter.alpha = 0.2,
                         gray = FALSE, start = 0.9, end = 0.4, color = NULL,
                         xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
-                        title = "", subtitle = "",  digits = 2, p.digits = 3, as.na = NULL,
+                        title = "", subtitle = "", digits = 2, p.digits = 3, as.na = NULL,
                         write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
@@ -174,8 +167,6 @@ test.levene <- function(formula, data, method = c("median", "mean"),
 
   # Check if input 'data' is NULL
   if (isTRUE(is.null(data))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
-
-
 
   #_____________________________________________________________________________
   #
@@ -196,14 +187,13 @@ test.levene <- function(formula, data, method = c("median", "mean"),
   #
   # Data frame -----------------------------------------------------------------
 
-  data <- as.data.frame(data, stringsAsFactors = FALSE)
+  data <- as.data.frame(data)
 
   # Check if variables are in the data
   var.data <- !var.formula %in% colnames(data)
   if (isTRUE(any(var.data))) {
 
-    stop(paste0("Variables specified in the the formula were not found in 'data': ",
-                paste(var.formula[which(var.data)], collapse = ", ")), call. = FALSE)
+    stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(var.data)], collapse = ", ")), call. = FALSE)
 
   }
 
@@ -227,63 +217,27 @@ test.levene <- function(formula, data, method = c("median", "mean"),
   #
   # Input Check ----------------------------------------------------------------
 
-  if (isTRUE(check)) {
+  # Check inputs
+  .check.input(logical = c("hypo", "descript", "plot", "violin.trim", "box", "jitter", "gray", "append", "output"),
+               numeric = list(violin.alpha = 1L, box.alpha = 1L, box.width = 1L, jitter.size = 1L, jitter.width = 1L, jitter.height = 1L, jitter.alpha = 1L, start = 1L, end = 1L, ylim = 2L),
+               character = list(xlab = 1L, ylab = 1L, title = 1L, subtitle = 1L),
+               s.character = list(method = c("median", "mean")),
+               args = c("conf.level", "digits", "p.digits", "write1"),
+               package = "ggplot2", envir = environment(), input.check = check)
 
-    # ggplot2 package
-    if (isTRUE(plot && !nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed for drawing a bar chart, please install the package.", call. = FALSE) }
+  # Additional checks
+  if (isTRUE(check)) {
 
     # Variance zero
     y.var0 <- tapply(data[, y.var], data[, group.var], var, na.rm = TRUE) == 0L
 
     if (isTRUE(any(y.var0))) { stop(paste0("There are groups with 0 variance: Group ", paste(which(y.var0), collapse = ", ")), call. = FALSE) }
 
-    # Check input 'method'
-    if (isTRUE(!all(method %in% c("median", "mean")))) { stop("Character string in the argument 'method' does not match with \"median\", or \"mean\".", call. = FALSE) }
-
-    # Check input 'conf.level'
-    if (isTRUE(conf.level >= 1L|| conf.level <= 0L)) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) }
-
-    # Check input 'hypo'
-    if (isTRUE(!is.logical(hypo))) { stop("Please specify TRUE or FALSE for the argument 'hypo'.", call. = FALSE) }
-
-    # Check input 'descript'
-    if (isTRUE(!is.logical(descript))) { stop("Please specify TRUE or FALSE for the argument 'descript'.", call. = FALSE) }
-
-    # Check input 'plot'
-    if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'plot'.", call. = FALSE) }
-
-    # Check input 'violin.trim '
-    if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'violin.trim '.", call. = FALSE) }
-
-    # Check input 'box'
-    if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'box'.", call. = FALSE) }
-
-    # Check input 'jitter'
-    if (isTRUE(!is.logical(plot))) { stop("Please specify TRUE or FALSE for the argument 'jitter'.", call. = FALSE) }
-
-    # Check input 'gray'
-    if (isTRUE(!is.logical(gray))) { stop("Please specify TRUE or FALSE for the argument 'gray'", call. = FALSE) }
-
-    # Check input 'start'
+     # Check input 'start'
     if (isTRUE(start < 0L || start > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) }
 
     # Check input 'end'
     if (isTRUE(end < 0L || end > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'end'", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1 != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1 != 0L || p.digits < 0L)) { stop("Specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
-
-    # Check input 'write'
-    if (isTRUE(!is.null(write) && substr(write, nchar(write) - 3L, nchar(write)) != ".txt")) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
 
   }
 
@@ -309,33 +263,26 @@ test.levene <- function(formula, data, method = c("median", "mean"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Confidence interval ####
 
-  result.ci <- misty::ci.var(y, group = group, conf.level = conf.level, output = FALSE)$result
-
-  result.ci <- data.frame(result.ci[, c("group", "variable", "n", "nNA", "m")],
-                          sd = sqrt(result.ci$var),
-                          result.ci[, c("var", "low", "upp")])
+  result.ci <- misty::ci.var(y, group = group, conf.level = conf.level, output = FALSE)$result |>
+    (\(y) data.frame(y[, c("group", "n", "nNA", "m")], sd = sqrt(y$var), y[, c("var", "low", "upp", "skew", "kurt")]))()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Analysis of Variance ####
 
-  #...................
-  ### Brown-Forsythe test ####
-  if (isTRUE(method == "median")) {
+  # Median by grouping variable
+  switch(method, "median" ={
 
-    # Median by grouping variable
     y.center <- tapply(y, group, median)
 
-  #...................
-  ### Levene's test ####
-  } else if (isTRUE(method == "mean")) {
+  # Mean by grouping variable
+  }, "mean" = {
 
-    # Mean by grouping variable
     y.center <- tapply(y, group, mean)
 
-  }
+  })
 
   # Deviation from the median or mean
-  y.dev <- abs(y - y.center[ group])
+  y.dev <- abs(y -  y.center[match(group, names(y.center))])
 
   # Analysis of Variance
   result.aov <- summary(aov(y.dev ~ as.factor(group)))[[1L]]
@@ -392,8 +339,7 @@ test.levene <- function(formula, data, method = c("median", "mean"),
   object <- list(call = match.call(),
                  type = "test.levene",
                  formula = formula,
-                 data = data.frame(y, group = factor(group), stringsAsFactors = FALSE),
-                 plot = p,
+                 data = data.frame(y, group = factor(group)),
                  args = list(method = method, conf.level = conf.level, hypo = hypo,
                              descript = descript, plot = plot, violin.alpha = violin.alpha,
                              violin.trim = violin.trim, box = box, box.alpha = box.alpha,
@@ -404,7 +350,7 @@ test.levene <- function(formula, data, method = c("median", "mean"),
                              ylim = ylim, breaks = breaks, title = title, subtitle = subtitle,
                              digits = digits, p.digits = p.digits, as.na = as.na,
                              write = write, append = append, check = check, output = output),
-                 result = list(descript = result.ci, test = result.aov))
+                 plot = p, result = list(descript = result.ci, test = result.aov))
 
   class(object) <- "misty.object"
 
@@ -439,3 +385,5 @@ test.levene <- function(formula, data, method = c("median", "mean"),
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

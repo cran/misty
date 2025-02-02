@@ -141,7 +141,7 @@ polynomial coding.
 # Example 1a: Dummy coding for 'gear', baseline group = 3
 coding(gear, data = mtcars)
 
-# Example 1b: Alterantive specification without using the 'data' argument
+# Example 1b: Alternative specification without using the 'data' argument
 coding(mtcars$gear)
 
 # Example 2: Dummy coding for 'gear', baseline group = 4

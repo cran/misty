@@ -110,15 +110,15 @@ mediation model:
            on the cluster or between-group level. In Mplus, \code{Estimate}
            of the random slope \eqn{a} under \code{Means} at the
            \code{Between Level}.}
-  \item{b}{Coefficient \eqn{a}, i.e., average effect of \eqn{M} on \eqn{Y}
+  \item{b}{Coefficient \eqn{b}, i.e., average effect of \eqn{M} on \eqn{Y}
            on the cluster or between-group level. In Mplus, \code{Estimate}
            of the random slope \eqn{b} under \code{Means} at the
                   \code{Between Level}.}
   \item{se.a}{Standard error of \code{a}. In Mplus, \code{S.E.}
               of the random slope \eqn{a} under \code{Means} at the
               \code{Between Level}.}
-  \item{se.a}{Standard error of \code{a}. In Mplus, \code{S.E.}
-              of the random slope \eqn{a} under \code{Means} at the
+  \item{se.b}{Standard error of \code{b}. In Mplus, \code{S.E.}
+              of the random slope \eqn{b} under \code{Means} at the
               \code{Between Level}.}
   \item{cov.ab}{Covariance between \eqn{a} and \eqn{b}. In Mplus, the
                 estimated covariance matrix for the parameter estimates
@@ -152,7 +152,6 @@ The function was adapted from the interactive web tool by Preacher and
 Selig (2010).
 }
 \examples{
-\dontrun{
 # Example 1: Confidence Interval for the Indirect Effect
 multilevel.indirect(a = 0.25, b = 0.20, se.a = 0.11, se.b = 0.13,
                     cov.ab = 0.01, cov.rand = 0.40, se.cov.rand = 0.02)
@@ -165,11 +164,11 @@ ab <- multilevel.indirect(a = 0.25, b = 0.20, se.a = 0.11, se.b = 0.13,
 # Histogram of the distribution of the indirect effect
 hist(ab)
 
+\dontrun{
 # Example 3: Write results into a text file
 multilevel.indirect(a = 0.25, b = 0.20, se.a = 0.11, se.b = 0.13,
                     cov.ab = 0.01, cov.rand = 0.40, se.cov.rand = 0.02,
-                    write = "ML-Indirect.txt")
-}
+                    write = "ML-Indirect.txt")}
 }
 \references{
 Bauer, D. J., Preacher, K. J., & Gil, K. M. (2006). Conceptualizing and testing

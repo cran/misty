@@ -9,13 +9,13 @@
 #' The specification of the within-group and between-group variables is in line
 #' with the syntax in Mplus. That is, the \code{within} argument is used to
 #' identify the variables in the matrix or data frame specified in \code{x} that
-#' are measured on the individual level and modeled only on the within level.
+#' are measured at the individual level and modeled only at the within level.
 #' They are specified to have no variance in the between part of the model. The
 #' \code{between} argument is used to identify the variables in the matrix or
-#' data frame specified in \code{x} that are measured on the cluster level and
-#' modeled only on the between level. Variables not mentioned in the arguments
-#' \code{within} or \code{between} are measured on the individual level and will
-#' be modeled on both the within and between level.
+#' data frame specified in \code{x} that are measured at the cluster level and
+#' modeled only at the between level. Variables not mentioned in the arguments
+#' \code{within} or \code{between} are measured at the individual level and will
+#' be modeled at both the within and between level.
 #'
 #' The function uses maximum likelihood estimation with conventional standard
 #' errors (\code{estimator = "ML"}) which are not robust against non-normality
@@ -59,24 +59,19 @@
 #'                     vector representing the nested grouping structure (i.e.,
 #'                     group or cluster variable).
 #' @param within       a character vector representing variables that are measured
-#'                     on the within level and modeled only on the within level.
+#'                     at the within level and modeled only at the within level.
 #'                     Variables not mentioned in \code{within} or \code{between}
-#'                     are measured on the within level and will be modeled on both
+#'                     are measured at the within level and will be modeled on both
 #'                     the within and between level.
 #' @param between      a character vector representing variables that are measured
-#'                     on the between level and modeled only on the between level.
+#'                     at the between level and modeled only at the between level.
 #'                     Variables not mentioned in \code{within} or \code{between}
-#'                     are measured on the within level and will be modeled on
+#'                     are measured at the within level and will be modeled on
 #'                     both the within and between level.
 #' @param estimator    a character string indicating the estimator to be used:
-#'                     \code{"ML"} (default) for maximum likelihood with
-#'                     conventional standard errors and \code{"MLR"} for maximum
-#'                     likelihood with Huber-White robust standard errors. Note
-#'                     that by default, full information maximum likelihood (FIML)
-#'                     method is used to deal with missing data when using
-#'                     \code{"ML"} (\code{missing = "fiml"}), whereas incomplete
-#'                     cases are removed listwise (i.e., \code{missing = "listwise"})
-#'                     when using \code{"MLR"}.
+#'                     \code{"ML"} for maximum likelihood with conventional standard
+#'                     errors and \code{"MLR"} (default) for maximum likelihood
+#'                     with Huber-White robust standard errors.
 #' @param optim.method a character string indicating the optimizer, i.e., \code{nlminb}
 #'                     (default) for the unconstrained and bounds-constrained
 #'                     quasi-Newton method optimizer and \code{"em"} for the
@@ -84,10 +79,9 @@
 #' @param missing      a character string indicating how to deal with missing
 #'                     data, i.e., \code{"listwise"} for listwise deletion or
 #'                     \code{"fiml"} (default) for full information maximum
-#'                     likelihood (FIML) method. Note that FIML method is only
-#'                     available when \code{estimator = "ML"}. Note that it takes
-#'                     longer to estimate the model when using FIML and using FIML
-#'                     might cause issues in model convergence, these issues might
+#'                     likelihood (FIML) method. Note that it takes longer to
+#'                     estimate the model when using FIML and using FIML might
+#'                     cause issues in model convergence, these issues might
 #'                     be resolved by switching to listwise deletion.
 #' @param sig          logical: if \code{TRUE}, statistically significant
 #'                     correlation coefficients are shown in boldface on the
@@ -160,17 +154,29 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#' \tabular{ll}{
-#' \code{call} \tab function call \cr
-#' \code{type} \tab type of analysis \cr
-#' \code{data} \tab data frame specified in \code{x} including the group variable
-#'                  specified in \code{cluster} \cr
-#' \code{args} \tab specification of function arguments \cr
-#' \code{model} \tab specified model \cr
-#' \code{model.fit} \tab fitted lavaan object (\code{model.fit}) \cr
-#' \code{check} \tab results of the convergence and model identification check \cr
-#' \code{result} \tab list with result tables \cr
-#' }
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame specified in \code{x} including the group variable
+#'                    specified in \code{cluster}}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
+#' \item{\code{result}}{list with result tables, i.e., \code{summary} for the
+#'                      specification of the estimation method and missing data
+#'                      handling in lavaan, \code{wb.cor} for the within- and
+#'                      between-group correlations, \code{wb.se} for the standard
+#'                      error of the within- and between-group correlations,
+#'                      \code{wb.stat} for the test statistic of within- and between-group
+#'                      correlations, \code{wb.p} for the significance value of
+#'                      the within- and between-group correlations, \code{with.cor}
+#'                      for the within-group correlations, \code{with.se} for the
+#'                      standard error of the within-group correlations, \code{with.stat}
+#'                      for the test statistic of within-group correlations, \code{with.p}
+#'                      for the significance value of the within-group correlations,
+#'                      \code{betw.cor} for the between-group correlations, \code{betw.se}
+#'                      for the standard error of the between-group correlations,
+#'                      \code{betw.stat} for the test statistic of between-group
+#'                      correlations, \code{betw.p} for the significance value of
+#'                      the between-group correlations}
 #'
 #' @note
 #' The function uses the functions \code{sem}, \code{lavInspect},
@@ -194,11 +200,11 @@
 #' # Example 1b: Cluster variable 'cluster' not in 'x'
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
 #'
-#' # Example 1c: Alternative specification using the 'data' argument
+#' # Alternative specification using the 'data' argument
 #' multilevel.cor(x1:x3, data = Demo.twolevel, cluster = "cluster")
 #'
 #' #----------------------------------------------------------------------------
-#' # Example 2: All variables modeled on both the within and between level
+#' # Example 2: All variables modeled at both the within and between level
 #' # Highlight statistically significant result at alpha = 0.05
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], sig = TRUE,
 #'               cluster = Demo.twolevel$cluster)
@@ -219,8 +225,8 @@
 #'                p.adj = "bonferroni")
 #'
 #' #----------------------------------------------------------------------------
-#' # Example 6: Variables "y1", "y2", and "y2" modeled on both the within and between level
-#' # Variables "w1" and "w2" modeled on the cluster level
+#' # Example 6: Variables "y1", "y2", and "y2" modeled at both the within and between level
+#' # Variables "w1" and "w2" modeled at the cluster level
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
 #'                cluster = Demo.twolevel$cluster,
 #'                between = c("w1", "w2"))
@@ -231,8 +237,8 @@
 #'                between = c("w1", "w2"), order = TRUE)
 #'
 #' #----------------------------------------------------------------------------
-#' # Example 8: Variables "y1", "y2", and "y2" modeled only on the within level
-#' # Variables "w1" and "w2" modeled on the cluster level
+#' # Example 8: Variables "y1", "y2", and "y2" modeled only at the within level
+#' # Variables "w1" and "w2" modeled at the cluster level
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
 #'                cluster = Demo.twolevel$cluster,
 #'                within = c("y1", "y2", "y3"), between = c("w1", "w2"))
@@ -286,9 +292,6 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
@@ -304,11 +307,11 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
 
   if (isTRUE(!is.null(data))) {
 
-    # Variable names
-    var.names <- .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Extract data
-    x <- data[, var.names]
+    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
 
     # Cluster variable
     cluster <- data[, cluster]
@@ -320,6 +323,10 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
 
     # Extract data
     x <- eval(..., enclos = parent.frame())
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- as.data.frame(cluster) } }
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -336,8 +343,8 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   ## Within- and Between-Group Variables ####
 
   # Within variables in 'x'
-  within.miss <- !within %in% colnames(x)
-  if (isTRUE(any(within.miss))) { stop(paste0(ifelse(length(which(within.miss)) == 1L, "Variable ", "Variables "), "specified in the argument 'within' ", ifelse(length(which(within.miss)) == 1L, "was ", "were "), "not found in 'x': ", within[which(within.miss)], collapse = ", "), call. = FALSE) }  # Within variables
+  (!within %in% colnames(x)) |>
+    (\(y) if (isTRUE(any(y))) { stop(paste0(ifelse(length(which(y)) == 1L, "Variable ", "Variables "), "specified in the argument 'within' ", ifelse(length(which(y)) == 1L, "was ", "were "), "not found in 'x': ", within[which(y)], collapse = ", "), call. = FALSE) })()
 
   if (isTRUE(is.null(between))) { var.with <- colnames(x) } else { var.with <- colnames(x)[!colnames(x) %in% between] }
 
@@ -345,8 +352,8 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   if (isTRUE(length(var.with) <= 1L)) { stop("Please specify at least two within-group variables.", call. = FALSE) }
 
   # Between variables in 'x'
-  between.miss <- !between %in% colnames(x)
-  if (isTRUE(any(between.miss))) { stop(paste0(ifelse(length(which(between.miss)) == 1L, "Variable ", "Variables "), "specified in the argument 'between' ", ifelse(length(which(between.miss)) == 1L, "was ", "were "), "not found in 'x': ", within[which(between.miss)], collapse = ", "), call. = FALSE) }
+  (!between %in% colnames(x)) |>
+    (\(y) if (isTRUE(any(y))) { stop(paste0(ifelse(length(which(y)) == 1L, "Variable ", "Variables "), "specified in the argument 'between' ", ifelse(length(which(y)) == 1L, "was ", "were "), "not found in 'x': ", within[which(y)], collapse = ", "), call. = FALSE) })()
 
   # Variance within clusters
   x.check <- vapply(x[, between, drop = FALSE], function(y) any(tapply(y, cluster, var, na.rm = TRUE) != 0L), FUN.VALUE = logical(1L))
@@ -360,8 +367,8 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   if (isTRUE(length(var.betw) <= 1L)) { stop("Please specify at least two between-group variables.", call. = FALSE) }
 
   # Variables in 'within' or 'between'
-  wb.inter <- intersect(within, between)
-  if (isTRUE(length(wb.inter) > 0L)) { warning(paste0("Following ", ifelse(length(wb.inter) == 1L, "variable is ", "variables are "), "specified in both arguments 'within' and 'between': ", paste(wb.inter, collapse = ", ")), call. = FALSE) }
+  intersect(within, between) |>
+    (\(y) if (isTRUE(length(y) > 0L)) { warning(paste0("Following ", ifelse(length(y) == 1L, "variable is ", "variables are "), "specified in both arguments 'within' and 'between': ", paste(y, collapse = ", ")), call. = FALSE) })()
 
   # Unique variables at Within and Between
   var <- unique(c(var.with, var.betw))
@@ -370,6 +377,19 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   ## Data frame with Cluster Variable ####
 
   x <- data.frame(x[, var], .cluster = cluster, stringsAsFactors = FALSE)
+
+  n.total <- nrow(x)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data on the Cluster Variable ####
+
+  if (isTRUE(any(is.na(x$.cluster)))) {
+
+    warning(paste0("Data contains missing values on the cluster variable, number of cases removed from the analysis: ", sum(is.na(x$.cluster))), call. = FALSE)
+
+    x <- x[!is.na(x$.cluster), ]
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -380,12 +400,15 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("sig", "split", "order", "tri.lower", "append", "output"),
+               s.character = list(estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"), missing = c("listwise", "fiml"), tri = c("both", "lower", "upper")),
+               m.character = list(print = c("all", "cor", "se", "stat", "p")),
+               args = c("alpha", "p.adj", "digits", "p.digits", "write2"),
+               package = "lavaan", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
-
-    if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
 
     # Check input 'x': Zero variance?
     x.check <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
@@ -397,51 +420,6 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
 
     if (isTRUE(any(x.check))) { warning(paste0("Following within-group ", ifelse(length(which(x.check)) == 1L, "variable has ", "variables have "), "zero variance within all clusters: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE) }
 
-    # Check input 'estimator'
-    if (isTRUE(any(!estimator %in% c("ML", "MLR")))) { stop("Character string in the argument 'estimator' does not match with \"ML\" or \"MLR\".", call. = FALSE) }
-
-    # Check input 'optim.method'
-    if (isTRUE(!all(optim.method  %in% c("nlminb", "em")))) { stop("Character string in the argument 'optim.method' does not match with \"nlminb\" or \"em\".", call. = FALSE) }
-
-    # Check input 'missing'
-    if (isTRUE(any(!missing %in% c("listwise", "fiml")))) { stop("Character string in the argument 'estimator' does not match with \"listwise\" or \"fiml\".", call. = FALSE) }
-
-    # Check input 'sig'
-    if (isTRUE(!is.logical(sig))) { stop("Please specify TRUE or FALSE for the argument 'sig'.", call. = FALSE) }
-
-    # Check input 'alpha'
-    if (isTRUE(alpha >= 1L || alpha <= 0L)) { stop("Please specify a number between 0 and 1 for the argument 'alpha'.", call. = FALSE) }
-
-    # Check input 'print'
-    if (isTRUE(any(!print %in% c("all", "cor", "se", "stat", "p")))) { stop("Character string(s) in the argument 'print' does not match with \"all\", \"cor\", \"se\", \"stat\", or \"p\".", call. = FALSE) }
-
-    # Check input 'split'
-    if (isTRUE(!is.logical(split))) { stop("Please specify TRUE or FALSE for the argument 'split'.", call. = FALSE) }
-
-    # Check input 'order'
-    if (isTRUE(!is.logical(order))) { stop("Please specify TRUE or FALSE for the argument 'order'.", call. = FALSE) }
-
-    # Check input 'tri'
-    if (isTRUE(any(!tri %in% c("both", "lower", "upper")))) { stop("Character string in the argument 'tri' does not match with \"both\", \"lower\", or \"upper\".", call. = FALSE) }
-
-    # Check input 'tri.lower'
-    if (isTRUE(!is.logical(tri.lower))) { stop("Please specify TRUE or FALSE for the argument 'tri.lower'.", call. = FALSE) }
-
-    # Check input 'p.adj'
-    if (isTRUE(any(!p.adj %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr")))) { stop("Character string in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".", call. = FALSE) }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) }
-
-    # Check input 'p.digits'
-    if (isTRUE(p.digits %% 1L != 0L || p.digits < 0L)) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) }
-
-    # Check input 'append'
-    if (isTRUE(!is.logical(append))) { stop("Please specify TRUE or FALSE for the argument 'append'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
-
   }
 
   #_____________________________________________________________________________
@@ -451,7 +429,7 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Estimator ####
 
-  estimator <- ifelse(all(c("ML", "MLR") %in% estimator), "ML", estimator)
+  estimator <- ifelse(all(c("ML", "MLR") %in% estimator), "MLR", estimator)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Optimizer ####
@@ -467,24 +445,7 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
 
     complete <- FALSE
 
-    # ML estimation with FIML
-    if (isTRUE(estimator == "ML")) {
-
-        missing <- ifelse(all(c("listwise", "fiml") %in% missing), "fiml", missing)
-
-    # MLR estimation
-    } else if (isTRUE(estimator == "MLR")) {
-
-      if (isTRUE(missing == "fiml")) {
-
-        warning("FIML method is not available with estimator = \"MLR\", argument missing switched to \"listwise\".", call. = FALSE)
-
-      }
-
-      # Listwise deletion
-      missing <- "listwise"
-
-    }
+    if (isTRUE(all(c("listwise", "fiml") %in% missing))) { missing <- "fiml" }
 
   #...................
   ### No missing values ####
@@ -498,15 +459,19 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   # Cases with missing on all variables
   if (isTRUE(missing == "fiml")) {
 
-    x.na.prop <- misty::na.prop(x[, -which(colnames(x) %in% c(".cluster", between)), drop = FALSE])
-    if (any(x.na.prop == 1L)) {
+    x <- misty::na.prop(x[, -which(colnames(x) %in% c(".cluster", between)), drop = FALSE]) |>
+      (\(y) if (any(y == 1L)) {
 
-      warning(paste("Data set contains", sum(x.na.prop == 1L), "cases with missing on all variables that are measured on the within level which were not included in the analysis."), call. = FALSE)
+        warning(paste0("Data contains cases with missing values on all variables measured at the within level, number of cases removed from the analysis: ", sum(y == 1L)), call. = FALSE)
 
-      # Remove cases with missing on all variables
-      x <- x[which(x.na.prop < 1L), ]
+        # Remove cases with missing on all variables
+        return(x[which(y < 1L), ])
 
-    }
+      } else {
+
+        return(x)
+
+      })()
 
   }
 
@@ -913,7 +878,7 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
                                  lavaan::lavInspect(model.fit, what = "nobs"),
                                  # Number of clusters
                                  lavaan::lavInspect(model.fit, what = "nclusters")),
-                               c(rep("", times = 6L), "Total", lavaan::lavInspect(model.fit, what = "norig"), ""),
+                               c(rep("", times = 6L), "Total", n.total, ""),
                                fix.empty.names = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -944,36 +909,9 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
 
   #_____________________________________________________________________________
   #
-  # Write Result ---------------------------------------------------------------
+  # Write Results --------------------------------------------------------------
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    if (isTRUE(grepl("\\.txt", write))) {
-
-      # Send R output to textfile
-      sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-      if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-      # Print object
-      print(object, check = FALSE)
-
-      # Close file connection
-      sink()
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
-
-    } else {
-
-      misty::write.result(object, file = write)
-
-    }
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
@@ -984,3 +922,5 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

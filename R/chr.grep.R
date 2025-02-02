@@ -25,8 +25,11 @@
 #' @author
 #' Takuya Yanagida
 #'
+#' @name chr.grep
+#'
 #' @seealso
-#' \code{\link{chr.gsub}}, \code{\link{chr.omit}}, \code{\link{chr.trim}}
+#' \code{\link{chr.color}}, \code{\link{chr.grepl}}, \code{\link{chr.gsub}},
+#' \code{\link{chr.omit}}, \code{\link{chr.trim}}, \code{\link{chr.trunc}}
 #'
 #' @references
 #' Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}.
@@ -73,30 +76,8 @@ chr.grep <- function(pattern, x, ignore.case = FALSE, perl = FALSE, value = FALS
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'ignore.case'
-    if (isTRUE(!is.logical(ignore.case))) { stop("Please specify TRUE or FALSE for the argument 'ignore.case'.", call. = FALSE) }
-
-    # Check input 'perl'
-    if (isTRUE(!is.logical(perl))) { stop("Please specify TRUE or FALSE for the argument 'perl'.", call. = FALSE) }
-
-    # Check input 'value'
-    if (isTRUE(!is.logical(value))) { stop("Please specify TRUE or FALSE for the argument 'value'.", call. = FALSE) }
-
-    # Check input 'fixed'
-    if (isTRUE(!is.logical(fixed))) { stop("Please specify TRUE or FALSE for the argument 'fixed'.", call. = FALSE) }
-
-    # Check input 'useBytes'
-    if (isTRUE(!is.logical(useBytes))) { stop("Please specify TRUE or FALSE for the argument 'useBytes'.", call. = FALSE) }
-
-    # Check input 'invert'
-    if (isTRUE(!is.logical(invert))) { stop("Please specify TRUE or FALSE for the argument 'invert'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("ignore.case", "perl", "value", "fixed", "useBytes", "invert"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -112,8 +93,7 @@ chr.grep <- function(pattern, x, ignore.case = FALSE, perl = FALSE, value = FALS
 
     if (isTRUE(length(pattern) == 1L)) {
 
-      object <- grep(pattern, x, ignore.case = ignore.case, perl = perl, value = FALSE,
-                     fixed = fixed, useBytes = useBytes, invert = FALSE)
+      object <- grep(pattern, x, ignore.case = ignore.case, perl = perl, value = FALSE, fixed = fixed, useBytes = useBytes, invert = FALSE)
 
 
     #...................
@@ -121,8 +101,7 @@ chr.grep <- function(pattern, x, ignore.case = FALSE, perl = FALSE, value = FALS
 
     } else {
 
-      object <- sort(unique(unlist(sapply(pattern, function(y) grep(y, x, ignore.case = ignore.case, perl = perl, value = FALSE,
-                                                                    fixed = fixed, useBytes = useBytes, invert = FALSE)))))
+      object <- sort(unique(unlist(sapply(pattern, function(y) grep(y, x, ignore.case = ignore.case, perl = perl, value = FALSE, fixed = fixed, useBytes = useBytes, invert = FALSE)))))
 
     }
 
@@ -136,8 +115,7 @@ chr.grep <- function(pattern, x, ignore.case = FALSE, perl = FALSE, value = FALS
 
     if (isTRUE(length(pattern) == 1L)) {
 
-      object <- grep(pattern, x, ignore.case = ignore.case, perl = perl, value = FALSE,
-                     fixed = fixed, useBytes = useBytes, invert = TRUE)
+      object <- grep(pattern, x, ignore.case = ignore.case, perl = perl, value = FALSE, fixed = fixed, useBytes = useBytes, invert = TRUE)
 
 
     #...................
@@ -193,23 +171,7 @@ chr.grepl <- function(pattern, x, ignore.case = FALSE, perl = FALSE, fixed = FAL
   # Input Check ----------------------------------------------------------------
 
   # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'ignore.case'
-    if (isTRUE(!is.logical(ignore.case))) { stop("Please specify TRUE or FALSE for the argument 'ignore.case'.", call. = FALSE) }
-
-    # Check input 'perl'
-    if (isTRUE(!is.logical(perl))) { stop("Please specify TRUE or FALSE for the argument 'perl'.", call. = FALSE) }
-
-    # Check input 'fixed'
-    if (isTRUE(!is.logical(fixed))) { stop("Please specify TRUE or FALSE for the argument 'fixed'.", call. = FALSE) }
-
-    # Check input 'useBytes'
-    if (isTRUE(!is.logical(useBytes))) { stop("Please specify TRUE or FALSE for the argument 'useBytes'.", call. = FALSE) }
-
-  }
+  .check.input(logical = c("ignore.case", "perl", "fixed", "useBytes"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -246,3 +208,5 @@ chr.grepl <- function(pattern, x, ignore.case = FALSE, perl = FALSE, fixed = FAL
   return(object)
 
 }
+
+#_______________________________________________________________________________

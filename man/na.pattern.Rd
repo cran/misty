@@ -8,7 +8,7 @@ na.pattern(..., data = NULL, order = FALSE, n.pattern = NULL, plot = FALSE,
            square = TRUE, rotate = FALSE, fill.col = c("#B61A51B3", "#006CC2B3"),
            alpha = 0.6, plot.margin = c(4, 16, 0, 4),
            legend.box.margin = c(-8, 6, 6, 6), legend.key.size = 12,
-           legend.text.size = 9, saveplot = FALSE, file = "NA_Patternt.pdf",
+           legend.text.size = 9, saveplot = FALSE, file = "NA_Pattern.pdf",
            width = NA, height = NA, units = c("in", "cm", "mm", "px"), dpi = 600,
            digits = 2, as.na = NULL, write = NULL, append = TRUE, check = TRUE,
            output = TRUE)
@@ -123,34 +123,30 @@ The code for plotting missing data patterns is based on the \code{plot_pattern}
 function in the \pkg{ggmice} package by Hanne Oberman.
 }
 \examples{
-\dontrun{
 # Example 1a: Compute a summary of missing data patterns
 dat.pattern <- na.pattern(airquality)
 
 # Example 1b: Alternative specification using the 'data' argument
-dat.pattern <- na.pattern(., data = airquality)
+na.pattern(., data = airquality)
 
 # Example 2a: Compute and plot a summary of missing data patterns
 na.pattern(airquality, plot = TRUE)
 
-# Example 2b: Plot missing data patterns with at least 3 cases
+# Example 2b: Exclude missing data patterns with less than 3 cases
 na.pattern(airquality, plot = TRUE, n.pattern = 3)
 
 # Example 3: Vector of missing data pattern for each case
 dat.pattern$pattern
 
-# Data frame without cases with missing data pattern 2 and 4
-airquality[!dat.pattern$pattern %in% c(2, 4), ]
+# Data frame without cases with missing data pattern 2
+airquality[!dat.pattern$pattern == 2, ]
 
+\dontrun{
 # Example 4a: Write Results into a text file
-result <- na.pattern(airquality, write = "NA_Pattern.xlsx")
+na.pattern(airquality, write = "NA_Pattern.xlsx")
 
 # Example 4b: Write Results into a Excel file
-result <- na.pattern(airquality, write = "NA_Pattern.xlsx")
-
-result <- 4c.pattern(dat, output = FALSE)
-write.result(result, "NA_Pattern.xlsx")
-}
+na.pattern(airquality, write = "NA_Pattern.xlsx")}
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.

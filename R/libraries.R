@@ -54,21 +54,8 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
-
-  if (isTRUE(check)) {
-
-    # Check input 'install'
-    if (isTRUE(!is.logical(install))) { stop("Please specify TRUE or FALSE for the argument 'install'.", call. = FALSE) }
-
-    # Check input 'quiet'
-    if (isTRUE(!is.logical(quiet))) { stop("Please specify TRUE or FALSE for the argument 'quiet'.", call. = FALSE) }
-
-    # Check input 'output'
-    if (isTRUE(!is.logical(output))) { stop("Please specify TRUE or FALSE for the argument 'output'.", call. = FALSE) }
-
-  }
+  # Check inputs
+  .check.input(logical = c("install", "quiet", "output"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
@@ -77,19 +64,18 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract package names from the argument ... ####
 
-  pkg <- match.call(expand.dots = FALSE)[[2L]]
+  pkg <- match.call(expand.dots = FALSE)[[2L]] |>
+    (\(y) # Name or literal character string
+     if (isTRUE(length(y) != 1L)) {
 
-  # Name or literal character string
-  if (isTRUE(length(pkg) != 1L)) {
+       return(as.character(y))
 
-    pkg <- as.character(pkg)
+     # Character vector
+     } else {
 
-  # Character vector
-  } else {
+       return(misty::chr.omit(as.character(y[[1L]]), omit = "c", check = FALSE))
 
-    pkg <- misty::chr.omit(as.character(pkg[[1L]]), omit = "c", check = FALSE)
-
-  }
+     })()
 
   #_____________________________________________________________________________
   #
@@ -373,3 +359,5 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
   return(invisible(object))
 
 }
+
+#_______________________________________________________________________________

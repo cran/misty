@@ -77,6 +77,15 @@ overwritten.}
 
 \item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
+\value{
+Returns an object of class \code{misty.object}, which is a list with following
+entries:
+\item{\code{call}}{function call}
+\item{\code{type}}{type of analysis}
+\item{\code{data}}{data frame with variables used in the current analysis}
+\item{\code{args}}{specification of function arguments}
+\item{\code{result}}{result table}
+}
 \description{
 This function computes effect sizes for one or more than one categorical
 variable, i.e., (adjusted) phi coefficient, (bias-corrected) Cramer's \emph{V},
@@ -124,8 +133,7 @@ effsize(cyl, vs:carb, data = mtcars)
 effsize(cyl, vs:carb, data = mtcars, write = "Cramer.txt")
 
 # Example 7b: Write Results into a Excel file
-effsize(cyl, vs:carb, data = mtcars, write = "Cramer.xlsx")
-}
+effsize(cyl, vs:carb, data = mtcars, write = "Cramer.xlsx")}
 }
 \references{
 Bergsma, W. (2013). A bias correction for Cramer's V and Tschuprow's T.

@@ -50,25 +50,7 @@ cdat <- data.frame(id = c(2, 3),
 ddat <- data.frame(id = 4,
                    y4 = 6)
 
-# Merge adat, bdat, cdat, and data by the variable id
-df.merge(adat, bdat, cdat, ddat, by = "id")
-
-# Do not show output on the console
-df.merge(adat, bdat, cdat, ddat, by = "id", output = FALSE)
-
-adat <- data.frame(id = c(1, 2, 3),
-                   x1 = c(7, 3, 8))
-
-bdat <- data.frame(id = c(1, 2),
-                   x2 = c(5, 1))
-
-cdat <- data.frame(id = c(2, 3),
-                   y3 = c(7, 9))
-
-ddat <- data.frame(id = 4,
-                   y4 = 6)
-
-# Example 1: Merge adat, bdat, cdat, and data by the variable id
+# Example 1: Merge 'adat', 'bdat', 'cdat', and 'ddat' by the variable 'id'
 df.merge(adat, bdat, cdat, ddat, by = "id")
 
 # Example 2: Do not show output on the console

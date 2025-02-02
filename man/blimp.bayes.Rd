@@ -241,6 +241,7 @@ Makowski et al. (2019).
 }
 \examples{
 \dontrun{
+
 #----------------------------------------------------------------------------
 # Blimp Example 4.3: Linear Regression
 

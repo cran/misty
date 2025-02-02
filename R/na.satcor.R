@@ -52,7 +52,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Load lavaan package
 #' library(lavaan)
 #'
@@ -71,7 +70,6 @@
 #'
 #' # Result summary
 #' summary(mod.fit)
-#' }
 na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"),
                       check = TRUE, ...) {
 
@@ -92,13 +90,10 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(s.character = list(fun = c("cfa", "sem", "growth", "lavaan")), package = "lavaan", envir = environment(), input.check = check)
 
   if (isTRUE(check)) {
-
-    # R package lavaan
-    if (isTRUE(!nzchar(system.file(package = "lavaan")))) { stop("Package \"lavaan\" is needed for this function, please install the package.", call. = FALSE) }
 
     # Check input 'model'
     lavaan::lavNames(model, type = "ov") |>
@@ -113,11 +108,6 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
 
     which(aux %in% lavaan::lavNames(model, type = "ov")) |>
       (\(y) if (isTRUE(length(y) != 0L)) { stop("Variables specified in the model syntax 'model' must not be declared as auxiliary variables: ", paste(aux[y], collapse = ", ")) })()
-
-    # Check input 'fun'
-    if (isTRUE(!all(fun %in% c("cfa", "sem", "growth", "lavaan")))) { stop("Character string in the argument 'fun' does not match with \"cfa\", \"sem\", \"growth\", or \"lavaan\".", call. = FALSE) }
-
-    if (isTRUE(!all(c("cfa", "sem", "growth", "lavaan") %in% fun) && length(fun) != 1L)) { stop("Please specify a character string for the argument 'fun'", call. = FALSE) }
 
   }
 
@@ -285,3 +275,6 @@ lavaan.satcor <- function(model, data, aux, check = TRUE, ...) {
   eval(mc, parent.frame())
 
 }
+
+
+#_______________________________________________________________________________

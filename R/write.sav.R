@@ -100,7 +100,7 @@
 #'           write.csv = TRUE, write.sps = TRUE)
 #'
 #' # Example 3: Specify variable attributes
-#' # Note that it is recommended to manually specify the variables attritbues in a CSV or
+#' # Note that it is recommended to manually specify the variables attributes in a CSV or
 #' # Excel file which is subsequently read into R
 #' attr <- data.frame(# Variable names
 #'                    var = c("id", "gender", "age", "status", "score"),
@@ -112,7 +112,7 @@
 #'                               "1 = Austria; 2 = former Yugoslavia; 3 = Turkey; 4 = other",
 #'                               ""),
 #'                    # User-missing values
-#'                    missing = c("", "-99", "-99", "-99", "-99"), stringsAsFactors = FALSE)
+#'                    missing = c("", "-99", "-99", "-99", "-99"))
 #'
 #' # Example 4: Write SPSS file with variable attributes using the haven package
 #' write.sav(dat, file = "Dataframe_haven_Attr.sav", var.attr = attr)
@@ -167,17 +167,14 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = c("write.csv", "write.sps"), character = list(file = 1L, pspp.path = 1L, na = 1L), s.character = list(sep = c(";", ",")), args = "digits", envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Check input 'pspp.path'
-    if (isTRUE(!is.null(pspp.path))) {
-
-      if (isTRUE(length(grep("pspp.exe", list.files(paste0(pspp.path, "/bin/")))) != 1L)) { stop("PSPP file \'pspp.exe\' was not found in the folder specified in the pspp.path argument.", call. = FALSE) }
-
-    }
+    if (isTRUE(!is.null(pspp.path))) { if (isTRUE(length(grep("pspp.exe", list.files(paste0(pspp.path, "/bin/")))) != 1L)) { stop("PSPP file \'pspp.exe\' was not found in the folder specified in the pspp.path argument.", call. = FALSE) } }
 
     # Check input 'var.attr'
     if (isTRUE(!is.null(var.attr))) {
@@ -222,12 +219,6 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
       }
 
     }
-
-    # Check input 'digits'
-    if (isTRUE(digits %% 1L != 0L || digits < 0L)) { stop("Specify a positive integer number for the argument digits.", call. = FALSE) }
-
-    # Check input 'sep'
-    if (isTRUE(write.csv & any(!sep %in% c(";", ",")))) { stop("Specify either \";\" or \",\" for the argument sep.", call. = FALSE) }
 
   }
 
@@ -545,3 +536,5 @@ write.sav <- function(x, file = "SPSS_Data.sav", var.attr = NULL, pspp.path = NU
   }
 
 }
+
+#_______________________________________________________________________________

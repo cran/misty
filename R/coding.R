@@ -127,10 +127,10 @@
 #' @export
 #'
 #' @examples
-#' # Example 1a: Dummy coding for 'gear', baseline group = 3
+#' # Example 1: Dummy coding for 'gear', baseline group = 3
 #' coding(gear, data = mtcars)
 #'
-#' # Example 1b: Alterantive specification without using the 'data' argument
+#' # Alternative specification without using the 'data' argument
 #' coding(mtcars$gear)
 #'
 #' # Example 2: Dummy coding for 'gear', baseline group = 4
@@ -162,9 +162,6 @@ coding <- function(..., data = NULL,
   # Check if input '...' is NULL
   if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
-
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
@@ -173,6 +170,9 @@ coding <- function(..., data = NULL,
   ## Data using the argument 'data' ####
 
   if (isTRUE(!is.null(data))) {
+
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
     # Variable names
     var.names <- .var.names(..., data = data, check.chr = "a numeric vector with integer values, character vector or factor")
@@ -188,6 +188,9 @@ coding <- function(..., data = NULL,
     # Extract data
     x <- eval(..., enclos = parent.frame())
 
+    # Convert tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -199,9 +202,10 @@ coding <- function(..., data = NULL,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical = "append", s.character = list(type = c("dummy", "simple", "effect", "weffect", "repeat", "fhelm", "rhelm", "poly")), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Input check 'x'
@@ -209,9 +213,6 @@ coding <- function(..., data = NULL,
 
     # Input check 'x'
     if (isTRUE(!is.factor(x) && !is.character(x))) { if (isTRUE(any(na.omit(x) %% 1L != 0L))) { stop("Please specify a vector with integer values, a character vector or a factor for the argument 'x'.", call. = FALSE) } }
-
-    # Input check 'type'
-    if (isTRUE(all(!type %in% c("dummy", "simple", "effect", "weffect", "repeat", "fhelm", "rhelm", "poly")))) { stop("Character string in the argument 'type' does not match with \"dummy\", \"simple\", \"effect\", \"weffect\", \"repeat\", \"fhelm\", \"rhelm\", or \"poly\".", call. = FALSE) }
 
     # Input check 'base'
     if (isTRUE(!is.null(base))) { if (isTRUE(!base %in% x)) { stop("The baseline category specified in 'base' was not found in 'x'.", call. = FALSE) } }
@@ -364,3 +365,5 @@ coding <- function(..., data = NULL,
   return(object)
 
 }
+
+#_______________________________________________________________________________

@@ -114,7 +114,6 @@ the \code{ci.reliability()} function in the \pkg{MBESS} package by Ken Kelley
 (2019).
 }
 \examples{
-\dontrun{
 dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
                   item2 = c(5, 3, 3, 5, 2, 2, 5, 1),
                   item3 = c(4, 2, 4, 5, 1, 3, 5, 1),
@@ -156,15 +155,12 @@ item.omega(dat, exclude = "item3")
 lavaan::summary(item.omega(dat, output = FALSE)$model.fit,
                 fit.measures = TRUE, standardized = TRUE)
 
+\dontrun{
 # Example 11a: Write results into a text file
 item.omega(dat, write = "Omega.txt")
 
 # Example 11b: Write results into a Excel file
-item.omega(dat, write = "Omega.xlsx")
-
-result <- item.omega(dat, output = FALSE)
-write.result(result, "Omega.xlsx")
-}
+item.omega(dat, write = "Omega.xlsx")}
 }
 \references{
 Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for

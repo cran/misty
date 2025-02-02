@@ -67,7 +67,7 @@ write.mplus <- function(x, file = "Mplus_Data.dat", data = TRUE, input = TRUE,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data frame ####
 
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
+  x <- as.data.frame(x)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert Factors in Numeric Variables ####
@@ -96,19 +96,10 @@ write.mplus <- function(x, file = "Mplus_Data.dat", data = TRUE, input = TRUE,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check input 'check'
-  if (isTRUE(!is.logical(check))) { stop("Please specify TRUE or FALSE for the argument 'check'.", call. = FALSE) }
+  # Check inputs
+  .check.input(logical =  c("data", "input", "var"), character = list(file = 1L), envir = environment(), input.check = check)
 
   if (isTRUE(check)) {
-
-    # Check input 'data'
-    if (isTRUE(!is.logical(data))) { stop("Please specify TRUE or FALSE for the argument 'data'.", call. = FALSE) }
-
-    # Check input 'input'
-    if (isTRUE(!is.logical(input))) { stop("Please specify TRUE or FALSE for the argument 'input'.", call. = FALSE) }
-
-    # Check input 'var'
-    if (isTRUE(!is.logical(var))) { stop("Please specify TRUE or FALSE for the argument 'var'.", call. = FALSE) }
 
     # Variable names with .
     names. <- grep("\\.", names(x))
@@ -218,3 +209,5 @@ write.mplus <- function(x, file = "Mplus_Data.dat", data = TRUE, input = TRUE,
   return(invisible(names.are))
 
 }
+
+#_______________________________________________________________________________
