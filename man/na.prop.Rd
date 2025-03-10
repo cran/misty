@@ -4,21 +4,18 @@
 \alias{na.prop}
 \title{Proportion of Missing Data for Each Case}
 \usage{
-na.prop(..., data = NULL, digits = 2, append = TRUE, name = "na.prop",
+na.prop(data, ..., digits = 2, append = TRUE, name = "na.prop",
         as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame with incomplete data, where missing
-values are coded as \code{NA}. Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{na.prop(x1, x2, x3, data = dat)}. Note that the operators
+\item{data}{a data frame with incomplete data, where missing
+values are coded as \code{NA}.}
+
+\item{...}{an expression indicating the variable names in \code{data}, e.g.,
+\code{na.prop(dat, x1, x2, x3)}. Note that the operators
 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
-
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{name}{a character string indicating the name of the variable appended
 to the data frame specified in the argument \code{data} when
@@ -38,20 +35,19 @@ the analysis.}
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 }
 \value{
-Returns a numeric vector with the same length as the number of rows in \code{x}
+Returns a numeric vector with the same length as the number of rows in \code{data}
 containing the proportion of missing data.
 }
 \description{
-This function computes the proportion of missing data for each case in a matrix
-or data frame.
+This function computes the proportion of missing data for each case in a
+data frame.
 }
 \examples{
-# Example 1a: Compute proportion of missing data for each case in the data frame
+# Example 1: Compute proportion of missing data for each case in the data frame
 na.prop(airquality)
 
-# Example 1b: Alternative specification using the 'data' argument,
-# append proportions to the data frame 'airquality'
-na.prop(., data = airquality)
+# Example 2: Do not append proportions of missing data to the data frame
+na.prop(airquality, append = FALSE)
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.

@@ -1,9 +1,9 @@
 #' Between-Subject Analysis of Variance
 #'
 #' This function performs an one-way between-subject analysis of variance (ANOVA)
-#' including Tukey HSD post hoc test for multiple comparison and provides descriptive
-#' statistics, effect size measures, and a plot showing error bars for
-#' difference-adjusted confidence intervals with jittered data points.
+#' including Tukey HSD post hoc tests for multiple comparison and provides descriptive
+#' statistics, effect size measures, and a plot showing bars representing means
+#' for each group and error bars for difference-adjusted confidence intervals.
 #'
 #' @param formula        a formula of the form \code{y ~ group} where \code{y} is
 #'                       a numeric variable giving the data values and \code{group}
@@ -27,32 +27,6 @@
 #'                       deviation is used to compute Cohen's d.
 #' @param correct        logical: if \code{TRUE}, correction factor to remove
 #'                       positive bias in small samples is used.
-#' @param plot           logical: if \code{TRUE}, a plot showing error bars for
-#'                       confidence intervals is drawn.
-#' @param point.size     a numeric value indicating the \code{size} aesthetic for
-#'                       the point representing the mean value.
-#' @param adjust         logical: if \code{TRUE} (default), difference-adjustment
-#'                       for the confidence intervals is applied.
-#' @param errorbar.width a numeric value indicating the horizontal bar width of
-#'                       the error bar.
-#' @param xlab           a character string specifying the labels for the x-axis.
-#' @param ylab           a character string specifying the labels for the y-axis.
-#' @param ylim           a numeric vector of length two specifying limits of the
-#'                       limits of the y-axis.
-#' @param breaks         a numeric vector specifying the points at which tick-marks
-#'                       are drawn at the y-axis.
-#' @param jitter         logical: if \code{TRUE} (default), jittered data points
-#'                       are drawn.
-#' @param jitter.size    a numeric value indicating the \code{size} aesthetic
-#'                       for the jittered data points.
-#' @param jitter.width   a numeric value indicating the amount of horizontal jitter.
-#' @param jitter.height  a numeric value indicating the amount of vertical jitter.
-#' @param jitter.alpha   a numeric value indicating the opacity of the jittered
-#'                       data points.
-#' @param title          a character string specifying the text for the title of
-#'                       the plot.
-#' @param subtitle       a character string specifying the text for the subtitle
-#'                       of the plot.
 #' @param digits         an integer value indicating the number of decimal places
 #'                       to be used for displaying descriptive statistics and
 #'                       confidence interval.
@@ -61,11 +35,69 @@
 #' @param as.na          a numeric vector indicating user-defined missing values,
 #'                       i.e. these values are converted to \code{NA} before conducting
 #'                       the analysis.
+#' @param plot           logical: if \code{TRUE}, a plot is drawn.
+#' @param bar            logical: if \code{TRUE} (default), bars representing means
+#'                       for each groups are drawn.
+#' @param point          logical: if \code{TRUE}, points representing means for
+#'                       each groups are drawn.
+#' @param ci             logical: if \code{TRUE} (default), error bars representing
+#'                       confidence intervals are drawn.
+#' @param jitter         logical: if \code{TRUE}, jittered data points are drawn.
+#' @param adjust         logical: if \code{TRUE} (default), difference-adjustment
+#'                       for the confidence intervals is applied.
+#' @param point.size     a numeric value indicating the \code{size} aesthetic for
+#'                       the point representing the mean value.
+#' @param errorbar.width a numeric value indicating the horizontal bar width of
+#'                       the error bar.
+#' @param jitter.size    a numeric value indicating the \code{size} aesthetic
+#'                       for the jittered data points.
+#' @param jitter.width   a numeric value indicating the amount of horizontal jitter.
+#'                       data points.
+#' @param jitter.height  a numeric value indicating the amount of vertical jitter.
+#' @param jitter.alpha   a numeric value between 0 and 1 for specifying the
+#'                       \code{alpha} argument in the \code{geom_histogram}
+#'                       function for controlling the opacity of the jittered
+#'                       data points.
+#' @param xlab           a character string specifying the labels for the x-axis.
+#' @param ylab           a character string specifying the labels for the y-axis.
+#' @param ylim           a numeric vector of length two specifying limits of the
+#'                       limits of the y-axis.
+#' @param ybreaks        a numeric vector specifying the points at which tick-marks
+#'                       are drawn at the y-axis.
+#' @param title          a character string specifying the text for the title of
+#'                       the plot.
+#' @param subtitle       a character string specifying the text for the subtitle
+#'                       of the plot.
+#' @param filename       a character string indicating the \code{filename}
+#'                       argument including the file extension in the \code{ggsave}
+#'                       function. Note that one of \code{".eps"}, \code{".ps"},
+#'                       \code{".tex"}, \code{".pdf"} (default),
+#'                       \code{".jpeg"}, \code{".tiff"}, \code{".png"},
+#'                       \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+#'                       to be specified as file extension in the \code{filename}
+#'                       argument. Note that plots can only be saved when
+#'                       \code{plot = TRUE}.
+#' @param width          a numeric value indicating the \code{width} argument
+#'                       (default is the size of the current graphics device)
+#'                       in the \code{ggsave} function.
+#' @param height         a numeric value indicating the \code{height} argument
+#'                       (default is the size of the current graphics device)
+#'                       in the \code{ggsave} function.
+#' @param units          a character string indicating the \code{units} argument
+#'                       (default is \code{in}) in the \code{ggsave} function.
+#' @param dpi            a numeric value indicating the \code{dpi} argument
+#'                       (default is \code{600}) in the \code{ggsave} function.
+#' @param write          a character string naming a text file with file extension
+#'                       \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                       output into a text file.
+#' @param append         logical: if \code{TRUE} (default), output will be appended
+#'                       to an existing text file with extension \code{.txt} specified
+#'                       in \code{write}, if \code{FALSE} existing text file will be
+#'                       overwritten.
 #' @param check          logical: if \code{TRUE} (default), argument specification
 #'                       is checked.
 #' @param output         logical: if \code{TRUE} (default), output is shown on the
 #'                       console.
-#' @param ...            further arguments to be passed to or from methods.
 #'
 #' @details
 #' \describe{
@@ -125,58 +157,36 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(group = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3),
-#'                   y = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 6, 3, NA))
-#'
 #' # Example 1: Between-subject ANOVA
-#' aov.b(y ~ group, data = dat)
+#' aov.b(mpg ~ gear, data = mtcars)
 #'
-#' # Example 2: Between-subject ANOVA
-#' # print effect size measures
-#' aov.b(y ~ group, data = dat, effsize = TRUE)
+#' # Example 2: Between-subject ANOVA, print effect size measures
+#' aov.b(mpg ~ gear, data = mtcars, effsize = TRUE)
 #'
-#' # Example 3: Between-subject ANOVA
-#' # do not print hypotheses and descriptive statistics,
-#' aov.b(y ~ group, data = dat, descript = FALSE, hypo = FALSE)
+#' # Example 3: Between-subject ANOVA, do not print hypotheses and descriptive statistics,
+#' aov.b(mpg ~ gear, data = mtcars, descript = FALSE, hypo = FALSE)
 #'
-#' # Example 4: Write Results into a text file
-#' aov.b(y ~ group, data = dat, write = "ANOVA.txt")
+#' # Example 4: Between-subject ANOVA, plot results
+#' aov.b(mpg ~ gear, data = mtcars, plot = TRUE)
 #'
-#' # Example 5: Between-subject ANOVA
-#' # plot results
-#' aov.b(y ~ group, data = dat, plot = TRUE)
+#' \dontrun{
+#' # Example 5: Write Results into a text file
+#' aov.b(mpg ~ gear, data = mtcars, write = "ANOVA.txt")
 #'
-#' # Load ggplot2 package
-#' library(ggplot2)
-#'
-#' # Example 6: Save plot, ggsave() from the ggplot2 package
-#' ggsave("Between-Subject_ANOVA.png", dpi = 600, width = 4.5, height = 6)
-#'
-#' # Example 7: Between-subject ANOVA
-#' # extract plot
-#' p <- aov.b(y ~ group, data = dat, output = FALSE)$plot
-#' p
-#'
-#' # Extract data
-#' plotdat <- aov.b(y ~ group, data = dat, output = FALSE)$data
-#'
-#' # Draw plot in line with the default setting of aov.b()
-#' ggplot(plotdat, aes(group, y)) +
-#'   geom_jitter(alpha = 0.1, width = 0.05, height = 0, size = 1.25) +
-#'   geom_point(stat = "summary", fun = "mean", size = 4) +
-#'   stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
-#'   scale_x_discrete(name = NULL) +
-#'   labs(subtitle = "Two-Sided Confidence Interval") +
-#'   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
-aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95,
-                  hypo = TRUE, descript = TRUE, effsize = FALSE, weighted = FALSE,
-                  correct = FALSE, plot = FALSE, point.size = 4, adjust = TRUE,
-                  errorbar.width = 0.1, xlab = NULL, ylab = NULL, ylim = NULL,
-                  breaks = ggplot2::waiver(), jitter = TRUE, jitter.size = 1.25,
+#' # Example 6: Save plot
+#' aov.b(mpg ~ gear, data = mtcars, plot = TRUE, filename = "Between-Subject_ANOVA.png",
+#'       width = 7, height = 6)
+#' }
+aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95, hypo = TRUE,
+                  descript = TRUE, effsize = FALSE, weighted = FALSE, correct = FALSE,
+                  digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE,
+                  point = FALSE, ci = TRUE, jitter = FALSE, adjust = TRUE,
+                  point.size = 3, errorbar.width = 0.1, jitter.size = 1.25,
                   jitter.width = 0.05, jitter.height = 0, jitter.alpha = 0.1,
-                  title = "", subtitle = "Confidence Interval",
-                  digits = 2, p.digits = 3, as.na = NULL, write = NULL,
-                  append = TRUE, check = TRUE, output = TRUE, ...) {
+                  xlab = NULL, ylab = "y", ylim = NULL, ybreaks = ggplot2::waiver(),
+                  title = NULL, subtitle = "Confidence Interval", filename = NULL,
+                  width = NA, height = NA, units = c("in", "cm", "mm", "px"), dpi = 600,
+                  write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -211,19 +221,21 @@ aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95,
   # Input Check ----------------------------------------------------------------
 
   # Check inputs and R package
-  .check.input(logical = c("posthoc", "hypo", "descript", "effsize", "weighted", "correct", "plot", "adjust", "jitter", "append", "output"),
-               numeric = list(point.size = 1L, errorbar.width = 1L, jitter.size = 1L, jitter.width = 1L, jitter.height = 1L, jitter.alpha = 1L),
-               character = list(xlab = 1L, ylab = 1L, title = 1L, subtitle = 1L), args = c("digits", "p.digits", "conf.level", "write1"), package = "ggplot2", envir = environment(), input.check = check)
+  .check.input(logical = c("posthoc", "hypo", "descript", "effsize", "weighted", "correct", "plot", "bar", "point", "ci", "jitter", "adjust", "append", "output"),
+               numeric = list(point.size = 1L, errorbar.width = 1L, jitter.size = 1L, jitter.alpha = 1L, jitter.width = 1L, jitter.height = 1L),
+               character = list(xlab = 1L, ylab = 1L, title = 1L, subtitle = 1L), args = c("digits", "p.digits", "conf.level", "write1"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
 
+    # Package ggplot2
+    if (isTRUE(check && plot != "none")) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
+
     # Check if variables are in the data
-    (!var.formula %in% colnames(data)) |>
-      (\(y) if (isTRUE(any(y))) { stop(paste0(ifelse(sum(y) == 1L, "Variable ", "Variables "), "specified in the formula ", ifelse(sum(y) == 1L, "was ", "were "), "not found in 'data': ", paste(var.formula[y], collapse = ", ")), call. = FALSE) })()
+    (!var.formula %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0(ifelse(sum(y) == 1L, "Variable ", "Variables "), "specified in the formula ", ifelse(sum(y) == 1L, "was ", "were "), "not found in 'data': ", paste(var.formula[y], collapse = ", ")), call. = FALSE) })()
 
     # Check if variance in any group is zero
-    misty::na.as(c(tapply(data[, y.var], data[, group.var], var, na.rm = TRUE)), na = 0L, check = FALSE) == 0L |>
+    (misty::na.as(c(tapply(data[, y.var], data[, group.var], var, na.rm = TRUE)), na = 0L, check = FALSE) == 0L) |>
      (\(y) if (isTRUE(any(y))) {
 
        if (isTRUE(sum(y) == 1L)) { stop(paste0("Variance in group \"", names(which(y))), "\" is zero.", call. = FALSE) }
@@ -276,13 +288,22 @@ aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95,
 
   #_____________________________________________________________________________
   #
+  # Arguments ------------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'units' Argument ####
+
+  # Default setting
+  if (isTRUE(all(c("in", "cm", "mm", "px") %in% units))) { units <- "in" }
+
+  #_____________________________________________________________________________
+  #
   # Main Function --------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Descriptive statistics ####
 
-  ci <- misty::ci.mean(y, group = group, adjust = adjust, conf.level = conf.level, output = FALSE)$result |>
-    (\(y) data.frame(y[, c("group", "n", "nNA", "m", "low", "upp", "sd", "skew", "kurt")]))()
+  ci.table <- misty::ci.mean(y, group = group, adjust = adjust, conf.level = conf.level, output = FALSE)$result |> (\(y) data.frame(y[, c("group", "n", "nNA", "m", "low", "upp", "sd", "skew", "kurt")]))()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Fit ANOVA model ####
@@ -328,7 +349,7 @@ aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95,
                      omega.sq = c(omega.sq, NA, NA))
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Post-hoc test ####
+  ## Post hoc test ####
 
   #...................
   ### Compute Tukey HSD tests ####
@@ -340,10 +361,12 @@ aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95,
 
   #...................
   ### Result table ####
+
   result.ph <- data.frame(group1 = labels[, 1L], group2 = labels[, 2L], m.diff = result.ph[, "diff"], m.low = result.ph[, "lwr"], m.upp = result.ph[, "upr"], pval = result.ph[, "p adj"], row.names = NULL)
 
   #...................
   ### Cohen's d ####
+
   cohen <- t(sapply(seq_len(nrow(result.ph)), function(x) {
 
     data.temp <- data.frame(group, y)[which(group %in% unlist(result.ph[x, c("group1", "group2")])), ]
@@ -357,6 +380,7 @@ aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95,
 
   #...................
   ### Result table ####
+
   result.ph <- data.frame(result.ph, d = unlist(cohen[, "d"]), d.low = unlist(cohen[, "low"]), d.upp = unlist(cohen[, "upp"]))
 
   #...................
@@ -382,40 +406,7 @@ aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Result object ####
 
-  result <- list(descript = ci, test = test, posthoc = result.ph, aov = aov.res)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Plot ####
-
-  # Plot data
-  plotdat <-  data.frame(group = group, y = y, row.names = NULL)
-
-  # Confidence interval
-  plot.ci <- misty::ci.mean(data[, y.var], group = data[, group.var], adjust = adjust, conf.level = conf.level, output = FALSE)$result
-
-  # Subtitle
-  if (isTRUE(subtitle == "Confidence Interval")) { subtitle <- paste0("Two-Sided ", round(conf.level * 100L, digits = 2L), "% Confidence Interval") }
-
-  #...................
-  ### Create ggplot ####
-  p <- ggplot2::ggplot(plotdat, ggplot2::aes(group, y))
-
-  #...................
-  ### Add jittered points ####
-  if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size) }
-
-  p <- p + ggplot2::geom_point(data = plot.ci, ggplot2::aes(group, m), stat = "identity", size = point.size) +
-         ggplot2::geom_errorbar(data = plot.ci, ggplot2::aes(group, m, ymin = low, ymax = upp), width = errorbar.width) +
-         ggplot2::scale_x_discrete(name = xlab) +
-         ggplot2::scale_y_continuous(name = ylab, limits = ylim, breaks = breaks) +
-         ggplot2::theme_bw() +
-         ggplot2::labs(title = title, subtitle = subtitle) +
-         ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
-                        plot.title = ggplot2::element_text(hjust = 0.5))
-
-  #...................
-  ### Print plot ####
-  if (isTRUE(plot)) { suppressWarnings(print(p)) }
+  result <- list(descript = ci.table, test = test, posthoc = result.ph, aov = aov.res)
 
   #_____________________________________________________________________________
   #
@@ -423,25 +414,32 @@ aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95,
 
   object <- list(call = match.call(),
                  type = "aov.b",
-                 data = data.frame(y, group, stringsAsFactors = FALSE),
+                 data = data.frame(y, group),
                  formula = formula,
                  args = list(posthoc = posthoc, conf.level = conf.level,
                              hypo = hypo, descript = descript, effsize = effsize,
-                             weighted = weighted, correct = correct, plot = plot,
-                             point.size = point.size, errorbar.width = errorbar.width,
-                             xlab = xlab, ylab = ylab, ylim = ylim, breaks = breaks,
-                             jitter = jitter, jitter.size = jitter.size, jitter.width = jitter.width,
-                             jitter.height = jitter.height, jitter.alpha = jitter.alpha,
-                             title = title, subtitle = subtitle, digits = digits,
-                             p.digits = p.digits, as.na = as.na, check = check,
-                             write = write, append = append, output = output),
-                 plot = p, result = result)
+                             weighted = weighted, correct = correct,
+                             digits = digits, p.digits = p.digits, as.na = as.na,
+                             plot = plot, bar = bar, point = point, ci = ci, jitter = jitter,
+                             adjust = adjust, point.size = point.size, errorbar.width = errorbar.width,
+                             jitter.size = jitter.size, jitter.width = jitter.width, jitter.height = jitter.height,
+                             jitter.alpha = jitter.alpha, xlab = xlab, ylab = ylab, ylim = ylim, ybreaks = ybreaks,
+                             title = title, subtitle = subtitle, filename = filename,
+                             width = width, height = height, units = units, dpi = dpi,
+                             write = write, append = append, check = check, output = output),
+                 plot = NULL, result = result)
 
   class(object) <- "misty.object"
 
   #_____________________________________________________________________________
   #
-  # Write results --------------------------------------------------------------
+  # Plot and Save Results ------------------------------------------------------
+
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) {
 

@@ -5,13 +5,15 @@
 \alias{df.unique}
 \title{Extract Duplicated or Unique Rows}
 \usage{
-df.duplicated(..., data, first = TRUE, keep.all = TRUE, from.last = FALSE,
+df.duplicated(data, ..., first = TRUE, keep.all = TRUE, from.last = FALSE,
               keep.row.names = TRUE, check = TRUE)
 
-df.unique(..., data, keep.all = TRUE, from.last = FALSE,
+df.unique(data, ..., keep.all = TRUE, from.last = FALSE,
           keep.row.names = TRUE, check = TRUE)
 }
 \arguments{
+\item{data}{a data frame.}
+
 \item{...}{an expression indicating the variable names in \code{data}
 used to determine duplicated or unique rows.e.g.,
 \code{df.duplicated(x1, x2, data = dat)}. Note that the
@@ -20,14 +22,12 @@ operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
 variables, see Details in the \code{\link{df.subset}}
 function.}
 
-\item{data}{a data frame.}
-
 \item{first}{logical: if \code{TRUE} (default), the \code{df.duplicated()}
 function will return duplicated rows including the first of identical
 rows.}
 
 \item{keep.all}{logical: if \code{TRUE} (default), the function will return all
-variables in \code{x} after extracting duplicated or unique rows based
+variables in \code{data} after extracting duplicated or unique rows based
 on the variables specified in the argument \code{...}.}
 
 \item{from.last}{logical: if \code{TRUE}, duplication will be considered
@@ -35,7 +35,7 @@ from the reversed side, i.e., the last of identical rows
 would correspond to \code{duplicated = FALSE}.
 Note that this argument is only used when \code{first = FALSE}.}
 
-\item{keep.row.names}{logical: if \code{TRUE} (default), the row names from \code{x} are kept,
+\item{keep.row.names}{logical: if \code{TRUE} (default), the row names from \code{data} are kept,
 otherwise they are set to \code{NULL}.}
 
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
@@ -54,63 +54,61 @@ that the \code{df.unique()} function provides the \code{...} argument to
 specify a variable or multiple variables which are used to determine unique rows.
 }
 \examples{
-dat <- data.frame(x1 = c(1, 1, 2, 1, 4),
-                  x2 = c(1, 1, 2, 1, 6),
-                  x3 = c(2, 2, 3, 2, 6),
-                  x4 = c(1, 1, 2, 2, 4),
+dat <- data.frame(x1 = c(1, 1, 2, 1, 4), x2 = c(1, 1, 2, 1, 6),
+                  x3 = c(2, 2, 3, 2, 6), x4 = c(1, 1, 2, 2, 4),
                   x5 = c(1, 1, 4, 4, 3))
 
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # df.duplicated() function
 
 # Example 1: Extract duplicated rows based on all variables
-df.duplicated(., data = dat)
+df.duplicated(dat)
 
 # Example 2: Extract duplicated rows based on 'x4'
-df.duplicated(x4, data = dat)
+df.duplicated(dat, x4)
 
 # Example 3: Extract duplicated rows based on 'x2' and 'x3'
-df.duplicated(x2, x3, data = dat)
+df.duplicated(dat, x2, x3)
 
 # Example 4: Extract duplicated rows based on all variables
 # exclude first of identical rows
-df.duplicated(., data = dat, first = FALSE)
+df.duplicated(dat, first = FALSE)
 
 # Example 5: Extract duplicated rows based on 'x2' and 'x3'
 # do not return all variables
-df.duplicated(x2, x3, data = dat, keep.all = FALSE)
+df.duplicated(dat, x2, x3, keep.all = FALSE)
 
 # Example 6: Extract duplicated rows based on 'x4'
 # consider duplication from the reversed side
-df.duplicated(x4, data = dat, first = FALSE, from.last = TRUE)
+df.duplicated(dat, x4, first = FALSE, from.last = TRUE)
 
 # Example 7: Extract duplicated rows based on 'x2' and 'x3'
 # set row names to NULL
-df.duplicated(x2, x3, data = dat, keep.row.names = FALSE)
+df.duplicated(dat, x2, x3, keep.row.names = FALSE)
 
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # df.unique() function
 
 # Example 8: Extract unique rows based on all variables
-df.unique(., data = dat)
+df.unique(dat)
 
 # Example 9: Extract unique rows based on 'x4'
-df.unique(x4, data = dat)
+df.unique(dat, x4)
 
 # Example 10: Extract unique rows based on 'x1', 'x2', and 'x3'
-df.unique(x1, x2, x3, data = dat)
+df.unique(dat, x1, x2, x3)
 
 # Example 11: Extract unique rows based on 'x2' and 'x3'
 # do not return all variables
-df.unique(x2, x3, data = dat, keep.all = FALSE)
+df.unique(dat, x2, x3, keep.all = FALSE)
 
 # Example 12: Extract unique rows based on 'x4'
 # consider duplication from the reversed side
-df.unique(x4, data = dat, from.last = TRUE)
+df.unique(dat, x4, from.last = TRUE)
 
 # Example 13: Extract unique rows based on 'x2' and 'x3'
 # set row names to NULL
-df.unique(x2, x3, data = dat, keep.row.names = FALSE)
+df.unique(dat, x2, x3, keep.row.names = FALSE)
 }
 \references{
 Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}.

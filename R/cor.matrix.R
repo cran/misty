@@ -17,16 +17,14 @@
 #' supported when using R Markdown, i.e., the argument \code{sig} will switch to
 #' \code{FALSE}.
 #'
-#' @param ...        a matrix or data frame. Alternatively, an expression
-#'                   indicating the variable names in \code{data} e.g.,
-#'                   \code{cor.matrix(x1, x2, x3, data = dat)}. Note that the
+#' @param data       a data frame with numeric variables, i.e., factors and character
+#'                   variables are excluded from \code{data} before conducting the
+#'                   analysis.
+#' @param ...        an expression indicating the variable names in \code{data},
+#'                   e.g., \code{cor.matrix(dat, x1, x2, x3)}. Note that the
 #'                   operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
 #'                   \code{::}, and \code{!} can also be used to select variables,
 #'                   see 'Details' in the \code{\link{df.subset}} function.
-#' @param data       a data frame when specifying one or more variables in the
-#'                   argument \code{...}. Note that the argument is \code{NULL}
-#'                   when specifying a matrix or data frame for the argument
-#'                   \code{...}.
 #' @param method     a character vector indicating which correlation coefficient
 #'                   is to be computed, i.e. \code{"pearson"} for Pearson product-
 #'                   moment correlation coefficient (default), \code{"spearman"}
@@ -40,9 +38,9 @@
 #'                   conducting the analysis (i.e., listwise deletion); if
 #'                   \code{FALSE} (default), pairwise deletion is used.
 #' @param group      either a character string indicating the variable name of
-#'                   the grouping variable in \code{...} or \code{data}, or a
-#'                   vector representing the grouping variable. Note that the
-#'                   grouping variable is limited to two groups.
+#'                   the grouping variable in \code{data}, or a vector representing
+#'                   the grouping variable. Note that the grouping variable is
+#'                   limited to two groups.
 #' @param sig        logical: if \code{TRUE}, statistically significant correlation
 #'                   coefficients are shown in boldface on the console. Note that
 #'                   this function does not provide statistical significance
@@ -129,54 +127,56 @@
 #'
 #' @examples
 #' # Example 1: Pearson product-moment correlation coefficient between 'Ozone' and 'Solar.R
+#' cor.matrix(airquality, Ozone, Solar.R)
+#'
+#' # Alternative specification without using the '...' argument
 #' cor.matrix(airquality[, c("Ozone", "Solar.R")])
 #'
-#' # Alternative specification using the 'data' argument
-#' cor.matrix(Ozone, Solar.R, data = airquality)
-#'
 #' # Example 2: Pearson product-moment correlation matrix using pairwise deletion
+#' cor.matrix(airquality, Ozone:Wind)
+#'
+#' # Alternative specification without using the '...' argument
 #' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")])
 #'
-#' # Alternative specification using the 'data' argument
-#' cor.matrix(Ozone:Wind, data = airquality)
-#'
 #' # Example 3: Spearman's rank-order correlation matrix
-#' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], method = "spearman")
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, method = "spearman")
 #'
 #' # Example 4: Pearson product-moment correlation matrix
 #' # highlight statistically significant result at alpha = 0.05
-#' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], sig = TRUE)
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, sig = TRUE)
 #'
 #' # Example 5: Pearson product-moment correlation matrix
 #' # highlight statistically significant result at alpha = 0.05
-#' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], sig = TRUE, alpha = 0.10)
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, sig = TRUE, alpha = 0.10)
 #'
 #' # Example 6: Pearson product-moment correlation matrix
 #' # print sample size and significance values
-#' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], print = "all")
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all")
 #'
 #' # Example 7: Pearson product-moment correlation matrix using listwise deletion,
 #' # print sample size and significance values
-#' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], na.omit = TRUE, print = "all")
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, na.omit = TRUE, print = "all")
 #'
 #' # Example 8: Pearson product-moment correlation matrix
 #' # print sample size and significance values with Bonferroni correction
-#' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], na.omit = TRUE,
-#'            print = "all", p.adj = "bonferroni")
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, na.omit = TRUE, print = "all",
+#'            p.adj = "bonferroni")
 #'
 #' # Example 9: Pearson product-moment correlation matrix for 'mpg', 'cyl', and 'disp'
 #' # results for group "0" and "1" separately
+#' cor.matrix(mtcars, mpg:disp, group = "vs")
+#'
+#' # Alternative specification without using the '...' argument
 #' cor.matrix(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 #'
-#' # Alternative specification using the 'data' argument
-#' cor.matrix(mpg:disp, data = mtcars, group = "vs")
-#'
+#' \dontrun{
 #' # Example 10a: Write Results into a text file
-#' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], print = "all", write = "Correlation.txt")
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.txt")
 #'
 #' # Example 10b: Write Results into a Excel file
-#' cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], print = "all", write = "Correlation.xlsx")
-cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly"),
+#' cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.xlsx")
+#' }
+cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly"),
                        na.omit = FALSE, group = NULL, sig = FALSE, alpha = 0.05,
                        print = c("all", "cor", "n", "stat", "df", "p"),
                        tri = c("both", "lower", "upper"),
@@ -188,11 +188,11 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -201,13 +201,10 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract variables
-    x <- data[, .var.names(..., data = data, group = group, check.chr = "a matrix or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- data[, .var.names(..., data = data, group = group), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -217,14 +214,10 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
+    # Data frame
+    x <- as.data.frame(data)
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
-    if (isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unlist(group) }
-
-    # Data and group
+    # Data and cluster
     var.group <- .var.group(data = x, group = group)
 
     # Data
@@ -235,11 +228,27 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Grouping Variable ####
+  # Convert 'group' as tibble into a vector
+  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
 
-  # Convert 'group' into a vector
-  if (isTRUE(!is.null(group))) { group <- unlist(group, use.names = FALSE) }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Numeric Variables ####
+
+  x <- x |>
+    (\(y) !vapply(y, is.numeric, FUN.VALUE = logical(1L)))() |>
+    (\(z) if (isTRUE(any(z))) {
+
+      warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(z)), collapse = ", ")), call. = FALSE)
+
+      return(x[, -which(z), drop = FALSE])
+
+    } else {
+
+      return(x)
+
+    })()
+
+  if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -254,15 +263,15 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
   # Additional checks
   if (isTRUE(check)) {
 
-    # Check input 'x'
-    if (isTRUE(any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1L))))) { stop("Please specify a matrix or data frame with numeric vectors.", call. = FALSE) }
+    # Check input 'data'
+    if (isTRUE(any(vapply(x, function(y) !is.numeric(y), FUN.VALUE = logical(1L))))) { stop("Please specify a data frame with numeric vectors.", call. = FALSE) }
 
     # Tetrachoric or polychoric corelation coefficient
     if (isTRUE((all(method == "tetra") || all(method == "poly")))) {
 
       if (isTRUE(any(x %% 1L != 0L))) { stop("Pleas specify a matrix or data frame with integer vectors when computing tetrachoric or polychoric correlation coefficients.", call. = FALSE) }
 
-      if (isTRUE(method == "tetra" && any(apply(x, 2L, function(y) length(na.omit(unique(y))) != 2L)))) { stop("Please specify a matrix or data frame with dichotomous data when computing tetrachoric correlation coefficients.", call. = FALSE) }
+      if (isTRUE(method == "tetra" && any(apply(x, 2L, function(y) length(na.omit(unique(y))) != 2L)))) { stop("Please specify a data frame with dichotomous data when computing tetrachoric correlation coefficients.", call. = FALSE) }
 
     }
 
@@ -273,15 +282,14 @@ cor.matrix <- function(..., data = NULL, method = c("pearson", "spearman", "kend
       if (isTRUE(length(na.omit(unique(group))) != 2L)) { stop("Please specify a grouping variable with only two groups for the argument 'group'.", call. = FALSE) }
 
       # Zero variance in one of the groups
-      x.zero.var <- vapply(split(x, f = group), function(y) apply(y, 2L, function(z) length(na.omit(unique(z))) == 1L), FUN.VALUE = logical(ncol(x)))
+      vapply(split(x, f = group), function(y) apply(y, 2L, function(z) length(na.omit(unique(z))) == 1L), FUN.VALUE = logical(ncol(x))) |> (\(y) if (isTRUE(any(y))) { stop(paste("Following variables have zero variance in at least one of the groups specified in 'group': ", paste(names(which(apply(y, 1L, any))), collapse = ", ")), call. = FALSE) })()
 
-      if (isTRUE(any(x.zero.var))) { stop(paste("Following variables specified in 'x' have zero variance in at least one of the groups specified in 'group': ", paste(names(which(apply(x.zero.var, 1, any))), collapse = ", ")), call. = FALSE) }
 
     }
 
-    # Check input 'x' for zero variance
-    x.zero.var <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
-    if (isTRUE(any(x.zero.var))) { warning(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(x.zero.var)), collapse = ", ")), call. = FALSE) }
+    # Check input 'data' for zero variance
+    vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L)) |> (\(y) if (isTRUE(any(y))) { warning(paste0("Following variables have zero variance: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
+
 
   }
 

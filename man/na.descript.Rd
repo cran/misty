@@ -4,27 +4,24 @@
 \alias{na.descript}
 \title{Descriptive Statistics for Missing Data in Single-Level, Two-Level and Three-Level Data}
 \usage{
-na.descript(..., data = NULL, cluster = NULL,  table = FALSE, digits = 2,
+na.descript(data, ..., cluster = NULL,  table = FALSE, digits = 2,
             as.na = NULL, write = NULL, append = TRUE, check = TRUE,
             output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame with incomplete data, where missing
-values are coded as \code{NA}. Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{na.descript(x1, x2, x3, data = dat)}. Note that the operators
+\item{data}{a data frame with incomplete data, where missing
+values are coded as \code{NA}.}
+
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{na.descript(dat, x1, x2, x3)}. Note that the operators
 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument \code{...}.}
-
 \item{cluster}{a character string indicating the name of the cluster
-variable in \code{...} or \code{data} for two-level data,
+variable in \code{data} for two-level data,
 a character vector indicating the names of the cluster
-variables in \code{...} for three-level data, or a vector
+variables in \code{data} for three-level data, or a vector
 or data frame representing the nested grouping structure
 (i.e., group or cluster variables). Alternatively, a
 character string or character vector indicating the variable
@@ -80,11 +77,8 @@ values across all variables.
 #----------------------------------------------------------------------------
 # Single-Level Data
 
-# Example 1a: Descriptive statistics for missing data
+# Example 1: Descriptive statistics for missing data
 na.descript(airquality)
-
-# Example 1b: Alternative specification using the 'data' argument
-na.descript(., data = airquality)
 
 # Example 2: Descriptive statistics for missing data, print results with 3 digits
 na.descript(airquality, digits = 3)
@@ -98,7 +92,7 @@ na.descript(airquality, table = TRUE)
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-# Example 4: escriptive statistics for missing data
+# Example 4: Descriptive statistics for missing data
 na.descript(Demo.twolevel, cluster = "cluster")
 
 #----------------------------------------------------------------------------
@@ -119,10 +113,7 @@ na.descript(Demo.threelevel, cluster = c("cluster3", "cluster2"))
 na.descript(airquality, table = TRUE, write = "NA_Descriptives.txt")
 
 # Example 6b: Write Results into a Excel file
-na.descript(airquality, table = TRUE, write = "NA_Descriptives.xlsx")
-
-result <- na.descript(airquality, table = TRUE, output = FALSE)
-write.result(result, "NA_Descriptives.xlsx")}
+na.descript(airquality, table = TRUE, write = "NA_Descriptives.xlsx")}
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.

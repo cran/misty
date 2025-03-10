@@ -4,32 +4,28 @@
 \alias{freq}
 \title{Frequency Table}
 \usage{
-freq(..., data = NULL, print = c("no", "all", "perc", "v.perc"), freq = TRUE,
+freq(data, ..., print = c("no", "all", "perc", "v.perc"), freq = TRUE,
      split = FALSE, labels = TRUE, val.col = FALSE, round = 3, exclude = 15,
      digits = 2, as.na = NULL, write = NULL, append = TRUE, check = TRUE,
      output = TRUE)
 }
 \arguments{
-\item{...}{a vector, factor, matrix or data frame. Alternatively, an
-expression indicating the variable names in \code{data} e.g.,
-\code{freq(x1, x2, x3, data = dat)}. Note that the operators
+\item{data}{a vector, factor, or data frame.}
+
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{freq(dat, x1, x2, x3)}. Note that the operators
 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
-
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a vector, factor, matrix or data frame for
-the argument \code{...}.}
 
 \item{print}{a character string indicating which percentage(s) to be
 printed on the console, i.e., no percentages (\code{"no"}),
 all percentages (\code{"all"}), percentage frequencies
 (\code{"print"}), and valid percentage frequencies
 (\code{"v.perc"}). Default setting when specifying one
-variable in \code{...} is \code{print = "all"}, while default
-setting when specifying more than one variable in \code{...}
-is \code{print = "no"} unless \code{split = TRUE}.}
+variable is \code{print = "all"}, while default
+setting when specifying more than one variable is \code{print = "no"}
+unless \code{split = TRUE}.}
 
 \item{freq}{logical: if \code{TRUE} (default), absolute frequencies will
 be shown on the console.}
@@ -48,7 +44,7 @@ to be used for rounding numeric variables.}
 
 \item{exclude}{an integer value indicating the maximum number of unique
 values for variables to be included in the analysis when
-specifying more than one variable in \code{...} i.e.,
+specifying more than one variable i.e.,
 variables with the number of unique values exceeding
 \code{exclude} will be excluded from the analysis. It is
 also possible to specify \code{exclude = FALSE} to include
@@ -94,48 +90,48 @@ for one or more than one variable.
 }
 \details{
 By default, the function displays the absolute and percentage frequencies when
-specifying one variable in the argument \code{...}, while the function displays
-only the absolute frequencies when more than one variable is specified. The
-function displays valid percentage frequencies only in the presence of missing
-values and excludes variables with all values missing from the analysis. Note
-that it is possible to mix numeric variables, factors, and character variables
-in the data frame specified in the argument \code{...}. By default, numeric
-variables are rounded to three digits before computing the frequency table.
+specifying one variable, while the function displays only the absolute frequencies
+when more than one variable is specified. The function displays valid percentage
+frequencies only in the presence of missing values and excludes variables with
+all values missing from the analysis. Note that it is possible to mix numeric
+variables, factors, and character variables in the data frame specified in the
+argument \code{data}. By default, numeric variables are rounded to three digits
+before computing the frequency table.
 }
 \examples{
-# Example 1a: Frequency table for 'cyl'
+# Example 1: Frequency table for 'cyl'
+freq(mtcars, cyl)
+
+# Alternative specification without using the '...' argument
 freq(mtcars$cyl)
 
-# Example 1b: Alternative specification using the 'data' argument
-freq(cyl, data = mtcars)
-
 # Example 2: Frequency table, values shown in columns
-freq(mtcars$cyl, val.col = TRUE)
+freq(mtcars, cyl, val.col = TRUE)
 
 # Example 3: Frequency table, use 3 digit for displaying percentages
-freq(mtcars$cyl, digits = 3)
+freq(mtcars, cyl, digits = 3)
 
-# Example 4a: Frequency table for 'cyl', 'gear', and 'carb'
+# Example 4: Frequency table for 'cyl', 'gear', and 'carb'
+freq(mtcars, cyl, gear, carb)
+
+# Alternative specification without using the '...' argument
 freq(mtcars[, c("cyl", "gear", "carb")])
 
-# Example 4b: Alternative specification using the 'data' argument
-freq(cyl, gear, carb, data = mtcars)
-
 # Example 5: Frequency table, with percentage frequencies
-freq(mtcars[, c("cyl", "gear", "carb")], print = "all")
+freq(mtcars, cyl, gear, carb, print = "all")
 
 # Example 6: Frequency table, split output table
-freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE)
+freq(mtcars, cyl, gear, carb, split = TRUE)
 
 # Example 7: Frequency table, exclude variables with more than 5 unique values
 freq(mtcars, exclude = 5)
 
 \dontrun{
-# Example 8a: Write results into a text file
-freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE, write = "Frequencies.txt")
+# Example 8a: Write Results into a text file
+freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.txt")
 
-# Example 8b: Write results into an Excel file
-freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE, write = "Frequencies.xlsx")}
+# Example 8b: Write Results into a Excel file
+freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.xlsx")}
 }
 \references{
 Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New  S Language}.

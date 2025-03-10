@@ -4,18 +4,14 @@
 #' of cases with a specific missing data pattern and plots the missing data
 #' patterns.
 #'
-#' @param ...               a matrix or data frame with incomplete data, where
-#'                          missing values are coded as \code{NA}. Alternatively,
-#'                          an expression indicating the variable names in
-#'                          \code{data} e.g., \code{na.pattern(x1, x2, x3, data = dat)}.
+#' @param data              a data frame with incomplete data, where missing
+#'                          values are coded as \code{NA}.
+#' @param ...               an expression indicating the variable names in
+#'                          \code{data} e.g., \code{na.pattern(dat, x1, x2, x3)}.
 #'                          Note that the operators \code{.}, \code{+}, \code{-},
 #'                          \code{~}, \code{:}, \code{::}, and \code{!} can also
 #'                          be used to select variables, see 'Details' in the
 #'                          \code{\link{df.subset}} function.
-#' @param data              a data frame when specifying one or more variables
-#'                          in the argument \code{...}. Note that the argument
-#'                          is \code{NULL} when specifying a matrix or data frame
-#'                          for the argument \code{...}.
 #' @param order             logical: if \code{TRUE}, variables are ordered from
 #'                          left to right in increasing order of missing values.
 #' @param n.pattern         an integer value indicating the minimum number of
@@ -35,12 +31,12 @@
 #'                          in the package \pkg{mice}.
 #' @param rotate            logical: if \code{TRUE}, the variable name labels
 #'                          are rotated 90 degrees.
-#' @param fill.col          a character string indicating the color for the
+#' @param color             a character string indicating the color for the
 #'                          \code{"fill"} argument. Note that the first color
 #'                          represents missing values and the second color
 #'                          represent observed values.
-#' @param alpha             a numeric value between 0 and 1 for the \code{alpha}
-#'                          argument (default is \code{0.1}.
+#' @param tile.alpha        a numeric value between 0 and 1 for the \code{alpha}
+#'                          argument (default is \code{0.1}).
 #' @param plot.margin       a numeric vector indicating the \code{plot.margin}
 #'                          argument for the \code{theme} function.
 #' @param legend.box.margin a numeric vector indicating the \code{legend.box.margin}
@@ -51,15 +47,15 @@
 #' @param legend.text.size  a numeric value indicating the \code{legend.text}
 #'                          argument (default is \code{element_text(size = 10)})
 #'                          for the \code{theme} function.
-#' @param saveplot          logical: if \code{TRUE}, the ggplot is saved.
-#' @param file              a character string indicating the \code{filename}
-#'                          argument (default is \code{"NA_Pattern.pdf"}) including
-#'                          the file extension for the \code{ggsave} function.
-#'                          Note that one of \code{".eps"}, \code{".ps"},
-#'                          \code{".tex"}, \code{".pdf"} (default), \code{".jpeg"},
-#'                          \code{".tiff"}, \code{".png"}, \code{".bmp"},
-#'                          \code{".svg"} or \code{".wmf"} needs to be specified
-#'                          as file extension in the \code{file} argument.
+#' @param filename          a character string indicating the \code{filename}
+#'                          argument including the file extension in the \code{ggsave}
+#'                          function. Note that one of \code{".eps"}, \code{".ps"},
+#'                          \code{".tex"}, \code{".pdf"} (default),
+#'                          \code{".jpeg"}, \code{".tiff"}, \code{".png"},
+#'                          \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+#'                          to be specified as file extension in the \code{file}
+#'                          argument. Note that plots can only be saved when
+#'                          \code{plot = TRUE}.
 #' @param width             a numeric value indicating the \code{width} argument
 #'                          (default is the size of the current graphics device)
 #'                          for the \code{ggsave} function.
@@ -113,9 +109,7 @@
 #' entries:
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
-#' \item{\code{data}}{list with data frames, i.e., \code{data} for the data frame
-#'                    with variables used in the current analysis, and \code{plotdat}
-#'                    for the data frame used for plotting the results}
+#' \item{\code{data}}{data frame with variables used in the analysis}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{result}}{result table}
 #' \item{\code{plot}}{ggplot2 object for plotting the results}
@@ -126,9 +120,6 @@
 #' @examples
 #' # Example 1: Compute a summary of missing data patterns
 #' dat.pattern <- na.pattern(airquality)
-#'
-#' # Alternative specification using the 'data' argument
-#' na.pattern(., data = airquality)
 #'
 #' # Example 2a: Compute and plot a summary of missing data patterns
 #' na.pattern(airquality, plot = TRUE)
@@ -142,28 +133,31 @@
 #' # Data frame without cases with missing data pattern 2 and 4
 #' airquality[!dat.pattern$pattern == 2, ]
 #'
+#' \dontrun{
 #' # Example 4a: Write Results into a text file
 #' na.pattern(airquality, write = "NA_Pattern.xlsx")
 #'
 #' # Example 4b: Write Results into a Excel file
 #' na.pattern(airquality, write = "NA_Pattern.xlsx")
-na.pattern <- function(..., data = NULL, order = FALSE, n.pattern = NULL, plot = FALSE,
-                       square = TRUE, rotate = FALSE, fill.col = c("#B61A51B3", "#006CC2B3"),
-                       alpha = 0.6, plot.margin = c(4, 16, 0, 4), legend.box.margin = c(-8, 6, 6, 6),
-                       legend.key.size = 12, legend.text.size = 9, saveplot = FALSE, file = "NA_Pattern.pdf",
-                       width = NA, height = NA, units = c("in", "cm", "mm", "px"), dpi = 600,
-                       digits = 2, as.na = NULL, write = NULL, append = TRUE, check = TRUE,
+#' }
+na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
+                       as.na = NULL,plot = FALSE, square = TRUE, rotate = FALSE,
+                       color = c("#B61A51B3", "#006CC2B3"), tile.alpha = 0.6,
+                       plot.margin = c(4, 16, 0, 4), legend.box.margin = c(-8, 6, 6, 6),
+                       legend.key.size = 12, legend.text.size = 9, filename = NULL,
+                       width = NA, height = NA, units = c("in", "cm", "mm", "px"),
+                       dpi = 600, write = NULL, append = TRUE, check = TRUE,
                        output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -172,31 +166,20 @@ na.pattern <- function(..., data = NULL, order = FALSE, n.pattern = NULL, plot =
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract data
-    x <- data[, .var.names(..., data = data, check.chr = "a matrix or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- as.data.frame(data)
 
   }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
-
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -208,21 +191,24 @@ na.pattern <- function(..., data = NULL, order = FALSE, n.pattern = NULL, plot =
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical = c("order", "plot", "rotate", "square", "saveplot", "append", "output"),
+  .check.input(logical = c("order", "plot", "rotate", "square", "append", "output"),
                numeric = list(n.pattern = 1L, plot.margin = 4L, legend.box.margin = 4L, legend.key.size = 1L, legend.text.size = 1L, dpi = 1L),
-               character = list(file = 1L), args = c("alpha", "units", "digits", "write2"), envir = environment(), input.check = check)
+               character = list(filename = 1L), args = c("tile.alpha", "units", "digits", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
 
+    # Package ggplot2
+    if (isTRUE(plot)) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
+
     # Check input 'n.pattern'
     if (isTRUE(n.pattern %% 1L != 0L || n.pattern < 0L)) { stop("Please specify a positive integer value for the argument 'n.pattern'.", call. = FALSE) }
 
-    # Check input 'fill.col'
-    if (isTRUE(length(fill.col) != 2L)) { stop("Please specify character vector with two elements for the argument 'fill.col'.", call. = FALSE) }
+    # Check input 'color'
+    if (isTRUE(length(color) != 2L)) { stop("Please specify character vector with two elements for the argument 'color'.", call. = FALSE) }
 
-    # Check input 'file'
-    if (isTRUE(!grepl(".", file) || !rev(unlist(strsplit(file, "\\.")))[1L] %in% c("eps", "ps", "tex", "pdf", "jpeg", "tiff", "png", "bmp", "svg", "wmf"))) { stop("Please specify a character string including the file extension (e.g., \".pdf\" or \".png\") for the argument 'file'.", call. = FALSE) }
+    # Check input 'filename'
+    if (isTRUE(!is.null(filename))) { if (isTRUE(!grepl(".", filename) || !rev(unlist(strsplit(filename, "\\.")))[1L] %in% c("eps", "ps", "tex", "pdf", "jpeg", "tiff", "png", "bmp", "svg", "wmf"))) { stop("Please specify a character string including the file extension (e.g., \".pdf\" or \".png\") for the argument 'filename'.", call. = FALSE) } }
 
   }
 
@@ -299,8 +285,7 @@ na.pattern <- function(..., data = NULL, order = FALSE, n.pattern = NULL, plot =
                     c(NA, sum(as.vector(table(patt))), sum(as.vector(table(patt) / nrow(x.na) * 100L)), colSums(x.na), NA, NA))
 
     # Number of missing data pattern
-    pattern <- apply(x.na.order.dupl, 1L, function(y) paste(as.numeric(y), collapse = "")) |>
-      (\(z) unname(vapply(patt, function(y) match(y, table = z), FUN.VALUE = 1L)))()
+    pattern <- apply(x.na.order.dupl, 1L, function(y) paste(as.numeric(y), collapse = "")) |> (\(z) unname(vapply(patt, function(y) match(y, table = z), FUN.VALUE = 1L)))()
 
   } else {
 
@@ -319,105 +304,26 @@ na.pattern <- function(..., data = NULL, order = FALSE, n.pattern = NULL, plot =
 
   #_____________________________________________________________________________
   #
-  # Plot -----------------------------------------------------------------------
-
-  if (isTRUE(plot)) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Plot Data ####
-
-    obs_miss <- NULL
-
-    plotdat <- do.call("rbind", apply(restab[-nrow(restab), c("pattern", colnames(x.na))], 1, function(y) {
-
-      data.frame(pattern = y["pattern"],
-                 var = colnames(x.na),
-                 obs_miss = y[colnames(x.na)],
-                 x = seq_len(ncol(x.na)), row.names = NULL)
-
-    }))
-
-    # Factor
-    plotdat$obs_miss <- factor(ifelse(plotdat$obs_miss == 1L, "Observed", "Missing"))
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Create ggplot ####
-
-    p <- ggplot2::ggplot(plotdat, ggplot2::aes(x, pattern, fill = obs_miss, alpha = alpha)) +
-      ggplot2::geom_tile(color = "black") +
-      ggplot2::scale_fill_manual(values = c("Missing" = fill.col[1L], "Observed" = fill.col[2L])) +
-      ggplot2::scale_alpha_continuous(limits = c(0, 1), guide = "none") +
-      ggplot2::scale_x_continuous("Number of Missing Entries per Variable",
-                                  breaks = seq_len(length(colnames(x.na))), labels = restab[nrow(restab), colnames(x.na)],
-                                  sec.axis = ggplot2::dup_axis(labels = colnames(x.na), name = "Variable")) +
-      ggplot2::scale_y_reverse("Number of Missing Entries per Pattern",
-                               breaks = seq_len(length(restab$n) - 1L), labels = restab[-nrow(restab), "n"],
-                               sec.axis = ggplot2::dup_axis(labels = restab[-nrow(restab), "nNA"])) +
-      ggplot2::ylab("Pattern Frequency") +
-      ggplot2::theme(plot.margin = ggplot2::margin(t = plot.margin[1L], r = plot.margin[2L], b = plot.margin[3L], l = plot.margin[4L]),
-                     legend.title = ggplot2::element_blank(),
-                     legend.position = "bottom",
-                     legend.key.size = ggplot2::unit(legend.key.size, "pt"),
-                     legend.text = ggplot2::element_text(size = legend.text.size),
-                     legend.box.margin = ggplot2::margin(t = legend.box.margin[1L], r = legend.box.margin[2L], b = legend.box.margin[3L], l = legend.box.margin[4L]),
-                     panel.grid.minor = ggplot2::element_blank(), panel.grid.major = ggplot2::element_blank())
-
-    ### Square Plot Tiles ####
-    if (isTRUE(square)) {
-
-      p <- p + ggplot2::coord_fixed(expand = FALSE)
-
-    } else {
-
-      p <- p + ggplot2::coord_cartesian(expand = FALSE)
-
-    }
-
-    ### Rotate Labels ####
-    if (isTRUE(rotate)) { p <- p + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90L)) }
-
-    ### Caption ####
-    if (isTRUE(length(n.pattern.exclude) != 0L)) {
-
-      p <- p + ggplot2::labs(caption = paste0("Note. ", length(n.pattern.exclude), ifelse(length(n.pattern.exclude) == 1L, " pattern ", " patterns "), " with less than ", n.pattern, " cases removed.")) +
-             ggplot2::theme(plot.caption = ggplot2::element_text(hjust = 0.5, vjust = 5))
-
-    }
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Plot ggplot Object ####
-
-    print(suppressWarnings(suppressMessages(p)))
-
-  } else {
-
-    p <- plotdat <- NULL
-
-  }
-
-  #_____________________________________________________________________________
-  #
-  # Save Plot ------------------------------------------------------------------
-
-  if (isTRUE(saveplot)) { suppressWarnings(suppressMessages(ggplot2::ggsave(file, plot = p, width = width, height = height, units = units, dpi = dpi))) }
-
-  #_____________________________________________________________________________
-  #
   # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "na.pattern",
-                 data = list(data = x, plotdat = plotdat),
-                 args = list(order = order, n.pattern = NULL, plot = plot, square = square,
-                             rotate = rotate, fill.col = fill.col, alpha = alpha,
-                             plot.margin = plot.margin, legend.box.margin = legend.box.margin,
+                 data = x,
+                 args = list(order = order, n.pattern = NULL, digits = digits, as.na = as.na,
+                             plot = plot, square = square, rotate = rotate, color = color,
+                             tile.alpha = tile.alpha, plot.margin = plot.margin, legend.box.margin = legend.box.margin,
                              legend.key.size = legend.key.size, legend.text.size = legend.text.size,
-                             saveplot = saveplot, file = file, width = width, height = height, units = units,
-                             dpi = dpi, digits = digits, as.na = as.na, write = write, append = append,
-                             check = check, output = output),
-                 result = restab, plot = p, pattern = pattern)
+                             filename = filename, width = width, height = height, units = units, dpi = dpi,
+                             write = write, append = append, check = check, output = output),
+                 plot = NULL, result = restab, pattern = pattern)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Plot and Save Results ------------------------------------------------------
+
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #

@@ -1,8 +1,8 @@
 #' t-Test
 #'
 #' This function performs one-sample, two-sample, and paired-sample t-tests and
-#' provides descriptive statistics, effect size measure, and a plot showing error
-#' bars for (difference-adjusted) confidence intervals with jittered data points.
+#' provides descriptive statistics, effect size measure, and a plot showing bar
+#' plots with error bars for (difference-adjusted) confidence intervals.
 #'
 #' @param x              a numeric vector of data values.
 #' @param y              a numeric vector of data values.
@@ -45,8 +45,26 @@
 #'                       positive bias in small samples is used.
 #' @param conf.level     a numeric value between 0 and 1 indicating the confidence
 #'                       level of the interval.
-#' @param plot           logical: if \code{TRUE}, a plot showing error bars for
-#'                       confidence intervals is drawn.
+#' @param digits         an integer value indicating the number of decimal places
+#'                       to be used for displaying descriptive statistics and
+#'                       confidence interval.
+#' @param p.digits       an integer value indicating the number of decimal places
+#'                       to be used for displaying the \emph{p}-value.
+#' @param as.na          a numeric vector indicating user-defined missing values,
+#'                       i.e. these values are converted to \code{NA} before
+#'                       conducting the analysis.
+#' @param plot           logical: if \code{TRUE}, a plot showing bar plots with
+#'                       error bars for confidence intervals is drawn.
+#' @param bar            logical: if \code{TRUE} (default), bars representing means
+#'                       for each groups are drawn.
+#' @param point          logical: if \code{TRUE}, points representing means for
+#'                       each groups are drawn.
+#' @param ci             logical: if \code{TRUE} (default), error bars representing
+#'                       confidence intervals are drawn.
+#' @param jitter         logical: if \code{TRUE}, jittered data points are drawn.
+#' @param line           logical: if \code{TRUE} (default), a horizontal line
+#'                       is drawn at \code{mu} for the one-sample t-test or at
+#'                       0 for the paired-sample t-test.
 #' @param adjust         logical: if \code{TRUE} (default), difference-adjustment
 #'                       for the confidence intervals in a two-sample design is
 #'                       applied.
@@ -58,11 +76,8 @@
 #' @param ylab           a character string specifying the labels for the y-axis.
 #' @param ylim           a numeric vector of length two specifying limits of the
 #'                       limits of the y-axis.
-#' @param breaks         a numeric vector specifying the points at which tick-marks
+#' @param ybreaks        a numeric vector specifying the points at which tick-marks
 #'                       are drawn at the y-axis.
-#' @param line           logical: if \code{TRUE} (default), a horizontal line
-#'                       is drawn at \code{mu} for the one-sample t-test or at
-#'                       0 for the paired-sample t-test.
 #' @param linetype       an integer value or character string specifying the line
 #'                       type for the line representing the population mean under
 #'                       the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed,
@@ -70,25 +85,36 @@
 #' @param linewidth      a numeric value indicating the \code{linewidth} aesthetic
 #'                       for the line representing the population mean under the
 #'                       null hypothesis.
-#' @param jitter         logical: if \code{TRUE} (default), jittered data points
-#'                       are drawn.
 #' @param jitter.size    a numeric value indicating the \code{size} aesthetic
 #' @param jitter.width   a numeric value indicating the amount of horizontal jitter.
 #' @param jitter.height  a numeric value indicating the amount of vertical jitter.
-#' @param jitter.alpha   a numeric value indicating the opacity of the jittered
+#' @param jitter.alpha   a numeric value between 0 and 1 for specifying the
+#'                       \code{alpha} argument in the \code{geom_jitter}
+#'                       function for controlling the opacity of the jittered
 #'                       data points.
 #' @param title          a character string specifying the text for the title for
 #'                       the plot.
 #' @param subtitle       a character string specifying the text for the subtitle for
 #'                       the plot.
-#' @param digits         an integer value indicating the number of decimal places
-#'                       to be used for displaying descriptive statistics and
-#'                       confidence interval.
-#' @param p.digits       an integer value indicating the number of decimal places
-#'                       to be used for displaying the \emph{p}-value.
-#' @param as.na          a numeric vector indicating user-defined missing values,
-#'                       i.e. these values are converted to \code{NA} before
-#'                       conducting the analysis.
+#' @param filename       a character string indicating the \code{filename}
+#'                       argument including the file extension in the \code{ggsave}
+#'                       function. Note that one of \code{".eps"}, \code{".ps"},
+#'                       \code{".tex"}, \code{".pdf"} (default),
+#'                       \code{".jpeg"}, \code{".tiff"}, \code{".png"},
+#'                       \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+#'                       to be specified as file extension in the \code{file}
+#'                       argument. Note that plots can only be saved when
+#'                       \code{plot = TRUE}.
+#' @param width          a numeric value indicating the \code{width} argument
+#'                       (default is the size of the current graphics device)
+#'                       for the \code{ggsave} function.
+#' @param height         a numeric value indicating the \code{height} argument
+#'                       (default is the size of the current graphics device)
+#'                       for the \code{ggsave} function.
+#' @param units          a character string indicating the \code{units} argument
+#'                       (default is \code{in}) for the \code{ggsave} function.
+#' @param dpi            a numeric value indicating the \code{dpi} argument
+#'                       (default is \code{600}) for the \code{ggsave} function.
 #' @param write          a character string naming a text file with file extension
 #'                       \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
 #'                       output into a text file.
@@ -137,7 +163,7 @@
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
-#' entries:#'
+#' entries:
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
 #' \item{\code{sample}}{type of sample, i.e., one-, two-, or paired sample}
@@ -153,46 +179,20 @@
 #' #----------------------------------------------------------------------------
 #' # One-Sample Design
 #'
-#' # Example 1a: Two-sided one-sample t-test
-#' # population mean = 20
+#' # Example 1a: Two-sided one-sample t-test, population mean = 20
 #' test.t(mtcars$mpg, mu = 20)
 #'
-#' # Example 1b: One-sided one-sample t-test
-#' # population mean = 20, print Cohen's d
+#' # Example 1b: One-sided one-sample t-test, population mean = 20, print Cohen's d
 #' test.t(mtcars$mpg, mu = 20, alternative = "greater", effsize = TRUE)
 #'
-#' # Example 1c: Two-sided one-sample t-test
-#' # population mean = 20, plot results
+#' # Example 1c: Two-sided one-sample t-test, population mean = 20, plot results
 #' test.t(mtcars$mpg, mu = 20, plot = TRUE)
 #'
-#' # Load ggplot2 package
-#' library(ggplot2)
-#'
-#' # Save plot, ggsave() from the ggplot2 package
-#' ggsave("One-sample_t-test.png", dpi = 600, width = 3, height = 6)
-#'
-#' # Example 1d: Two-sided one-sample t-test
-#' # population mean = 20, extract plot
-#' p <- test.t(mtcars$mpg, mu = 20, output = FALSE)$plot
-#' p
-#'
-#' # Example 1e: Two-sided one-sample t-test
-#' # Draw plot in line with the default setting of test.t()
-#'
-#' # Extract data
-#' plotdat <- data.frame(x = test.t(mtcars$mpg, mu = 20, output = FALSE)$data[[1]])
-#'
-#' # Draw plot
-#' ggplot(plotdat, aes(0, x)) +
-#'    geom_point(stat = "summary", fun = "mean", size = 4) +
-#'    stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
-#'    scale_x_continuous(name = NULL, limits = c(-2, 2)) +
-#'    scale_y_continuous(name = NULL) +
-#'    geom_hline(yintercept = 20, linetype = 3, linewidth = 0.8) +
-#'    labs(subtitle = "Two-Sided 95% Confidence Interval") +
-#'    theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
-#'                       axis.text.x = element_blank(),
-#'                       axis.ticks.x = element_blank())
+#' \dontrun{
+#' # Example 1d: Two-sided one-sample t-test, population mean = 20, save plot
+#' test.t(mtcars$mpg, mu = 20, plot = TRUE, filename = "One-sample_t-test.png",
+#'        width = 4, height = 5)
+#' }
 #'
 #' #----------------------------------------------------------------------------
 #' # Two-Sample Design
@@ -200,41 +200,20 @@
 #' # Example 2a: Two-sided two-sample t-test
 #' test.t(mpg ~ vs, data = mtcars)
 #'
-#' # Example 2b: One-sided two-sample t-test
-#' # print Cohen's d with weighted pooled SD
+#' # Example 2b: Two-sided two-sample t-test, alternative specification
+#' test.t(c(3, 1, 4, 2, 5, 3, 6, 7), c(5, 2, 4, 3, 1))
+#'
+#' # Example 2c: One-sided two-sample t-test, print Cohen's d with weighted pooled SD
 #' test.t(mpg ~ vs, data = mtcars, alternative = "greater", effsize = TRUE)
 #'
-#' # Example 2c: Two-sided two-sample t-test
-#' # Plot results
+#' # Example 2d: Two-sided two-sample t-test, plot results
 #' test.t(mpg ~ vs, data = mtcars, plot = TRUE)
 #'
-#' # Load ggplot2 package
-#' library(ggplot2)
-#'
-#' # Save plot, ggsave() from the ggplot2 package
-#' ggsave("Two-sample_t-test.png", dpi = 600, width = 4, height = 6)
-#'
-#' # Example 2d: Two-sided two-sample t-test
-#' # extract plot
-#' p <- test.t(mpg ~ vs, data = mtcars, output = FALSE)$plot
-#' p
-#'
-#' # Example 2e: Two-sided two-sample t-test
-#' # Draw plot in line with the default setting of test.t()
-#'
-#' # Extract data used to plot results
-#' plotdat <- test.t(mpg ~ vs, data = mtcars, output = FALSE)$data
-#'
-#' # Draw plot
-#' ggplot(plotdat, aes(factor(vs), mpg)) +
-#'    geom_point(stat = "summary", fun = "mean", size = 4) +
-#'    stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
-#'    scale_x_discrete(name = NULL) + scale_y_continuous(name = "y") +
-#'    labs(title = "", subtitle = "Two-Sided 95% Confidence Interval") +
-#'    theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
-#'
-#' # Two-sided two-sample t-test, alternative specification
-#' test.t(c(3, 1, 4, 2, 5, 3, 6, 7), c(5, 2, 4, 3, 1))
+#' \dontrun{
+#' # Example 2e: Two-sided two-sample t-test, plot results
+#' test.t(mpg ~ vs, data = mtcars, plot = TRUE, filename = "Two-sample_t-test.png",
+#'        width = 5, height = 6)
+#' }
 #'
 #' #----------------------------------------------------------------------------
 #' # Paired-Sample Design
@@ -242,45 +221,19 @@
 #' # Example 3a: Two-sided paired-sample t-test
 #' test.t(mtcars$drat, mtcars$wt, paired = TRUE)
 #'
-#' # Example 3b: One-sided paired-sample t-test
-#' # print Cohen's d based on the standard deviation of the difference scores
+#' # Example 3b: One-sided paired-sample t-test,
+#' # print Cohen's d based on the SD of the difference scores
 #' test.t(mtcars$drat, mtcars$wt, paired = TRUE, alternative = "greater",
 #'        effsize = TRUE)
 #'
-#' # Example 3c: Two-sided paired-sample t-test
-#' # Plot results
+#' # Example 3c: Two-sided paired-sample t-test, plot results
 #' test.t(mtcars$drat, mtcars$wt, paired = TRUE, plot = TRUE)
 #'
-#' # Load ggplot2 package
-#' library(ggplot2)
-#'
-#' # Save plot, ggsave() from the ggplot2 package
-#' ggsave("Paired-sample_t-test.png", dpi = 600, width = 3, height = 6)
-#'
-#' # Example 3d: Two-sided paired-sample t-test
-#' # Extract plot
-#' p <- test.t(mtcars$drat, mtcars$wt, paired = TRUE, output = FALSE)$plot
-#' p
-#'
-#' # Example 3e: Two-sided paired-sample t-test
-#' # Draw plot in line with the default setting of test.t()
-#'
-#' # Extract data used to plot results
-#' plotdat <- data.frame(test.t(mtcars$drat, mtcars$wt, paired = TRUE, output = FALSE)$data)
-#'
-#' # Difference score
-#' plotdat$diff <- plotdat$y - plotdat$x
-#'
-#' # Draw plot
-#' ggplot(plotdat, aes(0, diff)) +
-#'    geom_point(stat = "summary", fun = "mean", size = 4) +
-#'    stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
-#'    scale_x_discrete(name = NULL) + scale_y_continuous(name = NULL) +
-#'    geom_hline(yintercept = 0, linetype = 3, linewidth = 0.8) +
-#'    labs(subtitle = "Two-Sided 95% Confidence Interval") +
-#'    theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
-#'                       axis.text.x = element_blank(),
-#'                       axis.ticks.x = element_blank())
+#' \dontrun{
+#' # Example 3d: Two-sided paired-sample t-test, save plot
+#' test.t(mtcars$drat, mtcars$wt, paired = TRUE, plot = TRUE,
+#'        filename = "Paired-sample_t-test.png", width = 4, height = 5)
+#' }
 test.t <- function(x, ...) {
 
   UseMethod("test.t")
@@ -294,15 +247,16 @@ test.t <- function(x, ...) {
 test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                            alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
                            hypo = TRUE, descript = TRUE, effsize = FALSE, weighted = FALSE,
-                           cor = TRUE, ref = NULL, correct = FALSE,
-                           plot = FALSE, adjust = TRUE, point.size = 4, errorbar.width = 0.1,
-                           xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
-                           line = TRUE, linetype = 3, linewidth = 0.8,
-                           jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
-                           jitter.height = 0, jitter.alpha = 0.1,
-                           title = "", subtitle = "Confidence Interval",
-                           digits = 2, p.digits = 3, as.na = NULL, write = NULL,
-                           append = TRUE, check = TRUE, output = TRUE, ...) {
+                           cor = TRUE, ref = NULL, correct = FALSE, digits = 2, p.digits = 3,
+                           as.na = NULL, plot = FALSE, bar = TRUE, point = FALSE, ci = TRUE,
+                           line = TRUE, jitter = FALSE, adjust = TRUE, point.size = 4, errorbar.width = 0.1,
+                           xlab = NULL, ylab = NULL, ylim = NULL, ybreaks = ggplot2::waiver(),
+                           linetype = 3, linewidth = 0.8, jitter.size = 1.25, jitter.width = 0.05,
+                           jitter.height = 0, jitter.alpha = 0.1, title = "",
+                           subtitle = "Confidence Interval", filename = NULL,
+                           width = NA, height = NA, units = c("in", "cm", "mm", "px"),
+                           dpi = 600, write = NULL, append = TRUE, check = TRUE,
+                           output = TRUE, ...) {
 
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
@@ -323,7 +277,7 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
   if (!is.null(y)) {
 
     # Check if only one variable specified in the input 'y'
-    if (ncol(data.frame(y)) != 1) { stop("More than one variable specified for the argument 'y'.",call. = FALSE) }
+    if (ncol(data.frame(y)) != 1L) { stop("More than one variable specified for the argument 'y'.",call. = FALSE) }
 
     # Convert 'y' into a vector
     y <- unlist(y, use.names = FALSE)
@@ -374,7 +328,10 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                numeric = list(mu = 1L, point.size = 1L, errorbar.width = 1L, ylim = 2L, linewidth = 1L, jitter.size = 1L, jitter.width = 1L, jitter.height = 1L, jitter.alpha = 1L),
                character = list(xlab = 1L, ylab = 1L, title = 1L, subtitle = 1L),
                args = c("alternative", "conf.level", "digits", "p.digits", "write1"),
-               package = "ggplot2", envir = environment(), input.check = check)
+               envir = environment(), input.check = check)
+
+  # Package ggplot2
+  if (isTRUE(check && plot)) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
 
   #_____________________________________________________________________________
   #
@@ -397,25 +354,18 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
   if (isTRUE(is.null(y))) {
 
     # Confidence intervals
-    x.ci <- misty::ci.mean.diff(x = x, y = NULL, alternative = alternative,
-                                conf.level = conf.level, check = FALSE, output = FALSE)$result
+    x.ci <- misty::ci.mean.diff(x = x, y = NULL, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)$result
 
     # Cohen's d
-    d <- misty::cohens.d(x = x, y = NULL, paired = FALSE, mu = mu,
-                         weighted = FALSE, cor = TRUE, ref = NULL, correct = correct,
-                         alternative = alternative, conf.level = conf.level,
-                         group = NULL, split = NULL, sort.var = FALSE,
-                         check = FALSE, output = FALSE)$result
+    d <- misty::cohens.d(x = x, y = NULL, paired = FALSE, mu = mu, weighted = FALSE, cor = TRUE, ref = NULL, correct = correct,
+                         alternative = alternative, conf.level = conf.level, group = NULL, split = NULL, sort.var = FALSE, check = FALSE, output = FALSE)$result
 
     # t-test
     t <- t.test(x = x, y = y, mu = mu, alternative = alternative)
 
-    result <- data.frame(n = x.ci[["n"]], nNA = x.ci[["nNA"]],
-                         m = x.ci[["m"]], sd = x.ci[["sd"]],
-                         m.diff = x.ci[["m"]] - mu, se = t$stderr,
-                         m.low = x.ci[["low"]], m.upp = x.ci[["upp"]],
-                         t = t$statistic, df = t$parameter,
-                         pval = t$p.value, d = d$d, d.low = d$low, d.upp = d$upp,
+    result <- data.frame(n = x.ci[["n"]], nNA = x.ci[["nNA"]], m = x.ci[["m"]], sd = x.ci[["sd"]],
+                         m.diff = x.ci[["m"]] - mu, se = t$stderr, m.low = x.ci[["low"]], m.upp = x.ci[["upp"]],
+                         t = t$statistic, df = t$parameter, pval = t$p.value, d = d$d, d.low = d$low, d.upp = d$upp,
                          row.names = NULL, check.names = FALSE)
 
     sample <- "one"
@@ -430,20 +380,13 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
     # Cohen's d
     d <- misty::cohens.d(x = x, y = y, paired = FALSE, mu = 0L, weighted = weighted,
-                         cor = TRUE, ref = ref, correct = correct,
-                         alternative = alternative, conf.level = conf.level,
-                         group = NULL, split = NULL, sort.var = FALSE,
-                         check = FALSE, output = FALSE)$result
+                         cor = TRUE, ref = ref, correct = correct, alternative = alternative, conf.level = conf.level,
+                         group = NULL, split = NULL, sort.var = FALSE, check = FALSE, output = FALSE)$result
     # t-test
-    t <- t.test(x = x, y = y, alternative = switch(alternative,
-                                                   two.sided = "two.sided",
-                                                   greater = "less",
-                                                   less = "greater"), var.equal = TRUE)
+    t <- t.test(x = x, y = y, alternative = switch(alternative, two.sided = "two.sided", greater = "less", less = "greater"), var.equal = TRUE)
 
-    result <- data.frame(cbind(x.ci[, c("group", "n", "nNA", "m", "sd", "m.diff")],
-                               se = c(NA, t$stderr), x.ci[, c("m.low", "m.upp")],
-                               t = c(NA, t$statistic)*-1L, df = c(NA, t$parameter), pval = c(NA, t$p.value),
-                               d = d$d, d.low = d$low, d.upp = d$upp),
+    result <- data.frame(cbind(x.ci[, c("group", "n", "nNA", "m", "sd", "m.diff")], se = c(NA, t$stderr), x.ci[, c("m.low", "m.upp")],
+                               t = c(NA, t$statistic)*-1L, df = c(NA, t$parameter), pval = c(NA, t$p.value), d = d$d, d.low = d$low, d.upp = d$upp),
                          row.names = NULL, check.names = FALSE)
 
     sample <- "two"
@@ -453,133 +396,20 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
   } else if (isTRUE(!is.null(y) && isTRUE(paired))) {
 
     # Confidence intervals
-    x.ci <- misty::ci.mean.diff(x = x, y = y, paired = TRUE, alternative = alternative,
-                                conf.level = conf.level, output = FALSE)$result
+    x.ci <- misty::ci.mean.diff(x = x, y = y, paired = TRUE, alternative = alternative, conf.level = conf.level, output = FALSE)$result
 
     # Cohen's d
-    d <- misty::cohens.d(x = x, y = y, paired = TRUE, mu = 0L, weighted = weighted,
-                         cor = cor, ref = ref, correct = correct,
-                         alternative = alternative, conf.level = conf.level,
-                         group = NULL, split = NULL, sort.var = FALSE,
-                         check = FALSE, output = FALSE)$result
+    d <- misty::cohens.d(x = x, y = y, paired = TRUE, mu = 0L, weighted = weighted, cor = cor, ref = ref, correct = correct,
+                         alternative = alternative, conf.level = conf.level, group = NULL, split = NULL, sort.var = FALSE, check = FALSE, output = FALSE)$result
 
     # t-test
-    t <- t.test(x = x, y = y, alternative = switch(alternative,
-                                                   two.sided = "two.sided",
-                                                   greater = "less",
-                                                   less = "greater"), paired = TRUE)
+    t <- t.test(x = x, y = y, alternative = switch(alternative, two.sided = "two.sided", greater = "less", less = "greater"), paired = TRUE)
 
-    result <- data.frame(n = x.ci[["n"]], nNA = x.ci[["nNA"]],
-                         m1 = x.ci[["m1"]], m2 = x.ci[["m2"]],
-                         m.diff = x.ci[["m.diff"]], sd.diff = x.ci[["sd.diff"]],
-                         se = t$stderr, m.low = x.ci[["low"]], m.upp = x.ci[["upp"]],
-                         t = t$statistic*-1, df = t$parameter, pval = t$p.value,
-                         d = d$d, d.low = d$low, d.upp = d$upp,
-                         row.names = NULL, check.names = FALSE)
+    result <- data.frame(n = x.ci[["n"]], nNA = x.ci[["nNA"]], m1 = x.ci[["m1"]], m2 = x.ci[["m2"]],
+                         m.diff = x.ci[["m.diff"]], sd.diff = x.ci[["sd.diff"]], se = t$stderr, m.low = x.ci[["low"]], m.upp = x.ci[["upp"]],
+                         t = t$statistic*-1, df = t$parameter, pval = t$p.value, d = d$d, d.low = d$low, d.upp = d$upp, row.names = NULL, check.names = FALSE)
 
     sample <- "paired"
-
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Plot ####
-
-  switch(sample,
-         #...................
-         ### One-sample ####
-         "one" = {
-
-           # Plot data
-           plotdat <- data.frame(x = x)
-
-           # Plot Subtitle
-           if (isTRUE(subtitle == "Confidence Interval")) { subtitle <- paste0(ifelse(alternative == "two.sided", "Two-Sided ", "One-Sided "),
-                                                                               round(conf.level * 100, digits = 2), "% Confidence Interval") }
-
-           # Crease ggplot
-           p <- ggplot2::ggplot(plotdat, ggplot2::aes(x = 0L, y = x))
-
-           # Add jittered points
-           if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, height = jitter.height, size = jitter.size) }
-
-           p <-  p + ggplot2::geom_point(data = result, ggplot2::aes(x = 0L, m), size = point.size) +
-                   ggplot2::geom_errorbar(data = result, ggplot2::aes(x = 0L, y = m, ymin = m.low, ymax = m.upp), width = errorbar.width) +
-                   ggplot2::scale_x_continuous(name = xlab, limits = c(-2L, 2L)) +
-                   ggplot2::scale_y_continuous(name = ylab, limits = ylim, breaks = breaks) +
-                   ggplot2::labs(title = title, subtitle = subtitle) +
-                   ggplot2::theme_bw() + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
-                                                        plot.subtitle = ggplot2::element_text(hjust = 0.5),
-                                                        axis.text.x = ggplot2::element_blank(),
-                                                        axis.ticks.x = ggplot2::element_blank())
-
-           # Add horizontal line
-           if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = mu, linetype = linetype, linewidth = linewidth) }
-
-         #...................
-         ### Two-sample ####
-         }, "two" = {
-
-           # Plot data
-           plotdat <- data.frame(group = factor(c(rep("x", times = length(x)), rep("y", times = length(y)))), y = c(x, y))
-
-           # Plot Subtitle
-           if (isTRUE(subtitle == "Confidence Interval")) { subtitle <- paste0("Two-Sided ", round(conf.level * 100, digits = 2), "% Confidence Interval") }
-
-           # Confidence interval
-           plot.ci <- misty::ci.mean(plotdat[, "y"], group = plotdat[, "group"], adjust = adjust,
-                                     conf.level = conf.level, output = FALSE)$result
-
-           # Crease ggplot
-           p <- ggplot2::ggplot(plotdat, ggplot2::aes(group, y))
-
-           # Add jittered points
-           if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, size = jitter.size) }
-
-           p <- p + ggplot2::geom_point(data = plot.ci, ggplot2::aes(group, m), stat = "identity", size = point.size) +
-                 ggplot2::geom_errorbar(data = plot.ci, ggplot2::aes(group, m, ymin = low, ymax = upp), width = errorbar.width) +
-                 ggplot2::scale_x_discrete(name = xlab) +
-                 ggplot2::scale_y_continuous(name = ylab, limits = ylim, breaks = breaks) +
-                 ggplot2::theme_bw() +
-                 ggplot2::labs(title = title, subtitle = subtitle) +
-                 ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5), plot.title = ggplot2::element_text(hjust = 0.5))
-
-          #...................
-          ### Paired-sample ####
-          }, "paired" = {
-
-            # Plot data
-            plotdat <- data.frame(x = y - x)
-
-            # Plot Subtitle
-            if (isTRUE(subtitle == "Confidence Interval")) { subtitle <- paste0(ifelse(alternative == "two.sided", "Two-Sided ", "One-Sided "),
-                                                                                round(conf.level * 100L, digits = 2L), "% Confidence Interval") }
-            # Crease ggplot
-            p <- ggplot2::ggplot(plotdat, ggplot2::aes(x = 0L, y = x))
-
-            # Add jittered points
-            if (isTRUE(jitter)) { p <- p + ggplot2::geom_jitter(alpha = jitter.alpha, width = jitter.width, size = jitter.size) }
-
-            p <- p + ggplot2::geom_point(data = result,
-                                         ggplot2::aes(x = 0L, y = m.diff), size = point.size) +
-                  ggplot2::geom_errorbar(data = result,
-                                         ggplot2::aes(x = 0L, y = m.diff, ymin = m.low, ymax = m.upp), width = errorbar.width) +
-                  ggplot2::scale_x_continuous(name = xlab, limits = c(-2L, 2L)) +
-                  ggplot2::scale_y_continuous(name = ylab, limits = ylim, breaks = breaks) +
-                  ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.ticks.x = ggplot2::element_blank()) +
-                  ggplot2::labs(title = title, subtitle = subtitle) +
-                  ggplot2::theme(plot.subtitle = ggplot2::element_text(hjust = 0.5),
-                                 plot.title = ggplot2::element_text(hjust = 0.5))
-
-            # Add horizontal line
-            if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = 0, linetype = linetype, linewidth = linewidth) }
-
-          })
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Print plot ####
-  if (isTRUE(plot)) {
-
-    suppressWarnings(print(p))
 
   }
 
@@ -591,23 +421,28 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
                  type = "test.t",
                  sample = sample,
                  data = list(x = x, y = y),
-                 plot = p,
                  args = list(mu = mu, paired = paired, alternative = alternative,
                              conf.level = conf.level, hypo = hypo, descript = descript,
                              effsize = effsize, weighted = weighted, cor = cor, ref = ref,
-                             correct = correct, conf.level = conf.level,
-                             plot = plot, point.size = point.size, adjust = adjust,
-                             errorbar.width = errorbar.width, xlab = xlab, ylab = ylab,
-                             ylim = ylim, breaks = breaks, line = line,
-                             linetype = linetype, linewidth = linewidth,
-                             jitter = jitter, jitter.size = jitter.size, jitter.width = jitter.width,
-                             jitter.height = jitter.height, jitter.alpha = jitter.alpha,
-                             title = title, subtitle = subtitle, digits = digits,
-                             p.digits = p.digits, as.na = as.na, write = write,
-                             append = append, check = check, output = output),
-                 result = result)
+                             correct = correct, conf.level = conf.level, digits = digits,
+                             p.digits = p.digits, as.na = as.na, plot = plot, bar = bar,
+                             point = point, ci = ci, line = line, jitter = jitter,
+                             adjust = adjust, point.size = point.size, errorbar.width = errorbar.width,
+                             xlab = xlab, ylab = ylab, ylim = ylim, ybreaks = ybreaks,
+                             linetype = linetype, linewidth = linewidth, jitter.size = jitter.size,
+                             jitter.width = jitter.width, jitter.height = jitter.height,
+                             jitter.alpha = jitter.alpha, title = title, subtitle = subtitle,
+                             filename = filename, width = width, height = height, units = units,
+                             dpi = dpi, write = write, append = append, check = check, output = output),
+                 plot = NULL, result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Plot and Save Results ------------------------------------------------------
+
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
@@ -648,13 +483,16 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "greater"),
                            conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
                            weighted = FALSE, cor = TRUE, ref = NULL, correct = FALSE,
-                           plot = FALSE, adjust = TRUE, point.size = 4, errorbar.width = 0.1,
-                           xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
-                           jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
-                           jitter.height = 0, jitter.alpha = 0.1,
-                           title = "", subtitle = "Confidence Interval",
-                           digits = 2, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
-                           check = TRUE, output = TRUE, ...) {
+                           digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE,
+                           point = FALSE, ci = TRUE, line = TRUE, jitter = FALSE,
+                           adjust = TRUE, point.size = 4, errorbar.width = 0.1,
+                           xlab = NULL, ylab = NULL, ylim = NULL, ybreaks = ggplot2::waiver(),
+                           linetype = 3, linewidth = 0.8, jitter.size = 1.25, jitter.width = 0.05,
+                           jitter.height = 0, jitter.alpha = 0.1, title = "",
+                           subtitle = "Confidence Interval", filename = NULL,
+                           width = NA, height = NA, units = c("in", "cm", "mm", "px"),
+                           dpi = 600, write = NULL, append = TRUE, check = TRUE,
+                           output = TRUE, ...) {
 
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
@@ -688,14 +526,7 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
   if (isTRUE(check)) {
 
     # Check if variables are in the data
-    (!var.formula %in% colnames(data)) |>
-      (\(y) if (isTRUE(any(y))) {
-
-        stop(paste0("Variables specified in the the formula were not found in 'data': ",
-                    paste(var.formula[which(y)], collapse = ", ")), call. = FALSE)
-
-      })()
-
+    (!var.formula %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(y)], collapse = ", ")), call. = FALSE) })()
 
     # Check if input 'formula' has only one grouping variable
     if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
@@ -717,11 +548,9 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
     vapply(data[, y.vars, drop = FALSE], function(y) all(is.na(y)), FUN.VALUE = logical(1L)) |>
       (\(y) if (any(y)) {
 
-        stop(paste0("After converting user-missing values into NA, following ",
-                    ifelse(sum(y) == 1L, "variable is ", "variables are "),
-                    "completely missing: ", paste(names(which(y)), collapse = ", ")), call. = FALSE)
+        stop(paste0("After converting user-missing values into NA, following ", ifelse(sum(y) == 1L, "variable is ", "variables are "), "completely missing: ", paste(names(which(y)), collapse = ", ")), call. = FALSE)
 
-      } )()
+      })()
 
 
   }
@@ -746,11 +575,7 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
   # Check if input 'data' is NULL
   if (isTRUE(!is.null(ref))) {
 
-    if (isTRUE(!ref %in% na.omit(unlist(data[, group.var])))) {
-
-      stop("Reference group specified in the argument 'ref' is not represented in the grouping variable.", call. = FALSE)
-
-    }
+    if (isTRUE(!ref %in% na.omit(unlist(data[, group.var])))) { stop("Reference group specified in the argument 'ref' is not represented in the grouping variable.", call. = FALSE) }
 
     ifelse(which(unique(sort(na.omit(unlist(data[, group.var])))) %in% ref) == 1, ref <- "x", ref <- "y")
 
@@ -769,21 +594,12 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
                            weighted = weighted, cor = cor, ref = ref, correct = correct,
                            plot = FALSE, adjust = adjust, point.size = point.size,
                            errorbar.width = errorbar.width, xlab = xlab, ylab = ylab,
-                           ylim = ylim, breaks = breaks, jitter = jitter,
+                           ylim = ylim, ybreaks = ybreaks, jitter = jitter,
                            jitter.size = jitter.size, jitter.width = jitter.width,
                            jitter.height = jitter.height, jitter.alpha = jitter.alpha, title = title,
                            subtitle = subtitle, check = check, output = FALSE)
 
   object$result[, "group"] <- names(data.split)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Plot ####
-
-  # Label x-axis
-  p <- suppressMessages(object$plot + ggplot2::scale_x_discrete(labels = names(data.split)))
-
-  # Print plot
-  if (isTRUE(plot)) { suppressWarnings(print(p)) }
 
   #_____________________________________________________________________________
   #
@@ -797,17 +613,25 @@ test.t.formula <- function(formula, data, alternative = c("two.sided", "less", "
                  args = list(alternative = alternative,
                              conf.level = conf.level, hypo = hypo, descript = descript,
                              effsize = effsize, weighted = weighted, cor = cor,
-                             ref = ref.return, correct = correct, plot = plot,
-                             adjust = adjust, point.size = point.size,
-                             errorbar.width = errorbar.width, xlab = xlab, ylab = ylab,
-                             ylim = ylim, breaks = breaks, jitter = jitter,
+                             ref = ref.return, correct = correct, digits = digits, p.digits = p.digits,
+                             as.na = as.na, plot = plot, bar = bar, point = point, ci = ci,
+                             line = line, jitter = jitter, adjust = adjust, point.size = point.size,
+                             errorbar.width = errorbar.width, xlab = xlab, ylab = ylab, ylim = ylim,
+                             ybreaks = ybreaks, linetype = linetype, linewidth = linewidth,
                              jitter.size = jitter.size, jitter.width = jitter.width,
                              jitter.height = jitter.height, jitter.alpha = jitter.alpha,
-                             title = title, subtitle = subtitle, digits = digits, p.digits = p.digits,
-                             write = write, append = append, as.na = as.na, check = check, output = output),
-                 plot = p, result = object$result)
+                             title = title, subtitle = subtitle, filename = filename,
+                             width = width, height = height, units = units, dpi = dpi,
+                             write = write, append = append, check = check, output = output),
+                 plot = NULL, result = object$result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Plot and Save Results ------------------------------------------------------
+
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #

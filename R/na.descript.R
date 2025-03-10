@@ -5,26 +5,22 @@
 #' (%) of missing values, and summary statistics for the number (%) of missing
 #' values across all variables.
 #'
-#' @param ...     a matrix or data frame with incomplete data, where missing
-#'                values are coded as \code{NA}. Alternatively, an expression
-#'               indicating the variable names in \code{data} e.g.,
-#'                \code{na.descript(x1, x2, x3, data = dat)}. Note that the operators
+#' @param data    a data frame with incomplete data, where missing values are
+#'                coded as \code{NA}.
+#' @param ...     an expression indicating the variable names in \code{data},
+#'                e.g., \code{na.descript(dat, x1, x2, x3)}. Note that the operators
 #'                \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'                and \code{!} can also be used to select variables, see 'Details'
 #'                in the \code{\link{df.subset}} function.
-#' @param data    a data frame when specifying one or more variables in the
-#'                argument \code{...}. Note that the argument is \code{NULL}
-#'                when specifying a matrix or data frame for the argument \code{...}.
 #' @param cluster a character string indicating the name of the cluster
-#'                variable in \code{...} or \code{data} for two-level data,
-#'                a character vector indicating the names of the cluster
-#'                variables in \code{...} for three-level data, or a vector
-#'                or data frame representing the nested grouping structure
-#'                (i.e., group or cluster variables). Alternatively, a
-#'                character string or character vector indicating the variable
-#'                name(s) of the cluster variable(s) in \code{data}. Note that
-#'                the cluster variable at Level 3 come first in a three-level
-#'                model, i.e., \code{cluster = c("level3", "level2")}.
+#'                variable in \code{data} for two-level data, a character vector
+#'                indicating the names of the cluster variables in \code{data}
+#'                for three-level data, or a vector or data frame representing
+#'                the nested grouping structure (i.e., group or cluster variables).
+#'                Alternatively, a character string or character vector indicating
+#'                the variable name(s) of the cluster variable(s) in \code{data}.
+#'                Note that the cluster variable at Level 3 come first in a
+#'                three-level model, i.e., \code{cluster = c("level3", "level2")}.
 #' @param table   logical: if \code{TRUE}, a frequency table with number of
 #'                observed values (\code{"nObs"}), percent of observed values
 #'                (\code{"pObs"}), number of missing values (\code{"nNA"}),
@@ -84,9 +80,6 @@
 #' # Example 1: Descriptive statistics for missing data
 #' na.descript(airquality)
 #'
-#' # Alternative specification using the 'data' argument
-#' na.descript(., data = airquality)
-#'
 #' # Example 2: Descriptive statistics for missing data, print results with 3 digits
 #' na.descript(airquality, digits = 3)
 #'
@@ -112,6 +105,7 @@
 #' # Example 5: Descriptive statistics for missing data
 #' na.descript(Demo.threelevel, cluster = c("cluster3", "cluster2"))
 #'
+#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Write Results
 #'
@@ -120,10 +114,8 @@
 #'
 #' # Example 6b: Write Results into a Excel file
 #' na.descript(airquality, table = TRUE, write = "NA_Descriptives.xlsx")
-#'
-#' result <- na.descript(airquality, table = TRUE, output = FALSE)
-#' write.result(result, "NA_Descriptives.xlsx")
-na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits = 2,
+#' }
+na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
                         as.na = NULL, write = NULL, append = TRUE, check = TRUE,
                         output = TRUE) {
 
@@ -131,11 +123,11 @@ na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits 
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -144,10 +136,10 @@ na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
     # Extract data
-    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
+    x <- as.data.frame(data[, .var.names(..., data = data, cluster = cluster), drop = FALSE])
 
     # Cluster variable
     if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
@@ -157,15 +149,11 @@ na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits 
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
-    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- as.data.frame(cluster) } }
+    # Data frame
+    x <- as.data.frame(data) |> (\(y) if (isTRUE(ncol(y) == 1L)) { unname(y) } else { y })()
 
     # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster)
+    var.group <- .var.group(data = x, cluster = cluster, drop = FALSE)
 
     # Data
     if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
@@ -173,17 +161,16 @@ na.descript <- function(..., data = NULL, cluster = NULL, table = FALSE, digits 
     # Cluster variable
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
+
   }
+
+  # Convert 'cluster' as tibble into a vector
+  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
-
-  x <- as.data.frame(x)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Cluster variables ####

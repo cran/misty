@@ -12,31 +12,25 @@
 #' and residual correlation matrix can be requested by specifying the argument
 #' \code{print}.
 #'
-#' @param ...          a matrix or data frame. If \code{model} is \code{NULL},
+#' @param data         a data frame. If \code{model} is \code{NULL},
 #'                     multilevel confirmatory factor analysis based on a
 #'                     measurement model with one factor at the Within and Between
-#'                     level comprising all variables in the matrix or data frame
-#'                     is conducted to evaluate cross-level measurement invariance.
-#'                     Note that the cluster variable specified in \code{cluster}
-#'                     is excluded from \code{x} when specifying the argument
-#'                     \code{cluster} using the variable name of the cluster
-#'                     variable. If \code{model} is specified, the matrix or data
-#'                     frame needs to contain all variables used in the \code{model}
-#'                     argument. Alternatively, an expression indicating the
-#'                     variable names in \code{data} e.g.,
-#'                     \code{multilevel.invar(x1, x2, x3, data = dat)}. Note that
-#'                     the operators \code{.}, \code{+}, \code{-}, \code{~},
+#'                     level comprising all variables in the data frame is conducted
+#'                     to evaluate cross-level measurement invariance. Note that
+#'                     the cluster variable specified in \code{cluster} is excluded
+#'                     from \code{data} when specifying the argument \code{cluster}
+#'                     using the variable name of the cluster variable. If \code{model}
+#'                     is specified, the matrix or data frame needs to contain
+#'                     all variables used in the \code{model} argument.
+#' @param ...          an expression indicating the variable names in \code{data},
+#'                     e.g., \code{multilevel.invar(dat, x1, x2, x3, cluster = "cluster")}.
+#'                     Note that the operators \code{.}, \code{+}, \code{-}, \code{~},
 #'                     \code{:}, \code{::}, and \code{!} can also be used to
 #'                     select variables, see 'Details' in the \code{\link{df.subset}}
 #'                     function.
-#' @param data         a data frame when specifying one or more variables in the
-#'                     argument \code{...}. Note that the argument is \code{NULL}
-#'                     when specifying a a matrix or data frame for the argument
-#'                     \code{...}.
 #' @param cluster      either a character string indicating the variable name of
-#'                     the cluster variable in \code{...} or \code{data}, or a
-#'                     vector representing the nested grouping structure (i.e.,
-#'                     group or cluster variable).
+#'                     the cluster variable in \code{data}, or a vector representing
+#'                     the nested grouping structure (i.e., group or cluster variable).
 #' @param model        a character vector specifying the same factor structure
 #'                     with one factor at the Within and Between Level, or a list
 #'                     of character vectors for specifying the same measurement
@@ -155,7 +149,7 @@
 #' @param as.na        a numeric vector indicating user-defined missing values,
 #'                     i.e. these values are converted to \code{NA} before conducting
 #'                     the analysis. Note that \code{as.na()} function is only
-#'                     applied to \code{x} but not to \code{cluster}.
+#'                     applied to \code{data} but not to \code{cluster}.
 #' @param write        a character string naming a file for writing the output into
 #'                     either a text file with file extension \code{".txt"} (e.g.,
 #'                     \code{"Output.txt"}) or Excel file with file extension
@@ -188,7 +182,7 @@
 #'
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
-#' \item{\code{data}}{matrix or data frame specified in \code{x}}
+#' \item{\code{data}}{data frame specified in \code{data}}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{model}}{list with specified model for the configural, metric, and
 #'                     scalar invariance model}
@@ -227,53 +221,47 @@
 #' #----------------------------------------------------------------------------
 #' # Cluster variable specification
 #'
-#' # Example 1a: Cluster variable 'cluster' in 'x'
-#' multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4", "cluster")], cluster = "cluster")
+#' # Example 1a: Specification using the argument '...'
+#' multilevel.invar(Demo.twolevel, y1:y4, cluster = "cluster")
 #'
-#' # Example 1b: Cluster variable 'cluster' not in 'x'
-#' multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
+#' # Example 1b: Alternative specification with cluster variable 'cluster' in 'data'
+#' multilevel.invar(Demo.twolevel[, c("y1", "y2", "y3", "y4", "cluster")], cluster = "cluster")
 #'
-#' # Alternative specification using the 'data' argument
-#' multilevel.invar(y1:y4, data = Demo.twolevel, cluster = "cluster")
+#' # Example 1b: Alternative specification with cluster variable 'cluster' not in 'data'
+#' multilevel.invar(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
 #'
 #' #----------------------------------------------------------------------------
-#' # Model specification using 'x' for a one-factor model
+#' # Model specification using 'data' for a one-factor model
 #'
 #' #..........
 #' # Level of measurement invariance
 #'
 #' # Example 2a: Configural invariance
-#' multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-#'                  cluster = Demo.twolevel$cluster, invar = "config")
+#' multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", invar = "config")
 #'
 #' # Example 2b: Metric invariance
-#' multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-#'                  cluster = Demo.twolevel$cluster, invar = "metric")
+#' multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", invar = "metric")
 #'
 #' # Example 2c: Scalar invariance
-#' multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-#'                  cluster = Demo.twolevel$cluster, invar = "scalar")
+#' multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", invar = "scalar")
 #'
 #' #..........
 #' # Residual covariance at the Within level and residual variance at the Between level
 #'
 #' # Example 3a: Residual covariance between "y3" and "y4" at the Within level
-#' multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-#'                  cluster = Demo.twolevel$cluster, rescov = c("y3", "y4"))
+#' multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster",
+#'                  rescov = c("y3", "y4"))
 #'
 #' # Example 3b: Residual variances of 'y1' at the Between level fixed at 0
-#' multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-#'                  cluster = Demo.twolevel$cluster, fix.resid = "y1")
+#' multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", fix.resid = "y1")
 #'
 #' #..........
 #' # Example 4: Print all results
-#' multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-#'                  cluster = Demo.twolevel$cluster, print = "all")
+#' multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", print = "all")
 #'
 #' #..........
 #' # Example 5: lavaan model and summary of the estimated model
-#' mod <- multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-#'                         cluster = Demo.twolevel$cluster, output = FALSE)
+#' mod <- multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", output = FALSE)
 #'
 #' # lavaan syntax of the metric invariance model
 #' mod$model$metric
@@ -295,24 +283,14 @@
 #' # Write results
 #'
 #' # Example 7a: Write Results into a Excel file
-#' multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-#'                  cluster = Demo.twolevel$cluster, print = "all",
+#' multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", print = "all",
 #'                  write = "Multilevel_Invariance.txt")
 #'
 #' # Example 7b:  Write Results into a Excel file
-#' multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-#'                  cluster = Demo.twolevel$cluster, print = "all",
+#' multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", print = "all",
 #'                  write = "Multilevel_Invariance.xlsx")
-#'
-#' # Assign results into an object and write results into an Excel file
-#' mod <- multilevel.invar(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-#'                         cluster = Demo.twolevel$cluster, print = "all",
-#'                         output = FALSE)
-#'
-#' # Write results into an Excel file
-#' write.result(mod, "Multilevel_Invariance.xlsx")
 #' }
-multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = NULL,
+multilevel.invar <- function(data, ..., cluster, model = NULL, rescov = NULL,
                              invar = c("config", "metric", "scalar"), fix.resid = NULL,
                              ident = c("marker", "var", "effect"), estimator = c("ML", "MLR"),
                              optim.method = c("nlminb", "em"), missing = c("listwise", "fiml"),
@@ -325,11 +303,11 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
@@ -344,28 +322,21 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+  if (isTRUE(!missing(...))) {
 
     # Extract data
-    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
+    x <- as.data.frame(data[, .var.names(..., data = data, cluster = cluster), drop = FALSE])
 
     # Cluster variable
-    cluster <- unlist(data[, cluster])
+    cluster <- data[, cluster]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- as.data.frame(cluster) } }
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- as.data.frame(data)
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -378,6 +349,9 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
 
   }
 
+  # Convert 'cluster' as tibble into a vector
+  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
+
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
@@ -387,8 +361,7 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
                numeric = list(mod.minval = 1L, resid.minval = 1L),
                s.character = list(invar = c("config", "metric", "scalar"), ident = c("marker", "var", "effect"), estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"), missing = c("listwise", "fiml")),
                m.character = list(print = c("all", "summary", "coverage", "descript", "fit", "est", "modind", "resid"), print.fit = c("all", "standard", "scaled", "robust")),
-               args = c("digits", "p.digits", "write2"),
-               package = "lavaan", envir = environment(), input.check = check)
+               args = c("digits", "p.digits", "write2"), package = "lavaan", envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
@@ -397,12 +370,7 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
     if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
 
     # Model specification with 'model'
-    if (isTRUE(!is.null(model))) {
-
-      var.model <- !unique(unlist(model)) %in% colnames(x)
-      if (isTRUE(any(var.model))) { stop(paste0("Variables specified in the argument 'model' were not found in 'x': ", paste(unique(unlist(model))[var.model], collapse = ", ")), call. = FALSE) }
-
-    }
+    if (isTRUE(!is.null(model))) { (!unique(unlist(model)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'model' were not found in 'data': ", paste(unique(unlist(model))[y], collapse = ", ")), call. = FALSE) })() }
 
     # Check input 'rescov'
     if (isTRUE(!is.null(rescov))) {
@@ -412,15 +380,13 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
 
       } else { if (isTRUE(length(rescov) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov'", call. = FALSE) } }
 
-      # Variable in 'x'
-      rescov.var <- !unique(unlist(rescov)) %in% colnames(x)
-      if (isTRUE(any(rescov.var))) { stop(paste0("Variables specified in the argument 'rescov' were not found in 'x': ", paste(unique(unlist(rescov))[rescov.var], collapse = ", ")), call. = FALSE) }
+      # Variable in 'data'
+      (!unique(unlist(rescov)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'rescov' were not found in 'data': ", paste(unique(unlist(rescov))[y], collapse = ", ")), call. = FALSE) })()
 
     }
 
     # Check input 'fix.resid'
-    fix.resid.var <- !unique(fix.resid) %in% colnames(x)
-    if (isTRUE(any(fix.resid.var) &&  all(fix.resid != "all"))) { stop(paste0("Variables specified in the argument 'fix.resid' were not found in 'x': ", paste(fix.resid[fix.resid.var], collapse = ", ")), call. = FALSE) }
+    (!unique(fix.resid) %in% colnames(x)) |> (\(y) if (isTRUE(any(y) &&  all(fix.resid != "all"))) { stop(paste0("Variables specified in the argument 'fix.resid' were not found in 'data': ", paste(fix.resid[y], collapse = ", ")), call. = FALSE) })()
 
     # Check input 'mod.minval'
     if (isTRUE(mod.minval <= 0L)) { stop("Please specify a value greater than 0 for the argument 'mod.minval'.", call. = FALSE) }
@@ -438,7 +404,7 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   ## Manifest variables ####
 
   #...................
-  ### Model specification with 'x' ####
+  ### Model specification with 'data' ####
   if (isTRUE(is.null(model))) {
 
     var <- colnames(x)
@@ -471,6 +437,7 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x[, var] <- .as.na(x[, var], na = as.na) }
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Factor labels ####
 
@@ -598,7 +565,7 @@ multilevel.invar <- function(..., data = NULL, cluster, model = NULL, rescov = N
   ## Model estimation ####
 
   #...................
-  ### Model specification with 'x' ####
+  ### Model specification with 'data' ####
   if (isTRUE(is.null(model))) {
 
     model.fit.metric <- model.fit.scalar <- warn.config <- warn.metric <- warn.scalar <- NULL

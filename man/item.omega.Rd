@@ -4,25 +4,21 @@
 \alias{item.omega}
 \title{Coefficient Omega, Hierarchical Omega, and Categorical Omega}
 \usage{
-item.omega(..., data = NULL, rescov = NULL, type = c("omega", "hierarch", "categ"),
+item.omega(data, ..., rescov = NULL, type = c("omega", "hierarch", "categ"),
            exclude = NULL, std = FALSE, na.omit = FALSE,
            print = c("all", "omega", "item"), digits = 2, conf.level = 0.95,
            as.na = NULL, write = NULL, append = TRUE, check = TRUE,
            output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame. Note that at least three items are
-needed for computing omega. Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{item.omega(x1, x2, x3, data = dat)}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+\item{data}{a data frame. Note that at least three items are
+needed for computing coefficient omega.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument
-\code{...}.}
+\item{...}{an expression indicating the variable names in \code{data}
+e.g., \code{item.omega(dat, x1, x2, x3)}. Note that the
+operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+\code{::}, and \code{!} can also be used to select variables,
+see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{rescov}{a character vector or a list of character vectors for specifying
 residual covariances when computing coefficient omega, e.g.
@@ -86,7 +82,7 @@ entries:
   \item{\code{data}}{data frame used for the current analysis}
   \item{\code{args}}{specification of function arguments}
   \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
-  \item{\code{result}}{list with result tables, i.e., \code{alpha} for a table
+  \item{\code{result}}{list with result tables, i.e., \code{omega} for a table
                        with coefficient omega and \code{itemstat} for a table with
                        item statistics}
 }
@@ -114,53 +110,50 @@ the \code{ci.reliability()} function in the \pkg{MBESS} package by Ken Kelley
 (2019).
 }
 \examples{
-dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
-                  item2 = c(5, 3, 3, 5, 2, 2, 5, 1),
-                  item3 = c(4, 2, 4, 5, 1, 3, 5, 1),
-                  item4 = c(5, 1, 2, 5, 2, 3, 4, 2))
+\dontrun{
+
+dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 5, 2, 2, 5, 1),
+                  item3 = c(4, 2, 4, 5, 1, 3, 5, 1), item4 = c(5, 1, 2, 5, 2, 3, 4, 2))
 
 # Example 1a: Compute unstandardized coefficient omega and item statistics
 item.omega(dat)
 
-# Example 1b: Alternative specification using the 'data' argument
-item.omega(., data = dat)
+# Example 2: Compute unstandardized coefficient omega and item statistics while excluding item3
+item.omega(dat, exclude = "item3")
 
-# Example 2: Compute unstandardized coefficient omega with a residual covariance
+# Example 3: Compute unstandardized coefficient omega with a residual covariance
 # and item statistics
 item.omega(dat, rescov = c("item1", "item2"))
 
-# Example 3: Compute unstandardized coefficient omega with residual covariances
+# Example 4: Compute unstandardized coefficient omega with residual covariances
 # and item statistics
 item.omega(dat, rescov = list(c("item1", "item2"), c("item1", "item3")))
 
-# Example 4: Compute unstandardized hierarchical omega and item statistics
+# Example 5: Compute unstandardized hierarchical omega and item statistics
 item.omega(dat, type = "hierarch")
 
-# Example 5: Compute categorical omega and item statistics
+# Example 6: Compute categorical omega and item statistics
 item.omega(dat, type = "categ")
 
-# Example 6: Compute standardized coefficient omega and item statistics
+# Example 7: Compute standardized coefficient omega and item statistics
 item.omega(dat, std = TRUE)
 
-# Example 7: Compute unstandardized coefficient omega
+# Example 8: Compute unstandardized coefficient omega
 item.omega(dat, print = "omega")
 
-# Example 8: Compute item statistics
+# Example 9: Print only item statistics
 item.omega(dat, print = "item")
-
-# Example 9: Compute unstandardized coefficient omega and item statistics while excluding item3
-item.omega(dat, exclude = "item3")
 
 # Example 10: Summary of the CFA model used to compute coefficient omega
 lavaan::summary(item.omega(dat, output = FALSE)$model.fit,
                 fit.measures = TRUE, standardized = TRUE)
 
-\dontrun{
-# Example 11a: Write results into a text file
+# Example 11a: Write Results into a text file
 item.omega(dat, write = "Omega.txt")
 
-# Example 11b: Write results into a Excel file
-item.omega(dat, write = "Omega.xlsx")}
+# Example 11b: Write Results into a Excel file
+item.omega(dat, write = "Omega.xlsx")
+}
 }
 \references{
 Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for

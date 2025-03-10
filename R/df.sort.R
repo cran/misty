@@ -3,7 +3,7 @@
 #' This function arranges a data frame in increasing or decreasing order according
 #' to one or more variables.
 #'
-#' @param x           a data frame.
+#' @param data        a data frame.
 #' @param ...         a sorting variable or a sequence of sorting variables which
 #'                    are specified without quotes \code{''} or double quotes \code{""}.
 #' @param decreasing  logical: if \code{TRUE}, the sort is decreasing.
@@ -24,7 +24,7 @@
 #' and Searching} (2nd ed.). Addison-Wesley.
 #'
 #' @return
-#' Returns data frame \code{x} sorted according to the variables specified in
+#' Returns data frame \code{data} sorted according to the variables specified in
 #' \code{...}, a matrix will be coerced to a data frame.
 #'
 #' @export
@@ -41,7 +41,7 @@
 #'
 #' # Example 4: Sort data frame 'mtcars' by 'mpg' and 'cyl' in decreasing order
 #' df.sort(mtcars, mpg, cyl, decreasing = TRUE)
-df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
+df.sort <- function(data, ..., decreasing = FALSE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -54,22 +54,17 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
-  # No variables specified in ..., i.e., use all variables in x
-  if (isTRUE(length(var.names) == 0)) { var.names <- colnames(x) }
+  # No variables specified in ..., i.e., use all variables in data
+  if (isTRUE(length(var.names) == 0)) { var.names <- colnames(data) }
 
-  # Data frame for the argument 'x'?
-  if (isTRUE(!is.data.frame(x))) { stop("Please specify a data frame for the argument 'x'.", call. = FALSE) }
+  # Data frame for the argument 'data'?
+  if (isTRUE(!is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   # Check input '...'
-  (!var.names %in% colnames(x)) |>
-    (\(y) if (isTRUE(any(y))) {
-
-      stop(paste0("Variables specified in '...' were not all found in 'x': ", paste0(var.names[y], collapse = ", ")), call. = FALSE)
-
-    })()
+  (!var.names %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in '...' were not all found in 'data': ", paste0(var.names[y], collapse = ", ")), call. = FALSE) })()
 
   #_____________________________________________________________________________
   #
@@ -82,14 +77,14 @@ df.sort <- function(x, ..., decreasing = FALSE, check = TRUE) {
   #
   # Main Function --------------------------------------------------------------
 
-  object <- eval(substitute(order(..., decreasing = decreasing)), envir = x, enclos = parent.frame()) |>
-    (\(y) if (isTRUE(length(y) != nrow(x))) {
+  object <- eval(substitute(order(..., decreasing = decreasing)), envir = data, enclos = parent.frame()) |>
+    (\(y) if (isTRUE(length(y) != nrow(data))) {
 
-      stop("Length of ordering vectors does not match with the number of rows in 'x'.", call. = FALSE)
+      stop("Length of ordering vectors does not match with the number of rows in 'data'.", call. = FALSE)
 
     } else {
 
-      return(x[y, , drop = FALSE])
+      return(data[y, , drop = FALSE])
 
     })()
 

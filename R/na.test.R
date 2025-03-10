@@ -4,16 +4,13 @@
 #' Jamshidian and Jalalꞌs approach for testing the MCAR assumption. By default,
 #' the function performs the Little's MCAR test.
 #'
-#' @param ...      a matrix or data frame with incomplete data, where missing
-#'                 values are coded as \code{NA}. Alternatively, an expression
-#'                 indicating the variable names in \code{data} e.g.,
-#'                 \code{na.test(x1, x2, x3, data = dat)}. Note that the operators
+#' @param data     a data frame with incomplete data, where missing values are
+#'                 coded as \code{NA}.
+#' @param ...      an expression indicating the variable names in \code{data}, e.g.,
+#'                 \code{na.test(dat, x1, x2, x3)}. Note that the operators
 #'                 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'                 and \code{!} can also be used to select variables, see 'Details'
 #'                 in the \code{\link{df.subset}} function.
-#' @param data     a data frame when specifying one or more variables in the
-#'                 argument \code{...}. Note that the argument is \code{NULL}
-#'                 when specifying a matrix or data frame for the argument \code{...}.
 #' @param print    a character vector indicating which results to be printed on
 #'                 the console, i.e. \code{"all"} for Little's MCAR test and
 #'                 Jamshidian and Jalalꞌs approach, \code{"little"} (defaut) for
@@ -246,7 +243,7 @@
 #'
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
-#' \item{\code{data}}{matrix or data frame specified in \code{x}}
+#' \item{\code{data}}{data frame specified in \code{data}}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{result}}{list with result tables, i.e., \code{little} for the
 #'                      result table of the Little's MCAR test, \code{jamjal}
@@ -261,15 +258,12 @@
 #' # Example 1: Perform Little's MCAR test and Jamshidian and Jalalꞌs approach
 #' na.test(airquality)
 #'
-#' # Alternative specification using the 'data' argument,
-#' na.test(., data = airquality)
-#'
 #' # Example 2: Perform Jamshidian and Jalalꞌs approach
 #' na.test(airquality, print = "jamjal")
 #'
 #' # Example 3: Write results into a text file
 #' na.test(airquality, write = "NA_Test.txt")
-na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
+na.test <- function(data, ..., print = c("all", "little", "jamjal"),
                     impdat = NULL, delete = 6, method = c("npar", "normal"),
                     m = 20, seed = 123, nrep = 10000, n.min = 30,
                     pool = c("m", "med", "min", "max", "random"),
@@ -280,11 +274,11 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -293,29 +287,20 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract data
-    x <- data[, .var.names(..., data = data, check.chr = "data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- as.data.frame(data)
 
   }
-
-  # Matrix or data frame for the argument 'x'?
-  if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specifiy a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -360,7 +345,7 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
   if (isTRUE(check)) {
 
     # No missing values
-    if (isTRUE(all(!is.na(x.matrix)))) { stop("There are no missing values (NA) in the matrix or data frame specified in 'x'.", call. = FALSE) }
+    if (isTRUE(all(!is.na(x.matrix)))) { stop("There are no missing values (NA) in the data frame specified in 'data'.", call. = FALSE) }
 
     # Variables with completely missing
     apply(x.matrix, 2L, function(y) all(is.na(y))) |> (\(y) if (isTRUE(any(y))) { stop(paste("Following variables are completely missing:", paste(names(y)[which(y)], collapse = ", ")), call. = FALSE) })()
@@ -443,7 +428,7 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Result table ####
 
-    restab.little <- data.frame(no.cases = nrow(x), no.incomplete = misty::na.descript(x, data = NULL, output = FALSE)$result$L1$no.incomplete.l1, no.pattern = restab.LittleMCAR$missing.patterns,
+    restab.little <- data.frame(no.cases = nrow(x), no.incomplete = misty::na.descript(x, output = FALSE)$result$L1$no.incomplete.l1, no.pattern = restab.LittleMCAR$missing.patterns,
                                 statistic = restab.LittleMCAR$chi.square, df = restab.LittleMCAR$df, pval = restab.LittleMCAR$p.value, row.names = NULL)
 
   } else {
@@ -463,10 +448,10 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Result table ####
 
-    restab.hawkins <- data.frame(no.cases = nrow(restab.TestMCARNormality$dat.analysis), no.incomplete = misty::na.descript(restab.TestMCARNormality$dat.analysis, data = NULL, output = FALSE)$result$L1$no.incomplete.l1, no.pattern = restab.TestMCARNormality$g,
+    restab.hawkins <- data.frame(no.cases = nrow(restab.TestMCARNormality$dat.analysis), no.incomplete = misty::na.descript(restab.TestMCARNormality$dat.analysis, output = FALSE)$result$L1$no.incomplete.l1, no.pattern = restab.TestMCARNormality$g,
                                  statistic = restab.TestMCARNormality$tsa.hawkins, df = 2L*restab.TestMCARNormality$g, pval = restab.TestMCARNormality$pa.hawkins, row.names = NULL)
 
-    restab.anderson <- data.frame(no.cases = nrow(restab.TestMCARNormality$dat.analysis), no.incomplete = misty::na.descript(restab.TestMCARNormality$dat.analysis, data = NULL, output = FALSE)$result$L1$no.incomplete.l1, no.pattern = restab.TestMCARNormality$g,
+    restab.anderson <- data.frame(no.cases = nrow(restab.TestMCARNormality$dat.analysis), no.incomplete = misty::na.descript(restab.TestMCARNormality$dat.analysis, output = FALSE)$result$L1$no.incomplete.l1, no.pattern = restab.TestMCARNormality$g,
                                   statistic = restab.TestMCARNormality$tsa.anderson, pval = restab.TestMCARNormality$pa.anderson, row.names = NULL)
 
   } else {
@@ -482,12 +467,8 @@ na.test <- function(..., data = NULL, print = c("all", "little", "jamjal"),
   object <- list(call = match.call(),
                  type = "na.test",
                  data = x,
-                 args = list(print = print, impdat = impdat, delete = delete, method = method,
-                             m = m, seed = seed, nrep = nrep, n.min = n.min, pool = pool,
-                             alpha = alpha, digits = digits, p.digits = p.digits, as.na = NULL,
-                             write = write, append = append, check = TRUE, output = TRUE),
-                 result = list(little = restab.little,
-                               jamjal = restab.TestMCARNormality, hawkins = restab.hawkins, anderson = restab.anderson))
+                 args = list(print = print, impdat = impdat, delete = delete, method = method, m = m, seed = seed, nrep = nrep, n.min = n.min, pool = pool, alpha = alpha, digits = digits, p.digits = p.digits, as.na = NULL, write = write, append = append, check = check, output = output),
+                 result = list(little = restab.little, jamjal = restab.TestMCARNormality, hawkins = restab.hawkins, anderson = restab.anderson))
 
   class(object) <- "misty.object"
 

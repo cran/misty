@@ -12,29 +12,25 @@
 #' parameter estimates, modification indices, and residual correlation matrix can
 #' be requested by specifying the argument \code{print}.
 #'
-#' @param ...          a matrix or data frame. If \code{model = NULL}, confirmatory
-#'                     factor analysis based on a measurement model with one factor
-#'                     labeled \code{f} comprising all variables in the matrix or
-#'                     data frame specified in \code{x} for evaluating between-group
-#'                     measurement invariance for the grouping variable specified
-#'                     in the argument \code{group} is conducted. Longitudinal
-#'                     measurement invariance evaluation can only be conducted by
-#'                     specifying the model using the argument \code{model}. Note
-#'                     that the cluster variable is excluded from \code{x} when
-#'                     specifying \code{cluster}. If \code{model} is specified,
-#'                     the matrix or data frame needs to contain all variables
-#'                     used in the argument \code{model} and the cluster variable
-#'                     when specifying the name of the cluster variable in the
-#'                     argument \code{cluster}. Alternatively, an expression
-#'                     indicating the variable names in \code{data} e.g.,
-#'                     \code{item.invar(x1, x2, x2, data = dat)}. Note that the
-#'                     operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
-#'                     \code{::}, and \code{!} can also be used to select variables,
-#'                     see 'Details' in the \code{\link{df.subset}} function.
-#' @param data         a data frame when specifying one or more variables in the
-#'                     argument \code{...}. Note that the argument is \code{NULL}
-#'                     when specifying a a matrix or data frame for the argument
-#'                     \code{...}.
+#' @param data         a data frame. If \code{model = NULL}, confirmatory factor
+#'                     analysis based on a measurement model with one factor
+#'                     labeled \code{f} comprising all variables in the data frame
+#'                     specified in \code{data} for evaluating between-group measurement
+#'                     invariance for the grouping variable specified in the argument
+#'                     \code{group} is conducted. Longitudinal measurement invariance
+#'                     evaluation can only be conducted by specifying the model
+#'                     using the argument \code{model}. Note that the cluster
+#'                     variable is excluded from \code{data} when specifying \code{cluster}.
+#'                     If \code{model} is specified, the data frame needs to
+#'                     contain all variables used in the argument \code{model}
+#'                     and the cluster variable when specifying the name of the
+#'                     cluster variable in the argument \code{cluster}.
+#' @param ...          an expression indicating the variable names in \code{data},
+#'                     e.g., \code{item.invar(dat, x1, x2, x2, group = "group")}.
+#'                     Note that the operators \code{.}, \code{+}, \code{-},
+#'                     \code{~}, \code{:}, \code{::}, and \code{!} can also be
+#'                     used to select variables, see 'Details' in the
+#'                     \code{\link{df.subset}} function.
 #' @param model        a character vector specifying a measurement model with one
 #'                     factor, or a list of character vectors for specifying a
 #'                     measurement model with more than one factor for evaluating
@@ -78,10 +74,9 @@
 #'                     is likely to correlate with itself over time (Little, 2013,
 #'                     p. 164).
 #' @param group        either a character string indicating the variable name of
-#'                     the grouping variable in the matrix or data frame specified
-#'                     in \code{x} or a vector representing the groups for
-#'                     conducting multiple-group analysis to evaluate between-group
-#'                     measurement invariance.
+#'                     the grouping variable in the data frame specified in \code{data}
+#'                     or a vector representing the groups for conducting multiple-group
+#'                     analysis to evaluate between-group measurement invariance.
 #' @param long         logical: if \code{TRUE}, longitudinal measurement invariance
 #'                     evaluation is conducted. The longitudinal measurement model
 #'                     is specified by using the argument \code{model}. Note that
@@ -89,10 +84,10 @@
 #'                     longitudinal measurement invariance, but not both at the
 #'                     same time.
 #' @param cluster      either a character string indicating the variable name
-#'                     of the cluster variable in \code{...} or \code{data},
-#'                     or a vector representing the nested grouping structure
-#'                     (i.e., group or cluster variable) for computing
-#'                     cluster-robust standard errors.
+#'                     of the cluster variable in \code{data}, or a vector
+#'                     representing the nested grouping structure (i.e., group
+#'                     or cluster variable) for computing cluster-robust standard
+#'                     errors.
 #' @param invar        a character string indicating the level of measurement
 #'                     invariance to be evaluated, i.e., \code{config} to evaluate
 #'                     configural measurement invariance (i.e., same factor structure
@@ -207,7 +202,7 @@
 #' @param as.na        a numeric vector indicating user-defined missing values, i.e.,
 #'                     these values are converted to \code{NA} before conducting
 #'                     the analysis. Note that \code{as.na()} function is only
-#'                     applied to \code{x} but not to \code{group} or \code{cluster}.
+#'                     applied to \code{data} but not to \code{group} or \code{cluster}.
 #' @param write        a character string naming a file for writing the output into
 #'                     either a text file with file extension \code{".txt"} (e.g.,
 #'                     \code{"Output.txt"}) or Excel file with file extension
@@ -297,28 +292,25 @@
 #' #..................
 #' # Measurement model with one factor
 #'
-#' # Example 1a: Specification of the grouping variable in 'x'
-#' item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "sex")], group = "sex")
+#' # Example 1a: Specification using the argument '...'
+#' item.invar(HolzingerSwineford1939, x1:x4, group = "sex")
 #'
-#' # Example 1b: Specification of the grouping variable in 'group'
+#' # Example 1b: Alternative specification without using the argument '...'
 #' item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
 #'            group = HolzingerSwineford1939$sex)
 #'
-#' # Example 1c: Alternative specification using the 'data' argument
-#' item.invar(x1:x4, data = HolzingerSwineford1939, group = "sex")
+#' # Example 1c: Alternative specification without using the argument '...'
+#' item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "sex")], group = "sex")
 #'
 #' # Example 1d: Alternative specification using the argument 'model'
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "sex")
-#'
-#' # Example 1e: Alternative specification using the 'data' and 'model' argument
-#' item.invar(., data = HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "sex")
 #'
 #' #..................
 #' # Measurement model with two factors
 #'
 #' item.invar(HolzingerSwineford1939,
-#'            model = list(c("x1", "x2", "x3", "x4"),
-#'                         c("x5", "x6", "x7", "x8")), group = "sex")
+#'            model = list(c("x1", "x2", "x3", "x4"), c("x5", "x6", "x7", "x8")),
+#'            group = "sex")
 #'
 #' #..................
 #' # Configural, metric, scalar, and strict measurement invariance
@@ -343,12 +335,12 @@
 #'
 #' # Example 4b: Two residual covariances
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            rescov = list(c("x1", "x2"), c("x3", "x4")), group = "sex")
+#'            rescov = list(c("x1", "x4"), c("x3", "x4")), group = "sex")
 #'
 #' #..................
 #' # Scaled test statistic and cluster-robust standard errors
 #'
-#' # Example 5a: Specify cluster variable using a variable name in 'x'
+#' # Example 5a: Specify cluster variable using a variable name in 'data'
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "sex", cluster = "agemo")
 #'
@@ -416,7 +408,7 @@
 #'                      group = "sex", print = "all", output = FALSE)
 #' write.result(result, "Invariance.xlsx")
 #' }
-item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.long = TRUE,
+item.invar <- function(data, ..., model = NULL, rescov = NULL, rescov.long = TRUE,
                        group = NULL, long = FALSE, cluster = NULL,
                        invar = c("config", "metric", "scalar", "strict"),
                        partial = NULL, ident = c("marker", "var", "effect"),
@@ -432,11 +424,11 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   # Check if input 'model' is a character vector or list of character vectors
   if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
@@ -454,18 +446,15 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract data
-    x <- data[, .var.names(..., data = data, group = group, cluster = cluster, check.chr = "a matrix or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- as.data.frame(data[, .var.names(..., data = data, group = group, cluster = cluster)])
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
 
-    # Cluster variable
+    # Splitting variable
     if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -473,19 +462,14 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
+    # Data frame
+    x <- as.data.frame(data)
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
-    if (isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unlist(group) }
-    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unlist(cluster) }
-
-    # Data, grouping, and cluster variable
+    # Data and cluster
     var.group <- .var.group(data = x, group = group, cluster = cluster)
 
     # Data
-    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
 
     # Grouping variable
     if (isTRUE(!is.null(var.group$group))) { group <- var.group$group }
@@ -494,6 +478,10 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
+
+  # Convert 'group' and 'cluster' as tibble into a vector
+  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
+  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
 
   #_____________________________________________________________________________
   #
@@ -514,18 +502,18 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   # Additional checks
   if (isTRUE(check)) {
 
-    ## Check input 'x' ##
+    ## Check input 'data' ##
     if (isTRUE(is.null(model))) {
 
-      # No cluster or grouping variable in 'x'
+      # No cluster or grouping variable in 'data'
       if (isTRUE((is.null(cluster) || length(cluster) != 1L) && (is.null(group) || length(group) != 1L))) {
 
-        if (isTRUE(ncol(data.frame(x)) < 3L)) { stop("Please specify at least three indicators for the measurement model in 'x'.", call. = FALSE) }
+        if (isTRUE(ncol(data.frame(x)) < 3L)) { stop("Please specify at least three indicators for the measurement model in 'data'.", call. = FALSE) }
 
-      # Cluster or grouping variable in 'x'
+      # Cluster or grouping variable in 'data'
       } else if (isTRUE( length(cluster) == 1L || length(group) == 1L)) {
 
-        if (isTRUE(ncol(data.frame(x)[, !colnames(data.frame(x)) %in% c(cluster, group), drop = FALSE]) < 3L)) { stop("Please specify at least three indicators for the measurement model in 'x'.", call. = FALSE) }
+        if (isTRUE(ncol(data.frame(x)[, !colnames(data.frame(x)) %in% c(cluster, group), drop = FALSE]) < 3L)) { stop("Please specify at least three indicators for the measurement model in 'data'.", call. = FALSE) }
 
       }
 
@@ -580,7 +568,7 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
         rescov.items <- !unique(unlist(rescov)) %in% colnames(x)
         if (isTRUE(any(rescov.items))) {
 
-          stop(paste0("Items specified in the argument 'rescov' were not found in 'x': ", paste(unique(unlist(rescov))[rescov.items], collapse = ", ")), call. = FALSE)
+          stop(paste0("Items specified in the argument 'rescov' were not found in 'data': ", paste(unique(unlist(rescov))[rescov.items], collapse = ", ")), call. = FALSE)
 
         }
 
@@ -601,20 +589,20 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     ## Check input 'group' ##
     if (isTRUE(!is.null(group))) {
 
-      # Name of the grouping variable in 'x'
+      # Name of the grouping variable in 'data'
       if (isTRUE(length(group) == 1L)) {
 
         # One grouping variable
-        if (isTRUE(!is.character(group))) { stop("Please specify a character string for the name of the grouping variable in 'x'", call. = FALSE) }
+        if (isTRUE(!is.character(group))) { stop("Please specify a character string for the name of the grouping variable in 'data'", call. = FALSE) }
 
-        # Grouping variable in 'x'
-        if (isTRUE(!group %in% colnames(x))) { stop(paste0("Grouping variable \"", group, "\" specified in 'group' was not found in 'x'"), call. = FALSE) }
+        # Grouping variable in 'data'
+        if (isTRUE(!group %in% colnames(x))) { stop(paste0("Grouping variable \"", group, "\" specified in 'group' was not found in 'data'"), call. = FALSE) }
 
       # Group variable
       } else {
 
         # Length of grouping variable
-        if (isTRUE(nrow(x) != length(group))) { stop("The grouping variable does not match with the number of rows in 'x'.",call. = FALSE) }
+        if (isTRUE(nrow(x) != length(group))) { stop("The grouping variable does not match with the number of rows in 'data'.",call. = FALSE) }
 
         # Number of groups
         if (isTRUE(length(unique(na.omit(group))) == 1L)) { stop("There is only one group represented in the grouping variable 'group'.", call. = FALSE) }
@@ -639,20 +627,20 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
     ## Check input 'cluster' ##
     if (isTRUE(!is.null(cluster))) {
 
-      # Name of the cluster variable in 'x'
+      # Name of the cluster variable in 'data'
       if (isTRUE(length(cluster) == 1L)) {
 
         # One cluster variable
-        if (isTRUE(!is.character(cluster))) { stop("Please specify a character string for the name of the cluster variable in 'x'", call. = FALSE) }
+        if (isTRUE(!is.character(cluster))) { stop("Please specify a character string for the name of the cluster variable in 'data'", call. = FALSE) }
 
         # Cluster variable in 'x'
-        if (isTRUE(!cluster %in% colnames(x))) { stop(paste0("Cluster variable \"", cluster, "\" specified in 'cluster' was not found in 'x'"), call. = FALSE) }
+        if (isTRUE(!cluster %in% colnames(x))) { stop(paste0("Cluster variable \"", cluster, "\" specified in 'cluster' was not found in 'data'"), call. = FALSE) }
 
       # Cluster variable
       } else {
 
         # Length of cluster variable
-        if (isTRUE(nrow(x) != length(cluster))) { stop("The cluster variable does not match with the number of rows in 'x'.",call. = FALSE) }
+        if (isTRUE(nrow(x) != length(cluster))) { stop("The cluster variable does not match with the number of rows in 'data'.",call. = FALSE) }
 
         # Number of groups
         if (isTRUE(length(unique(na.omit(cluster))) == 1L)) { stop("There is only one group represented in the cluster variable 'cluster'.", call. = FALSE) }
@@ -674,7 +662,7 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   ## Manifest Variables ####
 
   #...................
-  ### Model specification with 'x' ####
+  ### Model specification with 'data' ####
   if (isTRUE(is.null(model))) {
 
     var.mod <- colnames(x)
@@ -1085,7 +1073,7 @@ item.invar <- function(..., data = NULL, model = NULL, rescov = NULL, rescov.lon
   #### Between-group measurement invariance ####
   if (isTRUE(!long)) {
 
-    ##### Model specification with 'x'
+    ##### Model specification with 'data'
     if (isTRUE(is.null(model) || !is.list(model))) {
 
       # Configural

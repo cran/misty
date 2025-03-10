@@ -4,24 +4,18 @@
 \alias{crosstab}
 \title{Cross Tabulation}
 \usage{
-crosstab(...,  data = NULL, print = c("no", "all", "row", "col", "total"),
+crosstab(data, ..., print = c("no", "all", "row", "col", "total"),
          freq = TRUE, split = FALSE, na.omit = TRUE, digits = 2, as.na = NULL,
          write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{ a matrix or data frame with two or three columns. Alternatively,
-an expression indicating the variable names in \code{data}.
-Note, variable names are specified without quotes \code{''} or
-double quotes \code{""}, e.g., \code{crosstab(x1, x2, data = dat)}.
-Note that the operators
+\item{data}{a data frame with two or three columns.}
+
+\item{...}{an expression indicating the variable names in \code{data}, e.g.,
+\code{crosstab(dat, x1, x2, x3)}. Note that the operators
 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
-
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument
-\code{...}.}
 
 \item{print}{a character string or character vector indicating which
 percentage(s) to be printed on the console, i.e., no percentages
@@ -66,7 +60,7 @@ Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{matrix or data frame specified in \code{...}}
+  \item{\code{data}}{data frame specified in \code{data}}
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{list with result tables, i.e., \code{crosstab} for the
                        cross tabulation, \code{freq.a} for the absolute frequencies,
@@ -82,48 +76,48 @@ frequencies and row-wise, column-wise and total percentages.
 #----------------------------------------------------------------------------
 # Two-Dimensional Table
 
-# Example 1a: Cross Tabulation for 'vs' and 'am'
+# Example 1: Cross Tabulation for 'vs' and 'am'
+crosstab(mtcars, vs, am)
+
+# Alternative specification without using the '...' argument
 crosstab(mtcars[, c("vs", "am")])
 
-# Example 1b: Alternative specification using the 'data' argument
-crosstab(vs, am, data = mtcars)
-
 # Example 2: Cross Tabulation, print all percentages
-crosstab(mtcars[, c("vs", "am")], print = "all")
+crosstab(mtcars, vs, am, print = "all")
 
 # Example 3: Cross Tabulation, print row-wise percentages
-crosstab(mtcars[, c("vs", "am")], print = "row")
+crosstab(mtcars, vs, am, print = "row")
 
 # Example 4: Cross Tabulation, print col-wise percentages
-crosstab(mtcars[, c("vs", "am")], print = "col")
+crosstab(mtcars, vs, am, print = "col")
 
 # Example 5: Cross Tabulation, print total percentages
-crosstab(mtcars[, c("vs", "am")], print = "total")
+crosstab(mtcars, vs, am, print = "total")
 
 # Example 6: Cross Tabulation, print all percentages, split output table
-crosstab(mtcars[, c("vs", "am")], print = "all", split = TRUE)
+crosstab(mtcars, vs, am, print = "all", split = TRUE)
 
 #----------------------------------------------------------------------------
 # Three-Dimensional Table
 
-# Example 7a: Cross Tabulation for 'vs', 'am', ane 'gear'
+# Example 7: Cross Tabulation for 'vs', 'am', ane 'gear'
+crosstab(mtcars, vs:gear)
+
+# Alternative specification without using the '...' argument
 crosstab(mtcars[, c("vs", "am", "gear")])
 
-# Example 7b: Alternative specification using the 'data' argument
-crosstab(vs:gear, data = mtcars)
-
 # Example 8: Cross Tabulation, print all percentages
-crosstab(mtcars[, c("vs", "am", "gear")], print = "all")
+crosstab(mtcars, vs:gear, print = "all")
 
 # Example 9: Cross Tabulation, print all percentages, split output table
-crosstab(mtcars[, c("vs", "am", "gear")], print = "all", split = TRUE)
+crosstab(mtcars, vs:gear, print = "all", split = TRUE)
 
 \dontrun{
-# Example 10a: Write results into a text file
-crosstab(mtcars[, c("vs", "am")], print = "all", write = "Crosstab.txt")
+# Example 10a: Write Results into a text file
+crosstab(mtcars, vs:gear, print = "all", write = "Crosstab.txt")
 
-# Example 10b: Write results into an Excel file
-crosstab(mtcars[, c("vs", "am")], print = "all", write = "Crosstab.xlsx")}
+# Example 10b: Write Results into a Excel file
+crosstab(mtcars, vs:gear, print = "all", write = "Crosstab.xlsx")}
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology

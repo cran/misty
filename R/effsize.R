@@ -10,19 +10,15 @@
 #' chi-square test of independence for two variables with at least one polytomous
 #' variable.
 #'
-#' @param ...         a vector, factor, matrix or data frame. Alternatively, an
-#'                    expression indicating the variable names in \code{data} e.g.,
-#'                    \code{as.na(x1, x2, data = dat)}. When specifying more than
+#' @param data        a vector, factor or data frame.
+#' @param ...         an expression indicating the variable names in \code{data},
+#'                    e.g., \code{effsize(dat, x1, x2)}. When specifying more than
 #'                    one variable, the first variable is always the focal variable
-#'                    in the Chi-square test of independence which association with
-#'                    all other variables is investigated. Note that the operators
-#'                    \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-#'                    and \code{!} can also be used to select variables, see
-#'                    'Details' in the \code{\link{df.subset}} function.
-#' @param data        a data frame when specifying one or more variables in the
-#'                    argument \code{...}. Note that the argument is \code{NULL}
-#'                    when specifying a vector, factor, matrix, array, data frame,
-#'                    or list for the argument \code{...}.
+#'                    in the Chi-square test of independence which association
+#'                    with all other variables is investigated. Note that the
+#'                    operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+#'                    \code{::}, and \code{!} can also be used to select variables,
+#'                    see 'Details' in the \code{\link{df.subset}} function.
 #' @param type        a character string indicating the type of effect size, i.e.,
 #'                    \code{phi} for phi coefficient, \code{cramer} for Cramer's
 #'                    V, \code{tschuprow} for Tschuprow’s T, \code{cont} for
@@ -39,9 +35,9 @@
 #'                    and Tschuprow’s \emph{T} are corrected for small-sample bias.
 #' @param indep       logical: if \code{TRUE}, effect size computation is based
 #'                    on a chi-square test of independence (default when specifying
-#'                    two variable in \code{...}), if \code{FALSE} effect size
-#'                    computation is based on a chi-square goodness-of-fit test
-#'                    (default when specifying one variable in \code{...}).
+#'                    two variable, if \code{FALSE} effect size computation is
+#'                    based on a chi-square goodness-of-fit test (default when
+#'                    specifying one variable).
 #' @param p           a numeric vector specifying the expected proportions in
 #'                    each category of the categorical variable when conducting a
 #'                    chi-square goodness-of-fit test. By default, the expected
@@ -114,35 +110,37 @@
 #'
 #' @examples
 #' # Example 1: Phi coefficient for 'vs' and 'am'
+#' effsize(mtcars, vs, am)
+#'
+#' # Alternative specification without using the '...' argument
 #' effsize(mtcars[, c("vs", "am")])
 #'
-#' # Alternative specification using the 'data' argument
-#' effsize(vs, am, data = mtcars)
-#'
 #' # Example 2: Bias-corrected Cramer's V for 'gear' and 'carb'
-#' effsize(gear, carb, data = mtcars)
+#' effsize(mtcars, gear, carb)
 #'
 #' # Example 3: Cramer's V (without bias-correction) for 'gear' and 'carb'
-#' effsize(gear, carb, data = mtcars, adjust = FALSE)
+#' effsize(mtcars, gear, carb, adjust = FALSE)
 #'
 #' # Example 4: Adjusted Pearson's contingency coefficient for 'gear' and 'carb'
-#' effsize(gear, carb, data = mtcars, type = "cont")
+#' effsize(mtcars, gear, carb, type = "cont")
 #'
 #' # Example 5: Fei for 'gear'
-#' effsize(gear, data = mtcars)
+#' effsize(mtcars, gear)
 #'
 #' # Example 6: Bias-corrected Cramer's V for 'cyl' and 'vs', 'am', 'gear', and 'carb'
+#' effsize(mtcars, cyl, vs:carb)
+#'
+#' # Alternative specification without using the '...' argument
 #' effsize(mtcars[, c("cyl", "vs", "am", "gear", "carb")])
 #'
-#' # Alternative specification using the 'data' argument
-#' effsize(cyl, vs:carb, data = mtcars)
-#'
+#' \dontrun{
 #' # Example 7a: Write Results into a text file
-#' effsize(cyl, vs:carb, data = mtcars, write = "Cramer.txt")
+#' effsize(mtcars, cyl, vs:carb, write = "Cramer.txt")
 #'
 #' # Example 7b: Write Results into a Excel file
-#' effsize(cyl, vs:carb, data = mtcars, write = "Cramer.xlsx")
-effsize <- function(..., data = NULL, type = c("phi", "cramer", "tschuprow", "cont", "w", "fei"),
+#' effsize(mtcars, cyl, vs:carb, write = "Cramer.xlsx")
+#' }
+effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w", "fei"),
                     alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
                     adjust = TRUE, indep = TRUE, p = NULL, digits = 3, as.na = NULL,
                     write = NULL, append = TRUE, check = TRUE, output = TRUE) {
@@ -151,11 +149,11 @@ effsize <- function(..., data = NULL, type = c("phi", "cramer", "tschuprow", "co
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a a vector, factor or data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -164,24 +162,18 @@ effsize <- function(..., data = NULL, type = c("phi", "cramer", "tschuprow", "co
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract variables
-    x <- data[, .var.names(..., data = data, check.chr = "a vector, factor, matrix or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- data[, .var.names(..., data = data)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Convert 'data' as tibble into data frame
+    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   }
 
@@ -389,10 +381,7 @@ effsize <- function(..., data = NULL, type = c("phi", "cramer", "tschuprow", "co
   object <- list(call = match.call(),
                  type = "effsize",
                  data = x,
-                 args = list(type = type, alternative = alternative, conf.level = conf.level,
-                             adjust = adjust, indep = indep, p = p, digits = digits,
-                             as.na = as.na, write = write, append = append, check = check,
-                             output = output),
+                 args = list(type = type, alternative = alternative, conf.level = conf.level, adjust = adjust, indep = indep, p = p, digits = digits, as.na = as.na, write = write, append = append, check = check, output = output),
                  result = result)
 
   class(object) <- "misty.object"

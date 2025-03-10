@@ -3,18 +3,14 @@
 #' This function computes summary statistics for one or more than one variable,
 #' optionally by a grouping and/or split variable.
 #'
-#' @param ...      a numeric vector, matrix or data frame with numeric variables,
-#'                 i.e., factors and character variables are excluded from \code{...}
-#'                 before conducting the analysis. Alternatively, an expression
-#'                 indicating the variable names in \code{data} e.g.,
-#'                 \code{descript(x1, x2, x3, data = dat)}. Note that the operators
+#' @param data     a numeric vector or data frame with numeric variables, i.e.,
+#'                 factors and character variables are excluded from \code{data}
+#'                 before conducting the analysis.
+#' @param ...      an expression indicating the variable names in \code{data},
+#'                 e.g., \code{descript(dat, x1, x2, x3)}. Note that the operators
 #'                 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'                 and \code{!} can also be used to select variables, see 'Details'
 #'                 in the \code{\link{df.subset}} function.
-#' @param data     a data frame when specifying one or more variables in the
-#'                 argument \code{...}. Note that the argument is \code{NULL}
-#'                 when specifying a numeric vector, matrix, or data frame for
-#'                 the argument \code{...}.
 #' @param print    a character vector indicating which statistical measures to be
 #'                 printed on the console, i.e. \code{n} (number of observations),
 #'                 \code{nNA} (number of missing values), \code{pNA} (percentage of
@@ -44,7 +40,7 @@
 #' @param as.na    a numeric vector indicating user-defined missing values,
 #'                 i.e. these values are converted to \code{NA} before conducting
 #'                 the analysis. Note that \code{as.na()} function is only applied
-#'                 to \code{...}, but not to \code{group} or \code{split}.
+#'                 to \code{data}, but not to \code{group} or \code{split}.
 #' @param write    a character string naming a file for writing the output into
 #'                 either a text file with file extension \code{".txt"} (e.g.,
 #'                 \code{"Output.txt"}) or Excel file with file extension
@@ -77,7 +73,7 @@
 #'
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
-#' \item{\code{data}}{list with the input specified in \code{...}, \code{data}, \code{group}, and \code{split}}
+#' \item{\code{data}}{list with the input specified in \code{data}, \code{group}, and \code{split}}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{result}}{result table}
 #'
@@ -88,38 +84,39 @@
 #' # Descriptive statistics
 #'
 #' # Example 1a: Descriptive statistics for 'mpg', 'cyl', and 'hp'
-#' descript(mpg, cyl, hp, data = mtcars)
+#' descript(mtcars, mpg, cyl, hp)
 #'
-#' # Alternative specification using the 'data' argument
+#' # Alternative specification without using the '...' argument
 #' descript(mtcars[, c("mpg", "cyl", "hp")])
 #'
 #' # Example 1b: Print all available statistical measures
-#' descript(mpg, cyl, hp, data = mtcars, print = "all")
+#' descript(mtcars, mpg, cyl, hp, print = "all")
 #'
 #' # Example 1c: Print default statistical measures plus median
-#' descript(mpg, cyl, hp, data = mtcars, print = c("default", "med"))
+#' descript(mtcars, mpg, cyl, hp, print = c("default", "med"))
 #'
 #' #----------------------------------------------------------------------------
 #' # Grouping and Split Variable
 #'
 #' # Example 2a: Grouping variable
-#' descript(mpg, cyl, hp, data = mtcars, group = "vs")
+#' descript(mtcars, mpg, cyl, hp, group = "vs")
 #'
-#' # Alternative specification
+#' # Alternative specification without using the '...' argument
 #' descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs)
 #'
 #' # Example 2b: Split variable
-#' descript(mpg, cyl, hp, data = mtcars, split = "am")
+#' descript(mtcars, mpg, cyl, hp, split = "am")
 #'
-#' # Alternative specification
+#' # Alternative specification without using the '...' argument
 #' descript(mtcars[, c("mpg", "cyl", "hp")], split = mtcars$am)
 #'
 #' # Example 2c: Grouping and split variable
-#' descript(mpg, cyl, hp, data = mtcars, group = "vs", split = "am")
+#' descript(mtcars, mpg, cyl, hp, group = "vs", split = "am")
 #'
-#' # Alternative specification
+#' # Alternative specification without using the '...' argument
 #' descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs, split = mtcars$am)
 #'
+#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Write Output
 #'
@@ -128,7 +125,8 @@
 #'
 #' # Example 3b: Excel file
 #' descript(mtcars, write = "Descript_Excel.xlsx")
-descript <- function(..., data = NULL,
+#' }
+descript <- function(data, ...,
                      print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
                      group = NULL, split = NULL, sample = FALSE, sort.var = FALSE, na.omit = FALSE,
                      digits = 2, as.na = NULL, write = NULL, append = TRUE,
@@ -138,11 +136,11 @@ descript <- function(..., data = NULL,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -151,13 +149,10 @@ descript <- function(..., data = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract variables
-    x <- data[, .var.names(..., data = data, group = group, split = split, check.chr = "a numeric vector, matrix or data frame"), drop = FALSE]
+    # Extract data and convert tibble into data frame or vector
+    x <- data[, .var.names(..., data = data, group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -170,13 +165,8 @@ descript <- function(..., data = NULL,
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
-    if (isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unlist(group) }
-    if (isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { group <- unlist(split) }
+    # Data frame
+    x <- as.data.frame(data)
 
     # Data and cluster
     var.group <- .var.group(data = x, group = group, split = split)
@@ -191,6 +181,10 @@ descript <- function(..., data = NULL,
     if (isTRUE(!is.null(var.group$split))) { split <- var.group$split }
 
   }
+
+  # Convert 'group' and 'split' as tibble into a vector
+  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
+  if (!is.null(split) && isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { split <- unname(unlist(split)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
@@ -217,7 +211,7 @@ descript <- function(..., data = NULL,
 
     x <- which(sapply(names(x), function(y) identical(group, x[, y]))) |> (\(z) if (isTRUE(length(z) != 0L)) { return(x[, -z]) } else { x })()
 
-    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the grouping variable from the matrix or data frame, there are no variables left.") }
+    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the grouping variable from the data frame, there are no variables left.") }
 
   }
 
@@ -226,7 +220,7 @@ descript <- function(..., data = NULL,
 
     x <- which(sapply(names(x), function(y) identical(split, x[, y]))) |> (\(z) if (isTRUE(length(z) != 0L)) { return(x[, -z]) } else { x })()
 
-    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the split variable from the matrix or data frame, there are no variables left.") }
+    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the split variable from the data frame, there are no variables left.") }
 
   }
 
@@ -356,21 +350,21 @@ descript <- function(..., data = NULL,
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    result <- lapply(split(x, f = group), function(y) misty::descript(y, data = NULL, group = NULL, split = NULL, sort.var = sort.var, check = FALSE, output = FALSE)$result) |> (\(y) data.frame(group = rep(names(y), each = ncol(x)), eval(parse(text = paste0("rbind(", paste0("y[[", seq_len(length(y)), "]]", collapse = ", "), ")")))) )()
+    result <- lapply(split(x, f = group), function(y) misty::descript(y, group = NULL, split = NULL, sort.var = sort.var, check = FALSE, output = FALSE)$result) |> (\(y) data.frame(group = rep(names(y), each = ncol(x)), eval(parse(text = paste0("rbind(", paste0("y[[", seq_len(length(y)), "]]", collapse = ", "), ")")))) )()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## No Grouping, Split ####
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    result <- lapply(split(data.frame(x), f = split), function(y) misty::descript(y, data = NULL, group = NULL, split = NULL, sort.var = sort.var, check = FALSE, output = FALSE)$result)
+    result <- lapply(split(data.frame(x), f = split), function(y) misty::descript(y, group = NULL, split = NULL, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, Split ####
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    result <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::descript(y[, -grep("group", names(y))], data = NULL, group = y$group, split = NULL, sort.var = sort.var, check = FALSE, output = FALSE)$result)
+    result <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::descript(y[, -grep("group", names(y))], group = y$group, split = NULL, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
   }
 

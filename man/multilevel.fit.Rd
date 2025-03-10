@@ -4,11 +4,11 @@
 \alias{multilevel.fit}
 \title{Simultaneous and Level-Specific Multilevel Model Fit Information}
 \usage{
-multilevel.fit(x, print = c("all", "summary", "fit"), digits = 3, p.digits = 3,
+multilevel.fit(model, print = c("all", "summary", "fit"), digits = 3, p.digits = 3,
                write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a fitted model of class \code{"lavaan"} from the \pkg{lavaan}
+\item{model}{a fitted model of class \code{"lavaan"} from the \pkg{lavaan}
 package.}
 
 \item{print}{a character string or character vector indicating which results
@@ -46,7 +46,7 @@ Returns an object of class \code{misty.object}, which is a list with following
 entries:
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
-\item{\code{x}}{a fitted model of class \code{"lavaan"}}
+\item{\code{model}}{a fitted model of class \code{"lavaan"}}
 \item{\code{args}}{specification of function arguments}
 \item{\code{model}}{specified models, i.e., \code{mod.l1} for the model at the
                     Within level, \code{mod.l1.syntax} for the lavaan syntax

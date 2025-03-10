@@ -4,25 +4,21 @@
 \alias{na.auxiliary}
 \title{Auxiliary Variables Analysis}
 \usage{
-na.auxiliary(..., data = NULL, model = NULL, estimator = c("ML", "MLR"),
+na.auxiliary(data, ..., model = NULL, estimator = c("ML", "MLR"),
              missing = c("fiml", "two.stage", "robust.two.stage", "doubly.robust"),
              tri = c("both", "lower", "upper"), weighted = FALSE, correct = FALSE,
              digits = 2, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
              check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame with incomplete data, where missing
-values are coded as \code{NA}. Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{na.auxiliary(x1, x2, x3, data = dat)}. Note that the
+\item{data}{a data frame with incomplete data, where missing
+values are coded as \code{NA}.}
+
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{na.auxiliary(dat, x1, x2, x3)}. Note that the
 operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
 \code{::}, and \code{!} can also be used to select variables,
 see 'Details' in the \code{\link{df.subset}} function.}
-
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument
-\code{...}.}
 
 \item{model}{a character string specifying the substantive model predicting
 an continuous outcome variable using a set of predictor variables
@@ -114,14 +110,8 @@ vectors) are excluded from to the analysis.
 # Example 1: Auxiliary variables
 na.auxiliary(airquality)
 
-# Alternative specification using the 'data' argument
-na.auxiliary(., data = airquality)
-
 # Example 2: Semi-partial correlation coefficients
 na.auxiliary(airquality, model = "Ozone ~ Solar.R + Wind")
-
-# Alternative specification using the 'data' argument
-na.auxiliary(Temp, Month, Day, data = airquality, model = "Ozone ~ Solar.R + Wind")
 
 \dontrun{
 # Example 3a: Write Results into a text file

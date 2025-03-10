@@ -5,65 +5,64 @@
 \alias{ci.median}
 \title{(Bootstrap) Confidence Intervals for Arithmetic Means and Medians}
 \usage{
-ci.mean(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALSE,
-        boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"), R = 1000,
-        seed = NULL, sample = TRUE, alternative = c("two.sided", "less", "greater"),
+ci.mean(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
+        boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"),
+        R = 1000, seed = NULL, sample = TRUE,
+        alternative = c("two.sided", "less", "greater"),
         conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
-        na.omit = FALSE, digits = 2, as.na = NULL, plot = c("none", "ci", "boot"),
-        point.size = 2.5, point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5,
-        hist = TRUE, binwidth = NULL, bins = NULL, alpha = 0.4, fill = "gray85",
-        density = TRUE, density.col = "#0072B2", density.linewidth = 0.5,
-        density.linetype = "solid", plot.point = TRUE, point.col = "#CC79A7",
-        point.linewidth = 0.6, point.linetype = "solid", plot.ci = TRUE,
-        ci.col = "black", ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE,
-        intercept = 0, linetype = "solid", line.col = "gray65", xlab = NULL,
-        ylab = NULL, xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(),
+        na.omit = FALSE, digits = 2, as.na = NULL,
+        plot = c("none", "ci", "boot"), point.size = 2.5, point.shape = 19,
+        errorbar.width = 0.3, dodge.width = 0.5, hist = TRUE,
+        binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85", density = TRUE,
+        density.col = "#0072B2", density.linewidth = 0.5, density.linetype = "solid",
+        point = TRUE, point.col = "#CC79A7", point.linewidth = 0.6,
+        point.linetype = "solid", ci = TRUE, ci.col = "black",
+        ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE, intercept = 0,
+        linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
+        xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(),
         ybreaks = ggplot2::waiver(), axis.title.size = 11, axis.text.size = 10,
         strip.text.size = 11, title = NULL, subtitle = NULL, group.col = NULL,
         plot.margin = NA, legend.title = "",
         legend.position = c("right", "top", "left", "bottom", "none"),
         legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-        facet.scales = "free", saveplot = NULL, width = NA, height = NA,
-        units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
-        check = TRUE, output = TRUE)
+        facet.scales = "free", filename = NULL, width = NA, height = NA,
+        units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL,
+        append = TRUE, check = TRUE, output = TRUE)
 
-ci.median(..., data = NULL,
-          boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"), R = 1000,
-          seed = NULL, sample = TRUE, alternative = c("two.sided", "less", "greater"),
+ci.median(data, ..., boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"),
+          R = 1000, seed = NULL, sample = TRUE,
+          alternative = c("two.sided", "less", "greater"),
           conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
           na.omit = FALSE, digits = 2, as.na = NULL, plot = c("none", "ci", "boot"),
           point.size = 2.5, point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5,
-          hist = TRUE, binwidth = NULL, bins = NULL, alpha = 0.4, fill = "gray85",
+          hist = TRUE, binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85",
           density = TRUE, density.col = "#0072B2", density.linewidth = 0.5,
-          density.linetype = "solid", plot.point = TRUE, point.col = "#CC79A7",
-          point.linewidth = 0.6, point.linetype = "solid", plot.ci = TRUE,
-          ci.col = "black", ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE,
-          intercept = 0, linetype = "solid", line.col = "gray65", xlab = NULL,
-          ylab = NULL, xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(),
+          density.linetype = "solid", point = TRUE, point.col = "#CC79A7",
+          point.linewidth = 0.6, point.linetype = "solid", ci = TRUE, ci.col = "black",
+          ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE, intercept = 0,
+          linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
+          xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(),
           ybreaks = ggplot2::waiver(), axis.title.size = 11, axis.text.size = 10,
           strip.text.size = 11, title = NULL, subtitle = NULL, group.col = NULL,
-          plot.margin = NA, legend.title = "",
+          plot.margin = NA,  legend.title = "",
           legend.position = c("right", "top", "left", "bottom", "none"),
           legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-          facet.scales = "free", saveplot = NULL, width = NA, height = NA,
+          facet.scales = "free", filename = NULL, width = NA, height = NA,
           units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
           check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a numeric vector, matrix or data frame with numeric
+\item{data}{a numeric vector or data frame with numeric
 variables, i.e., factors and character variables are
-excluded from \code{x} before conducting the analysis.
-Alternatively, an expression indicating the variable
-names in \code{data} e.g., \code{ci.mean(x1, x2, data = dat)}.
-Note that the operators \code{.}, \code{+}, \code{-},
-\code{~}, \code{:}, \code{::}, and \code{!} can also
-be used to select variables, see 'Details' in the
-\code{\link{df.subset}} function.}
+excluded from \code{data} before conducting the
+analysis.}
 
-\item{data}{a data frame when specifying one or more variables in
-the argument \code{...}. Note that the argument is
-\code{NULL} when specifying a numeric vector, matrix
-or data frame for the argument \code{...}.}
+\item{...}{an expression indicating the variable names in \code{data}
+e.g., \code{ci.mean(x1, x2, data = dat)}. Note that the
+operators \code{.}, \code{+}, \code{-}, \code{~},
+\code{:}, \code{::}, and \code{!} can also be used
+to select variables, see 'Details' in the
+\code{\link{df.subset}} function.}
 
 \item{sigma}{a numeric vector indicating the population standard
 deviation when computing confidence intervals for the
@@ -71,7 +70,7 @@ arithmetic mean with known standard deviation Note
 that either argument \code{sigma} or argument
 \code{sigma2} is specified and it is only possible to
 specify one value for the argument \code{sigma} even
-though multiple variables are specified in \code{x}.}
+though multiple variables are specified in \code{data}.}
 
 \item{sigma2}{a numeric vector indicating the population variance
 when computing confidence intervals for the arithmetic
@@ -79,7 +78,7 @@ mean with known variance. Note that either argument
 \code{sigma} or argument \code{sigma2} is specified
 and it is only possible to specify one value for the
 argument \code{sigma2} even though multiple variables
-are specified in \code{x}.}
+are specified in \code{data}.}
 
 \item{adjust}{logical: if \code{TRUE}, difference-adjustment for
 the confidence intervals for the arithmetic mean
@@ -117,16 +116,18 @@ must be one of \code{"two.sided"} (default),
 level of the interval.}
 
 \item{group}{either a character string indicating the variable name
-of the grouping variable in \code{...} or \code{data},
-or a vector representing the grouping variable. Note
-that a grouping variable can only be used when computing
+of the grouping variable in \code{data},
+or a vector representing the grouping variable.  The grouping variable
+is excluded from the data frame specified
+in \code{data}. Notethat a grouping variable can only be used when computing
 confidence intervals with unknown population standard
 deviation and population variance.}
 
 \item{split}{either a character string indicating the variable name
-of the split variable in \code{...} or \code{data},
-or a vector representing the split variable. Note
-that a grouping variable can only be used when computing
+of the split variable in \code{data},
+or a vector representing the split variable. The split variable
+is excluded from the data frame specified
+in \code{data}.Note that a grouping variable can only be used when computing
 confidence intervals with unknown population standard
 deviation and population variance.}
 
@@ -143,7 +144,7 @@ places to be used.}
 \item{as.na}{a numeric vector indicating user-defined missing
 values, i.e. these values are converted to \code{NA}
 before conducting the analysis. Note that \code{as.na()}
-function is only applied to \code{x}, but not to
+function is only applied to \code{data}, but not to
 \code{group} or \code{split}.}
 
 \item{plot}{a character string indicating the type of the plot
@@ -191,7 +192,7 @@ in the \code{geom_histogram} function for controlling
 the number of bins when plotting bootstrap samples
 (\code{plot = "boot"}).}
 
-\item{alpha}{a numeric value between 0 and 1 for specifying the
+\item{hist.alpha}{a numeric value between 0 and 1 for specifying the
 \code{alpha} argument in the \code{geom_histogram}
 function for controlling the opacity of the bars
 when plotting bootstrap samples (\code{plot = "boot"}).}
@@ -224,7 +225,7 @@ function controlling the line type of the density
 curves when plotting bootstrap samples
 (\code{plot = "boot"}).}
 
-\item{plot.point}{logical: if \code{TRUE} (default), vertical lines
+\item{point}{logical: if \code{TRUE} (default), vertical lines
 representing the point estimate of the arithmetic
 mean or median are drawn when plotting bootstrap samples
 (\code{plot = "boot"}).}
@@ -249,7 +250,7 @@ function controlling the line type of the vertical
 line displaying the arithmetic mean or median when
 plotting bootstrap samples (\code{plot = "boot"}).}
 
-\item{plot.ci}{logical: if \code{TRUE} (default), vertical lines
+\item{ci}{logical: if \code{TRUE} (default), vertical lines
 representing the bootstrap confidence intervals of
 the arithmetic mean or median are drawn when
 plotting bootstrap samples (\code{plot = "boot"}).}
@@ -398,7 +399,7 @@ scales shared across facets, i.e., \code{"fixed"},
 (default) when specifying a split variable using
 the argument \code{split}.}
 
-\item{saveplot}{a character string indicating the \code{filename}
+\item{filename}{a character string indicating the \code{filename}
 argument including the file extension in the \code{ggsave}
 function. Note that one of \code{".eps"}, \code{".ps"},
 \code{".tex"}, \code{".pdf"} (default),
@@ -446,7 +447,7 @@ entries:
 
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
-\item{\code{data}}{list with the input specified in \code{...}, \code{data}, \code{group}, and \code{split}}
+\item{\code{data}}{list with the input specified in \code{data}, \code{group}, and \code{split}}
 \item{\code{args}}{specification of function arguments}
 \item{\code{boot}}{data frame with bootstrap replicates of the arithmetic mean of median when bootstrapping was requested}
 \item{\code{plot}}{ggplot2 object for plotting the results and the data frame used for plotting}
@@ -468,38 +469,32 @@ by Angelo Canty and Brain Ripley (2024).
 }
 \examples{
 #----------------------------------------------------------------------------
-# Example 1: Confidence Interval (CI) for the Arithmetic Mean
+# Confidence Interval (CI) for the Arithmetic Mean
 
 # Example 1a: Two-Sided 95% CI
 ci.mean(mtcars)
-
-# Alternative specification
-ci.mean(., data = mtcars)
 
 # Example 1b: Two-Sided 95% Difference-Adjusted CI
 ci.mean(mtcars, adjust = TRUE)
 
 # Example 1c: Two-Sided 95% CI with known population standard deviation
+ci.mean(mtcars, mpg, sigma = 6)
+
+# Alternative specification without using the '...' argument
 ci.mean(mtcars$mpg, sigma = 6)
 
-# Alternative specification
-ci.mean(mpg, data = mtcars, sigma = 6)
-
 #----------------------------------------------------------------------------
-# Example 2: Confidence Interval (CI) for the Median
+# Confidence Interval (CI) for the Median
 
 # Example 2a: Two-Sided 95% CI
 ci.median(mtcars)
-
-# Alternative specification
-ci.median(., data = mtcars)
 
 # Example 2b: One-Sided 99% CI
 ci.median(mtcars, alternative = "less", conf.level = 0.99)
 
 \dontrun{
 #----------------------------------------------------------------------------
-# Example 3: Bootstrap Confidence Interval (CI)
+# Bootstrap Confidence Interval (CI)
 
 # Example 3a: Bias-corrected (BC) percentile bootstrap CI
 ci.mean(mtcars, boot = "bc")
@@ -509,28 +504,28 @@ ci.mean(mtcars, boot = "bc")
 ci.mean(mtcars, boot = "bca", R = 5000, seed = 123)
 
 #----------------------------------------------------------------------------
-# Example 4: Grouping and Split Variable
+# Grouping and Split Variable
 
 # Example 4a: Grouping variable
-ci.mean(mpg, cyl, disp, data = mtcars, group = "vs")
+ci.mean(mtcars, mpg, cyl, disp, group = "vs")
 
-# Alternative specification
+# Alternative specification without using the '...' argument
 ci.mean(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 
 # Example 4b: Split variable
-ci.mean(mpg, cyl, disp, data = mtcars, split = "am")
+ci.mean(mtcars, mpg, cyl, disp, split = "am")
 
 # Alternative specification
 ci.mean(mtcars[, c("mpg", "cyl", "disp")], split = mtcars$am)
 
 # Example 4c: Grouping and split variable
-ci.mean(mpg, cyl, disp, data = mtcars, group = "vs", split = "am")
+ci.mean(mtcars, mpg, cyl, disp, group = "vs", split = "am")
 
 # Alternative specification
 ci.mean(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, split = mtcars$am)
 
 #----------------------------------------------------------------------------
-# Example 5: Write Output
+# Write Output
 
 # Example 5a: Text file
 ci.mean(mtcars, write = "CI_Mean_Text.txt")
@@ -539,44 +534,44 @@ ci.mean(mtcars, write = "CI_Mean_Text.txt")
 ci.mean(mtcars, write = "CI_Mean_Excel.xlsx")
 
 #----------------------------------------------------------------------------
-# Example 6: Plot Confidence Intervals
+# Plot Confidence Intervals
 
 # Example 6a: Two-Sided 95% CI
-ci.mean(disp, hp, data = mtcars, plot = "ci")
+ci.mean(mtcars, disp, hp, plot = "ci")
 
 # Example 6b: Grouping variable
-ci.mean(disp, hp, data = mtcars, group = "vs", plot = "ci")
+ci.mean(mtcars, disp, hp, group = "vs", plot = "ci")
 
 # Example 6c: Split variable
-ci.mean(disp, hp, data = mtcars, split = "am", plot = "ci")
+ci.mean(mtcars, disp, hp, split = "am", plot = "ci")
 
 # Example 6d: Save plot as PDF file
-ci.mean(disp, hp, data = mtcars, plot = "ci", saveplot = "CI_Mean.pdf",
+ci.mean(mtcars, disp, hp, plot = "ci", saveplot = "CI_Mean.pdf",
         width = 9, height = 6)
 
 # Example 6e: Save plot as PNG file
-ci.mean(disp, hp, data = mtcars, plot = "ci", saveplot = "CI_Mean.png",
+ci.mean(mtcars, disp, hp, plot = "ci", saveplot = "CI_Mean.png",
         width = 9, height = 6)
 
 #----------------------------------------------------------------------------
 # Example 7: Plot Bootstrap Samples
 
 # Example 7a: Two-Sided 95% CI
-ci.mean(disp, hp, data = mtcars, boot = "bc", plot = "boot")
+ci.mean(mtcars, disp, hp, boot = "bc", plot = "boot")
 
 # Example 7b: Grouping variable
-ci.mean(disp, hp, data = mtcars, group = "vs", boot = "bc", plot = "boot")
+ci.mean(mtcars, disp, hp, group = "vs", boot = "bc", plot = "boot")
 
 # Example 7c: Split variable
-ci.mean(disp, hp, data = mtcars, split = "am", boot = "bc", plot = "boot")
+ci.mean(mtcars, disp, hp, split = "am", boot = "bc", plot = "boot")
 
 # Example 7d: Save plot as PDF file
-ci.mean(disp, hp, data = mtcars, boot = "bc", plot = "boot",
-        saveplot = "CI_Mean_Boot.pdf", width = 12, height = 7)
+ci.mean(mtcars, disp, hp, boot = "bc", plot = "boot", saveplot = "CI_Mean_Boot.pdf",
+        width = 12, height = 7)
 
 # Example 7e: Save plot as PNG file
-ci.mean(disp, hp, data = mtcars, boot = "bc", plot = "boot",
-        saveplot = "CI_Mean_Boot.png", width = 12, height = 7)
+ci.mean(mtcars, disp, hp, boot = "bc", plot = "boot", saveplot = "CI_Mean_Boot.png",
+        width = 12, height = 7)
 }
 }
 \references{

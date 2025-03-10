@@ -4,7 +4,7 @@
 \alias{multilevel.cor}
 \title{Within-Group and Between-Group Correlation Matrix}
 \usage{
-multilevel.cor(..., data = NULL, cluster, within = NULL, between = NULL,
+multilevel.cor(data, ..., cluster, within = NULL, between = NULL,
                estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"),
                missing = c("listwise", "fiml"), sig = FALSE, alpha = 0.05,
                print = c("all", "cor", "se", "stat", "p"), split = FALSE,
@@ -15,20 +15,17 @@ multilevel.cor(..., data = NULL, cluster, within = NULL, between = NULL,
                output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame.  Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{multilevel.cor(x1, x2, x3, data = dat)}. Note that
+\item{data}{a data frame.}
+
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{multilevel.cor(dat, x1, x2, x3)}. Note that
 the operators \code{.}, \code{+}, \code{-}, \code{~},
 \code{:}, \code{::}, and \code{!} can also be used to
 select variables, see 'Details' in the \code{\link{df.subset}}
 function.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument \code{...}.}
-
 \item{cluster}{either a character string indicating the variable name of
-the cluster variable in \code{...} or \code{data}, or a
+the cluster variable in \code{data}, or a
 vector representing the nested grouping structure (i.e.,
 group or cluster variable).}
 
@@ -114,7 +111,7 @@ to be used for displaying \emph{p}-values.}
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before
 conducting the analysis. Note that \code{as.na()} function
-is only applied to \code{x} but not to \code{cluster}.}
+is only applied to \code{data} but not to \code{cluster}.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
@@ -137,7 +134,7 @@ Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{data frame specified in \code{x} including the group variable
+  \item{\code{data}}{data frame specified in \code{data} including the group variable
                      specified in \code{cluster}}
   \item{\code{args}}{specification of function arguments}
   \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
@@ -169,11 +166,11 @@ H0: \eqn{\rho} = 0 for all pairs of variables within and between groups.
 \details{
 The specification of the within-group and between-group variables is in line
 with the syntax in Mplus. That is, the \code{within} argument is used to
-identify the variables in the matrix or data frame specified in \code{x} that
+identify the variables in the data frame specified in \code{data} that
 are measured on the individual level and modeled only on the within level.
 They are specified to have no variance in the between part of the model. The
-\code{between} argument is used to identify the variables in the matrix or
-data frame specified in \code{x} that are measured on the cluster level and
+\code{between} argument is used to identify the variables in the
+data frame specified in \code{data} that are measured on the cluster level and
 modeled only on the between level. Variables not mentioned in the arguments
 \code{within} or \code{between} are measured on the individual level and will
 be modeled on both the within and between level.
@@ -216,64 +213,56 @@ Yves Rosseel (2012).
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Cluster variable specification
 
-# Example 1a: Cluster variable 'cluster' in 'x'
+# Example 1a: Specification using the argument '...'
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster")
+
+# Example 1b: Alternative specification with cluster variable 'cluster' in 'data'
 multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "cluster")], cluster = "cluster")
 
-# Example 1b: Cluster variable 'cluster' not in 'x'
+# Example 1b: Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
 
-# Example 1c: Alternative specification using the 'data' argument
-multilevel.cor(x1:x3, data = Demo.twolevel, cluster = "cluster")
-
-#-------------------------------------------------------------------------------
-# Example 2: All variables modeled on both the within and between level
+#----------------------------------------------------------------------------
+# Example 2: All variables modeled at both the within and between level
 # Highlight statistically significant result at alpha = 0.05
-multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], sig = TRUE,
-              cluster = Demo.twolevel$cluster)
+multilevel.cor(Demo.twolevel, y1, y2, y3, sig = TRUE, cluster = "cluster")
 
 # Example 3: Split output table in within-group and between-group correlation matrix.
-multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-               cluster = Demo.twolevel$cluster, split = TRUE)
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", split = TRUE)
 
 # Example 4: Print correlation coefficients, standard errors, z test statistics,
 # and p-values
-multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-               cluster = Demo.twolevel$cluster, print = "all")
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", print = "all")
 
 # Example 5: Print correlation coefficients and p-values
 # significance values with Bonferroni correction
-multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-               cluster = Demo.twolevel$cluster, print = c("cor", "p"),
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", print = c("cor", "p"),
                p.adj = "bonferroni")
 
-#-------------------------------------------------------------------------------
-# Example 6: Variables "y1", "y2", and "y2" modeled on both the within and between level
-# Variables "w1" and "w2" modeled on the cluster level
-multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-               cluster = Demo.twolevel$cluster,
+#----------------------------------------------------------------------------
+# Example 6: Variables "y1", "y2", and "y2" modeled at both the within and between level
+# Variables "w1" and "w2" modeled at the cluster level
+multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
                between = c("w1", "w2"))
 
 # Example 7: Show variables specified in the argument 'between' first
-multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-               cluster = Demo.twolevel$cluster,
+multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
                between = c("w1", "w2"), order = TRUE)
 
-#-------------------------------------------------------------------------------
-# Example 8: Variables "y1", "y2", and "y2" modeled only on the within level
-# Variables "w1" and "w2" modeled on the cluster level
-multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-               cluster = Demo.twolevel$cluster,
+#----------------------------------------------------------------------------
+# Example 8: Variables "y1", "y2", and "y2" modeled only at the within level
+# Variables "w1" and "w2" modeled at the cluster level
+multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
                within = c("y1", "y2", "y3"), between = c("w1", "w2"))
 
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Example 9: lavaan model and summary of the multilevel model used to compute the
 # within-group and between-group correlation matrix
 
-mod <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-                      cluster = Demo.twolevel$cluster, output = FALSE)
+mod <- multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", output = FALSE)
 
 # lavaan model syntax
 mod$model
@@ -281,23 +270,16 @@ mod$model
 # Fitted lavaan object
 lavaan::summary(mod$model.fit, standardized = TRUE)
 
-\dontrun{
 #----------------------------------------------------------------------------
 # Write Results
 
-# Example 10a: Write results into a text file
-multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-               cluster = Demo.twolevel$cluster,
+# Example 10a: Write Results into a text file
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
                write = "Multilevel_Correlation.txt")
 
-# Example 10b: Write results into an Excel file
-multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-               cluster = Demo.twolevel$cluster,
+# Example 10b: Write Results into a Excel file
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
                write = "Multilevel_Correlation.xlsx")
-
-result <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-                         cluster = Demo.twolevel$cluster, output = FALSE)
-write.result(result, "Multilevel_Correlation.xlsx")}
 }
 }
 \references{

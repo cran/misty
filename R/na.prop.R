@@ -1,18 +1,15 @@
 #' Proportion of Missing Data for Each Case
 #'
-#' This function computes the proportion of missing data for each case in a matrix
-#' or data frame.
+#' This function computes the proportion of missing data for each case in a data
+#' frame.
 #'
-#' @param ...     a matrix or data frame with incomplete data, where missing
-#'                values are coded as \code{NA}. Alternatively, an expression
-#'                indicating the variable names in \code{data} e.g.,
-#'                \code{na.prop(x1, x2, x3, data = dat)}. Note that the operators
+#' @param data    a data frame with incomplete data, where missing values are
+#'                coded as \code{NA}.
+#' @param ...     an expression indicating the variable names in \code{data}, e.g.,
+#'                \code{na.prop(dat, x1, x2, x3)}. Note that the operators
 #'                \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'                and \code{!} can also be used to select variables, see 'Details'
 #'                in the \code{\link{df.subset}} function.
-#' @param data    a data frame when specifying one or more variables in the
-#'                argument \code{...}. Note that the argument is \code{NULL}
-#'                when specifying a matrix or data frame for the argument \code{...}.
 #' @param append  logical: if \code{TRUE} (default), variable with proportion of
 #'                missing data is appended to the data frame specified in the
 #'                argument \code{data}.
@@ -47,7 +44,7 @@
 #' Chapman & Hall.
 #'
 #' @return
-#' Returns a numeric vector with the same length as the number of rows in \code{x}
+#' Returns a numeric vector with the same length as the number of rows in \code{data}
 #' containing the proportion of missing data.
 #'
 #' @export
@@ -56,21 +53,20 @@
 #' # Example 1: Compute proportion of missing data for each case in the data frame
 #' na.prop(airquality)
 #'
-#' # Alternative specification using the 'data' argument,
-#' # append proportions to the data frame 'airquality'
-#' na.prop(., data = airquality)
-na.prop <- function(..., data = NULL, digits = 2, append = TRUE, name = "na.prop",
+#' # Example 2: Do not append proportions of missing data to the data frame
+#' na.prop(airquality, append = FALSE)
+na.prop <- function(data, ..., digits = 2, append = TRUE, name = "na.prop",
                     as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -79,27 +75,20 @@ na.prop <- function(..., data = NULL, digits = 2, append = TRUE, name = "na.prop
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract data
-    x <- data[, .var.names(..., data = data, check.chr = "a matrix or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- as.data.frame(data)
 
   }
-
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####

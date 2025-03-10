@@ -60,16 +60,38 @@
 #'                  (Within), Fixed slopes (Between), Slope variation (Within),
 #'                  Intercept variation (Between), and Residual (Within). By default,
 #'                  colors from the colorblind-friendly palettes are used.
-#' @param write     a character string naming a text file with file extension
-#'                  \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
-#'                  output into a text file.
-#' @param append    logical: if \code{TRUE} (default), output will be appended
-#'                  to an existing text file with extension \code{.txt} specified
-#'                  in \code{write}, if \code{FALSE} existing text file will be
-#'                  overwritten.
-#' @param check     logical: if \code{TRUE} (default), argument specification is
-#'                  checked.
-#' @param output    logical: if \code{TRUE}, (default) output is shown on the console.
+#' @param filename  a character string indicating the \code{filename}
+#'                  argument including the file extension in the \code{ggsave}
+#'                  function. Note that one of \code{".eps"}, \code{".ps"},
+#'                  \code{".tex"}, \code{".pdf"} (default),
+#'                  \code{".jpeg"}, \code{".tiff"}, \code{".png"},
+#'                  \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+#'                  to be specified as file extension in the \code{file}
+#'                  argument. Note that plots can only be saved when
+#'                  \code{plot = TRUE}.
+#' @param width     a numeric value indicating the \code{width} argument
+#'                  (default is the size of the current graphics device)
+#'                  in the \code{ggsave} function.
+#' @param height    a numeric value indicating the \code{height} argument
+#'                  (default is the size of the current graphics device)
+#'                  in the \code{ggsave} function.
+#' @param units     a character string indicating the \code{units} argument
+#'                  (default is \code{in}) in the \code{ggsave} function.
+#' @param dpi       a numeric value indicating the \code{dpi} argument
+#'                  (default is \code{600}) in the \code{ggsave} function.
+#' @param write      a character string naming a text file with file extension
+#'                   \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                   output into a text file.
+#' @param write      a character string naming a text file with file extension
+#'                   \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                   output into a text file.
+#' @param append     logical: if \code{TRUE} (default), output will be appended
+#'                   to an existing text file with extension \code{.txt} specified
+#'                   in \code{write}, if \code{FALSE} existing text file will be
+#'                   overwritten.
+#' @param check      logical: if \code{TRUE} (default), argument specification is
+#'                   checked.
+#' @param output     logical: if \code{TRUE}, (default) output is shown on the console.
 #'
 #' @details
 #' A number of R-squared measures for multilevel and linear mixed effects models
@@ -121,7 +143,7 @@
 #' @examples
 #' \dontrun{
 #' # Load misty and lme4 package
-#' libraries(misty, lme4)
+#' misty::libraries(misty, lme4)
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
@@ -129,12 +151,10 @@
 #' #----------------------------------------------------------------------------
 #'
 #' # Cluster mean centering, center() from the misty package
-#' Demo.twolevel$x2.c <- center(Demo.twolevel$x2, type = "CWC",
-#'                              cluster = Demo.twolevel$cluster)
+#' Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
 #'
 #' # Compute group means, cluster.scores() from the misty package
-#' Demo.twolevel$x2.b <- cluster.scores(Demo.twolevel$x2,
-#'                                      cluster = Demo.twolevel$cluster)
+#' Demo.twolevel <- cluster.scores(Demo.twolevel, x2, cluster = "cluster", name = "x2.b")
 #'
 #' # Estimate random intercept model using the lme4 package
 #' mod1 <- lmer(y1 ~ x2.c + x2.b + w1 + (1| cluster), data = Demo.twolevel,
@@ -183,6 +203,8 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
                                  intercept = TRUE, center = TRUE, digits = 3,
                                  plot = FALSE, gray = FALSE, start = 0.15, end = 0.85,
                                  color = c("#D55E00", "#0072B2", "#CC79A7", "#009E73", "#E69F00"),
+                                 filename = NULL, width = NA, height = NA,
+                                 units = c("in", "cm", "mm", "px"), dpi = 600,
                                  write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
@@ -215,10 +237,13 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
   .check.input(logical = c("intercept", "center", "plot", "gray", "append", "output"),
                numeric = list(start = 1L, end = 1L),
                args = c("digits", "write1"),
-               package = "ggplot2", envir = environment(), input.check = check)
+               envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
+
+    # Package ggplot2
+    if (isTRUE(plot)) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
 
     #......
     # Check input 'within'
@@ -227,20 +252,11 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
     if (isTRUE(is.character(within))) {
 
       # Check if level-1 predictors are in the data
-      (!within %in% colnames(data)) |>
-        (\(y) if (isTRUE(any(y))) {
-
-          stop(paste0("Predictors specified in the argument 'within' were not found in 'data': ", paste(within[which(y)], collapse = ", ")), call. = FALSE)
-
-        })()
+      (!within %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Predictors specified in the argument 'within' were not found in 'data': ", paste(within[which(y)], collapse = ", ")), call. = FALSE) })()
 
     } else {
 
-      if (isTRUE(ncol(data) < max(within))) {
-
-        stop("Colummn numbers specified in the argument 'within' were not found in 'data'", call. = FALSE)
-
-      }
+      if (isTRUE(ncol(data) < max(within))) { stop("Colummn numbers specified in the argument 'within' were not found in 'data'", call. = FALSE) }
 
     }
 
@@ -251,20 +267,11 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
     if (isTRUE(is.character(between))) {
 
       # Check if level-2 predictors are in the data
-      (!between %in% colnames(data)) |>
-        (\(y) if (isTRUE(any(y))) {
-
-          stop(paste0("Predictors specified in the argument 'between' were not found in 'data': ", paste(between[which(y)], collapse = ", ")), call. = FALSE)
-
-        })()
+      (!between %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Predictors specified in the argument 'between' were not found in 'data': ", paste(between[which(y)], collapse = ", ")), call. = FALSE) })()
 
     } else {
 
-      if (isTRUE(ncol(data) < max(between))) {
-
-        stop("Colummn numbers specified in the argument 'between' were not found in 'data'", call. = FALSE)
-
-      }
+      if (isTRUE(ncol(data) < max(between))) { stop("Colummn numbers specified in the argument 'between' were not found in 'data'", call. = FALSE) }
 
     }
 
@@ -273,20 +280,11 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
     if (isTRUE(is.character(between))) {
 
       # Check if level-1 predictors with random slopes are in 'within'
-      (!random %in% within) |>
-        (\(y) if (isTRUE(any(y))) {
-
-          stop(paste0("Predictors specified in the argument 'random' were not found in 'within': ", paste(between[which(y)], collapse = ", ")), call. = FALSE)
-
-        })()
+      (!random %in% within) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Predictors specified in the argument 'random' were not found in 'within': ", paste(between[which(y)], collapse = ", ")), call. = FALSE) })()
 
     } else {
 
-      if (isTRUE(any(!random %in% within))) {
-
-        stop("Colummn numbers specified in the argument 'random' were not all found in 'within'", call. = FALSE)
-
-      }
+      if (isTRUE(any(!random %in% within))) { stop("Colummn numbers specified in the argument 'random' were not all found in 'within'", call. = FALSE) }
 
     }
 
@@ -342,11 +340,20 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
   #
   # Data and Variables ---------------------------------------------------------
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'within', 'between', and 'random' Arguments ####
+
   if (isTRUE(is.character(within))) { within_covs <- match(within, colnames(data)) } else { within_covs <- within }
 
   if (isTRUE(is.character(between))) { between_covs <- match(between, colnames(data)) } else { between_covs <- between }
 
   if (isTRUE(is.character(random))) { random_covs <- match(random, colnames(data)) } else { random_covs <- random }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'units' Argument ####
+
+  # Default setting
+  if (isTRUE(all(c("in", "cm", "mm", "px") %in% units))) { units <- "in" }
 
   #_____________________________________________________________________________
   #
@@ -718,56 +725,6 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
                               r2 = matrix(apply(r2mlm.out$R2s, 2L, as.numeric), ncol = ncol(r2mlm.out$R2s),
                                           dimnames = list(rownames(r2mlm.out$R2s), colnames(r2mlm.out$R2s)))))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Plot ####
-
-  part <- NULL
-
-  # Predictors are not cluster-mean-centered
-  if (isTRUE(ncol(rs$decomp) == 1L)) {
-
-    df <- data.frame(var = factor(rep("Total", times = 4L)),
-                     part = factor(c("Fixed Slopes", "Slope Variation", "Intercept Variation", "Residual"),
-                                   levels = c("Residual", "Intercept Variation", "Slope Variation", "Fixed Slopes")),
-                     y = as.vector(rs$decomp))
-
-  # Predictors are cluster-mean-centered
-  } else {
-
-    df <- data.frame(var = factor(rep(c("Total", "Within", "Between"), each = 5L),
-                                  levels = c("Total", "Within", "Between")),
-                     part = factor(c("Fixed Slopes (Within)", "Fixed Slopes (Between)","Slope Variation (Within)", "Intercept Variation (Between)", "Residual (Within)"),
-                                   levels = c("Residual (Within)", "Intercept Variation (Between)", "Slope Variation (Within)", "Fixed Slopes (Between)", "Fixed Slopes (Within)")),
-                     y = as.vector(rs$decomp))
-
-  }
-
-  p <- ggplot2::ggplot(df, ggplot2::aes(x = var, y = y, fill = part)) +
-         ggplot2::geom_bar(stat = "identity") +
-         ggplot2::scale_y_continuous(name = "Proportion of Variance",
-                                     breaks = seq(0L, 1L, by = 0.1)) +
-         ggplot2::theme_bw() +
-         ggplot2::theme(axis.title.x = ggplot2::element_blank(),
-                        axis.ticks.x = ggplot2::element_blank(),
-                        legend.title = ggplot2::element_blank(),
-                        legend.position = "bottom",
-                        legend.box.margin = ggplot2::margin(-10L, 6L, 6L, 6L)) +
-         ggplot2::guides(fill = ggplot2::guide_legend(nrow = 2L, reverse = TRUE))
-
-  # Gray color scales
-  if (isTRUE(gray)) {
-
-    p <- p + ggplot2::scale_fill_grey(start = end, end = start)
-
-  } else {
-
-    p <- p + ggplot2::scale_fill_manual(values = rev(color))
-
-  }
-
-  # Print plot
-  if (isTRUE(plot)) { suppressWarnings(print(p)) }
-
   #_____________________________________________________________________________
   #
   # Return Object --------------------------------------------------------------
@@ -775,13 +732,14 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
   object <- list(call = match.call(),
                  type = "multilevel.r2.manual",
                  data = data,
-                 plot = p,
                  args = list(within = within, between = between, random = random,
                              gamma.w = gamma.w, gamma.b = gamma.b, tau = tau,
                              sigma2 = sigma2, intercept = intercept, center = center,
                              digits = digits, plot = plot, gray = gray,
-                             start = start, end = end, color = color, write = write,
-                             append = append, check = check, output = output),
+                             start = start, end = end, color = color,
+                             width = width, height = height, units = units, dpi = dpi,
+                             write = write, append = append, check = check, output = output),
+                 plot = NULL,
                  result = list(decomp = rs$decomp,
                                total = data.frame(f1 = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "f1", "total"], NA),
                                                   f2 = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "f2", "total"], NA),
@@ -797,6 +755,12 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
                                                     m  = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "m", "between"], NA))))
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Plot and Save Results ------------------------------------------------------
+
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #

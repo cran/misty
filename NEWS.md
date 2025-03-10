@@ -1,3 +1,52 @@
+### misty 0.7.1 (2025-03-10)
+
+##### New features
+* New function `plot.misty.object()` for plotting a misty object.
+
+##### Minor features and improvements
+* Added the argument `factor.labels` to the function `df.head` and `df.tail`.
+* Added the arguments `filename`, `width`, `height`, `units`, and `dpi` to the 
+functions `aov.b`, `aov.w`, `multilevel.r2`, `multilevel.r2.manual`, `na.pattern`,
+`test.levene`, `test.t`, `test.welch`, and `test.z`.
+
+* The function `df.rename` can rename columns in a matrix or variables in a
+data frame using `old_name = new_name` and using the functions `toupper`, 
+`tolower`, `gsub`, and `sub` similar to the `rename` function in the `dplyr` package. 
+
+##### Bug fix
+* Fixed a bug in the function `multilevel.icc()`, computation of the ICC(1) at
+Level 2 was wrong in case of a three-level data when specifying `type = "1b"`
+(thanks to David S. DeGarmo).
+* Fixed a bug in the function `center()`, within-cluster centering of a Level-2 
+predictor variable in three-level was wrong (thanks to Stefanos Mastrotheodoros).
+* Fixed a bug in the functions `df.head()` and `df.tail()`, function could not
+handle date and times. 
+
+##### User-visible changes
+* The argument `subset` in the function `df.subset` is specified without quotation
+marks in line with the argument `subset` in the function `subset` function.
+* Moved the argument `data` in the functions `as.na`, `na.as`, `center`, 
+`ci.cor`, `ci.cor`, `ci.mean`, `ci.median`, `ci.mean.w`, `ci.var`, `ci.sd`,
+`cluster.scores`, `coding`, `cor.matrix`, `crosstab`, `descript`, `df.duplicated`,
+`df.unique`, `df.move`, `df.subset`, `effsize`, `freq`, `item.alpha`, `item.cfa`,
+`item.invar`, `item.omega`, `item.reverse`, `item.scores`, `lagged`, `multilevel.cfa`,
+`multilevel.cor`, `multilevel.descript`, `multilevel.icc`, `multilevel.invar`,
+`multilevel.omega`, `na.auxiliary`, `na.coverage`, `na.descript`, `na.indicator`,
+ `na.pattern`,  `na.prop`, `na.test`, `rec`,  `rwg.lindell`, `skewness` 
+ to the first position.
+* Renamed the argument `x` in the functions `df.check`, `df.head`, `df.rename`,
+`df.sort` to `data`.
+* Renamed the argument `x` in the function `multilevel.fit` to `model`.
+* Renamed the arguments `alpha`, `ci.plot`, `plot.point`, `saveplot` 
+in the functions `ci.cor`, `ci.mean`, `ci.median`, `ci.prop`, `ci.var`, and `ci.sd`
+to `hist.alpha`, `confint`, `point` and `filename`.
+* Renamed the argument `fill.col` in the functions `na.pattern` to `color`.
+* Renamed the argument `file` in the functions `blimp.plot`, `mplus.plot`, and
+`na.pattern` to `filename`.
+* Removed the argument `saveplot` from the functions `na.pattern`.
+* Changed the default setting of the argument `na` in the functions `na.indicator()`, 
+to `1`.
+
 ### misty 0.7.0 (2025-02-02)
 
 ##### New features
@@ -14,7 +63,7 @@ to the specified width.
 * New function `df.head()` and `df.tail()` for printing the first or last rows
 of a data frame and displaying only as many columns as fit on the console.
 * New function `df.check()` which is a wrapper function around the functions 
-`dim()`, `names()`, `head()`, and `tail()`.
+`dim()`, `names()`, `df.head()`, and `df.tail()`.
 
 ##### Minor features and improvements
 * The functions `skewness` and `kurtosis` can also compute Mardia's multivariate

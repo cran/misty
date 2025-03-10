@@ -4,22 +4,18 @@
 \alias{rec}
 \title{Recode Variable}
 \usage{
-rec(..., data = NULL, spec, as.factor = FALSE, levels = NULL, append = TRUE,
+rec(data, ..., spec, as.factor = FALSE, levels = NULL, append = TRUE,
     name = ".e", as.na = NULL, table = FALSE, check = TRUE)
 }
 \arguments{
-\item{...}{a numeric vector, character vector, factor, matrix or data
-frame. Alternatively, an expression indicating the variable
-names in \code{data} e.g., \code{rec(x1, x2, x3, data = dat, spec = "1 = 0"))}.
-Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+\item{data}{a numeric vector, character vector, factor, or data
+frame.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a a numeric vector, character vector, factor,
-matrix or data frame for the argument \code{...}.}
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{rec(dat, x1, x2, x3, spec = "1 = 0"))}. Note that
+the operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+\code{::}, and \code{!} can also be used to select variables,
+see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{spec}{a character string of recode specifications (see 'Details').}
 
@@ -40,18 +36,18 @@ appended to the data frame specified in the argument \code{data}.}
 of the recoded variables. By default, variables are named with the ending
 \code{".r"} Resulting in e.g. \code{"x1.r"} and \code{"x2.r"}. Variable
 names can also be specified using a character vector matching
-the number of variables specified in \code{...} (e.g.,
+the number of variables specified in \code{data} (e.g.,
 \code{name = c("recode.x1", "recode.x2")}).}
 
 \item{table}{logical: if \code{TRUE}, a cross table variable x recoded
 variable is printed on the console if only one variable is
-specified in \code{...}.}
+specified in \code{data}.}
 
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
 Returns a numeric vector or data frame with the same length or same number of
-rows as \code{...} containing the recoded coded variable(s).
+rows as \code{data} containing the recoded coded variable(s).
 }
 \description{
 This function recodes numeric vectors, character vectors, or factors according
@@ -83,7 +79,7 @@ package by John Fox and Sanford Weisberg (2019).
 }
 \examples{
 #----------------------------------------------------------------------------
-# Numeric vector
+# Example 1: Numeric vector
 x.num <- c(1, 2, 4, 5, 6, 8, 12, 15, 19, 20)
 
 # Example 1a: Recode 5 = 50 and 19 = 190
@@ -99,7 +95,7 @@ rec(x.num, spec = "lo:10 = 100; 11:hi = 200")
 rec(x.num, spec = "5 = 50; 19 = 190", table = TRUE)
 
 #----------------------------------------------------------------------------
-# Character vector
+# Example 2: Character vector
 x.chr <- c("a", "c", "f", "j", "k")
 
 # Example 2a: Recode a to x
@@ -112,7 +108,7 @@ rec(x.chr, spec = "c('a', 'f') = 'x'; c('c', 'j') = 'y'; else = 'z'")
 rec(x.chr, spec = "'a' = 'X'", as.factor = TRUE)
 
 #----------------------------------------------------------------------------
-# Factor
+# Example 3: Factor
 x.fac <- factor(c("a", "b", "a", "c", "d", "d", "b", "b", "a"))
 
 # Example 3a: Recode a to x, factor levels ordered alphabetically
@@ -122,7 +118,7 @@ rec(x.fac, spec = "'a' = 'x'")
 rec(x.fac, spec = "'a' = 'x'", levels = c("x", "b", "c", "d"))
 
 #----------------------------------------------------------------------------
-# Multiple variables
+# Example 4: Multiple variables
 dat <- data.frame(x1.num = c(1, 2, 4, 5, 6),
                   x2.num = c(5, 19, 2, 6, 3),
                   x1.chr = c("a", "c", "f", "j", "k"),
@@ -131,17 +127,16 @@ dat <- data.frame(x1.num = c(1, 2, 4, 5, 6),
                   x2.fac = factor(c("b", "a", "d", "c", "e")))
 
 # Example 4a: Recode numeric vector and attach to 'dat'
-dat <- cbind(dat, rec(dat[, c("x1.num", "x2.num")], spec = "5 = 50; 19 = 190"))
+cbind(dat, rec(dat[, c("x1.num", "x2.num")], spec = "5 = 50; 19 = 190"))
 
-# Example 4b: Alternative specification using the 'data' argument,
-rec(x1.num, x2.num, data = dat, spec = "5 = 50; 19 = 190")
+# Alternative specification using the 'data' argument,
+rec(dat, x1.num, x2.num, spec = "5 = 50; 19 = 190")
 
-# Example 4c: Recode character vector and attach to 'dat'
-dat <- cbind(dat, rec(dat[, c("x1.chr", "x2.chr")], spec = "'a' = 'X'"))
+# Example 4b: Recode character vector and attach to 'dat'
+cbind(dat, rec(dat[, c("x1.chr", "x2.chr")], spec = "'a' = 'X'"))
 
-# Example 4d: Recode factor vector and attach to 'dat'
-dat <- cbind(dat, rec(dat[, c("x1.fac", "x2.fac")], spec = "'a' = 'X'"))
-}
+# Example 4c: Recode factor vector and attach to 'dat'
+cbind(dat, rec(dat[, c("x1.fac", "x2.fac")], spec = "'a' = 'X'"))}
 \references{
 Fox, J., & Weisberg S. (2019). \emph{An {R} Companion to Applied Regression} (3rd ed.).
 Thousand Oaks CA: Sage. URL: https://socialsciences.mcmaster.ca/jfox/Books/Companion/

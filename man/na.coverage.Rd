@@ -4,22 +4,19 @@
 \alias{na.coverage}
 \title{Variance-Covariance Coverage}
 \usage{
-na.coverage(..., data = NULL, tri = c("both", "lower", "upper"), digits = 2,
+na.coverage(data, ..., tri = c("both", "lower", "upper"), digits = 2,
             as.na = NULL, write = NULL, append = TRUE, check = TRUE,
             output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame with incomplete data, where missing
-values are coded as \code{NA}. Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{na.coverage(x1, x2, x3, data = dat)}. Note that the operators
+\item{data}{a data frame with incomplete data, where missing
+values are coded as \code{NA}.}
+
+\item{...}{an expression indicating the variable names in \code{data}, e.g.,
+\code{na.coverage(dat, x1, x2, x3)}. Note that the operators
 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
-
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{tri}{a character string or character vector indicating which triangular
 of the matrix to show on the console, i.e., \code{both} for
@@ -63,17 +60,14 @@ This function computes the proportion of cases that contributes for the calculat
 of each variance and covariance.
 }
 \examples{
-# Example 1a: Compute variance-covariance coverage
+# Example 1: Compute variance-covariance coverage
 na.coverage(airquality)
-
-# Example 1b: Alternative specification using the 'data' argument
-na.coverage(., data = airquality)
 
 \dontrun{
 # Example 2a: Write Results into a text file
 na.coverage(airquality, write = "Coverage.txt")
 
-# Example 2b: Write Results into an Excel file
+# Example 2b: Write Results into a Excel file
 na.coverage(airquality, write = "Coverage.xlsx")}
 }
 \references{

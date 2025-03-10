@@ -6,13 +6,14 @@
 \usage{
 aov.b(formula, data, posthoc = FALSE, conf.level = 0.95, hypo = TRUE,
       descript = TRUE, effsize = FALSE, weighted = FALSE, correct = FALSE,
-      plot = FALSE, point.size = 4, adjust = TRUE, errorbar.width = 0.1,
-      xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
-      jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
-      jitter.height = 0, jitter.alpha = 0.1, title = "",
-      subtitle = "Confidence Interval", digits = 2, p.digits = 3,
-      as.na = NULL, write = NULL, append = TRUE, check = TRUE,
-      output = TRUE, ...)
+      digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE,
+      point = FALSE, ci = TRUE, jitter = FALSE, adjust = TRUE,
+      point.size = 3, errorbar.width = 0.1, jitter.size = 1.25,
+      jitter.width = 0.05, jitter.height = 0, jitter.alpha = 0.1,
+      xlab = NULL, ylab = "y", ylim = NULL, ybreaks = ggplot2::waiver(),
+      title = NULL, subtitle = "Confidence Interval", filename = NULL,
+      width = NA, height = NA, units = c("in", "cm", "mm", "px"), dpi = 600,
+      write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{formula}{a formula of the form \code{y ~ group} where \code{y} is
@@ -46,47 +47,6 @@ deviation is used to compute Cohen's d.}
 \item{correct}{logical: if \code{TRUE}, correction factor to remove
 positive bias in small samples is used.}
 
-\item{plot}{logical: if \code{TRUE}, a plot showing error bars for
-confidence intervals is drawn.}
-
-\item{point.size}{a numeric value indicating the \code{size} aesthetic for
-the point representing the mean value.}
-
-\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment
-for the confidence intervals is applied.}
-
-\item{errorbar.width}{a numeric value indicating the horizontal bar width of
-the error bar.}
-
-\item{xlab}{a character string specifying the labels for the x-axis.}
-
-\item{ylab}{a character string specifying the labels for the y-axis.}
-
-\item{ylim}{a numeric vector of length two specifying limits of the
-limits of the y-axis.}
-
-\item{breaks}{a numeric vector specifying the points at which tick-marks
-are drawn at the y-axis.}
-
-\item{jitter}{logical: if \code{TRUE} (default), jittered data points
-are drawn.}
-
-\item{jitter.size}{a numeric value indicating the \code{size} aesthetic
-for the jittered data points.}
-
-\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
-
-\item{jitter.height}{a numeric value indicating the amount of vertical jitter.}
-
-\item{jitter.alpha}{a numeric value indicating the opacity of the jittered
-data points.}
-
-\item{title}{a character string specifying the text for the title of
-the plot.}
-
-\item{subtitle}{a character string specifying the text for the subtitle of
-the plot.}
-
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying descriptive statistics and
 confidence interval.}
@@ -97,6 +57,81 @@ to be used for displaying the \emph{p}-value.}
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
+
+\item{plot}{logical: if \code{TRUE}, a plot showing error bars for
+confidence intervals is drawn.}
+
+\item{bar}{logical: if \code{TRUE} (default), bars representing means
+for each groups are drawn.}
+
+\item{point}{logical: if \code{TRUE}, points representing means for
+each groups are drawn.}
+
+\item{ci}{logical: if \code{TRUE} (default), error bars representing
+confidence intervals are drawn.}
+
+\item{jitter}{logical: if \code{TRUE}, jittered data points are drawn.}
+
+\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment
+for the confidence intervals is applied.}
+
+\item{point.size}{a numeric value indicating the \code{size} aesthetic for
+the point representing the mean value.}
+
+\item{errorbar.width}{a numeric value indicating the horizontal bar width of
+the error bar.}
+
+\item{jitter.size}{a numeric value indicating the \code{size} aesthetic
+for the jittered data points.}
+
+\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
+
+\item{jitter.height}{a numeric value indicating the amount of vertical jitter.}
+
+\item{jitter.alpha}{a numeric value between 0 and 1 for specifying the
+\code{alpha} argument in the \code{geom_histogram}
+function for controlling the opacity of the jittered
+data points.}
+
+\item{xlab}{a character string specifying the labels for the x-axis.}
+
+\item{ylab}{a character string specifying the labels for the y-axis.}
+
+\item{ylim}{a numeric vector of length two specifying limits of the
+limits of the y-axis.}
+
+\item{ybreaks}{a numeric vector specifying the points at which tick-marks
+are drawn at the y-axis.}
+
+\item{title}{a character string specifying the text for the title of
+the plot.}
+
+\item{subtitle}{a character string specifying the text for the subtitle of
+the plot.}
+
+\item{filename}{a character string indicating the \code{filename}
+argument including the file extension in the \code{ggsave}
+function. Note that one of \code{".eps"}, \code{".ps"},
+\code{".tex"}, \code{".pdf"} (default),
+\code{".jpeg"}, \code{".tiff"}, \code{".png"},
+\code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+to be specified as file extension in the \code{filename}
+argument. Note that plots can only be saved when
+\code{plot = TRUE}.}
+
+\item{width}{a numeric value indicating the \code{width} argument
+(default is the size of the current graphics device)
+in the \code{ggsave} function.}
+
+\item{height}{a numeric value indicating the \code{height} argument
+(default is the size of the current graphics device)
+in the \code{ggsave} function.}
+
+\item{units}{a character string indicating the \code{units} argument
+(default is \code{in}) in the \code{ggsave} function.}
+
+\item{dpi}{a numeric value indicating the \code{dpi} argument
+(default is \code{600}) in the \code{ggsave} function.}
 
 \item{write}{a character string naming a text file with file extension
 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
@@ -110,8 +145,6 @@ overwritten.}
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
-
-\item{...}{further arguments to be passed to or from methods.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -129,9 +162,9 @@ entries:
 }
 \description{
 This function performs an one-way between-subject analysis of variance (ANOVA)
-including Tukey HSD post hoc test for multiple comparison and provides descriptive
-statistics, effect size measures, and a plot showing error bars for
-difference-adjusted confidence intervals with jittered data points.
+including Tukey HSD post hoc tests for multiple comparison and provides descriptive
+statistics, effect size measures, and a plot showing bars representing means
+for each group and error bars for difference-adjusted confidence intervals.
 }
 \details{
 \describe{
@@ -156,51 +189,42 @@ of difference-adjusted CIs.
 }
 }
 \examples{
-dat <- data.frame(group = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3),
-                  y = c(3, 1, 4, 2, 5, 3, 2, 3, 6, 6, 3, NA))
-
 # Example 1: Between-subject ANOVA
-aov.b(y ~ group, data = dat)
+aov.b(mpg ~ gear, data = mtcars)
 
 # Example 2: Between-subject ANOVA
 # print effect size measures
-aov.b(y ~ group, data = dat, effsize = TRUE)
+aov.b(mpg ~ gear, data = mtcars, effsize = TRUE)
 
 # Example 3: Between-subject ANOVA
 # do not print hypotheses and descriptive statistics,
-aov.b(y ~ group, data = dat, descript = FALSE, hypo = FALSE)
+aov.b(mpg ~ gear, data = mtcars, descript = FALSE, hypo = FALSE)
+
+# Example 4: Between-subject ANOVA
+# plot results
+aov.b(mpg ~ gear, data = mtcars, plot = TRUE)
 
 \dontrun{
-# Example 4: Write results into a text file
-aov.b(y ~ group, data = dat, write = "ANOVA.txt")}
+# Example 5: Write Results into a text file
+aov.b(mpg ~ gear, data = mtcars, write = "ANOVA.txt")
 
-# Example 5: Between-subject ANOVA
-# plot results
-aov.b(y ~ group, data = dat, plot = TRUE)
+# Example 6: Save plot
+aov.b(mpg ~ gear, data = mtcars, plot = TRUE, filename = "Between-Subject_ANOVA.png",
+      width = 7, height = 6)
 
-# Load ggplot2 package
+# Example 7: Draw plot in line with the default setting of aov.b()
 library(ggplot2)
 
-\dontrun{
-# Example 6: Save plot, ggsave() from the ggplot2 package
-ggsave("Between-Subject_ANOVA.png", dpi = 600, width = 4.5, height = 6)}
+object <- aov.b(mpg ~ gear, data = mtcars, output = FALSE)
 
-# Example 7: Between-subject ANOVA
-# extract plot
-p <- aov.b(y ~ group, data = dat, output = FALSE)$plot
-p
-
-# Extract data
-plotdat <- aov.b(y ~ group, data = dat, output = FALSE)$data
-
-# Draw plot in line with the default setting of aov.b()
-ggplot(plotdat, aes(group, y)) +
-  geom_jitter(alpha = 0.1, width = 0.05, height = 0, size = 1.25) +
-  geom_point(stat = "summary", fun = "mean", size = 4) +
-  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
+ggplot(object$data, aes(group, y)) +
+  geom_bar(stat = "summary", fun = "mean") +
+  geom_errorbar(data = ci.mean(object$data, y, group = "group", adjust = TRUE,
+                output = FALSE)$result,
+                aes(group, m, ymin = low, ymax = upp), width = 0.1) +
   scale_x_discrete(name = NULL) +
-  labs(subtitle = "Two-Sided Confidence Interval") +
-  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
+  labs(subtitle = "Two-Sided Difference-Adjusted Confidence Interval") +
+  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))}
 }
 \references{
 Baguley, T. S. (2012a). \emph{Serious stats: A guide to advanced statistics for

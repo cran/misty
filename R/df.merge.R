@@ -117,7 +117,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
     if (isTRUE(any(vapply(df, function(y) !by %in% names(y), FUN.VALUE = logical(1L))))) { stop("Data frames do not have the same matching variable specified in 'by'.", call. = FALSE) }
 
     # Same class
-    if (isTRUE(length(unique(vapply(df, function(y) class(y[, by]), FUN.VALUE = character(1L)))) != 1L)) { stop("Matching variable in the data frames do not all have the same class.", call. = FALSE) }
+    if (isTRUE(unique(vapply(df, function(y) class(y[, by]), FUN.VALUE = character(1L))) |> (\(y) length(y) != 1L & !all(y %in% c("integer", "numeric")))())) { stop("Matching variable in the data frames do not all have the same class.", call. = FALSE) }
 
     # Missing values in the matching variable
     if (isTRUE(any(vapply(df, function(y) any(is.na(y[, by])), FUN.VALUE = logical(1L))))) { stop("There are missing values in the matching variable specified in 'by'.", call. = FALSE) }

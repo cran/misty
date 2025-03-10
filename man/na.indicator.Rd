@@ -4,25 +4,22 @@
 \alias{na.indicator}
 \title{Missing Data Indicator Matrix}
 \usage{
-na.indicator(..., data = NULL, na = 0, append = TRUE, name = ".i", as.na = NULL,
+na.indicator(data, ..., na = 1, append = TRUE, name = ".i", as.na = NULL,
              check = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame with incomplete data, where missing
-values are coded as \code{NA}. Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{na.indicator(x1, x2, x3, data = dat)}. Note that the operators
+\item{data}{a data frame with incomplete data, where missing
+values are coded as \code{NA}.}
+
+\item{...}{an expression indicating the variable names in \code{data}, e.g.,
+\code{na.indicator(dat, x1, x2, x3)}. Note that the operators
 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument \code{...}.}
-
 \item{na}{an integer value specifying the value representing missing values,
-i.e., either \code{na = 0} (default) for \code{0 = missing} and
-\code{1 = observed}, or \code{na = 1} for \code{0} (observed)
+i.e., either \code{na = 0} for \code{0 = missing} and
+\code{1 = observed}, or \code{na = 1} (default) for \code{0} (observed)
 and \code{1 = missing}.}
 
 \item{append}{logical: if \code{TRUE} (default), missing data indicator matrix
@@ -50,14 +47,11 @@ values are observed or missing, i.e., \eqn{r = 0} if a value is observed, and
 \eqn{r = 1} if a value is missing.
 }
 \examples{
-# Example 1a: Create missing data indicator matrix
+# Example 1: Create missing data indicator matrix
 na.indicator(airquality)
 
-# Example 1b: Alternative specification using the 'data' argument
-na.indicator(., data = airquality)
-
-# Example 2: Append missing data indicator matrix to the data frame
-na.indicator(., data = airquality)
+# Example 2: Do not append missing data indicator matrix to the data frame
+na.indicator(airquality, append = FALSE)
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.

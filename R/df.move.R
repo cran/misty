@@ -5,12 +5,12 @@
 #' in the first argument \code{...} are moved to the first position in the data
 #' frame specified in the argument \code{data}.
 #'
+#' @param data   a data frame.
 #' @param ...    an expression indicating the variable names in \code{data} to
 #'               move. Note that the operators \code{.}, \code{+}, \code{-},
 #'               \code{~}, \code{:}, \code{::}, and \code{!} can also be used to
 #'               select variables, see Details in the \code{\link{df.subset}}
 #'               function.
-#' @param data   a data frame.
 #' @param before a character string indicating a variable in \code{data}.
 #'               Variable(s) specified in \code{...} are moved to the left-hand
 #'               side of this variable.
@@ -41,33 +41,33 @@
 #'
 #' @examples
 #' # Example 1: Move variables 'hp' and 'am' to the first position
-#' df.move(hp, am, data = mtcars)
+#' df.move(mtcars, hp, am)
 #'
 #' # Example 2: Move variables 'hp' and 'am' to the last position
-#' df.move(hp, am, data = mtcars, first = FALSE)
+#' df.move(mtcars, hp, am, first = FALSE)
 #'
 #' # Example 3: Move variables 'hp' and 'am' to the left-hand side of 'disp'
-#' df.move(hp, am, data = mtcars, before = "disp")
+#' df.move(mtcars, hp, am, before = "disp")
 #'
 #' # Example 4: Move variables 'hp' and 'am' to the right-hand side of 'disp'
-#' df.move(hp, am, data = mtcars, after = "disp")
-df.move <- function(..., data = NULL, before = NULL, after = NULL, first = TRUE, check = TRUE) {
+#' df.move(mtcars, hp, am, after = "disp")
+df.move <- function(data, ..., before = NULL, after = NULL, first = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
-
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
-
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
   # Check if input 'data' is missing
   if (isTRUE(missing(data))) { stop("Please specify the argument 'data'.", call. = FALSE) }
 
   # Check if input 'data' is NULL
   if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
+
+  # Check if input '...' is missing
+  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+
+  # Check if input '...' is NULL
+  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

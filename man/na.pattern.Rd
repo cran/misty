@@ -4,28 +4,24 @@
 \alias{na.pattern}
 \title{Missing Data Pattern}
 \usage{
-na.pattern(..., data = NULL, order = FALSE, n.pattern = NULL, plot = FALSE,
-           square = TRUE, rotate = FALSE, fill.col = c("#B61A51B3", "#006CC2B3"),
-           alpha = 0.6, plot.margin = c(4, 16, 0, 4),
-           legend.box.margin = c(-8, 6, 6, 6), legend.key.size = 12,
-           legend.text.size = 9, saveplot = FALSE, file = "NA_Pattern.pdf",
-           width = NA, height = NA, units = c("in", "cm", "mm", "px"), dpi = 600,
-           digits = 2, as.na = NULL, write = NULL, append = TRUE, check = TRUE,
-           output = TRUE)
+na.pattern(data, ..., order = FALSE, n.pattern = NULL, digits = 2, as.na = NULL,
+           plot = FALSE, square = TRUE, rotate = FALSE,
+           color = c("#B61A51B3", "#006CC2B3"), tile.alpha = 0.6,
+           plot.margin = c(4, 16, 0, 4), legend.box.margin = c(-8, 6, 6, 6),
+           legend.key.size = 12, legend.text.size = 9, filename = NULL,
+           width = NA, height = NA, units = c("in", "cm", "mm", "px"),
+           dpi = 600, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame with incomplete data, where missing
-values are coded as \code{NA}. a matrix or data frame with incomplete data, where missing
-values are coded as \code{NA}. Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{na.pattern(x1, x2, x3, data = dat)}.Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+\item{data}{a data frame with incomplete data, where
+missing values are coded as \code{NA}.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument \code{...}.}
+\item{...}{an expression indicating the variable names in
+\code{data} e.g., \code{na.pattern(dat, x1, x2, x3)}.
+Note that the operators \code{.}, \code{+}, \code{-},
+\code{~}, \code{:}, \code{::}, and \code{!} can also
+be used to select variables, see 'Details' in the
+\code{\link{df.subset}} function.}
 
 \item{order}{logical: if \code{TRUE}, variables are ordered from left to
 right in increasing order of missing values.}
@@ -34,6 +30,13 @@ right in increasing order of missing values.}
 a missing data pattern to be included in the result table and the plot, e.g., specifying
 \code{n.pattern = 5} excludes missing data patters with less than \code{5} cases.}
 
+\item{digits}{an integer value indicating the number of decimal places to
+be used for displaying percentages.}
+
+\item{as.na}{a numeric vector indicating user-defined missing values,
+i.e. these values are converted to NA before conducting the
+analysis.}
+
 \item{plot}{logical: if \code{TRUE}, missing data pattern is plotted.}
 
 \item{square}{logical: if \code{TRUE} (default), the plot tiles are squares
@@ -41,11 +44,11 @@ to mimic the \code{md.pattern} function in the package \pkg{mice}.}
 
 \item{rotate}{logical: if \code{TRUE}, the variable name labels are rotated 90 degrees.}
 
-\item{fill.col}{a character string indicating the color for the \code{"fill"} argument.
+\item{color}{a character string indicating the color for the \code{"fill"} argument.
 Note that the first color represents missing values and the second color
 represent observed values.}
 
-\item{alpha}{a numeric value between 0 and 1 for the \code{alpha} argument (default is \code{0.1}.}
+\item{tile.alpha}{a numeric value between 0 and 1 for the \code{alpha} argument (default is \code{0.1}).}
 
 \item{plot.margin}{a numeric vector indicating the \code{plot.margin} argument for the \code{theme} function.}
 
@@ -58,9 +61,7 @@ argument (default is \code{unit(12, "pt")}) for the \code{theme} function.}
 \item{legend.text.size}{a numeric value indicating the \code{legend.text}
 argument (default is \code{element_text(size = 10)}) for the \code{theme} function.}
 
-\item{saveplot}{logical: if \code{TRUE}, the ggplot is saved.}
-
-\item{file}{a character string indicating the \code{filename} argument (default is \code{"NA_Pattern.pdf"}) including
+\item{filename}{a character string indicating the \code{filename} argument (default is \code{"NA_Pattern.pdf"}) including
 the file extension for the \code{ggsave} function. Note that one of \code{".eps"}, \code{".ps"},
 \code{".tex"}, \code{".pdf"} (default), \code{".jpeg"}, \code{".tiff"}, \code{".png"}, \code{".bmp"},
 \code{".svg"} or \code{".wmf"} needs to be specified as file extension in the \code{file} argument.}
@@ -76,13 +77,6 @@ size of the current graphics device) for the \code{ggsave} function.}
 
 \item{dpi}{a numeric value indicating the \code{dpi} argument
 (default is \code{600}) for the \code{ggsave} function.}
-
-\item{digits}{an integer value indicating the number of decimal places to
-be used for displaying percentages.}
-
-\item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to NA before conducting the
-analysis.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
@@ -105,9 +99,7 @@ Returns an object of class \code{misty.object}, which is a list with following
 entries:
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
-\item{\code{data}}{list with data frames, i.e., \code{data} for the data frame
-                   with variables used in the current analysis, and \code{plotdat}
-                   for the data frame used for plotting the results}
+\item{\code{data}}{data frame with variables used in the analysis}
 \item{\code{args}}{specification of function arguments}
 \item{\code{result}}{result table}
 \item{\code{plot}}{ggplot2 object for plotting the results}
@@ -123,11 +115,8 @@ The code for plotting missing data patterns is based on the \code{plot_pattern}
 function in the \pkg{ggmice} package by Hanne Oberman.
 }
 \examples{
-# Example 1a: Compute a summary of missing data patterns
+# Example 1: Compute a summary of missing data patterns
 dat.pattern <- na.pattern(airquality)
-
-# Example 1b: Alternative specification using the 'data' argument
-na.pattern(., data = airquality)
 
 # Example 2a: Compute and plot a summary of missing data patterns
 na.pattern(airquality, plot = TRUE)
@@ -138,7 +127,7 @@ na.pattern(airquality, plot = TRUE, n.pattern = 3)
 # Example 3: Vector of missing data pattern for each case
 dat.pattern$pattern
 
-# Data frame without cases with missing data pattern 2
+# Data frame without cases with missing data pattern 2 and 4
 airquality[!dat.pattern$pattern == 2, ]
 
 \dontrun{

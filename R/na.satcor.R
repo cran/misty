@@ -96,18 +96,14 @@ na.satcor <- function(model, data, aux, fun = c("cfa", "sem", "growth", "lavaan"
   if (isTRUE(check)) {
 
     # Check input 'model'
-    lavaan::lavNames(model, type = "ov") |>
-      (\(y) if (isTRUE(any(!y %in% names(data)))) { stop("Data frame does not contain all variables specified in the argument 'model': ", paste(y[!y %in% names(data)], collapse = ", ")) })()
+    lavaan::lavNames(model, type = "ov") |> (\(y) if (isTRUE(any(!y %in% names(data)))) { stop("Data frame does not contain all variables specified in the argument 'model': ", paste(y[!y %in% names(data)], collapse = ", ")) })()
 
     # Check input 'aux'
-    which(!aux %in% names(data)) |>
-      (\(y) if (isTRUE(length(y) != 0L)) { stop("Data frame does not contain all auxiliary variables specified in 'aux': ", paste(aux[y], collapse = ", ")) })()
+    which(!aux %in% names(data)) |> (\(y) if (isTRUE(length(y) != 0L)) { stop("Data frame does not contain all auxiliary variables specified in 'aux': ", paste(aux[y], collapse = ", ")) })()
 
-    which(!sapply(data[aux], is.numeric)) |>
-      (\(y) if (isTRUE(length(y) != 0L)) { stop("Auxiliary variables specified in 'aux' are not all numeric: ", paste(aux[y], collapse = ", ")) })()
+    which(!sapply(data[aux], is.numeric)) |> (\(y) if (isTRUE(length(y) != 0L)) { stop("Auxiliary variables specified in 'aux' are not all numeric: ", paste(aux[y], collapse = ", ")) })()
 
-    which(aux %in% lavaan::lavNames(model, type = "ov")) |>
-      (\(y) if (isTRUE(length(y) != 0L)) { stop("Variables specified in the model syntax 'model' must not be declared as auxiliary variables: ", paste(aux[y], collapse = ", ")) })()
+    which(aux %in% lavaan::lavNames(model, type = "ov")) |> (\(y) if (isTRUE(length(y) != 0L)) { stop("Variables specified in the model syntax 'model' must not be declared as auxiliary variables: ", paste(aux[y], collapse = ", ")) })()
 
   }
 

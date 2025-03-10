@@ -8,11 +8,12 @@
 #' skewness or multivariate skewness and the univariate sample excess kurtosis or
 #' multivariate excess kurtosis.
 #'
-#' @param ...      a numeric vector. Alternatively, an expression indicating the
-#'                 variable names in \code{data} e.g., \code{skewness(x1, data = dat)}.
-#' @param data     a data frame when specifying the variable in the argument
-#'                 \code{...}. Note that the argument is \code{NULL} when specifying
-#'                 a numeric vector, matrix, or data frame for the argument \code{...}.
+#' @param data     a numeric vector or data frame.
+#' @param ...      an expression indicating the variable names in \code{data}, e.g.,
+#'                 \code{skewness(dat, x1)}. Note that the operators \code{.},
+#'                 \code{+}, \code{-}, \code{~}, \code{:}, \code{::}, and \code{!}
+#'                 can also be used to select variables, see 'Details' in the
+#'                 \code{\link{df.subset}} function.
 #' @param sample   logical: if \code{TRUE} (default), the univariate sample skewness
 #'                 or kurtosis is computed, while the population skewness or kurtosis
 #'                 is computed when \code{sample = FALSE}.
@@ -95,12 +96,12 @@
 #' R package version 2.4.6, https://CRAN.R-project.org/package=psych.
 #'
 #' @return
-#' Returns univariate skewness or kurtosis of \code{x} or an object of class
+#' Returns univariate skewness or kurtosis of \code{data} or an object of class
 #' \code{misty.object}, which is a list with following entries:
 #'
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
-#' \item{\code{data}}{list with the input specified in \code{...} }
+#' \item{\code{data}}{a numeric vector or data frame specified in \code{data}}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{result}}{result table}
 #'
@@ -112,53 +113,54 @@
 #'
 #' @examples
 #' # Example 1a: Compute univariate sample skewness
-#' skewness(mpg, data = mtcars)
+#' skewness(mtcars, mpg)
 #'
 #' # Example 1b: Compute univariate sample excess kurtosis
-#' kurtosis(mpg, data = mtcars)
+#' kurtosis(mtcars, mpg)
 #'
 #' # Example 2a: Compute multivariate skewness
 #' skewness(mtcars)
 #'
 #' # Example 2b: Compute multivariate excess kurtosis
 #' kurtosis(mtcars)
-skewness <- function(..., data = NULL, sample = TRUE, digits = 2, p.digits = 3,
+skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
                      as.na = NULL, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
-  # Check if input 'data' is a data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
+  #_____________________________________________________________________________
+  #
+  # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data ####
+  ## Data using the argument 'data' ####
 
-  #...................
-  ### Data using the argument 'data' ####
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+    # Extract data and convert tibble into data frame or vector
+    x <- data[, .var.names(..., data = data)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-    x <- data[, .var.names(..., data = data, check.chr = "a numeric vector, matrix, or data frame")]
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument 'data' ####
 
-  #...................
-  ### Data without using the argument 'data' ####
   } else {
 
-    x <- eval(..., enclos = parent.frame())
+    # Convert 'data' as tibble into data frame
+    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   }
 
-  # Convert user-missing values into NA
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
+
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #_____________________________________________________________________________
@@ -181,11 +183,11 @@ skewness <- function(..., data = NULL, sample = TRUE, digits = 2, p.digits = 3,
     # Additional checks
     if (isTRUE(check)) {
 
-      # Numeric vector for the argument 'x'?
-      if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
+      # Numeric vector for the argument 'data'?
+      if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'data'.", call. = FALSE) }
 
-      # Check input 'x': Zero variance
-      if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE) }
+      # Check input 'data': Zero variance
+      if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'data' has zero variance.", call. = FALSE) }
 
       # At least 3 observations
       if (isTRUE(length(x) < 3L)) { stop("At least 3 observations are needed to compute skewness.", call. = FALSE) }
@@ -217,8 +219,10 @@ skewness <- function(..., data = NULL, sample = TRUE, digits = 2, p.digits = 3,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Missing Data ####
 
+
+
     # Omit complete missing columns
-    x <- x[, misty::na.prop(t(x)) != 1L]
+    x <- x[, misty::na.prop(t(x), append = FALSE) != 1L]
 
     # Listwise deletion
     x <- na.omit(x)
@@ -279,21 +283,18 @@ skewness <- function(..., data = NULL, sample = TRUE, digits = 2, p.digits = 3,
 #_____________________________________________________________________________
 
 #' @rdname kurtosis
-kurtosis <- function(..., data = NULL, sample = TRUE, center = TRUE, digits = 2,
+kurtosis <- function(data, ..., sample = TRUE, center = TRUE, digits = 2,
                      p.digits = 3, as.na = NULL, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a numeric vector for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
-
-  # Check if input 'data' is a data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -302,21 +303,23 @@ kurtosis <- function(..., data = NULL, sample = TRUE, center = TRUE, digits = 2,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    x <- data[, .var.names(..., data = data, check.chr = "a numeric vector, matrix, or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- data[, .var.names(..., data = data)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    x <- eval(..., enclos = parent.frame())
+    # Convert 'data' as tibble into data frame
+    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
   # Convert user-missing values into NA
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
@@ -341,11 +344,11 @@ kurtosis <- function(..., data = NULL, sample = TRUE, center = TRUE, digits = 2,
     # Additional checks
     if (isTRUE(check)) {
 
-      # Numeric vector for the argument 'x'?
-      if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE) }
+      # Numeric vector for the argument 'data'?
+      if (isTRUE(mode(x) != "numeric")) { stop("Please specify a numeric vector for the argument 'data'.", call. = FALSE) }
 
-      # Check input 'x': Zero variance
-      if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'x' has zero variance.", call. = FALSE) }
+      # Check input 'data': Zero variance
+      if (isTRUE(length(na.omit(unique(x))) == 1L)) { stop("Vector specified in the argument 'data' has zero variance.", call. = FALSE) }
 
       # At least 4 observations
       if (isTRUE(length(x) < 4L)) { stop("At least 4 observations are needed to compute kurtosis.", call. = FALSE) }
@@ -379,7 +382,7 @@ kurtosis <- function(..., data = NULL, sample = TRUE, center = TRUE, digits = 2,
     ## Missing Data ####
 
     # Omit complete missing columns
-    x <- x[, misty::na.prop(t(x)) != 1L]
+    x <- x[, misty::na.prop(t(x), append = FALSE) != 1L]
 
     # Listwise deletion
     x <- na.omit(x)

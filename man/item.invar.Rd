@@ -4,7 +4,7 @@
 \alias{item.invar}
 \title{Between-Group and Longitudinal Measurement Invariance Evaluation}
 \usage{
-item.invar(..., data = NULL, model = NULL, rescov = NULL, rescov.long = TRUE,
+item.invar(data, ..., model = NULL, rescov = NULL, rescov.long = TRUE,
            group = NULL, long = FALSE, cluster = NULL,
            invar = c("config", "metric", "scalar", "strict"),
            partial = NULL, ident = c("marker", "var", "effect"),
@@ -20,9 +20,9 @@ item.invar(..., data = NULL, model = NULL, rescov = NULL, rescov.long = TRUE,
            as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame. If \code{model = NULL}, confirmatory
+\item{data}{a data frame. If \code{model = NULL}, confirmatory
 factor analysis based on a measurement model with one factor
-labeled \code{f} comprising all variables in the matrix or
+labeled \code{f} comprising all variables in the
 data frame specified in \code{x} for evaluating between-group
 measurement invariance for the grouping variable specified
 in the argument \code{group} is conducted. Longitudinal
@@ -30,20 +30,17 @@ measurement invariance evaluation can only be conducted by
 specifying the model using the argument \code{model}. Note
 that the cluster variable is excluded from \code{x} when
 specifying \code{cluster}. If \code{model} is specified,
-the matrix or data frame needs to contain all variables
+the data frame needs to contain all variables
 used in the argument \code{model} and the cluster variable
 when specifying the name of the cluster variable in the
-argument \code{cluster}. Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{item.invar(x1, x2, x2, data = dat)}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+argument \code{cluster}.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a vector, factor, matrix, array, data frame,
-or list for the argument \code{...}.}
+\item{...}{ an expression indicating the variable names in \code{data},
+e.g., \code{item.invar(dat, x1, x2, x2, group = "group")}.
+Note that the operators \code{.}, \code{+}, \code{-},
+\code{~}, \code{:}, \code{::}, and \code{!} can also be
+used to select variables, see 'Details' in the
+\code{\link{df.subset}} function.}
 
 \item{model}{a character vector specifying a measurement model with one
 factor, or a list of character vectors for specifying a
@@ -91,7 +88,7 @@ is likely to correlate with itself over time (Little, 2013,
 p. 164).}
 
 \item{group}{either a character string indicating the variable name of
-the grouping variable in the matrix or data frame specified
+the grouping variable in the data frame specified
 in \code{x} or a vector representing the groups
 for conducting multiple-group analysis to evaluate between-group
 measurement invariance.}
@@ -104,7 +101,7 @@ longitudinal measurement invariance, but not both at the
 same time.}
 
 \item{cluster}{either a character string indicating the variable name
-of the cluster variable in \code{...} or \code{data},
+of the cluster variable in \code{data},
 or a vector representing the nested grouping structure
 (i.e., group or cluster variable) for computing
 cluster-robust standard errors. Note that cluster-robust
@@ -314,34 +311,31 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Between-Group Measurement Invariance Evaluation
 
 #..................
 # Measurement model with one factor
 
-# Example 1a: Specification of the grouping variable in 'x'
-item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "sex")], group = "sex")
+# Example 1a: Specification using the argument '...'
+item.invar(HolzingerSwineford1939, x1:x4, group = "sex")
 
-# Example 1b: Specification of the grouping variable in 'group'
+# Example 1b: Alternative specification without using the argument '...'
 item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
            group = HolzingerSwineford1939$sex)
 
-# Example 1c: Alternative specification using the 'data' argument
-item.invar(x1:x4, data = HolzingerSwineford1939, group = "sex")
+# Example 1c: Alternative specification without using the argument '...'
+item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "sex")], group = "sex")
 
 # Example 1d: Alternative specification using the argument 'model'
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "sex")
-
-# Example 1e: Alternative specification using the 'data' and 'model' argument
-item.invar(., data = HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "sex")
 
 #..................
 # Measurement model with two factors
 
 item.invar(HolzingerSwineford1939,
-           model = list(c("x1", "x2", "x3", "x4"),
-                        c("x5", "x6", "x7", "x8")), group = "sex")
+           model = list(c("x1", "x2", "x3", "x4"), c("x5", "x6", "x7", "x8")),
+           group = "sex")
 
 #..................
 # Configural, metric, scalar, and strict measurement invariance
@@ -366,12 +360,12 @@ item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 
 # Example 4b: Two residual covariances
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           rescov = list(c("x1", "x2"), c("x3", "x4")), group = "sex")
+           rescov = list(c("x1", "x4"), c("x3", "x4")), group = "sex")
 
 #..................
 # Scaled test statistic and cluster-robust standard errors
 
-# Example 5a: Specify cluster variable using a variable name in 'x'
+# Example 5a: Specify cluster variable using a variable name in 'data'
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", cluster = "agemo")
 
@@ -416,7 +410,7 @@ cat(mod$model$scalar)
 # lavaan summary of the scalar invariance model
 lavaan::summary(mod$model.fit$scalar, standardized = TRUE, fit.measures = TRUE)
 
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Longitudinal Measurement Invariance Evaluation
 
 # Example 9: Two time points with three indicators at each time point
@@ -427,13 +421,13 @@ item.invar(HolzingerSwineford1939,
 #------------------------------------------------
 # Write Results
 
-# Example 10a: Write results into a text file
+# Example 10a: Write Results into a text file
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-            group = "sex", print = "all", write = "Invariance.txt", output = FALSE)
+           group = "sex", print = "all", write = "Invariance.txt", output = FALSE)
 
-# Example 10b: Write results into an Excel file
+# Example 10b: Write Results into a Excel file
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-            group = "sex", print = "all", write = "Invariance.xlsx", output = FALSE)
+           group = "sex", print = "all", write = "Invariance.xlsx", output = FALSE)
 
 result <- item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
                      group = "sex", print = "all", output = FALSE)

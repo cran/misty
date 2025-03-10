@@ -8,26 +8,21 @@
 #' indices, and residual correlation matrix can be requested by specifying the
 #' argument \code{print}.
 #'
-#' @param ...              a matrix or data frame. If \code{model = NULL},
-#'                         confirmatory factor analysis based on a measurement
-#'                         model with one factor labeled \code{f} comprising all
-#'                         variables in the matrix or data frame is conducted.
-#'                         Note that the cluster variable is excluded from \code{x}
-#'                         when specifying \code{cluster}. If \code{model} is
-#'                         specified, the matrix or data frame needs to contain
-#'                         all variables used in the argument \code{model} and
-#'                         the cluster variable when specifying \code{cluster}.
-#'                         Alternatively, an expression indicating the variable
-#'                         names in \code{data} e.g.,
-#'                         \code{item.cfa(x1, x2, x3, data = dat)}. Note that the
-#'                         operators \code{.}, \code{+}, \code{-}, \code{~},
-#'                         \code{:}, \code{::}, and \code{!} can also be used to
-#'                         select variables, see 'Details' in the
+#' @param data             a data frame. If \code{model = NULL}, confirmatory
+#'                         factor analysis based on a measurement model with one
+#'                         factor labeled \code{f} comprising all variables in
+#'                         the data frame is conducted. Note that the cluster
+#'                         variable is excluded from \code{data} when specifying
+#'                         \code{cluster}. If \code{model} is specified, the
+#'                         data frame needs to contain all variables used in the
+#'                         argument \code{model} and the cluster variable when
+#'                         specifying \code{cluster}.
+#' @param ...              an expression indicating the variable names in \code{data},
+#'                         e.g., \code{item.cfa(x1, x2, x3, data = dat)}. Note
+#'                         that the operators \code{.}, \code{+}, \code{-},
+#'                         \code{~}, \code{:}, \code{::}, and \code{!} can also
+#'                         be used to select variables, see 'Details' in the
 #'                         \code{\link{df.subset}} function.
-#' @param data             a data frame when specifying one or more variables in
-#'                         the argument \code{...}. Note that the argument is
-#'                         \code{NULL} when specifying a a matrix or data frame
-#'                         for the argument \code{...}.
 #' @param model            a character vector specifying a measurement model with
 #'                         one factor, or a list of character vectors for specifying
 #'                         a measurement model with more than one factor, e.g.,
@@ -82,11 +77,11 @@
 #'                         character vector indicating which variables to treat
 #'                         as ordered (ordinal) variables can be specified.
 #' @param cluster          either a character string indicating the variable name
-#'                         of the cluster variable in \code{...} or \code{data},
-#'                         or a vector representing the nested grouping structure
-#'                         (i.e., group or cluster variable) for computing
-#'                         cluster-robust standard errors. Note that cluster-robust
-#'                         standard errors are not available when treating indicators
+#'                         of the cluster variable in \code{data}, or a vector
+#'                         representing the nested grouping structure (i.e., group
+#'                         or cluster variable) for computing cluster-robust
+#'                         standard errors. Note that cluster-robust standard
+#'                         errors are not available when treating indicators
 #'                         of the measurement model as ordered (ordinal).
 #' @param estimator        a character string indicating the estimator to be used
 #'                         (see 'Details'). By default, \code{"MLR"} is used for
@@ -145,7 +140,7 @@
 #' @param as.na            a numeric vector indicating user-defined missing values,
 #'                         i.e. these values are converted to \code{NA} before
 #'                         conducting the analysis. Note that \code{as.na()}
-#'                         function is only applied to \code{x} but not to
+#'                         function is only applied to \code{data} but not to
 #'                         \code{cluster}.
 #' @param write            a character string naming a file for writing the output into
 #'                         either a text file with file extension \code{".txt"} (e.g.,
@@ -430,23 +425,17 @@
 #' #----------------------------------------------------------------------------
 #' # Measurement model with one factor
 #'
-#' # Example 1a: Specification using the argument 'x'
-#' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")])
+#' # Example 1a: Specification using the argument '...'
+#' item.cfa(HolzingerSwineford1939, x1:x3)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
-#' item.cfa(x1:x3, data = HolzingerSwineford1939)
+#' # Example 1b: Alternative specification without using the '...' argument
+#' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")])
 #'
 #' # Example 1c: Alternative specification using the argument 'model'
 #' item.cfa(HolzingerSwineford1939, model = c("x1", "x2", "x3"))
 #'
-#' # Example 1d: Alternative specification using the 'data' and 'model' argument
-#' item.cfa(., data = HolzingerSwineford1939, model = c("x1", "x2", "x3"))
-#'
 #' # Example 1e: Alternative specification using the argument 'model'
 #' item.cfa(HolzingerSwineford1939, model = list(visual = c("x1", "x2", "x3")))
-#'
-#' # Example 1f: Alternative specification using the 'data' and 'model' argument
-#' item.cfa(., data = HolzingerSwineford1939, model = list(visual = c("x1", "x2", "x3")))
 #'
 #' #----------------------------------------------------------------------------
 #' # Measurement model with three factors
@@ -481,8 +470,7 @@
 #' item.cfa(HolzingerSwineford1939,
 #'          model = list(visual = c("x1", "x2", "x3"),
 #'                       textual = c("x4", "x5", "x6"),
-#'                       speed = c("x7", "x8", "x9")),
-#'          hierarch = TRUE)
+#'                       speed = c("x7", "x8", "x9")), hierarch = TRUE)
 #'
 #' #----------------------------------------------------------------------------
 #' # Measurement model with ordered-categorical indicators
@@ -496,30 +484,29 @@
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' # Example 6a: Specification using a variable in 'x'
-#' item.cfa(Demo.twolevel[, c("y4", "y5", "y6", "cluster")], cluster = "cluster")
+#' # Example 6a: Specification using the '...' argument
+#' item.cfa(y4:y6, data = Demo.twolevel, cluster = "cluster")
 #'
-#' # Example 6b: Specification of the cluster variable in 'cluster'
+#' # Example 6b: Alternative specification without using the '...' argument
 #' item.cfa(Demo.twolevel[, c("y4", "y5", "y6")], cluster = Demo.twolevel$cluster)
 #'
-#' # Example 6c: Alternative specification using the 'data' argument
-#' item.cfa(y4:y6, data = Demo.twolevel, cluster = "cluster")
+#' # Example 6c: Alternative specification without using the '...' argument
+#' item.cfa(Demo.twolevel[, c("y4", "y5", "y6", "cluster")], cluster = "cluster")
 #'
 #' #----------------------------------------------------------------------------
 #' # Print argument
 #'
 #' # Example 7a: Request all results
-#' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], print = "all")
+#' item.cfa(HolzingerSwineford1939, x1, x2, x3, print = "all")
 #'
 #' # Example 7b: Request modification indices with value equal or higher than 5
-#' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
-#'          print = "modind", mod.minval = 5)
+#' item.cfa(HolzingerSwineford1939, x1, x2, x3, x4, print = "modind", mod.minval = 5)
 #'
 #' #----------------------------------------------------------------------------
 #' # lavaan summary of the estimated model
 #'
 #' # Example 8
-#' mod <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
+#' mod <- item.cfa(HolzingerSwineford1939, x1, x2, x3, output = FALSE)
 #'
 #' lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 #'
@@ -528,11 +515,12 @@
 #' # Write Results
 #'
 #' # Example 9a: Write Results into a text file
-#' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.txt")
+#' item.cfa(HolzingerSwineford1939, x1, x2, x3, write = "CFA.txt")
 #'
 #' # Example 9b: Write Results into a Excel file
-#' item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.xlsx")}
-item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = FALSE,
+#' item.cfa(HolzingerSwineford1939, x1, x2, x3, write = "CFA.xlsx")
+#' }
+item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
                      meanstructure = TRUE, ident = c("marker", "var", "effect"),
                      parameterization = c("delta", "theta"), ordered = NULL, cluster = NULL,
                      estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
@@ -547,11 +535,11 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   # Check if input 'model' is a character vector or list of character vectors
   if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
@@ -563,13 +551,10 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+  if (isTRUE(!missing(...))) {
 
     # Extract data
-    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
+    x <- as.data.frame(data[, .var.names(..., data = data, cluster = cluster), drop = FALSE])
 
     # Cluster variable
     if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
@@ -579,12 +564,8 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
-    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unlist(cluster) }
+    # Data frame
+    x <- as.data.frame(data)
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -596,6 +577,9 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
+
+  # Convert 'cluster' as tibble into a vector
+  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
 
   #_____________________________________________________________________________
   #
@@ -615,8 +599,8 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
   # Additional checks
   if (isTRUE(check)) {
 
-    # Check input 'x'
-    if (isTRUE(is.null(model) && ncol(data.frame(x)) < 3L)) { stop("Please specify at least three indicators for the measurement model in 'x'.", call. = FALSE) }
+    # Check input 'data'
+    if (isTRUE(is.null(model) && ncol(data.frame(x)) < 3L)) { stop("Please specify at least three indicators for the measurement model in 'data'.", call. = FALSE) }
 
     # Check input 'model'
     if (isTRUE(!is.null(model))) {
@@ -655,7 +639,7 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
         rescov.items <- !unique(unlist(rescov)) %in% colnames(x)
         if (isTRUE(any(rescov.items))) {
 
-          stop(paste0("Items specified in the argument 'rescov' were not found in 'x': ", paste(unique(unlist(rescov))[rescov.items], collapse = ", ")), call. = FALSE)
+          stop(paste0("Items specified in the argument 'rescov' were not found in 'data': ", paste(unique(unlist(rescov))[rescov.items], collapse = ", ")), call. = FALSE)
 
         }
 
@@ -681,7 +665,7 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
 
         if (isTRUE(any(!ordered %in% colnames(x)))) {
 
-          stop(paste0("Variables specified in the argument 'ordered' were not found in 'x': ", paste(x[!ordered %in% colnames(x)], collapse = ", ")), call. = FALSE)
+          stop(paste0("Variables specified in the argument 'ordered' were not found in 'data': ", paste(x[!ordered %in% colnames(x)], collapse = ", ")), call. = FALSE)
 
         }
 
@@ -713,7 +697,7 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Manifest variables ####
 
-  # Model specification with 'x'
+  # Model specification with 'data'
   if (isTRUE(is.null(model))) {
 
     # No cluster variable
@@ -1436,21 +1420,13 @@ item.cfa <- function(..., data = NULL, model = NULL, rescov = NULL, hierarch = F
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Modification indices ####
 
-  if (isTRUE(check.vcov && estimator != "PML")) {
-
-    model.modind <- misty::df.rename(model.modind[, c("lhs", "op", "rhs", "mi", "epc", "sepc.all")], from = "sepc.all", to = "stdyx")
-
-  }
+  if (isTRUE(check.vcov && estimator != "PML")) { model.modind <- misty::df.rename(model.modind[, c("lhs", "op", "rhs", "mi", "epc", "sepc.all")], from = "sepc.all", to = "stdyx") }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Residual Correlation Matrix ####
 
   # Combine residual correlation matrix and standardized residual means
-  if (isTRUE(!is.null(model.resid))) {
-
-    model.resid <- do.call("rbind", model.resid[c("cov", "mean")])
-
-  }
+  if (isTRUE(!is.null(model.resid))) { model.resid <- do.call("rbind", model.resid[c("cov", "mean")]) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Return object ####

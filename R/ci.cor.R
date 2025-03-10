@@ -15,19 +15,15 @@
 #' function computes Pearson product-moment correlation coefficients adjusted via
 #' approximate distribution method.
 #'
-#' @param ...               a matrix or data frame with numeric variables, i.e.,
-#'                          factors and character variables are excluded from
-#'                          \code{x} before conducting the analysis. Alternatively,
-#'                          an expression indicating the variable names in \code{data}
+#' @param data              a data frame with numeric variables, i.e., factors
+#'                          and character variables are excluded from \code{data}
+#'                          before conducting the analysis.
+#' @param ...               an expression indicating the variable names in \code{data}
 #'                          e.g., \code{ci.cor(x1, x2, data = dat)}. Note that the
 #'                          operators \code{.}, \code{+}, \code{-}, \code{~},
 #'                          \code{:}, \code{::}, and \code{!} can also be used
 #'                          to select variables, see 'Details' in the
 #'                          \code{\link{df.subset}} function.
-#' @param data              a data frame when specifying one or more variables
-#'                          in the argument \code{...}. Note that the argument is
-#'                          \code{NULL} when specifying a numeric vector, matrix
-#'                          or data frame for the argument \code{...}.
 #' @param method            a character string indicating which correlation
 #'                          coefficient is to be computed, i.e., \code{"pearson"}
 #'                          for Pearson product-moment correlation coefficient
@@ -109,15 +105,13 @@
 #' @param conf.level        a numeric value between 0 and 1 indicating the confidence
 #'                          level of the interval.
 #' @param group             either a character string indicating the variable name
-#'                          of the grouping variable in \code{...} or \code{data},
-#'                          or a vector representing the grouping variable. The
-#'                          grouping variable is excluded from the matrix or data
-#'                          frame specified in \code{...} or \code{data}.
+#'                          of the grouping variable in \code{data}, or a vector
+#'                          representing the grouping variable. The grouping variable
+#'                          is excluded from the data frame specified in \code{data}.
 #' @param split             either a character string indicating the variable name
-#'                          of the split variable in \code{...} or \code{data},
-#'                          or a vector representing the split variable. The split
-#'                          variable is excluded from the matrix or data frame
-#'                          specified in \code{...} or \code{data}.
+#'                          of the split variable in \code{data}, or a vector
+#'                          representing the split variable. The split variable
+#'                          is excluded from the data frame specified in \code{data}.
 #' @param na.omit           logical: if \code{TRUE}, incomplete cases are removed
 #'                          before conducting the analysis (i.e., listwise deletion);
 #'                          if \code{FALSE} (default), pairwise deletion is used.
@@ -162,7 +156,7 @@
 #'                          in the \code{geom_histogram} function for controlling
 #'                          the number of bins when plotting bootstrap samples
 #'                          (\code{plot = "boot"}).
-#' @param alpha             a numeric value between 0 and 1 for specifying the
+#' @param hist.alpha        a numeric value between 0 and 1 for specifying the
 #'                          \code{alpha} argument in the \code{geom_histogram}
 #'                          function for controlling the opacity of the bars
 #'                          when plotting bootstrap samples (\code{plot = "boot"}).
@@ -190,7 +184,7 @@
 #'                          function controlling the line type of the density
 #'                          curves when plotting bootstrap samples
 #'                          (\code{plot = "boot"}).
-#' @param plot.point        logical: if \code{TRUE} (default), vertical lines
+#' @param point             logical: if \code{TRUE} (default), vertical lines
 #'                          representing the point estimate of the correlation
 #'                          coefficients are drawn when plotting bootstrap samples
 #'                          (\code{plot = "boot"}).
@@ -201,7 +195,7 @@
 #'                          (\code{plot = "boot"}). Note that this argument applied
 #'                          only when no grouping variable was specified
 #'                          \code{group = NULL}.
-#' @param point.linewidth     a numeric value specifying the \code{linewdith} argument
+#' @param point.linewidth   a numeric value specifying the \code{linewdith} argument
 #'                          in the \code{geom_vline} function for controlling the
 #'                          line width of the vertical line displaying the
 #'                          correlation coefficient when plotting bootstrap samples
@@ -211,7 +205,7 @@
 #'                          function controlling the line type of the vertical
 #'                          line displaying the correlation  coefficient when
 #'                          plotting bootstrap samples (\code{plot = "boot"}).
-#' @param plot.ci           logical: if \code{TRUE} (default), vertical lines
+#' @param ci                logical: if \code{TRUE} (default), vertical lines
 #'                          representing the bootstrap confidence intervals of
 #'                          the correlation coefficient are drawn when plotting
 #'                          bootstrap samples (\code{plot = "boot"}).
@@ -222,7 +216,7 @@
 #'                          (\code{plot = "boot"}). Note that this argument applied
 #'                          only when no grouping variable was specified
 #'                          \code{group = NULL}.
-#' @param ci.linewidth      a numeric value specifying the \code{linewdith} argument
+#' @param c.linewidth       a numeric value specifying the \code{linewdith} argument
 #'                          in the \code{geom_vline} function for controlling the
 #'                          line width of the vertical line displaying bootstrap
 #'                          confidence intervals when plotting bootstrap samples
@@ -333,7 +327,7 @@
 #'                          \code{"free_x"}, \code{"free_y"} (default), or
 #'                          \code{"free"} when specifying a split variable using
 #'                          the argument \code{split}.
-#' @param saveplot          a character string indicating the \code{filename}
+#' @param filename          a character string indicating the \code{filename}
 #'                          argument including the file extension in the \code{ggsave}
 #'                          function. Note that one of \code{".eps"}, \code{".ps"},
 #'                          \code{".tex"}, \code{".pdf"} (default),
@@ -657,10 +651,10 @@
 #'
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
-#' \item{\code{data}}{list with the input specified in \code{...}, \code{data}, \code{group}, and \code{split}}
+#' \item{\code{data}}{list with the input specified in \code{data}, \code{group}, and \code{split}}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{boot}}{data frame with bootstrap replicates of the correlation coefficient when bootstrapping was requested}
-#' \item{\code{plot}}{ggplot2 object for plotting the results and the data frame used for plotting}
+#' \item{\code{plot}}{ggplot2 object for plotting the results}
 #' \item{\code{result}}{result table}
 #'
 #' @note
@@ -680,171 +674,117 @@
 #' # Pearson product-moment correlation coefficient
 #'
 #' # Example 1a: Approximate distribution method
+#' ci.cor(mtcars, mpg, drat, qsec)
+#'
+#' # Alternative specification without using the '...' argument
 #' ci.cor(mtcars[, c("mpg", "drat", "qsec")])
 #'
-#' # Alternative specification
-#' ci.cor(mpg, drat, qsec, data = mtcars)
-#'
 #' # Example 1b: Joint moments method
-#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], adjust = "joint")
+#' ci.cor(mtcars, mpg, drat, qsec, adjust = "joint")
 #'
 #' #----------------------------------------------------------------------------
 #' # Spearman's rank-order correlation coefficient
 #'
 #' # Example 2a: Fieller et al. (1957) approximate standard error
-#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], method = "spearman")
+#' ci.cor(mtcars, mpg, drat, qsec, method = "spearman")
 #'
 #' # Example 2b: Bonett and Wright (2000) approximate standard error
-#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], method = "spearman", se = "bonett")
+#' ci.cor(mtcars, mpg, drat, qsec, method = "spearman", se = "bonett")
 #'
 #' # Example 2c: Rank-based inverse normal (RIN) transformation
-#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], method = "spearman", se = "rin")
+#' ci.cor(mtcars, mpg, drat, qsec, method = "spearman", se = "rin")
 #'
 #' #----------------------------------------------------------------------------
 #' # Kendall's Tau
 #'
 #' # Example 3a:  Kendall's Tau-b
-#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], method = "kendall-b")
+#' ci.cor(mtcars, mpg, drat, qsec, method = "kendall-b")
 #'
 #' # Example 3b:  Kendall's Tau-c
-#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], method = "kendall-c")
+#' ci.cor(mtcars, mpg, drat, qsec, method = "kendall-c")
 #'
 #' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Bootstrap Confidence Interval (CI)
 #'
 #' # Example 4a: Bias-corrected (BC) percentile bootstrap CI
-#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], boot = "bc")
+#' ci.cor(mtcars, mpg, drat, qsec, boot = "bc")
 #'
 #' # Example 4b: Bias-corrected and accelerated (BCa) bootstrap CI,
 #' # 5000 bootstrap replications, set seed of the pseudo-random number generator
-#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], boot = "bca", R = 5000, seed = 123)
+#' ci.cor(mtcars, mpg, drat, qsec, boot = "bca", R = 5000, seed = 123)
 #'
 #' #----------------------------------------------------------------------------
 #' # Grouping and Split Variable
 #'
 #' # Example 5a: Grouping variable
-#' ci.cor(mpg, drat, qsec, data = mtcars, group = "vs")
+#' ci.cor(mtcars, mpg, drat, qsec, group = "vs")
 #'
-#' # Alternative specification
+#' # Alternative specification without using the argument '...'
 #' ci.cor(mtcars[, c("mpg", "drat", "qsec")], group = mtcars$vs)
 #'
 #' # Example 5b: Split variable
-#' ci.cor(mpg, drat, qsec, data = mtcars, split = "am")
+#' ci.cor(mtcars, mpg, drat, qsec, split = "am")
 #'
-#' # Alternative specification
+#' # Alternative specification without using the argument '...'
 #' ci.cor(mtcars[, c("mpg", "drat", "qsec")], split = mtcars$am)
 #'
 #' # Example 5c: Grouping and split variable
-#' ci.cor(mpg, drat, qsec, data = mtcars, group = "vs", split = "am")
+#' ci.cor(mtcars, mpg, drat, qsec, group = "vs", split = "am")
 #'
-#' # Alternative specification
+#' # Alternative specification without using the argument '...'
 #' ci.cor(mtcars[, c("mpg", "drat", "qsec")], group = mtcars$vs, split = mtcars$am)
 #'
 #' #----------------------------------------------------------------------------
 #' # Write Output
 #'
 #' # Example 6a: Text file
-#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], write = "CI_Cor_Text.txt")
+#' ci.cor(mtcars, mpg, drat, qsec, write = "CI_Cor_Text.txt")
 #'
 #' # Example 6b: Excel file
-#' ci.cor(mtcars[, c("mpg", "drat", "qsec")], write = "CI_Cor_Excel.xlsx")
+#' ci.cor(mtcars, mpg, drat, qsec, write = "CI_Cor_Excel.xlsx")
 #'
 #' #----------------------------------------------------------------------------
 #' # Plot Confidence Intervals
 #'
 #' # Example 7a: Pearson product-moment correlation coefficient
-#' ci.cor(mpg, drat, qsec, data = mtcars, plot = "ci")
+#' ci.cor(mtcars, mpg, drat, qsec, plot = "ci")
 #'
 #' # Example 7b: Grouping variable
-#' ci.cor(mpg, drat, qsec, data = mtcars, group = "vs", plot = "ci")
+#' ci.cor(mtcars, mpg, drat, qsec, group = "vs", plot = "ci")
 #'
 #' # Example 7c: Split variable
-#' ci.cor(mpg, drat, qsec, data = mtcars, split = "am", plot = "ci")
+#' ci.cor(mtcars, mpg, drat, qsec, split = "am", plot = "ci")
 #'
 #' # Example 7d: Save plot as PDF file
-#' ci.cor(mpg, drat, qsec, data = mtcars, plot = "ci", saveplot = "CI_Cor.pdf",
-#'        width = 9, height = 6)
+#' ci.cor(mtcars, mpg, drat, qsec, plot = "ci", filename = "CI_Cor.pdf",
+#'        width = 8, height = 6)
 #'
 #' # Example 7e: Save plot as PNG file
-#' ci.cor(mpg, drat, qsec, data = mtcars, plot = "ci", saveplot = "CI_Cor.png",
-#'        width = 9, height = 6)
-#'
-#' # Example 7f: Plot in line with the default setting
-#'
-#' # Load ggplot2 package
-#' library(ggplot2)
-#'
-#' # Extract plot data
-#' plotdata <- ci.cor(mtcars[, c("mpg", "drat", "qsec")], plot = "ci",
-#'                    output = FALSE)$plot$plotdata
-#'
-#' # Draw plot
-#' ggplot(plotdata, aes(x, y)) +
-#'   geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
-#'   geom_errorbar(aes(ymin = low, ymax = upp), width = 0.3) +
-#'   geom_point(size = 2.5) +
-#'   scale_x_discrete(name = "") +
-#'   scale_y_continuous(name = "Correlation Coefficient", limits = c(-1, 1),
-#'                      breaks = seq(-1, 1, by = 0.25)) +
-#'   theme_bw() +
-#'   labs(title = NULL, subtitle = NULL) +
-#'   theme(plot.subtitle = element_text(hjust = 0.5),
-#'         plot.title = element_text(hjust = 0.5),
-#'         plot.margin = unit(c(5.5, 5.5, 5.5, 5.5), "pt"),
-#'         axis.text = element_text(size = 10),
-#'         axis.title = element_text(size = 10))
+#' ci.cor(mtcars, mpg, drat, qsec, plot = "ci", filename = "CI_Cor.png",
+#'        width = 8, height = 6)
 #'
 #' #----------------------------------------------------------------------------
 #' # Plot Bootstrap Samples
 #'
 #' # Example 8a: Pearson product-moment correlation coefficient
-#' ci.cor(mpg, drat, qsec, data = mtcars, boot = "bc", plot = "boot")
+#' ci.cor(mtcars, mpg, drat, qsec, boot = "bc", plot = "boot")
 #'
 #' # Example 8b: Grouping variable
-#' ci.cor(mpg, drat, qsec, data = mtcars, group = "vs", boot = "bc", plot = "boot")
+#' ci.cor(mtcars, mpg, drat, qsec, group = "vs", boot = "bc", plot = "boot")
 #'
 #' # Example 8c: Split variable
-#' ci.cor(mpg, drat, qsec, data = mtcars, split = "am", boot = "bc", plot = "boot")
+#' ci.cor(mtcars, mpg, drat, qsec, split = "am", boot = "bc", plot = "boot")
 #'
 #' # Example 8d: Save plot as PDF file
 #' ci.cor(mpg, drat, qsec, data = mtcars, boot = "bc", plot = "boot",
-#'        saveplot = "CI_Cor_Boot.pdf", width = 14, height = 9)
+#'        filename = "CI_Cor_Boot.pdf", width = 14, height = 9)
 #'
 #' # Example 8e: Save plot as PNG file
-#' ci.cor(mpg, drat, qsec, data = mtcars, boot = "bc", plot = "boot",
-#'        saveplot = "CI_Cor_Boot.png", width = 14, height = 9)
-#'
-#' # Example 8f: Plot in line with the default setting
-#'
-#' # Load ggplot2 package
-#' library(ggplot2)
-#'
-#' # Extract plot data
-#' plotdata <- ci.cor(mtcars[, c("mpg", "drat", "qsec")], boot = "bc", plot = "boot",
-#'                    output = FALSE)$plot$plotdata
-#'
-#' ggplot(plotdata, aes(y)) +
-#'   geom_histogram(aes(y = after_stat(density)), color = "black", alpha = 0.4, fill = "gray85") +
-#'   geom_density(color = "#0072B2", linewidth = 0.5) +
-#'   geom_vline(xintercept = 0, color = "gray70") +
-#'   geom_vline(aes(xintercept = point), linewidth = 0.6) +
-#'   geom_vline(aes(xintercept = low), linewidth = 0.6, linetype = "dashed") +
-#'   geom_vline(aes(xintercept = upp), linewidth = 0.6, linetype = "dashed") +
-#'   facet_wrap(~ x, scales = "free_y") +
-#'   scale_x_continuous(name = "Correlation Coefficient", expand = c(0.02, 0),
-#'                      limits =  c(-1, 1), breaks = seq(-1, 1, by = 0.25)) +
-#'   scale_y_continuous(name = "Probability Density, f(x)",
-#'                      expand = expansion(mult = c(0L, 0.05))) +
-#'   theme_bw() +
-#'   theme(plot.subtitle = element_text(hjust = 0.5),
-#'         strip.text = element_text(size = 11),
-#'         plot.title = element_text(hjust = 0.5),
-#'         plot.margin = unit(c(5.5, 5.5, 5.5, 5.5), "pt"),
-#'         axis.text = element_text(size = 10),
-#'         axis.title = element_text(size = 11))
+#' ci.cor(mtcars, mpg, drat, qsec, boot = "bc", plot = "boot",
+#'        filename = "CI_Cor_Boot.png", width = 14, height = 9)
 #' }
-ci.cor <- function(..., data = NULL,
+ci.cor <- function(data, ...,
                    method = c("pearson", "spearman", "kendall-b", "kendall-c"),
                    adjust = c("none", "joint", "approx"),
                    se = c("fisher", "fieller", "bonett", "rin"),
@@ -854,10 +794,10 @@ ci.cor <- function(..., data = NULL,
                    conf.level = 0.95, group = NULL, split = NULL, na.omit = FALSE, digits = 2,
                    as.na = NULL, plot = c("none", "ci", "boot"), point.size = 2.5,
                    point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5, hist = TRUE,
-                   binwidth = NULL, bins = NULL, alpha = 0.4, fill = "gray85", density = TRUE,
+                   binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85", density = TRUE,
                    density.col = "#0072B2", density.linewidth = 0.5, density.linetype = "solid",
-                   plot.point = TRUE, point.col = "#CC79A7", point.linewidth = 0.6,
-                   point.linetype = "solid", plot.ci = TRUE, ci.col = "black",
+                   point = TRUE, point.col = "#CC79A7", point.linewidth = 0.6,
+                   point.linetype = "solid", ci = TRUE, ci.col = "black",
                    ci.linewidth = 0.6, ci.linetype = "dashed", line = TRUE, intercept = 0,
                    linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
                    xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
@@ -865,7 +805,7 @@ ci.cor <- function(..., data = NULL,
                    subtitle = NULL, group.col = NULL, plot.margin = NA,  legend.title = "",
                    legend.position = c("right", "top", "left", "bottom", "none"),
                    legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-                   facet.scales = "free_y", saveplot = NULL, width = NA, height = NA,
+                   facet.scales = "free_y", filename = NULL, width = NA, height = NA,
                    units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL,
                    append = TRUE, check = TRUE, output = TRUE) {
 
@@ -873,11 +813,11 @@ ci.cor <- function(..., data = NULL,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame with numeric variables for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -886,13 +826,10 @@ ci.cor <- function(..., data = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract variables
-    x <- data[, .var.names(..., data = data, group = group, split = split, check.chr = "a numeric vector, matrix or data frame"), drop = FALSE]
+    # Extract data and convert tibble into data frame or vector
+    x <- as.data.frame(data[, .var.names(..., data = data, group = group, split = split)])
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -905,13 +842,8 @@ ci.cor <- function(..., data = NULL,
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
-    if (isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unlist(group) }
-    if (isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { group <- unlist(split) }
+    # Convert 'data' as tibble into data frame
+    x <- as.data.frame(data)
 
     # Data and cluster
     var.group <- .var.group(data = x, group = group, split = split)
@@ -927,6 +859,10 @@ ci.cor <- function(..., data = NULL,
 
   }
 
+  # Convert 'group' and 'split' as tibble into a vector
+  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
+  if (!is.null(split) && isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { split <- unname(unlist(split)) }
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping and Split Variable ####
 
@@ -935,7 +871,7 @@ ci.cor <- function(..., data = NULL,
 
     x <- which(sapply(names(x), function(y) identical(group, x[, y]))) |> (\(z) if (isTRUE(length(z) != 0L)) { return(x[, -z]) } else { x })()
 
-    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the grouping variable from the matrix or data frame, there are not enough variables left for computing a correlation coefficient.") }
+    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the grouping variable from the data frame, there are not enough variables left for computing a correlation coefficient.") }
 
   }
 
@@ -944,7 +880,7 @@ ci.cor <- function(..., data = NULL,
 
     x <- which(sapply(names(x), function(y) identical(split, x[, y]))) |> (\(z) if (isTRUE(length(z) != 0L)) { return(x[, -z]) } else { x })()
 
-    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the split variable from the matrix or data frame, there are not enough variables left for computing a correlation coefficient.") }
+    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the split variable from the data frame, there are not enough variables left for computing a correlation coefficient.") }
 
   }
 
@@ -995,11 +931,11 @@ ci.cor <- function(..., data = NULL,
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical = c("sample", "fisher", "plot.point", "plot.ci", "line", "append", "output"),
+  .check.input(logical = c("sample", "fisher", "point", "ci", "line", "append", "output"),
                numeric = list(seed = 1L, maxtol = 1L, nudge = 1L, point.size = 1L, point.shape  = 1L, errorbar.width = 1L, dodge.width = 1L, bins = 1L, density.linewidth = 1L, point.linewidth = 1L, ci.linewidth = 1L, intercept = 1L, xlim = 2L, ylim = 2L, axis.title.size = 1L, axis.text.size = 1L, strip.text.size = 1L, plot.margin = 4L, legend.box.margin = 4L, facet.ncol = 1L, facet.nrow = 1L, width = 1L, height = 1L, dpi = 1L),
                character = list(title = 1L, subtitle = 1L, legend.title = 1L),
                s.character = list(method = c("pearson", "spearman", "kendall-b", "kendall-c"), adjust = c("none", "joint", "approx"), se = c("fisher", "fieller", "bonett", "rin"), boot = c("none", "norm", "basic", "perc", "bc", "bca"), plot = c("none", "ci", "boot")),
-               args = c("R", "alternative", "conf.level", "digits", "alpha", "linetype", "units", "legend.position", "facet.scales", "write2"), envir = environment(), input.check = check)
+               args = c("R", "alternative", "conf.level", "digits", "hist.alpha", "linetype", "units", "legend.position", "facet.scales", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(isTRUE(check))) {
@@ -1084,6 +1020,9 @@ ci.cor <- function(..., data = NULL,
   ## 'plot' Argument ####
 
   plot <- ifelse(all(c("none", "ci", "boot") %in% plot), "none", plot)
+
+  # Package ggplot2
+  if (isTRUE(check && plot != "none")) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'xlab', 'ylab', 'xlim', 'ylim', 'xbreaks', and 'ybreaks' Argument ####
@@ -1215,7 +1154,7 @@ ci.cor <- function(..., data = NULL,
 
     if (isTRUE(boot == "none")) {
 
-      result <- lapply(split(x, f = group), function(y) misty::ci.cor(y, data = NULL, group = NULL, split = NULL, method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)$result) |>
+      result <- lapply(split(x, f = group), function(y) misty::ci.cor(y, group = NULL, split = NULL, method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)$result) |>
         (\(z) data.frame(group = rep(names(z), each = unique(unlist(lapply(z, nrow)))), do.call("rbind", z), row.names = NULL))()
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1223,7 +1162,7 @@ ci.cor <- function(..., data = NULL,
 
     } else {
 
-      result.boot <- lapply(split(x, f = group), function(y) misty::ci.cor(y, data = NULL, group = NULL, split = NULL, method = method, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, na.omit = FALSE, check = FALSE, output = FALSE)) |>
+      result.boot <- lapply(split(x, f = group), function(y) misty::ci.cor(y, group = NULL, split = NULL, method = method, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, na.omit = FALSE, check = FALSE, output = FALSE)) |>
         (\(z) list(boot.sample = data.frame(group = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = data.frame(group = rep(names(z), each = unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$result)), row.names = NULL)))()
 
       boot.sample <- result.boot$boot.sample
@@ -1241,14 +1180,14 @@ ci.cor <- function(..., data = NULL,
 
     if (isTRUE(boot == "none")) {
 
-      result <- lapply(split(x, f = split), function(y) misty::ci.cor(y, data = NULL, group = NULL, split = NULL, method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, alternative = alternative, conf.level = conf.level, na.omit = FALSE, as.na = NULL, check = FALSE, output = FALSE)$result)
+      result <- lapply(split(x, f = split), function(y) misty::ci.cor(y, group = NULL, split = NULL, method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, alternative = alternative, conf.level = conf.level, na.omit = FALSE, as.na = NULL, check = FALSE, output = FALSE)$result)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = split), function(y) misty::ci.cor(y, data = NULL, group = NULL, split = NULL, method = method, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, na.omit = FALSE, check = FALSE, output = FALSE)) |>
+      result.boot <- lapply(split(x, f = split), function(y) misty::ci.cor(y, group = NULL, split = NULL, method = method, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, na.omit = FALSE, check = FALSE, output = FALSE)) |>
         (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
@@ -1266,14 +1205,14 @@ ci.cor <- function(..., data = NULL,
 
     if (isTRUE(boot == "none")) {
 
-      result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split), function(y) misty::ci.cor(y[, -grep("group", names(y))], data = NULL, group = y$group, split = NULL, method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)$result)
+      result <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.cor(y[, -grep("group", names(y))], group = y$group, split = NULL, method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)$result)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split), function(y) misty::ci.cor(y[, -grep("group", names(y))], data = NULL, group = y$group, split = NULL, method = method, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, na.omit = FALSE, check = FALSE, output = FALSE)) |>
+      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.cor(y[, -grep("group", names(y))], group = y$group, split = NULL, method = method, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, na.omit = FALSE, check = FALSE, output = FALSE)) |>
         (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
@@ -1285,79 +1224,28 @@ ci.cor <- function(..., data = NULL,
 
   #_____________________________________________________________________________
   #
-  # Plot -----------------------------------------------------------------------
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Correlation Coefficient with Error Bars ####
-
-  switch(plot, "ci" = {
-
-    if (isTRUE(any(!is.na((if (isTRUE(!is.data.frame(result))) { do.call("rbind", result) } else { result })$low)))) {
-
-      plot.object <- .plot.ci(result = result, stat = "cor", group = group, split = split, point.size = point.size, point.shape = point.shape, errorbar.width = errorbar.width, dodge.width = dodge.width, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales)
-
-      #...................
-      ### Print plot ####
-
-      suppressWarnings(print(plot.object$p))
-
-    } else {
-
-      plot <- "none"
-
-      warning("There are no confidence intervals for the arithmetic mean to plot.", call. = FALSE)
-
-    }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Bootstrap Samples ####
-
-  }, "boot" = {
-
-    if (any(!is.na(boot.sample$cor))) {
-
-      plot.object <- .plot.boot(result = result, boot.sample = boot.sample, stat = "cor", group = group, split = split, hist = hist, binwidth = binwidth, bins = bins, alpha = alpha, fill = fill, density = density, density.col = density.col, density.linewidth = density.linewidth, density.linetype = density.linetype, plot.point = plot.point, point.col = point.col, point.linewidth = point.linewidth, point.linetype = point.linetype, plot.ci = plot.ci, ci.col = ci.col, ci.linewidth = ci.linewidth, ci.linetype = ci.linetype, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales)
-
-      #...................
-      ### Print plot ####
-
-      suppressMessages(suppressWarnings(print(plot.object$p)))
-
-    } else {
-
-      plot <- "none"
-
-      warning("There are no bootstrap samples to plot.", call. = FALSE)
-
-    }
-
-  })
-
-  #_____________________________________________________________________________
-  #
   # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "ci.cor",
                  data = list(x = x, group = group, split = split),
-                 args = list(method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, boot = boot, R = R, fisher = fisher, alternative = alternative, conf.level = conf.level, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, point.size = point.size, point.shape = point.shape, errorbar.width = errorbar.width, dodge.width = dodge.width, hist = hist, binwidth = binwidth, bins = bins, alpha = alpha, fill = fill, density = density, density.col = density.col, density.linewidth = density.linewidth, density.linetype = density.linetype, plot.point = plot.point, point.col = point.col, point.linewidth = point.linewidth, point.linetype = point.linetype, plot.ci = plot.ci, ci.col = ci.col, ci.linewidth = ci.linewidth, ci.linetype = ci.linetype, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales, saveplot = saveplot, width = width, height = height, units = units, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, boot = boot, R = R, fisher = fisher, alternative = alternative, conf.level = conf.level, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, point.size = point.size, point.shape = point.shape, errorbar.width = errorbar.width, dodge.width = dodge.width, hist = hist, binwidth = binwidth, bins = bins, hist.alpha = hist.alpha, fill = fill, density = density, density.col = density.col, density.linewidth = density.linewidth, density.linetype = density.linetype, point = point, point.col = point.col, point.linewidth = point.linewidth, point.linetype = point.linetype, ci = ci, ci.col = ci.col, ci.linewidth = ci.linewidth, ci.linetype = ci.linetype, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales, filename = filename, width = width, height = height, units = units, dpi = dpi, write = write, append = append, check = check, output = output),
                  boot = if (isTRUE(boot != "none")) { boot.sample } else { NULL },
-                 plot = if (isTRUE(plot != "none")) { list(plot = plot.object$p, plotdata = plot.object$plotdat) } else { NULL },
-                 result = result)
+                 plot = NULL, result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Plot and Save Results ------------------------------------------------------
+
+  if (isTRUE(plot != "none")) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
   # Write Results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
-
-  #_____________________________________________________________________________
-  #
-  # Save ggplot ----------------------------------------------------------------
-
-  if (isTRUE(plot != "none" && !is.null(saveplot))) { suppressWarnings(suppressMessages(ggplot2::ggsave(filename = saveplot, plot = plot.object$p, width = width, height = height, units = units, dpi = dpi))) }
 
   #_____________________________________________________________________________
   #

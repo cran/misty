@@ -132,8 +132,8 @@
       # Check input 'conf.level'
       if (isTRUE("conf.level" %in% args)) { eval(parse(text = "conf.level"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) })() }
 
-      # Check input 'alpha'
-      if (isTRUE("alpha" %in% args)) { eval(parse(text = "alpha"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'alpha '.", call. = FALSE) })() }
+      # Check input 'hist.alpha'
+      if (isTRUE("hist.alpha" %in% args)) { eval(parse(text = "hist.alpha"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'hist.alpha '.", call. = FALSE) })() }
 
       # Check input 'R'
       if (isTRUE("R" %in% args)) { eval(parse(text = "R"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'R'.", call. = FALSE) })() }
@@ -176,45 +176,10 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Write Results ----------------------------------------------------------------
-
-.write.result <- function(object, write, append) {
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Text file ####
-
-  if (isTRUE(grepl("\\.txt", write))) {
-
-    # Send R output to text file
-    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-    if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-    # Print object
-    print(object, check = FALSE)
-
-    # Close file connection
-    sink()
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Excel file ####
-
-  } else {
-
-    misty::write.result(object, file = write)
-
-  }
-
-}
-
-#_______________________________________________________________________________
-#_______________________________________________________________________________
-#
 # Extract Variable Names Specified in the ... Argument  ------------------------
 
 .var.names <- function(..., data, group = NULL, split = NULL, cluster = NULL,
-                       id = NULL, obs = NULL, day = NULL, time = NULL,
-                       check.chr = NULL) {
+                       id = NULL, obs = NULL, day = NULL, time = NULL) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check if input 'data' is data frame ####
@@ -493,7 +458,7 @@
 
   #...................
   ### Exclude grouping variable ####
-  if (isTRUE(!is.null(check.chr) && !is.null(group))) {
+  if (isTRUE(!is.null(group))) {
 
     if (isTRUE(!is.character(group) || length(group) != 1L)) { stop("Please specify a character string for the argument 'group'.", call. = FALSE) }
     if (isTRUE(!group %in% colnames(data))) { stop("Grouping variable specifed in 'group' was not found in 'data'.", call. = FALSE) }
@@ -504,7 +469,7 @@
 
   #...................
   ### Exclude split variable ####
-  if (isTRUE(!is.null(check.chr) && !is.null(split))) {
+  if (isTRUE(!is.null(split))) {
 
     if (isTRUE(!is.character(split) || length(split) != 1L)) { stop("Please specify a character string for the argument 'split'.", call. = FALSE) }
     if (isTRUE(!split %in% colnames(data))) { stop("Split variable specifed in 'split' was not found in 'data'.", call. = FALSE) }
@@ -515,7 +480,7 @@
 
   #...................
   ### Exclude cluster variable ####
-  if (isTRUE(!is.null(check.chr) && !is.null(cluster))) {
+  if (isTRUE(!is.null(cluster))) {
 
     if (isTRUE(!is.character(cluster) || !length(cluster) %in% c(1L, 2L))) { stop("Please specify a character vector for the argument 'cluster'.", call. = FALSE) }
 
@@ -555,7 +520,7 @@
 
   #...................
   ### Exclude id variable ####
-  if (isTRUE(!is.null(check.chr) && !is.null(id))) {
+  if (isTRUE(!is.null(id))) {
 
     if (isTRUE(!is.character(id) || length(id) != 1L)) { stop("Please specify a character string for the argument 'id'.", call. = FALSE) }
     if (isTRUE(!id %in% colnames(data))) { stop("Split variable specifed in 'id' was not found in 'data'.", call. = FALSE) }
@@ -566,10 +531,10 @@
 
   #...................
   ### Exclude obs variable ####
-  if (isTRUE(!is.null(check.chr) && !is.null(obs))) {
+  if (isTRUE(!is.null(obs))) {
 
     if (isTRUE(!is.character(obs) || length(obs) != 1L)) { stop("Please specify a character string for the argument 'obs'.", call. = FALSE) }
-    if (isTRUE(!id %in% colnames(data))) { stop("Split variable specifed in 'obs' was not found in 'data'.", call. = FALSE) }
+    if (isTRUE(!id %in% colnames(data))) { stop("Observation number variable specifed in 'obs' was not found in 'data'.", call. = FALSE) }
 
     check.obs.dupli <- sapply(split(obs, id), function(x) length(x) != length(unique(x)))
     if (isTRUE(any(check.obs.dupli))) { stop("There are duplicated observations specified in 'obs' within subjects specified in 'id'.", call. = FALSE) }
@@ -580,10 +545,10 @@
 
   #...................
   ### Exclude day variable ####
-  if (isTRUE(!is.null(check.chr) && !is.null(day))) {
+  if (isTRUE(!is.null(day))) {
 
     if (isTRUE(!is.character(day) || length(day) != 1L)) { stop("Please specify a character string for the argument 'day'.", call. = FALSE) }
-    if (isTRUE(!id %in% colnames(data))) { stop("Split variable specifed in 'day' was not found in 'data'.", call. = FALSE) }
+    if (isTRUE(!id %in% colnames(data))) { stop("Day variable specifed in 'day' was not found in 'data'.", call. = FALSE) }
 
     var.names <- setdiff(var.names, day)
 
@@ -591,10 +556,10 @@
 
   #...................
   ### Exclude time variable ####
-  if (isTRUE(!is.null(check.chr) && !is.null(time))) {
+  if (isTRUE(!is.null(time))) {
 
     if (isTRUE(!is.character(time) || length(time) != 1L)) { stop("Please specify a character string for the argument 'time'.", call. = FALSE) }
-    if (isTRUE(!id %in% colnames(data))) { stop("Split variable specifed in 'time' was not found in 'data'.", call. = FALSE) }
+    if (isTRUE(!id %in% colnames(data))) { stop("Date and time variable specifed in 'time' was not found in 'data'.", call. = FALSE) }
 
     var.names <- setdiff(var.names, time)
 
@@ -608,24 +573,7 @@
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check if Variables in '...' are available in 'data' ####
 
-  if (isTRUE(!is.null(data) && !is.null(check.chr))) {
-
-    setdiff(var.names, colnames(data)) |>
-      (\(y) if (isTRUE(length(y) != 0L)) {
-
-        if (isTRUE(any(c("$", "[", "subset(", "df.subset(") %in% var.names))) {
-
-          stop(paste0("Please do not specify the argument 'data' when specifying ", check.chr, " for the argument '...'."), call. = FALSE)
-
-        } else {
-
-          stop(paste0(ifelse(length(y) == 1L, "Variable specified in '...' was not found in 'data': ", "Variables specified in '...' were not found in 'data': "), paste(y, collapse = ", ")), call. = FALSE)
-
-        }
-
-      })()
-
-  }
+  if (isTRUE(!is.null(data))) { setdiff(var.names, colnames(data)) |> (\(y) if (isTRUE(length(y) != 0L)) { stop(paste0(ifelse(length(y) == 1L, "Variable specified in '...' was not found in 'data': ", "Variables specified in '...' were not found in 'data': "), paste(y, collapse = ", ")), call. = FALSE) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Return Object ####
@@ -4128,6 +4076,243 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
+# Internal functions for the df.rbind() function ---------------------------------
+#
+# - .make_names
+# - .quickdf
+# - .make_assignment_call
+# - .allocate_column
+# - .output_template
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .make_names ####
+
+.make_names <- function(x, prefix = "X") {
+
+  nm <- names(x)
+
+  if (isTRUE(is.null(nm))) {
+
+    nm <- rep.int("", length(x))
+
+  }
+
+  n <- sum(nm == "", na.rm = TRUE)
+
+  nm[nm == ""] <- paste0(prefix, seq_len(n))
+
+  return(nm)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .quickdf ####
+
+.quickdf <- function (list) {
+
+  rows <- unique(unlist(lapply(list, NROW)))
+
+  stopifnot(length(rows) == 1L)
+
+  names(list) <- .make_names(list, "X")
+
+  class(list) <- "data.frame"
+
+  attr(list, "row.names") <- c(NA_integer_, -rows)
+
+  return(list)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .make_assignment_call ####
+
+.make_assignment_call <- function (ndims) {
+
+  assignment <- quote(column[rows] <<- what)
+
+  if (isTRUE(ndims >= 2L)) {
+
+    assignment[[2L]] <- as.call(c(as.list(assignment[[2]]), rep(list(quote(expr = )), ndims - 1L)))
+
+  }
+
+  return(assignment)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .allocate_column ####
+
+.allocate_column <- function(example, nrows, dfs, var) {
+
+  a <- attributes(example)
+  type <- typeof(example)
+  class <- a$class
+  isList <- is.recursive(example)
+
+  a$names <- NULL
+  a$class <- NULL
+
+  if (isTRUE(is.data.frame(example))) {
+
+    stop("Data frame column '", var, "' not supported by the df.rbind() function.", call. = FALSE)
+
+  }
+
+  if (isTRUE(is.array(example))) {
+
+    if (isTRUE(length(dim(example)) > 1L)) {
+
+      if (isTRUE("dimnames" %in% names(a))) {
+
+        a$dimnames[1L] <- list(NULL)
+
+        if (isTRUE(!is.null(names(a$dimnames))))
+
+          names(a$dimnames)[1L] <- ""
+
+      }
+
+      # Check that all other args have consistent dims
+      df_has <- vapply(dfs, function(df) var %in% names(df), FALSE)
+
+      dims <- unique(lapply(dfs[df_has], function(df) dim(df[[var]])[-1]))
+
+      if (isTRUE(length(dims) > 1L))
+
+        stop("Array variable ", var, " has inconsistent dimensions.", call. = FALSE)
+
+      a$dim <- c(nrows, dim(example)[-1L])
+
+      length <- prod(a$dim)
+
+    } else {
+
+      a$dim <- NULL
+      a$dimnames <- NULL
+      length <- nrows
+
+    }
+
+  } else {
+
+    length <- nrows
+
+  }
+
+  if (isTRUE(is.factor(example))) {
+
+    df_has <- vapply(dfs, function(df) var %in% names(df), FALSE)
+
+    isfactor <- vapply(dfs[df_has], function(df) is.factor(df[[var]]), FALSE)
+
+    if (isTRUE(all(isfactor))) {
+
+      levels <- unique(unlist(lapply(dfs[df_has], function(df) levels(df[[var]]))))
+
+      a$levels <- levels
+
+      handler <- "factor"
+
+    } else {
+
+      type <- "character"
+      handler <- "character"
+      class <- NULL
+      a$levels <- NULL
+
+    }
+
+  } else if (isTRUE(inherits(example, "POSIXt"))) {
+
+    tzone <- attr(example, "tzone")
+    class <- c("POSIXct", "POSIXt")
+    type <- "double"
+    handler <- "time"
+
+  } else {
+
+    handler <- type
+
+  }
+
+  column <- vector(type, length)
+
+  if (isTRUE(!isList)) {
+
+    column[] <- NA
+
+  }
+
+  attributes(column) <- a
+
+  assignment <- .make_assignment_call(length(a$dim))
+
+  setter <- switch(
+    handler,
+    character = function(rows, what) {
+      what <- as.character(what)
+      eval(assignment)
+    },
+    factor = function(rows, what) {
+      #duplicate what `[<-.factor` does
+      what <- match(what, levels)
+      #no need to check since we already computed levels
+      eval(assignment)
+    },
+    time = function(rows, what) {
+      what <- as.POSIXct(what, tz = tzone)
+      eval(assignment)
+    },
+    function(rows, what) {
+      eval(assignment)
+    })
+
+  getter <- function() {
+    class(column) <<- class
+
+    column
+
+  }
+
+  list(set = setter, get = getter)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .output_template ####
+
+.output_template <- function(dfs, nrows) {
+
+  vars <- unique(unlist(lapply(dfs, base::names)))
+  output <- vector("list", length(vars))
+  names(output) <- vars
+
+  seen <- rep(FALSE, length(output))
+  names(seen) <- vars
+
+  for (df in dfs) {
+
+    matching <- intersect(names(df), vars[!seen])
+
+    for (var in matching) {
+
+      output[[var]] <- .allocate_column(df[[var]], nrows, dfs, var)
+
+    }
+
+    seen[matching] <- TRUE
+    if (isTRUE(all(seen))) break
+
+  }
+
+  list(setters = lapply(output, `[[`, "set"), getters = lapply(output, `[[`, "get"))
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
 # Internal functions for the coding() function ---------------------------------
 #
 # - .contr.sum
@@ -6004,7 +6189,7 @@
 #
 # Internal functions for the item.omega() function -----------------------------
 #
-# - omega.function
+# - .omega.function
 # - .catOmega
 # - .getThreshold
 # - .polycorLavaan
@@ -6014,7 +6199,7 @@
 # MBESS: The MBESS R Package
 # https://cran.r-project.org/web/packages/MBESS/index.html
 
-omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check = TRUE) {
+.omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check = TRUE) {
 
   std <- type <- NULL
 
@@ -8479,6 +8664,40 @@ splitFilePath <- function(filepath, normalize = FALSE) {
   if (isTRUE(any(sapply(variables, is.null)))) { variables <- lapply(match.call()[-1L], deparse)[1L:nmodels] }
 
   return(invisible(object))
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Write Results ----------------------------------------------------------------
+
+.write.result <- function(object, write, append) {
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Text file ####
+
+  if (isTRUE(grepl("\\.txt", write))) {
+
+    # Send R output to text file
+    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
+
+    if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
+
+    # Print object
+    print(object, check = FALSE)
+
+    # Close file connection
+    sink()
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Excel file ####
+
+  } else {
+
+    misty::write.result(object, file = write)
+
+  }
 
 }
 

@@ -7,7 +7,7 @@
 #' equal factor loadings across levels in line with the metric cross-level
 #' measurement invariance assumption.
 #'
-#' @param x        a fitted model of class \code{"lavaan"} from the \pkg{lavaan}
+#' @param model    a fitted model of class \code{"lavaan"} from the \pkg{lavaan}
 #'                 package.
 #' @param print    a character string or character vector indicating which results
 #'                 to show on the console, i.e. \code{"all"} for all results,
@@ -51,7 +51,7 @@
 #' entries:
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
-#' \item{\code{x}}{a fitted model of class \code{"lavaan"}}
+#' \item{\code{model}}{a fitted model of class \code{"lavaan"}}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{model}}{specified models, i.e., \code{mod.l1} for the model at the
 #'                     Within level, \code{mod.l1.syntax} for the lavaan syntax
@@ -116,44 +116,45 @@
 #' # Write results into an Excel file
 #' multilevel.fit(fit2, write = "LS-Fit2.xlsx")
 #' }
-multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.digits = 3,
-                           write = NULL, append = TRUE, check = TRUE, output = TRUE) {
+multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3,
+                           p.digits = 3, write = NULL, append = TRUE, check = TRUE,
+                           output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+  # Check if input 'model' is missing
+  if (isTRUE(missing(model))) { stop("Please specify a fitted model of class 'lavaan' for the argument 'model'.", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input 'model' is NULL
+  if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check if model is a lavaan object ####
 
-  if (isTRUE(!inherits(x, "lavaan"))) { stop("Please specify a fitted multilevel model of class \"lavaan\" in the argument 'x'.", call. = FALSE) }
+  if (isTRUE(!inherits(model, "lavaan"))) { stop("Please specify a fitted multilevel model of class \"lavaan\" in the argument 'model'.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check if model is a multilevel model ####
 
-  if (isTRUE(!lavaan::lavInspect(x, what = "options")$.multilevel)) { stop("Please specify a fitted multilevel model of class \"lavaan\" in the argument 'x'.", call. = FALSE) }
+  if (isTRUE(!lavaan::lavInspect(model, what = "options")$.multilevel)) { stop("Please specify a fitted multilevel model of class \"lavaan\" in the argument 'model'.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check if model converged ####
 
-  if (isTRUE(!lavaan::lavInspect(x, what = "converged"))) { stop("Model specified in the argument 'x' did not converge.", call. = FALSE) }
+  if (isTRUE(!lavaan::lavInspect(model, what = "converged"))) { stop("Model specified in the argument 'model' did not converge.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check if degrees of freedoms is 0 ####
 
-  if (isTRUE(suppressWarnings(lavaan::lavInspect(x, what = "fit"))["df"] == 0L)) { stop("The model specified in the argument 'x' is saturated with zero degrees of freedom.", call. = FALSE) }
+  if (isTRUE(suppressWarnings(lavaan::lavInspect(model, what = "fit"))["df"] == 0L)) { stop("The model specified in the argument 'model' is saturated with zero degrees of freedom.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check if model includes cross-level constraints ####
 
   # Parameter table
-  mod.par <- lavaan::parTable(x)
+  mod.par <- lavaan::parTable(model)
 
   # Cross-level equality constraints
   if (isTRUE(any(mod.par$op == "=="))) {
@@ -362,7 +363,7 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
   ## Partially Saturated Model ####
 
   # Observed variables
-  obs.var <- colnames(lavaan::lavInspect(x, what = "data"))
+  obs.var <- colnames(lavaan::lavInspect(model, what = "data"))
 
   # Level 1 observed variables
   l1.obs.var <- obs.var[obs.var %in% unique(unlist(mod.par[mod.par$level == 1L, c("lhs", "rhs")]))]
@@ -371,7 +372,7 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
   l2.obs.var <- obs.var[obs.var %in% unique(unlist(mod.par[mod.par$level == 2L, c("lhs", "rhs")]))]
 
   # Call
-  model.call <- lavaan::lavInspect(x, what = "call")
+  model.call <- lavaan::lavInspect(model, what = "call")
 
   model.call <- unlist(model.call[!names(model.call) %in% c("", "model", "data", "cluster", "estimator", "optim.method", "missing", "std.lv", "effect.coding", "test", "se")])
 
@@ -379,7 +380,7 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
 
   for (i in seq_along(model.call)) { model.call[i] <- paste0(names(model.call)[i], " = ", model.call[i]) }
 
-  lav.options <- lavaan::lavInspect(x, what = "options")
+  lav.options <- lavaan::lavInspect(model, what = "options")
 
   model.call <- c(estimator = paste0("estimator = ", "\"", ifelse(lav.options$test == "yuan.bentler.mplus", "MLR", "ML"), "\""),
                   optim.method = paste0("optim.method =", "\"", lav.options$optim.method, "\""),
@@ -396,14 +397,14 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
   l1.mod.base <- paste0(c(" level: 1\n  ", paste0(apply(combn(l1.obs.var, m = 2L), 2L, paste, collapse = " ~~ 0*"), collapse = " \n   "), "\n",
                           "level: 2\n  ", paste0(apply(combn(l2.obs.var, m = 2L), 2L, paste, collapse = " ~~ "), collapse = " \n   ")))
 
-  l1.mod.base.fit <- eval(parse(text = paste0("suppressWarnings(lavaan::cfa(model = l1.mod.base, data = data.frame(lavaan::lavInspect(x, what = \"data\"), cluster = lavaan::lavInspect(x, what = \"cluster.idx\")), cluster = \"cluster\", ",
+  l1.mod.base.fit <- eval(parse(text = paste0("suppressWarnings(lavaan::cfa(model = l1.mod.base, data = data.frame(lavaan::lavInspect(model, what = \"data\"), cluster = lavaan::lavInspect(model, what = \"cluster.idx\")), cluster = \"cluster\", ",
                           paste(model.call, collapse = ", "), ", check.gradient = FALSE, check.post = FALSE, check.vcov = FALSE))")))
 
   # Hypothesized model
   l1.mod.hypo <- paste0(c(" level: 1 \n  ", mod.l1.syntax, "\n",
                          "level: 2 \n  ", paste0(apply(combn(l2.obs.var, m = 2L), 2L, paste, collapse = " ~~ "), collapse = " \n   ")))
 
-  l1.mod.hypo.fit <- eval(parse(text = paste0("suppressWarnings(lavaan::cfa(model = l1.mod.hypo, data = data.frame(lavaan::lavInspect(x, what = \"data\"), cluster = lavaan::lavInspect(x, what = \"cluster.idx\")), cluster = \"cluster\", ",
+  l1.mod.hypo.fit <- eval(parse(text = paste0("suppressWarnings(lavaan::cfa(model = l1.mod.hypo, data = data.frame(lavaan::lavInspect(model, what = \"data\"), cluster = lavaan::lavInspect(model, what = \"cluster.idx\")), cluster = \"cluster\", ",
                                               paste(model.call, collapse = ", "), ", check.gradient = FALSE, check.post = FALSE, check.vcov = FALSE))")))
 
   #...................
@@ -413,14 +414,14 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
   l2.mod.base <- paste0(c(" level: 1 \n  ", paste0(apply(combn(l1.obs.var, m = 2L), 2L, paste, collapse = " ~~ "), collapse = " \n   "), "\n",
                           "level: 2 \n  ", paste0(apply(combn(l2.obs.var, m = 2L), 2L, paste, collapse = " ~~ 0*"), collapse = " \n   ")))
 
-  l2.mod.base.fit <- eval(parse(text = paste0("suppressWarnings(lavaan::cfa(model = l2.mod.base, data = data.frame(lavaan::lavInspect(x, what = \"data\"), cluster = lavaan::lavInspect(x, what = \"cluster.idx\")), cluster = \"cluster\", ",
+  l2.mod.base.fit <- eval(parse(text = paste0("suppressWarnings(lavaan::cfa(model = l2.mod.base, data = data.frame(lavaan::lavInspect(model, what = \"data\"), cluster = lavaan::lavInspect(model, what = \"cluster.idx\")), cluster = \"cluster\", ",
                                               paste(model.call, collapse = ", "), ", check.gradient = FALSE, check.post = FALSE, check.vcov = FALSE))")))
 
   # Hypothesized model
   l2.mod.hypo <- paste0(c(" level: 1 \n  ", paste0(apply(combn(l1.obs.var, m = 2L), 2L, paste, collapse = " ~~ "), collapse = " \n   "), "\n",
                          "level: 2 \n  ", mod.l2.syntax))
 
-  l2.mod.hypo.fit <- eval(parse(text = paste0("suppressWarnings(lavaan::cfa(model = l2.mod.hypo, data = data.frame(lavaan::lavInspect(x, what = \"data\"), cluster = lavaan::lavInspect(x, what = \"cluster.idx\")), cluster = \"cluster\", ",
+  l2.mod.hypo.fit <- eval(parse(text = paste0("suppressWarnings(lavaan::cfa(model = l2.mod.hypo, data = data.frame(lavaan::lavInspect(model, what = \"data\"), cluster = lavaan::lavInspect(model, what = \"cluster.idx\")), cluster = \"cluster\", ",
                                               paste(model.call, collapse = ", "), ", check.gradient = FALSE, check.post = FALSE, check.vcov = FALSE))")))
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -525,14 +526,14 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Chi-Square Values and Fit Indices ####
 
-  mod.hypo.fit.measures <- lavaan::fitmeasures(x)
+  mod.hypo.fit.measures <- lavaan::fitmeasures(model)
 
   l1.mod.base.fit.measures <- lavaan::fitmeasures(l1.mod.base.fit)
   l1.mod.hypo.fit.measures <- lavaan::fitmeasures(l1.mod.hypo.fit)
 
   # Between Sample size: Number of clusters
-  l2.mod.base.fit@SampleStats@ntotal <- lavaan::lavInspect(x, what = "nclusters")
-  l2.mod.hypo.fit@SampleStats@ntotal <- lavaan::lavInspect(x, what = "nclusters")
+  l2.mod.base.fit@SampleStats@ntotal <- lavaan::lavInspect(model, what = "nclusters")
+  l2.mod.hypo.fit@SampleStats@ntotal <- lavaan::lavInspect(model, what = "nclusters")
 
   l2.mod.base.fit.measures <- lavaan::fitmeasures(l2.mod.base.fit)
   l2.mod.hypo.fit.measures <- lavaan::fitmeasures(l2.mod.hypo.fit)
@@ -642,7 +643,7 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
     l1.rmsea[c("rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")] <- NA
 
   # Scaled test statistic not available when estimator = "MLR"
-  } else if (isTRUE(lavaan::lavInspect(x, what = "options")$test != "standard" && is.na(l1.chisq["chisq.scaled"]))) {
+  } else if (isTRUE(lavaan::lavInspect(model, what = "options")$test != "standard" && is.na(l1.chisq["chisq.scaled"]))) {
 
     warning("(Scaled and robust) CFI, TLI, and RMSEA at the Within level are not available due to estimation problems.", call. = FALSE)
 
@@ -664,7 +665,7 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
     l2.rmsea[c("rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")] <- NA
 
   # Scaled test statistic not available when estimator = "MLR"
-  } else if (isTRUE(is.na(lavaan::lavInspect(x, what = "options")$test != "standard" && l2.chisq["chisq.scaled"]))) {
+  } else if (isTRUE(is.na(lavaan::lavInspect(model, what = "options")$test != "standard" && l2.chisq["chisq.scaled"]))) {
 
     warning("(Scaled and robust) CFI, TLI, and RMSEA at the Between level are not available due to estimation problems.", call. = FALSE)
 
@@ -692,7 +693,7 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
 
   # Summary
   lavaan.summary <- data.frame(# First column
-                               c(paste("lavaan", lavaan::lavInspect(x, what = "version")), "", "Estimator", "Optimization Method", "",
+                               c(paste("lavaan", lavaan::lavInspect(model, what = "version")), "", "Estimator", "Optimization Method", "",
                                  "Test Statistic", "Standard Errors", "Missing Data", "",
                                  "Numer of Model Parameters", "Within", "Between",
                                  "Numer of Equality Constraints", "", "",
@@ -700,18 +701,18 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
                                # Second column
                                unlist(c("", "",
                                         # Estimator
-                                        ifelse(lavaan::lavInspect(x, what = "options")$test == "standard", "ML", "MLR"),
+                                        ifelse(lavaan::lavInspect(model, what = "options")$test == "standard", "ML", "MLR"),
                                         # Optimization method
-                                        toupper(lavaan::lavTech(x, what = "options")$optim.method), "",
+                                        toupper(lavaan::lavTech(model, what = "options")$optim.method), "",
                                         # Test statistic
-                                        switch(lavaan::lavTech(x, what = "options")$test,
+                                        switch(lavaan::lavTech(model, what = "options")$test,
                                                "standard" = "Conventional",
                                                "satorra.bentler" = "Satorra-Bentler",
                                                "scaled.shifted" = "Scale-Shifted",
                                                "mean.var.adjusted" = "Satterthwaite",
                                                "yuan.bentler.mplus" = "Yuan-Bentler"),
                                         # Standard errors
-                                        switch(lavaan::lavTech(x, what = "options")$se,
+                                        switch(lavaan::lavTech(model, what = "options")$se,
                                                "standard" = "Conventional",
                                                "robust.sem" = "Conventional Robust",
                                                "robust.huber.white" = "Huber-White",
@@ -720,20 +721,20 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
                                                "two.stage" = "Two-Stage",
                                                "robust.two.stage" = "Robust Two-Stage"),
                                         # Missing data
-                                        ifelse(lavaan::lavInspect(x, what = "nobs") != lavaan::lavInspect(x, what = "norig"), "Listwise",
-                                               ifelse(lavaan::lavInspect(x, what = "nobs") == lavaan::lavInspect(x, what = "norig") && any(is.na(lavaan::lavInspect(x, what = "data"))), "FIML", "None")), "",
+                                        ifelse(lavaan::lavInspect(model, what = "nobs") != lavaan::lavInspect(model, what = "norig"), "Listwise",
+                                               ifelse(lavaan::lavInspect(model, what = "nobs") == lavaan::lavInspect(model, what = "norig") && any(is.na(lavaan::lavInspect(model, what = "data"))), "FIML", "None")), "",
                                         # Numer of model parameters
                                         npar, npar.l1, npar.l2,
                                         # Numer of equality constraints
                                         npar.eq, "", "Used",
                                         # Number of observations
-                                        lavaan::lavInspect(x, what = "nobs"),
+                                        lavaan::lavInspect(model, what = "nobs"),
                                         # Number of clusters
-                                        lavaan::lavInspect(x, what = "nclusters"),
+                                        lavaan::lavInspect(model, what = "nclusters"),
                                         # Average cluster size
-                                        lavaan::lavInspect(x, what = "ncluster.size"))),
+                                        lavaan::lavInspect(model, what = "ncluster.size"))),
                                # Third column
-                               c(rep("", times = 14L), "Total", lavaan::lavInspect(x, what = "norig"), "", ""),
+                               c(rep("", times = 14L), "Total", lavaan::lavInspect(model, what = "norig"), "", ""),
                                fix.empty.names = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -828,7 +829,7 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
                                               rep(NA, times = 3L)),
                                    fix.empty.names = FALSE)
 
-  if (isTRUE(lavaan::lavInspect(x, what = "options")$test == "standard")) {
+  if (isTRUE(lavaan::lavInspect(model, what = "options")$test == "standard")) {
 
     model.fit.measures <- model.fit.measures[-c(3L, 5L, 22:24L), c(1L, 2L)]
 
@@ -842,7 +843,7 @@ multilevel.fit <- function(x, print = c("all", "summary", "fit"), digits = 3, p.
 
   object <- list(call = match.call(),
                  type = "multilevel.fit",
-                 x = x,
+                 model = model,
                  args = list(print = print, digits = digits, p.digits = p.digits,
                              write = write, append = append, check = check, output = output),
                  model = list(mod.l1 = mod.l1, mod.l1.syntax = mod.l1.syntax,

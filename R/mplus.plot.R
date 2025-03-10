@@ -188,17 +188,17 @@
 #'                          saving the autocorrelation plots, \code{"ppc"} for
 #'                          saving the posterior predictive check plots, and
 #'                          \code{"loop"} for saving the loop plot.
-#' @param file              a character string indicating the \code{filename}
+#' @param filename          a character string indicating the \code{filename}
 #'                          argument (default is \code{"Mplus_Plot.pdf"}) including
 #'                          the file extension for the \code{ggsave} function.
 #'                          Note that one of \code{".eps"}, \code{".ps"},
 #'                          \code{".tex"}, \code{".pdf"} (default), \code{".jpeg"},
 #'                          \code{".tiff"}, \code{".png"}, \code{".bmp"},
 #'                          \code{".svg"} or \code{".wmf"} needs to be specified
-#'                          as file extension in the \code{file} argument.
+#'                          as file extension in the \code{filename} argument.
 #' @param file.plot         a character vector with five elements for distinguishing
 #'                          different types of plots. By default, the character
-#'                          string specified in the argument \code{"file"}
+#'                          string specified in the argument \code{"filename"}
 #'                          (\code{"Mplus_Plot"}) is concatenated with \code{"_TRACE"}
 #'                          (\code{"Mplus_Plot_TRACE"}) for the trace plots,
 #'                          \code{"_POST"} (\code{"Mplus_Plot_POST"}) for
@@ -334,7 +334,7 @@
 #' mplus.plot("ex3.18.gh5", saveplot = "all")
 #'
 #' # Example 6b: Save all plots in png format with 300 dpi
-#' mplus.plot("ex3.18.gh5", saveplot = "all", file = "Mplus_Plot.png", dpi = 300)
+#' mplus.plot("ex3.18.gh5", saveplot = "all", filename = "Mplus_Plot.png", dpi = 300)
 #'
 #' # Example 6a: Save loop plot, specify width and height of the plot
 #' mplus.plot("ex3.18.gh5", plot = "none", saveplot = "loop",
@@ -556,7 +556,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
                        plot.margin = NULL, legend.title.size = 10, legend.text.size = 10,
                        legend.box.margin = NULL,
                        saveplot = c("all", "none", "trace", "post", "auto", "ppc", "loop"),
-                       file = "Mplus_Plot.pdf", file.plot = c("_TRACE", "_POST", "_AUTO", "_PPC", "_LOOP"),
+                       filename = "Mplus_Plot.pdf", file.plot = c("_TRACE", "_POST", "_AUTO", "_PPC", "_LOOP"),
                        width = NA, height = NA, units = c("in", "cm", "mm", "px"),
                        dpi = 600, check = TRUE) {
 
@@ -604,7 +604,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
   # Check inputs
   .check.input(logical = c("burnin", "hist", "density", "area"),
                numeric = list(chain = 1L, facet.nrow = 1L, facet.ncol = 1L,  xlim = 2L, ylim = 2L, shape = 1L, linewidth = 1L, bar.width = 1L, plot.margin = 4L, legend.title.size = 1L, legend.text.size = 1L, legend.box.margin = 4L, dpi = 1L),
-               character = list(file = 1L, file.plot = 5L, point.col = 3L),
+               character = list(filename = 1L, file.plot = 5L, point.col = 3L),
                s.character = list(plot = c("none", "trace", "post", "auto", "ppc", "loop"), param = c("all", "on", "by", "with", "inter", "var", "r2", "new"), ci = c("none", "eti", "hdi"), facet.scales = c("fixed", "free", "free_x", "free_y")),
                m.character = list(std = c("all", "none", "stdyx", "stdy", "std"), point = c("all", "none", "m", "med", "map"), saveplot = c("all", "none", "trace", "post", "auto", "ppc", "loop")),
                args = c("conf.level", "alpha", "linetype", "units"),
@@ -1490,7 +1490,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
                                bar.col = bar.col, bar.width = bar.width,
                                plot.margin = plot.margin, legend.title.size = legend.title.size,
                                legend.text.size = legend.text.size, legend.box.margin = legend.box.margin,
-                               saveplot = saveplot, file = file, file.plot = file.plot,
+                               saveplot = saveplot, filename = filename, file.plot = file.plot,
                                width = width, height = height, units = units, dpi = dpi,
                                check = check),
                    data = list(post = list(parameters = post, wide = post.wide, long = post.long),
@@ -1596,7 +1596,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
   if (isTRUE(all(saveplot != "none"))) {
 
     # File extension
-    file.ext <- paste0(".", rev(unlist(strsplit(file, "\\.")))[1L])
+    file.ext <- paste0(".", rev(unlist(strsplit(filename, "\\.")))[1L])
 
     # Trace plot
     if (isTRUE("trace" %in% saveplot)) {
@@ -1607,7 +1607,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
       } else {
 
-        suppressWarnings(suppressMessages(ggplot2::ggsave(filename = sub(file.ext, paste0(file.plot[1L], file.ext), file), plot = object$plot$trace, width = width, height = height, units = units, dpi = dpi)))
+        suppressWarnings(suppressMessages(ggplot2::ggsave(filename = sub(file.ext, paste0(file.plot[1L], file.ext), filename), plot = object$plot$trace, width = width, height = height, units = units, dpi = dpi)))
 
       }
 
@@ -1622,7 +1622,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
       } else {
 
-        suppressWarnings(suppressMessages(ggplot2::ggsave(filename = sub(file.ext, paste0(file.plot[2L], file.ext), file), plot = object$plot$post, width = width, height = height, units = units, dpi = dpi)))
+        suppressWarnings(suppressMessages(ggplot2::ggsave(filename = sub(file.ext, paste0(file.plot[2L], file.ext), filename), plot = object$plot$post, width = width, height = height, units = units, dpi = dpi)))
 
       }
 
@@ -1637,7 +1637,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
       } else {
 
-        suppressWarnings(suppressMessages(ggplot2::ggsave(filename = sub(file.ext, paste0(file.plot[3L], file.ext), file), plot = object$plot$auto, width = width, height = height, units = units, dpi = dpi)))
+        suppressWarnings(suppressMessages(ggplot2::ggsave(filename = sub(file.ext, paste0(file.plot[3L], file.ext), filename), plot = object$plot$auto, width = width, height = height, units = units, dpi = dpi)))
 
       }
 
@@ -1652,7 +1652,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
       } else {
 
-        suppressWarnings(suppressMessages(ggplot2::ggsave(filename = sub(file.ext, paste0(file.plot[4L], file.ext), file), plot = object$plot$ppc, width = width, height = height, units = units, dpi = dpi)))
+        suppressWarnings(suppressMessages(ggplot2::ggsave(filename = sub(file.ext, paste0(file.plot[4L], file.ext), filename), plot = object$plot$ppc, width = width, height = height, units = units, dpi = dpi)))
 
       }
 
@@ -1667,7 +1667,7 @@ mplus.plot <- function(x, plot = c("none", "trace", "post", "auto", "ppc", "loop
 
       } else {
 
-        suppressWarnings(suppressMessages(ggplot2::ggsave(filename = sub(file.ext, paste0(file.plot[5L], file.ext), file), plot = object$plot$loop, width = width, height = height, units = units, dpi = dpi)))
+        suppressWarnings(suppressMessages(ggplot2::ggsave(filename = sub(file.ext, paste0(file.plot[5L], file.ext), filename), plot = object$plot$loop, width = width, height = height, units = units, dpi = dpi)))
 
       }
 

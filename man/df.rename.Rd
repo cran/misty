@@ -4,10 +4,16 @@
 \alias{df.rename}
 \title{Rename Columns in a Matrix or Variables in a Data Frame}
 \usage{
-df.rename(x, from, to, check = TRUE)
+df.rename(data, ..., from, to, check = TRUE)
 }
 \arguments{
-\item{x}{a matrix or data frame.}
+\item{data}{a matrix or data frame.}
+
+\item{...}{\code{old_name = new_name} when \code{from = NULL} and \code{to = NULL},
+or one of the functions \code{toupper}, \code{tolower}, \code{sub},
+and \code{gsub}. Note that a tilde (\code{~}) needs to be specified
+before when using a function, e.g., \code{~toupper} or
+\code{~gsub("_", ".")}.}
 
 \item{from}{a character string or character vector indicating the column(s) or variable(s) to be renamed.}
 
@@ -17,19 +23,49 @@ the column(s) or variable(s) specified in the argument \code{name}.}
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
-Returns a matrix or data frame with renamed columns or variables.
+Returns the matrix or data frame \code{data} with renamed columns or variables.
 }
 \description{
-This function renames columns in a matrix or variables in a data frame by specifying a character string or
-character vector indicating the columns or variables to be renamed and a character string or character
-vector indicating the corresponding replacement values.
+This function renames columns in a matrix or variables in a data frame by
+(1) using \code{old_name = new_name}, by using the functions \code{toupper},
+\code{tolower}, \code{sub}, and \code{gsub}, or (3) by specifying a character
+vector indicating the column(s) or variable(s) to be renamed (argument \code{from})
+and a character vector indicating the corresponding replacement values (argument
+\code{to}).
 }
 \examples{
-# Example 1: Rename 'cyl' in 'mtcars' to 'cylinder'
+#----------------------------------------------------------------------------
+# Rename using variable names
+
+# Example 1a: Rename 'cyl' in 'mtcars' to 'cylinder' using 'old_name = new_name'
+df.rename(mtcars, cyl = cylinder)
+
+# Example 1b: Rename 'cyl' in 'mtcars' to 'cylinder' using 'from' and 'to'
 df.rename(mtcars, from = "cyl", to = "cylinder")
 
-# Example 2: Rename 'cyl' and 'wt' in 'mtcars' to 'cylinder' and 'weight'
+# Example 2a: Rename 'cyl' and 'wt' in 'mtcars' to 'cylinder' and 'weight'
+# using 'old_name = new_name'
+df.rename(mtcars, cyl = cylinder, wt = weight)
+
+# Example 2b: Rename 'cyl' and 'wt' in 'mtcars' to 'cylinder' and 'weight'
+# using using 'from' and 'to'
 df.rename(mtcars, from = c("cyl", "wt"), to = c("cylinder", "weight"))
+
+#----------------------------------------------------------------------------
+# Rename using functions
+
+# Example 3: Convert all variable names to lowercase
+df.rename(iris, ~tolower)
+
+# Example 4: Replace all '.' with '_'
+# Note, the argument fixed is set to TRUE by default.
+df.rename(iris, ~gsub(".", "_"))
+
+# Example 5: Replace all 'S' with 'P'
+df.rename(iris, ~gsub("S", "P"))
+
+# Example 6: Replace all 'S' with 'P', ignore case during matching
+df.rename(iris, ~gsub("S", "P", ignore.case = TRUE))
 }
 \seealso{
 \code{\link{df.duplicated}}, \code{\link{df.merge}},

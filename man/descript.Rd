@@ -4,27 +4,23 @@
 \alias{descript}
 \title{Descriptive Statistics}
 \usage{
-descript(..., data = NULL,
-        print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd",
-                  "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
-        group = NULL, split = NULL, sample = FALSE, sort.var = FALSE, na.omit = FALSE,
-        digits = 2, as.na = NULL, write = NULL, append = TRUE, check = TRUE,
-        output = TRUE)
+descript(data, ...,
+         print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd",
+                   "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
+         group = NULL, split = NULL, sample = FALSE, sort.var = FALSE,
+         na.omit = FALSE, digits = 2, as.na = NULL, write = NULL, append = TRUE,
+         check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a numeric vector, matrix or data frame with numeric variables,
-i.e., factors and character variables are excluded from \code{...}
-before conducting the analysis. Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{descript(x1, x2, x3, data = dat)}. Note that the operators
+\item{data}{a numeric vector or data frame with numeric variables,
+i.e., factors and character variables are excluded from
+\code{data} before conducting the analysis.}
+
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{descript(dat, x1, x2, x3)}. Note that the operators
 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
-
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a numeric vector, matrix, or data frame for
-the argument \code{...}.}
 
 \item{print}{a character vector indicating which statistical measures to be
 printed on the console, i.e. \code{n} (number of observations),
@@ -62,7 +58,7 @@ used.}
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis. Note that \code{as.na()} function is only applied
-to \code{...}, but not to \code{group} or \code{split}.}
+to \code{data}, but not to \code{group} or \code{split}.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
@@ -86,7 +82,7 @@ entries:
 
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
-\item{\code{data}}{list with the input specified in \code{...}, \code{data}, \code{group}, and \code{split}}
+\item{\code{data}}{list with the input specified in \code{data}, \code{group}, and \code{split}}
 \item{\code{args}}{specification of function arguments}
 \item{\code{result}}{result table}
 }
@@ -99,42 +95,42 @@ by a grouping and/or split variable.
 # Descriptive statistics
 
 # Example 1a: Descriptive statistics for 'mpg', 'cyl', and 'hp'
-descript(mpg, cyl, hp, data = mtcars)
+descript(mtcars, mpg, cyl, hp)
 
-# Alternative specification using the 'data' argument
+# Alternative specification without using the '...' argument
 descript(mtcars[, c("mpg", "cyl", "hp")])
 
 # Example 1b: Print all available statistical measures
-descript(mpg, cyl, hp, data = mtcars, print = "all")
+descript(mtcars, mpg, cyl, hp, print = "all")
 
 # Example 1c: Print default statistical measures plus median
-descript(mpg, cyl, hp, data = mtcars, print = c("default", "med"))
+descript(mtcars, mpg, cyl, hp, print = c("default", "med"))
 
 #----------------------------------------------------------------------------
 # Grouping and Split Variable
 
 # Example 2a: Grouping variable
-descript(mpg, cyl, hp, data = mtcars, group = "vs")
+descript(mtcars, mpg, cyl, hp, group = "vs")
 
-# Alternative specification
+# Alternative specification without using the '...' argument
 descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs)
 
 # Example 2b: Split variable
-descript(mpg, cyl, hp, data = mtcars, split = "am")
+descript(mtcars, mpg, cyl, hp, split = "am")
 
-# Alternative specification
+# Alternative specification without using the '...' argument
 descript(mtcars[, c("mpg", "cyl", "hp")], split = mtcars$am)
 
 # Example 2c: Grouping and split variable
-descript(mpg, cyl, hp, data = mtcars, group = "vs", split = "am")
+descript(mtcars, mpg, cyl, hp, group = "vs", split = "am")
 
-# Alternative specification
+# Alternative specification without using the '...' argument
 descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs, split = mtcars$am)
 
-\dontrun{
 #----------------------------------------------------------------------------
 # Write Output
 
+\dontrun{
 # Example 3a: Text file
 descript(mtcars, write = "Descript_Text.txt")
 

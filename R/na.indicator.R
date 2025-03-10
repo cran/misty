@@ -4,20 +4,16 @@
 #' whether values are observed or missing, i.e., \eqn{r = 0} if a value is
 #' observed, and \eqn{r = 1} if a value is missing.
 #'
-#' @param ...    a matrix or data frame with incomplete data, where missing
-#'               values are coded as \code{NA}. Alternatively, an expression
-#'               indicating the variable names in \code{data} e.g.,
-#'               \code{na.indicator(x1, x2, x3, data = dat)}. Note that the operators
+#' @param data   a data frame with incomplete data, where missing
+#'               values are coded as \code{NA}.
+#' @param ...    an expression indicating the variable names in \code{data}, e.g.,
+#'               \code{na.indicator(dat, x1, x2, x3)}. Note that the operators
 #'               \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'               and \code{!} can also be used to select variables, see 'Details'
 #'               in the \code{\link{df.subset}} function.
-#' @param data   a data frame when specifying one or more variables in the
-#'               argument \code{...}. Note that the argument is \code{NULL}
-#'               when specifying a matrix or data frame for the argument \code{...}.
 #' @param na     an integer value specifying the value representing missing values,
-#'               i.e., either \code{na = 0} (default) for \code{0 = missing} and
-#'               \code{1 = observed}, or \code{na = 1} for \code{0} (observed)
-#'               and \code{1 = missing}.
+#'               i.e., either \code{na = 0} for \code{0 = missing} and \code{1 = observed},
+#'               or \code{na = 1} (default) for \code{0} (observed) and \code{1 = missing}.
 #' @param append logical: if \code{TRUE} (default), missing data indicator matrix
 #'               is appended to the data frame specified in the argument \code{data}.
 #' @param name   a character string indicating the  name suffix of indicator variables
@@ -57,23 +53,20 @@
 #' # Example 1: Create missing data indicator matrix
 #' na.indicator(airquality)
 #'
-#' # Alternative specification using the 'data' argument
-#' na.indicator(., data = airquality, append = FALSE)
-#'
-#' # Example 2: Append missing data indicator matrix to the data frame
-#' na.indicator(., data = airquality)
-na.indicator <- function(..., data = NULL, na = 0, append = TRUE, name = ".i",
+#' # Example 2: Do not append missing data indicator matrix to the data frame
+#' na.indicator(airquality, append = FALSE)
+na.indicator <- function(data, ..., na = 1, append = TRUE, name = ".i",
                          as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -82,24 +75,18 @@ na.indicator <- function(..., data = NULL, na = 0, append = TRUE, name = ".i",
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract data
-    x <- as.data.frame(data[, .var.names(..., data = data, check.chr = "a matrix or data frame"), drop = FALSE])
+    # Extract data and convert tibble into data frame or vector
+    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- as.data.frame(data)
 
   }
 

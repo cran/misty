@@ -4,26 +4,22 @@
 \alias{effsize}
 \title{Effect Sizes for Categorical Variables}
 \usage{
-effsize(..., data = NULL, type = c("phi", "cramer", "tschuprow", "cont", "w", "fei"),
+effsize(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w", "fei"),
         alternative = c("two.sided", "less", "greater"),   conf.level = 0.95,
         adjust = TRUE, indep = TRUE, p = NULL, digits = 3, as.na = NULL,
         write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a vector, factor, matrix or data frame. Alternatively, an
-expression indicating the variable names in \code{data} e.g.,
-\code{as.na(x1, x2, data = dat)}. When specifying more than
-one variable, the first variable is always the focal variable
-in the Chi-square test of independence which association with
-all other variables is investigated. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see
-'Details' in the \code{\link{df.subset}} function.}
+\item{data}{a vector, factor or data frame.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a vector, factor, matrix, array, data frame,
-or list for the argument \code{...}.}
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{effsize(dat, x1, x2)}. When specifying more than
+one variable, the first variable is always the focal variable
+in the Chi-square test of independence which association
+with all other variables is investigated. Note that the
+operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+\code{::}, and \code{!} can also be used to select variables,
+see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{type}{a character string indicating the type of effect size, i.e.,
 \code{phi} for phi coefficient, \code{cramer} for Cramer's
@@ -45,9 +41,9 @@ and Tschuprow’s \emph{T} are corrected for small-sample bias.}
 
 \item{indep}{logical: if \code{TRUE}, effect size computation is based
 on a chi-square test of independence (default when specifying
-two variable in \code{...}), if \code{FALSE} effect size
+two variable, if \code{FALSE} effect size
 computation is based on a chi-square goodness-of-fit test
-(default when specifying one variable in \code{...}).}
+(default when specifying one variable).}
 
 \item{p}{a numeric vector specifying the expected proportions in
 each category of the categorical variable when conducting a
@@ -104,36 +100,36 @@ This function is based on modified copies of the functions \code{chisq_to_phi},
 package (Ben-Shachar, Lüdecke & Makowski, 2020).
 }
 \examples{
-# Example 1a: Phi coefficient for 'vs' and 'am'
+# Example 1: Phi coefficient for 'vs' and 'am'
+effsize(mtcars, vs, am)
+
+# Alternative specification without using the '...' argument
 effsize(mtcars[, c("vs", "am")])
 
-# Example 1a: Alternative specification using the 'data' argument
-effsize(vs, am, data = mtcars)
-
 # Example 2: Bias-corrected Cramer's V for 'gear' and 'carb'
-effsize(gear, carb, data = mtcars)
+effsize(mtcars, gear, carb)
 
 # Example 3: Cramer's V (without bias-correction) for 'gear' and 'carb'
-effsize(gear, carb, data = mtcars, adjust = FALSE)
+effsize(mtcars, gear, carb, adjust = FALSE)
 
 # Example 4: Adjusted Pearson's contingency coefficient for 'gear' and 'carb'
-effsize(gear, carb, data = mtcars, type = "cont")
+effsize(mtcars, gear, carb, type = "cont")
 
 # Example 5: Fei for 'gear'
-effsize(gear, data = mtcars)
+effsize(mtcars, gear)
 
-# Example 6a: Bias-corrected Cramer's V for 'cyl' and 'vs', 'am', 'gear', and 'carb'
+# Example 6: Bias-corrected Cramer's V for 'cyl' and 'vs', 'am', 'gear', and 'carb'
+effsize(mtcars, cyl, vs:carb)
+
+# Alternative specification without using the '...' argument
 effsize(mtcars[, c("cyl", "vs", "am", "gear", "carb")])
 
-# Example 6b: Alternative specification using the 'data' argument
-effsize(cyl, vs:carb, data = mtcars)
-
 \dontrun{
-# Example 7b: Write Results into a text file
-effsize(cyl, vs:carb, data = mtcars, write = "Cramer.txt")
+# Example 7a: Write Results into a text file
+effsize(mtcars, cyl, vs:carb, write = "Cramer.txt")
 
 # Example 7b: Write Results into a Excel file
-effsize(cyl, vs:carb, data = mtcars, write = "Cramer.xlsx")}
+effsize(mtcars, cyl, vs:carb, write = "Cramer.xlsx")}
 }
 \references{
 Bergsma, W. (2013). A bias correction for Cramer's V and Tschuprow's T.

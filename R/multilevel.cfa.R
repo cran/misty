@@ -11,29 +11,24 @@
 #' be requested by specifying the argument \code{print}.
 #'
 #'
-#' @param ...          a matrix or data frame. If \code{model}, \code{model.w},
-#'                     and \code{model.b} are \code{NULL}, multilevel confirmatory
-#'                     factor analysis based on a measurement model with one factor
-#'                     labeled \code{wf} at the Within level and one factor labeled
-#'                     \code{bf} at the Between level comprising all variables in
-#'                     the matrix or data frame is conducted. Note that the cluster
-#'                     variable specified in \code{cluster} is excluded from \code{...}
-#'                     when specifying the argument \code{cluster} using the variable
-#'                     name of the cluster variable. If \code{model} or \code{mode.w}
-#'                     and \code{model.b} is specified, the matrix or data frame
-#'                     needs to contain all variables used in the \code{model}
-#'                     argument(s). Alternatively, an expression indicating
-#'                     the variable names in \code{data}.
+#' @param data         a data frame. If \code{model}, \code{model.w}, and \code{model.b}
+#'                     are \code{NULL}, multilevel confirmatory factor analysis
+#'                     based on a measurement model with one factor labeled \code{wf}
+#'                     at the Within level and one factor labeled \code{bf} at the
+#'                     Between level comprising all variables in the data frame
+#'                     is conducted. Note that the cluster variable specified in
+#'                     \code{cluster} is excluded from \code{data} when specifying
+#'                     the argument \code{cluster} using the variable name of the
+#'                     cluster variable. If \code{model} or \code{mode.w}
+#'                     and \code{model.b} is specified, the data frame needs to
+#'                     contain all variables used in the \code{model} argument(s).
+#' @param ...          an expression indicating the variable names in \code{data}.
 #'                     Note that the operators \code{.}, \code{+}, \code{-},
 #'                     \code{~}, \code{:}, \code{::}, and \code{!} can also be
 #'                     used to select variables, see 'Details' in the
 #'                     \code{\link{df.subset}} function.
-#' @param data         a data frame when specifying one or more variables in the
-#'                     argument \code{...}. Note that the argument is \code{NULL}
-#'                     when specifying a a matrix or data frame for the argument
-#'                     \code{...}.
 #' @param cluster      either a character string indicating the variable name of
-#'                     the cluster variable in \code{...} or \code{data}, or a
+#'                     the cluster variable in \code{data} or \code{data}, or a
 #'                     vector representing the nested grouping structure (i.e.,
 #'                     group or cluster variable).
 #' @param model        a character vector for specifying the same factor structure
@@ -163,11 +158,11 @@
 #' @param as.na        a numeric vector indicating user-defined missing values,
 #'                     i.e. these values are converted to \code{NA} before conducting
 #'                     the analysis. Note that \code{as.na()} function is only
-#'                     applied to \code{x} but not to \code{cluster}.
+#'                     applied to \code{data} but not to \code{cluster}.
 #' @param write        a character string naming a file for writing the output into
 #'                     either a text file with file extension \code{".txt"} (e.g.,
 #'                     \code{"Output.txt"}) or Excel file with file extension
-#'                     \code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+#'                     \code{".xlsx"} (e.g., \code{"Output.xlsx"}). If the file
 #'                     name does not contain any file extension, an Excel file will
 #'                     be written.
 #' @param append       logical: if \code{TRUE} (default), output will be appended
@@ -226,49 +221,44 @@
 #' data("Demo.twolevel", package = "lavaan")
 #'
 #' #----------------------------------------------------------------------------
-#' # Model specification using 'x' for a one-factor model
+#' # Model specification using 'data' for a one-factor model
 #' # with the same factor structure with one factor at the Within and Between Level
 #'
 #' #..........
 #' # Cluster variable specification
 #'
-#' # Example 1a: Cluster variable 'cluster' in 'x'
+#' # Example 1a: Specification using the argument '...'
+#' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster")
+#'
+#' # Example 1b: Alternative specification with cluster variable 'cluster' in 'data'
 #' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4", "cluster")], cluster = "cluster")
 #'
-#' # Example 1b: Cluster variable 'cluster' not in 'x'
+#' # Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 #' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
-#'
-#' # Example 1c: Alternative specification using the 'data' argument
-#' multilevel.cfa(y1:y4, data = Demo.twolevel, cluster = "cluster")
 #'
 #' #..........
 #' # Type of construct
 #'
 #' # Example 2a: Within-cluster constructs
-#' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                const = "within")
+#' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", const = "within")
 #'
 #' # Example 2b: Shared cluster-level construct
-#' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                const = "shared")
+#' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", const = "shared")
 #'
 #' # Example 2c: Configural cluster construct (default)
-#' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                const = "config")
+#' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", const = "config")
 #'
 #' # Example 2d: Simultaneous shared and configural cluster construct
-#' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                const = "shareconf")
+#' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", const = "shareconf")
 #'
 #' #..........
 #' # Residual covariances at the Within level
 #'
 #' # Example 3a: Residual covariance between 'y1' and 'y3'
-#' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                rescov = c("y1", "y3"))
+#' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", rescov = c("y1", "y3"))
 #'
 #' # Example 3b: Residual covariance between 'y1' and 'y3', and 'y2' and 'y4'
-#' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
+#' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster",
 #'                rescov = list(c("y1", "y3"), c("y2", "y4")))
 #'
 #' #..........
@@ -276,26 +266,23 @@
 #'
 #' # Example 4a: All residual variances fixed at 0
 #' # i.e., strong factorial invariance across clusters
-#' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                fix.resid = "all")
+#' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", fix.resid = "all")
 #'
 #' # Example 4b: Fesidual variances of 'y1', 'y2', and 'y4' fixed at 0
 #' # i.e., partial strong factorial invariance across clusters
-#' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                fix.resid = c("y1", "y2", "y4"))
+#' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", fix.resid = c("y1", "y2", "y4"))
 #'
 #' #..........
 #' # Print all results
 #'
 #' # Example 5: Set minimum value for modification indices to 1
-#' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                print = "all", mod.minval = 1)
+#' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", print = "all",
+#'                mod.minval = 1)
 #'
 #' #..........
 #' # Example 6: lavaan model and summary of the estimated model
 #'
-#' mod <- multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                       output = FALSE)
+#' mod <- multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", output = FALSE)
 #'
 #' # lavaan model syntax
 #' cat(mod$model)
@@ -307,19 +294,19 @@
 #' # Write results
 #'
 #' # Example 7a: Assign results into an object and write results into an Excel file
-#' mod <- multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                       print = "all", write = "Multilevel_CFA.txt", output = FALSE)
+#' mod <- multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", print = "all",
+#'                       write = "Multilevel_CFA.txt", output = FALSE)
 #'
 #' # Example 7b: Assign results into an object and write results into an Excel file
-#' mod <- multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                       print = "all", output = FALSE)
+#' mod <- multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", print = "all",
+#'                       output = FALSE)
 #'
 #' # Write results into an Excel file
 #' write.result(mod, "Multilevel_CFA.xlsx")
 #'
 #' # Estimate model and write results into an Excel file
-#' multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster,
-#'                print = "all", write = "Multilevel_CFA.xlsx")
+#' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", print = "all",
+#'                write = "Multilevel_CFA.xlsx")
 #'
 #' #----------------------------------------------------------------------------
 #' # Model specification using 'model' for one or multiple factor model
@@ -386,7 +373,7 @@
 #'                rescov.w = c("y1", "y4"),
 #'                rescov.b = c("y5", "y6"))
 #' }
-multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NULL,
+multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
                            model.w = NULL, model.b = NULL, rescov.w = NULL, rescov.b = NULL,
                            const = c("within", "shared", "config", "shareconf"), fix.resid = NULL,
                            ident = c("marker", "var", "effect"), ls.fit = FALSE, estimator = c("ML", "MLR"),
@@ -399,11 +386,11 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
@@ -418,13 +405,10 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+  if (isTRUE(!missing(...))) {
 
     # Extract data
-    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
+    x <- as.data.frame(data[, .var.names(..., data = data, cluster = cluster), drop = FALSE])
 
     # Cluster variable
     cluster <- data[, cluster]
@@ -434,12 +418,8 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
-    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- as.data.frame(cluster) } }
+    # Data frame
+    x <- as.data.frame(data)
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -451,6 +431,9 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
+
+  # Convert 'cluster' as tibble into a vector
+  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
 
   #_____________________________________________________________________________
   #
@@ -480,25 +463,13 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
     if (isTRUE(!is.null(model) && (!is.null(model.w) || !is.null(model.b)))) { stop("Please specifiy the model either using the argument 'model' or the arguments 'model.w' and 'model.w'.", call. = FALSE) }
 
     # Model specification with 'model'
-    if (isTRUE(!is.null(model))) {
-
-      (!unique(unlist(model)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'model' were not found in 'x': ", paste(unique(unlist(model))[y], collapse = ", ")), call. = FALSE) })()
-
-    }
+    if (isTRUE(!is.null(model))) { (!unique(unlist(model)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'model' were not found in 'data': ", paste(unique(unlist(model))[y], collapse = ", ")), call. = FALSE) })() }
 
     # Model specification with 'model.w'
-    if (isTRUE(!is.null(model.w))) {
-
-      (!unique(unlist(model.w)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'model.w' were not found in 'x': ", paste(unique(unlist(model))[model.w], collapse = ", ")), call. = FALSE) })()
-
-    }
+    if (isTRUE(!is.null(model.w))) { (!unique(unlist(model.w)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'model.w' were not found in 'data': ", paste(unique(unlist(model))[model.w], collapse = ", ")), call. = FALSE) })() }
 
     # Model specification with 'model.b'
-    if (isTRUE(!is.null(model.b))) {
-
-      (!unique(unlist(model.b)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'model.b' were not found in 'x': ", paste(unique(unlist(model))[model.b], collapse = ", ")), call. = FALSE) })()
-
-    }
+    if (isTRUE(!is.null(model.b))) { (!unique(unlist(model.b)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'model.b' were not found in 'data': ", paste(unique(unlist(model))[model.b], collapse = ", ")), call. = FALSE) })() }
 
     # Check input 'rescov'
     if (isTRUE(!is.null(rescov))) {
@@ -558,7 +529,7 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
     }
 
     # Check input 'fix.resid'
-    (!unique(fix.resid) %in% colnames(x)) |> (\(y) if (isTRUE(any(y) &&  all(fix.resid != "all"))) { stop(paste0("Variables specified in the argument 'fix.resid' were not found in 'x': ", paste(fix.resid[y], collapse = ", ")), call. = FALSE) })()
+    (!unique(fix.resid) %in% colnames(x)) |> (\(y) if (isTRUE(any(y) &&  all(fix.resid != "all"))) { stop(paste0("Variables specified in the argument 'fix.resid' were not found in 'data': ", paste(fix.resid[y], collapse = ", ")), call. = FALSE) })()
 
     # Check input 'mod.minval'
     if (isTRUE(mod.minval <= 0L)) { stop("Please specify a value greater than 0 for the argument 'mod.minval'.", call. = FALSE) }
@@ -576,7 +547,7 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
   ## Manifest variables ####
 
   #...................
-  ### Model specification with 'x' ####
+  ### Model specification with 'data' ####
   if (isTRUE(is.null(model) && is.null(model.w) && is.null(model.b))) {
 
     var <- colnames(x)
@@ -598,7 +569,7 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data frame with Cluster Variable ####
 
-  x <- data.frame(x[, var], .cluster = cluster, stringsAsFactors = FALSE)
+  x <- data.frame(x[, var], .cluster = cluster)
 
   n.total <- nrow(x)
 
@@ -781,7 +752,7 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
   ## Model Specification ####
 
   #...................
-  ### Model specification with 'x' ####
+  ### Model specification with 'data' ####
   if (isTRUE(is.null(model) && is.null(model.w) && is.null(model.b))) {
 
     switch(const,
@@ -1117,7 +1088,7 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
            shareconf = {
 
              # Labels for parameter constraints
-             model.label <- paste0("L", 1L:length(unlist(model)), "*", unlist(model))
+             model.label <- paste0("L", seq_len(length(unlist(model))), "*", unlist(model))
              attr(model.label, "skeleton") <- attr(unlist(as.relistable(model)), "skeleton")
 
              # Fixed factor method
@@ -1355,7 +1326,7 @@ multilevel.cfa <- function(..., data = NULL, cluster, model = NULL, rescov = NUL
   mod.par <- lavaan::parTable(model.fit)
 
   #...................
-  ### Model specified with 'x' or 'model' ####
+  ### Model specified with 'data' or 'model' ####
   if (isTRUE(is.null(model.w) && is.null(model.b))) {
 
     model.fit.measu <- suppressWarnings(lavaan::lavInspect(model.fit, what = "fit"))

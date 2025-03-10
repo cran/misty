@@ -18,16 +18,12 @@
 #' when either the item means or the inter-item correlation vary (Lee, Bartholow,
 #' McCarthy, Pederson & Sher, 2014; Mazza et al., 2015).
 #'
-#' @param ...      a matrix or data frame with numeric vectors. Alternatively, an
-#'                 expression indicating the variable names in \code{data} e.g.,
-#'                 \code{item.scores(x1, x2, x3, data = dat)}. Note that the
+#' @param data     a data frame with numeric vectors.
+#' @param ...      an expression indicating the variable names in \code{data},
+#'                 e.g., \code{item.scores(dat, x1, x2, x3)}. Note that the
 #'                 operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
 #'                 \code{::}, and \code{!} can also be used to select variables,
 #'                 see 'Details' in the \code{\link{df.subset}} function.
-#' @param data     a data frame when specifying one or more variables in the
-#'                 argument \code{...}. Note that the argument is \code{NULL}
-#'                 when specifying a matrix or data frame for the argument
-#'                 \code{...}.
 #' @param fun      a character string indicating the function used to compute
 #'                 scale scores, default: \code{"mean"}.
 #' @param prorated logical: if \code{TRUE} (default), prorated scale scores are
@@ -105,9 +101,6 @@
 #' # Example 1: Prorated mean scale scores
 #' item.scores(dat)
 #'
-#' # Alternative specification using the 'data' argument
-#' item.scores(., data = dat)
-#'
 #' # Example 2: Prorated standard deviation scale scores
 #' item.scores(dat, fun = "sd")
 #'
@@ -121,7 +114,7 @@
 #' # Example 5: Prorated mean scale scores,
 #' # minimum number of available item responses = 3
 #' item.scores(dat, n.avail = 3)
-item.scores <- function(..., data = NULL, fun = c("mean", "sum", "median", "var", "sd", "min", "max"),
+item.scores <- function(data, ..., fun = c("mean", "sum", "median", "var", "sd", "min", "max"),
                         prorated = TRUE, p.avail = NULL, n.avail = NULL,
                         append = TRUE, name = "scores", as.na = NULL, check = TRUE) {
 
@@ -129,11 +122,11 @@ item.scores <- function(..., data = NULL, fun = c("mean", "sum", "median", "var"
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -142,24 +135,18 @@ item.scores <- function(..., data = NULL, fun = c("mean", "sum", "median", "var"
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract variables
-    x <- data[, .var.names(..., data = data, check.chr = "a matrix or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- as.data.frame(data[, .var.names(..., data = data)])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- as.data.frame(data)
 
   }
 
@@ -169,18 +156,17 @@ item.scores <- function(..., data = NULL, fun = c("mean", "sum", "median", "var"
 
   # Check inputs
   .check.input(logical = c("prorated", "append"),
-               numeric = list(p.avail = 1L, n.avail = 1L),
-               character = list(name = 1L),
+               numeric = list(p.avail = 1L, n.avail = 1L), character = list(name = 1L),
                s.character = list(fun = c("mean", "sum", "median", "var", "sd", "min", "max")), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
 
-    # Check input 'x'
-    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
+    # Check input 'data'
+    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
-    # Check input 'x'
-    if (isTRUE(any(apply(x, 2L, function(y) !is.numeric(y))))) { stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE) }
+    # Check input 'data'
+    if (isTRUE(any(apply(x, 2L, function(y) !is.numeric(y))))) { stop("Please specify a data frame with numeric vectors for the argument 'data'.", call. = FALSE) }
 
     # Check argument p.avail
     if (isTRUE(!is.null(p.avail) && !is.null(n.avail))) { stop("Please specify either argument 'p.avail' or 'n.avail', but not both arguments.", call. = FALSE) }

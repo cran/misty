@@ -4,16 +4,16 @@
 \alias{df.move}
 \title{Move Variable(s) in a Data Frame}
 \usage{
-df.move(..., data = NULL, before = NULL, after = NULL, first = TRUE, check = TRUE)
+df.move(data, ..., before = NULL, after = NULL, first = TRUE, check = TRUE)
 }
 \arguments{
+\item{data}{a data frame.}
+
 \item{...}{an expression indicating the variable names in \code{data} to
 move. Note that the operators \code{.}, \code{+}, \code{-},
 \code{~}, \code{:}, \code{::}, and \code{!} can also be used to
 select variables, see Details in the \code{\link{df.subset}}
 function.}
-
-\item{data}{a data frame.}
 
 \item{before}{a character string indicating a variable in \code{data}.
 Variable(s) specified in \code{...} are moved to the left-hand
@@ -41,16 +41,16 @@ frame specified in the argument \code{data}.
 }
 \examples{
 # Example 1: Move variables 'hp' and 'am' to the first position
-df.move(hp, am, data = mtcars)
+df.move(mtcars, hp, am)
 
 # Example 2: Move variables 'hp' and 'am' to the last position
-df.move(hp, am, data = mtcars, first = FALSE)
+df.move(mtcars, hp, am, first = FALSE)
 
 # Example 3: Move variables 'hp' and 'am' to the left-hand side of 'disp'
-df.move(hp, am, data = mtcars, before = "disp")
+df.move(mtcars, hp, am, before = "disp")
 
 # Example 4: Move variables 'hp' and 'am' to the right-hand side of 'disp'
-df.move(hp, am, data = mtcars, after = "disp")
+df.move(mtcars, hp, am, after = "disp")
 }
 \references{
 Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}.

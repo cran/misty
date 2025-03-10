@@ -4,7 +4,7 @@
 \alias{item.cfa}
 \title{Confirmatory Factor Analysis}
 \usage{
-item.cfa(..., data = NULL, model = NULL, rescov = NULL, hierarch = FALSE,
+item.cfa(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
          meanstructure = TRUE, ident = c("marker", "var", "effect"),
          parameterization = c("delta", "theta"), ordered = NULL, cluster = NULL,
          estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
@@ -18,25 +18,22 @@ item.cfa(..., data = NULL, model = NULL, rescov = NULL, hierarch = FALSE,
          as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame. If \code{model = NULL},
+\item{data}{a data frame. If \code{model = NULL},
 confirmatory factor analysis based on a measurement
 model with one factor labeled \code{f} comprising all
-variables in the matrix or data frame is conducted.
-Note that the cluster variable is excluded from \code{x}
+variables in the data frame is conducted.
+Note that the cluster variable is excluded from \code{data}
 when specifying \code{cluster}. If \code{model} is
-specified, the matrix or data frame needs to contain
+specified, the data frame needs to contain
 all variables used in the argument \code{model} and
-the cluster variable when specifying \code{cluster}.
-Alternatively, an expression indicating the variable names in
-\code{data} e.g., \code{item.cfa(x1, x2, x3, data = dat)}.
-Note that the operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
-\code{::}, and \code{!} can also be used to select variables,
-see 'Details' in the \code{\link{df.subset}} function.}
+the cluster variable when specifying \code{cluster}.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a vector, factor, matrix, array, data frame,
-or list for the argument \code{...}.}
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{item.cfa(x1, x2, x3, data = dat)}. Note
+that the operators \code{.}, \code{+}, \code{-},
+\code{~}, \code{:}, \code{::}, and \code{!} can also
+be used to select variables, see 'Details' in the
+\code{\link{df.subset}} function.}
 
 \item{model}{a character vector specifying a measurement model with
 one factor, or a list of character vectors for specifying
@@ -99,7 +96,7 @@ character vector indicating which variables to treat
 as ordered (ordinal) variables can be specified.}
 
 \item{cluster}{either a character string indicating the variable name
-of the cluster variable in \code{...} or \code{data},
+of the cluster variable in \code{data},
 or a vector representing the nested grouping structure
 (i.e., group or cluster variable) for computing
 cluster-robust standard errors. Note that cluster-robust
@@ -166,7 +163,7 @@ to be used for displaying the \emph{p}-value.}
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before
 conducting the analysis. Note that \code{as.na()}
-function is only applied to \code{x} but not to
+function is only applied to \code{data} but not to
 \code{cluster}.}
 
 \item{write}{a character string naming a file for writing the output into
@@ -190,7 +187,7 @@ Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{matrix or data frame specified in \code{x}}
+  \item{\code{data}}{data frame specified in \code{data}}
   \item{\code{args}}{specification of function arguments}
   \item{\code{model}}{specified model}
   \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
@@ -414,31 +411,23 @@ The function uses the functions \code{cfa}, \code{lavInspect}, \code{lavTech},
 provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 }
 \examples{
-\dontrun{
-
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
 #----------------------------------------------------------------------------
 # Measurement model with one factor
 
-# Example 1a: Specification using the argument 'x'
-item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")])
+# Example 1a: Specification using the argument '...'
+item.cfa(HolzingerSwineford1939, x1:x3)
 
-# Example 1b: Alternative specification using the 'data' argument
-item.cfa(x1:x3, data = HolzingerSwineford1939)
+# Example 1b: Alternative specification without using the '...' argument
+item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")])
 
 # Example 1c: Alternative specification using the argument 'model'
 item.cfa(HolzingerSwineford1939, model = c("x1", "x2", "x3"))
 
-# Example 1d: Alternative specification using the 'data' and 'model' argument
-item.cfa(., data = HolzingerSwineford1939, model = c("x1", "x2", "x3"))
-
 # Example 1e: Alternative specification using the argument 'model'
 item.cfa(HolzingerSwineford1939, model = list(visual = c("x1", "x2", "x3")))
-
-# Example 1f: Alternative specification using the  'data' and 'model' argument
-item.cfa(., data = HolzingerSwineford1939, model = list(visual = c("x1", "x2", "x3")))
 
 #----------------------------------------------------------------------------
 # Measurement model with three factors
@@ -473,8 +462,7 @@ item.cfa(HolzingerSwineford1939,
 item.cfa(HolzingerSwineford1939,
          model = list(visual = c("x1", "x2", "x3"),
                       textual = c("x4", "x5", "x6"),
-                      speed = c("x7", "x8", "x9")),
-         hierarch = TRUE)
+                      speed = c("x7", "x8", "x9")), hierarch = TRUE)
 
 #----------------------------------------------------------------------------
 # Measurement model with ordered-categorical indicators
@@ -488,45 +476,41 @@ item.cfa(round(HolzingerSwineford1939[, c("x4", "x5", "x6")]), ordered = TRUE)
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-# Example 6a: Specification using a variable in 'x'
-item.cfa(Demo.twolevel[, c("y4", "y5", "y6", "cluster")], cluster = "cluster")
+# Example 6a: Specification using the '...' argument
+item.cfa(y4:y6, data = Demo.twolevel, cluster = "cluster")
 
-# Example 6b: Specification of the cluster variable in 'cluster'
+# Example 6b: Alternative specification without using the '...' argument
 item.cfa(Demo.twolevel[, c("y4", "y5", "y6")], cluster = Demo.twolevel$cluster)
 
-# Example 6c: Alternative specification using the 'data' argument
-item.cfa(y4:y6, data = Demo.twolevel, cluster = "cluster")
+# Example 6c: Alternative specification without using the '...' argument
+item.cfa(Demo.twolevel[, c("y4", "y5", "y6", "cluster")], cluster = "cluster")
 
 #----------------------------------------------------------------------------
 # Print argument
 
 # Example 7a: Request all results
-item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], print = "all")
+item.cfa(HolzingerSwineford1939, x1, x2, x3, print = "all")
 
 # Example 7b: Request modification indices with value equal or higher than 5
-item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
-         print = "modind", mod.minval = 5)
+item.cfa(HolzingerSwineford1939, x1, x2, x3, x4, print = "modind", mod.minval = 5)
 
 #----------------------------------------------------------------------------
 # lavaan summary of the estimated model
 
 # Example 8
-mod <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
+mod <- item.cfa(HolzingerSwineford1939, x1, x2, x3, output = FALSE)
 
 lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 
+\dontrun{
 #----------------------------------------------------------------------------
 # Write Results
 
-# Example 9a: Write results into a text file
-item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.txt")
+# Example 9a: Write Results into a text file
+item.cfa(HolzingerSwineford1939, x1, x2, x3, write = "CFA.txt")
 
-# Example 9b: Write results into an Excel file
-item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], write = "CFA.xlsx")
-
-result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
-write.result(result, "CFA.xlsx")
-}
+# Example 9b: Write Results into a Excel file
+item.cfa(HolzingerSwineford1939, x1, x2, x3, write = "CFA.xlsx")}
 }
 \references{
 Brosseau-Liard, P. E., Savalei, V., & Li. L. (2012). An investigation of the

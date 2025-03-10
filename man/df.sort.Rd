@@ -4,10 +4,10 @@
 \alias{df.sort}
 \title{Data Frame Sorting}
 \usage{
-df.sort(x, ..., decreasing = FALSE, check = TRUE)
+df.sort(data, ..., decreasing = FALSE, check = TRUE)
 }
 \arguments{
-\item{x}{a data frame.}
+\item{data}{a data frame.}
 
 \item{...}{a sorting variable or a sequence of sorting variables which are specified without
 quotes \code{''} or double quotes \code{""}.}
@@ -17,8 +17,8 @@ quotes \code{''} or double quotes \code{""}.}
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
 \value{
-Returns data frame \code{x} sorted according to the variables specified in \code{...}, a matrix will
-be coerced to a data frame.
+Returns data frame \code{data} sorted according to the variables specified in \code{...},
+a matrix will be coerced to a data frame.
 }
 \description{
 This function arranges a data frame in increasing or decreasing order according to one or more variables.

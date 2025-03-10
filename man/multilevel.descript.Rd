@@ -4,28 +4,25 @@
 \alias{multilevel.descript}
 \title{Multilevel Descriptive Statistics for Two-Level and Three-Level Data}
 \usage{
-multilevel.descript(..., data = NULL, cluster, type = c("1a", "1b"),
+multilevel.descript(data, ..., cluster, type = c("1a", "1b"),
                     method = c("aov", "lme4", "nlme"),
                     print = c("all", "var", "sd"), REML = TRUE, digits = 2,
                     icc.digits = 3, as.na = NULL, write = NULL, append = TRUE,
                     check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a numeric vector, matrix, or data frame. Alternatively, an
-expression indicating the variable names in \code{data} e.g.,
-\code{multilevel.descript(x1, x2, x3, data = dat, cluster = "cluster")}. Note that the operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+\item{data}{a numeric vector or data frame.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a numeric vector, matrix, or data frame for
-the argument \code{...}.}
+\item{...}{an expression indicating the variable names in \code{data}.
+Note that the operators \code{.}, \code{+}, \code{-},
+\code{~}, \code{:}, \code{::}, and \code{!} can also be
+used to select variables, see 'Details' in the
+\code{\link{df.subset}} function.}
 
 \item{cluster}{a character string indicating the name of the cluster
-variable in \code{...} or \code{data} for two-level data,
+variable in \code{data} for two-level data,
 a character vector indicating the names of the cluster
-variables in \code{...} for three-level data, or a vector
+variables in \code{data} for three-level data, or a vector
 or data frame representing the nested grouping structure
 (i.e., group or cluster variables). Alternatively, a
 character string or character vector indicating the variable
@@ -68,7 +65,7 @@ for displaying intraclass correlation coefficients.}
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis. Note that \code{as.na()} function is only applied
-to \code{...} but not to \code{cluster}.}
+to \code{data} but not to \code{cluster}.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
@@ -91,7 +88,7 @@ Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
-  \item{\code{data}}{data frame specified in \code{...} including the cluster
+  \item{\code{data}}{data frame specified in \code{data} including the cluster
                      variable(s) specified in \code{cluster}}
   \item{\code{args}}{specification of function arguments}
   \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
@@ -182,36 +179,36 @@ data("Demo.twolevel", package = "lavaan")
 #..........
 # Cluster variable specification
 
-# Example 1a: Cluster variable 'cluster'
+# Example 1a: Specification using the argument '...'
+multilevel.descript(Demo.twolevel, y1, cluster = "cluster")
+
+# Example 1b: Alternative specification with  cluster variable 'cluster' in 'data'
 multilevel.descript(Demo.twolevel[, c("y1", "cluster")], cluster = "cluster")
 
-# Example 1b: Cluster variable 'cluster' not in '...'
+# Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
-
-# Example 1c: Alternative specification using the 'data' argument
-multilevel.descript(y1, data = Demo.twolevel, cluster = "cluster")
 
 #---------------------------
 
 # Example 2: Multilevel descriptive statistics for 'y1'
-multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
+multilevel.descript(Demo.twolevel, y1, cluster = "cluster")
 
 # Example 3: Multilevel descriptive statistics, print variance and standard deviation
-multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, print = "all")
+multilevel.descript(Demo.twolevel, y1, cluster = "cluster", print = "all")
 
 # Example 4: Multilevel descriptive statistics, print ICC with 5 digits
-multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, icc.digits = 5)
+multilevel.descript(Demo.twolevel, y1, cluster = "cluster", icc.digits = 5)
 
 # Example 5: Multilevel descriptive statistics
 # use lme() function in the nlme package to estimate ICC
-multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, method = "nlme")
+multilevel.descript(Demo.twolevel, y1, cluster = "cluster", method = "nlme")
 
 # Example 6a: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
-multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-                      cluster = Demo.twolevel$cluster)
+multilevel.descript(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster")
 
-# Example 6b: Alternative specification using the 'data' argument
-multilevel.descript(y1:y3, w1, w2, data = Demo.twolevel, cluster = "cluster")
+# Alternative specification without using the '...' argument
+multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
+                    cluster = Demo.twolevel$cluster)
 
 #----------------------------------------------------------------------------
 # Three-Level Data
@@ -223,35 +220,32 @@ Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
 #..........
 # Cluster variable specification
 
-# Example 7a: Cluster variables 'cluster' in '...'
+# Example 7a: Specification using the argument '...'
+multilevel.descript(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"))
+
+# Example 7b: Alternative specification without using the argument '...'
 multilevel.descript(Demo.threelevel[, c("y1", "cluster3", "cluster2")],
                     cluster = c("cluster3", "cluster2"))
 
-# Example 7b: Cluster variables 'cluster' not in '...'
-multilevel.descript(Demo.threelevel$y1, cluster = Demo.threelevel[, c("cluster3", "cluster2")])
-
-# Example 7c: Alternative specification using the 'data' argument
-multilevel.descript(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
+# Example 7c: Alternative specification with cluster variables 'cluster' not in 'data'
+multilevel.descript(Demo.threelevel$y1,
+                    cluster = Demo.threelevel[, c("cluster3", "cluster2")])
 
 #----------------------------------------------------------------------------
 
 # Example 8: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
-multilevel.descript(y1:y3, w1, w2, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
+multilevel.descript(Demo.threelevel, y1:y3, w1, w2, cluster = c("cluster3", "cluster2"))
 
 #----------------------------------------------------------------------------
 # Write Results
 
-# Example 9a: Write results into a Excel file
-multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-                    cluster = Demo.twolevel$cluster, write = "Multilevel_Descript.txt")
+# Example 9a: Write Results into a text file
+multilevel.descript(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
+                    write = "Multilevel_Descript.txt")
 
-# Example 9b: Write results into a Excel file
-multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-                    cluster = Demo.twolevel$cluster, write = "Multilevel_Descript.xlsx")
-
-result <- multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-                              cluster = Demo.twolevel$cluster, output = FALSE)
-write.result(result, "Multilevel_Descript.xlsx")
+# Example 9b: Write Results into a Excel file
+multilevel.descript(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
+                    write = "Multilevel_Descript.xlsx")
 }
 }
 \references{

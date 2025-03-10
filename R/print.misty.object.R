@@ -4700,7 +4700,30 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Manual Dominance Analysis ---------------------------------------------------------
+  # Print the First Rows of a Data Frame ---------------------------------------
+  }, df.head = {
+
+    # Print data frame
+    write.table(print.object$df, quote = FALSE, col.names = FALSE, row.names = FALSE)
+
+    # Print message
+    if (isTRUE(!is.null(print.object$row.col))) { cat(print.object$row.col) }
+
+
+  #_____________________________________________________________________________
+  #
+  # Print the Last Rows of a Data Frame ----------------------------------------
+  }, df.tail = {
+
+    # Print data frame
+    write.table(print.object$df, quote = FALSE, col.names = FALSE, row.names = FALSE)
+
+    # Print message
+    if (isTRUE(!is.null(print.object$row.col))) { cat(print.object$row.col) }
+
+  #_____________________________________________________________________________
+  #
+  # Manual Dominance Analysis --------------------------------------------------
   }, dominance.manual = {
 
     cat(" Dominance Analysis: General Dominance\n\n")

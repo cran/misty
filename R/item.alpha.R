@@ -23,18 +23,14 @@
 #' Pornprasertmanit, 2016), which are implemented in the \code{ci.reliability()}
 #' function in the \pkg{MBESSS} package by Ken Kelley (2019).
 #'
-#' @param ...        a matrix, data frame, variance-covariance or correlation
+#' @param data       a data frame, variance-covariance or correlation
 #'                   matrix. Note that raw data is needed to compute ordinal
-#'                   coefficient alpha, i.e., \code{ordered = TRUE}. Alternatively,
-#'                   an expression indicating the variable names in \code{data}
-#'                   e.g., \code{item.alpha(x1, x2, x3, data = dat)}. Note that
-#'                   the operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+#'                   coefficient alpha, i.e., \code{ordered = TRUE}.
+#' @param ...        an expression indicating the variable names in \code{data}
+#'                   e.g., \code{item.alpha(dat, x1, x2, x3)}. Note that the
+#'                   operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
 #'                   \code{::}, and \code{!} can also be used to select variables,
 #'                   see 'Details' in the \code{\link{df.subset}} function.
-#' @param data       a data frame when specifying one or more variables in the
-#'                   argument \code{...}. Note that the argument is \code{NULL}
-#'                   when specifying a matrix, data frame, variance-covariance
-#'                   or correlation matrix for the argument \code{...}.
 #' @param exclude    a character vector indicating items to be excluded from the
 #'                   analysis.
 #' @param std        logical: if \code{TRUE}, the standardized coefficient alpha
@@ -107,7 +103,7 @@
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
 #' entries:
-#'   \item{\code{call}}{function call}
+#' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
 #' \item{\code{data}}{data frame used for the current analysis}
 #' \item{\code{args}}{specification of function arguments}
@@ -119,16 +115,11 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(item1 = c(4, 2, 3, 4, 1, 2, 4, 2),
-#'                   item2 = c(4, 3, 3, 3, 2, 2, 4, 1),
-#'                   item3 = c(3, 2, 4, 2, 1, 3, 4, 1),
-#'                   item4 = c(4, 1, 2, 3, 2, 3, 4, 2))
+#' dat <- data.frame(item1 = c(4, 2, 3, 4, 1, 2, 4, 2), item2 = c(4, 3, 3, 3, 2, 2, 4, 1),
+#'                   item3 = c(3, 2, 4, 2, 1, 3, 4, 1), item4 = c(4, 1, 2, 3, 2, 3, 4, 2))
 #'
 #' # Example 1: Compute unstandardized coefficient alpha and item statistics
 #' item.alpha(dat)
-#'
-#' # Alternative specification using the 'data' argument
-#' item.alpha(., data = dat)
 #'
 #' # Example 2: Compute standardized coefficient alpha and item statistics
 #' item.alpha(dat, std = TRUE)
@@ -142,22 +133,20 @@
 #' # Example 5: Compute unstandardized coefficient alpha and item statistics while excluding item3
 #' item.alpha(dat, exclude = "item3")
 #'
-#' # Example 6: Compute variance-covariance matrix
-#' dat.cov <- cov(dat)
-#' # Compute unstandardized coefficient alpha based on the variance-covariance matrix
-#' item.alpha(dat.cov)
+#' # Example 6: Compute unstandradized coefficient alpha based on the variance-covariance matrix
+#' item.alpha(cov(dat))
 #'
-#' # Compute correlation matrix
-#' dat.cor <- cor(dat)
 #' # Example 7: Compute standardized coefficient alpha based on the correlation matrix
-#' item.alpha(dat.cor)
+#' item.alpha(cor(dat))
 #'
 #' # Example 8: Compute ordinal coefficient alpha
 #' item.alpha(dat, ordered = TRUE)
 #'
+#' \dontrun{
 #' # Example 9a: Write Results into a text file
 #' result <- item.alpha(dat, write = "Alpha.xlsx")
-item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = FALSE,
+#' }
+item.alpha <- function(data, ..., exclude = NULL, std = FALSE, ordered = FALSE,
                        na.omit = FALSE, print = c("all", "alpha", "item"), digits = 2,
                        conf.level = 0.95, as.na = NULL, write = NULL, append = TRUE,
                        check = TRUE, output = TRUE) {
@@ -166,11 +155,11 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame, variance-covariance or correlation matrix for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -179,24 +168,18 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract variables
-    x <- data[, .var.names(..., data = data, check.chr = "a matrix, data frame, variance-covariance or correlation matrix")]
+    # Extract data and convert tibble into data frame or vector
+    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- as.data.frame(data)
 
   }
 
@@ -205,7 +188,7 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
 
   if (isTRUE(nrow(x) == ncol(x))) {
 
-    if (isTRUE(isSymmetric(x))) {
+    if (isTRUE(isSymmetric(as.matrix(x)))) {
 
       sym <- TRUE
       x.raw <- FALSE
@@ -220,7 +203,7 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
     # Diagonal is all 1?
     if (isTRUE(sym)) {
 
-      std <- ifelse(all(diag(x) == 1L), TRUE, FALSE)
+      std <- ifelse(all(diag(as.matrix(x)) == 1L), TRUE, FALSE)
 
     }
 
@@ -236,11 +219,7 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
   if (isTRUE(ordered)) {
 
     # Check if raw data is availeble
-    if (!isTRUE(x.raw)) {
-
-      stop("Please submit raw data to the argument 'x' to compute ordinal coefficient alpha.", call. = FALSE)
-
-    }
+    if (!isTRUE(x.raw)) { stop("Please submit raw data to the argument 'data' to compute ordinal coefficient alpha.", call. = FALSE) }
 
     # Compute polychoric correlation matrix
     x <- misty::cor.matrix(x, method = "poly", output = FALSE)$result$cor
@@ -277,7 +256,7 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
 
       # Check input 'exclude'
       check.ex <- !exclude %in% colnames(x)
-      if (isTRUE(any(check.ex))) { stop(paste0("Items to be excluded from the analysis were not found in 'x': ", paste(exclude[check.ex], collapse = ", ")), call. = FALSE) }
+      if (isTRUE(any(check.ex))) { stop(paste0("Items to be excluded from the analysis were not found in 'data': ", paste(exclude[check.ex], collapse = ", ")), call. = FALSE) }
 
       x <- x[, which(!colnames(x) %in% exclude)]
 
@@ -334,19 +313,19 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
   # Additional checks
   if (isTRUE(check)) {
 
-    # Matrix or data frame for the argument 'x'?
-    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix, a data frame, a variance-covariance or correlation matrix for the argument 'x'.", call. = FALSE) }
+    # Matrix or data frame for the argument 'data'?
+    if (isTRUE(!is.matrix(x) && !is.data.frame(x))) { stop("Please specify a a data frame, a variance-covariance or correlation matrix for the argument 'data'.", call. = FALSE) }
 
-    # Check input 'x': One item
+    # Check input 'data': One item
     if (isTRUE(ncol(x) == 1L)) { stop("Please specify at least two items to compute coefficient alpha.", call. = FALSE) }
 
-    # Check input 'x': Zero variance
+    # Check input 'data': Zero variance
     if (isTRUE(nrow(x) != ncol(x))) {
 
       vapply(as.data.frame(x), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L)) |>
         (\(y) if (isTRUE(any(y))) {
 
-          stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(y)), collapse = ", ")), call. = FALSE)
+          stop(paste0("Following variables in the data frame specified in 'data' have zero variance: ", paste(names(which(y)), collapse = ", ")), call. = FALSE)
 
         })()
 
@@ -394,11 +373,7 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
   ## Coefficient Alpha ####
 
   # Define Coefficient alpha function
-  alpha.function <- function(mat.sigma, p) {
-
-    return((p / (p - 1L)) * (1L - sum(diag(as.matrix(mat.sigma))) / sum(as.matrix(mat.sigma))))
-
-  }
+  alpha.function <- function(mat.sigma, p) { return((p / (p - 1L)) * (1L - sum(diag(as.matrix(mat.sigma))) / sum(as.matrix(mat.sigma)))) }
 
   p <- ncol(mat.sigma)
 
@@ -482,9 +457,7 @@ item.alpha <- function(..., data = NULL, exclude = NULL, std = FALSE, ordered = 
   object <- list(call = match.call(),
                  type = "item.alpha",
                  data = x,
-                 args = list(exclude = exclude, std = std, ordered = ordered, na.omit = na.omit,
-                             print = print, digits = digits, conf.level = conf.level, as.na = as.na,
-                             write = write, append = append, check = check, output = output),
+                 args = list(exclude = exclude, std = std, ordered = ordered, na.omit = na.omit, print = print, digits = digits, conf.level = conf.level, as.na = as.na, write = write, append = append, check = check, output = output),
                  result = list(alpha = alpha.x, itemstat = itemstat))
 
   class(object) <- "misty.object"

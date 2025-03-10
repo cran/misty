@@ -4,7 +4,7 @@
 \alias{cor.matrix}
 \title{Correlation Matrix}
 \usage{
-cor.matrix(..., data = NULL,
+cor.matrix(data, ...,
            method = c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly"),
            na.omit = FALSE, group = NULL, sig = FALSE, alpha = 0.05,
            print = c("all", "cor", "n", "stat", "df", "p"),
@@ -15,16 +15,15 @@ cor.matrix(..., data = NULL,
            write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame. Alternatively, an expression indicating
-the variable names in \code{data} e.g.,
-\code{cor.matrix(x1, x2, x3, data = dat)}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+\item{data}{a data frame with numeric variables, i.e., factors and character
+variables are excluded from \code{data} before conducting the
+analysis.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument \code{...}.}
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{cor.matrix(dat, x1, x2, x3)}. Note that the
+operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+\code{::}, and \code{!} can also be used to select variables,
+see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{method}{a character vector indicating which correlation coefficient
 is to be computed, i.e. \code{"pearson"} for Pearson product-moment correlation
@@ -39,7 +38,7 @@ conducting the analysis (i.e., listwise deletion); if \code{FALSE}
 (default), pairwise deletion is used.}
 
 \item{group}{either a character string indicating the variable name of
-the grouping variable in \code{...} or \code{data}, or a
+the grouping variable in \code{data}, or a
 vector representing the grouping variable. Note that the
 grouping variable is limited to two groups.}
 
@@ -138,57 +137,55 @@ package by William Revelle to estimate tetrachoric and polychoric correlation
 coefficients.
 }
 \examples{
-# Example 1a: Pearson product-moment correlation coefficient between 'Ozone' and 'Solar.R'
+# Example 1: Pearson product-moment correlation coefficient between 'Ozone' and 'Solar.R
+cor.matrix(airquality, Ozone, Solar.R)
+
+# Alternative specification without using the '...' argument
 cor.matrix(airquality[, c("Ozone", "Solar.R")])
 
-# Example 1b: Alternative specification using the 'data' argument
-cor.matrix(Ozone, Solar.R, data = airquality)
+# Example 2: Pearson product-moment correlation matrix using pairwise deletion
+cor.matrix(airquality, Ozone:Wind)
 
-# Example 2a: Pearson product-moment correlation matrix using pairwise deletion
+# Alternative specification without using the '...' argument
 cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")])
 
-# Example 2b: Alternative specification using the 'data' argument
-cor.matrix(Ozone:Wind, data = airquality)
-
 # Example 3: Spearman's rank-order correlation matrix
-cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], method = "spearman")
+cor.matrix(airquality, Ozone, Solar.R, Wind, method = "spearman")
 
 # Example 4: Pearson product-moment correlation matrix
 # highlight statistically significant result at alpha = 0.05
-cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], sig = TRUE)
+cor.matrix(airquality, Ozone, Solar.R, Wind, sig = TRUE)
 
 # Example 5: Pearson product-moment correlation matrix
 # highlight statistically significant result at alpha = 0.05
-cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], sig = TRUE, alpha = 0.10)
+cor.matrix(airquality, Ozone, Solar.R, Wind, sig = TRUE, alpha = 0.10)
 
 # Example 6: Pearson product-moment correlation matrix
 # print sample size and significance values
-cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], print = "all")
+cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all")
 
 # Example 7: Pearson product-moment correlation matrix using listwise deletion,
 # print sample size and significance values
-cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], na.omit = TRUE, print = "all")
+cor.matrix(airquality, Ozone, Solar.R, Wind, na.omit = TRUE, print = "all")
 
 # Example 8: Pearson product-moment correlation matrix
 # print sample size and significance values with Bonferroni correction
-cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], na.omit = TRUE,
-           print = "all", p.adj = "bonferroni")
+cor.matrix(airquality, Ozone, Solar.R, Wind, na.omit = TRUE, print = "all",
+           p.adj = "bonferroni")
 
-# Example 9a: Pearson product-moment correlation matrix for 'mpg', 'cyl', and 'disp'
+# Example 9: Pearson product-moment correlation matrix for 'mpg', 'cyl', and 'disp'
 # results for group "0" and "1" separately
+cor.matrix(mtcars, mpg:disp, group = "vs")
+
+# Alternative specification without using the '...' argument
 cor.matrix(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 
-# Example 9b: Alternative specification using the 'data' argument
-cor.matrix(mpg:disp, data = mtcars, group = "vs")
-
 \dontrun{
-# Example 10a: Write results into a text file
-cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], print = "all", write = "Correlation.txt")
+# Example 10a: Write Results into a text file
+cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.txt")
 
-# Example 10b: Write results into an Excel file
-cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")], print = "all", write = "Correlation.xlsx")
-}
-}
+# Example 10b: Write Results into a Excel file
+cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.xlsx")}}
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
 - Using R and SPSS}. John Wiley & Sons.

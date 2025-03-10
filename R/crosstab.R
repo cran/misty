@@ -3,16 +3,12 @@
 #' This function creates a two-way and three-way cross tabulation with absolute
 #' frequencies and row-wise, column-wise and total percentages.
 #'
-#' @param ...     a matrix or data frame with two or three columns. Alternatively,
-#'                an expression indicating the variable names in \code{data} e.g.,
-#'                \code{crosstab(x1, x2, x3, data = dat)}. Note that the operators
+#' @param data    a data frame with two or three columns.
+#' @param ...     an expression indicating the variable names in \code{data}, e.g.,
+#'                \code{crosstab(dat, x1, x2, x3)}. Note that the operators
 #'                \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'                and \code{!} can also be used to select variables, see 'Details'
 #'                in the \code{\link{df.subset}} function.
-#' @param data    a data frame when specifying one or more variables in the
-#'                argument \code{...}. Note that the argument is \code{NULL}
-#'                when specifying a matrix or data frame for the argument
-#'                \code{...}.
 #' @param print   a character string or character vector indicating which
 #'                percentage(s) to be printed on the console, i.e., no percentages
 #'                (\code{"no"}) (default), all percentages (\code{"all"}),
@@ -58,7 +54,7 @@
 #'
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
-#' \item{\code{data}}{matrix or data frame specified in \code{...}}
+#' \item{\code{data}}{data frame specified in \code{data}}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{result}}{list with result tables, i.e., \code{crosstab} for the
 #'                      cross tabulation, \code{freq.a} for the absolute frequencies,
@@ -73,47 +69,49 @@
 #' # Two-Dimensional Table
 #'
 #' # Example 1: Cross Tabulation for 'vs' and 'am'
+#' crosstab(mtcars, vs, am)
+#'
+#' # Alternative specification without using the '...' argument
 #' crosstab(mtcars[, c("vs", "am")])
 #'
-#' # Alternative specification using the 'data' argument
-#' crosstab(vs, am, data = mtcars)
-#'
 #' # Example 2: Cross Tabulation, print all percentages
-#' crosstab(mtcars[, c("vs", "am")], print = "all")
+#' crosstab(mtcars, vs, am, print = "all")
 #'
 #' # Example 3: Cross Tabulation, print row-wise percentages
-#' crosstab(mtcars[, c("vs", "am")], print = "row")
+#' crosstab(mtcars, vs, am, print = "row")
 #'
 #' # Example 4: Cross Tabulation, print col-wise percentages
-#' crosstab(mtcars[, c("vs", "am")], print = "col")
+#' crosstab(mtcars, vs, am, print = "col")
 #'
 #' # Example 5: Cross Tabulation, print total percentages
-#' crosstab(mtcars[, c("vs", "am")], print = "total")
+#' crosstab(mtcars, vs, am, print = "total")
 #'
 #' # Example 6: Cross Tabulation, print all percentages, split output table
-#' crosstab(mtcars[, c("vs", "am")], print = "all", split = TRUE)
+#' crosstab(mtcars, vs, am, print = "all", split = TRUE)
 #'
 #' #----------------------------------------------------------------------------
 #' # Three-Dimensional Table
 #'
 #' # Example 7: Cross Tabulation for 'vs', 'am', ane 'gear'
+#' crosstab(mtcars, vs:gear)
+#'
+#' # Alternative specification without using the '...' argument
 #' crosstab(mtcars[, c("vs", "am", "gear")])
 #'
-#' # Alternative specification using the 'data' argument
-#' crosstab(vs:gear, data = mtcars)
-#'
 #' # Example 8: Cross Tabulation, print all percentages
-#' crosstab(mtcars[, c("vs", "am", "gear")], print = "all")
+#' crosstab(mtcars, vs:gear, print = "all")
 #'
 #' # Example 9: Cross Tabulation, print all percentages, split output table
-#' crosstab(mtcars[, c("vs", "am", "gear")], print = "all", split = TRUE)
+#' crosstab(mtcars, vs:gear, print = "all", split = TRUE)
 #'
+#' \dontrun{
 #' # Example 10a: Write Results into a text file
-#' crosstab(mtcars[, c("vs", "am")], print = "all", write = "Crosstab.txt")
+#' crosstab(mtcars, vs:gear, print = "all", write = "Crosstab.txt")
 #'
 #' # Example 10b: Write Results into a Excel file
-#' crosstab(mtcars[, c("vs", "am")], print = "all", write = "Crosstab.xlsx")
-crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "total"),
+#' crosstab(mtcars, vs:gear, print = "all", write = "Crosstab.xlsx")
+#' }
+crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
                      freq = TRUE, split = FALSE, na.omit = TRUE, digits = 2,
                      as.na = NULL, write = NULL, append = TRUE, check = TRUE,
                      output = TRUE) {
@@ -122,11 +120,11 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -135,39 +133,25 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract data
-    x <- data[, .var.names(..., data = data, check.chr = "a matrix or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- data[, .var.names(..., data = data)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { as.data.frame(y) } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { as.data.frame(y) } else { y })()
 
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
-
-  x.crosstab <- as.data.frame(x, stringsAsFactors = FALSE)
-
-  # Number of variables
-  x.ncol <- ncol(x)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
-  if (isTRUE(!is.null(as.na))) { x.crosstab <- .as.na(x.crosstab, na = as.na) }
+  if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #_____________________________________________________________________________
   #
@@ -181,10 +165,10 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
   if (isTRUE(check)) {
 
     # Check input 'x'
-    if (isTRUE(ncol(x.crosstab) > 3L || ncol(x.crosstab) < 2L)) { stop("Please specify a matrix or data frame with two or three columns.", call. = FALSE) }
+    if (isTRUE(ncol(x) > 3L || ncol(x) < 2L)) { stop("Please specify a data frame with two or three columns.", call. = FALSE) }
 
     # Check input 'x'
-    vapply(x.crosstab, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L)) |>
+    vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L)) |>
       (\(y) if (isTRUE(any(y))) { stop(paste0("Following variables have only one unique value: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
 
     # Check print = "no" and freq = FALSE
@@ -211,18 +195,18 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Two variables ####
 
-  if (isTRUE(x.ncol == 2L)) {
+  if (isTRUE(ncol(x) == 2L)) {
 
     # If na.omit = FALSE, then include NA if any present
     if (isTRUE(!na.omit)) {
 
-      x.crosstab <- data.frame(lapply(x.crosstab, function(y) misty::rec(y, spec = "NA = 'NA'")), stringsAsFactors = FALSE)
+      x <- data.frame(lapply(x, function(y) misty::rec(y, spec = "NA = 'NA'")))
 
     } else {
 
-      if (isTRUE(any(is.na(x.crosstab)))) {
+      if (isTRUE(any(is.na(x)))) {
 
-        warning(paste0("Listwise deletion of incomplete cases, number of cases removed from the analysis: ", length(attributes(na.omit(x.crosstab))$na.action)), call. = FALSE)
+        warning(paste0("Listwise deletion of incomplete cases, number of cases removed from the analysis: ", length(attributes(na.omit(x))$na.action)), call. = FALSE)
 
       }
 
@@ -230,13 +214,13 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
 
     #...................
     ### Absolute frequencies without margins ####
-    freq.a <- table(x.crosstab)
+    freq.a <- table(x)
 
     #...................
     ### Row-wise percentages ####
 
     perc.r <- addmargins(prop.table(freq.a, margin = 1L) * 100L)
-    perc.r[row.names(perc.r) == "Sum", ] <- addmargins(prop.table(table(x.crosstab[, 2L])) * 100L)
+    perc.r[row.names(perc.r) == "Sum", ] <- addmargins(prop.table(table(x[, 2L])) * 100L)
 
     rownames(perc.r)[nrow(perc.r)] <- "Total"
     colnames(perc.r)[ncol(perc.r)] <- "Total"
@@ -245,7 +229,7 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
     ### Column-wise percentages ####
 
     perc.c <- addmargins(prop.table(freq.a, margin = 2L) * 100L)
-    perc.c[, colnames(perc.c) == "Sum"] <- addmargins(prop.table(table(x.crosstab[, 1L])) * 100L)
+    perc.c[, colnames(perc.c) == "Sum"] <- addmargins(prop.table(table(x[, 1L])) * 100L)
 
     rownames(perc.c)[nrow(perc.c)] <- "Total"
     colnames(perc.c)[ncol(perc.c)] <- "Total"
@@ -277,17 +261,17 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
     ### Sort Table ####
 
     #### First variable is a factor ####
-    if (isTRUE(is.factor(x.crosstab[, 1L]))) {
+    if (isTRUE(is.factor(x[, 1L]))) {
 
       # Sort with NA
-      if (isTRUE(any(is.na(x.crosstab)) && isTRUE(!na.omit))) {
+      if (isTRUE(any(is.na(x)) && isTRUE(!na.omit))) {
 
-        result <- result[order(factor(result[, 1L], levels = c(levels(x.crosstab[, 1L]), "NA"), labels = c(levels(x.crosstab[, 1L]), "NA"))), ]
+        result <- result[order(factor(result[, 1L], levels = c(levels(x[, 1L]), "NA"), labels = c(levels(x[, 1L]), "NA"))), ]
 
       # Sort without NA
       } else {
 
-        result <- result[order(factor(result[, 1L], levels = levels(x.crosstab[, 1L]), labels = levels(x.crosstab[, 1L]))), ]
+        result <- result[order(factor(result[, 1L], levels = levels(x[, 1L]), labels = levels(x[, 1L]))), ]
 
       }
 
@@ -300,7 +284,7 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
       if (isTRUE(is.numeric(x[, 1L]))) {
 
         # 'NA' character
-        if (isTRUE(any(x.crosstab[, 1L] == "NA", na.rm = TRUE))) {
+        if (isTRUE(any(x[, 1L] == "NA", na.rm = TRUE))) {
 
           result.temp.NA <- result.temp[-which(result.temp[, 1L] == "NA"), ]
 
@@ -317,7 +301,7 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
       } else {
 
         # 'NA' character
-        if (isTRUE(any(x.crosstab[, 1L] == "NA", na.rm = TRUE))) {
+        if (isTRUE(any(x[, 1L] == "NA", na.rm = TRUE))) {
 
           result.temp.NA <- result.temp[-which(result.temp[, 1L] == "NA"), ]
 
@@ -338,18 +322,18 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Three variables ####
-  } else if (isTRUE(x.ncol == 3L)) {
+  } else if (isTRUE(ncol(x) == 3L)) {
 
     # If na.omit = FALSE, then include NA if any present
     if (isTRUE(!na.omit)) {
 
-      x.crosstab <- data.frame(lapply(x.crosstab, function(y) misty::rec(y, spec = "NA = 'NA'")), stringsAsFactors = FALSE)
+      x <- data.frame(lapply(x, function(y) misty::rec(y, spec = "NA = 'NA'")))
 
     } else {
 
-      if (isTRUE(any(is.na(x.crosstab)))) {
+      if (isTRUE(any(is.na(x)))) {
 
-        warning(paste0("Listwise deletion of incomplete cases, number of cases removed from the analysis: ", length(attributes(na.omit(x.crosstab))$na.action)), call. = FALSE)
+        warning(paste0("Listwise deletion of incomplete cases, number of cases removed from the analysis: ", length(attributes(na.omit(x))$na.action)), call. = FALSE)
 
       }
 
@@ -358,7 +342,7 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
     #...................
     ### Absolute frequencies without margins ####
 
-    x.table <- table(x.crosstab[, names(x.crosstab)[c(2L, 3L, 1L)]])
+    x.table <- table(x[, names(x)[c(2L, 3L, 1L)]])
 
     freq.a <- list()
     for (i in seq_len(dim(x.table)[3L])) { freq.a[[i]] <- x.table[, , i] }
@@ -467,16 +451,16 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
     if (isTRUE(is.factor(x[, 1L]) && is.factor(x[, 2L]))) {
 
       ##### Sort with NA
-      if (isTRUE(any(x.crosstab == "NA", na.rm = TRUE) && isTRUE(!na.omit))) {
+      if (isTRUE(any(x == "NA", na.rm = TRUE) && isTRUE(!na.omit))) {
 
-        result <- result[order(factor(result[, 1L], levels = c(levels(x.crosstab[, 1L]), "NA"), labels = c(levels(x.crosstab[, 1L]), "NA")),
-                               factor(result[, 2L], levels = c(levels(x.crosstab[, 2L]), "NA"), labels = c(levels(x.crosstab[, 2L]), "NA"))), ]
+        result <- result[order(factor(result[, 1L], levels = c(levels(x[, 1L]), "NA"), labels = c(levels(x[, 1L]), "NA")),
+                               factor(result[, 2L], levels = c(levels(x[, 2L]), "NA"), labels = c(levels(x[, 2L]), "NA"))), ]
 
       ##### Sort without NA
       } else {
 
-        result <- result[order(factor(result[, 1L], levels = levels(x.crosstab[, 1L]), labels = levels(x.crosstab[, 1L])),
-                               factor(result[, 2L], levels = levels(x.crosstab[, 2L]), labels = levels(x.crosstab[, 2L]))), ]
+        result <- result[order(factor(result[, 1L], levels = levels(x[, 1L]), labels = levels(x[, 1L])),
+                               factor(result[, 2L], levels = levels(x[, 2L]), labels = levels(x[, 2L]))), ]
 
       }
 
@@ -484,7 +468,7 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
     } else if (isTRUE(is.factor(x[, 1L]) && !is.factor(x[, 2L]))) {
 
       ##### Sort with NA
-      if (isTRUE(any(x.crosstab == "NA", na.rm = TRUE) && isTRUE(!na.omit))) {
+      if (isTRUE(any(x == "NA", na.rm = TRUE) && isTRUE(!na.omit))) {
 
         result.temp <- NULL
         for (i in unique(result[, 1L])) {
@@ -541,20 +525,20 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
     } else if (isTRUE(!is.factor(x[, 1L]) && is.factor(x[, 2L]))) {
 
       ##### Sort with NA
-      if (isTRUE(any(x.crosstab == "NA", na.rm = TRUE) && isTRUE(!na.omit))) {
+      if (isTRUE(any(x == "NA", na.rm = TRUE) && isTRUE(!na.omit))) {
 
         # First variable is numeric
         if (isTRUE(is.numeric(x[, 1L]))) {
 
           result <- result[order(factor(result[, 1L], levels = c(sort(unique(as.numeric(suppressWarnings(misty::chr.omit(result[, 1L], omit = "NA"))))))),
-                                 factor(result[, 2L], levels = c(levels(x.crosstab[, 2L]), "NA"), labels = c(levels(x.crosstab[, 2L]), "NA"))), ]
+                                 factor(result[, 2L], levels = c(levels(x[, 2L]), "NA"), labels = c(levels(x[, 2L]), "NA"))), ]
 
 
         # First variable is character
         } else {
 
           result <- result[order(factor(result[, 1L], levels = c(sort(unique(suppressWarnings(misty::chr.omit(result[, 1L], omit = "NA")))))),
-                                 factor(result[, 2L], levels = c(levels(x.crosstab[, 2L]), "NA"), labels = c(levels(x.crosstab[, 2L]), "NA"))), ]
+                                 factor(result[, 2L], levels = c(levels(x[, 2L]), "NA"), labels = c(levels(x[, 2L]), "NA"))), ]
 
         }
 
@@ -565,13 +549,13 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
         if (isTRUE(is.numeric(x[, 1L]))) {
 
           result <- result[order(factor(result[, 1L], levels = sort(unique(as.numeric(result[, 1L])))),
-                                 factor(result[, 2L], levels = levels(x.crosstab[, 2L]), labels = levels(x.crosstab[, 2L]))), ]
+                                 factor(result[, 2L], levels = levels(x[, 2L]), labels = levels(x[, 2L]))), ]
 
         # First variable is character
         } else {
 
           result <- result[order(factor(result[, 1L], levels = sort(unique(result[, 1L]))),
-                                 factor(result[, 2L], levels = levels(x.crosstab[, 2L]), labels = levels(x.crosstab[, 2L]))), ]
+                                 factor(result[, 2L], levels = levels(x[, 2L]), labels = levels(x[, 2L]))), ]
 
         }
 
@@ -581,7 +565,7 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
     } else if (isTRUE(!is.factor(x[, 1L]) && !is.factor(x[, 2L]))) {
 
       ##### Sort with NA
-      if (isTRUE(any(x.crosstab == "NA", na.rm = TRUE) && isTRUE(!na.omit))) {
+      if (isTRUE(any(x == "NA", na.rm = TRUE) && isTRUE(!na.omit))) {
 
         # NA in first variable
         if (isTRUE(any(result[, 1L] == "NA"))) {
@@ -692,7 +676,7 @@ crosstab <- function(..., data = NULL, print = c("no", "all", "row", "col", "tot
 
   object <- list(call = match.call(),
                  type = "crosstab",
-                 data = x.crosstab,
+                 data = x,
                  args = list(freq = freq, print = print, split = split, na.omit = na.omit,
                              digits = digits, as.na = as.na, write = write, append = append,
                              check = check, output = output),

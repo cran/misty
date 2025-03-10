@@ -9,26 +9,28 @@
 test.t(x, ...)
 
 \method{test.t}{default}(x, y = NULL, mu = 0, paired = FALSE,
-       alternative = c("two.sided", "less", "greater"),
-       conf.level = 0.95,  hypo = TRUE, descript = TRUE, effsize = FALSE,
-       weighted = FALSE, cor = TRUE, ref = NULL, correct = FALSE,
-       plot = FALSE, adjust = TRUE, point.size = 4, errorbar.width = 0.1,
-       xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
-       line = TRUE, linetype = 3, linewidth = 0.8,
-       jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
+       alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
+       hypo = TRUE, descript = TRUE, effsize = FALSE, weighted = FALSE,
+       cor = TRUE, ref = NULL, correct = FALSE, digits = 2, p.digits = 3,
+       as.na = NULL, plot = FALSE, bar = TRUE, point = FALSE, ci = TRUE,
+       line = TRUE, jitter = FALSE, adjust = TRUE, point.size = 4, errorbar.width = 0.1,
+       xlab = NULL, ylab = NULL, ylim = NULL, ybreaks = ggplot2::waiver(),
+       linetype = 3, linewidth = 0.8, jitter.size = 1.25, jitter.width = 0.05,
        jitter.height = 0, jitter.alpha = 0.1, title = "",
-       subtitle = "Confidence Interval", digits = 2, p.digits = 3,
-        as.na = NULL, write = NULL, append = TRUE,check = TRUE, output = TRUE, ...)
+       subtitle = "Confidence Interval", filename = NULL, width = NA, height = NA,
+       units = c("in", "cm", "mm", "px"),
+       dpi = 600, write = NULL, append = TRUE, check = TRUE, output = TRUE, ...)
 
 \method{test.t}{formula}(formula, data, alternative = c("two.sided", "less", "greater"),
-       conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
-       weighted = FALSE, cor = TRUE, ref = NULL, correct = FALSE,
-       plot = FALSE, adjust = TRUE, point.size = 4, errorbar.width = 0.1,
-       xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
-       jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
-       jitter.height = 0, jitter.alpha = 0.1, title = "",
-       subtitle = "Confidence Interval", digits = 2, p.digits = 3,
-       as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE, ...)
+       conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE, weighted = FALSE,
+       cor = TRUE, ref = NULL, correct = FALSE, digits = 2, p.digits = 3, as.na = NULL,
+       plot = FALSE, bar = TRUE, point = FALSE, ci = TRUE, line = TRUE,
+       jitter = FALSE, adjust = TRUE, point.size = 4, errorbar.width = 0.1, xlab = NULL,
+       ylab = NULL, ylim = NULL, ybreaks = ggplot2::waiver(), linetype = 3,
+       linewidth = 0.8, jitter.size = 1.25, jitter.width = 0.05, jitter.height = 0,
+       jitter.alpha = 0.1, title = "", subtitle = "Confidence Interval", filename = NULL,
+       width = NA, height = NA, units = c("in", "cm", "mm", "px"), dpi = 600,
+       write = NULL, append = TRUE, check = TRUE, output = TRUE, ...)
 }
 \arguments{
 \item{x}{a numeric vector of data values.}
@@ -86,8 +88,34 @@ positive bias in small samples is used.}
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence
 level of the interval.}
 
-\item{plot}{logical: if \code{TRUE}, a plot showing error bars for
-confidence intervals is drawn.}
+\item{digits}{an integer value indicating the number of decimal places
+to be used for displaying descriptive statistics and
+confidence interval.}
+
+\item{p.digits}{an integer value indicating the number of decimal places
+to be used for displaying the \emph{p}-value.}
+
+\item{as.na}{a numeric vector indicating user-defined missing values,
+i.e. these values are converted to \code{NA} before
+conducting the analysis.}
+
+\item{plot}{logical: if \code{TRUE}, a plot showing bar plots with
+error bars for confidence intervals is drawn.}
+
+\item{bar}{ogical: if \code{TRUE} (default), bars representing means
+for each groups are drawn.}
+
+\item{point}{logical: if \code{TRUE}, points representing means for
+each groups are drawn.}
+
+\item{ci}{logical: if \code{TRUE} (default), error bars representing
+confidence intervals are drawn.}
+
+\item{jitter}{logical: if \code{TRUE}, jittered data points are drawn.}
+
+\item{line}{logical: if \code{TRUE} (default), a horizontal line
+is drawn at \code{mu} for the one-sample t-test or at
+0 for the paired-sample t-test.}
 
 \item{adjust}{logical: if \code{TRUE} (default), difference-adjustment for the
 confidence intervals in a two-sample design is applied.}
@@ -105,12 +133,8 @@ the error bar.}
 \item{ylim}{a numeric vector of length two specifying limits of the
 limits of the y-axis.}
 
-\item{breaks}{a numeric vector specifying the points at which tick-marks
+\item{ybreaks}{a numeric vector specifying the points at which tick-marks
 are drawn at the y-axis.}
-
-\item{line}{logical: if \code{TRUE} (default), a horizontal line
-is drawn at \code{mu} for the one-sample t-test or at
-0 for the paired-sample t-test.}
 
 \item{linetype}{an integer value or character string specifying the line
 type for the line representing the population mean under
@@ -121,16 +145,15 @@ the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed,
 for the line representing the population mean under the
 null hypothesis.}
 
-\item{jitter}{logical: if \code{TRUE} (default), jittered data points
-are drawn.}
-
 \item{jitter.size}{a numeric value indicating the \code{size} aesthetic}
 
 \item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
 
 \item{jitter.height}{a numeric value indicating the amount of vertical jitter.}
 
-\item{jitter.alpha}{a numeric value indicating the opacity of the jittered
+\item{jitter.alpha}{ a numeric value between 0 and 1 for specifying the
+\code{alpha} argument in the \code{geom_jitter}
+function for controlling the opacity of the jittered
 data points.}
 
 \item{title}{a character string specifying the text for the title for
@@ -139,16 +162,22 @@ the plot.}
 \item{subtitle}{a character string specifying the text for the subtitle for
 the plot.}
 
-\item{digits}{an integer value indicating the number of decimal places
-to be used for displaying descriptive statistics and
-confidence interval.}
+\item{filename}{a character string indicating the \code{filename} argument (default is \code{"NA_Pattern.pdf"}) including
+the file extension for the \code{ggsave} function. Note that one of \code{".eps"}, \code{".ps"},
+\code{".tex"}, \code{".pdf"} (default), \code{".jpeg"}, \code{".tiff"}, \code{".png"}, \code{".bmp"},
+\code{".svg"} or \code{".wmf"} needs to be specified as file extension in the \code{file} argument.}
 
-\item{p.digits}{an integer value indicating the number of decimal places
-to be used for displaying the \emph{p}-value.}
+\item{width}{a numeric value indicating the \code{width} argument (default is the
+size of the current graphics device) for the \code{ggsave} function.}
 
-\item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before
-conducting the analysis.}
+\item{height}{a numeric value indicating the \code{height} argument
+(default is the size of the current graphics device) for the \code{ggsave} function.}
+
+\item{units}{a character string indicating the \code{units} argument
+(default is \code{in}) for the \code{ggsave} function.}
+
+\item{dpi}{a numeric value indicating the \code{dpi} argument
+(default is \code{600}) for the \code{ggsave} function.}
 
 \item{write}{a character string naming a text file with file extension
 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
@@ -187,8 +216,8 @@ entries:
 }
 \description{
 This function performs one-sample, two-sample, and paired-sample t-tests and
-provides descriptive statistics, effect size measure, and a plot showing error
-bars for (difference-adjusted) confidence intervals with jittered data points.
+provides descriptive statistics, effect size measure, and a plot showing bar
+plots with error bars for (difference-adjusted) confidence intervals.
 }
 \details{
 \describe{
@@ -204,47 +233,19 @@ specifying \code{weighted = TRUE}.}
 #----------------------------------------------------------------------------
 # One-Sample Design
 
-# Example 1a: Two-sided one-sample t-test
-# population mean = 20
+# Example 1a: Two-sided one-sample t-test, population mean = 20
 test.t(mtcars$mpg, mu = 20)
 
-# Example 1b: One-sided one-sample t-test
-# population mean = 20, print Cohen's d
+# Example 1b: One-sided one-sample t-test, population mean = 20, print Cohen's d
 test.t(mtcars$mpg, mu = 20, alternative = "greater", effsize = TRUE)
 
-# Example 1c: Two-sided one-sample t-test
-# population mean = 20, plot results
+# Example 1c: Two-sided one-sample t-test, population mean = 20, plot results
 test.t(mtcars$mpg, mu = 20, plot = TRUE)
 
-# Load ggplot2 package
-library(ggplot2)
-
 \dontrun{
-# Save plot, ggsave() from the ggplot2 package
-ggsave("One-sample_t-test.png", dpi = 600, width = 3, height = 6)}
-
-# Example 1d: Two-sided one-sample t-test
-# population mean = 20, extract plot
-p <- test.t(mtcars$mpg, mu = 20, output = FALSE)$plot
-p
-
-# Example 1e: Two-sided one-sample t-test
-# Draw plot in line with the default setting of test.t()
-
-# Extract data
-plotdat <- data.frame(x = test.t(mtcars$mpg, mu = 20, output = FALSE)$data[[1]])
-
-# Draw plot
-ggplot(plotdat, aes(0, x)) +
-   geom_point(stat = "summary", fun = "mean", size = 4) +
-   stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
-   scale_x_continuous(name = NULL, limits = c(-2, 2)) +
-   scale_y_continuous(name = NULL) +
-   geom_hline(yintercept = 20, linetype = 3, linewidth = 0.8) +
-   labs(subtitle = "Two-Sided Confidence Interval") +
-   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
-                      axis.text.x = element_blank(),
-                      axis.ticks.x = element_blank())
+# Example 1d: Two-sided one-sample t-test, population mean = 20, save plot
+test.t(mtcars$mpg, mu = 20, plot = TRUE, filename = "One-sample_t-test.png",
+       width = 4, height = 5)}
 
 #----------------------------------------------------------------------------
 # Two-Sample Design
@@ -252,42 +253,19 @@ ggplot(plotdat, aes(0, x)) +
 # Example 2a: Two-sided two-sample t-test
 test.t(mpg ~ vs, data = mtcars)
 
-# Example 2b: One-sided two-sample t-test
-# print Cohen's d with weighted pooled SD
+# Example 2b: Two-sided two-sample t-test, alternative specification
+test.t(c(3, 1, 4, 2, 5, 3, 6, 7), c(5, 2, 4, 3, 1))
+
+# Example 2c: One-sided two-sample t-test, print Cohen's d with weighted pooled SD
 test.t(mpg ~ vs, data = mtcars, alternative = "greater", effsize = TRUE)
 
-# Example 2c: Two-sided two-sample t-test
-# Plot results
+# Example 2d: Two-sided two-sample t-test, plot results
 test.t(mpg ~ vs, data = mtcars, plot = TRUE)
 
-# Load ggplot2 package
-library(ggplot2)
-
 \dontrun{
-# Save plot, ggsave() from the ggplot2 package
-ggsave("Two-sample_t-test.png", dpi = 600, width = 4, height = 6)}
-
-# Example 2d: Two-sided two-sample t-test
-# extract plot
-p <- test.t(mpg ~ vs, data = mtcars, output = FALSE)$plot
-p
-
-# Example 2e: Two-sided two-sample t-test
-# Draw plot in line with the default setting of test.t()
-
-# Extract data used to plot results
-plotdat <- test.t(mpg ~ vs, data = mtcars, output = FALSE)$data
-
-# Draw plot
-ggplot(plotdat, aes(factor(vs), mpg)) +
-   geom_point(stat = "summary", fun = "mean", size = 4) +
-   stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
-   scale_x_discrete(name = NULL) + scale_y_continuous(name = "y") +
-   labs(title = "", subtitle = "Two-Sided 95 Confidence Interval") +
-   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
-
-# Example 2f: Two-sided two-sample t-test, alternative specification
-test.t(c(3, 1, 4, 2, 5, 3, 6, 7), c(5, 2, 4, 3, 1))
+# Example 2e: Two-sided two-sample t-test, plot results
+test.t(mpg ~ vs, data = mtcars, plot = TRUE, filename = "Two-sample_t-test.png",
+       width = 5, height = 6)}
 
 #----------------------------------------------------------------------------
 # Paired-Sample Design
@@ -295,46 +273,18 @@ test.t(c(3, 1, 4, 2, 5, 3, 6, 7), c(5, 2, 4, 3, 1))
 # Example 3a: Two-sided paired-sample t-test
 test.t(mtcars$drat, mtcars$wt, paired = TRUE)
 
-# Example 3b: One-sided paired-sample t-test
-# print Cohen's d based on the standard deviation of the difference scores
+# Example 3b: One-sided paired-sample t-test,
+# print Cohen's d based on the SD of the difference scores
 test.t(mtcars$drat, mtcars$wt, paired = TRUE, alternative = "greater",
        effsize = TRUE)
 
-# Example 3c: Two-sided paired-sample t-test
-# Plot results
+# Example 3c: Two-sided paired-sample t-test, plot results
 test.t(mtcars$drat, mtcars$wt, paired = TRUE, plot = TRUE)
 
-# Load ggplot2 package
-library(ggplot2)
-
 \dontrun{
-# Save plot, ggsave() from the ggplot2 package
-ggsave("Paired-sample_t-test.png", dpi = 600, width = 3, height = 6)}
-
-# Example 3d: Two-sided paired-sample t-test
-# Extract plot
-p <- test.t(mtcars$drat, mtcars$wt, paired = TRUE, output = FALSE)$plot
-p
-
-# Example 3e: Two-sided paired-sample t-test
-# Draw plot in line with the default setting of test.t()
-
-# Extract data used to plot results
-plotdat <- data.frame(test.t(mtcars$drat, mtcars$wt, paired = TRUE, output = FALSE)$data)
-
-# Difference score
-plotdat$diff <- plotdat$y - plotdat$x
-
-# Draw plot
-ggplot(plotdat, aes(0, diff)) +
-   geom_point(stat = "summary", fun = "mean", size = 4) +
-   stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
-   scale_x_discrete(name = NULL) + scale_y_continuous(name = NULL) +
-   geom_hline(yintercept = 0, linetype = 3, linewidth = 0.8) +
-   labs(subtitle = "Two-Sided 95 Confidence Interval") +
-   theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5),
-                      axis.text.x = element_blank(),
-                      axis.ticks.x = element_blank())
+# Example 3d: Two-sided paired-sample t-test, save plot
+test.t(mtcars$drat, mtcars$wt, paired = TRUE, plot = TRUE,
+       filename = "Paired-sample_t-test.png", width = 4, height = 5)}
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in

@@ -23,18 +23,14 @@
 #' multi-item scales can be found in Bardach et al. (2018), Bardach et al.
 #' (2019a), and Bardach et al. (2019b).
 #'
-#' @param ...     a numeric vector or data frame. Alternatively, an expression
-#'                indicating the variable names in \code{data} e.g.,
-#'                \code{rwg.lindell(x1, x2, x3, data = dat)}. Note that the
+#' @param data    a numeric vector or data frame.
+#' @param ...     an expression indicating the variable names in \code{data},
+#'                e.g., \code{rwg.lindell(dat, x1, x2, x3)}. Note that the
 #'                operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
 #'                \code{::}, and \code{!} can also be used to select variables,
 #'                see 'Details' in the \code{\link{df.subset}} function.
-#' @param data    a data frame when specifying one or more variables in the
-#'                argument \code{...}. Note that the argument is \code{NULL}
-#'                when specifying a numeric vector or data frame for the argument
-#'                \code{...}.
 #' @param cluster either a character string indicating the variable name of
-#'                the cluster variable in \code{...} or \code{data}, or a
+#'                the cluster variable in \code{data}, or a
 #'                vector representing the nested grouping structure (i.e.,
 #'                group or cluster variable).
 #' @param A       a numeric value indicating the number of discrete response
@@ -48,7 +44,7 @@
 #'                on the formula \eqn{z = 0.5*log((1 + r) / (1 - r))} is applied
 #'                to the vector of r*wg(j) estimates.
 #' @param expand  logical: if \code{TRUE} (default), vector of r*wg(j) estimates
-#'                is expanded to match the input vector \code{x}.
+#'                is expanded to match the input vector \code{data}.
 #' @param na.omit logical: if \code{TRUE}, incomplete cases are removed before
 #'                conducting the analysis (i.e., listwise deletion).
 #' @param append  logical: if \code{TRUE} (default), a variable with the r*wg(j)
@@ -60,7 +56,7 @@
 #' @param as.na   a numeric vector indicating user-defined missing values,
 #'                i.e. these values are converted to \code{NA} before conducting
 #'                the analysis. Note that \code{as.na()} function is only applied
-#'                to \code{x}, but not to \code{cluster}.
+#'                to \code{data}, but not to \code{cluster}.
 #' @param check   logical: if \code{TRUE} (default), argument specification is
 #'                checked.
 #'
@@ -113,21 +109,20 @@
 #'                   x3 = c(3, 1, 1, 2, 3, 3, 5, 5, 4))
 #'
 #' # Example 1: Compute Fisher z-transformed r*wg(j) for a multi-item scale with A = 5 response options
+#' rwg.lindell(dat, x1, x2, x3, cluster = "cluster", A = 5)
+#'
+#' # Alternative specification without using the '...' argument
 #' rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, A = 5)
 #'
-#' # Alternative specification using the 'data' argument,
-#' rwg.lindell(x1:x3, data = dat, cluster = "cluster", A = 5)
-#'
 #' # Example 2: Compute Fisher z-transformed r*wg(j) for a multi-item scale with a random variance of 2
-#' rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, ranvar = 2)
+#' rwg.lindell(dat, x1, x2, x3, cluster = "cluster", ranvar = 2)
 #'
 #' # Example 3: Compute r*wg(j) for a multi-item scale with A = 5 response options
-#' rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, A = 5, z = FALSE)
+#' rwg.lindell(dat, x1, x2, x3, cluster = "cluster", A = 5, z = FALSE)
 #'
-#' # Example 4: Compute Fisher z-transformed r*wg(j) for a multi-item scale with A = 5 response options,
-#' # do not expand the vector
-#' rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, A = 5, expand = FALSE)
-rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = TRUE,
+#' # Example 4: Do not expand Fisher z-transformed r*wg(j)
+#' rwg.lindell(dat, x1, x2, x3, cluster = "cluster", A = 5, expand = FALSE)
+rwg.lindell <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
                         expand = TRUE, na.omit = FALSE, append = TRUE, name = "rwg",
                         as.na = NULL, check = TRUE) {
 
@@ -135,20 +130,17 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
   # Check if input 'cluster' is NULL
   if (isTRUE(is.null(cluster))) { stop("Input specified for the argument 'cluster' is NULL.", call. = FALSE) }
-
-  # Check if input 'data' is a data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -157,13 +149,10 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+  if (isTRUE(!missing(...))) {
 
     # Extract data
-    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
+    x <- as.data.frame(data[, .var.names(..., data = data, cluster = cluster), drop = FALSE])
 
     # Cluster variable
     cluster <- data[, cluster]
@@ -173,33 +162,27 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- data.frame(x) } }
-    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- data.frame(cluster) } }
+    # Data frame
+    x <- as.data.frame(data) |> (\(y) if (isTRUE(ncol(y) == 1L)) { unname(y) } else { y })()
 
     # Data and cluster
-    var.group <- .var.group(data = x, cluster = cluster)
+    var.group <- .var.group(data = x, cluster = cluster, drop = FALSE)
 
     # Data
-    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
+    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
 
     # Cluster variable
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
 
+  # Convert 'cluster' as tibble into a vector
+  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data frame ####
-
-  x <- data.frame(x, cluster = cluster)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
@@ -219,10 +202,10 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
     # Check input 'A'
     if (isTRUE(!is.null(A))) {
 
-      # Check input 'x': Number of discrete responses
-      if (isTRUE(length(na.omit(unique(unlist(x)))) > A)) { warning("There are more unique values in 'x' than the number of discrete response options specified in 'A'.", call. = FALSE) }
+      # Check input 'data': Number of discrete responses
+      if (isTRUE(length(na.omit(unique(unlist(x)))) > A)) { warning("There are more unique values in 'data' than the number of discrete response options specified in 'A'.", call. = FALSE) }
 
-      # Check input 'x': Integer number
+      # Check input 'data': Integer number
       if (isTRUE(A %% 1L != 0L || A < 0L)) { stop("Please specify a positive integer number for the argument 'A'.", call. = FALSE) }
 
     }
@@ -241,16 +224,11 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
 
   if (isTRUE(!is.null(A))) { ranvar <- (A^2L - 1L) / 12L }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Listwise deletion ####
-
-  if (isTRUE(any(is.na(x)) && na.omit)) { assign("x", na.omit(x)) |> (\(y) warning(paste("Listwise deletion of incomplete data, number of cases removed from the analysis:", length(attributes(y)$na.action)), call. = FALSE))() }
-
   #_____________________________________________________________________________
   #
   # Main Function --------------------------------------------------------------
 
-  x.split <- split(x[, -grep("cluster", names(x))], x$cluster)
+  x.split <- split(x[, -grep("cluster", names(x))], cluster)
 
   rwg <- misty::as.na(vapply(x.split, function(y) 1L - (mean(vapply(y, var, na.rm = TRUE, FUN.VALUE = double(1L)), na.rm = TRUE) / ranvar), FUN.VALUE = double(1L)), na = NaN, check = FALSE)
 
@@ -259,15 +237,8 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
 
   if (isTRUE(expand)) {
 
-    object <- rwg[match(x$cluster, names(rwg))]
-
-    #......
     # Fisher z-transformation
-    if (isTRUE(z)) {
-
-      object <- ifelse(object == 1L | object == -1L, NA, atanh(object))
-
-    }
+    object <- rwg[match(cluster, names(rwg))] |> (\(y) if (isTRUE(z)) { object <- ifelse(y == 1L | y == -1L, NA, atanh(y)) } else { y })()
 
   } else {
 
@@ -280,7 +251,7 @@ rwg.lindell <- function(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####
 
-  if (isTRUE(!is.null(data) && expand && append)) { object <- data.frame(data, setNames(as.data.frame(object), nm = name)) }
+  if (isTRUE(!missing(...) && expand && append)) { object <- data.frame(data, setNames(as.data.frame(object), nm = name)) }
 
   #_____________________________________________________________________________
   #

@@ -35,17 +35,11 @@ This function is a copy of the \code{rbind.fill()} function in the \pkg{plyr}
 package by Hadley Wickham.
 }
 \examples{
-adat <- data.frame(id = c(1, 2, 3),
-                   a = c(7, 3, 8),
-                   b = c(4, 2, 7))
+adat <- data.frame(id = c(1, 2, 3), a = c(7, 3, 8), b = c(4, 2, 7))
 
-bdat <- data.frame(id = c(4, 5, 6),
-                   a = c(2, 4, 6),
-                   c = c(4, 2, 7))
+bdat <- data.frame(id = c(4, 5, 6), a = c(2, 4, 6), c = c(4, 2, 7))
 
-cdat <- data.frame(id = c(7, 8, 9),
-                   a = c(1, 4, 6),
-                   d = c(9, 5, 4))
+cdat <- data.frame(id = c(7, 8, 9), a = c(1, 4, 6), d = c(9, 5, 4))
 
 # Example 1
 df.rbind(adat, bdat, cdat)

@@ -5,25 +5,21 @@
 \title{Lindell, Brandt and Whitney (1999) r*wg(j) Within-Group Agreement Index for
 Multi-Item Scales}
 \usage{
-rwg.lindell(..., data = NULL, cluster, A = NULL, ranvar = NULL, z = TRUE,
+rwg.lindell(data, ...,  cluster, A = NULL, ranvar = NULL, z = TRUE,
             expand = TRUE, na.omit = FALSE, append = TRUE, name = "rwg",
             as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{...}{a numeric vector or data frame. Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{rwg.lindell(x1, x2, x3, data = dat)}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+\item{data}{a numeric vector or data frame.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a numeric vector or data frame for the argument
-\code{...}.}
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{rwg.lindell(dat, x1, x2, x3)}. Note that the
+operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+\code{::}, and \code{!} can also be used to select variables,
+see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{cluster}{either a character string indicating the variable name of
-the cluster variable in \code{...} or \code{data}, or a
+the cluster variable in \code{data}, or a
 vector representing the nested grouping structure (i.e.,
 group or cluster variable).}
 
@@ -41,7 +37,7 @@ formula \eqn{z = 0.5*log((1 + r) / (1 - r))} is applied to
 the vector of r*wg(j) estimates.}
 
 \item{expand}{logical: if \code{TRUE} (default), vector of r*wg(j) estimates is expanded
-to match the input vector \code{x}.}
+to match the input vector \code{data}.}
 
 \item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before
 conducting the analysis (i.e., listwise deletion).}
@@ -57,7 +53,7 @@ to the data frame specified in the argument \code{data} when
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis. Note that \code{as.na()} function is only applied to
-\code{x}, but not to \code{cluster}.}
+\code{data}, but not to \code{cluster}.}
 
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 }
@@ -99,25 +95,23 @@ Yanagida, Spiel and Schober (2019).
 dat <- data.frame(id = c(1, 2, 3, 4, 5, 6, 7, 8, 9),
                   cluster = c(1, 1, 1, 2, 2, 2, 3, 3, 3),
                   x1 = c(2, 3, 2, 1, 1, 2, 4, 3, 5),
-                  x2 = c(3, 2, 2, 1, 2, 1, 3, 2, 5),
+                  x2 = c(3, 2, NA, 1, 2, 1, 3, 2, 5),
                   x3 = c(3, 1, 1, 2, 3, 3, 5, 5, 4))
 
-# Example 1a: Compute Fisher z-transformed r*wg(j) for a multi-item scale
-# with A = 5 response options
+# Example 1: Compute Fisher z-transformed r*wg(j) for a multi-item scale with A = 5 response options
+rwg.lindell(dat, x1, x2, x3, cluster = "cluster", A = 5)
+
+# Alternative specification without using the '...' argument
 rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, A = 5)
 
-# Example 1b: Alternative specification using the 'data' argument,
-rwg.lindell(x1:x3, data = dat, cluster = "cluster", A = 5)
 # Example 2: Compute Fisher z-transformed r*wg(j) for a multi-item scale with a random variance of 2
-rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, ranvar = 2)
+rwg.lindell(dat, x1, x2, x3, cluster = "cluster", ranvar = 2)
 
 # Example 3: Compute r*wg(j) for a multi-item scale with A = 5 response options
-rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, A = 5, z = FALSE)
+rwg.lindell(dat, x1, x2, x3, cluster = "cluster", A = 5, z = FALSE)
 
-# Example 4: Compute Fisher z-transformed r*wg(j) for a multi-item scale
-# with A = 5 response options, do not expand the vector
-rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, A = 5, expand = FALSE)
-}
+# Example 4: Do not expand Fisher z-transformed r*wg(j)
+rwg.lindell(dat, x1, x2, x3, cluster = "cluster", A = 5, expand = FALSE)}
 \references{
 Bardach, L., Lueftenegger, M., Yanagida, T., & Schober, B. (2019). Achievement
 or agreement - Which comes first? Clarifying the temporal ordering of achievement

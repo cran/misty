@@ -6,14 +6,10 @@
 #' repeated coding, forward Helmert coding, reverse Helmert coding, and orthogonal
 #' polynomial coding.
 #'
-#' @param ...    a numeric vector with integer values, character vector or factor
-#'               Alternatively, an expression indicating the variable name in
-#'               \code{data}. Note that the function can only deal with one
-#'               categorical variable.
-#' @param data   a data frame when specifying a variable in the argument \code{...}.
-#'               Note that the argument is \code{NULL} when specifying a numeric
-#'               vector with integer values, character vector or factor numeric
-#'               vector for the argument \code{...}.
+#' @param data   a numeric vector with integer values, character vector or factor.
+#' @param ...    an expression indicating the variable name in \code{data},
+#'               e.g., \code{coding(dat, x)}. Note that the function can only
+#'               deal with one categorical variable.
 #' @param type   a character string indicating the type of coding, i.e.,
 #'               \code{dummy} (default) for dummy coding, \code{simple} for
 #'               simple coding, \code{effect} for unweighted effect coding,
@@ -128,26 +124,26 @@
 #'
 #' @examples
 #' # Example 1: Dummy coding for 'gear', baseline group = 3
-#' coding(gear, data = mtcars)
+#' coding(mtcars, gear)
 #'
-#' # Alternative specification without using the 'data' argument
+#' # Alternative specification without using the '...' argument
 #' coding(mtcars$gear)
 #'
 #' # Example 2: Dummy coding for 'gear', baseline group = 4
-#' coding(gear, data = mtcars, base = 4)
+#' coding(mtcars, gear, base = 4)
 #'
 #' # Example 3: Effect coding for 'gear', omitted group = 3
-#' coding(gear, data = mtcars, type = "effect")
+#' coding(mtcars, gear, type = "effect")
 #'
 #' # Example 3: Effect coding for 'gear', omitted group = 4
-#' coding(gear, data = mtcars, type = "effect", base = 4)
+#' coding(mtcars, gear, type = "effect", base = 4)
 #'
 #' # Example 4a: Dummy-coded variable names with prefix "gear3."
-#' coding(gear, data = mtcars, name = "gear3.")
+#' coding(mtcars, gear, name = "gear3.")
 #'
 #' # Example 4b: Dummy-coded variables named "gear_4vs3" and "gear_5vs3"
-#' coding(gear, data = mtcars, name = c("gear_4vs3", "gear_5vs3"))
-coding <- function(..., data = NULL,
+#' coding(mtcars, gear, name = c("gear_4vs3", "gear_5vs3"))
+coding <- function(data, ...,
                    type = c("dummy", "simple", "effect", "weffect", "repeat", "fhelm", "rhelm", "poly"),
                    base = NULL, name = c("dum.", "sim.", "eff.", "weff.", "rep.", "fhelm.", "rhelm.", "poly."),
                    append = TRUE, as.na = NULL, check = TRUE) {
@@ -156,11 +152,11 @@ coding <- function(..., data = NULL,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a numeric vector for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -169,27 +165,18 @@ coding <- function(..., data = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a numeric vector with integer values, character vector or factor")
-
-    # Extract variables
-    x <- data[, var.names]
+    # Extract data and convert tibble into data frame or vector
+    x <- data[, .var.names(..., data = data)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { y })()
 
   }
 
@@ -208,14 +195,14 @@ coding <- function(..., data = NULL,
   # Additional checks
   if (isTRUE(check)) {
 
-    # Input check 'x'
-    if (isTRUE(ncol(as.data.frame(x)) != 1L)) { stop("Please specify one categorical variable for the argument '...'", call. = FALSE) }
+    # Input check 'data'
+    if (isTRUE(ncol(as.data.frame(x)) != 1L)) { stop("Please specify one categorical variable for the argument 'data'", call. = FALSE) }
 
-    # Input check 'x'
-    if (isTRUE(!is.factor(x) && !is.character(x))) { if (isTRUE(any(na.omit(x) %% 1L != 0L))) { stop("Please specify a vector with integer values, a character vector or a factor for the argument 'x'.", call. = FALSE) } }
+    # Input check 'data'
+    if (isTRUE(!is.factor(x) && !is.character(x))) { if (isTRUE(any(na.omit(x) %% 1L != 0L))) { stop("Please specify a vector with integer values, a character vector or a factor for the argument 'data'.", call. = FALSE) } }
 
     # Input check 'base'
-    if (isTRUE(!is.null(base))) { if (isTRUE(!base %in% x)) { stop("The baseline category specified in 'base' was not found in 'x'.", call. = FALSE) } }
+    if (isTRUE(!is.null(base))) { if (isTRUE(!base %in% x)) { stop("The baseline category specified in 'base' was not found in 'data'.", call. = FALSE) } }
 
     # Input check 'name'
     if (isTRUE(!is.character(name))) { stop("Please specify a character string or character vector for the argument 'name'.", call. = FALSE) }

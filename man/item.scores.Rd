@@ -4,22 +4,18 @@
 \alias{item.scores}
 \title{Scale Scores}
 \usage{
-item.scores(..., data = NULL, fun = c("mean", "sum", "median", "var", "sd", "min", "max"),
+item.scores(data, ..., fun = c("mean", "sum", "median", "var", "sd", "min", "max"),
             prorated = TRUE, p.avail = NULL, n.avail = NULL, append = TRUE,
             name = "scores", as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame with numeric vectors. Alternatively, an
-expression indicating the variable names in \code{data} e.g.,
-\code{item.scores(x1, x2, x3, data = dat)}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+\item{data}{a data frame with numeric vectors.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument
-\code{...}.}
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{item.scores(dat, x1, x2, x3)}. Note that the
+operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+\code{::}, and \code{!} can also be used to select variables,
+see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{fun}{a character string indicating the function used to compute
 scale scores, default: \code{"mean"}.}
@@ -90,11 +86,8 @@ dat <- data.frame(item1 = c(3,  2,  4, 1,  5, 1,  3, NA),
                   item4 = c(4,  2,  4, 4, NA, 2, NA, NA),
                   item5 = c(3, NA, NA, 2,  4, 3, NA,  3))
 
-# Example 1a: Prorated mean scale scores
+# Example 1: Prorated mean scale scores
 item.scores(dat)
-
-# Example 1b: Alternative specification using the 'data' argument
-item.scores(., data = dat)
 
 # Example 2: Prorated standard deviation scale scores
 item.scores(dat, fun = "sd")

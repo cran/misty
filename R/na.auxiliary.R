@@ -12,17 +12,13 @@
 #' Note that non-numeric variables (i.e., factors, character vectors, and logical
 #' vectors) are excluded from to the analysis.
 #'
-#' @param ...       a matrix or data frame with incomplete data, where missing
-#'                  values are coded as \code{NA}. Alternatively, an expression
-#'                  indicating the variable names in \code{data} e.g.,
-#'                  \code{na.auxiliary(x1, x2, x3, data = dat)}. Note that the
+#' @param data      a data frame with incomplete data, where missing
+#'                  values are coded as \code{NA}.
+#' @param ...       an expression indicating the variable names in \code{data},
+#'                  e.g., \code{na.auxiliary(dat, x1, x2, x3)}. Note that the
 #'                  operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
 #'                  \code{::}, and \code{!} can also be used to select variables,
 #'                  see 'Details' in the \code{\link{df.subset}} function.
-#' @param data      a data frame when specifying one or more variables in the
-#'                  argument \code{...}. Note that the argument is \code{NULL}
-#'                  when specifying a matrix or data frame for the argument
-#'                  \code{...}.
 #' @param model     a character string specifying the substantive model predicting
 #'                  an continuous outcome variable using a set of predictor variables
 #'                  to estimate semi-partial correlations between the outcome
@@ -114,21 +110,17 @@
 #' # Example 1: Auxiliary variables
 #' na.auxiliary(airquality)
 #'
-#' # Alternative specification using the 'data' argument
-#' na.auxiliary(., data = airquality)
-#'
 #' # Example 2: Semi-partial correlation coefficients
 #' na.auxiliary(airquality, model = "Ozone ~ Solar.R + Wind")
 #'
-#' # Alternative specification using the 'data' argument
-#' na.auxiliary(Temp, Month, Day, data = airquality, model = "Ozone ~ Solar.R + Wind")
-#'
+#' \dontrun{
 #' # Example 3a: Write Results into a text file
 #' na.auxiliary(airquality, write = "NA_Auxiliary.txt")
 #'
 #' # Example 3a: Write Results into an Excel file
 #' na.auxiliary(airquality, write = "NA_Auxiliary.xlsx")
-na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "MLR"),
+#' }
+na.auxiliary <- function(data, ..., model = NULL, estimator = c("ML", "MLR"),
                          missing = c("fiml", "two.stage", "robust.two.stage", "doubly.robust"),
                          tri = c("both", "lower", "upper"), weighted = FALSE, correct = FALSE,
                          digits = 2, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
@@ -138,11 +130,11 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -151,31 +143,20 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract data
-    x <- data[, .var.names(..., data = data, check.chr = "a matrix or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- as.data.frame(data)
 
   }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
-
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Exclude factors, character vectors and logical vectors ####
@@ -217,7 +198,7 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
     } else {
 
       # No missing values
-      if (isTRUE(all(!is.na(x)))) { stop("There are no missing values (NA) in the matrix or data frame specified in '...'.", call. = FALSE) }
+      if (isTRUE(all(!is.na(x)))) { stop("There are no missing values (NA) in the data frame specified in 'data'.", call. = FALSE) }
 
     }
 
@@ -244,7 +225,7 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
 
   #_____________________________________________________________________________
   #
-  # Main Function Product-Moment Correlation matrix and Cohen's d Matrix -------
+  # Main Function Product-Moment Correlation Matrix and Cohen's d Matrix -------
 
   if (isTRUE(is.null(model))) {
 
@@ -257,29 +238,26 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
     ## Variables related to the probability of missingness ####
 
     # Indicator matrix
-    ind <- misty::na.indicator(x)
+    ind <- misty::na.indicator(x, na = 0L, append = FALSE)
     colnames(ind) <- paste0(colnames(ind), "_ind")
 
     # Pairwise combinations
     x.combn <- combn(ncol(x), m = 2L)
 
     # Data
-    x.ind <- data.frame(x, ind, stringsAsFactors = FALSE)
+    x.ind <- data.frame(x, ind)
 
     #...................
     ### Cohen's d ####
 
-    result.d.upp <- numeric(ncol(x.combn))
-    result.d.low <- numeric(ncol(x.combn))
+    result.d.low <- result.d.upp <- numeric(ncol(x.combn))
     for (i in seq_len(ncol(x.combn))) {
 
       temp <- x.combn[, i]
 
-      if (isTRUE(length(unique(x.ind[, colnames(ind)[temp[1L]]])) == 2L &&
-          all(tapply(x.ind[,  names(x)[temp[2L]]], x.ind[colnames(ind)[temp[1]]], function(y) length(unique(na.omit(y)))) > 0L))) {
+      if (isTRUE(length(unique(x.ind[, colnames(ind)[temp[1L]]])) == 2L && all(tapply(x.ind[,  names(x)[temp[2L]]], x.ind[colnames(ind)[temp[1L]]], function(y) length(unique(na.omit(y)))) > 0L))) {
 
-        result.d.upp[i] <- eval(parse(text = paste0(".cohens.d.na.auxiliary(", names(x)[temp[2L]], " ~ ", colnames(ind)[temp[1L]],
-                                                    ", data = x.ind, weighted = weighted, correct = correct)")))
+        result.d.upp[i] <- eval(parse(text = paste0(".cohens.d.na.auxiliary(", names(x)[temp[2L]], " ~ ", colnames(ind)[temp[1L]], ", data = x.ind, weighted = weighted, correct = correct)")))
 
       } else {
 
@@ -287,11 +265,9 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
 
       }
 
-      if (isTRUE(length(unique(x.ind[, colnames(ind)[temp[2L]]])) == 2L &&
-          all(tapply(x.ind[,  names(x)[temp[1L]]], x.ind[colnames(ind)[temp[2]]], function(y) length(unique(na.omit(y)))) > 0L))) {
+      if (isTRUE(length(unique(x.ind[, colnames(ind)[temp[2L]]])) == 2L && all(tapply(x.ind[,  names(x)[temp[1L]]], x.ind[colnames(ind)[temp[2L]]], function(y) length(unique(na.omit(y)))) > 0L))) {
 
-        result.d.low[i] <- eval(parse(text = paste0(".cohens.d.na.auxiliary(", names(x)[temp[1L]], " ~ ", colnames(ind)[temp[2L]],
-                                                    ", data = x.ind, weighted = weighted, correct = correct)")))
+        result.d.low[i] <- eval(parse(text = paste0(".cohens.d.na.auxiliary(", names(x)[temp[1L]], " ~ ", colnames(ind)[temp[2L]], ", data = x.ind, weighted = weighted, correct = correct)")))
 
       } else {
 
@@ -304,7 +280,7 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
     #...................
     ### Cohen's d matrix ####
 
-    d.mat <-  matrix(NA, ncol = ncol(x), nrow = ncol(x), dimnames = list(names(x), names(x)))
+    d.mat <- matrix(NA, ncol = ncol(x), nrow = ncol(x), dimnames = list(names(x), names(x)))
 
     d.mat[rev(upper.tri(d.mat))] <- result.d.upp
     d.mat <- t(d.mat)
@@ -322,9 +298,7 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
                    data = x,
                    model = NULL,
                    model.fit = NULL, model.fit.stand = NULL,
-                   args = list(model = model, estimator = estimator, missing = missing,
-                               tri = tri, weighted = weighted, correct = correct, digits = digits, p.digits = p.digits,
-                               as.na = as.na, write = write, append = append, check = check, output = output),
+                   args = list(model = model, estimator = estimator, missing = missing, tri = tri, weighted = weighted, correct = correct, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
                    result = list(cor = cor.mat, d = d.mat))
 
     class(object) <- "misty.object"
@@ -359,7 +333,7 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
       which(!var.formula %in% colnames(x)) |>
         (\(z) if (isTRUE(length(z) != 0L)) {
 
-          stop(paste0("Variables specified in the argument 'model' were not all found in 'x': ", paste(var.formula[z], collapse = ", ")), call. = FALSE)
+          stop(paste0("Variables specified in the argument 'model' were not all found in 'data': ", paste(var.formula[z], collapse = ", ")), call. = FALSE)
 
         })()
 
@@ -425,9 +399,7 @@ na.auxiliary <- function(..., data = NULL, model = NULL, estimator = c("ML", "ML
                    data = x,
                    model = mod.na,
                    model.fit = mod.na.fit, model.fit.stand = mod.na.fit.stand,
-                   args = list(model = model, estimator = estimator, missing = missing,
-                               tri = tri, weighted = weighted, correct = correct, digits = digits, p.digits = p.digits,
-                               as.na = as.na, write = write, append = append, check = check, output = output),
+                   args = list(model = model, estimator = estimator, missing = missing, tri = tri, weighted = weighted, correct = correct, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
                    result = list(cor = NULL, d = NULL))
 
     class(object) <- "misty.object"

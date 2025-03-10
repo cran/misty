@@ -4,35 +4,31 @@
 #' for one or more than one variable.
 #'
 #' By default, the function displays the absolute and percentage frequencies when
-#' specifying one variable in the argument \code{...}, while the function displays
-#' only the absolute frequencies when more than one variable is specified. The
-#' function displays valid percentage frequencies only in the presence of missing
-#' values and excludes variables with all values missing from the analysis. Note
-#' that it is possible to mix numeric variables, factors, and character variables
-#' in the data frame specified in the argument \code{...}. By default, numeric
-#' variables are rounded to three digits before computing the frequency table.
+#' specifying one variable, while the function displays only the absolute frequencies
+#' when more than one variable is specified. The function displays valid percentage
+#' frequencies only in the presence of missing values and excludes variables with
+#' all values missing from the analysis. Note that it is possible to mix numeric
+#' variables, factors, and character variables in the data frame specified in the
+#' argument \code{data}. By default, numeric variables are rounded to three digits
+#' before computing the frequency table.
 #'
-#' @param ...      a vector, factor, matrix or data frame. Alternatively, an
-#'                 expression indicating the variable names in \code{data} e.g.,
-#'                 \code{freq(x1, x2, x3, data = dat)}. Note that the operators
+#' @param data     a vector, factor, or data frame.
+#' @param ...      an expression indicating the variable names in \code{data},
+#'                 e.g., \code{freq(dat, x1, x2, x3)}. Note that the operators
 #'                 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'                 and \code{!} can also be used to select variables, see 'Details'
 #'                 in the \code{\link{df.subset}} function.
-#' @param data     a data frame when specifying one or more variables in the
-#'                 argument \code{...}. Note that the argument is \code{NULL}
-#'                 when specifying a vector, factor, matrix or data frame for
-#'                 the argument \code{...}.
 #' @param print    a character string indicating which percentage(s) to be printed
 #'                 on the console, i.e., no percentages (\code{"no"}), all percentages
 #'                 (\code{"all"}), percentage frequencies (\code{"print"}), and
 #'                 valid percentage frequencies \code{"v.perc"}). Default setting
-#'                 when specifying one variable in \code{...} is \code{print = "all"},
-#'                 while default setting when specifying more than one variable
-#'                 in \code{...} is \code{print = "no"} unless \code{split = TRUE}.
+#'                 when specifying one variable is \code{print = "all"}, while
+#'                 default setting when specifying more than one variable is
+#'                 \code{print = "no"} unless \code{split = TRUE}.
 #' @param freq     logical: if \code{TRUE} (default), absolute frequencies will
 #'                 be shown on the console.
 #' @param split    logical: if \code{TRUE}, output table is split by variables
-#'                 when specifying more than one variable in \code{...}.
+#'                 when specifying more than one variable in \code{data}.
 #' @param labels   logical: if \code{TRUE} (default), labels for the factor
 #'                 levels will be used.
 #' @param val.col  logical: if \code{TRUE}, values are shown in the columns,
@@ -41,10 +37,10 @@
 #'                 used for rounding numeric variables.
 #' @param exclude  an integer value indicating the maximum number of unique values
 #'                 for variables to be included in the analysis when specifying
-#'                 more than one variable in \code{...} i.e., variables with the
-#'                 number of unique values exceeding \code{exclude} will be
-#'                 excluded from the analysis. It is also possible to specify
-#'                 \code{exclude = FALSE} to include all variables in the analysis.
+#'                 more than one variable, i.e., variables with the number of
+#'                 unique values exceeding \code{exclude} will be excluded from
+#'                 the analysis. It is also possible to specify \code{exclude = FALSE}
+#'                 to include all variables in the analysis.
 #' @param digits   an integer value indicating the number of decimal places to be
 #'                 used for displaying percentages.
 #' @param as.na    a numeric vector indicating user-defined missing values, i.e.
@@ -89,38 +85,40 @@
 #'
 #' @examples
 #' # Example 1: Frequency table for 'cyl'
+#' freq(mtcars, cyl)
+#'
+#' # Alternative specification without using the '...' argument
 #' freq(mtcars$cyl)
 #'
-#' # Alternative specification using the 'data' argument
-#' freq(cyl, data = mtcars)
-#'
 #' # Example 2: Frequency table, values shown in columns
-#' freq(mtcars$cyl, val.col = TRUE)
+#' freq(mtcars, cyl, val.col = TRUE)
 #'
 #' # Example 3: Frequency table, use 3 digit for displaying percentages
-#' freq(mtcars$cyl, digits = 3)
+#' freq(mtcars, cyl, digits = 3)
 #'
 #' # Example 4: Frequency table for 'cyl', 'gear', and 'carb'
+#' freq(mtcars, cyl, gear, carb)
+#'
+#' # Alternative specification without using the '...' argument
 #' freq(mtcars[, c("cyl", "gear", "carb")])
 #'
-#' # Alternative specification using the 'data' argument
-#' freq(cyl, gear, carb, data = mtcars)
-#'
 #' # Example 5: Frequency table, with percentage frequencies
-#' freq(mtcars[, c("cyl", "gear", "carb")], print = "all")
+#' freq(mtcars, cyl, gear, carb, print = "all")
 #'
 #' # Example 6: Frequency table, split output table
-#' freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE)
+#' freq(mtcars, cyl, gear, carb, split = TRUE)
 #'
 #' # Example 7: Frequency table, exclude variables with more than 5 unique values
 #' freq(mtcars, exclude = 5)
 #'
+#' \dontrun{
 #' # Example 8a: Write Results into a text file
-#' freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE, write = "Frequencies.txt")
+#' freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.txt")
 #'
 #' # Example 8b: Write Results into a Excel file
-#' freq(mtcars[, c("cyl", "gear", "carb")], split = TRUE, write = "Frequencies.xlsx")
-freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
+#' freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.xlsx")
+#' }
+freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
                  freq = TRUE, split = FALSE, labels = TRUE, val.col = FALSE,
                  round = 3, exclude = 15, digits = 2, as.na = NULL,
                  write = NULL, append = TRUE, check = TRUE, output = TRUE) {
@@ -129,11 +127,11 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a vector, factor, or data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -142,34 +140,20 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract data
-    x <- data[, .var.names(..., data = data, check.chr = "a vector, factor, matrix or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- as.data.frame(data)
 
   }
-
-  # Check if input 'x' is not a list or an array
-  if (isTRUE((is.list(x) && !is.data.frame(x)) || (is.array(x) && !is.matrix(x)))) { stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.", call. = FALSE) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
-
-  x <- as.data.frame(x)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -192,10 +176,10 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
   # Additional checks
   if (isTRUE(check)) {
 
-    # Check input 'x': All values missing
-    if (isTRUE(all(is.na(x)))) { stop("All values in the vector, matrix or data frame specified in the argument 'x' are missing.", call. = FALSE) }
+    # Check input 'data': All values missing
+    if (isTRUE(all(is.na(x)))) { stop("All values in the vector or data frame specified in the argument 'data' are missing.", call. = FALSE) }
 
-    # Check input 'x': Exclude variables with all missing
+    # Check input 'data': Exclude variables with all missing
     if (isTRUE(length(x) > 1L)) {
 
       x <- vapply(x, function(y) all(is.na(y)), FUN.VALUE = logical(1L)) |>
@@ -293,7 +277,7 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
     }
 
     # Remove labels
-    x <- data.frame(lapply(x, function(y) if (isTRUE(is.factor(y))) as.numeric(y) else y), stringsAsFactors = FALSE)
+    x <- data.frame(lapply(x, function(y) if (isTRUE(is.factor(y))) as.numeric(y) else y))
 
   }
 
@@ -372,7 +356,7 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
       freqtab <- data.frame(Value = c(na.omit(suppressWarnings(iconv(na.omit(names(x.abs)), from = "ISO-8859-1", to = "UTF-8"))), NA),
                             Freq = as.numeric(x.abs),
                             Perc = as.numeric(x.perc),
-                            V.Perc = c(as.numeric(x.v.perc), NA), stringsAsFactors = FALSE)
+                            V.Perc = c(as.numeric(x.v.perc), NA))
 
       # Convert 'Value' in numeric
       if(all(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)", x = na.omit(freqtab$Value)))) {
@@ -386,8 +370,7 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
     ### Values in rows ####
     } else {
 
-      freqtab <- data.frame(matrix(c(x.abs, x.perc, x.v.perc, NA), nrow = 3L, dimnames = list(c ("Freq", "Perc", "V.Perc"), names(x.abs)), byrow = TRUE),
-                            stringsAsFactors = FALSE, check.names = FALSE)
+      freqtab <- data.frame(matrix(c(x.abs, x.perc, x.v.perc, NA), nrow = 3L, dimnames = list(c ("Freq", "Perc", "V.Perc"), names(x.abs)), byrow = TRUE), check.names = FALSE)
 
     }
 
@@ -406,19 +389,19 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
       x.levels <- NULL
 
       # Numeric variables
-      if (isTRUE(any(vapply(x, is.numeric, FUN.VALUE = logical(1))))) {
+      if (isTRUE(any(vapply(x, is.numeric, FUN.VALUE = logical(1L))))) {
 
         x.levels <- c(x.levels, na.omit(sort(unique(unlist(x[, vapply(x, is.numeric, FUN.VALUE = logical(1L))])))))
 
       }
 
       # Factors
-      if (isTRUE(any(vapply(x, is.factor, FUN.VALUE = logical(1))))) {
+      if (isTRUE(any(vapply(x, is.factor, FUN.VALUE = logical(1L))))) {
 
         f.levels <- sort(unique(unname(unlist(sapply(x[, vapply(x, is.factor, FUN.VALUE = logical(1L))], function(y) (as.character(y)))))))
 
         # Factor levels are numbers
-        if (isTRUE(all(unlist(strsplit(f.levels, "")) %in% 0:9))) {
+        if (isTRUE(all(unlist(strsplit(f.levels, "")) %in% 0L:9L))) {
 
           x.levels <- sort(c(x.levels, as.numeric(f.levels)))
 
@@ -451,7 +434,7 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
       # More than one value
       if (isTRUE(is.matrix(x.v.perc))) {
 
-        x.v.perc <- apply(x.v.perc, 2, function(z) prop.table(z) * 100L)
+        x.v.perc <- apply(x.v.perc, 2L, function(z) prop.table(z) * 100L)
 
       # One value
       } else {
@@ -464,13 +447,13 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
       if (!isTRUE(val.col)) {
 
         # Absolute frequencies table
-        abs.freqtab <- data.frame(Value = rownames(x.abs), x.abs, stringsAsFactors = FALSE, row.names = NULL)
+        abs.freqtab <- data.frame(Value = rownames(x.abs), x.abs, row.names = NULL)
 
         # Percentages table
-        perc.freqtab <- data.frame(Value = rownames(x.perc), x.perc, stringsAsFactors = FALSE, row.names = NULL)
+        perc.freqtab <- data.frame(Value = rownames(x.perc), x.perc, row.names = NULL)
 
         # Valid Percentages table
-        v.perc.freqtab <- data.frame(Value = rownames(x.v.perc), x.v.perc, stringsAsFactors = FALSE, row.names = NULL)
+        v.perc.freqtab <- data.frame(Value = rownames(x.v.perc), x.v.perc, row.names = NULL)
 
         # Convert 'Value' in numeric
         if(all(grepl("(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))$)|(^(-|\\+)?((\\.?\\d+)|(\\d+\\.\\d+)|(\\d+\\.?))e(-|\\+)?(\\d+)$)",
@@ -486,16 +469,13 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
       } else {
 
         # Absolute frequencies table
-        abs.freqtab <- data.frame(Var = colnames(x.abs), matrix(t(x.abs), nrow = ncol(x.abs), dimnames = list(NULL, rownames(x.abs))),
-                                  check.names = FALSE, stringsAsFactors = FALSE)
+        abs.freqtab <- data.frame(Var = colnames(x.abs), matrix(t(x.abs), nrow = ncol(x.abs), dimnames = list(NULL, rownames(x.abs))), check.names = FALSE)
 
         # Percentages table
-        perc.freqtab <- data.frame(Var = colnames(x.perc), matrix(t(x.perc), nrow = ncol(x.perc), dimnames = list(NULL, rownames(x.perc))),
-                                   check.names = FALSE, stringsAsFactors = FALSE)
+        perc.freqtab <- data.frame(Var = colnames(x.perc), matrix(t(x.perc), nrow = ncol(x.perc), dimnames = list(NULL, rownames(x.perc))), check.names = FALSE)
 
         # Valid Percentages table
-        v.perc.freqtab <- data.frame(Var = colnames(x.v.perc), matrix(t(x.v.perc), nrow = ncol(x.v.perc), dimnames = list(NULL, rownames(x.v.perc))),
-                                     check.names = FALSE, stringsAsFactors = FALSE)
+        v.perc.freqtab <- data.frame(Var = colnames(x.v.perc), matrix(t(x.v.perc), nrow = ncol(x.v.perc), dimnames = list(NULL, rownames(x.v.perc))), check.names = FALSE)
 
       }
 
@@ -505,8 +485,7 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
     ### split = TRUE ####
     } else {
 
-      freqtab <- lapply(x, function(y) misty::freq(y, labels = labels, val.col = val.col, round = round,
-                                                   as.na = as.na, check = FALSE, output = FALSE)$result)
+      freqtab <- lapply(x, function(y) misty::freq(y, labels = labels, val.col = val.col, round = round, as.na = as.na, check = FALSE, output = FALSE)$result)
     }
 
   }
@@ -518,10 +497,7 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
   object <- list(call = match.call(),
                  type = "freq",
                  data = x,
-                 args = list(print = print, freq = freq, split = split, labels = labels,
-                             val.col = val.col, round = round, digits = digits,
-                             as.na = as.na, write = write, append = append,
-                             check = check, output = output),
+                 args = list(print = print, freq = freq, split = split, labels = labels, val.col = val.col, round = round, digits = digits, as.na = as.na, write = write, append = append, check = check, output = output),
                  result = freqtab)
 
   class(object) <- "misty.object"
@@ -539,7 +515,7 @@ freq <- function(..., data = NULL, print = c("no", "all", "perc", "v.perc"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Message ####
 
-  if (isTRUE(message.split)) { message("Argument 'split' set to FALSE because only one variable was specified in 'x'.") }
+  if (isTRUE(message.split)) { message("Argument 'split' set to FALSE because only one variable was specified in 'data'.") }
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

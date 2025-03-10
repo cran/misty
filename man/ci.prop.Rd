@@ -4,44 +4,38 @@
 \alias{ci.prop}
 \title{(Bootstrap) Confidence Intervals for Proportions}
 \usage{
-ci.prop(..., data = NULL, method = c("wald", "wilson"),
+ci.prop(data, ..., method = c("wald", "wilson"),
         boot = c("none", "perc", "bc", "bca"), R = 1000, seed = NULL,
         alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
-        group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE,
-        digits = 3, as.na = NULL, plot = c("none", "ci", "boot"),
-        point.size = 2.5, point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5,
-        hist = TRUE, binwidth = NULL, bins = NULL, alpha = 0.4, fill = "gray85",
+        group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE, digits = 3,
+        as.na = NULL, plot = c("none", "ci", "boot"), point.size = 2.5,
+        point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5, hist = TRUE,
+        binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85",
         density = TRUE, density.col = "#0072B2", density.linewidth = 0.5,
-        density.linetype = "solid", plot.point = TRUE, point.col = "#CC79A7",
-        point.linewidth = 0.6, point.linetype = "solid", plot.ci = TRUE,
-        ci.col = "black", ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE,
-        intercept = 0.5, linetype = "solid", line.col = "gray65", xlab = NULL,
-        ylab = NULL, xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(),
-        ybreaks = ggplot2::waiver(), axis.title.size = 11, axis.text.size = 10,
+        density.linetype = "solid", point = TRUE, point.col = "#CC79A7",
+        point.linewidth = 0.6, point.linetype = "solid", ci = TRUE, ci.col = "black",
+        ci.linewidth = 0.6, ci.linetype = "dashed",  line = FALSE, intercept = 0.5,
+        linetype = "solid", line.col = "gray65",  xlab = NULL, ylab = NULL,
+        xlim = NULL, ylim = NULL,  xbreaks = ggplot2::waiver(),
+        ybreaks = ggplot2::waiver(),  axis.title.size = 11, axis.text.size = 10,
         strip.text.size = 11, title = NULL, subtitle = NULL, group.col = NULL,
         plot.margin = NA, legend.title = "",
         legend.position = c("right", "top", "left", "bottom", "none"),
         legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-        facet.scales = "free_y", saveplot = NULL, width = NA, height = NA,
+        facet.scales = "free_y", filename = NULL, width = NA, height = NA,
         units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
         check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a numeric vector, matrix or data frame with numeric
-variables with 0 and 1 values, i.e., factors and
-character variables are excluded from \code{x} before
-conducting the analysis. Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{ci.prop(x1, x2, x3, data = dat)}. Note that the
+\item{data}{a numeric vector or data frame with numeric
+variables with 0 and 1 values.}
+
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{ci.prop(dat, x1, x2, x3)}. Note that the
 operators \code{.}, \code{+}, \code{-}, \code{~},
 \code{:}, \code{::}, and \code{!} can also be used
 to select variables, see 'Details' in the
 \code{\link{df.subset}} function.}
-
-\item{data}{a data frame when specifying one or more variables in
-the argument \code{...}. Note that the argument is
-\code{NULL} when specifying a numeric vector, matrix
-or data frame for the argument \code{...}.}
 
 \item{method}{a character string specifying the method for computing
 the confidence interval, must be one of \code{"wald"},
@@ -71,11 +65,11 @@ must be one of \code{"two.sided"} (default),
 level of the interval.}
 
 \item{group}{either a character string indicating the variable name
-of the grouping variable in \code{...} or \code{data},
+of the grouping variable in \code{data},
 or a vector representing the grouping variable.}
 
 \item{split}{either a character string indicating the variable name
-of the split variable in \code{...} or \code{data},
+of the split variable in \code{data},
 or a vector representing the split variable.}
 
 \item{sort.var}{logical: if \code{TRUE}, output table is sorted by
@@ -91,7 +85,7 @@ places to be used.}
 \item{as.na}{a numeric vector indicating user-defined missing
 values, i.e. these values are converted to \code{NA}
 before conducting the analysis. Note that \code{as.na()}
-function is only applied to \code{x}, but not to
+function is only applied to \code{data}, but not to
 \code{group} or \code{split}.}
 
 \item{plot}{a character string indicating the type of the plot
@@ -139,7 +133,7 @@ in the \code{geom_histogram} function for controlling
 the number of bins when plotting bootstrap samples
 (\code{plot = "boot"}).}
 
-\item{alpha}{a numeric value between 0 and 1 for specifying the
+\item{hist.alpha}{a numeric value between 0 and 1 for specifying the
 \code{alpha} argument in the \code{geom_histogram}
 function for controlling the opacity of the bars
 when plotting bootstrap samples (\code{plot = "boot"}).}
@@ -172,7 +166,7 @@ function controlling the line type of the density
 curves when plotting bootstrap samples
 (\code{plot = "boot"}).}
 
-\item{plot.point}{logical: if \code{TRUE} (default), vertical lines
+\item{point}{logical: if \code{TRUE} (default), vertical lines
 representing the point estimate of the proportion
 are drawn when plotting bootstrap samples
 (\code{plot = "boot"}).}
@@ -196,7 +190,7 @@ function controlling the line type of the vertical
 line displaying proportions when plotting bootstrap
 samples (\code{plot = "boot"}).}
 
-\item{plot.ci}{logical: if \code{TRUE} (default), vertical lines
+\item{ci}{logical: if \code{TRUE} (default), vertical lines
 representing the bootstrap confidence intervals of
 proportions are drawn when plotting bootstrap samples
 (\code{plot = "boot"}).}
@@ -351,7 +345,7 @@ scales shared across facets, i.e., \code{"fixed"},
 (default) when specifying a split variable using
 the argument \code{split}.}
 
-\item{saveplot}{a character string indicating the \code{filename}
+\item{filename}{a character string indicating the \code{filename}
 argument including the file extension in the \code{ggsave}
 function. Note that one of \code{".eps"}, \code{".ps"},
 \code{".tex"}, \code{".pdf"} (default),
@@ -431,97 +425,94 @@ by Angelo Canty and Brain Ripley (2024).
 #----------------------------------------------------------------------------
 # Confidence Interval (CI) forproportions
 
-# Example 1a: Two-Sided 95\% CI
+# Example 1a: Two-Sided 95% CI
+ci.prop(mtcars, vs, am)
+
+# Alternative specification without using the '...' argument
 ci.prop(mtcars[, c("vs", "am")])
 
-# Alternative specification
-ci.prop(vs, am, data = mtcars)
-
-# Example 1b: One-Sided 95\% CI using Wald method
-ci.prop(mtcars[, c("vs", "am")], method = "wald", alternative = "less")
-
-# Alternative specification
-ci.prop(vs, am, data = mtcars, method = "wald", alternative = "less")
+# Example 1b: One-Sided 95% CI using Wald method
+ci.prop(mtcars, vs, am, method = "wald", alternative = "less")
 
 \dontrun{
 #----------------------------------------------------------------------------
 # Bootstrap Confidence Interval (CI)
 
 # Example 2a: Bias-corrected (BC) percentile bootstrap CI
-ci.prop(mtcars[, c("vs", "am")], boot = "bc")
+ci.prop(mtcars, vs, am, boot = "bc")
 
 # Example 2b: Bias-corrected and accelerated (BCa) bootstrap CI,
 # 5000 bootstrap replications, set seed of the pseudo-random number generator
-ci.prop(mtcars[, c("vs", "am")], boot = "bca", R = 5000, seed = 123)
+ci.prop(mtcars, vs, am, boot = "bca", R = 5000, seed = 123)
 
 #----------------------------------------------------------------------------
 # Grouping and Split Variable
 
 # Example 3a: Grouping variable
-ci.prop(vs, data = mtcars, group = "am")
+ci.prop(mtcars, vs, group = "am")
 
-# Alternative specification
-ci.prop(mtcars[, "vs"], group = mtcars$am)
+# Alternative specification without using the '...' argument
+ci.prop(mtcars$vs, group = mtcars$am)
 
 # Example 3b: Split variable
-ci.prop(vs, data = mtcars, split = "am")
+ci.prop(mtcars, vs, split = "am")
 
-# Alternative specification
-ci.prop(mtcars[, "vs"], split = mtcars$am)
+# Alternative specification without using the '...' argument
+ci.prop(mtcars$vs, split = mtcars$am)
 
 # Example 3c: Grouping and split variable
-ci.prop(vs, data = mtcars, group = "am", split = "cyl")
+ci.prop(mtcars, vs, group = "am", split = "cyl")
 
-# Alternative specification
-ci.prop(mtcars$vs,  group = mtcars$am, split = mtcars$cyl)
+# Alternative specification without using the '...' argument
+ci.prop(mtcars$vs, group = mtcars$am, split = mtcars$cyl)
 
 #----------------------------------------------------------------------------
 # Write Output
 
 # Example 4a: Text file
-ci.prop(mtcars[, c("vs", "am")], write = "CI_Prop_Text.txt")
+ci.prop(mtcars, vs, am, write = "CI_Prop_Text.txt")
 
 # Example 4b: Excel file
-ci.prop(mtcars[, c("vs", "am")], write = "CI_Prop_Excel.xlsx")
+ci.prop(mtcars, vs, am, write = "CI_Prop_Excel.xlsx")
 
 #----------------------------------------------------------------------------
 # Plot Confidence Intervals
 
-# Example 5a: Two-Sided 95\% CI
-ci.prop(vs, am, data = mtcars, plot = "ci")
+# Example 5a: Two-Sided 95% CI
+ci.prop(mtcars, vs, am, plot = "ci")
 
 # Example 5b: Grouping variable
-ci.prop(vs, am, data = mtcars, group = "am", plot = "ci")
+ci.prop(mtcars, vs, am, group = "am", plot = "ci")
 
 # Example 5c: Split variable
-ci.prop(vs, am, data = mtcars, split = "am", plot = "ci")
+ci.prop(mtcars, vs, am, split = "am", plot = "ci")
 
 # Example 5d: Save plot as PDF file
-ci.prop(vs, am, data = mtcars, plot = "ci", saveplot = "CI_Prop.pdf",
+ci.prop(mtcars, vs, am, plot = "ci", saveplot = "CI_Prop.pdf",
         width = 9, height = 6)
 
 # Example 5e: Save plot as PNG file
-ci.prop(vs, am, data = mtcars, plot = "ci", saveplot = "CI_Prop.png",
+ci.prop(mtcars, vs, am, plot = "ci", saveplot = "CI_Prop.png",
         width = 9, height = 6)
 
 #----------------------------------------------------------------------------
 # Plot Bootstrap Samples
 
-# Example 6a: Two-Sided 95\% CI
-ci.prop(vs, am, data = mtcars, boot = "bc", plot = "boot")
+# Example 6a: Two-Sided 95% CI
+ci.prop(mtcars, vs, am, boot = "bc", plot = "boot")
 
 # Example 6b: Grouping variable
-ci.prop(vs, am, data = mtcars, group = "am", boot = "bc", plot = "boot")
+ci.prop(mtcars, vs, am, group = "am", boot = "bc", plot = "boot")
 
 # Example 6c: Split variable
-ci.prop(vs, am, data = mtcars, split = "am", boot = "bc", plot = "boot")
+ci.prop(mtcars, vs, am, split = "am", boot = "bc", plot = "boot")
 
 # Example 6d: Save plot as PDF file
-ci.prop(vs, am, data = mtcars, boot = "bc", plot = "boot",
+ci.prop(mtcars, vs, am, boot = "bc", plot = "boot",
         saveplot = "CI_Prop_Boot.pdf", width = 9, height = 6)
 
 # Example 6e: Save plot as PNG file
-ci.prop(vs, am, data = mtcars, boot = "bc", plot = "boot",
+ci.prop(mtcars, vs, am, boot = "bc", plot = "boot",
         saveplot = "CI_Prop_Boot.png", width = 9, height = 6)
 }
 }

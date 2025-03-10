@@ -4,27 +4,23 @@
 \alias{multilevel.icc}
 \title{Intraclass Correlation Coefficient, ICC(1) and ICC(2)}
 \usage{
-multilevel.icc(..., data = NULL, cluster, type = c("1a", "1b", "2"),
+multilevel.icc(data, ..., cluster, type = c("1a", "1b", "2"),
                method = c("aov", "lme4", "nlme"), REML = TRUE,
                as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{...}{a numeric vector, matrix, or data frame. Alternatively, an
-expression indicating the variable names in \code{data}. Note
-that the operators \code{.}, \code{+}, \code{-}, \code{~},
+\item{data}{a numeric vector or data frame.}
+
+\item{...}{an expression indicating the variable names in \code{data}.
+Note that the operators \code{.}, \code{+}, \code{-}, \code{~},
 \code{:}, \code{::}, and \code{!} can also be used to select
 variables, see 'Details' in the \code{\link{df.subset}}
 function.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a numeric vector, matrix, or data frame for
-the argument \code{...}.}
-
 \item{cluster}{a character string indicating the name of the cluster
-variable in \code{...} or \code{data} for two-level data,
+variable in \code{data} for two-level data,
 a character vector indicating the names of the cluster
-variables in \code{...} for three-level data, or a vector
+variables in \code{data} for three-level data, or a vector
 or data frame representing the nested grouping structure
 (i.e., group or cluster variables). Alternatively, a
 character string or character vector indicating the variable
@@ -153,40 +149,40 @@ where \eqn{n_j} is the average group size at Level 2 and \eqn{n_j} is the averag
 data("Demo.twolevel", package = "lavaan")
 
 #----------------------------------------------------------------------------
-# Two-Level Models
+# Two-Level Data
 
 #..........
 # Cluster variable specification
 
-# Example 1a: Cluster variable 'cluster' in '...'
+# Example 1a: Specification using the argument '...'
+multilevel.icc(Demo.twolevel, y1, cluster = "cluster")
+
+# Example 1b: Alternative specification with cluster variable 'cluster' in 'data'
 multilevel.icc(Demo.twolevel[, c("y1", "cluster")], cluster = "cluster")
 
-# Example 1b: Cluster variable 'cluster' not in '...'
+# Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
-
-# Example 1c: Alternative specification using the 'data' argument
-multilevel.icc(y1, data = Demo.twolevel, cluster = "cluster")
 
 #..........
 
 # Example 2: ICC(1) for 'y1'
-multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
+multilevel.icc(Demo.twolevel, y1, cluster = "cluster")
 
 # Example 3: ICC(2)
-multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, type = "2")
+multilevel.icc(Demo.twolevel, y1, cluster = "cluster", type = "2")
 
 # Example 4: ICC(1)
 # use lme() function in the lme4 package to estimate ICC
-multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, method = "nlme")
+multilevel.icc(Demo.twolevel, y1, cluster = "cluster", method = "nlme")
 
-# Example 5a: ICC(1) for 'y1', 'y2', and 'y3'
+# Example 5: ICC(1) for 'y1', 'y2', and 'y3'
+multilevel.icc(Demo.twolevel, y1, y2, y3, cluster = "cluster")
+
+# Alternative specification without using the '...' argument
 multilevel.icc(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
 
-# Example 5b: Alternative specification using the 'data' argument
-multilevel.icc(y1:y3, data = Demo.twolevel, cluster = "cluster")
-
 #----------------------------------------------------------------------------
-# Three-Level Models
+# Three-Level Data
 
 # Create arbitrary three-level data
 Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
@@ -195,29 +191,27 @@ Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
 #..........
 # Cluster variable specification
 
-# Example 6a: Cluster variables 'cluster' in '...'
+# Example 6a: Specification using the argument '...'
+multilevel.icc(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"))
+
+# Example 6b: Alternative specification without using the argument '...'
 multilevel.icc(Demo.threelevel[, c("y1", "cluster3", "cluster2")],
                cluster = c("cluster3", "cluster2"))
 
-# Example 6b: Cluster variables 'cluster' not in '...'
+# Example 6c: Alternative specification with cluster variables 'cluster' not in 'data'
 multilevel.icc(Demo.threelevel$y1, cluster = Demo.threelevel[, c("cluster3", "cluster2")])
 
-# Example 6c: Alternative specification using the 'data' argument
-multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
-
-#..........
+#----------------------------------------------------------------------------
 
 # Example 7a: ICC(1), proportion of variance at Level 2 and Level 3
-multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
+multilevel.icc(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"))
 
 # Example 7b: ICC(1), expected correlation between two randomly chosen elements
 # in the same group
-multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"),
-               type = "1b")
+multilevel.icc(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "1b")
 
 # Example 7c: ICC(2)
-multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"),
-type = "2")
+multilevel.icc(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "2")
 }
 \references{
 Hox, J., Moerbeek, M., & van de Schoot, R. (2018). \emph{Multilevel analysis:

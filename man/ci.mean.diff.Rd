@@ -18,8 +18,8 @@ ci.mean.diff(x, ...)
 \method{ci.mean.diff}{formula}(formula, data, sigma = NULL, sigma2 = NULL,
              var.equal = FALSE, alternative = c("two.sided", "less", "greater"),
              conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
-             na.omit = FALSE, digits = 2, as.na = NULL, write = NULL, append = TRUE,
-             check = TRUE, output = TRUE, ...)
+             na.omit = FALSE, digits = 2, as.na = NULL, write = NULL,
+             append = TRUE, check = TRUE, output = TRUE, ...)
 }
 \arguments{
 \item{x}{a numeric vector of data values.}

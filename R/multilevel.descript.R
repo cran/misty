@@ -4,26 +4,22 @@
 #' multilevel data, e.g. average cluster size, variance components, intraclass
 #' correlation coefficient, design effect, and effective sample size.
 #'
-#' @param ...         a numeric vector, matrix, or data frame. Alternatively, an
-#'                    expression indicating the variable names in \code{data}.
+#' @param data        a numeric vector or data frame.
+#' @param ...         an expression indicating the variable names in \code{data}.
 #'                    Note that the operators \code{.}, \code{+}, \code{-},
 #'                    \code{~}, \code{:}, \code{::}, and \code{!} can also be
 #'                    used to select variables, see 'Details' in the
 #'                    \code{\link{df.subset}} function.
-#' @param data        a data frame when specifying one or more variables in the
-#'                    argument \code{...}. Note that the argument is \code{NULL}
-#'                    when specifying a numeric vector, matrix, or data frame for
-#'                    the argument \code{...}.
 #' @param cluster     a character string indicating the name of the cluster
-#'                    variable in \code{...} or \code{data} for two-level data,
-#'                    a character vector indicating the names of the cluster
-#'                    variables in \code{...} for three-level data, or a vector
-#'                    or data frame representing the nested grouping structure
-#'                    (i.e., group or cluster variables). Alternatively, a
-#'                    character string or character vector indicating the variable
-#'                    name(s) of the cluster variable(s) in \code{data}. Note that
-#'                    the cluster variable at Level 3 come first in a three-level
-#'                    model, i.e., \code{cluster = c("level3", "level2")}.
+#'                    variable in \code{data} for two-level data, a character
+#'                    vector indicating the names of the cluster variables in
+#'                    \code{data} for three-level data, or a vector or data frame
+#'                    representing the nested grouping structure (i.e., group or
+#'                    cluster variables). Alternatively, a character string or
+#'                    character vector indicating the variable name(s) of the
+#'                    cluster variable(s) in \code{data}. Note that the cluster
+#'                    variable at Level 3 come first in a three-level model, i.e.,
+#'                    \code{cluster = c("level3", "level2")}.
 #' @param type        a character string indicating the type of intraclass
 #'                    correlation coefficient, i.e., \code{type = "1a"} (default)
 #'                    for ICC(1) representing the proportion of variance at Level
@@ -55,7 +51,7 @@
 #' @param as.na       a numeric vector indicating user-defined missing values,
 #'                    i.e. these values are converted to \code{NA} before conducting
 #'                    the analysis. Note that \code{as.na()} function is only applied
-#'                    to \code{x} but not to \code{cluster}.
+#'                    to \code{data} but not to \code{cluster}.
 #' @param write       a character string naming a file for writing the output into
 #'                    either a text file with file extension \code{".txt"} (e.g.,
 #'                    \code{"Output.txt"}) or Excel file with file extension
@@ -142,7 +138,7 @@
 #' entries:
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
-#' \item{\code{data}}{data frame specified in \code{...} including the cluster
+#' \item{\code{data}}{data frame specified in \code{data} including the cluster
 #'                    variable(s) specified in \code{cluster}}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
@@ -167,6 +163,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
@@ -176,36 +173,36 @@
 #' #..........
 #' # Cluster variable specification
 #'
-#' # Example 1a: Cluster variable 'cluster'
+#' # Example 1a: Specification using the argument '...'
+#' multilevel.descript(Demo.twolevel, y1, cluster = "cluster")
+#'
+#' # Example 1b: Alternative specification with  cluster variable 'cluster' in 'data'
 #' multilevel.descript(Demo.twolevel[, c("y1", "cluster")], cluster = "cluster")
 #'
-#' # Example 1b: Cluster variable 'cluster' not in '...'
+#' # Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 #' multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
-#'
-#' # Alternative specification using the 'data' argument
-#' multilevel.descript(y1, data = Demo.twolevel, cluster = "cluster")
 #'
 #' #---------------------------
 #'
 #' # Example 2: Multilevel descriptive statistics for 'y1'
-#' multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
+#' multilevel.descript(Demo.twolevel, y1, cluster = "cluster")
 #'
 #' # Example 3: Multilevel descriptive statistics, print variance and standard deviation
-#' multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, print = "all")
+#' multilevel.descript(Demo.twolevel, y1, cluster = "cluster", print = "all")
 #'
 #' # Example 4: Multilevel descriptive statistics, print ICC with 5 digits
-#' multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, icc.digits = 5)
+#' multilevel.descript(Demo.twolevel, y1, cluster = "cluster", icc.digits = 5)
 #'
 #' # Example 5: Multilevel descriptive statistics
 #' # use lme() function in the nlme package to estimate ICC
-#' multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, method = "nlme")
+#' multilevel.descript(Demo.twolevel, y1, cluster = "cluster", method = "nlme")
 #'
 #' # Example 6a: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
-#' multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-#'                       cluster = Demo.twolevel$cluster)
+#' multilevel.descript(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster")
 #'
-#' # Alternative specification using the 'data' argument
-#' multilevel.descript(y1:y3, w1, w2, data = Demo.twolevel, cluster = "cluster")
+#' # Alternative specification without using the '...' argument
+#' multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
+#'                     cluster = Demo.twolevel$cluster)
 #'
 #' #----------------------------------------------------------------------------
 #' # Three-Level Data
@@ -217,36 +214,34 @@
 #' #..........
 #' # Cluster variable specification
 #'
-#' # Example 7a: Cluster variables 'cluster' in '...'
+#' # Example 7a: Specification using the argument '...'
+#' multilevel.descript(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"))
+#'
+#' # Example 7b: Alternative specification without using the argument '...'
 #' multilevel.descript(Demo.threelevel[, c("y1", "cluster3", "cluster2")],
 #'                     cluster = c("cluster3", "cluster2"))
 #'
-#' # Example 7b: Cluster variables 'cluster' not in '...'
-#' multilevel.descript(Demo.threelevel$y1, cluster = Demo.threelevel[, c("cluster3", "cluster2")])
-#'
-#' # Alternative specification using the 'data' argument
-#' multilevel.descript(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
+#' # Example 7c: Alternative specification with cluster variables 'cluster' not in 'data'
+#' multilevel.descript(Demo.threelevel$y1,
+#'                     cluster = Demo.threelevel[, c("cluster3", "cluster2")])
 #'
 #' #----------------------------------------------------------------------------
 #'
 #' # Example 8: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
-#' multilevel.descript(y1:y3, w1, w2, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
+#' multilevel.descript(Demo.threelevel, y1:y3, w1, w2, cluster = c("cluster3", "cluster2"))
 #'
 #' #----------------------------------------------------------------------------
 #' # Write Results
 #'
 #' # Example 9a: Write Results into a text file
-#' multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-#'                     cluster = Demo.twolevel$cluster, write = "Multilevel_Descript.txt")
+#' multilevel.descript(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
+#'                     write = "Multilevel_Descript.txt")
 #'
 #' # Example 9b: Write Results into a Excel file
-#' multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-#'                     cluster = Demo.twolevel$cluster, write = "Multilevel_Descript.xlsx")
-#'
-#' result <- multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-#'                               cluster = Demo.twolevel$cluster, output = FALSE)
-#' write.result(result, "Multilevel_Descript.xlsx")
-multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
+#' multilevel.descript(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
+#'                     write = "Multilevel_Descript.xlsx")
+#' }
+multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
                                 method = c("aov", "lme4", "nlme"), print = c("all", "var", "sd"),
                                 REML = TRUE, digits = 2, icc.digits = 3, as.na = NULL,
                                 write = NULL, append = TRUE, check = TRUE, output = TRUE) {
@@ -255,11 +250,11 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
@@ -274,13 +269,10 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract data
-    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- data[,  .var.names(..., data = data, cluster = cluster)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Cluster variable
     cluster <- data[, cluster]
@@ -290,23 +282,22 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- as.data.frame(cluster) } }
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Convert 'data' as tibble into data frame
+    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
 
     # Data
-    if (isTRUE(!is.null(var.group$data)))  { x <- var.group$data }
+    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
 
     # Cluster variable
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
+
+  # Convert 'cluster' as tibble into data frame
+  if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unname(unlist(cluster)) } else { cluster <- as.data.frame(cluster) } }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Cluster variables ####
@@ -933,7 +924,7 @@ multilevel.descript <- function(..., data = NULL, cluster, type = c("1a", "1b"),
   ## More than one variable ####
   } else {
 
-    object <- apply(x, 2L, function(y) misty::multilevel.descript(y, data = NULL, cluster = cluster, method = method,
+    object <- apply(x, 2L, function(y) misty::multilevel.descript(y, cluster = cluster, method = method,
                                                                   REML = REML, digits = digits, icc.digits = icc.digits,
                                                                   as.na = NULL, check = FALSE, output = FALSE))
 

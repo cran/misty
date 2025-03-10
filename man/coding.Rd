@@ -4,22 +4,18 @@
 \alias{coding}
 \title{Coding Categorical Variables}
 \usage{
-coding(..., data = NULL,
+coding(data, ...,
        type = c("dummy", "simple", "effect", "weffect", "repeat",
                 "fhelm", "rhelm", "poly"), base = NULL,
        name = c("dum.", "sim.", "eff.", "weff.", "rep.", "fhelm.", "rhelm.", "poly."),
        append = TRUE, as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{...}{a numeric vector with integer values, character vector or factor
-Alternatively, an expression indicating the variable name in
-\code{data}. Note that the function can only deal with one
-categorical variable.}
+\item{data}{a numeric vector with integer values, character vector or factor.}
 
-\item{data}{a data frame when specifying a variable in the argument \code{...}.
-Note that the argument is \code{NULL} when specifying a numeric
-vector with integer values, character vector or factor numeric
-vector for the argument \code{...}.}
+\item{...}{an expression indicating the variable name in \code{data},
+e.g., \code{coding(dat, x)}. Note that the function can only
+deal with one categorical variable.}
 
 \item{type}{a character string indicating the type of coding, i.e.,
 \code{dummy} (default) for dummy coding, \code{simple} for
@@ -138,26 +134,26 @@ function from the \pkg{faux} package for reverse Helmert coding, and the
 polynomial coding.
 }
 \examples{
-# Example 1a: Dummy coding for 'gear', baseline group = 3
-coding(gear, data = mtcars)
+# Example 1: Dummy coding for 'gear', baseline group = 3
+coding(mtcars, gear)
 
-# Example 1b: Alternative specification without using the 'data' argument
+# Alternative specification without using the '...' argument
 coding(mtcars$gear)
 
 # Example 2: Dummy coding for 'gear', baseline group = 4
-coding(gear, data = mtcars, base = 4)
+coding(mtcars, gear, base = 4)
 
 # Example 3: Effect coding for 'gear', omitted group = 3
-coding(gear, data = mtcars, type = "effect")
+coding(mtcars, gear, type = "effect")
 
 # Example 3: Effect coding for 'gear', omitted group = 4
-coding(gear, data = mtcars, type = "effect", base = 4)
+coding(mtcars, gear, type = "effect", base = 4)
 
 # Example 4a: Dummy-coded variable names with prefix "gear3."
-coding(gear, data = mtcars, name = "gear3.")
+coding(mtcars, gear, name = "gear3.")
 
 # Example 4b: Dummy-coded variables named "gear_4vs3" and "gear_5vs3"
-coding(gear, data = mtcars, name = c("gear_4vs3", "gear_5vs3"))
+coding(mtcars, gear, name = c("gear_4vs3", "gear_5vs3"))
 }
 \seealso{
 \code{\link{rec}}, \code{\link{item.reverse}}

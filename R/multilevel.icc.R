@@ -5,26 +5,21 @@
 #' ICC(2), i.e., reliability of aggregated variables in a two-level and
 #' three-level model.
 #'
-#' @param ...     a numeric vector, matrix, or data frame. Alternatively, an
-#'                expression indicating the variable names in \code{data}. Note
-#'                that the operators \code{.}, \code{+}, \code{-}, \code{~},
+#' @param data    a numeric vector or data frame.
+#' @param ...     an expression indicating the variable names in \code{data}.
+#'                Note that the operators \code{.}, \code{+}, \code{-}, \code{~},
 #'                \code{:}, \code{::}, and \code{!} can also be used to select
 #'                variables, see 'Details' in the \code{\link{df.subset}}
 #'                function.
-#' @param data    a data frame when specifying one or more variables in the
-#'                argument \code{...}. Note that the argument is \code{NULL}
-#'                when specifying a numeric vector, matrix, or data frame for
-#'                the argument \code{...}.
 #' @param cluster a character string indicating the name of the cluster
-#'                variable in \code{...} or \code{data} for two-level data,
-#'                a character vector indicating the names of the cluster
-#'                variables in \code{...} for three-level data, or a vector
-#'                or data frame representing the nested grouping structure
-#'                (i.e., group or cluster variables). Alternatively, a
-#'                character string or character vector indicating the variable
-#'                name(s) of the cluster variable(s) in \code{data}. Note that
-#'                the cluster variable at Level 3 come first in a three-level
-#'                model, i.e., \code{cluster = c("level3", "level2")}.
+#'                variable in \code{data} for two-level data, a character vector
+#'                indicating the names of the cluster variables in \code{data}
+#'                for three-level data, or a vector or data frame representing
+#'                the nested grouping structure (i.e., group or cluster variables).
+#'                Alternatively, a character string or character vector indicating
+#'                the variable name(s) of the cluster variable(s) in \code{data}.
+#'                Note that the cluster variable at Level 3 come first in a
+#'                three-level model, i.e., \code{cluster = c("level3", "level2")}.
 #' @param type    a character string indicating the type of intraclass correlation
 #'                coefficient, i.e., \code{type = "1a"} (default) for ICC(1) and
 #'                \code{type = "2"} for ICC(2) when specifying a two-level model
@@ -50,7 +45,7 @@
 #' @param as.na   a numeric vector indicating user-defined missing values,
 #'                i.e. these values are converted to \code{NA} before conducting
 #'                the analysis. Note that \code{as.na()} function is only applied
-#'                to \code{...} but not to \code{cluster}.
+#'                to \code{data} but not to \code{cluster}.
 #' @param check   logical: if \code{TRUE} (default), argument specification is
 #'                checked.
 #'
@@ -160,32 +155,32 @@
 #' #..........
 #' # Cluster variable specification
 #'
-#' # Example 1a: Cluster variable 'cluster' in '...'
+#' # Example 1a: Specification using the argument '...'
+#' multilevel.icc(Demo.twolevel, y1, cluster = "cluster")
+#'
+#' # Example 1b: Alternative specification with cluster variable 'cluster' in 'data'
 #' multilevel.icc(Demo.twolevel[, c("y1", "cluster")], cluster = "cluster")
 #'
-#' # Example 1b: Cluster variable 'cluster' not in '...'
+#' # Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 #' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
-#'
-#' # Alternative specification using the 'data' argument
-#' multilevel.icc(y1, data = Demo.twolevel, cluster = "cluster")
 #'
 #' #..........
 #'
 #' # Example 2: ICC(1) for 'y1'
-#' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
+#' multilevel.icc(Demo.twolevel, y1, cluster = "cluster")
 #'
 #' # Example 3: ICC(2)
-#' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, type = "2")
+#' multilevel.icc(Demo.twolevel, y1, cluster = "cluster", type = "2")
 #'
 #' # Example 4: ICC(1)
 #' # use lme() function in the lme4 package to estimate ICC
-#' multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster, method = "nlme")
+#' multilevel.icc(Demo.twolevel, y1, cluster = "cluster", method = "nlme")
 #'
 #' # Example 5: ICC(1) for 'y1', 'y2', and 'y3'
-#' multilevel.icc(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
+#' multilevel.icc(Demo.twolevel, y1, y2, y3, cluster = "cluster")
 #'
-#' # Alternative specification using the 'data' argument
-#' multilevel.icc(y1:y3, data = Demo.twolevel, cluster = "cluster")
+#' # Alternative specification without using the '...' argument
+#' multilevel.icc(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
 #'
 #' #----------------------------------------------------------------------------
 #' # Three-Level Data
@@ -197,30 +192,28 @@
 #' #..........
 #' # Cluster variable specification
 #'
-#' # Example 6a: Cluster variables 'cluster' in '...'
+#' # Example 6a: Specification using the argument '...'
+#' multilevel.icc(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"))
+#'
+#' # Example 6b: Alternative specification without using the argument '...'
 #' multilevel.icc(Demo.threelevel[, c("y1", "cluster3", "cluster2")],
 #'                cluster = c("cluster3", "cluster2"))
 #'
-#' # Example 6b: Cluster variables 'cluster' not in '...'
+#' # Example 6c: Alternative specification with cluster variables 'cluster' not in 'data'
 #' multilevel.icc(Demo.threelevel$y1, cluster = Demo.threelevel[, c("cluster3", "cluster2")])
-#'
-#' # Alternative specification using the 'data' argument
-#' multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
 #'
 #' #----------------------------------------------------------------------------
 #'
 #' # Example 7a: ICC(1), proportion of variance at Level 2 and Level 3
-#' multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"))
+#' multilevel.icc(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"))
 #'
 #' # Example 7b: ICC(1), expected correlation between two randomly chosen elements
 #' # in the same group
-#' multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"),
-#'                type = "1b")
+#' multilevel.icc(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "1b")
 #'
 #' # Example 7c: ICC(2)
-#' multilevel.icc(y1, data = Demo.threelevel, cluster = c("cluster3", "cluster2"),
-#'                type = "2")
-multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
+#' multilevel.icc(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "2")
+multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
                            method = c("aov", "lme4", "nlme"), REML = TRUE,
                            as.na = NULL, check = TRUE) {
 
@@ -228,11 +221,11 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
@@ -247,13 +240,10 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract data
-    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- data[,  .var.names(..., data = data, cluster = cluster)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Cluster variable
     cluster <- data[, cluster]
@@ -263,12 +253,8 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- data.frame(x) } }
-    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- data.frame(cluster) } }
+    # Convert 'data' as tibble into data frame
+    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -278,6 +264,27 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
 
     # Cluster variable
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
+
+  }
+
+  # Convert 'cluster' as tibble into data frame
+  if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unname(unlist(cluster)) } else { cluster <- as.data.frame(cluster) } }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Cluster variables ####
+
+  # Two cluster variables
+  if (isTRUE(ncol(as.data.frame(cluster)) == 2L)) {
+
+    l3.cluster <- cluster[, 1L]
+    l2.cluster <- cluster[, 2L]
+
+    no.clust <- "two"
+
+    # One cluster variables
+  } else {
+
+    no.clust <- "one"
 
   }
 
@@ -419,7 +426,7 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
           } else if (isTRUE(type == "2")) {
 
             # Intraclass correlation coefficient, ICC(2)
-            object <- var.u / (var.u + var.r / mean(table(cluster)))
+            object <- var.u / ( (var.u + var.r) / mean(table(cluster)))
 
           }
 
@@ -488,20 +495,20 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
         } else if (isTRUE(type == "1b")) {
 
           icc.l3 <- var.v / var.total
-          icc.l2 <- var.v + var.u / var.total
+          icc.l2 <- (var.v + var.u) / var.total
 
         # ICC(2)
         } else if (isTRUE(type == "2")) {
 
           # Average cluster size
           cluster.size.l2 <- mean(table(l2.cluster))
-          cluster.size.l3 <- mean(table(cluster[which(!duplicated(cluster[, 2])), 1L]))
+          cluster.size.l3 <- mean(table(cluster[which(!duplicated(cluster[, 2L])), 1L]))
 
           # Formula 10.25, Hox et al. (2018, p. 185) and Formula 8.8, Raudenbush and Bryk (2002, p. 230)
-          icc.l3 <- var.v / (var.v + var.u / cluster.size.l3 + var.r / (cluster.size.l2 * cluster.size.l3))
+          icc.l3 <- var.v / (((var.v + var.u) / cluster.size.l3) + (var.r / (cluster.size.l2 * cluster.size.l3)))
 
           # Formula 10.27, Hox et al. (2018, p. 186)
-          icc.l2 <- var.u / (var.u + var.r / cluster.size.l2)
+          icc.l2 <- var.u / (var.u + (var.r / cluster.size.l2))
 
         }
 
@@ -533,8 +540,7 @@ multilevel.icc <- function(..., data = NULL, cluster, type = c("1a", "1b", "2"),
   ## More than one dependent variable ####
   } else {
 
-    object <- sapply(x, function(y) misty::multilevel.icc(y, data = NULL, cluster = cluster, type = type, method = method,
-                                                          REML = REML, as.na = NULL, check = FALSE))
+    object <- sapply(x, function(y) misty::multilevel.icc(y, cluster = cluster, type = type, method = method, REML = REML, as.na = NULL, check = FALSE))
 
   }
 

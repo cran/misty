@@ -4,12 +4,12 @@
 \alias{df.check}
 \title{Data Check}
 \usage{
-df.check(x, print = c("dim", "names", "head", "tail"), n = 4,
+df.check(data, print = c("dim", "names", "head", "tail"), n = 4,
          digits = 3, width = 20, row.names = TRUE, row.names.col = "gray2",
          message = TRUE, message.col = "b.blue", check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a data frame.}
+\item{data}{a data frame.}
 
 \item{print}{a character string or character vector indicating which
 results to show on the console, i.e., \code{"dim"}, for

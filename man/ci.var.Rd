@@ -5,65 +5,61 @@
 \alias{ci.sd}
 \title{(Bootstrap) Confidence Intervals for Variances and Standard Deviations}
 \usage{
-ci.var(..., data = NULL, method = c("chisq", "bonett"),
+ci.var(data, ..., method = c("chisq", "bonett"),
        boot = c("none", "perc", "bc", "bca"), R = 1000, seed = NULL,
-       alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
-       group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE, digits = 2,
-       as.na = NULL, plot = c("none", "ci", "boot"),
-       point.size = 2.5, point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5,
-       hist = TRUE, binwidth = NULL, bins = NULL, alpha = 0.4, fill = "gray85",
-       density = TRUE, density.col = "#0072B2", density.linewidth = 0.5,
-       density.linetype = "solid", plot.point = TRUE, point.col = "#CC79A7",
-       point.linewidth = 0.6, point.linetype = "solid", plot.ci = TRUE,
-       ci.col = "black", ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE,
-       intercept = 0, linetype = "solid", line.col = "gray65", xlab = NULL,
-       ylab = NULL, xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(),
-       ybreaks = ggplot2::waiver(), axis.title.size = 11, axis.text.size = 10,
-       strip.text.size = 11, title = NULL, subtitle = NULL, group.col = NULL,
-       plot.margin = NA, legend.title = "",
+       alternative = c("two.sided", "less", "greater"),
+       conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
+       na.omit = FALSE, digits = 2, as.na = NULL,
+       plot = c("none", "ci", "boot"), point.size = 2.5, point.shape = 19,
+       errorbar.width = 0.3, dodge.width = 0.5, hist = TRUE,
+       binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85", density = TRUE,
+       density.col = "#0072B2", density.linewidth = 0.5, density.linetype = "solid",
+       point = TRUE, point.col = "#CC79A7", point.linewidth = 0.6,
+       point.linetype = "solid", ci = TRUE, ci.col = "black",
+       ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE, intercept = 0,
+       linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
+       xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
+       axis.title.size = 11, axis.text.size = 10, strip.text.size = 11, title = NULL,
+       subtitle = NULL, group.col = NULL, plot.margin = NA,  legend.title = "",
        legend.position = c("right", "top", "left", "bottom", "none"),
        legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-       facet.scales = "free", saveplot = NULL, width = NA, height = NA,
+       facet.scales = "free", filename = NULL, width = NA, height = NA,
        units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
        check = TRUE, output = TRUE)
 
-ci.sd(..., data = NULL, method = c("chisq", "bonett"),
+ci.sd(data, ..., method = c("chisq", "bonett"),
       boot = c("none", "perc", "bc", "bca"), R = 1000, seed = NULL,
-      alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
-      group = NULL, split = NULL, sort.var = FALSE, na.omit = FALSE, digits = 2,
-      as.na = NULL, plot = c("none", "ci", "boot"),
-      point.size = 2.5, point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5,
-      hist = TRUE, binwidth = NULL, bins = NULL, alpha = 0.4, fill = "gray85",
-      density = TRUE, density.col = "#0072B2", density.linewidth = 0.5,
-      density.linetype = "solid", plot.point = TRUE, point.col = "#CC79A7",
-      point.linewidth = 0.6, point.linetype = "solid", plot.ci = TRUE,
-      ci.col = "black", ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE,
-     intercept = 0, linetype = "solid", line.col = "gray65", xlab = NULL,
-      ylab = NULL, xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(),
-      ybreaks = ggplot2::waiver(), axis.title.size = 11, axis.text.size = 10,
-      strip.text.size = 11, title = NULL, subtitle = NULL, group.col = NULL,
-      plot.margin = NA, legend.title = "",
+      alternative = c("two.sided", "less", "greater"),
+      conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
+      na.omit = FALSE, digits = 2, as.na = NULL,
+      plot = c("none", "ci", "boot"), point.size = 2.5, point.shape = 19,
+      errorbar.width = 0.3, dodge.width = 0.5, hist = TRUE,
+      binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85", density = TRUE,
+      density.col = "#0072B2", density.linewidth = 0.5, density.linetype = "solid",
+      point = TRUE, point.col = "#CC79A7", point.linewidth = 0.6,
+      point.linetype = "solid", ci = TRUE, ci.col = "black",
+      ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE, intercept = 0,
+      linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
+      xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
+      axis.title.size = 11, axis.text.size = 10, strip.text.size = 11, title = NULL,
+      subtitle = NULL, group.col = NULL, plot.margin = NA,  legend.title = "",
       legend.position = c("right", "top", "left", "bottom", "none"),
       legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-      facet.scales = "free", saveplot = NULL, width = NA, height = NA,
-      units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
-      check = TRUE, output = TRUE)
+      facet.scales = "free", filename = NULL, width = NA, height = NA,
+      units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL,
+      append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a numeric vector, matrix or data frame with numeric
+\item{data}{a numeric vector or data frame with numeric
 variables, i.e., factors and character variables are
-excluded from \code{x} before conducting the analysis.
-Alternatively, an expression indicating the variable
-names in \code{data} e.g., \code{ci.var(x1, x2, x3, data = dat)}.
-Note that the operators \code{.}, \code{+}, \code{-},
-\code{~}, \code{:}, \code{::}, and \code{!} can also
-be used to select variables, see 'Details' in the
-\code{\link{df.subset}} function.}
+excluded from \code{data} before conducting the analysis.}
 
-\item{data}{a data frame when specifying one or more variables
-in the argument \code{...}. Note that the argument
-is \code{NULL} when specifying a numeric vector,
-matrix or data frame for the argument \code{...}.}
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{ci.var(dat, x1, x2, x3)}. Note that the
+operators \code{.}, \code{+}, \code{-}, \code{~},
+\code{:}, \code{::}, and \code{!} can also be used
+to select variables, see 'Details' in the
+\code{\link{df.subset}} function.}
 
 \item{method}{a character string specifying the method for computing
 the confidence interval, must be one of \code{"chisq"},
@@ -93,12 +89,11 @@ or \code{"less"}.}
 level of the interval.}
 
 \item{group}{either a character string indicating the variable name
-of the grouping variable in \code{...} or \code{data},
-or a vector representing the grouping variable.}
+of the grouping variable in \code{data}, or a vector representing the grouping
+variable.}
 
 \item{split}{either a character string indicating the variable name
-of the split variable in \code{...} or 'data', or a
-vector representing the split variable.}
+of the split variable in 'data', or a vector representing the split variable.}
 
 \item{sort.var}{logical: if \code{TRUE}, output table is sorted by
 variables when specifying \code{group}.}
@@ -114,7 +109,7 @@ places to be used.}
 i.e. these values are converted to \code{NA} before
 conducting the analysis.
 Note that \code{as.na()} function is only applied to
-\code{x}, but not to \code{group} or \code{split}.}
+\code{data}, but not to \code{group} or \code{split}.}
 
 \item{plot}{a character string indicating the type of the plot
 to display, i.e., \code{"none"} (default) for not
@@ -161,7 +156,7 @@ in the \code{geom_histogram} function for controlling
 the number of bins when plotting bootstrap samples
 (\code{plot = "boot"}).}
 
-\item{alpha}{a numeric value between 0 and 1 for specifying the
+\item{hist.alpha}{a numeric value between 0 and 1 for specifying the
 \code{alpha} argument in the \code{geom_histogram}
 function for controlling the opacity of the bars
 when plotting bootstrap samples (\code{plot = "boot"}).}
@@ -195,7 +190,7 @@ function controlling the line type of the density
 curves when plotting bootstrap samples
 (\code{plot = "boot"}).}
 
-\item{plot.point}{logical: if \code{TRUE} (default), vertical lines
+\item{point}{logical: if \code{TRUE} (default), vertical lines
 representing the point estimate of the variance or
 standard deviation are drawn when plotting bootstrap
 samples (\code{plot = "boot"}).}
@@ -220,7 +215,7 @@ function controlling the line type of the vertical
 line displaying the variance or standard deviation
 when plotting bootstrap samples (\code{plot = "boot"}).}
 
-\item{plot.ci}{logical: if \code{TRUE} (default), vertical lines
+\item{ci}{logical: if \code{TRUE} (default), vertical lines
 representing the bootstrap confidence intervals of
 the variance or standard deviation are drawn when
 plotting bootstrap samples (\code{plot = "boot"}).}
@@ -376,7 +371,7 @@ scales shared across facets, i.e., \code{"fixed"},
 (default) when specifying a split variable using
 the argument \code{split}.}
 
-\item{saveplot}{a character string indicating the \code{filename}
+\item{filename}{a character string indicating the \code{filename}
 argument including the file extension in the \code{ggsave}
 function. Note that one of \code{".eps"}, \code{".ps"},
 \code{".tex"}, \code{".pdf"} (default),
@@ -457,25 +452,19 @@ by Angelo Canty and Brain Ripley (2024).
 #----------------------------------------------------------------------------
 # Confidence Interval (CI) for the Variance
 
-# Example 1a: Two-Sided 95\% CI
+# Example 1a: Two-Sided 95% CI
 ci.var(mtcars)
 
-# Alternative specification
-ci.var(., data = mtcars)
-
-# Example 1b: One-Sided 99\% CI based on the chi-square distributio
+# Example 1b: One-Sided 99% CI based on the chi-square distributio
 ci.var(mtcars, alternative = "less", method = "chisq")
 
 #----------------------------------------------------------------------------
 # Confidence Interval (CI) for the Standard Deviation
 
-# Example 2a: Two-Sided 95\% CI
+# Example 2a: Two-Sided 95% CI
 ci.sd(mtcars)
 
-# Alternative specification
-ci.sd(., data = mtcars)
-
-# Example 2b: One-Sided 99\% CI based on the chi-square distributio
+# Example 2b: One-Sided 99% CI based on the chi-square distributio
 ci.sd(mtcars, alternative = "less", method = "chisq")
 
 \dontrun{
@@ -493,21 +482,21 @@ ci.var(mtcars, boot = "bca", R = 5000, seed = 123)
 # Grouping and Split Variable
 
 # Example 4a: Grouping variable
-ci.var(mpg, cyl, disp, data = mtcars, group = "vs")
+ci.var(mtcars, mpg, cyl, disp, group = "vs")
 
-# Alternative specification
+# Alternative specification without using the '...' argument
 ci.var(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 
 # Example 4b: Split variable
-ci.var(mpg, cyl, disp, data = mtcars, split = "am")
+ci.var(mtcars, mpg, cyl, disp, split = "am")
 
-# Alternative specification
+# Alternative specification without using the '...' argument
 ci.var(mtcars[, c("mpg", "cyl", "disp")], split = mtcars$am)
 
 # Example 4c: Grouping and split variable
-ci.var(mpg, cyl, disp, data = mtcars, group = "vs", split = "am")
+ci.var(mtcars, mpg, cyl, disp, group = "vs", split = "am")
 
-# Alternative specification
+# Alternative specification without using the '...' argument
 ci.var(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, split = mtcars$am)
 
 #----------------------------------------------------------------------------
@@ -522,41 +511,41 @@ ci.var(mtcars, write = "CI_Var_Excel.xlsx")
 #----------------------------------------------------------------------------
 # Plot Confidence Intervals
 
-# Example 6a: Two-Sided 95\% CI
-ci.var(airquality, plot = "ci")
+# Example 6a: Two-Sided 95% CI
+ci.var(mtcars, plot = "ci")
 
 # Example 6b: Grouping variable
-ci.var(disp, hp, data = mtcars, group = "vs", plot = "ci")
+ci.var(mtcars, disp, hp, group = "vs", plot = "ci")
 
 # Example 6c: Split variable
-ci.var(disp, hp, data = mtcars, split = "am", plot = "ci")
+ci.var(mtcars, disp, hp, split = "am", plot = "ci")
 
 # Example 6d: Save plot as PDF file
-ci.var(disp, hp, data = mtcars, plot = "ci", saveplot = "CI_Var.pdf",
+ci.var(mtcars, disp, hp, plot = "ci", saveplot = "CI_Var.pdf",
        width = 9, height = 6)
 
 # Example 6e: Save plot as PNG file
-ci.var(disp, hp, data = mtcars, plot = "ci", saveplot = "CI_Var.png",
+ci.var(mtcars, disp, hp, plot = "ci", saveplot = "CI_Var.png",
        width = 9, height = 6)
 
 #----------------------------------------------------------------------------
 # Plot Bootstrap Samples
 
-# Example 7a: Two-Sided 95\% CI
-ci.var(disp, hp, data = mtcars, boot = "bc", plot = "boot")
+# Example 7a: Two-Sided 95% CI
+ci.var(mtcars, disp, hp, boot = "bc", plot = "boot")
 
 # Example 7b: Grouping variable
-ci.var(disp, hp, data = mtcars, group = "vs", boot = "bc", plot = "boot")
+ci.var(mtcars, disp, hp, group = "vs", boot = "bc", plot = "boot")
 
 # Example 7c: Split variable
-ci.var(disp, hp, data = mtcars, split = "am", boot = "bc", plot = "boot")
+ci.var(mtcars, disp, hp, split = "am", boot = "bc", plot = "boot")
 
 # Example 7d: Save plot as PDF file
-ci.var(disp, hp, data = mtcars, boot = "bc", plot = "boot",
+ci.var(mtcars, disp, hp, boot = "bc", plot = "boot",
        saveplot = "CI_Var_Boot.pdf", width = 12, height = 7)
 
 # Example 7e: Save plot as PNG file
-ci.var(disp, hp, data = mtcars, boot = "bc", plot = "boot",
+ci.var(mtcars, disp, hp, boot = "bc", plot = "boot",
        saveplot = "CI_Var_Boot.png", width = 12, height = 7)
 }
 }

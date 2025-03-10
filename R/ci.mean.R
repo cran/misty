@@ -9,33 +9,30 @@
 #' (BCa) bootstrap confidence intervals) and plots the bootstrap samples with
 #' histograms and density curves.
 #'
-#' @param ...               a numeric vector, matrix or data frame with numeric
+#' @param data              a numeric vector or data frame with numeric
 #'                          variables, i.e., factors and character variables are
-#'                          excluded from \code{x} before conducting the analysis.
-#'                          Alternatively, an expression indicating the variable
-#'                          names in \code{data} e.g., \code{ci.mean(x1, x2, data = dat)}.
-#'                          Note that the operators \code{.}, \code{+}, \code{-},
-#'                          \code{~}, \code{:}, \code{::}, and \code{!} can also
-#'                          be used to select variables, see 'Details' in the
+#'                          excluded from \code{data} before conducting the
+#'                          analysis.
+#' @param ...               an expression indicating the variable names in \code{data}
+#'                          e.g., \code{ci.mean(x1, x2, data = dat)}. Note that the
+#'                          operators \code{.}, \code{+}, \code{-}, \code{~},
+#'                          \code{:}, \code{::}, and \code{!} can also be used
+#'                          to select variables, see 'Details' in the
 #'                          \code{\link{df.subset}} function.
-#' @param data              a data frame when specifying one or more variables
-#'                          in the argument \code{...}. Note that the argument
-#'                          is \code{NULL} when specifying a numeric vector,
-#'                          matrix or data frame for the argument \code{...}.
 #' @param sigma             a numeric vector indicating the population standard
 #'                          deviation when computing confidence intervals for the
 #'                          arithmetic mean with known standard deviation Note
 #'                          that either argument \code{sigma} or argument
 #'                          \code{sigma2} is specified and it is only possible to
 #'                          specify one value for the argument \code{sigma} even
-#'                          though multiple variables are specified in \code{x}.
+#'                          though multiple variables are specified in \code{data}.
 #' @param sigma2            a numeric vector indicating the population variance
 #'                          when computing confidence intervals for the arithmetic
 #'                          mean with known variance. Note that either argument
 #'                          \code{sigma} or argument \code{sigma2} is specified
 #'                          and it is only possible to specify one value for the
 #'                          argument \code{sigma2} even though multiple variables
-#'                          are specified in \code{x}.
+#'                          are specified in \code{data}.
 #' @param adjust            logical: if \code{TRUE}, difference-adjustment for
 #'                          the confidence intervals for the arithmetic mean
 #'                          (Baguley, 2012) is applied.
@@ -65,17 +62,19 @@
 #' @param conf.level        a numeric value between 0 and 1 indicating the confidence
 #'                          level of the interval.
 #' @param group             either a character string indicating the variable name
-#'                          of the grouping variable in \code{...} or \code{data},
-#'                          or a vector representing the grouping variable. Note
-#'                          that a grouping variable can only be used when computing
-#'                          confidence intervals with unknown population standard
-#'                          deviation and population variance.
+#'                          of the grouping variable in \code{data}, or a vector
+#'                          representing the grouping variable. The grouping variable
+#'                          is excluded from the data frame specified in \code{data}.
+#'                          Note that a grouping variable can only be used when
+#'                          computing confidence intervals with unknown population
+#'                          standard deviation and population variance.
 #' @param split             either a character string indicating the variable name
-#'                          of the split variable in \code{...} or \code{data},
-#'                          or a vector representing the split variable. Note
-#'                          that a grouping variable can only be used when computing
-#'                          confidence intervals with unknown population standard
-#'                          deviation and population variance.
+#'                          of the split variable in \code{data}, or a vector
+#'                          representing the split variable. The split variable
+#'                          is excluded from the data frame specified in \code{data}.
+#'                          Note that a grouping variable can only be used when
+#'                          computing confidence intervals with unknown population
+#'                          standard deviation and population variance.
 #' @param sort.var          logical: if \code{TRUE}, output table is sorted by
 #'                          variables when specifying \code{group}.
 #' @param na.omit           logical: if \code{TRUE}, incomplete cases are removed
@@ -86,7 +85,7 @@
 #' @param as.na             a numeric vector indicating user-defined missing
 #'                          values, i.e. these values are converted to \code{NA}
 #'                          before conducting the analysis. Note that \code{as.na()}
-#'                          function is only applied to \code{x}, but not to
+#'                          function is only applied to \code{data}, but not to
 #'                          \code{group} or \code{split}.
 #' @param plot              a character string indicating the type of the plot
 #'                          to display, i.e., \code{"none"} (default) for not
@@ -125,7 +124,7 @@
 #'                          in the \code{geom_histogram} function for controlling
 #'                          the number of bins when plotting bootstrap samples
 #'                          (\code{plot = "boot"}).
-#' @param alpha             a numeric value between 0 and 1 for specifying the
+#' @param hist.alpha        a numeric value between 0 and 1 for specifying the
 #'                          \code{alpha} argument in the \code{geom_histogram}
 #'                          function for controlling the opacity of the bars
 #'                          when plotting bootstrap samples (\code{plot = "boot"}).
@@ -152,7 +151,7 @@
 #'                          function controlling the line type of the density
 #'                          curves when plotting bootstrap samples
 #'                          (\code{plot = "boot"}).
-#' @param plot.point        logical: if \code{TRUE} (default), vertical lines
+#' @param point             logical: if \code{TRUE} (default), vertical lines
 #'                          representing the point estimate of the arithmetic
 #'                          mean or median are drawn when plotting bootstrap samples
 #'                          (\code{plot = "boot"}).
@@ -173,7 +172,7 @@
 #'                          function controlling the line type of the vertical
 #'                          line displaying the arithmetic mean or median when
 #'                          plotting bootstrap samples (\code{plot = "boot"}).
-#' @param plot.ci           logical: if \code{TRUE} (default), vertical lines
+#' @param ci                logical: if \code{TRUE} (default), vertical lines
 #'                          representing the bootstrap confidence intervals of
 #'                          the arithmetic mean or median are drawn when
 #'                          plotting bootstrap samples (\code{plot = "boot"}).
@@ -295,7 +294,7 @@
 #'                          \code{"free_x"}, \code{"free_y"}, or \code{"free"}
 #'                          (default) when specifying a split variable using
 #'                          the argument \code{split}.
-#' @param saveplot          a character string indicating the \code{filename}
+#' @param filename          a character string indicating the \code{filename}
 #'                          argument including the file extension in the \code{ggsave}
 #'                          function. Note that one of \code{".eps"}, \code{".ps"},
 #'                          \code{".tex"}, \code{".pdf"} (default),
@@ -355,7 +354,7 @@
 #'
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
-#' \item{\code{data}}{list with the input specified in \code{...}, \code{data}, \code{group}, and \code{split}}
+#' \item{\code{data}}{list with the input specified in \code{data}, \code{group}, and \code{split}}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{boot}}{data frame with bootstrap replicates of the arithmetic mean of median when bootstrapping was requested}
 #' \item{\code{plot}}{ggplot2 object for plotting the results and the data frame used for plotting}
@@ -369,38 +368,32 @@
 #'
 #' @examples
 #' #----------------------------------------------------------------------------
-#' # Example 1: Confidence Interval (CI) for the Arithmetic Mean
+#' # Confidence Interval (CI) for the Arithmetic Mean
 #'
 #' # Example 1a: Two-Sided 95% CI
 #' ci.mean(mtcars)
-#'
-#' # Alternative specification
-#' ci.mean(., data = mtcars)
 #'
 #' # Example 1b: Two-Sided 95% Difference-Adjusted CI
 #' ci.mean(mtcars, adjust = TRUE)
 #'
 #' # Example 1c: Two-Sided 95% CI with known population standard deviation
+#' ci.mean(mtcars, mpg, sigma = 6)
+#'
+#' # Alternative specification without using the '...' argument
 #' ci.mean(mtcars$mpg, sigma = 6)
 #'
-#' # Alternative specification
-#' ci.mean(mpg, data = mtcars, sigma = 6)
-#'
 #' #----------------------------------------------------------------------------
-#' # Example 2: Confidence Interval (CI) for the Median
+#' # Confidence Interval (CI) for the Median
 #'
 #' # Example 2a: Two-Sided 95% CI
 #' ci.median(mtcars)
-#'
-#' # Alternative specification
-#' ci.median(., data = mtcars)
 #'
 #' # Example 2b: One-Sided 99% CI
 #' ci.median(mtcars, alternative = "less", conf.level = 0.99)
 #'
 #' \dontrun{
 #' #----------------------------------------------------------------------------
-#' # Example 3: Bootstrap Confidence Interval (CI)
+#' # Bootstrap Confidence Interval (CI)
 #'
 #' # Example 3a: Bias-corrected (BC) percentile bootstrap CI
 #' ci.mean(mtcars, boot = "bc")
@@ -410,28 +403,28 @@
 #' ci.mean(mtcars, boot = "bca", R = 5000, seed = 123)
 #'
 #' #----------------------------------------------------------------------------
-#' # Example 4: Grouping and Split Variable
+#' # Grouping and Split Variable
 #'
 #' # Example 4a: Grouping variable
-#' ci.mean(mpg, cyl, disp, data = mtcars, group = "vs")
+#' ci.mean(mtcars, mpg, cyl, disp, group = "vs")
 #'
-#' # Alternative specification
+#' # Alternative specification without using the '...' argument
 #' ci.mean(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 #'
 #' # Example 4b: Split variable
-#' ci.mean(mpg, cyl, disp, data = mtcars, split = "am")
+#' ci.mean(mtcars, mpg, cyl, disp, split = "am")
 #'
 #' # Alternative specification
 #' ci.mean(mtcars[, c("mpg", "cyl", "disp")], split = mtcars$am)
 #'
 #' # Example 4c: Grouping and split variable
-#' ci.mean(mpg, cyl, disp, data = mtcars, group = "vs", split = "am")
+#' ci.mean(mtcars, mpg, cyl, disp, group = "vs", split = "am")
 #'
 #' # Alternative specification
 #' ci.mean(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, split = mtcars$am)
 #'
 #' #----------------------------------------------------------------------------
-#' # Example 5: Write Output
+#' # Write Output
 #'
 #' # Example 5a: Text file
 #' ci.mean(mtcars, write = "CI_Mean_Text.txt")
@@ -440,46 +433,44 @@
 #' ci.mean(mtcars, write = "CI_Mean_Excel.xlsx")
 #'
 #' #----------------------------------------------------------------------------
-#' # Example 6: Plot Confidence Intervals
+#' # Plot Confidence Intervals
 #'
 #' # Example 6a: Two-Sided 95% CI
-#' ci.mean(disp, hp, data = mtcars, plot = "ci")
+#' ci.mean(mtcars, disp, hp, plot = "ci")
 #'
 #' # Example 6b: Grouping variable
-#' ci.mean(disp, hp, data = mtcars, group = "vs", plot = "ci")
+#' ci.mean(mtcars, disp, hp, group = "vs", plot = "ci")
 #'
 #' # Example 6c: Split variable
-#' ci.mean(disp, hp, data = mtcars, split = "am", plot = "ci")
+#' ci.mean(mtcars, disp, hp, split = "am", plot = "ci")
 #'
 #' # Example 6d: Save plot as PDF file
-#' ci.mean(disp, hp, data = mtcars, plot = "ci", saveplot = "CI_Mean.pdf",
-#'         width = 9, height = 6)
+#' ci.mean(mtcars, disp, hp, plot = "ci", filename = "CI_Mean.pdf", width = 9, height = 6)
 #'
 #' # Example 6e: Save plot as PNG file
-#' ci.mean(disp, hp, data = mtcars, plot = "ci", saveplot = "CI_Mean.png",
-#'         width = 9, height = 6)
+#' ci.mean(mtcars, disp, hp, plot = "ci", filename = "CI_Mean.png", width = 9, height = 6)
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 7: Plot Bootstrap Samples
 #'
 #' # Example 7a: Two-Sided 95% CI
-#' ci.mean(disp, hp, data = mtcars, boot = "bc", plot = "boot")
+#' ci.mean(mtcars, disp, hp, boot = "bc", plot = "boot")
 #'
 #' # Example 7b: Grouping variable
-#' ci.mean(disp, hp, data = mtcars, group = "vs", boot = "bc", plot = "boot")
+#' ci.mean(mtcars, disp, hp, group = "vs", boot = "bc", plot = "boot")
 #'
 #' # Example 7c: Split variable
-#' ci.mean(disp, hp, data = mtcars, split = "am", boot = "bc", plot = "boot")
+#' ci.mean(mtcars, disp, hp, split = "am", boot = "bc", plot = "boot")
 #'
 #' # Example 7d: Save plot as PDF file
-#' ci.mean(disp, hp, data = mtcars, boot = "bc", plot = "boot",
-#'         saveplot = "CI_Mean_Boot.pdf", width = 12, height = 7)
+#' ci.mean(mtcars, disp, hp, boot = "bc", plot = "boot", filename = "CI_Mean_Boot.pdf",
+#'         width = 12, height = 7)
 #'
 #' # Example 7e: Save plot as PNG file
-#' ci.mean(disp, hp, data = mtcars, boot = "bc", plot = "boot",
-#'         saveplot = "CI_Mean_Boot.png", width = 12, height = 7)
+#' ci.mean(mtcars, disp, hp, boot = "bc", plot = "boot", filename = "CI_Mean_Boot.png",
+#'         width = 12, height = 7)
 #' }
-ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALSE,
+ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
                     boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"),
                     R = 1000, seed = NULL, sample = TRUE,
                     alternative = c("two.sided", "less", "greater"),
@@ -487,10 +478,10 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
                     na.omit = FALSE, digits = 2, as.na = NULL,
                     plot = c("none", "ci", "boot"), point.size = 2.5, point.shape = 19,
                     errorbar.width = 0.3, dodge.width = 0.5, hist = TRUE,
-                    binwidth = NULL, bins = NULL, alpha = 0.4, fill = "gray85", density = TRUE,
+                    binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85", density = TRUE,
                     density.col = "#0072B2", density.linewidth = 0.5, density.linetype = "solid",
-                    plot.point = TRUE, point.col = "#CC79A7", point.linewidth = 0.6,
-                    point.linetype = "solid", plot.ci = TRUE, ci.col = "black",
+                    point = TRUE, point.col = "#CC79A7", point.linewidth = 0.6,
+                    point.linetype = "solid", ci = TRUE, ci.col = "black",
                     ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE, intercept = 0,
                     linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
                     xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
@@ -498,7 +489,7 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
                     subtitle = NULL, group.col = NULL, plot.margin = NA, legend.title = "",
                     legend.position = c("right", "top", "left", "bottom", "none"),
                     legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-                    facet.scales = "free", saveplot = NULL, width = NA, height = NA,
+                    facet.scales = "free", filename = NULL, width = NA, height = NA,
                     units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL,
                     append = TRUE, check = TRUE, output = TRUE) {
 
@@ -506,14 +497,11 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
-
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -522,13 +510,10 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract variables
-    x <- data[, .var.names(..., data = data, group = group, split = split, check.chr = "a numeric vector, matrix or data frame"), drop = FALSE]
+    # Extract data and convert tibble into data frame or vector
+    x <- data[, .var.names(..., data = data, group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -541,13 +526,8 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
-    if (isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unlist(group) }
-    if (isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { group <- unlist(split) }
+    # Data frame
+    x <- as.data.frame(data)
 
     # Data and cluster
     var.group <- .var.group(data = x, group = group, split = split)
@@ -563,10 +543,9 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data Frame ####
-
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
+  # Convert 'group' and 'split' as tibble into a vector
+  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
+  if (!is.null(split) && isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { split <- unname(unlist(split)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
@@ -593,7 +572,7 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
 
     x <- which(sapply(names(x), function(y) identical(group, x[, y]))) |> (\(z) if (isTRUE(length(z) != 0L)) { return(x[, -z]) } else { x })()
 
-    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the grouping variable from the matrix or data frame, there are no variables left.") }
+    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the grouping variable from the data frame, there are no variables left.") }
 
   }
 
@@ -602,7 +581,7 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
 
     x <- which(sapply(names(x), function(y) identical(split, x[, y]))) |> (\(z) if (isTRUE(length(z) != 0L)) { return(x[, -z]) } else { x })()
 
-    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the split variable from the matrix or data frame, there are no variables left.") }
+    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the split variable from the data frame, there are no variables left.") }
 
   }
 
@@ -637,11 +616,11 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical = c("adjust", "sample", "sort.var", "na.omit", "plot.point", "plot.ci", "line", "append", "output"),
+  .check.input(logical = c("adjust", "sample", "sort.var", "na.omit", "point", "ci", "line", "append", "output"),
                numeric = list(seed = 1L, point.size = 1L, point.shape  = 1L, errorbar.width = 1L, dodge.width = 1L, bins = 1L, density.linewidth = 1L, point.linewidth = 1L, ci.linewidth = 1L, intercept = 1L, xlim = 2L, ylim = 2L, axis.title.size = 1L, axis.text.size = 1L, strip.text.size = 1L, plot.margin = 4L, legend.box.margin = 4L, facet.ncol = 1L, facet.nrow = 1L, width = 1L, height = 1L, dpi = 1L),
                character = list(title = 1L, subtitle = 1L, legend.title = 1L),
                s.character = list(boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"), plot = c("none", "ci", "boot")),
-               args = c("R", "alternative", "conf.level", "digits", "alpha", "linetype", "units", "legend.position", "facet.scales", "write2"), envir = environment(), input.check = check)
+               args = c("R", "alternative", "conf.level", "digits", "hist.alpha", "linetype", "units", "legend.position", "facet.scales", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(isTRUE(check))) {
@@ -733,6 +712,9 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
 
   plot <- ifelse(all(c("none", "ci", "boot") %in% plot), "none", plot)
 
+  # Package ggplot2
+  if (isTRUE(check && plot != "none")) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'xlab' and 'ylab', Argument ####
 
@@ -818,7 +800,7 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
 
     if (isTRUE(boot == "none")) {
 
-      result <- lapply(split(x, f = group), function(y) misty::ci.mean(y, data = NULL, group = NULL, split = NULL, adjust = adjust, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result) |>
+      result <- lapply(split(x, f = group), function(y) misty::ci.mean(y, group = NULL, split = NULL, adjust = adjust, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result) |>
         (\(y) data.frame(group = rep(names(y), each = ncol(x)), eval(parse(text = paste0("rbind(", paste0("y[[", seq_len(length(y)), "]]", collapse = ", "), ")")))) )()
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -826,7 +808,7 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
 
     } else {
 
-      result.boot <- lapply(split(x, f = group), function(y) misty::ci.mean(y, data = NULL, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+      result.boot <- lapply(split(x, f = group), function(y) misty::ci.mean(y, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
         (\(z) list(boot.sample = data.frame(group = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL),
                    result = data.frame(group = rep(names(z), each = unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$result)), row.names = NULL)))()
 
@@ -845,14 +827,14 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
 
     if (isTRUE(boot == "none")) {
 
-      result <- lapply(split(data.frame(x), f = split), function(y) misty::ci.mean(y, data = NULL, group = NULL, split = NULL, adjust = adjust, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
+      result <- lapply(split(data.frame(x), f = split), function(y) misty::ci.mean(y, group = NULL, split = NULL, adjust = adjust, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = split), function(y) misty::ci.mean(y, data = NULL, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+      result.boot <- lapply(split(x, f = split), function(y) misty::ci.mean(y, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
         (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
@@ -870,14 +852,14 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
 
     if (isTRUE(boot == "none")) {
 
-      result <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.mean(y[, -grep("group", names(y))], data = NULL, group = y$group, split = NULL, adjust = adjust, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
+      result <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.mean(y[, -grep("group", names(y))], group = y$group, split = NULL, adjust = adjust, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.mean(y[, -grep("group", names(y))], data = NULL, group = y$group, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+      result.boot <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.mean(y[, -grep("group", names(y))], group = y$group, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
         (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
@@ -889,79 +871,28 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
 
   #_____________________________________________________________________________
   #
-  # Plot -----------------------------------------------------------------------
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Arithmetic Mean with Error Bars ####
-
-  switch(plot, "ci" = {
-
-    if (isTRUE(any(!is.na((if (isTRUE(!is.data.frame(result))) { do.call("rbind", result) } else { result })$low)))) {
-
-      plot.object <- .plot.ci(result = result, stat = "m", group = group, split = split, point.size = point.size, point.shape = point.shape, errorbar.width = errorbar.width, dodge.width = dodge.width, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales)
-
-      #...................
-      ### Print plot ####
-
-      suppressWarnings(print(plot.object$p))
-
-    } else {
-
-      plot <- "none"
-
-      warning("There are no confidence intervals for the arithmetic mean to plot.", call. = FALSE)
-
-    }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Bootstrap Samples ####
-
-  }, "boot" = {
-
-    if (any(!is.na(boot.sample$m))) {
-
-      plot.object <- .plot.boot(result = result, boot.sample = boot.sample, stat = "m", group = group, split = split, hist = hist, binwidth = binwidth, bins = bins, alpha = alpha, fill = fill, density = density, density.col = density.col, density.linewidth = density.linewidth, density.linetype = density.linetype, plot.point = plot.point, point.col = point.col, point.linewidth = point.linewidth, point.linetype = point.linetype, plot.ci = plot.ci, ci.col = ci.col, ci.linewidth = ci.linewidth, ci.linetype = ci.linetype, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales)
-
-      #...................
-      ### Print plot ####
-
-      suppressMessages(suppressWarnings(print(plot.object$p)))
-
-    } else {
-
-      plot <- "none"
-
-      warning("There are no bootstrap samples to plot.", call. = FALSE)
-
-    }
-
-  })
-
-  #_____________________________________________________________________________
-  #
   # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "ci.mean",
                  data = list(x = x, group = group, split = split),
-                 args = list(sigma = sigma, sigma2 = sigma2, adjust = adjust, boot = boot, R = R, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, point.size = point.size, point.shape = point.shape, errorbar.width = errorbar.width, dodge.width = dodge.width, hist = hist, binwidth = binwidth, bins = bins, alpha = alpha, fill = fill, density = density, density.col = density.col, density.linewidth = density.linewidth, density.linetype = density.linetype, plot.point = plot.point, point.col = point.col, point.linewidth = point.linewidth, point.linetype = point.linetype, plot.ci = plot.ci, ci.col = ci.col, ci.linewidth = ci.linewidth, ci.linetype = ci.linetype, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales, saveplot = saveplot, width = width, height = height, units = units, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(sigma = sigma, sigma2 = sigma2, adjust = adjust, boot = boot, R = R, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, point.size = point.size, point.shape = point.shape, errorbar.width = errorbar.width, dodge.width = dodge.width, hist = hist, binwidth = binwidth, bins = bins, hist.alpha = hist.alpha, fill = fill, density = density, density.col = density.col, density.linewidth = density.linewidth, density.linetype = density.linetype, point = point, point.col = point.col, point.linewidth = point.linewidth, point.linetype = point.linetype, ci = ci, ci.col = ci.col, ci.linewidth = ci.linewidth, ci.linetype = ci.linetype, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales, filename = filename, width = width, height = height, units = units, dpi = dpi, write = write, append = append, check = check, output = output),
                  boot = if (isTRUE(boot != "none")) { boot.sample } else { NULL },
-                 plot = if (isTRUE(plot != "none")) { list(plot = plot.object$p, plotdata = plot.object$plotdat) } else { NULL },
-                 result = result)
+                 plot = NULL, result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Plot and Save Results ------------------------------------------------------
+
+  if (isTRUE(plot != "none")) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
   # Write Results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
-
-  #_____________________________________________________________________________
-  #
-  # Save ggplot ----------------------------------------------------------------
-
-  if (isTRUE(plot != "none" && !is.null(saveplot))) { suppressWarnings(suppressMessages(ggplot2::ggsave(filename = saveplot, plot = plot.object$p, width = width, height = height, units = units, dpi = dpi))) }
 
   #_____________________________________________________________________________
   #
@@ -977,16 +908,16 @@ ci.mean <- function(..., data = NULL, sigma = NULL, sigma2 = NULL, adjust = FALS
 #_______________________________________________________________________________
 
 #' @rdname ci.median
-ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"),
+ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"),
                       R = 1000, seed = NULL, sample = TRUE,
                       alternative = c("two.sided", "less", "greater"),
                       conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
                       na.omit = FALSE, digits = 2, as.na = NULL, plot = c("none", "ci", "boot"),
                       point.size = 2.5, point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5,
-                      hist = TRUE, binwidth = NULL, bins = NULL, alpha = 0.4, fill = "gray85",
+                      hist = TRUE, binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85",
                       density = TRUE, density.col = "#0072B2", density.linewidth = 0.5,
-                      density.linetype = "solid", plot.point = TRUE, point.col = "#CC79A7",
-                      point.linewidth = 0.6, point.linetype = "solid", plot.ci = TRUE, ci.col = "black",
+                      density.linetype = "solid", point = TRUE, point.col = "#CC79A7",
+                      point.linewidth = 0.6, point.linetype = "solid", ci = TRUE, ci.col = "black",
                       ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE, intercept = 0,
                       linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
                       xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
@@ -994,7 +925,7 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
                       subtitle = NULL, group.col = NULL, plot.margin = NA,  legend.title = "",
                       legend.position = c("right", "top", "left", "bottom", "none"),
                       legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-                      facet.scales = "free", saveplot = NULL, width = NA, height = NA,
+                      facet.scales = "free", filename = NULL, width = NA, height = NA,
                       units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
                       check = TRUE, output = TRUE) {
 
@@ -1002,14 +933,11 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
-
-  # Check if input 'data' is data frame
-  if (isTRUE(!is.null(data) && !is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -1018,13 +946,10 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract variables
-    x <- data[, .var.names(..., data = data, group = group, split = split, check.chr = "a numeric vector, matrix or data frame"), drop = FALSE]
+    # Extract data and convert tibble into data frame or vector
+    x <- data[, .var.names(..., data = data, group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -1037,13 +962,8 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
-    if (isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unlist(group) }
-    if (isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { group <- unlist(split) }
+    # Data frame
+    x <- as.data.frame(data)
 
     # Data and cluster
     var.group <- .var.group(data = x, group = group, split = split)
@@ -1059,10 +979,9 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data Frame ####
-
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
+  # Convert 'group' and 'split' as tibble into a vector
+  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
+  if (!is.null(split) && isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { splits <- unname(unlist(split)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
@@ -1089,7 +1008,7 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
 
     x <- which(sapply(names(x), function(y) identical(group, x[, y]))) |> (\(z) if (isTRUE(length(z) != 0L)) { return(x[, -z]) } else { x })()
 
-    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the grouping variable from the matrix or data frame, there are no variables left.") }
+    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the grouping variable from the data frame, there are no variables left.") }
 
   }
 
@@ -1098,7 +1017,7 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
 
     x <- which(sapply(names(x), function(y) identical(split, x[, y]))) |> (\(z) if (isTRUE(length(z) != 0L)) { return(x[, -z]) } else { x })()
 
-    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the split variable from the matrix or data frame, there are no variables left.") }
+    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the split variable from the data frame, there are no variables left.") }
 
   }
 
@@ -1133,11 +1052,11 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical = c("sample", "sort.var", "na.omit", "plot.point", "plot.ci", "line", "append", "output"),
+  .check.input(logical = c("sample", "sort.var", "na.omit", "point", "ci", "line", "append", "output"),
                numeric = list(seed = 1L, point.size = 1L, point.shape  = 1L, errorbar.width = 1L, dodge.width = 1L, bins = 1L, density.linewidth = 1L, point.linewidth = 1L, ci.linewidth = 1L, intercept = 1L, xlim = 2L, ylim = 2L, axis.title.size = 1L, axis.text.size = 1L, strip.text.size = 1L, plot.margin = 4L, legend.box.margin = 4L, facet.ncol = 1L, facet.nrow = 1L, width = 1L, height = 1L, dpi = 1L),
                character = list(title = 1L, subtitle = 1L, legend.title = 1L),
                s.character = list(boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"), plot = c("none", "ci", "boot")),
-               args = c("R", "alternative", "conf.level", "digits", "alpha", "linetype", "units", "legend.position", "facet.scales", "write2"), envir = environment(), input.check = check)
+               args = c("R", "alternative", "conf.level", "digits", "hist.alpha", "linetype", "units", "legend.position", "facet.scales", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
@@ -1168,6 +1087,9 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
   ## 'plot' Argument ####
 
   plot <- ifelse(all(c("none", "ci", "boot") %in% plot), "none", plot)
+
+  # Package ggplot2
+  if (isTRUE(check && plot != "none")) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'xlab' and 'ylab', Argument ####
@@ -1256,7 +1178,7 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
 
     if (isTRUE(boot == "none")) {
 
-      result <- lapply(split(x, f = group), function(y) misty::ci.median(y, data = NULL, group = NULL, split = NULL, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result) |>
+      result <- lapply(split(x, f = group), function(y) misty::ci.median(y, group = NULL, split = NULL, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result) |>
         (\(y) data.frame(group = rep(names(y), each = ncol(x)), eval(parse(text = paste0("rbind(", paste0("y[[", seq_len(length(y)), "]]", collapse = ", "), ")")))) )()
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1264,7 +1186,7 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
 
     } else {
 
-      result.boot <- lapply(split(x, f = group), function(y) misty::ci.median(y, data = NULL, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+      result.boot <- lapply(split(x, f = group), function(y) misty::ci.median(y, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
         (\(z) list(boot.sample = data.frame(group = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = data.frame(group = rep(names(z), each = unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$result)), row.names = NULL)))()
 
       boot.sample <- result.boot$boot.sample
@@ -1282,14 +1204,14 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
 
     if (isTRUE(boot == "none")) {
 
-      result <- lapply(split(data.frame(x), f = split), function(y) misty::ci.median(y, data = NULL, group = NULL, split = NULL, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
+      result <- lapply(split(data.frame(x), f = split), function(y) misty::ci.median(y, group = NULL, split = NULL, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Bootstrapping ####
 
     } else {
 
-      result.boot <- lapply(split(x, f = split), function(y) misty::ci.median(y, data = NULL, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
+      result.boot <- lapply(split(x, f = split), function(y) misty::ci.median(y, group = NULL, split = NULL, sample = sample, seed = seed, boot = boot, R = R, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)) |>
         (\(z) list(boot.sample = data.frame(split = rep(names(z), each = R*unique(unlist(lapply(z, function(q) nrow(q$result))))), do.call("rbind", lapply(z, function(w) w$boot)), row.names = NULL), result = lapply(z, function(w) w$result)))()
 
       boot.sample <- result.boot$boot.sample
@@ -1326,79 +1248,28 @@ ci.median <- function(..., data = NULL, boot = c("none", "norm", "basic", "stud"
 
   #_____________________________________________________________________________
   #
-  # Plot -----------------------------------------------------------------------
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Arithmetic Mean with Error Bars ####
-
-  switch(plot, "ci" = {
-
-    if (isTRUE(any(!is.na((if (isTRUE(!is.data.frame(result))) { do.call("rbind", result) } else { result })$low)))) {
-
-      plot.object <- .plot.ci(result = result, stat = "med", group = group, split = split, point.size = point.size, point.shape = point.shape, errorbar.width = errorbar.width, dodge.width = dodge.width, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales)
-
-      #...................
-      ### Print plot ####
-
-      suppressWarnings(print(plot.object$p))
-
-    } else {
-
-      plot <- "none"
-
-      warning("There are no confidence intervals for the arithmetic mean to plot.", call. = FALSE)
-
-    }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Bootstrap Samples ####
-
-  }, "boot" = {
-
-    if (any(!is.na(boot.sample$m))) {
-
-      plot.object <- .plot.boot(result = result, boot.sample = boot.sample, stat = "med", group = group, split = split, hist = hist, binwidth = binwidth, bins = bins, alpha = alpha, fill = fill, density = density, density.col = density.col, density.linewidth = density.linewidth, density.linetype = density.linetype, plot.point = plot.point, point.col = point.col, point.linewidth = point.linewidth, point.linetype = point.linetype, plot.ci = plot.ci, ci.col = ci.col, ci.linewidth = ci.linewidth, ci.linetype = ci.linetype, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales)
-
-      #...................
-      ### Print plot ####
-
-      suppressMessages(suppressWarnings(print(plot.object$p)))
-
-    } else {
-
-      plot <- "none"
-
-      warning("There are no bootstrap samples to plot.", call. = FALSE)
-
-    }
-
-  })
-
-  #_____________________________________________________________________________
-  #
   # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
                  type = "ci.median",
                  data = list(x = x, group = group, split = split),
-                 args = list(boot = boot, R = R, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, point.size = point.size, point.shape = point.shape, errorbar.width = errorbar.width, dodge.width = dodge.width, hist = hist, binwidth = binwidth, bins = bins, alpha = alpha, fill = fill, density = density, density.col = density.col, density.linewidth = density.linewidth, density.linetype = density.linetype, plot.point = plot.point, point.col = point.col, point.linewidth = point.linewidth, point.linetype = point.linetype, plot.ci = plot.ci, ci.col = ci.col, ci.linewidth = ci.linewidth, ci.linetype = ci.linetype, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales, saveplot = saveplot, width = width, height = height, units = units, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(boot = boot, R = R, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, point.size = point.size, point.shape = point.shape, errorbar.width = errorbar.width, dodge.width = dodge.width, hist = hist, binwidth = binwidth, bins = bins, hist.alpha = hist.alpha, fill = fill, density = density, density.col = density.col, density.linewidth = density.linewidth, density.linetype = density.linetype, point = point, point.col = point.col, point.linewidth = point.linewidth, point.linetype = point.linetype, ci = ci, ci.col = ci.col, ci.linewidth = ci.linewidth, ci.linetype = ci.linetype, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales, filename = filename, width = width, height = height, units = units, dpi = dpi, write = write, append = append, check = check, output = output),
                  boot = if (isTRUE(boot != "none")) { boot.sample } else { NULL },
-                 plot = if (isTRUE(plot != "none")) { list(plot = plot.object$p, plotdata = plot.object$plotdat) } else { NULL },
-                 result = result)
+                 plot = NULL, result = result)
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Plot and Save Results ------------------------------------------------------
+
+  if (isTRUE(plot != "none")) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
   # Write Results --------------------------------------------------------------
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
-
-  #_____________________________________________________________________________
-  #
-  # Save ggplot ----------------------------------------------------------------
-
-  if (isTRUE(plot != "none" && !is.null(saveplot))) { suppressWarnings(suppressMessages(ggplot2::ggsave(filename = saveplot, plot = plot.object$p, width = width, height = height, units = units, dpi = dpi))) }
 
   #_____________________________________________________________________________
   #

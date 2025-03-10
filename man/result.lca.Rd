@@ -188,7 +188,7 @@ data("HolzingerSwineford1939", package = "lavaan")
 
 # Run LCA with k = 1 to k = 6 classes
 mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
-          run.mplus = TRUE)
+          mplus.run = TRUE)
 
 # Example 1a: Read Mplus output files, create result table, write table, and save plots
 result.lca(write = "LCA.xlsx", plot = TRUE)

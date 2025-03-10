@@ -4,27 +4,22 @@
 \alias{ci.mean.w}
 \title{Within-Subject Confidence Interval for the Arithmetic Mean}
 \usage{
-ci.mean.w(..., data = NULL, adjust = TRUE,
-          alternative = c("two.sided", "less", "greater"),
-          conf.level = 0.95, na.omit = TRUE, digits = 2,
-          as.na = NULL, write = NULL, append = TRUE, check = TRUE,
-          output = TRUE)
+ci.mean.w(data, ..., adjust = TRUE,
+          alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
+          na.omit = TRUE, digits = 2, as.na = NULL, write = NULL, append = TRUE,
+          check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame with numeric variables representing
+\item{data}{a data frame with numeric variables representing
 the levels of the within-subject factor, i.e., data are
 specified in wide-format (i.e., multivariate person level
-format). Alternatively, an expression indicating the variable
-names in \code{data} e.g., \code{ci.mean.w(x1, x2, x3, data = dat)}.
-Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+format).}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame
-for the argument \code{...}.}
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{ci.mean.w(dat, time1, time2, time3)}. Note that
+the operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+\code{::}, and \code{!} can also be used to select variables,
+see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{adjust}{logical: if \code{TRUE} (default), difference-adjustment
 for the Cousineau-Morey within-subject confidence intervals
@@ -118,9 +113,6 @@ dat <- data.frame(time1 = c(3, 2, 1, 4, 5, 2, 3, 5, 6, 7),
 
 # Example 1: Difference-adjusted Cousineau-Morey confidence intervals
 ci.mean.w(dat)
-
-# Example 1: Alternative specification using the 'data' argument
-ci.mean.w(., data = dat)
 
 # Example 2: Cousineau-Morey confidence intervals
 ci.mean.w(dat, adjust = FALSE)

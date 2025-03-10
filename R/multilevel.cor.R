@@ -8,11 +8,11 @@
 #'
 #' The specification of the within-group and between-group variables is in line
 #' with the syntax in Mplus. That is, the \code{within} argument is used to
-#' identify the variables in the matrix or data frame specified in \code{x} that
+#' identify the variables in the data frame specified in \code{data} that
 #' are measured at the individual level and modeled only at the within level.
 #' They are specified to have no variance in the between part of the model. The
-#' \code{between} argument is used to identify the variables in the matrix or
-#' data frame specified in \code{x} that are measured at the cluster level and
+#' \code{between} argument is used to identify the variables in the data frame
+#' specified in \code{data} that are measured at the cluster level and
 #' modeled only at the between level. Variables not mentioned in the arguments
 #' \code{within} or \code{between} are measured at the individual level and will
 #' be modeled at both the within and between level.
@@ -43,21 +43,16 @@
 #' Adjustment method for multiple testing when specifying the argument \code{p.adj}
 #' is applied to the within-group and between-group correlation matrix separately.
 #'
-#' @param ...          a matrix or data frame. Alternatively, an expression
-#'                     indicating the variable names in \code{data} e.g.,
-#'                     \code{multilevel.cor(x1, x2, x3, data = dat)}. Note that
+#' @param data         a data frame.
+#' @param ...          an expression indicating the variable names in \code{data},
+#'                     e.g., \code{multilevel.cor(dat, x1, x2, x3)}. Note that
 #'                     the operators \code{.}, \code{+}, \code{-}, \code{~},
 #'                     \code{:}, \code{::}, and \code{!} can also be used to
 #'                     select variables, see 'Details' in the \code{\link{df.subset}}
 #'                     function.
-#' @param data         a data frame when specifying one or more variables in the
-#'                     argument \code{...}. Note that the argument is \code{NULL}
-#'                     when specifying a matrix or data frameme for the argument
-#'                     \code{...}.
 #' @param cluster      either a character string indicating the variable name of
-#'                     the cluster variable in \code{...} or \code{data}, or a
-#'                     vector representing the nested grouping structure (i.e.,
-#'                     group or cluster variable).
+#'                     the cluster variable in \code{data} or a vector representing
+#'                     the nested grouping structure (i.e., group or cluster variable).
 #' @param within       a character vector representing variables that are measured
 #'                     at the within level and modeled only at the within level.
 #'                     Variables not mentioned in \code{within} or \code{between}
@@ -119,7 +114,7 @@
 #' @param as.na        a numeric vector indicating user-defined missing values,
 #'                     i.e. these values are converted to \code{NA} before
 #'                     conducting the analysis. Note that \code{as.na()} function
-#'                     is only applied to \code{x} but not to \code{cluster}.
+#'                     is only applied to \code{data} but not to \code{cluster}.
 #' @param write        a character string naming a file for writing the output into
 #'                     either a text file with file extension \code{".txt"} (e.g.,
 #'                     \code{"Output.txt"}) or Excel file with file extension
@@ -156,7 +151,7 @@
 #' entries:
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
-#' \item{\code{data}}{data frame specified in \code{x} including the group variable
+#' \item{\code{data}}{data frame specified in \code{data} including the group variable
 #'                    specified in \code{cluster}}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
@@ -194,61 +189,53 @@
 #' #----------------------------------------------------------------------------
 #' # Cluster variable specification
 #'
-#' # Example 1a: Cluster variable 'cluster' in 'x'
+#' # Example 1a: Specification using the argument '...'
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster")
+#'
+#' # Example 1b: Alternative specification with cluster variable 'cluster' in 'data'
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "cluster")], cluster = "cluster")
 #'
-#' # Example 1b: Cluster variable 'cluster' not in 'x'
+#' # Example 1b: Alternative specification with cluster variable 'cluster' not in 'data'
 #' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
-#'
-#' # Alternative specification using the 'data' argument
-#' multilevel.cor(x1:x3, data = Demo.twolevel, cluster = "cluster")
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 2: All variables modeled at both the within and between level
 #' # Highlight statistically significant result at alpha = 0.05
-#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], sig = TRUE,
-#'               cluster = Demo.twolevel$cluster)
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, sig = TRUE, cluster = "cluster")
 #'
 #' # Example 3: Split output table in within-group and between-group correlation matrix.
-#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-#'                cluster = Demo.twolevel$cluster, split = TRUE)
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", split = TRUE)
 #'
 #' # Example 4: Print correlation coefficients, standard errors, z test statistics,
 #' # and p-values
-#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-#'                cluster = Demo.twolevel$cluster, print = "all")
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", print = "all")
 #'
 #' # Example 5: Print correlation coefficients and p-values
 #' # significance values with Bonferroni correction
-#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-#'                cluster = Demo.twolevel$cluster, print = c("cor", "p"),
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", print = c("cor", "p"),
 #'                p.adj = "bonferroni")
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 6: Variables "y1", "y2", and "y2" modeled at both the within and between level
 #' # Variables "w1" and "w2" modeled at the cluster level
-#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-#'                cluster = Demo.twolevel$cluster,
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
 #'                between = c("w1", "w2"))
 #'
 #' # Example 7: Show variables specified in the argument 'between' first
-#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-#'                cluster = Demo.twolevel$cluster,
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
 #'                between = c("w1", "w2"), order = TRUE)
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 8: Variables "y1", "y2", and "y2" modeled only at the within level
 #' # Variables "w1" and "w2" modeled at the cluster level
-#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
-#'                cluster = Demo.twolevel$cluster,
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
 #'                within = c("y1", "y2", "y3"), between = c("w1", "w2"))
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 9: lavaan model and summary of the multilevel model used to compute the
 #' # within-group and between-group correlation matrix
 #'
-#' mod <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-#'                       cluster = Demo.twolevel$cluster, output = FALSE)
+#' mod <- multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", output = FALSE)
 #'
 #' # lavaan model syntax
 #' mod$model
@@ -260,20 +247,14 @@
 #' # Write Results
 #'
 #' # Example 10a: Write Results into a text file
-#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-#'                cluster = Demo.twolevel$cluster,
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
 #'                write = "Multilevel_Correlation.txt")
 #'
 #' # Example 10b: Write Results into a Excel file
-#' multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-#'                cluster = Demo.twolevel$cluster,
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
 #'                write = "Multilevel_Correlation.xlsx")
-#'
-#' result <- multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")],
-#'                          cluster = Demo.twolevel$cluster, output = FALSE)
-#' write.result(result, "Multilevel_Correlation.xlsx")
 #' }
-multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = NULL,
+multilevel.cor <- function(data, ..., cluster, within = NULL, between = NULL,
                            estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"),
                            missing = c("listwise", "fiml"), sig = FALSE, alpha = 0.05,
                            print = c("all", "cor", "se", "stat", "p"), split = FALSE,
@@ -286,11 +267,11 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   # Check input 'cluster'
   if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
@@ -305,13 +286,10 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+  if (isTRUE(!missing(...))) {
 
     # Extract data
-    x <- data[, .var.names(..., data = data, cluster = cluster, check.chr = "a matrix or data frame")]
+    x <- as.data.frame(data[, .var.names(..., data = data, cluster = cluster), drop = FALSE])
 
     # Cluster variable
     cluster <- data[, cluster]
@@ -321,12 +299,8 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
-    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unlist(cluster) } else { cluster <- as.data.frame(cluster) } }
+    # Data frame
+    x <- as.data.frame(data)
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster)
@@ -339,36 +313,34 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
 
   }
 
+  # Convert 'cluster' as tibble into a vector
+  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Within- and Between-Group Variables ####
 
-  # Within variables in 'x'
-  (!within %in% colnames(x)) |>
-    (\(y) if (isTRUE(any(y))) { stop(paste0(ifelse(length(which(y)) == 1L, "Variable ", "Variables "), "specified in the argument 'within' ", ifelse(length(which(y)) == 1L, "was ", "were "), "not found in 'x': ", within[which(y)], collapse = ", "), call. = FALSE) })()
+  # Within variables in 'data'
+  (!within %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0(ifelse(length(which(y)) == 1L, "Variable ", "Variables "), "specified in the argument 'within' ", ifelse(length(which(y)) == 1L, "was ", "were "), "not found in 'data': ", paste(within[which(y)], collapse = ", ")), call. = FALSE) })()
 
   if (isTRUE(is.null(between))) { var.with <- colnames(x) } else { var.with <- colnames(x)[!colnames(x) %in% between] }
 
   # At least two within variables
   if (isTRUE(length(var.with) <= 1L)) { stop("Please specify at least two within-group variables.", call. = FALSE) }
 
-  # Between variables in 'x'
-  (!between %in% colnames(x)) |>
-    (\(y) if (isTRUE(any(y))) { stop(paste0(ifelse(length(which(y)) == 1L, "Variable ", "Variables "), "specified in the argument 'between' ", ifelse(length(which(y)) == 1L, "was ", "were "), "not found in 'x': ", within[which(y)], collapse = ", "), call. = FALSE) })()
+  # Between variables in 'data'
+  (!between %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0(ifelse(length(which(y)) == 1L, "Variable ", "Variables "), "specified in the argument 'between' ", ifelse(length(which(y)) == 1L, "was ", "were "), "not found in 'data': ", paste(between[which(y)], collapse = ", ")), call. = FALSE) })()
 
   # Variance within clusters
-  x.check <- vapply(x[, between, drop = FALSE], function(y) any(tapply(y, cluster, var, na.rm = TRUE) != 0L), FUN.VALUE = logical(1L))
+  vapply(x[, between, drop = FALSE], function(y) any(tapply(y, cluster, var, na.rm = TRUE) != 0L), FUN.VALUE = logical(1L)) |> (\(y) if (isTRUE(any(y))) { warning(paste0("Following between-group ", ifelse(length(which(y)) == 1L, "variable has ", "variables have "), "variance within clusters: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
 
-  if (isTRUE(any(x.check))) { warning(paste0("Following between-group ", ifelse(length(which(x.check)) == 1L, "variable has ", "variables have "), "variance within clusters: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE) }
-
-  #  Between variables
+  # Between variables
   if (isTRUE(is.null(within))) { var.betw <- colnames(x) } else { var.betw <- colnames(x)[!colnames(x) %in% within] }
 
   # At least two between variables
   if (isTRUE(length(var.betw) <= 1L)) { stop("Please specify at least two between-group variables.", call. = FALSE) }
 
   # Variables in 'within' or 'between'
-  intersect(within, between) |>
-    (\(y) if (isTRUE(length(y) > 0L)) { warning(paste0("Following ", ifelse(length(y) == 1L, "variable is ", "variables are "), "specified in both arguments 'within' and 'between': ", paste(y, collapse = ", ")), call. = FALSE) })()
+  intersect(within, between) |> (\(y) if (isTRUE(length(y) > 0L)) { warning(paste0("Following ", ifelse(length(y) == 1L, "variable is ", "variables are "), "specified in both arguments 'within' and 'between': ", paste(y, collapse = ", ")), call. = FALSE) })()
 
   # Unique variables at Within and Between
   var <- unique(c(var.with, var.betw))
@@ -376,7 +348,7 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data frame with Cluster Variable ####
 
-  x <- data.frame(x[, var], .cluster = cluster, stringsAsFactors = FALSE)
+  x <- data.frame(x[, var], .cluster = cluster)
 
   n.total <- nrow(x)
 
@@ -410,15 +382,11 @@ multilevel.cor <- function(..., data = NULL, cluster, within = NULL, between = N
   # Additional checks
   if (isTRUE(check)) {
 
-    # Check input 'x': Zero variance?
-    x.check <- vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L))
-
-    if (isTRUE(any(x.check))) { warning(paste0("Following ", ifelse(length(which(x.check)) == 1L, "variable ", "variables "), "in the matrix or data frame specified in 'x' ", ifelse(length(which(x.check)) == 1L, "has ", "have "), "zero variance: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE) }
+    # Check input 'data': Zero variance?
+    vapply(x, function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L)) |> (\(y) if (isTRUE(any(y))) { warning(paste0("Following ", ifelse(length(which(y)) == 1L, "variable ", "variables "), "in the data frame specified in 'data' ", ifelse(length(which(y)) == 1L, "has ", "have "), "zero variance: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
 
     # Check input 'within'
-    x.check <- vapply(x[, var.with, drop = FALSE], function(y) all(tapply(y, x$.cluster, var, na.rm = TRUE) == 0L), FUN.VALUE = logical(1L))
-
-    if (isTRUE(any(x.check))) { warning(paste0("Following within-group ", ifelse(length(which(x.check)) == 1L, "variable has ", "variables have "), "zero variance within all clusters: ", paste(names(which(x.check)), collapse = ", ")), call. = FALSE) }
+    vapply(x[, var.with, drop = FALSE], function(y) all(tapply(y, x$.cluster, var, na.rm = TRUE) == 0L), FUN.VALUE = logical(1L)) |> (\(y) if (isTRUE(any(y))) { warning(paste0("Following within-group ", ifelse(length(which(y)) == 1L, "variable has ", "variables have "), "zero variance within all clusters: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
 
   }
 

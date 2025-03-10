@@ -4,7 +4,7 @@
 \alias{na.test}
 \title{Missing Completely at Random (MCAR) Test}
 \usage{
-na.test(..., data = NULL, print = c("all", "little", "jamjal"),
+na.test(data, ..., print = c("all", "little", "jamjal"),
         impdat = NULL, delete = 6, method = c("npar", "normal"),
         m = 20, seed = 123, nrep = 10000, n.min = 30,
         pool = c("m", "med", "min", "max", "random"),
@@ -12,17 +12,14 @@ na.test(..., data = NULL, print = c("all", "little", "jamjal"),
         write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame with incomplete data, where missing
-values are coded as \code{NA}. Alternatively, an expression
-indicating the variable names in \code{data} e.g.,
-\code{na.test(x1, x2, x3, data = dat)}. Note that the operators
+\item{data}{a data frame with incomplete data, where missing values are
+coded as \code{NA}.}
+
+\item{...}{an expression indicating the variable names in \code{data}, e.g.,
+\code{na.test(dat, x1, x2, x3)}. Note that the operators
 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
-
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument \code{...}.}
 
 \item{print}{a character vector indicating which results to be printed on
 the console, i.e. \code{"all"} for Little's MCAR test and Jamshidian and
@@ -114,7 +111,7 @@ entries:
 
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
-\item{\code{data}}{matrix or data frame specified in \code{x}}
+\item{\code{data}}{matrix or data frame specified in \code{data}}
 \item{\code{args}}{specification of function arguments}
 \item{\code{result}}{list with result tables, i.e., \code{little} for the
                      result table of the Little's MCAR test, \code{jamjal}

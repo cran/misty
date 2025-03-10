@@ -1,17 +1,20 @@
 #' Write Results of a misty Object into an Excel file
 #'
-#' This function writes the results of a misty object (\code{misty.object})
-#' into an Excel file.
+#' This function writes the results of a \code{misty.object}) into an Excel file.
 #'
-#' Currently the function supports result objects from the function
-#' \code{blimp.bayes}, \code{ci.cor}, \code{\link{ci.mean}}, \code{\link{ci.median}},
-#' \code{\link{ci.prop}}, \code{\link{ci.var}}, \code{\link{ci.sd}}, \code{cor.matrix},
-#' \code{crosstab}, \code{descript}, \code{dominance.manual}, \code{dominance},
-#' \code{effsize}, \code{freq}, \code{item.alpha}, \code{item.cfa}, \code{item.invar},
-#' \code{item.omega}, \code{result.lca}, \code{mplus.bayes}, \code{multilevel.cfa},
-#' \code{multilevel.cor}, \code{multilevel.descript}, \code{multilevel.fit},
-#' \code{multilevel.invar}, \code{multilevel.omega}, \code{na.coverage},
-#' \code{na.descript}, \code{na.pattern}, \code{robust.coef}, and \code{std.coef}.
+#  Currently the function supports result objects from the following functions:
+#' \code{\link{blimp.bayes}}, \code{\link{ci.cor}}, \code{\link{ci.mean}},
+#' \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
+#' \code{\link{ci.sd}}, \code{\link{cor.matrix}}, \code{\link{crosstab}},
+#' \code{\link{descript}}, \code{\link{dominance.manual}}, \code{\link{dominance}},
+#' \code{\link{effsize}}, \code{\link{freq}}, \code{\link{item.alpha}},
+#' \code{\link{item.cfa}}, \code{\link{item.invar}}, \code{\link{item.omega}},
+#' \code{\link{mplus.bayes}}, \code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
+#' \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
+#' \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}},
+#' \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
+#' \code{\link{na.pattern}}, \code{\link{result.lca}}, \code{\link{robust.coef}},
+#' and \code{\link{std.coef}}.
 #'
 #' @param x          misty object (\code{misty.object}) resulting from a misty
 #'                   function supported by the \code{write.result} function (see
@@ -42,22 +45,6 @@
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
-#'
-#' @seealso
-#' \code{\link{blimp.bayes}}, \code{\link{ci.cor}}, \code{\link{ci.mean}},
-#' \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
-#' \code{\link{ci.sd}}, \code{\link{cor.matrix}},
-#' \code{\link{crosstab}}, \code{\link{descript}}, \code{\link{dominance.manual}},
-#' \code{\link{dominance}}, \code{\link{effsize}}, \code{\link{freq}},
-#' \code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.invar}},
-#' \code{\link{item.omega}}, \code{\link{result.lca}},
-#' \code{\link{mplus.bayes}}, \code{\link{multilevel.cfa}},
-#' \code{\link{multilevel.cor}}, \code{\link{multilevel.descript}},
-#' \code{\link{multilevel.fit}}, \code{\link{multilevel.invar}},
-#' \code{\link{multilevel.omega}}, \code{\link{na.auxiliary}},
-#' \code{\link{na.coverage}}, \code{\link{na.descript}},
-#' \code{\link{na.pattern}}, \code{\link{robust.coef}},
-#' \code{\link{std.coef}}
 #'
 #' @export
 #'
@@ -99,7 +86,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   if (isTRUE(!inherits(x, "misty.object"))) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is supported by the function
-  if (isTRUE(!x$type %in% c("blimp.bayes", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "result.lca", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "robust.coef", "std.coef"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
+  if (isTRUE(!x$type %in% c("blimp.bayes", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "result.lca",  "robust.coef", "std.coef"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

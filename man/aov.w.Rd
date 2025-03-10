@@ -7,14 +7,14 @@
 aov.w(formula, data, print = c("all", "none", "LB", "GG", "HF"),
       posthoc = FALSE, conf.level = 0.95,
       p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
-      hypo = TRUE, descript = TRUE, epsilon = TRUE, effsize = FALSE,
-      na.omit = TRUE, plot = FALSE, adjust = TRUE, point.size = 4,
-      errorbar.width = 0.1, xlab = NULL, ylab = NULL, ylim = NULL,
-      breaks = ggplot2::waiver(), jitter = TRUE, line = FALSE,
-      jitter.size = 1.25, jitter.width = 0.05, jitter.height = 0,
-      jitter.alpha = 0.1, title = "", subtitle = "Confidence Interval",
-      digits = 2, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
-      check = TRUE, output = TRUE, ...)
+      hypo = TRUE, descript = TRUE, epsilon = TRUE, effsize = FALSE, na.omit = TRUE,
+      digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, point = TRUE, line = TRUE,
+      ci = TRUE, jitter = FALSE, adjust = TRUE, point.size = 3, line.width = 0.5,
+      errorbar.width = 0.1, jitter.size = 1.25,jitter.width = 0.05, jitter.alpha = 0.1,
+      xlab = NULL, ylab = "y", ylim = NULL, ybreaks = ggplot2::waiver(), title = NULL,
+      subtitle = "Confidence Interval", filename = NULL, width = NA, height = NA,
+      units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
+      check = TRUE, output = TRUE)
 }
 \arguments{
 \item{formula}{a formula of the form \code{cbind(time1, time2, time3) ~ 1}
@@ -65,51 +65,6 @@ the console.}
 \item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed
 before conducting the analysis (i.e., listwise deletion).}
 
-\item{plot}{logical: if \code{TRUE}, a plot showing error bars for
-confidence intervals is drawn.}
-
-\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment
-for the Cousineau-Morey within-subject confidence
-intervals is applied.}
-
-\item{point.size}{a numeric value indicating the \code{size} aesthetic for
-the point representing the mean value.}
-
-\item{errorbar.width}{a numeric value indicating the horizontal bar width of
-the error bar.}
-
-\item{xlab}{a character string specifying the labels for the x-axis.}
-
-\item{ylab}{a character string specifying the labels for the y-axis.}
-
-\item{ylim}{a numeric vector of length two specifying limits of the
-limits of the y-axis.}
-
-\item{breaks}{a numeric vector specifying the points at which tick-marks
-are drawn at the y-axis.}
-
-\item{jitter}{logical: if \code{TRUE} (default), jittered data points
-are drawn.}
-
-\item{line}{logical: if \code{TRUE} (default), subject-specific lines
-are drawn.}
-
-\item{jitter.size}{a numeric value indicating the \code{size} aesthetic
-for the jittered data points.}
-
-\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
-
-\item{jitter.height}{a numeric value indicating the amount of vertical jitter.}
-
-\item{jitter.alpha}{a numeric value indicating the opacity of the jittered
-data points.}
-
-\item{title}{a character string specifying the text for the title for
-the plot.}
-
-\item{subtitle}{a character string specifying the text for the subtitle for
-the plot.}
-
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying descriptive statistics and
 confidence interval.}
@@ -120,6 +75,85 @@ to be used for displaying the \emph{p}-value.}
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before
 conducting the analysis.}
+
+\item{plot}{logical: if \code{TRUE}, a plot showing error bars for
+confidence intervals is drawn.}
+
+\item{point}{logical: if \code{TRUE} (default), points representing
+means for each groups are drawn.}
+
+\item{line}{logical: if \code{TRUE} (default), a line connecting means
+of each groups and lines connecting data points are drawn
+when \code{jitter = TRUE}.}
+
+\item{ci}{logical: if \code{TRUE} (default), error bars representing
+confidence intervals are drawn.}
+
+\item{jitter}{logical: if \code{TRUE}, jittered data points with
+subject-specific lines are drawn.}
+
+\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment
+for the Cousineau-Morey within-subject confidence
+intervals is applied.}
+
+\item{point.size}{a numeric value indicating the \code{size} aesthetic for
+the point representing the mean value.}
+
+\item{line.width}{a numeric value indicating the \code{linewidth} aesthetic
+for the line connecting means of each groups.}
+
+\item{errorbar.width}{a numeric value indicating the horizontal bar width of
+the error bar.}
+
+\item{jitter.size}{a numeric value indicating the \code{size} aesthetic
+for the jittered data points.}
+
+\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
+
+\item{jitter.alpha}{a numeric value between 0 and 1 for specifying the
+\code{alpha} argument in the \code{geom_histogram}
+function for controlling the opacity of the jittered
+data points.}
+
+\item{xlab}{a character string specifying the labels for the x-axis.}
+
+\item{ylab}{a character string specifying the labels for the y-axis.}
+
+\item{ylim}{a numeric vector of length two specifying limits of the
+limits of the y-axis.}
+
+\item{ybreaks}{a numeric vector specifying the points at which tick-marks
+are drawn at the y-axis.}
+
+\item{title}{a character string specifying the text for the title for
+the plot.}
+
+\item{subtitle}{a character string specifying the text for the subtitle for
+the plot.}
+
+\item{filename}{a character string indicating the \code{filename}
+argument including the file extension in the \code{ggsave}
+function. Note that one of \code{".eps"}, \code{".ps"},
+\code{".tex"}, \code{".pdf"} (default),
+\code{".jpeg"}, \code{".tiff"}, \code{".png"},
+\code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+to be specified as file extension in the \code{filename}
+argument. Note that plots can only be saved when
+\code{plot = TRUE} or \code{plot = "boot"}.}
+
+\item{width}{a numeric value indicating the \code{width} argument
+(default is the size of the current graphics device)
+in the \code{ggsave} function.}
+
+\item{height}{a numeric value indicating the \code{height} argument
+(default is the size of the current graphics device)
+in the \code{ggsave} function.}
+
+\item{units}{a character string indicating the \code{units} argument
+(default is \code{in}) in the \code{ggsave} function.}
+
+\item{dpi}{a numeric value indicating the \code{dpi} argument
+(default is \code{600}) in the \code{ggsave} function.}
 
 \item{write}{a character string naming a text file with file extension
 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
@@ -134,7 +168,6 @@ overwritten.}
 
 \item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 
-\item{...}{further arguments to be passed to or from methods.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -233,54 +266,26 @@ dat <- data.frame(time1 = c(3, 2, 1, 4, 5, 2, 3, 5, 6, 7),
 # Example 1: Repeated measures ANOVA
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat)
 
-# Example 2: Repeated measures ANOVA
-# print results based on all sphericity corrections
+# Example 2: Repeated measures ANOVA, print results of all sphericity corrections
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat, print = "all")
 
 # Example 3: Repeated measures ANOVA
 # print effect size measures
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat, effsize = TRUE)
 
-# Example 4: Repeated measures ANOVA
-# do not print hypotheses and descriptive statistics,
+# Example 4: Repeated measures ANOVA, do not print hypotheses and descriptive statistics,
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat, descript = FALSE, hypo = FALSE)
 
-\dontrun{
-# Example 5: Write results into a text file
-aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.txt")}
-
-# Example 6: Repeated measures ANOVA
-# plot results
+# Example 5: Repeated measures ANOVA, plot results
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE)
 
-# Load ggplot2 package
-library(ggplot2)
-
 \dontrun{
-# Save plot, ggsave() from the ggplot2 package
-ggsave("Repeated_measures_ANOVA.png", dpi = 600, width = 4.5, height = 4)}
+# Example 6: Write Results into a text file
+aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.txt")
 
-# Example 7: Repeated measures ANOVA
-# extract plot
-p <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat, output = FALSE)$plot
-p
-
-# Extract data
-plotdat <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat, output = FALSE)$data
-
-# Draw plot in line with the default setting of aov.w()
-ggplot(plotdat$long, aes(time, y, group = 1L)) +
-geom_point(aes(time, y, group = id),
-          alpha = 0.1, position = position_dodge(0.05)) +
-geom_line(aes(time, y, group = id),
-         alpha = 0.1, position = position_dodge(0.05)) +
-geom_point(data = plotdat$ci, aes(variable, m), stat = "identity", size = 4) +
-stat_summary(aes(time, y), fun = mean, geom = "line") +
-geom_errorbar(data = plotdat$ci, aes(variable, m, ymin = low, ymax = upp), width = 0.1) +
-theme_bw() + xlab(NULL) +
-labs(subtitle = "Two-Sided Confidence Interval") +
-theme(plot.subtitle = element_text(hjust = 0.5),
-     plot.title = element_text(hjust = 0.5))
+# Example 7: Save plot
+aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE,
+      filename = "Repeated_measures_ANOVA.png", width = 7, height = 6)}
 }
 \references{
 Abdi, H. (2010). The Greenhouse-Geisser correction. In N. J. Salkind (Ed.)

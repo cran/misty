@@ -7,13 +7,14 @@
 test.welch(formula, data, alternative = c("two.sided", "less", "greater"),
            posthoc = FALSE, conf.level = 0.95, hypo = TRUE, descript = TRUE,
            effsize = FALSE, weighted = FALSE, ref = NULL, correct = FALSE,
-           plot = FALSE, adjust = TRUE, point.size = 4, errorbar.width = 0.1,
-           xlab = NULL, ylab = NULL, ylim = NULL, breaks = ggplot2::waiver(),
-           jitter = TRUE, jitter.size = 1.25, jitter.width = 0.05,
-           jitter.height = 0, jitter.alpha = 0.1, title = "",
-           subtitle = "Confidence Interval", digits = 2, p.digits = 3,
-           as.na = NULL, write = NULL, append = TRUE, check = TRUE,
-           output = TRUE, ...)
+           digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE,
+           point = FALSE, ci = TRUE, jitter = FALSE, adjust = TRUE,
+           point.size = 3, errorbar.width = 0.1, jitter.size = 1.25,
+           jitter.width = 0.05, jitter.height = 0, jitter.alpha = 0.1,
+           xlab = NULL, ylab = "y", ylim = NULL, ybreaks = ggplot2::waiver(),
+           title = NULL, subtitle = "Confidence Interval", filename = NULL,
+           width = NA, height = NA, units = c("in", "cm", "mm", "px"),
+           dpi = 600, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{formula}{a formula of the form \code{y ~ group} where \code{y} is
@@ -58,44 +59,6 @@ to standardized the mean difference to compute Cohen's d.}
 \item{correct}{logical: if \code{TRUE}, correction factor to remove positive
 bias in small samples is used.}
 
-\item{plot}{logical: if \code{TRUE}, a plot showing error bars for
-confidence intervals is drawn.}
-
-\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment for the
-confidence intervals is applied.}
-
-\item{point.size}{a numeric value indicating the \code{size} aesthetic for
-the point representing the mean value.}
-
-\item{errorbar.width}{a numeric value indicating the horizontal bar width of
-the error bar.}
-
-\item{xlab}{a character string specifying the labels for the x-axis.}
-
-\item{ylab}{a character string specifying the labels for the y-axis.}
-
-\item{ylim}{a numeric vector of length two specifying limits of the
-limits of the y-axis.}
-
-\item{breaks}{a numeric vector specifying the points at which tick-marks
-are drawn at the y-axis.}
-
-\item{jitter}{logical: if \code{TRUE} (default), jittered data points
-are drawn.}
-
-\item{jitter.size}{a numeric value indicating the \code{size} aesthetic
-for the jittered data points.}
-
-\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
-
-\item{jitter.height}{a numeric value indicating the amount of vertical jitter.}
-
-\item{jitter.alpha}{a numeric value indicating the opacity of the jittered
-data points.}
-
-\item{title}{a character string specifying the text for the title for
-the plot.}
-
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying descriptive statistics and
 confidence interval.}
@@ -106,6 +69,81 @@ to be used for displaying the \emph{p}-value.}
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis.}
+
+\item{plot}{logical: if \code{TRUE}, a plot showing error bars for
+confidence intervals is drawn.}
+
+\item{bar}{logical: if \code{TRUE} (default), bars representing means
+for each groups are drawn.}
+
+\item{point}{logical: if \code{TRUE}, points representing means for
+each groups are drawn.}
+
+\item{ci}{logical: if \code{TRUE} (default), error bars representing
+confidence intervals are drawn.}
+
+\item{jitter}{logical: if \code{TRUE}, jittered data points are drawn.}
+
+\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment
+for the confidence intervals is applied.}
+
+\item{point.size}{a numeric value indicating the \code{size} aesthetic for
+the point representing the mean value.}
+
+\item{errorbar.width}{a numeric value indicating the horizontal bar width of
+the error bar.}
+
+\item{jitter.size}{a numeric value indicating the \code{size} aesthetic
+for the jittered data points.}
+
+\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
+
+\item{jitter.height}{a numeric value indicating the amount of vertical jitter.}
+
+\item{jitter.alpha}{ a numeric value between 0 and 1 for specifying the
+\code{alpha} argument in the \code{geom_jitter}
+function for controlling the opacity of the jittered
+data points.}
+
+\item{xlab}{a character string specifying the labels for the x-axis.}
+
+\item{ylab}{a character string specifying the labels for the y-axis.}
+
+\item{ylim}{a numeric vector of length two specifying limits of the
+limits of the y-axis.}
+
+\item{ybreaks}{a numeric vector specifying the points at which tick-marks
+are drawn at the y-axis.}
+
+\item{title}{a character string specifying the text for the title of
+the plot.}
+
+\item{subtitle}{a character string specifying the text for the subtitle of
+the plot.}
+
+\item{filename}{a character string indicating the \code{filename}
+argument including the file extension in the \code{ggsave}
+function. Note that one of \code{".eps"}, \code{".ps"},
+\code{".tex"}, \code{".pdf"} (default),
+\code{".jpeg"}, \code{".tiff"}, \code{".png"},
+\code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+to be specified as file extension in the \code{filename}
+argument. Note that plots can only be saved when
+\code{plot = TRUE}.}
+
+\item{width}{a numeric value indicating the \code{width} argument
+(default is the size of the current graphics device)
+in the \code{ggsave} function.}
+
+\item{height}{a numeric value indicating the \code{height} argument
+(default is the size of the current graphics device)
+in the \code{ggsave} function.}
+
+\item{units}{a character string indicating the \code{units} argument
+(default is \code{in}) in the \code{ggsave} function.}
+
+\item{dpi}{a numeric value indicating the \code{dpi} argument
+(default is \code{600}) in the \code{ggsave} function.}
 
 \item{write}{a character string naming a text file with file extension
 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
@@ -119,11 +157,6 @@ overwritten.}
 \item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
 
 \item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
-
-\item{...}{further arguments to be passed to or from methods.}
-
-\item{subtitle}{a character string specifying the text for the subtitle for
-the plot.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
@@ -132,8 +165,8 @@ entries:
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
 \item{\code{sample}}{type of sample, i.e., one-, two-, or paired sample}
-\item{\code{formula}}{formula}
 \item{\code{data}}{data frame with the outcome and grouping variable}
+\item{\code{formula}}{formula}
 \item{\code{args}}{specification of function arguments}
 \item{\code{plot}}{ggplot2 object for plotting the results}
 \item{\code{result}}{result table}
@@ -141,8 +174,8 @@ entries:
 \description{
 This function performs Welch's two-sample t-test and Welch's ANOVA including
 Games-Howell post hoc test for multiple comparison and provides descriptive
-statistics, effect size measures, and a plot showing error bars for
-difference-adjusted confidence intervals with jittered data points.
+statistics, effect size measures, and a plot showing bars representing means
+for each group and error bars for difference-adjusted confidence intervals.
 }
 \details{
 \describe{
@@ -164,39 +197,11 @@ test.welch(mpg ~ vs, data = mtcars)
 # Example 1b: One-sided two-sample Welch-test
 test.welch(mpg ~ vs, data = mtcars, alternative = "greater")
 
-# Example 1c: Two-sided two-sample Welch-test
-# print Cohen's d with weighted pooled SD
+# Example 1c: Two-sided two-sample Welch-test, print Cohen's d
 test.welch(mpg ~ vs, data = mtcars, effsize = TRUE)
 
-# Example 1d: Two-sided two-sample Welch-test
-# plot results
+# Example 1d: Two-sided two-sample Welch-test, plot results
 test.welch(mpg ~ vs, data = mtcars, plot = TRUE)
-
-# Load ggplot2 package
-library(ggplot2)
-
-\dontrun{
-# Save plot, ggsave() from the ggplot2 package
-ggsave("Two-sample_Welch-test.png", dpi = 600, width = 4, height = 6)}
-
-# Example 1e: Two-sided two-sample Welch-test
-# extract plot
-p <- test.welch(mpg ~ vs, data = mtcars, output = FALSE)$plot
-p
-
-# Example 1f: Two-sided two-sample Welch-test
-# Draw plot in line with the default setting of test.welch()
-
-# Extract data
-plotdat <- test.welch(mpg ~ vs, data = mtcars, output = FALSE)$data
-
-# Draw plot
-ggplot(plotdat, aes(factor(group), y)) +
-  geom_point(stat = "summary", fun = "mean", size = 4) +
-  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
-  scale_x_discrete(name = NULL) +
-  labs(subtitle = "Two-Sided Confidence Interval") +
-  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
 
 #----------------------------------------------------------------------------
 # Multiple-Sample Design
@@ -204,38 +209,19 @@ ggplot(plotdat, aes(factor(group), y)) +
 # Example 2a: Welch's ANOVA
 test.welch(mpg ~ gear, data = mtcars)
 
-# Example 2b: Welch's ANOVA
-# print eta-squared and omega-squared
+# Example 2b: Welch's ANOVA, Games-Howell post hoc test
+test.welch(mpg ~ gear, data = mtcars, posthoc = TRUE)
+
+# Example 2c: Welch's ANOVA, print eta-squared and omega-squared
 test.welch(mpg ~ gear, data = mtcars, effsize = TRUE)
 
-# Example 2c: Welch's ANOVA, plot results
+# Example 2d: Welch's ANOVA, plot results
 test.welch(mpg ~ gear, data = mtcars, plot = TRUE)
 
-# Load ggplot2 package
-library(ggplot2)
-
 \dontrun{
-# Save plot, ggsave() from the ggplot2 package
-ggsave("Multiple-sample_Welch-test.png", dpi = 600, width = 4.5, height = 6)}
-
-# Example 2e: Welch's ANOVA
-# extract plot
-p <- test.welch(mpg ~ gear, data = mtcars, output = FALSE)$plot
-p
-
-# Example 2e: Welch's ANOVA
-# Draw plot in line with the default setting of test.welch()
-
-# Extract data
-plotdat <- test.welch(mpg ~ gear, data = mtcars, output = FALSE)$data
-
-# Draw plot
-ggplot(plotdat, aes(group, y)) +
-  geom_point(stat = "summary", fun = "mean", size = 4) +
-  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.20) +
-  scale_x_discrete(name = NULL) +
-  labs(subtitle = "Two-Sided Confidence Interval") +
-  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
+# Example 2e: Welch's ANOVA, save plot
+test.welch(mpg ~ gear, data = mtcars, plot = TRUE,
+           filename = "Multiple-sample_Welch-test.png", width = 6, height = 5)}
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology

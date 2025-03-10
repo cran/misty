@@ -5,19 +5,20 @@
 \alias{kurtosis}
 \title{Univariate and Multivariate Skewness and Kurtosis}
 \usage{
-skewness(..., data = NULL, sample = TRUE, digits = 2, p.digits,
+skewness(data, ..., sample = TRUE, digits = 2, p.digits,
          as.na = NULL, check = TRUE, output = TRUE)
 
-kurtosis(..., data = NULL, sample = TRUE, center = TRUE, digits = 2, p.digits,
+kurtosis(data, ..., sample = TRUE, center = TRUE, digits = 2, p.digits,
          as.na = NULL, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a numeric vector. Alternatively, an expression indicating the
-variable names in \code{data} e.g., \code{skewness(x1, data = dat)}. }
+\item{data}{a numeric vector or data frame.}
 
-\item{data}{a data frame when specifying the variable in the argument
-\code{...}. Note that the argument is \code{NULL} when specifying
-a numeric vector, matrix, or data frame for the argument \code{...}.}
+\item{...}{an expression indicating the variable names in \code{data}, e.g.,
+\code{skewness(dat, x1)}. Note that the operators \code{.},
+\code{+}, \code{-}, \code{~}, \code{:}, \code{::}, and \code{!}
+can also be used to select variables, see 'Details' in the
+\code{\link{df.subset}} function.}
 
 \item{sample}{logical: if \code{TRUE} (default), the univariate sample skewness
 or kurtosis is computed, while the population skewness or kurtosis
@@ -45,11 +46,11 @@ these values are converted to \code{NA} before conducting the analysis.}
 Note that this argument only applied when computing multivariate skewness and kurtosis.}
 }
 \value{
-Returns univariate skewness or kurtosis of \code{x} or an object of class
+Returns univariate skewness or kurtosis of \code{data} or an object of class
 \code{misty.object}, which is a list with following entries:
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
-\item{\code{data}}{list with the input specified in \code{...} }
+\item{\code{data}}{a numeric vector or data frame specified in \code{data}}
 \item{\code{args}}{specification of function arguments}
 \item{\code{result}}{result table}
 }
@@ -101,10 +102,10 @@ in the \pkg{psych} package by William Revelle (2024).
 }
 \examples{
 # Example 1a: Compute univariate sample skewness
-skewness(mpg, data = mtcars)
+skewness(mtcars, mpg)
 
 # Example 1b: Compute univariate sample excess kurtosis
-kurtosis(mpg, data = mtcars)
+kurtosis(mtcars, mpg)
 
 # Example 2a: Compute multivariate skewness
 skewness(mtcars)

@@ -4,25 +4,21 @@
 \alias{item.alpha}
 \title{Coefficient Alpha and Item Statistics}
 \usage{
-item.alpha(..., data = NULL, exclude = NULL, std = FALSE, ordered = FALSE,
+item.alpha(data, ..., exclude = NULL, std = FALSE, ordered = FALSE,
            na.omit = FALSE, print = c("all", "alpha", "item"), digits = 2,
            conf.level = 0.95, as.na = NULL, write = NULL, append = TRUE,
            check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a matrix, data frame, variance-covariance or correlation
+\item{data}{a data frame, variance-covariance or correlation
 matrix. Note that raw data is needed to compute ordinal
-coefficient alpha, i.e., \code{ordered = TRUE}. Alternatively,
-an expression indicating the variable names in \code{data}
-e.g., \code{item.alpha(x1, x2, x3, data = dat)}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+coefficient alpha, i.e., \code{ordered = TRUE}.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix, data frame, variance-covariance
-or correlation matrix for the argument \code{...}.}
+\item{...}{an expression indicating the variable names in \code{data}
+e.g., \code{item.alpha(dat, x1, x2, x3)}. Note that the
+operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+\code{::}, and \code{!} can also be used to select variables,
+see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{exclude}{a character vector indicating items to be excluded from the
 analysis.}
@@ -104,16 +100,11 @@ Pornprasertmanit, 2016), which are implemented in the \code{ci.reliability()}
 function in the \pkg{MBESSS} package by Ken Kelley (2019).
 }
 \examples{
-dat <- data.frame(item1 = c(4, 2, 3, 4, 1, 2, 4, 2),
-                  item2 = c(4, 3, 3, 3, 2, 2, 4, 1),
-                  item3 = c(3, 2, 4, 2, 1, 3, 4, 1),
-                  item4 = c(4, 1, 2, 3, 2, 3, 4, 2))
+dat <- data.frame(item1 = c(4, 2, 3, 4, 1, 2, 4, 2), item2 = c(4, 3, 3, 3, 2, 2, 4, 1),
+                  item3 = c(3, 2, 4, 2, 1, 3, 4, 1), item4 = c(4, 1, 2, 3, 2, 3, 4, 2))
 
-# Example 1a: Compute unstandardized coefficient alpha and item statistics
+# Example 1: Compute unstandardized coefficient alpha and item statistics
 item.alpha(dat)
-
-# Example 1b: Alternative specification using the 'data' argument
-item.alpha(., data = dat)
 
 # Example 2: Compute standardized coefficient alpha and item statistics
 item.alpha(dat, std = TRUE)
@@ -127,24 +118,17 @@ item.alpha(dat, print = "item")
 # Example 5: Compute unstandardized coefficient alpha and item statistics while excluding item3
 item.alpha(dat, exclude = "item3")
 
-# Example 6: Compute variance-covariance matrix
-dat.cov <- cov(dat)
-# Compute unstandardized coefficient alpha based on the variance-covariance matrix
-item.alpha(dat.cov)
+# Example 6: Compute unstandradized coefficient alpha based on the variance-covariance matrix
+item.alpha(cov(dat))
 
-# Compute correlation matrix
-dat.cor <- cor(dat)
 # Example 7: Compute standardized coefficient alpha based on the correlation matrix
-item.alpha(dat.cor)
+item.alpha(cor(dat))
 
 # Example 8: Compute ordinal coefficient alpha
 item.alpha(dat, ordered = TRUE)
 
 \dontrun{
-# Example 9a: Write results into a text file
-result <- item.alpha(dat, write = "Alpha.txt")
-
-# Example 9b: Write results into a Excel file
+# Example 9a: Write Results into a text file
 result <- item.alpha(dat, write = "Alpha.xlsx")}
 }
 \references{

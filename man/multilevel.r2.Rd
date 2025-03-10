@@ -7,6 +7,8 @@
 multilevel.r2(model, print = c("all", "RB", "SB", "NS", "RS"), digits = 3,
               plot = FALSE, gray = FALSE, start = 0.15, end = 0.85,
               color = c("#D55E00", "#0072B2", "#CC79A7", "#009E73", "#E69F00"),
+              filename = NULL, width = NA, height = NA,
+              units = c("in", "cm", "mm", "px"), dpi = 600,
               write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
@@ -42,7 +44,31 @@ the gray value at the high end of the palette.}
 bars in the bar chart in the following order: Fixed slopes (Within),
 Fixed slopes (Between), Slope variation (Within), Intercept variation
 (Between), and Residual (Within). By default, colors from the
-colorblind-friendly palettes are used}
+colorblind-friendly palettes are used.}
+
+\item{filename}{a character string indicating the \code{filename}
+argument including the file extension in the \code{ggsave}
+function. Note that one of \code{".eps"}, \code{".ps"},
+\code{".tex"}, \code{".pdf"} (default),
+\code{".jpeg"}, \code{".tiff"}, \code{".png"},
+\code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+to be specified as file extension in the \code{file}
+argument. Note that plots can only be saved when
+\code{plot = TRUE} and \code{print = "RS"}.}
+
+\item{width}{a numeric value indicating the \code{width} argument
+(default is the size of the current graphics device)
+in the \code{ggsave} function.}
+
+\item{height}{a numeric value indicating the \code{height} argument
+(default is the size of the current graphics device)
+in the \code{ggsave} function.}
+
+\item{units}{a character string indicating the \code{units} argument
+(default is \code{in}) in the \code{ggsave} function.}
+
+\item{dpi}{a numeric value indicating the \code{dpi} argument
+(default is \code{600}) in the \code{ggsave} function.}
 
 \item{write}{a character string naming a text file with file extension
 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
@@ -326,7 +352,7 @@ Jason Rights, Sonya Sterba, and Jessica Flake.
 \dontrun{
 
 # Load misty, lme4, nlme, and ggplot2 package
-libraries(misty, lme4, nlme, ggplot2)
+misty::libraries(misty, lme4, nlme, ggplot2)
 
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
@@ -334,12 +360,10 @@ data("Demo.twolevel", package = "lavaan")
 #----------------------------------------------------------------------------
 
 # Cluster mean centering, center() from the misty package
-Demo.twolevel$x2.c <- center(Demo.twolevel$x2, type = "CWC",
-                             cluster = Demo.twolevel$cluster)
+Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
 
 # Compute group means, cluster.scores() from the misty package
-Demo.twolevel$x2.b <- cluster.scores(Demo.twolevel$x2,
-                                     cluster = Demo.twolevel$cluster)
+Demo.twolevel <- cluster.scores(Demo.twolevel, x2, cluster = "cluster", name = "x2.b")
 
 # Estimate multilevel model using the lme4 package
 mod1a <- lmer(y1 ~ x2.c + x2.b + w1 + (1 + x2.c | cluster), data = Demo.twolevel,
@@ -350,7 +374,6 @@ mod1b <- lme(y1 ~ x2.c + x2.b + w1, random = ~ 1 + x2.c | cluster, data = Demo.t
              method = "ML")
 
 #----------------------------------------------------------------------------
-
 # Example 1a: R-squared measures according to Rights and Sterba (2019)
 multilevel.r2(mod1a)
 
@@ -361,7 +384,6 @@ multilevel.r2(mod1b)
 multilevel.r2(mod1a, write = "ML-R2.txt")
 
 #-------------------------------------------------------------------------------
-
 # Example 2: Bar chart showing the decomposition of scaled total, within-cluster,
 # and between-cluster outcome variance
 multilevel.r2(mod1a, plot = TRUE)
@@ -369,11 +391,11 @@ multilevel.r2(mod1a, plot = TRUE)
 # Bar chart in gray scale
 multilevel.r2(mod1a, plot = TRUE, gray = TRUE)
 
-# Save bar chart, ggsave() from the ggplot2 package
-ggsave("Proportion_of_Variance.png", dpi = 600, width = 5.5, height = 5.5)
+# Save bar chart
+multilevel.r2(mod1a, plot = TRUE, filename = "Proportion_of_Variance.png",
+              dpi = 600, width = 5.5, height = 5.5)
 
 #-------------------------------------------------------------------------------
-
 # Example 3: Estimate multilevel model without random slopes
 # Note. R-squared measures by Raudenbush and Bryk (2002), and  Snijders and
 # Bosker (2012) should be computed based on the random intercept model
@@ -384,7 +406,6 @@ mod2 <- lmer(y1 ~ x2.c + x2.b + w1 + (1 | cluster), data = Demo.twolevel,
 multilevel.r2(mod2, print = "all")
 
 #-------------------------------------------------------------------------------
-
 # Example 4: Draw bar chart manually
 mod1a.r2 <- multilevel.r2(mod1a, output = FALSE)
 

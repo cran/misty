@@ -3,16 +3,13 @@
 #' This function computes the proportion of cases that contributes for the calculation
 #' of each variance and covariance.
 #'
-#' @param ...    a matrix or data frame with incomplete data, where missing
-#'               values are coded as \code{NA}. Alternatively, an expression
-#'               indicating the variable names in \code{data} e.g.,
-#'               \code{na.coverage(x1, x2, x3, data = dat)}. Note that the operators
+#' @param data   a data frame with incomplete data, where missing
+#'               values are coded as \code{NA}.
+#' @param ...    an expression indicating the variable names in \code{data}, e.g.,
+#'               \code{na.coverage(dat, x1, x2, x3)}. Note that the operators
 #'               \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'               and \code{!} can also be used to select variables, see 'Details'
 #'               in the \code{\link{df.subset}} function.
-#' @param data   a data frame when specifying one or more variables in the
-#'               argument \code{...}. Note that the argument is \code{NULL}
-#'               when specifying a matrix or data frame for the argument \code{...}.
 #' @param tri    a character string or character vector indicating which triangular
 #'               of the matrix to show on the console, i.e., \code{both} for
 #'               upper and lower triangular, \code{lower} (default) for the
@@ -67,15 +64,14 @@
 #' # Example 1: Compute variance-covariance coverage
 #' na.coverage(airquality)
 #'
-#' # Alternative specification using the 'data' argument
-#' na.coverage(., data = airquality)
-#'
+#' \dontrun{
 #' # Example 2a: Write Results into a text file
 #' na.coverage(airquality, write = "Coverage.txt")
 #'
 #' # Example 2b: Write Results into a Excel file
 #' na.coverage(airquality, write = "Coverage.xlsx")
-na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), digits = 2,
+#' }
+na.coverage <- function(data, ..., tri = c("both", "lower", "upper"), digits = 2,
                         as.na = NULL, write = NULL, append = TRUE, check = TRUE,
                         output = TRUE) {
 
@@ -83,11 +79,11 @@ na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), dig
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -96,31 +92,20 @@ na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), dig
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract data
-    x <- data[, .var.names(..., data = data, check.chr = "a matrix or data frame")]
+    # Extract data and convert tibble into data frame or vector
+    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- as.data.frame(data)
 
   }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## As data frame ####
-
-  df <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
@@ -147,14 +132,11 @@ na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), dig
   #
   # Main Function --------------------------------------------------------------
 
-  # Pairwise combination
-  comb.pair <- data.frame(combn(ncol(df), m = 2L), stringsAsFactors = FALSE)
-
   # Compute pairwise coverage
-  cov.coverage <- vapply(comb.pair, function(y) nrow(na.omit(df[, c(y[1L], y[2L])])) / nrow(df), FUN.VALUE = double(1L))
+  cov.coverage <- data.frame(combn(ncol(x), m = 2L)) |> (\(y) vapply(y, function(z) nrow(na.omit(x[, c(z[1L], z[2L])])) / nrow(x), FUN.VALUE = double(1L)))()
 
   # Coverage matrix
-  restab <- matrix(NA, ncol = ncol(x), nrow = (ncol(x)), dimnames = list(colnames(df), colnames(df)))
+  restab <- matrix(NA, ncol = ncol(x), nrow = (ncol(x)), dimnames = list(colnames(x), colnames(x)))
 
   # Assign coverage to lower triangular
   restab[lower.tri(restab)] <- cov.coverage
@@ -163,7 +145,7 @@ na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), dig
   restab[upper.tri(restab)] <- t(restab)[upper.tri(restab)]
 
   # Variance coverage
-  diag(restab) <- vapply(df, function(y) mean(!is.na(y)), FUN.VALUE = double(1L))
+  diag(restab) <- vapply(x, function(y) mean(!is.na(y)), FUN.VALUE = double(1L))
 
   #_____________________________________________________________________________
   #
@@ -172,8 +154,7 @@ na.coverage <- function(..., data = NULL, tri = c("both", "lower", "upper"), dig
   object <- list(call = match.call(),
                  type = "na.coverage",
                  data = x,
-                 args = list(tri = tri, digits = digits, as.na = as.na,
-                             write = write, append = append, check = TRUE, output = output),
+                 args = list(tri = tri, digits = digits, as.na = as.na, write = write, append = append, check = TRUE, output = output),
                  result = restab)
 
   class(object) <- "misty.object"

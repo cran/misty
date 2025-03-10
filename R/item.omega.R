@@ -17,17 +17,13 @@
 #' which are implemented in the \code{ci.reliability()} function in the
 #' \pkg{MBESSS} package by Ken Kelley (2019).
 #'
-#' @param ...        a matrix or data frame. Note that at least three items are
-#'                   needed for computing omega. Alternatively, an expression
-#'                   indicating the variable names in \code{data} e.g.,
-#'                   \code{item.omega(x1, x2, x3, data = dat)}. Note that the
+#' @param data       a data frame. Note that at least three items are needed for
+#'                   computing coefficient omega.
+#' @param ...        an expression indicating the variable names in \code{data}
+#'                   e.g., \code{item.omega(dat, x1, x2, x3)}. Note that the
 #'                   operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
 #'                   \code{::}, and \code{!} can also be used to select variables,
 #'                   see 'Details' in the \code{\link{df.subset}} function.
-#' @param data       a data frame when specifying one or more variables in the
-#'                   argument \code{...}. Note that the argument is \code{NULL}
-#'                   when specifying a matrix or data frame for the argument
-#'                   \code{...}.
 #' @param rescov     a character vector or a list of character vectors for
 #'                   specifying residual covariances when computing coefficient
 #'                   omega, e.g. \code{rescov = c("x1", "x2")} for specifying
@@ -107,7 +103,7 @@
 #' \item{\code{data}}{data frame used for the current analysis}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
-#' \item{\code{result}}{list with result tables, i.e., \code{alpha} for a table
+#' \item{\code{result}}{list with result tables, i.e., \code{ometa} for a table
 #'                      with coefficient omega and \code{itemstat} for a table with
 #'                      item statistics}
 #'
@@ -119,42 +115,38 @@
 #' @export
 #'
 #' @examples
-#' dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2),
-#'                   item2 = c(5, 3, 3, 5, 2, 2, 5, 1),
-#'                   item3 = c(4, 2, 4, 5, 1, 3, 5, 1),
-#'                   item4 = c(5, 1, 2, 5, 2, 3, 4, 2))
+#' \dontrun{
+#' dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 5, 2, 2, 5, 1),
+#'                   item3 = c(4, 2, 4, 5, 1, 3, 5, 1), item4 = c(5, 1, 2, 5, 2, 3, 4, 2))
 #'
 #' # Example 1a: Compute unstandardized coefficient omega and item statistics
 #' item.omega(dat)
 #'
-#' # Example 1b: Alternative specification using the 'data' argument
-#' item.omega(., data = dat)
+#' # Example 2: Compute unstandardized coefficient omega and item statistics while excluding item3
+#' item.omega(dat, exclude = "item3")
 #'
-#' # Example 2: Compute unstandardized coefficient omega with a residual covariance
+#' # Example 3: Compute unstandardized coefficient omega with a residual covariance
 #' # and item statistics
 #' item.omega(dat, rescov = c("item1", "item2"))
 #'
-#' # Example 3: Compute unstandardized coefficient omega with residual covariances
+#' # Example 4: Compute unstandardized coefficient omega with residual covariances
 #' # and item statistics
 #' item.omega(dat, rescov = list(c("item1", "item2"), c("item1", "item3")))
 #'
-#' # Example 4: Compute unstandardized hierarchical omega and item statistics
+#' # Example 5: Compute unstandardized hierarchical omega and item statistics
 #' item.omega(dat, type = "hierarch")
 #'
-#' # Example 5: Compute categorical omega and item statistics
+#' # Example 6: Compute categorical omega and item statistics
 #' item.omega(dat, type = "categ")
 #'
-#' # Example 6: Compute standardized coefficient omega and item statistics
+#' # Example 7: Compute standardized coefficient omega and item statistics
 #' item.omega(dat, std = TRUE)
 #'
-#' # Example 7: Compute unstandardized coefficient omega
+#' # Example 8: Compute unstandardized coefficient omega
 #' item.omega(dat, print = "omega")
 #'
-#' # Example 8: Compute item statistics
+#' # Example 9: Print only item statistics
 #' item.omega(dat, print = "item")
-#'
-#' # Example 9: Compute unstandardized coefficient omega and item statistics while excluding item3
-#' item.omega(dat, exclude = "item3")
 #'
 #' # Example 10: Summary of the CFA model used to compute coefficient omega
 #' lavaan::summary(item.omega(dat, output = FALSE)$model.fit,
@@ -165,21 +157,22 @@
 #'
 #' # Example 11b: Write Results into a Excel file
 #' item.omega(dat, write = "Omega.xlsx")
- item.omega <- function(..., data = NULL, rescov = NULL,
+#' }
+item.omega <- function(data, ..., rescov = NULL,
                        type = c("omega", "hierarch", "categ"), exclude = NULL,
-                       std = FALSE, na.omit = FALSE, print = c("all", "omega", "item"),
-                       digits = 2, conf.level = 0.95, as.na = NULL, write = NULL,
-                       append = TRUE, check = TRUE, output = TRUE) {
+                        std = FALSE, na.omit = FALSE, print = c("all", "omega", "item"),
+                        digits = 2, conf.level = 0.95, as.na = NULL, write = NULL,
+                        append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   # Package 'mnormt' installed?
   if (isTRUE(ordered)) { if (isTRUE(!requireNamespace("mnormt", quietly = TRUE))) { stop("Package \"mnormt\" is needed for this function to work, please install it.", call. = FALSE) } }
@@ -191,24 +184,18 @@
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Extract variables
-    x <- data[, .var.names(..., data = data, check.chr = "a matrix, data frame, variance-covariance or correlation matrix")]
+    # Extract data and convert tibble into data frame or vector
+    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- as.data.frame(data)
 
   }
 
@@ -265,14 +252,14 @@
   # Additional checks
   if (isTRUE(check)) {
 
-    # Check input 'x': One or two item
+    # Check input 'data': One or two item
     if (isTRUE(ncol(x) < 3L)) { stop("Please specify at least three items to compute coefficient omega", call. = FALSE) }
 
-    # Check input 'x': Zero variance
+    # Check input 'data': Zero variance
     if (isTRUE(nrow(x) != ncol(x))) {
 
       vapply(as.data.frame(x, stringsAsFactors = FALSE), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L)) |>
-        (\(y) if (isTRUE(any(y))) { stop(paste0("Following variables in the matrix or data frame specified in 'x' have zero variance: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
+        (\(y) if (isTRUE(any(y))) { stop(paste0("Following variables in the data frame specified in 'data' have zero variance: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
 
 
     }
@@ -283,7 +270,7 @@
       unique(unlist(rescov)) |>
         (\(y) if (isTRUE(any(!y %in% colnames(x)))) {
 
-          stop(paste0("Items specified in the argument 'rescov' were not found in 'x': ", paste(y[!y %in% colnames(x)], collapse = ", ")), call. = FALSE)
+          stop(paste0("Items specified in the argument 'rescov' were not found in 'data': ", paste(y[!y %in% colnames(x)], collapse = ", ")), call. = FALSE)
 
         })()
 
@@ -324,7 +311,7 @@
   #
   # Main Function --------------------------------------------------------------
 
-  omega.mod <- omega.function(y = x, y.rescov = rescov, y.type = type, y.std = std, check = TRUE)
+  omega.mod <- .omega.function(y = x, y.rescov = rescov, y.type = type, y.std = std, check = TRUE)
 
   omega.x <- data.frame(n = lavaan::lavInspect(omega.mod$mod.fit, "nobs"),
                         items = ncol(lavaan::lavInspect(omega.mod$mod.fit, "data")),
@@ -377,7 +364,7 @@
 
         }
 
-        itemstat[i, 2L] <- omega.function(y = x[, -grep(var, colnames(x))], y.rescov = rescov.i, y.type = type, y.std = std, check = FALSE)$omega
+        itemstat[i, 2L] <- .omega.function(y = x[, -grep(var, colnames(x))], y.rescov = rescov.i, y.type = type, y.std = std, check = FALSE)$omega
 
       } else {
 
@@ -396,7 +383,7 @@
       # Omega if item deleted
       if (isTRUE(ncol(x) > 3L)) {
 
-        itemstat[i, 2L] <- omega.function(y = x[, -grep(var, colnames(x))], y.rescov = NULL, y.type = "categ", y.std = std, check = FALSE)$omega
+        itemstat[i, 2L] <- .omega.function(y = x[, -grep(var, colnames(x))], y.rescov = NULL, y.type = "categ", y.std = std, check = FALSE)$omega
 
       } else {
 
@@ -423,10 +410,7 @@
   object <- list(call = match.call(),
                  type = "item.omega",
                  data = x.raw,
-                 args = list(rescov = rescov, type = type, exclude = exclude,
-                             std = std, na.omit = na.omit, print = print,
-                             digits = digits, conf.level = conf.level, as.na = as.na,
-                             write = write, append = append, check = check, output = output),
+                 args = list(rescov = rescov, type = type, exclude = exclude, std = std, na.omit = na.omit, print = print, digits = digits, conf.level = conf.level, as.na = as.na, write = write, append = append, check = check, output = output),
                  model.fit = omega.mod$mod.fit,
                  result = list(omega = omega.x, itemstat = itemstat))
 

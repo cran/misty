@@ -19,7 +19,7 @@ blimp.plot(x, plot = c("none", "trace", "post"), param = NULL, labels = TRUE,
            linewidth = 0.6, linetype = "dashed", line.col = "black",
            plot.margin = NULL, legend.title.size = 10, legend.text.size = 10,
            legend.box.margin = NULL, saveplot = c("all", "none", "trace", "post"),
-           file = "Blimp_Plot.pdf", file.plot = c("_TRACE", "_POST"),
+           filename = "Blimp_Plot.pdf", file.plot = c("_TRACE", "_POST"),
            width = NA, height = NA, units = c("in", "cm", "mm", "px"), dpi = 600,
            check = TRUE)
 }
@@ -214,18 +214,18 @@ i.e., \code{"all"} for saving all plots, \code{"none"}
 for saving the trace plots and \code{post} for the saving
 the posterior distribution plots.}
 
-\item{file}{a character string indicating the \code{filename}
+\item{filename}{a character string indicating the \code{filename}
 argument (default is \code{"Blimp_Plot.pdf"}) including
 the file extension for the \code{ggsave} function.
 Note that one of \code{".eps"}, \code{".ps"},
 \code{".tex"}, \code{".pdf"} (default), \code{".jpeg"},
 \code{".tiff"}, \code{".png"}, \code{".bmp"},
 \code{".svg"} or \code{".wmf"} needs to be specified
-as file extension in the \code{file} argument.}
+as file extension in the \code{filename} argument.}
 
 \item{file.plot}{a character vector with two elements for distinguishing
 different types of plots. By default, the character
-string specified in the argument \code{"file"}
+string specified in the argument \code{"filename"}
 (\code{"Blimp_Plot"}) is concatenated with \code{"_TRACE"}
 (\code{"Blimp_Plot_TRACE"}) for the trace plots,
 and \code{"_POST"} (\code{"Blimp_Plot_POST"}) for
@@ -318,7 +318,7 @@ blimp.plot("Posterior_Ex4.3", plot = "post", hist = FALSE)
 blimp.plot("Posterior_Ex4.3", saveplot = "all")
 
 # Example 3b: Save all plots in png format with 300 dpi
-blimp.plot("Posterior_Ex4.3", saveplot = "all", file = "Blimp_Plot.png", dpi = 300)
+blimp.plot("Posterior_Ex4.3", saveplot = "all", filename = "Blimp_Plot.png", dpi = 300)
 
 # Example 3a: Save posterior distribution plot, specify width and height of the plot
 blimp.plot("Posterior_Ex4.3", plot = "none", saveplot = "post",

@@ -40,19 +40,14 @@
 #' The adjusted Cousineau-Morey interval is informative about the pattern of
 #' differences between means and is computed by default (i.e., \code{adjust = TRUE}).
 #'
-#' @param ...          a matrix or data frame with numeric variables representing
-#'                     the levels of the within-subject factor, i.e., data are
-#'                     specified in wide-format (i.e., multivariate person level
-#'                     format). Alternatively, an expression indicating the variable
-#'                     names in \code{data} e.g., \code{ci.mean.w(x1, x2, x3, data = dat)}.
-#'                     Note that the operators \code{.}, \code{+}, \code{-}, \code{~},
-#'                     \code{:}, \code{::}, and \code{!} can also be used to select
-#'                     variables, see 'Details' in the \code{\link{df.subset}}
-#'                     function.
-#' @param data         a data frame when specifying one or more variables in the
-#'                     argument \code{...}. Note that the argument is \code{NULL}
-#'                     when specifying a matrix or data frame for the argument
-#'                     \code{...}.
+#' @param data         a data frame with numeric variables representing the levels
+#'                     of the within-subject factor, i.e., data are specified in
+#'                     wide-format (i.e., multivariate person level format).
+#' @param ...          an expression indicating the variable names in \code{data},
+#'                     e.g., \code{ci.mean.w(dat, time1, time2, time3)}. Note that
+#'                     the operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+#'                     \code{::}, and \code{!} can also be used to select variables,
+#'                     see 'Details' in the \code{\link{df.subset}} function.
 #' @param adjust       logical: if \code{TRUE} (default), difference-adjustment
 #'                     for the Cousineau-Morey within-subjects confidence intervals
 #'                     is applied.
@@ -123,15 +118,12 @@
 #' # Example 1: Difference-adjusted Cousineau-Morey confidence intervals
 #' ci.mean.w(dat)
 #'
-#' # Alternative specification using the 'data' argument
-#' ci.mean.w(., data = dat)
-#'
 #' # Example 2: Cousineau-Morey confidence intervals
 #' ci.mean.w(dat, adjust = FALSE)
 #'
 #' # Example 3: Write Results into a text file
 #' ci.mean.w(dat, write = "WS_Confidence_Interval.txt")
-ci.mean.w <- function(..., data = NULL, adjust = TRUE,
+ci.mean.w <- function(data, ..., adjust = TRUE,
                       alternative = c("two.sided", "less", "greater"),
                       conf.level = 0.95, na.omit = TRUE, digits = 2, as.na = NULL,
                       write = NULL, append = TRUE, check = TRUE, output = TRUE) {
@@ -140,11 +132,11 @@ ci.mean.w <- function(..., data = NULL, adjust = TRUE,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a data.frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -156,34 +148,20 @@ ci.mean.w <- function(..., data = NULL, adjust = TRUE,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
+  if (isTRUE(!missing(...))) {
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
-
-    # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a matrix or data frame")
-
-    # Extract variables
-    x <- data[, var.names]
+    # Extract data and convert tibble into data frame or vector
+    x <- data[, .var.names(..., data = data), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- as.data.frame(eval(..., enclos = parent.frame()))
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data frame
+    x <- as.data.frame(data)
 
   }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data frame ####
-
-  x <- as.data.frame(x, stringsAsFactors = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####

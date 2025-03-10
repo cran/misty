@@ -9,6 +9,7 @@ S3method(test.t,default)
 S3method(test.t,formula)
 S3method(test.z,default)
 S3method(test.z,formula)
+S3method(plot,misty.object)
 S3method(print,misty.object)
 export(aov.b)
 export(aov.w)
@@ -131,12 +132,12 @@ export(write.mplus)
 export(write.result)
 export(write.sav)
 export(write.xlsx)
-importFrom("stats", "aov", "as.formula", "chisq.test", "contr.helmert", 
-           "contr.poly", "contr.sum", "contr.treatment", "coef", "coefficients", 
-           "cooks.distance", "cor", "cor.test", "cov", "cov2cor", "density", "df", 
-           "dfbetas", "df.residual", "dnorm", "dt", "fft", "formula", "hatvalues", "integrate", 
-           "IQR", "lag", "lm", "loess", "logLik", "mad", "mahalanobis", "median", "model.frame", "model.matrix", 
-           "na.omit", "nextn", "nobs", "oneway.test", "optim", "optimize", "pnorm", 
+importFrom("stats", "aov", "as.formula", "chisq.test", "contr.helmert",
+           "contr.poly", "contr.sum", "contr.treatment", "coef", "coefficients",
+           "cooks.distance", "cor", "cor.test", "cov", "cov2cor", "density", "df",
+           "dfbetas", "df.residual", "dnorm", "dt", "fft", "formula", "hatvalues", "integrate",
+           "IQR", "lag", "lm", "loess", "logLik", "mad", "mahalanobis", "median", "model.frame", "model.matrix",
+           "na.omit", "nextn", "nobs", "oneway.test", "optim", "optimize", "pnorm",
            "predict", "residuals", "rnorm", "rstandard", "rstudent", "runif", "setNames", "summary.lm",
            "pchisq", "qbeta", "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", "reshape",
            "sd", "terms", "time", "t.test", "p.adjust", "pf", "pt", "uniroot", "update",

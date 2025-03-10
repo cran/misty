@@ -5,16 +5,16 @@
 \alias{df.tail}
 \title{Print the First and Last Rows of a Data Frame}
 \usage{
-df.head(x, n = 6, digits = 3, width = 20, row.names = TRUE,
-        row.names.col = "gray2", message = TRUE, message.col = "b.blue",
-        check = TRUE, output = TRUE)
+df.head(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
+        row.names = TRUE, row.names.col = "gray2", message = TRUE,
+        message.col = "b.blue", check = TRUE, output = TRUE)
 
-df.tail(x, n = 6, digits = 3, width = 20, row.names = TRUE,
-        row.names.col = "gray2", message = TRUE, message.col = "b.blue",
-        check = TRUE, output = TRUE)
+df.tail(data, n = 6, digits = 3, width = 20, factor.labels = TRUE,
+        row.names = TRUE, row.names.col = "gray2", message = TRUE,
+        message.col = "b.blue", check = TRUE, output = TRUE)
 }
 \arguments{
-\item{x}{a data frame.}
+\item{data}{a data frame.}
 
 \item{n}{a numeric value indicating the number of rows to be
 printed on the console.}
@@ -24,6 +24,9 @@ places to be used.}
 
 \item{width}{a numeric value indicating the maximum width of the
 character strings in the vector.}
+
+\item{factor.labels}{logical: if \code{TRUE}, factor labels will be printed
+on the console.}
 
 \item{row.names}{logical: if \code{TRUE}, row names of the data frame are
 printed on the console.}
@@ -49,7 +52,7 @@ console.}
 \value{
 Returns a list with following entries:
 
-\item{\code{df}}{data frame specified in \code{x} with the first or last \code{n}
+\item{\code{df}}{data frame specified in \code{data} with the first or last \code{n}
 rows of the data frame with as many columns as fit on the console}
 \item{\code{row.col}}{character string indicating the remaining rows and columns}
 }

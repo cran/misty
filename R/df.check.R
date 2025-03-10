@@ -4,7 +4,7 @@
 #' rows and columns, \code{names} for the variable names, \code{df.head} for the
 #' first rows, and \code{df.tail} for the last rows of a data frame.
 #'
-#' @param x             a data frame.
+#' @param data          a data frame.
 #' @param print         a character string or character vector indicating which
 #'                      results to show on the console, i.e., \code{"dim"}, for
 #'                      the number of rows and number of columns, \code{"names"}
@@ -49,7 +49,7 @@
 #' @examples
 #' # Example 1: Check data frame mtcars
 #' df.check(mtcars)
-df.check <- function(x, print = c("dim", "names", "head", "tail"),
+df.check <- function(data, print = c("dim", "names", "head", "tail"),
                      n = 4, digits = 3, width = 20, row.names = TRUE, row.names.col = "gray2",
                      message = TRUE, message.col = "b.blue", check = TRUE, output = TRUE) {
 
@@ -58,7 +58,10 @@ df.check <- function(x, print = c("dim", "names", "head", "tail"),
   # Initial Check --------------------------------------------------------------
 
   # Check if input 'data' is missing
-  if (isTRUE(missing(x) || !is.data.frame(x))) { stop("Please specify a data frame for the argument 'x'.", call. = FALSE) }
+  if (isTRUE(missing(data))) { stop("Please specify a numeric vector for the argument 'data'", call. = FALSE) }
+
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -91,24 +94,24 @@ df.check <- function(x, print = c("dim", "names", "head", "tail"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dimensions ####
 
-  x.dim <- format(data.frame(x = c("  No. of rows:    ", "  No. of columns: "), y = c(nrow(x), ncol(x))), justify = "right")
+  data.dim <- format(data.frame(x = c("  No. of rows:    ", "  No. of columns: "), y = c(nrow(data), ncol(data))), justify = "right")
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Variable Names ####
 
-  for (i in seq_along(names(x))) {
+  for (i in seq_along(names(data))) {
 
     # Variable names
-    x.names.temp <- names(x)
+    data.names.temp <- names(data)
 
     # Length of variable names not divisible by i
-    if (isTRUE((length(x.names.temp) / i) %% 1L != 0L)) {
+    if (isTRUE((length(data.names.temp) / i) %% 1L != 0L)) {
 
       repeat {
 
-        x.names.temp <- c(x.names.temp, "")
+        data.names.temp <- c(data.names.temp, "")
 
-        if (isTRUE((length(x.names.temp) / i) %% 1L == 0L)) break
+        if (isTRUE((length(data.names.temp) / i) %% 1L == 0L)) break
 
       }
 
@@ -116,28 +119,28 @@ df.check <- function(x, print = c("dim", "names", "head", "tail"),
 
 
     # Variable print object
-    x.names.print <- format(as.data.frame(matrix(sapply(x.names.temp, function(y) ifelse(y != "", shQuote(y), y)), nrow = i, byrow = TRUE)), justify = "left")
+    data.names.print <- format(as.data.frame(matrix(sapply(data.names.temp, function(y) ifelse(y != "", shQuote(y), y)), nrow = i, byrow = TRUE)), justify = "left")
 
-    if (isTRUE(max(apply(x.names.print, 1L, function(y) nchar(paste(y, collapse = " "))) + 3L) < getOption("width"))) break
+    if (isTRUE(max(apply(data.names.print, 1L, function(y) nchar(paste(y, collapse = " "))) + 3L) < getOption("width"))) break
 
   }
 
   # Format
-  x.names.print[, 1L] <- paste("  ", x.names.print[, 1L])
+  data.names.print[, 1L] <- paste("  ", data.names.print[, 1L])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## First and Last Rows ####
 
   # First and last rows
-  x.head <- misty::df.head(x, n = n, digits = digits, width = width, row.names = row.names, row.names.col = row.names.col, message = message, message.col = message.col, check = FALSE, output = FALSE)
-  x.tail <- misty::df.tail(x, n = n, digits = digits, width = width, row.names = row.names, row.names.col = row.names.col, message = message, message.col = message.col,check = FALSE, output = FALSE)
+  data.head <- misty::df.head(data, n = n, digits = digits, width = width, row.names = row.names, row.names.col = row.names.col, message = message, message.col = message.col, check = FALSE, output = FALSE)$result
+  data.tail <- misty::df.tail(data, n = n, digits = digits, width = width, row.names = row.names, row.names.col = row.names.col, message = message, message.col = message.col,check = FALSE, output = FALSE)$result
 
   # Format
-  x.head$df[, 1L] <- paste("  ", x.head$df[, 1L])
-  x.head$row.col <- paste("  ", x.head$row.col)
+  data.head$df[, 1L] <- paste("  ", data.head$df[, 1L])
+  data.head$row.col <- paste("  ", data.head$row.col)
 
-  x.tail$df[, 1L] <- paste("  ", x.tail$df[, 1L])
-  x.tail$row.col <- paste("  ", x.tail$row.col)
+  data.tail$df[, 1L] <- paste("  ", data.tail$df[, 1L])
+  data.tail$row.col <- paste("  ", data.tail$row.col)
 
   #_____________________________________________________________________________
   #
@@ -148,7 +151,7 @@ df.check <- function(x, print = c("dim", "names", "head", "tail"),
   #...................
   ### Dimensions ####
 
-  if (isTRUE("dim" %in% print)) { write.table(x.dim, quote = FALSE, col.names = FALSE, row.names = FALSE) }
+  if (isTRUE("dim" %in% print)) { write.table(data.dim, quote = FALSE, col.names = FALSE, row.names = FALSE) }
 
   #...................
   ### Variable names ####
@@ -159,12 +162,12 @@ df.check <- function(x, print = c("dim", "names", "head", "tail"),
 
     cat("  Variable names\n")
 
-    write.table(x.names.print, quote = FALSE, col.names = FALSE, row.names = FALSE)
+    write.table(data.names.print, quote = FALSE, col.names = FALSE, row.names = FALSE)
 
   }
 
   # Number of rows to be printed smaller than the number of rows of the data frame
-  if (isTRUE(n < nrow(x))) {
+  if (isTRUE(n < nrow(data))) {
     #...................
     ### First Rows ####
 
@@ -187,10 +190,10 @@ df.check <- function(x, print = c("dim", "names", "head", "tail"),
       }
 
       # Print first rows
-      write.table(x.head$df, quote = FALSE, col.names = FALSE, row.names = FALSE)
+      write.table(data.head$df, quote = FALSE, col.names = FALSE, row.names = FALSE)
 
       # Number of remaining rows and columns
-      if (isTRUE(message)) { write.table(x.head$row.col, quote = FALSE, col.names = FALSE, row.names = FALSE) }
+      if (isTRUE(message)) { write.table(data.head$row.col, quote = FALSE, col.names = FALSE, row.names = FALSE) }
 
     }
 
@@ -216,10 +219,10 @@ df.check <- function(x, print = c("dim", "names", "head", "tail"),
       }
 
       # Print last rows
-      write.table(x.tail$df, quote = FALSE, col.names = FALSE, row.names = FALSE)
+      write.table(data.tail$df, quote = FALSE, col.names = FALSE, row.names = FALSE)
 
       # Number of remaining rows and columns
-      if (isTRUE(message)) { write.table(x.tail$row.col, quote = FALSE, col.names = FALSE, row.names = FALSE) }
+      if (isTRUE(message)) { write.table(data.tail$row.col, quote = FALSE, col.names = FALSE, row.names = FALSE) }
 
     }
 
@@ -229,7 +232,7 @@ df.check <- function(x, print = c("dim", "names", "head", "tail"),
     if (isTRUE(any(c("dim", "names") %in% print))) { cat("\n") }
 
     cat("  Data frame\n")
-    write.table(x.head$df, quote = FALSE, col.names = FALSE, row.names = FALSE)
+    write.table(data.head$df, quote = FALSE, col.names = FALSE, row.names = FALSE)
 
   }
 

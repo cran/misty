@@ -4,47 +4,42 @@
 \alias{ci.cor}
 \title{(Bootstrap) Confidence Intervals for Correlation Coefficients}
 \usage{
-ci.cor(..., data = NULL,
+ci.cor(data, ...,
        method = c("pearson", "spearman", "kendall-b", "kendall-c"),
        adjust = c("none", "joint", "approx"),
        se = c("fisher", "fieller", "bonett", "rin"),
        sample = TRUE, seed = NULL, maxtol = 1e-05, nudge = 0.001,
        boot = c("none", "norm", "basic", "perc", "bc", "bca"), R = 1000,
        fisher = TRUE, alternative = c("two.sided", "less", "greater"),
-       conf.level = 0.95, group = NULL, split = NULL, na.omit = FALSE,
-       digits = 2, as.na = NULL, plot = c("none", "ci", "boot"),
-       point.size = 2.5, point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5,
-       hist = TRUE, binwidth = NULL, bins = NULL, alpha = 0.4, fill = "gray85",
-       density = TRUE, density.col = "#0072B2", density.linewidth = 0.5,
-       density.linetype = "solid", plot.point = TRUE, point.col = "#CC79A7",
-       point.linewidth = 0.6, point.linetype = "solid", plot.ci = TRUE,
-       ci.col = "black", ci.linewidth = 0.6, ci.linetype = "dashed", line = TRUE,
-       intercept = 0, linetype = "solid", line.col = "gray65", xlab = NULL,
-       ylab = NULL, xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(),
-       ybreaks = ggplot2::waiver(), axis.title.size = 11, axis.text.size = 10,
-       strip.text.size = 11, title = NULL, subtitle = NULL, group.col = NULL,
-       plot.margin = NA, legend.title = "",
+       conf.level = 0.95, group = NULL, split = NULL, na.omit = FALSE, digits = 2,
+       as.na = NULL, plot = c("none", "ci", "boot"), point.size = 2.5,
+       point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5, hist = TRUE,
+       binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85", density = TRUE,
+       density.col = "#0072B2", density.linewidth = 0.5, density.linetype = "solid",
+       point = TRUE, point.col = "#CC79A7", point.linewidth = 0.6,
+       point.linetype = "solid", ci = TRUE, ci.col = "black",
+       ci.linewidth = 0.6, ci.linetype = "dashed", line = TRUE, intercept = 0,
+       linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
+       xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
+       axis.title.size = 11, axis.text.size = 10, strip.text.size = 11, title = NULL,
+       subtitle = NULL, group.col = NULL, plot.margin = NA,  legend.title = "",
        legend.position = c("right", "top", "left", "bottom", "none"),
        legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-       facet.scales = "free_y", saveplot = NULL, width = NA, height = NA,
-       units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
-       check = TRUE, output = TRUE)
+       facet.scales = "free_y", filename = NULL, width = NA, height = NA,
+       units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL,
+       append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame with numeric variables, i.e.,
+\item{data}{a data frame with numeric variables, i.e.,
 factors and character variables are excluded from
-\code{x} before conducting the analysis. Alternatively,
-an expression indicating the variable names in \code{data}
+\code{data} before conducting the analysis.}
+
+\item{...}{an expression indicating the variable names in \code{data}
 e.g., \code{ci.cor(x1, x2, data = dat)}. Note that the
 operators \code{.}, \code{+}, \code{-}, \code{~},
 \code{:}, \code{::}, and \code{!} can also be used
 to select variables, see 'Details' in the
 \code{\link{df.subset}} function.}
-
-\item{data}{a data frame when specifying one or more variables
-in the argument \code{...}. Note that the argument is
-\code{NULL} when specifying a numeric vector, matrix
-or data frame for the argument \code{...}.}
 
 \item{method}{a character string indicating which correlation
 coefficient is to be computed, i.e., \code{"pearson"}
@@ -141,14 +136,14 @@ level of the interval.}
 \item{group}{either a character string indicating the variable name
 of the grouping variable in \code{...} or \code{data},
 or a vector representing the grouping variable. The
-grouping variable is excluded from the matrix or data
-frame specified in \code{...} or \code{data}.}
+grouping variable is excluded from the data
+frame specified in \code{data}.}
 
 \item{split}{either a character string indicating the variable name
 of the split variable in \code{...} or \code{data},
 or a vector representing the split variable. The split
-variable is excluded from the matrix or data frame
-specified in \code{...} or \code{data}.}
+variable is excluded from the data frame
+specified in \code{data}.}
 
 \item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed
 before conducting the analysis (i.e., listwise deletion);
@@ -205,7 +200,7 @@ in the \code{geom_histogram} function for controlling
 the number of bins when plotting bootstrap samples
 (\code{plot = "boot"}).}
 
-\item{alpha}{a numeric value between 0 and 1 for specifying the
+\item{hist.alpha}{a numeric value between 0 and 1 for specifying the
 \code{alpha} argument in the \code{geom_histogram}
 function for controlling the opacity of the bars
 when plotting bootstrap samples (\code{plot = "boot"}).}
@@ -239,7 +234,7 @@ function controlling the line type of the density
 curves when plotting bootstrap samples
 (\code{plot = "boot"}).}
 
-\item{plot.point}{logical: if \code{TRUE} (default), vertical lines
+\item{point}{logical: if \code{TRUE} (default), vertical lines
 representing the point estimate of the correlation
 coefficients are drawn when plotting bootstrap samples
 (\code{plot = "boot"}).}
@@ -264,7 +259,7 @@ function controlling the line type of the vertical
 line displaying the correlation  coefficient when
 plotting bootstrap samples (\code{plot = "boot"}).}
 
-\item{plot.ci}{logical: if \code{TRUE} (default), vertical lines
+\item{ci}{logical: if \code{TRUE} (default), vertical lines
 representing the bootstrap confidence intervals of
 the correlation coefficient are drawn when plotting
 bootstrap samples (\code{plot = "boot"}).}
@@ -413,13 +408,13 @@ scales shared across facets, i.e., \code{"fixed"},
 \code{"free"} when specifying a split variable using
 the argument \code{split}.}
 
-\item{saveplot}{a character string indicating the \code{filename}
+\item{filename}{a character string indicating the \code{filename}
 argument including the file extension in the \code{ggsave}
 function. Note that one of \code{".eps"}, \code{".ps"},
 \code{".tex"}, \code{".pdf"} (default),
 \code{".jpeg"}, \code{".tiff"}, \code{".png"},
 \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
-to be specified as file extension in the \code{file}
+to be specified as file extension in the \code{filename}
 argument. Note that plots can only be saved when
 \code{plot = "ci"} or \code{plot = "boot"}.}
 
@@ -464,7 +459,7 @@ entries:
 \item{\code{data}}{list with the input specified in \code{...}, \code{data}, \code{group}, and \code{split}}
 \item{\code{args}}{specification of function arguments}
 \item{\code{boot}}{data frame with bootstrap replicates of the correlation coefficient when bootstrapping was requested}
-\item{\code{plot}}{ggplot2 object for plotting the results and the data frame used for plotting}
+\item{\code{plot}}{ggplot2 object for plotting the results}
 \item{\code{result}}{result table}
 }
 \description{
@@ -726,170 +721,115 @@ Brain Ripley (2024).
 # Pearson product-moment correlation coefficient
 
 # Example 1a: Approximate distribution method
+ci.cor(mtcars, mpg, drat, qsec)
+
+# Alternative specification without using the '...' argument
 ci.cor(mtcars[, c("mpg", "drat", "qsec")])
 
-# Alternative specification
-ci.cor(mpg, drat, qsec, data = mtcars)
-
 # Example 1b: Joint moments method
-ci.cor(mtcars[, c("mpg", "drat", "qsec")], adjust = "joint")
+ci.cor(mtcars, mpg, drat, qsec, adjust = "joint")
 
 #----------------------------------------------------------------------------
 # Spearman's rank-order correlation coefficient
 
 # Example 2a: Fieller et al. (1957) approximate standard error
-ci.cor(mtcars[, c("mpg", "drat", "qsec")], method = "spearman")
+ci.cor(mtcars, mpg, drat, qsec, method = "spearman")
 
 # Example 2b: Bonett and Wright (2000) approximate standard error
-ci.cor(mtcars[, c("mpg", "drat", "qsec")], method = "spearman", se = "bonett")
+ci.cor(mtcars, mpg, drat, qsec, method = "spearman", se = "bonett")
 
 # Example 2c: Rank-based inverse normal (RIN) transformation
-ci.cor(mtcars[, c("mpg", "drat", "qsec")], method = "spearman", se = "rin")
+ci.cor(mtcars, mpg, drat, qsec, method = "spearman", se = "rin")
 
 #----------------------------------------------------------------------------
 # Kendall's Tau
 
 # Example 3a:  Kendall's Tau-b
-ci.cor(mtcars[, c("mpg", "drat", "qsec")], method = "kendall-b")
+ci.cor(mtcars, mpg, drat, qsec, method = "kendall-b")
 
 # Example 3b:  Kendall's Tau-c
-ci.cor(mtcars[, c("mpg", "drat", "qsec")], method = "kendall-c")
+ci.cor(mtcars, mpg, drat, qsec, method = "kendall-c")
 
 \dontrun{
 #----------------------------------------------------------------------------
 # Bootstrap Confidence Interval (CI)
 
 # Example 4a: Bias-corrected (BC) percentile bootstrap CI
-ci.cor(mtcars[, c("mpg", "drat", "qsec")], boot = "bc")
+ci.cor(mtcars, mpg, drat, qsec, boot = "bc")
 
 # Example 4b: Bias-corrected and accelerated (BCa) bootstrap CI,
 # 5000 bootstrap replications, set seed of the pseudo-random number generator
-ci.cor(mtcars[, c("mpg", "drat", "qsec")], boot = "bca", R = 5000, seed = 123)
+ci.cor(mtcars, mpg, drat, qsec, boot = "bca", R = 5000, seed = 123)
 
 #----------------------------------------------------------------------------
 # Grouping and Split Variable
 
 # Example 5a: Grouping variable
-ci.cor(mpg, drat, qsec, data = mtcars, group = "vs")
+ci.cor(mtcars, mpg, drat, qsec, group = "vs")
 
-# Alternative specification
+# Alternative specification without using the argument '...'
 ci.cor(mtcars[, c("mpg", "drat", "qsec")], group = mtcars$vs)
 
 # Example 5b: Split variable
-ci.cor(mpg, drat, qsec, data = mtcars, split = "am")
+ci.cor(mtcars, mpg, drat, qsec, split = "am")
 
-# Alternative specification
+# Alternative specification without using the argument '...'
 ci.cor(mtcars[, c("mpg", "drat", "qsec")], split = mtcars$am)
 
 # Example 5c: Grouping and split variable
-ci.cor(mpg, drat, qsec, data = mtcars, group = "vs", split = "am")
+ci.cor(mtcars, mpg, drat, qsec, group = "vs", split = "am")
 
-# Alternative specification
+# Alternative specification without using the argument '...'
 ci.cor(mtcars[, c("mpg", "drat", "qsec")], group = mtcars$vs, split = mtcars$am)
 
 #----------------------------------------------------------------------------
 # Write Output
 
 # Example 6a: Text file
-ci.cor(mtcars[, c("mpg", "drat", "qsec")], write = "CI_Cor_Text.txt")
+ci.cor(mtcars, mpg, drat, qsec, write = "CI_Cor_Text.txt")
 
 # Example 6b: Excel file
-ci.cor(mtcars[, c("mpg", "drat", "qsec")], write = "CI_Cor_Excel.xlsx")
+ci.cor(mtcars, mpg, drat, qsec, write = "CI_Cor_Excel.xlsx")
 
 #----------------------------------------------------------------------------
 # Plot Confidence Intervals
 
 # Example 7a: Pearson product-moment correlation coefficient
-ci.cor(mpg, drat, qsec, data = mtcars, plot = "ci")
+ci.cor(mtcars, mpg, drat, qsec, plot = "ci")
 
 # Example 7b: Grouping variable
-ci.cor(mpg, drat, qsec, data = mtcars, group = "vs", plot = "ci")
+ci.cor(mtcars, mpg, drat, qsec, group = "vs", plot = "ci")
 
 # Example 7c: Split variable
-ci.cor(mpg, drat, qsec, data = mtcars, split = "am", plot = "ci")
+ci.cor(mtcars, mpg, drat, qsec, split = "am", plot = "ci")
 
 # Example 7d: Save plot as PDF file
-ci.cor(mpg, drat, qsec, data = mtcars, plot = "ci", saveplot = "CI_Cor.pdf",
-       width = 9, height = 6)
+ci.cor(mtcars, mpg, drat, qsec, plot = "ci", saveplot = "CI_Cor.pdf",
+       width = 8, height = 6)
 
 # Example 7e: Save plot as PNG file
-ci.cor(mpg, drat, qsec, data = mtcars, plot = "ci", saveplot = "CI_Cor.png",
-       width = 9, height = 6)
-
-# Example 7f: Plot in line with the default setting
-
-# Load ggplot2 package
-library(ggplot2)
-
-# Extract plot data
-plotdata <- ci.cor(mtcars[, c("mpg", "drat", "qsec")], plot = "ci",
-                   output = FALSE)$plot$plotdata
-
-# Draw plot
-ggplot(plotdata, aes(x, y)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
-  geom_errorbar(aes(ymin = low, ymax = upp), width = 0.3) +
-  geom_point(size = 2.5) +
-  scale_x_discrete(name = "") +
-  scale_y_continuous(name = "Correlation Coefficient", limits = c(-1, 1),
-                     breaks = seq(-1, 1, by = 0.25)) +
-  theme_bw() +
-  labs(title = NULL, subtitle = NULL) +
-  theme(plot.subtitle = element_text(hjust = 0.5),
-        plot.title = element_text(hjust = 0.5),
-        plot.margin = unit(c(5.5, 5.5, 5.5, 5.5), "pt"),
-        axis.text = element_text(size = 10),
-        axis.title = element_text(size = 10))
+ci.cor(mtcars, mpg, drat, qsec, plot = "ci", saveplot = "CI_Cor.png",
+       width = 8, height = 6)
 
 #----------------------------------------------------------------------------
 # Plot Bootstrap Samples
 
 # Example 8a: Pearson product-moment correlation coefficient
-ci.cor(mpg, drat, qsec, data = mtcars, boot = "bc", plot = "boot")
+ci.cor(mtcars, mpg, drat, qsec, boot = "bc", plot = "boot")
 
 # Example 8b: Grouping variable
-ci.cor(mpg, drat, qsec, data = mtcars, group = "vs", boot = "bc", plot = "boot")
+ci.cor(mtcars, mpg, drat, qsec, group = "vs", boot = "bc", plot = "boot")
 
 # Example 8c: Split variable
-ci.cor(mpg, drat, qsec, data = mtcars, split = "am", boot = "bc", plot = "boot")
+ci.cor(mtcars, mpg, drat, qsec, split = "am", boot = "bc", plot = "boot")
 
 # Example 8d: Save plot as PDF file
 ci.cor(mpg, drat, qsec, data = mtcars, boot = "bc", plot = "boot",
        saveplot = "CI_Cor_Boot.pdf", width = 14, height = 9)
 
 # Example 8e: Save plot as PNG file
-ci.cor(mpg, drat, qsec, data = mtcars, boot = "bc", plot = "boot",
-       saveplot = "CI_Cor_Boot.png", width = 14, height = 9)
-
-# Example 8f: Plot in line with the default setting
-
-# Load ggplot2 package
-library(ggplot2)
-
-# Extract plot data
-plotdata <- ci.cor(mtcars[, c("mpg", "drat", "qsec")], boot = "bc", plot = "boot",
-                   output = FALSE)$plot$plotdata
-
-ggplot(plotdata, aes(y)) +
-  geom_histogram(aes(y = after_stat(density)), color = "black", alpha = 0.4, fill = "gray85") +
-  geom_density(color = "#0072B2", linewidth = 0.5) +
-  geom_vline(xintercept = 0, color = "gray70") +
-  geom_vline(aes(xintercept = point), linewidth = 0.6) +
-  geom_vline(aes(xintercept = low), linewidth = 0.6, linetype = "dashed") +
-  geom_vline(aes(xintercept = upp), linewidth = 0.6, linetype = "dashed") +
-  facet_wrap(~ x, scales = "free_y") +
-  scale_x_continuous(name = "Correlation Coefficient", expand = c(0.02, 0),
-                     limits =  c(-1, 1), breaks = seq(-1, 1, by = 0.25)) +
-  scale_y_continuous(name = "Probability Density, f(x)",
-                     expand = expansion(mult = c(0L, 0.05))) +
-  theme_bw() +
-  theme(plot.subtitle = element_text(hjust = 0.5),
-        strip.text = element_text(size = 11),
-        plot.title = element_text(hjust = 0.5),
-        plot.margin = unit(c(5.5, 5.5, 5.5, 5.5), "pt"),
-        axis.text = element_text(size = 10),
-        axis.title = element_text(size = 11))
-}
+ci.cor(mtcars, mpg, drat, qsec, boot = "bc", plot = "boot",
+       saveplot = "CI_Cor_Boot.png", width = 14, height = 9)}
 }
 \references{
 Baguley, T. (2024). \emph{CI for Spearman's rho}. seriousstats.

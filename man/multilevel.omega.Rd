@@ -4,7 +4,7 @@
 \alias{multilevel.omega}
 \title{Multilevel Composite Reliability}
 \usage{
-multilevel.omega(..., data = NULL, cluster, rescov = NULL,
+multilevel.omega(data, ..., cluster, rescov = NULL,
                  const = c("within", "shared", "config"),
                  fix.resid = NULL, optim.method = c("nlminb", "em"),
                  missing = c("listwise", "fiml"), nrep = 100000, seed = NULL,
@@ -13,28 +13,24 @@ multilevel.omega(..., data = NULL, cluster, rescov = NULL,
                  check = TRUE, output = TRUE)
 }
 \arguments{
-\item{...}{a matrix or data frame. Multilevel confirmatory factor
+\item{data}{a data frame. Multilevel confirmatory factor
 analysis based on a measurement model with one factor
 at the Within level and one factor at the Between level
-comprising all variables in the matrix or data frame is
+comprising all variables in the data frame is
 conducted. Note that the cluster variable specified in
-\code{cluster} is excluded from \code{x} when specifying
+\code{cluster} is excluded from \code{data} when specifying
 the argument \code{cluster} using the variable name of the
-cluster variable. Alternatively, an expression indicating
-the variable names in \code{data} e.g.,
-\code{multilevel.omega(x1, x2, x3, data = dat, cluster = "cluster")}.
-Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
-and \code{!} can also be used to select variables, see 'Details'
-in the \code{\link{df.subset}} function.}
+cluster variable.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a matrix or data frame for the argument
-\code{...}.}
+\item{...}{an expression indicating the variable names in \code{data},
+e.g., \code{multilevel.omega(dat, x1, x2, x3, cluster = "cluster")}.
+Note that the operators \code{.}, \code{+}, \code{-},
+\code{~}, \code{:}, \code{::}, and \code{!} can also be
+used to select variables, see 'Details' in the
+\code{\link{df.subset}} function.}
 
 \item{cluster}{either a character string indicating the variable name of
-the cluster variable in \code{...} or \code{data}, or a
+the cluster variable in \code{data}, or a
 vector representing the nested grouping structure (i.e.,
 group or cluster variable).}
 
@@ -91,7 +87,7 @@ printed with \code{digits} minus 1 decimal places.}
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
 the analysis. Note that \code{as.na()} function is only
-applied to \code{x} but not to \code{cluster}.}
+applied to \code{data} but not to \code{cluster}.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
@@ -113,7 +109,7 @@ and model identification is checked.}
 \value{
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
-\item{\code{data}}{data frame specified in \code{x} including the group variable
+\item{\code{data}}{data frame specified in \code{data} including the group variable
                    specified in \code{cluster}}
 \item{\code{args}}{specification of function arguments}
 \item{\code{model}}{specified model}
@@ -141,64 +137,52 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012). The internal func
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Cluster variable specification
 
-# Example 1a: Cluster variable 'cluster' in 'x'
-multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4", "cluster")], cluster = "cluster")
+# Example 1a: Specification using the argument '...'
+multilevel.omega(Demo.twolevel, y1:y4, cluster = "cluster")
 
-# Example 1b: Cluster variable 'cluster' not in 'x'
-multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
+# Example 1b: Alternative specification with cluster variable 'cluster' in 'data'
+multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4", "cluster")], cluster = "cluster")
 
-# Example 1c: Alternative specification using the 'data' argument
-multilevel.omega(y1:y4, data = Demo.twolevel, cluster = "cluster")
+# Example 1b: Alternative specification with cluster variable 'cluster' not in 'data'
+multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
 
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Type of construct
 
 # Example 2a: Within-Cluster Construct
-multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")],
                  cluster = Demo.twolevel$cluster, const = "within")
 
 # Example 2b: Shared Cluster-Level Construct
-multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-                 cluster = Demo.twolevel$cluster, const = "shared")
+multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "shared")
 
 # Example 2c: Configural Construct
-multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-                 cluster = Demo.twolevel$cluster, const = "config")
+multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "config")
 
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Residual covariance at the Within level and residual variance at the Between level
 
 # Example 3a: Residual covariance between "y4" and "y5" at the Within level
-multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-                 cluster = Demo.twolevel$cluster, const = "config",
+multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "config",
                  rescov = c("y3", "y4"))
 
 # Example 3b: Residual variances of 'y1' at the Between level fixed at 0
-multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-                 cluster = Demo.twolevel$cluster, const = "config",
+multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "config",
                  fix.resid = c("y1", "y2"), digits = 3)
 
-\dontrun{
 #----------------------------------------------------------------------------
 # Write results
 
 # Example 4a: Write results into a text file
-multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
+multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")],
                  cluster = Demo.twolevel$cluster, write = "Multilevel_Omega.txt")
 
-# Example 4b: Write results into an Excel file
-multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-                 cluster = Demo.twolevel$cluster, write = "Multilevel_Omega.xlsx")
-
-# Example 4b: Assign results into an object and write results into an Excel file
-mod <- multilevel.omega(Demo.twolevel[,c("y1", "y2", "y3", "y4")],
-                        cluster = Demo.twolevel$cluster, output = FALSE)
-
-# Write results into an Excel file
-write.result(mod, "Multilevel_Omega.xlsx")}
+# Example 4b: Write results into a Excel file
+multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster",
+                 write = "Multilevel_Omega.xlsx")
 }
 }
 \references{

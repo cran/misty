@@ -4,39 +4,34 @@
 \alias{lagged}
 \title{Create Lagged Variables}
 \usage{
-lagged(..., data = NULL, id = NULL, obs = NULL, day = NULL, lag = 1, time = NULL,
+lagged(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time = NULL,
        units = c("secs", "mins", "hours", "days", "weeks"), append = TRUE,
        name = ".lag", name.td = ".td", as.na = NULL, check = TRUE)
 }
 \arguments{
-\item{...}{a vector for computing a lagged values for a variable, matrix
+\item{data}{a numeric vector for computing a lagged values for a variable
 or data frame for computing lagged values for more than one
 variable. Note that the subject ID variable (\code{id}),
 observation number variable (\code{obs}), day number variable
 (\code{day}), and the date and time variable (\code{time}) are
-excluded from \code{...} when specifying the argument the
-using the names of the variables. Alternatively, an expression
-indicating the variable names in \code{data}. Note that the
-operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
-\code{::}, and \code{!} can also be used to select variables,
-see 'Details' in the \code{\link{df.subset}} function.}
+excluded from \code{data} when specifying theses arguments.}
 
-\item{data}{a data frame when specifying one or more variables in the
-argument \code{...}. Note that the argument is \code{NULL}
-when specifying a vector, matrix, or data frame for the argument
-\code{...}.}
+\item{...}{an expression indicating the variable names in \code{data}.
+Note that the operators \code{.}, \code{+}, \code{-}, \code{~},
+\code{:}, \code{::}, and \code{!} can also be used to select
+variables, see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{id}{either a character string indicating the variable name of the
-subject ID variable in '...' or a vector representing the
+subject ID variable or a vector representing the
 subject IDs, see 'Details'.}
 
 \item{obs}{either a character string indicating the variable name of the
-observation number variable in '...' or a vector representing
+observation number variable or a vector representing
 the observations. Note that duplicated values within the same
 subject ID are not allowed, see 'Details'.}
 
 \item{day}{either a character string indicating the variable name of the
-day number variable in '...' or a vector representing the days,
+day number variable in or a vector representing the days,
 see 'Details'.}
 
 \item{lag}{a numeric value specifying the lag, e.g. \code{lag = 1} (default)
@@ -59,7 +54,7 @@ the lagged variables. By default, lagged variables are named
 with the ending \code{".lag"} resulting in e.g. \code{"x1.lag"}
 and \code{"x2.lag"} when specifying two variables. Variable
 names can also be specified using a character vector matching
-the number of variables specified in \code{...}, e.g.
+the number of variables, e.g.,
 \code{name = c("lag.x1", "lag.x2")}).}
 
 \item{name.td}{a character string or character vector indicating the names of
@@ -69,29 +64,29 @@ difference variables are named with the ending \code{".td"}
 resulting in e.g. \code{"x1.td"} and \code{"x2.td"} when
 specifying two variables. Variable names can also be specified
 using a character vector matching the number of variables
-specified in \code{...}, e.g. \code{name = c("td.x1", "td.x2")}).}
+specified, e.g., \code{name = c("td.x1", "td.x2")}).}
 
 \item{as.na}{a numeric vector indicating user-defined missing values, i.e.
 these values are converted to \code{NA} before conducting the
 analysis. Note that \code{as.na()} function is only applied to
-the argument \code{x}, but not to \code{cluster}.}
+the argument \code{data}, but not to \code{cluster}.}
 
 \item{check}{logical: if \code{TRUE} (default), argument specification is
 checked.}
 }
 \value{
 Returns a numeric vector or data frame with the same length or same number of
-rows as \code{...} containing the lagged variable(s).
+rows as \code{data} containing the lagged variable(s).
 }
 \description{
 This function computes lagged values of variables by a specified number of
-observations. By default, the function returns lag-1 values of the vector,
-matrix, or data frame specified in the first argument.
+observations. By default, the function returns lag-1 values of the vector
+or data frame specified in the first argument.
 }
 \details{
 \describe{
 The function is used to create lagged version of the variable(s) specified via
-the \code{...} argument:
+the \code{data} argument:
 \item{\strong{Optional argument \code{id}}}{If the \code{id} argument is not specified
 \code{i.e., id = NULL}, all observations are assumed to come from the same
 subject.  If the dataset includes multiple subjects, then this variable needs
@@ -125,7 +120,7 @@ dat <- data.frame(subject = rep(1:2, each = 6),
 # Example 1: Lagged variable for 'pos'
 lagged(dat$pos, id = dat$subject, day = dat$day)
 
-# Example 1b: Alternative specification
+# Example 1b: Alternative specification without using the '...' argument
 lagged(dat[, c("pos", "subject", "day")], id = "subject", day = "day")
 
 # Example 1c: Alternative specification using the 'data' argument

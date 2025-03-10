@@ -22,7 +22,7 @@ mplus.plot(x, plot = c("none", "trace", "post", "auto", "ppc", "loop"),
            bar.col = "black", bar.width = 0.8, plot.margin = NULL,
            legend.title.size = 10, legend.text.size = 10, legend.box.margin = NULL,
            saveplot = c("all", "none", "trace", "post", "auto", "ppc", "loop"),
-           file = "Mplus_Plot.pdf",
+           filename = "Mplus_Plot.pdf",
            file.plot = c("_TRACE", "_POST", "_AUTO", "_PPC", "_LOOP"),
            width = NA, height = NA, units = c("in", "cm", "mm", "px"),
            dpi = 600, check = TRUE)
@@ -247,18 +247,18 @@ saving the autocorrelation plots, \code{"ppc"} for
 saving the posterior predictive check plots, and
 \code{"loop"} for saving the loop plot.}
 
-\item{file}{a character string indicating the \code{filename}
+\item{filename}{a character string indicating the \code{filename}
 argument (default is \code{"Mplus_Plot.pdf"}) including
 the file extension for the \code{ggsave} function.
 Note that one of \code{".eps"}, \code{".ps"},
 \code{".tex"}, \code{".pdf"} (default), \code{".jpeg"},
 \code{".tiff"}, \code{".png"}, \code{".bmp"},
 \code{".svg"} or \code{".wmf"} needs to be specified
-as file extension in the \code{file} argument.}
+as file extension in the \code{filename} argument.}
 
 \item{file.plot}{a character vector with five elements for distinguishing
 different types of plots. By default, the character
-string specified in the argument \code{"file"}
+string specified in the argument \code{"filename"}
 (\code{"Mplus_Plot"}) is concatenated with \code{"_TRACE"}
 (\code{"Mplus_Plot_TRACE"}) for the trace plots,
 \code{"_POST"} (\code{"Mplus_Plot_POST"}) for
@@ -397,7 +397,7 @@ mplus.plot("ex3.18.gh5", plot = "loop", area = FALSE)
 mplus.plot("ex3.18.gh5", saveplot = "all")
 
 # Example 6b: Save all plots in png format with 300 dpi
-mplus.plot("ex3.18.gh5", saveplot = "all", file = "Mplus_Plot.png", dpi = 300)
+mplus.plot("ex3.18.gh5", saveplot = "all", filename = "Mplus_Plot.png", dpi = 300)
 
 # Example 6a: Save loop plot, specify width and height of the plot
 mplus.plot("ex3.18.gh5", plot = "none", saveplot = "loop",

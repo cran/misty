@@ -7,13 +7,13 @@
 check.resid(model, type = c("linear", "homo", "normal"),
             resid = c("unstand", "stand", "student"), plot = TRUE,
             point.shape = 21, point.fill = "gray80", point.size = 1,
-            line1 = TRUE, line2 = TRUE, linetype1 = "solid", linetype2 = "dashed",
-            linewidth1 = 1, linewidth2 = 1, line.col1 = "#0072B2",
-            line.col2 = "#D55E00", bar.width = NULL, bar.n = 30,
-            bar.col = "black", bar.fill = "gray95", strip.text.size = 11,
-            label.size = 10, axis.text.size = 10, xlim = NULL, ylim = NULL,
-            xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
-            check = TRUE)
+            line1 = TRUE, line2 = TRUE, linetype1 = "solid",
+            linetype2 = "dashed", linewidth1 = 1, linewidth2 = 1,
+            line.col1 = "#0072B2", line.col2 = "#D55E00", bar.width = NULL,
+            bar.n = 30, bar.col = "black", bar.fill = "gray95",
+            strip.text.size = 11, label.size = 10, axis.text.size = 10,
+            xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(),
+            ybreaks = ggplot2::waiver(), check = TRUE)
 }
 \arguments{
 \item{model}{a fitted model of class \code{lm}.}

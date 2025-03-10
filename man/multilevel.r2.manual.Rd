@@ -10,6 +10,8 @@ multilevel.r2.manual(data, within = NULL, between = NULL, random = NULL,
                      intercept = TRUE, center = TRUE, digits = 3,
                      plot = FALSE, gray = FALSE, start = 0.15, end = 0.85,
                      color = c("#D55E00", "#0072B2", "#CC79A7", "#009E73", "#E69F00"),
+                     filename = NULL, width = NA, height = NA,
+                     units = c("in", "cm", "mm", "px"), dpi = 600,
                      write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
@@ -84,6 +86,30 @@ of bars in the bar chart in the following order: Fixed slopes
 Intercept variation (Between), and Residual (Within). By default,
 colors from the colorblind-friendly palettes are used.}
 
+\item{filename}{a character string indicating the \code{filename}
+argument including the file extension in the \code{ggsave}
+function. Note that one of \code{".eps"}, \code{".ps"},
+\code{".tex"}, \code{".pdf"} (default),
+\code{".jpeg"}, \code{".tiff"}, \code{".png"},
+\code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+to be specified as file extension in the \code{file}
+argument. Note that plots can only be saved when
+\code{plot = TRUE}.}
+
+\item{width}{a numeric value indicating the \code{width} argument
+(default is the size of the current graphics device)
+in the \code{ggsave} function.}
+
+\item{height}{a numeric value indicating the \code{height} argument
+(default is the size of the current graphics device)
+in the \code{ggsave} function.}
+
+\item{units}{a character string indicating the \code{units} argument
+(default is \code{in}) in the \code{ggsave} function.}
+
+\item{dpi}{a numeric value indicating the \code{dpi} argument
+(default is \code{600}) in the \code{ggsave} function.}
+
 \item{write}{a character string naming a text file with file extension
 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
 output into a text file.}
@@ -134,20 +160,17 @@ Flake.
 \dontrun{
 
 # Load misty and lme4 package
-libraries(misty, lme4)
+misty::libraries(misty, lme4)
 
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
 #-------------------------------------------------------------------------------
 
-# Cluster mean centering, center() from the misty package
-Demo.twolevel$x2.c <- center(Demo.twolevel$x2, type = "CWC",
-                             cluster = Demo.twolevel$cluster)
+Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
 
 # Compute group means, cluster.scores() from the misty package
-Demo.twolevel$x2.b <- cluster.scores(Demo.twolevel$x2,
-                                     cluster = Demo.twolevel$cluster)
+Demo.twolevel <- cluster.scores(Demo.twolevel, x2, cluster = "cluster", name = "x2.b")
 
 # Estimate random intercept model using the lme4 package
 mod1 <- lmer(y1 ~ x2.c + x2.b + w1 + (1| cluster), data = Demo.twolevel,

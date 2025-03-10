@@ -9,17 +9,13 @@
 #' the data That is, it is always preferable to specify the arguments \code{min}
 #' and \code{max}.
 #'
-#' @param ...    a numeric vector for reverse coding an item, matrix or data frame
-#'               for reverse coding more than one item. Alternatively, an expression
-#'               indicating the variable names in \code{data} e.g.,
+#' @param data   a numeric vector for reverse coding an item or data frame for
+#'               reverse coding more than one item.
+#' @param ...    an expression indicating the variable names in \code{data} e.g.,
 #'               \code{item.reverse(x1, x2, x3, data = dat)}. Note that the operators
 #'               \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'               and \code{!} can also be used to select variables, see 'Details'
 #'               in the \code{\link{df.subset}} function.
-#' @param data   a data frame when specifying one or more variables in the
-#'               argument \code{...}. Note that the argument is \code{NULL}
-#'               when specifying a numeric vector or data frame for the argument
-#'               \code{...}.
 #' @param min    an integer indicating the minimum of the item (i.e., lowest
 #'               possible scale value).
 #' @param max    an integer indicating the maximum of the item (i.e., highest
@@ -31,14 +27,13 @@
 #'               of the reverse coded item. By default, variables are named with
 #'               the ending \code{".r"} resulting in e.g. \code{"x1.r"} and
 #'               \code{"x2.r"}. Variable names can also be specified using a
-#'               character vector matching the number of variables specified in
-#'               \code{...} (e.g., \code{name = c("reverse.x1", "reverse.x2")}).
+#'               character vector matching the number of variables (e.g.,
+#'               \code{name = c("reverse.x1", "reverse.x2")}).
 #' @param as.na  a numeric vector indicating user-defined missing values, i.e.
 #'               these values are converted to \code{NA} before conducting the
 #'                analysis.
 #' @param table  logical: if \code{TRUE}, a cross table item x reverse coded item
-#'               is printed on the console if only one variable is specified in
-#'               \code{...}.
+#'               is printed on the console if only one variable is specified.
 #' @param check  logical: if \code{TRUE} (default), argument specification is checked.
 #'
 #' @author
@@ -54,7 +49,7 @@
 #'
 #' @return
 #' Returns a numeric vector or data frame with the same length or same number of
-#' rows as \code{...} containing the reverse coded scale item(s).
+#' rows as \code{data} containing the reverse coded scale item(s).
 #'
 #' @export
 #'
@@ -64,25 +59,25 @@
 #'                   item3 = c(4, 2, 4, 5, 1, 3, 5, -99))
 #'
 #' # Example 1: Reverse code 'item1' and append to 'dat'
-#' dat$item1r <- item.reverse(dat$item1, min = 1, max = 5)
+#' item.reverse(dat, item1, min = 1, max = 5)
 #'
-#' # Alternative specification using the 'data' argument
-#' item.reverse(item1, data = dat, min = 1, max = 5)
+#' # Alternative specification without using the '...' argument
+#' item.reverse(dat$item1, min = 1, max = 5)
 #'
 #' # Example 2: Reverse code 'item3' while keeping the value -99
-#' dat$item3r <- item.reverse(dat$item3, min = 1, max = 5, keep = -99)
+#' item.reverse(dat, item3, min = 1, max = 5, keep = -99)
 #'
 #' # Example 3: Reverse code 'item3' while keeping the value -99 and check recoding
-#' dat$item3r <- item.reverse(dat$item3, min = 1, max = 5, keep = -99, table = TRUE)
+#' item.reverse(dat, item3, min = 1, max = 5, keep = -99, table = TRUE)
 #'
 #' # Example 4: Reverse code 'item1', 'item2', and 'item3' and attach to 'dat'
+#' item.reverse(item1:item3, data = dat, min = 1, max = 5, keep = -99)
+#'
+#' # Alternative specification without using the '...' argument
 #' dat <- cbind(dat,
 #'              item.reverse(dat[, c("item1", "item2", "item3")],
 #'                           min = 1, max = 5, keep = -99))
-#'
-#' # Alternative specification using the 'data' argument
-#' item.reverse(item1:item3, data = dat, min = 1, max = 5, keep = -99)
-item.reverse <- function(..., data = NULL, min = NULL, max = NULL, keep = NULL,
+item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL,
                          append = TRUE, name = ".r", as.na = NULL, table = FALSE,
                          check = TRUE) {
 
@@ -90,11 +85,11 @@ item.reverse <- function(..., data = NULL, min = NULL, max = NULL, keep = NULL,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
+  # Check if input 'data' is missing
+  if (isTRUE(missing(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  # Check if input 'data' is NULL
+  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -103,34 +98,33 @@ item.reverse <- function(..., data = NULL, min = NULL, max = NULL, keep = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
-  if (isTRUE(!is.null(data))) {
-
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
+  if (isTRUE(!missing(...))) {
 
     # Variable names
-    var.names <- .var.names(..., data = data, check.chr = "a numeric vector or data frame")
+    var.names <- .var.names(..., data = data)
 
-    # Extract data
-    x <- data[, var.names]
+    # Extract data and convert tibble into data frame or vector
+    x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
 
-    # Extract data
-    x <- eval(..., enclos = parent.frame())
+    # Convert 'data' as tibble into data frame
+    x <- data |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-    # Convert tibble into data frame
-    if (isTRUE("tbl" %in% substr(class(x), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(x)) == 1L)) { x <- unlist(x) } else { x <- as.data.frame(x) } }
+    # Data and cluster
+    var.group <- .var.group(data = x)
+
+    # Data
+    if (isTRUE(!is.null(var.group$data))) { x <- var.group$data }
 
   }
 
-  # Check if input 'x' is not a list or an array
-  if (isTRUE((is.list(x) && !is.data.frame(x)) || (is.array(x) && !is.matrix(x)))) { stop("Please specify a vector, factor, matrix or data frame for the argument 'x'.", call. = FALSE) }
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert user-missing values into NA ####
 
-  # Convert user-missing values into NA
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -157,16 +151,16 @@ item.reverse <- function(..., data = NULL, min = NULL, max = NULL, keep = NULL,
 
   if (isTRUE(check)) {
 
-    # Check input 'x'
+    # Check input 'data'
     if (isTRUE(any(vapply(data.frame(x), mode, FUN.VALUE = character(1L)) != "numeric"))) {
 
       if (isTRUE(is.null(dim(x)))) {
 
-        stop("Please specify a numeric vector for the argument 'x'.", call. = FALSE)
+        stop("Please specify a numeric vector for the argument 'data'.", call. = FALSE)
 
       } else {
 
-        stop("Please specify a matrix or data frame with numeric vectors for the argument 'x'.", call. = FALSE)
+        stop("Please specify a data frame with numeric vectors for the argument 'data'.", call. = FALSE)
 
       }
 
@@ -182,7 +176,7 @@ item.reverse <- function(..., data = NULL, min = NULL, max = NULL, keep = NULL,
     keep.na <- !keep %in% unlist(x)
     if (isTRUE(any(keep.na))) {
 
-      warning(paste0("Values specified in the argument 'keep' were not found in 'x': ", paste(keep[keep.na], collapse = ", ")), call. = FALSE)
+      warning(paste0("Values specified in the argument 'keep' were not found in 'data': ", paste(keep[keep.na], collapse = ", ")), call. = FALSE)
 
     }
 
@@ -191,7 +185,7 @@ item.reverse <- function(..., data = NULL, min = NULL, max = NULL, keep = NULL,
 
       if (isTRUE(!is.character(name))) { stop("Please specify a character string or vector for the argument 'name'.", call. = FALSE) }
 
-      if (isTRUE(length(name) > 1L && length(name) != ncol(x))) {  stop("The length of the vector specified in 'name' does not match with the number of variable in 'x'.", call. = FALSE) }
+      if (isTRUE(length(name) > 1L && length(name) != ncol(x))) {  stop("The length of the vector specified in 'name' does not match with the number of variable in 'data'.", call. = FALSE) }
 
     }
 
@@ -230,8 +224,7 @@ item.reverse <- function(..., data = NULL, min = NULL, max = NULL, keep = NULL,
   ## Multiple variables ####
   } else {
 
-    object <- data.frame(vapply(x, misty::item.reverse, min = min, max = max,
-                                keep = keep, as.na = as.na, table = FALSE,
+    object <- data.frame(vapply(x, misty::item.reverse, min = min, max = max, keep = keep, as.na = as.na, table = FALSE,
                                 check = FALSE, FUN.VALUE = double(nrow(x))))
 
     #...................
@@ -257,7 +250,7 @@ item.reverse <- function(..., data = NULL, min = NULL, max = NULL, keep = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####
 
-  if (isTRUE(!is.null(data) && append)) {
+  if (isTRUE(!missing(...) && append)) {
 
     if (isTRUE(is.null(dim(x)))) {
 

@@ -6,41 +6,60 @@
 #' effects models estimated by using the \code{lmer()} function in the package
 #' \pkg{lme4} or \code{lme()} function in the package \pkg{nlme}.
 #'
-#' @param model  a fitted model of class \code{"lmerMod"} from the \pkg{lme4}
-#'               package or \code{"lme"} from the \pkg{nlme} package.
-#' @param print  a character vector indicating which R-squared measures to be
-#'               printed on the console, i.e., \code{RB} for measures from
-#'               Raudenbush and Bryk (2002), \code{SB} for measures from Snijders
-#'               and Bosker (1994), \code{NS} for measures from Nakagawa and
-#'               Schielzeth (2013) as extended by Johnson (2014), and \code{RS}
-#'               for measures from Rights and Sterba (2019). The default setting
-#'               is \code{print = "RS"}.
-#' @param digits an integer value indicating the number of decimal places to be used.
-#' @param plot   logical: if \code{TRUE}, bar chart showing the decomposition of
-#'               scaled total, within-cluster, and between-cluster outcome variance
-#'               into five (total), three (within-cluster), and two (between-cluster)
-#'               proportions is drawn. Note that the \pkg{ggplot2} package is required
-#'               to draw the bar chart.
-#' @param gray   logical: if \code{TRUE}, graphical parameter to draw the bar chart
-#'               in gray scale.
-#' @param start  a numeric value between 0 and 1, graphical parameter to specify
-#'               the gray value at the low end of the palette.
-#' @param end    a numeric value between 0 and 1, graphical parameter to specify
-#'               the gray value at the high end of the palette.
-#' @param color  a character vector, graphical parameter indicating the color of
-#'               bars in the bar chart in the following order: Fixed slopes (Within),
-#'               Fixed slopes (Between), Slope variation (Within), Intercept variation
-#'               (Between), and Residual (Within). By default, colors from the
-#'               colorblind-friendly palettes are used
-#' @param write  a character string naming a text file with file extension
-#'               \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
-#'               output into a text file.
-#' @param append logical: if \code{TRUE} (default), output will be appended
-#'               to an existing text file with extension \code{.txt} specified
-#'               in \code{write}, if \code{FALSE} existing text file will be
-#'               overwritten.
-#' @param check  logical: if \code{TRUE} (default), argument specification is checked.
-#' @param output logical: if \code{TRUE} (default), output is shown on the console.
+#' @param model    a fitted model of class \code{"lmerMod"} from the \pkg{lme4}
+#'                 package or \code{"lme"} from the \pkg{nlme} package.
+#' @param print    a character vector indicating which R-squared measures to be
+#'                 printed on the console, i.e., \code{RB} for measures from
+#'                 Raudenbush and Bryk (2002), \code{SB} for measures from Snijders
+#'                 and Bosker (1994), \code{NS} for measures from Nakagawa and
+#'                 Schielzeth (2013) as extended by Johnson (2014), and \code{RS}
+#'                 for measures from Rights and Sterba (2019). The default setting
+#'                 is \code{print = "RS"}.
+#' @param digits   an integer value indicating the number of decimal places to be used.
+#' @param plot     logical: if \code{TRUE}, bar chart showing the decomposition of
+#'                 scaled total, within-cluster, and between-cluster outcome variance
+#'                 into five (total), three (within-cluster), and two (between-cluster)
+#'                 proportions is drawn. Note that the \pkg{ggplot2} package is required
+#'                 to draw the bar chart.
+#' @param gray     logical: if \code{TRUE}, graphical parameter to draw the bar chart
+#'                 in gray scale.
+#' @param start    a numeric value between 0 and 1, graphical parameter to specify
+#'                 the gray value at the low end of the palette.
+#' @param end      a numeric value between 0 and 1, graphical parameter to specify
+#'                 the gray value at the high end of the palette.
+#' @param color    a character vector, graphical parameter indicating the color of
+#'                 bars in the bar chart in the following order: Fixed slopes (Within),
+#'                 Fixed slopes (Between), Slope variation (Within), Intercept variation
+#'                 (Between), and Residual (Within). By default, colors from the
+#'                 colorblind-friendly palettes are used.
+#' @param filename a character string indicating the \code{filename}
+#'                 argument including the file extension in the \code{ggsave}
+#'                 function. Note that one of \code{".eps"}, \code{".ps"},
+#'                 \code{".tex"}, \code{".pdf"} (default),
+#'                 \code{".jpeg"}, \code{".tiff"}, \code{".png"},
+#'                 \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+#'                 to be specified as file extension in the \code{file}
+#'                 argument. Note that plots can only be saved when
+#'                 \code{plot = TRUE} and \code{print = "RS"}.
+#' @param width    a numeric value indicating the \code{width} argument
+#'                 (default is the size of the current graphics device)
+#'                 in the \code{ggsave} function.
+#' @param height   a numeric value indicating the \code{height} argument
+#'                 (default is the size of the current graphics device)
+#'                 in the \code{ggsave} function.
+#' @param units    a character string indicating the \code{units} argument
+#'                 (default is \code{in}) in the \code{ggsave} function.
+#' @param dpi      a numeric value indicating the \code{dpi} argument
+#'                 (default is \code{600}) in the \code{ggsave} function.
+#' @param write     a character string naming a text file with file extension
+#'                  \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                  output into a text file.
+#' @param append    logical: if \code{TRUE} (default), output will be appended
+#'                  to an existing text file with extension \code{.txt} specified
+#'                  in \code{write}, if \code{FALSE} existing text file will be
+#'                  overwritten.
+#' @param check     logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output    logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @details
 #' A number of R-squared measures for multilevel and linear mixed effects models have
@@ -366,7 +385,7 @@
 #' @examples
 #' \dontrun{
 #' # Load misty, lme4, nlme, and ggplot2 package
-#' libraries(misty, lme4, nlme, ggplot2)
+#' misty::libraries(misty, lme4, nlme, ggplot2)
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
@@ -374,12 +393,10 @@
 #' #----------------------------------------------------------------------------
 #'
 #' # Cluster mean centering, center() from the misty package
-#' Demo.twolevel$x2.c <- center(Demo.twolevel$x2, type = "CWC",
-#'                              cluster = Demo.twolevel$cluster)
+#' Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
 #'
 #' # Compute group means, cluster.scores() from the misty package
-#' Demo.twolevel$x2.b <- cluster.scores(Demo.twolevel$x2,
-#'                                      cluster = Demo.twolevel$cluster)
+#' Demo.twolevel <- cluster.scores(Demo.twolevel, x2, cluster = "cluster", name = "x2.b")
 #'
 #' # Estimate multilevel model using the lme4 package
 #' mod1a <- lmer(y1 ~ x2.c + x2.b + w1 + (1 + x2.c | cluster), data = Demo.twolevel,
@@ -390,7 +407,6 @@
 #'              method = "ML")
 #'
 #' #----------------------------------------------------------------------------
-#'
 #' # Example 1a: R-squared measures according to Rights and Sterba (2019)
 #' multilevel.r2(mod1a)
 #'
@@ -401,7 +417,6 @@
 #' multilevel.r2(mod1a, write = "ML-R2.txt")
 #'
 #' #----------------------------------------------------------------------------
-#'
 #' # Example 2: Bar chart showing the decomposition of scaled total, within-cluster,
 #' # and between-cluster outcome variance
 #' multilevel.r2(mod1a, plot = TRUE)
@@ -409,11 +424,11 @@
 #' # Bar chart in gray scale
 #' multilevel.r2(mod1a, plot = TRUE, gray = TRUE)
 #'
-#' # Save bar chart, ggsave() from the ggplot2 package
-#' ggsave("Proportion_of_Variance.png", dpi = 600, width = 5.5, height = 5.5)
+#' # Save bar chart
+#' multilevel.r2(mod1a, plot = TRUE, filename = "Proportion_of_Variance.png",
+#'               dpi = 600, width = 5.5, height = 5.5)
 #'
 #' #----------------------------------------------------------------------------
-#'
 #' # Example 3: Estimate multilevel model without random slopes
 #' # Note. R-squared measures by Raudenbush and Bryk (2002), and  Snijders and
 #' # Bosker (2012) should be computed based on the random intercept model
@@ -424,7 +439,6 @@
 #' multilevel.r2(mod2, print = "all")
 #'
 #' #----------------------------------------------------------------------------
-#'
 #' # Example 4: Draw bar chart manually
 #' mod1a.r2 <- multilevel.r2(mod1a, output = FALSE)
 #'
@@ -455,6 +469,8 @@
 multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digits = 3,
                           plot = FALSE, gray = FALSE, start = 0.15, end = 0.85,
                           color = c("#D55E00", "#0072B2", "#CC79A7", "#009E73", "#E69F00"),
+                          filename = NULL, width = NA, height = NA,
+                          units = c("in", "cm", "mm", "px"), dpi = 600,
                           write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
@@ -487,10 +503,13 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   .check.input(logical = c("plot", "gray", "append", "output"),
                numeric = list(start = 1L, end = 1L),
                s.character = list(print = c("all", "RB", "SB", "NS", "RS")),
-               args = "write1", package = "ggplot2", envir = environment(), input.check = check)
+               args = "write1", envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
+
+    # Package ggplot2
+    if (isTRUE(plot)) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
 
     # Check input 'start'
     if (isTRUE(start < 0L || start > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) }
@@ -504,11 +523,20 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   #
   # Arguments ------------------------------------------------------------------
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'print' Argument ####
+
   if (isTRUE(all(c("all", "RB", "SB", "NS", "RS") %in% print))) { print <- "RS" }
 
   if (isTRUE(length(print) == 1L && print == "all")) { print <- c("RB", "SB", "NS", "RS") }
 
   if (isTRUE(plot) & isTRUE(!"RS" %in% print)) { warning("Bar char is only available when \"RS\" is specified in the argument 'print'.", call. = FALSE) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'units' Argument ####
+
+  # Default setting
+  if (isTRUE(all(c("in", "cm", "mm", "px") %in% units))) { units <- "in" }
 
   #_____________________________________________________________________________
   #
@@ -1340,71 +1368,9 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
     rs <- suppressWarnings(list(decomp = matrix(apply(r2mlm.out$Decomposition, 2L, as.numeric),
                                                 ncol = ncol(r2mlm.out$Decomposition),
-                                                dimnames = list(rownames(r2mlm.out$Decompositions),
-                                                                colnames(r2mlm.out$Decompositions))),
+                                                dimnames = list(rownames(r2mlm.out$Decompositions), colnames(r2mlm.out$Decompositions))),
                                 r2 = matrix(apply(r2mlm.out$R2s, 2L, as.numeric), ncol = ncol(r2mlm.out$R2s),
                                             dimnames = list(rownames(r2mlm.out$R2s), colnames(r2mlm.out$R2s)))))
-
-    #...................
-    ### Plot ####
-
-    part <- NULL
-
-    # Predictors are not cluster-mean-centered
-    if (isTRUE(ncol(rs$decomp) == 1L)) {
-
-      df <- data.frame(var = factor(rep("Total", times = 4L)),
-                       part = factor(c("Fixed Slopes", "Slope Variation", "Intercept Variation", "Residual"),
-                                     levels = c("Residual", "Intercept Variation", "Slope Variation", "Fixed Slopes")),
-                       y = as.vector(rs$decomp))
-
-    # Predictors are cluster-mean-centered
-    } else {
-
-      df <- data.frame(var = factor(rep(c("Total", "Within", "Between"), each = 5L),
-                                    levels = c("Total", "Within", "Between")),
-                       part = factor(c("Fixed Slopes (Within)", "Fixed Slopes (Between)","Slope Variation (Within)", "Intercept Variation (Between)", "Residual (Within)"),
-                                     levels = c("Residual (Within)", "Intercept Variation (Between)", "Slope Variation (Within)", "Fixed Slopes (Between)", "Fixed Slopes (Within)")),
-                       y = as.vector(rs$decomp))
-
-    }
-
-    p <- ggplot2::ggplot(df, ggplot2::aes(x = var, y = y, fill = part)) +
-           ggplot2::geom_bar(stat = "identity") +
-           ggplot2::scale_y_continuous(name = "Proportion of Variance",
-                                       breaks = seq(0L, 1L, by = 0.1)) +
-           ggplot2::theme_bw() +
-           ggplot2::theme(axis.title.x = ggplot2::element_blank(),
-                          axis.ticks.x = ggplot2::element_blank(),
-                          legend.title = ggplot2::element_blank(),
-                          legend.position = "bottom",
-                          legend.box.margin = ggplot2::margin(-10L, 6L, 6L, 6L)) +
-           ggplot2::guides(fill = ggplot2::guide_legend(nrow = 2L, reverse = TRUE))
-
-    # Gray color scales
-    if (isTRUE(gray)) {
-
-      p <- p + ggplot2::scale_fill_grey(start = end, end = start)
-
-    } else {
-
-      p <- p + ggplot2::scale_fill_manual(values = rev(color))
-
-    }
-
-    # Print plot
-    if (isTRUE(plot)) { suppressWarnings(print(p)) }
-
-  } else {
-
-    p <- NULL
-
-    rs <- list(decomp = matrix(NA, ncol = 3L, nrow = 5L,
-                               dimnames = list(c("fixed, within", "fixed, between", "slope variation", "mean variation", "sigma2"),
-                                               c("total", "within", "between"))),
-               r2 = matrix(NA, ncol = 3L, nrow = 7L,
-                           dimnames = list(c("f1", "f2", "v", "m", "f", "fv", "fvm"),
-                                           c("total", "within", "between"))))
 
   }
 
@@ -1415,10 +1381,11 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
   object <- list(call = match.call(),
                  type = "multilevel.r2",
                  model = model,
-                 plot = p,
                  args = list(print = print, digits = digits, plot = plot, gray = gray,
-                             start = start, end = end, color = color, write = write,
-                             append = TRUE, check = check, output = output),
+                             start = start, end = end, color = color, filename = filename,
+                             width = width, height = height, units = units, dpi = dpi,
+                             write = write, append = TRUE, check = check, output = output),
+                 plot = NULL,
                  result = list(rb = data.frame(rb1 = rb1, rb2 = rb2),
                                sb = data.frame(sb1 = sb1, sb2 = sb2),
                                ns = data.frame(marg = marg, cond = cond),
@@ -1437,6 +1404,12 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
                                                               m  = ifelse(ncol(rs$r2) > 1L, rs$r2[row.names(rs$r2) == "m", "between"], NA)))))
 
   class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Plot and Save Results ------------------------------------------------------
+
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
