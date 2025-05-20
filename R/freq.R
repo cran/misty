@@ -169,7 +169,7 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
 
   # Check inputs
   .check.input(logical = c("freq", "labels", "val.col", "append", "output"),
-               numeric = list(round = 1L, exclude = 1L),
+               numeric = list(round = 1L),
                s.character = list(print = c("no", "all", "perc", "v.perc")),
                args = c("digits", "write2"), envir = environment(), input.check = check)
 

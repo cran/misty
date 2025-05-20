@@ -71,13 +71,13 @@
 #'                     at the Between level.
 #' @param rescov.w     a character vector or a list of character vectors for
 #'                     specifying residual covariances at the Within level.
-#'                     Note that this argument applies only
-#'                     when the model is specified by using the arguments
+#'                     Note that this argument applies only when the model is
+#'                     specified by using the arguments
 #'                     \code{model.w} and \code{model.b}.
 #' @param rescov.b     a character vector or a list of character vectors for
 #'                     specifying residual covariances at the Between level.
-#'                     Note that this argument applies only
-#'                     when the model is specified by using the arguments
+#'                     Note that this argument applies only when the model is
+#'                     specified by using the arguments
 #'                     \code{model.w} and \code{model.b}.
 #' @param const        a character string indicating the type of construct(s), i.e.,
 #'                     \code{"within"} for within-cluster constructs, \code{"shared"}
@@ -471,58 +471,52 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
     # Model specification with 'model.b'
     if (isTRUE(!is.null(model.b))) { (!unique(unlist(model.b)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the argument 'model.b' were not found in 'data': ", paste(unique(unlist(model))[model.b], collapse = ", ")), call. = FALSE) })() }
 
-    # Check input 'rescov'
+    ## Check input 'rescov' ##
     if (isTRUE(!is.null(rescov))) {
 
-      # List of residual covariances
+      # More than one residual covariance specified as list
       if (isTRUE(is.list(rescov))) {
 
-        # Two variables for each residual covariance
-        if (isTRUE(any(sapply(rescov, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov', where each element has two variable names", call. = FALSE) }
+        if (isTRUE(any(sapply(rescov, length) != 2L))) { stop("Please specify a list of character vectors, each with two variable names, for the argument 'rescov'.", call. = FALSE) }
 
-      # Character vector of one residual covariance
+      # One residual covariance specified as vector
       } else {
 
-        # Two variables for the residual covariance
-        if (isTRUE(length(rescov) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov'", call. = FALSE) }
+        if (isTRUE(length(rescov) != 2L)) { stop("Please specify a character vector with two variable names, for the argument 'rescov'", call. = FALSE) }
 
       }
 
     }
 
-    # Check input 'rescov.w'
+    ## Check input 'rescov.w' ##
     if (isTRUE(!is.null(rescov.w))) {
 
-      # List of residual covariances
+      # More than one residual covariance specified as list
       if (isTRUE(is.list(rescov.w))) {
 
-        # Two variables for each residual covariance
-        if (isTRUE(any(sapply(rescov.w, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov.w', where each element has two variable names", call. = FALSE) }
+        if (isTRUE(any(sapply(rescov.w, length) != 2L))) { stop("Please specify a list of character vectors, each with two variable names, for the argument 'rescov.w'.", call. = FALSE) }
 
-        # Character vector of one residual covariance
-        } else {
+      # One residual covariance specified as vector
+      } else {
 
-          # Two variables for the residual covariance
-          if (isTRUE(length(rescov.w) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov.w'", call. = FALSE) }
+        if (isTRUE(length(rescov.w) != 2L)) { stop("Please specify a character vector with two variable names, for the argument 'rescov.w'", call. = FALSE) }
 
       }
 
     }
 
-    # Check input 'rescov.b'
+    ## Check input 'rescov.b' ##
     if (isTRUE(!is.null(rescov.b))) {
 
-      # List of residual covariances
+      # More than one residual covariance specified as list
       if (isTRUE(is.list(rescov.b))) {
 
-        # Two variables for each residual covariance
-        if (isTRUE(any(sapply(rescov.b, length) != 2L))) { stop("Please specify a list of character vectors for the argument 'rescov.b', where each element has two variable names", call. = FALSE) }
+        if (isTRUE(any(sapply(rescov.b, length) != 2L))) { stop("Please specify a list of character vectors, each with two variable names, for the argument 'rescov.b'.", call. = FALSE) }
 
-        # Character vector of one residual covariance
-        } else {
+      # One residual covariance specified as vector
+      } else {
 
-          # Two variables for the residual covariance
-          if (isTRUE(length(rescov.b) != 2L)) { stop("Please specify a character vector with two variable names for the argument 'rescov.b'", call. = FALSE) }
+        if (isTRUE(length(rescov.b) != 2L)) { stop("Please specify a character vector with two variable names, for the argument 'rescov.b'", call. = FALSE) }
 
       }
 
@@ -715,7 +709,7 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Missing Data on All Variable ####
 
-  (misty::na.prop(x[, var]) == 1L) |> (\(y) if (isTRUE(any(y) && missing == "fiml")) { warning(paste0("Data contains cases with missing values on all variables, number of cases removed from the analysis: ", sum(y)), call. = FALSE) })()
+  (misty::na.prop(x[, var], append = FALSE) == 1L) |> (\(y) if (isTRUE(any(y) && missing == "fiml")) { warning(paste0("Data contains cases with missing values on all variables, number of cases removed from the analysis: ", sum(y)), call. = FALSE) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Print ####

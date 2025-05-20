@@ -111,11 +111,7 @@ na.prop <- function(data, ..., digits = 2, append = TRUE, name = "na.prop",
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####
 
-  if (isTRUE(!is.null(data) && append)) {
-
-    object <- data.frame(data,  setNames(as.data.frame(object), nm = name))
-
-  }
+  if (isTRUE(!missing(...) && append)) { object <- data.frame(data,  setNames(as.data.frame(object), nm = name)) }
 
   #_____________________________________________________________________________
   #

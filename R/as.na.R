@@ -213,6 +213,7 @@ as.na <- function(data, ..., na, replace = TRUE, check = TRUE) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dimension of the object = NULL ####
+
   if (isTRUE(is.null(dim(x)))) {
 
     #...................

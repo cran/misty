@@ -95,7 +95,7 @@ Note that operators can be combined within the same function call. For example,
 df.subset(iris, Sepal.Length, Petal.Width)
 
 #----------------------------------------------------------------------------
-# Select all variables using the . operator
+# Select rows
 
 # Example 2a: Select all variables, select rows with 'Species' equal 'setosa'
 df.subset(iris, subset = Species == "setosa")
@@ -137,10 +137,10 @@ df.subset(anscombe, x1::x3, y1::y3)
 # Drop variables using the ! operator
 
 # Example 8a: Select all variables but 'Sepal.Width'
-df.subset(iris, !Sepal.Width)
+df.subset(iris, ., !Sepal.Width)
 
 # Example 8b: Select all variables but 'Sepal.Width' to 'Petal.Width'
-df.subset(iris, !Sepal.Width:Petal.Width)
+df.subset(iris, ., !Sepal.Width:Petal.Width)
 
 #----------------------------------------------------------------------------
 # Combine +, -, !, and : operators

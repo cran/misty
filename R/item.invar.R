@@ -547,40 +547,27 @@ item.invar <- function(data, ..., model = NULL, rescov = NULL, rescov.long = TRU
     ## Check input 'rescov' ##
     if (isTRUE(!is.null(rescov))) {
 
-      # Two variables for each residual covariance
-      if (isTRUE(is.list(rescov)) && any(sapply(rescov, length) != 2L)) {
+      # More than one residual covariance specified as list
+      if (isTRUE(is.list(rescov))) {
 
-        stop("Please specify a list of character vectors for the argument 'rescov', where each element has two variable names", call. = FALSE)
+        if (isTRUE(any(sapply(rescov, length) != 2L))) { stop("Please specify a list of character vectors, each with two variable names, for the argument 'rescov'.", call. = FALSE) }
 
+      # One residual covariance specified as vector
       } else {
 
-        if (isTRUE(length(rescov) != 2L)) {
-
-          stop("Please specify a character vector with two variable names for the argument 'rescov'", call. = FALSE)
-
-        }
+        if (isTRUE(length(rescov) != 2L)) { stop("Please specify a character vector with two variable names, for the argument 'rescov'", call. = FALSE) }
 
       }
 
       # Model specification without 'model'
       if (isTRUE(is.null(model))) {
 
-        rescov.items <- !unique(unlist(rescov)) %in% colnames(x)
-        if (isTRUE(any(rescov.items))) {
-
-          stop(paste0("Items specified in the argument 'rescov' were not found in 'data': ", paste(unique(unlist(rescov))[rescov.items], collapse = ", ")), call. = FALSE)
-
-        }
+        (!unique(unlist(rescov)) %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Items specified in the argument 'rescov' were not found in 'data': ", paste(unique(unlist(rescov))[y], collapse = ", ")), call. = FALSE) })()
 
       # Model specification with 'model'
       } else {
 
-        rescov.items <- !unique(unlist(rescov)) %in% unique(unlist(model))
-        if (isTRUE(any(rescov.items))) {
-
-          stop(paste0("Items specified in the argument 'rescov' were not found in 'model': ", paste(unique(unlist(rescov))[rescov.items], collapse = ", ")), call. = FALSE)
-
-        }
+        (!unique(unlist(rescov)) %in% unique(unlist(model))) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Items specified in the argument 'rescov' were not found in 'model': ", paste(unique(unlist(rescov))[y], collapse = ", ")), call. = FALSE) })()
 
       }
 
@@ -961,7 +948,7 @@ item.invar <- function(data, ..., model = NULL, rescov = NULL, rescov.long = TRU
   # Cases with missing on all variables
   if (isTRUE(missing %in% c("fiml", "two.stage", "robust.two.stage"))) {
 
-    misty::na.prop(x[, var.mod]) |>
+    misty::na.prop(x[, var.mod], append = FALSE) |>
       (\(y) if (any(y == 1L)) {
 
         warning(paste("Data set contains", sum(y == 1L), "cases with missing on all variables which were not included in the analysis."), call. = FALSE)

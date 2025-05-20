@@ -37,7 +37,7 @@
 #' @return
 #' Returns a data frame with following entries:
 #'
-#' \item{\code{idout}}{ID variabl}
+#' \item{\code{idout}}{ID variable}
 #' \item{\code{mahal}}{Mahalanobis distance}
 #' \item{\code{hat}}{hat values}
 #' \item{\code{rstand}}{standardized leverage-corrected residuals}

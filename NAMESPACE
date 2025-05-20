@@ -127,20 +127,22 @@ export(test.levene)
 export(test.t)
 export(test.welch)
 export(test.z)
+export(uniq)
+export(uniq.n)
 export(write.dta)
 export(write.mplus)
 export(write.result)
 export(write.sav)
 export(write.xlsx)
-importFrom("stats", "aov", "as.formula", "chisq.test", "contr.helmert",
+importFrom("stats", "aov", "as.formula", "chisq.test", "contrasts", "contr.helmert",
            "contr.poly", "contr.sum", "contr.treatment", "coef", "coefficients",
            "cooks.distance", "cor", "cor.test", "cov", "cov2cor", "density", "df",
            "dfbetas", "df.residual", "dnorm", "dt", "fft", "formula", "hatvalues", "integrate",
-           "IQR", "lag", "lm", "loess", "logLik", "mad", "mahalanobis", "median", "model.frame", "model.matrix",
-           "na.omit", "nextn", "nobs", "oneway.test", "optim", "optimize", "pnorm",
-           "predict", "residuals", "rnorm", "rstandard", "rstudent", "runif", "setNames", "summary.lm",
-           "pchisq", "qbeta", "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", "reshape",
-           "sd", "terms", "time", "t.test", "p.adjust", "pf", "pt", "uniroot", "update",
+           "IQR", "lag", "lm", "loess", "logLik", "mad", "mahalanobis", "median", "model.frame", 
+           "model.matrix", "na.omit", "nextn", "nobs", "oneway.test", "optim", "optimize", "pnorm",
+           "predict", "residuals", "rnorm", "rstandard", "rstudent", "runif", "setNames", "sigma", 
+           "summary.lm", "pchisq", "qbeta", "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", 
+           "reshape", "sd", "terms", "time", "t.test", "p.adjust", "pf", "pt", "uniroot", "update",
            "var", "vcov", "weights")
 importFrom("grDevices", "hcl.colors", "hcl.pals")
 importFrom("utils", "as.relistable", "available.packages", "combn", "head",

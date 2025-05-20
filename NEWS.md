@@ -1,3 +1,30 @@
+### misty 0.7.2 (2025-05-20)
+
+##### New features
+* New function `uniq` for extracting unique elements in a vector, matrix, or data 
+frame and function `uniq.n` for counting the number of unique elements in a vector
+or for each column in a matrix or data frame.
+
+##### Minor features and improvements
+* The function `std.coef` computes standardized coefficients for multilevel and linear 
+mixed-effects models estimated by using the `lmer` or `lme` function from the lme4 
+or nlme package.
+* The function `item.alpha` computes coefficient alpha by estimating an essentially 
+tau-equivalent measurement model allowing full information maximum likelihood  (FIML) method 
+for missing data handling by specifying `missing = "fiml"` along with `estimator = "ML"`. 
+* Added the argument `rescov` to the function `item.alpha` for specifying residual 
+covariances when computing coefficient alpha.
+
+##### Bug fix
+* Fixed a bug in the functions `item.invar()`, functions did not allow specifying 
+more than two residual covariances (thanks to Lydia Laninga-Wijnen).
+
+##### User-visible changes
+* Changed the default setting of the argument `print` in the functions `item.alpha` 
+and `item.omega` to `alpha` and `omega`.
+* Removed the argument `na.omit` in the function `item.omega` and added the 
+arguments `estimator` and `missing`.
+
 ### misty 0.7.1 (2025-03-10)
 
 ##### New features
@@ -109,7 +136,7 @@ to `1`.
 * New functions `na.satcor()`, `cfa.satcor()`, `sem.satcor()`, `growth.satcor()`, 
 and `lavaan.satcor()` to estimate a confirmatory factor analysis model, structural 
 equation model, growth curve model, or latent variable model in the `lavaan` package
-using full information maximum likelihood  (FIML) method to handle missing data 
+using full information maximum likelihood  (FIML) method to missing data handling 
 while automatically specifying a saturated correlates model to incorporate auxiliary 
 variables into a substantive model.
 * New function `read.data()` to read data files in CSV, DAT, TXT, SPSS, Excel, or
@@ -537,7 +564,7 @@ to the functions `test.welch()`.
 ##### User-visible changes
 * Revised the output of the function `multilevel.cor()` to make it consistent with the output of the function `item.cfa()`.
 * Changed the argument `na.omit` in the function `multilevel.cor()` to `missing` to make it consistent with the arguments of the function `item.cfa()`.
-* Changed the default setting of the argument `estimator` in the function `multilevel.cor()` to `ML`, so that full information maximum likelihood method is used for dealing with missing data.
+* Changed the default setting of the argument `estimator` in the function `multilevel.cor()` to `ML`, so that full information maximum likelihood method is used for missing data handling.
 
 ##### Bug fix
 * Fixed a bug in the function `multilevel.cor()`, function did not use Huber-White 

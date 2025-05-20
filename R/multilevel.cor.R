@@ -427,7 +427,7 @@ multilevel.cor <- function(data, ..., cluster, within = NULL, between = NULL,
   # Cases with missing on all variables
   if (isTRUE(missing == "fiml")) {
 
-    x <- misty::na.prop(x[, -which(colnames(x) %in% c(".cluster", between)), drop = FALSE]) |>
+    x <- misty::na.prop(x[, -which(colnames(x) %in% c(".cluster", between)), drop = FALSE], append = FALSE) |>
       (\(y) if (any(y == 1L)) {
 
         warning(paste0("Data contains cases with missing values on all variables measured at the within level, number of cases removed from the analysis: ", sum(y == 1L)), call. = FALSE)

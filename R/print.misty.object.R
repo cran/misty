@@ -2908,17 +2908,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       #......
       # Check input 'print'
-      if (isTRUE(!all(print %in% c("all", "stdx", "stdy", "stdyx")))) {
-
-        stop("Character strings in the argument 'print' do not all match with \"all\", \"stdx\", \"stdy\", or \"stdyx\".", call. = FALSE)
-
-      }
+      if (isTRUE(!all(print %in% c("all", "stdx", "stdy", "stdyx")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"stdx\", \"stdy\", or \"stdyx\".", call. = FALSE) }
 
     }
-
-    #......
-    # Print object
-    print.object <- print.object$coef
 
     #----------------------------------------
     # Arguments
@@ -2929,31 +2921,46 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     #-----------------------------------------
     # Exclude columns
-    if (isTRUE(!"stdx" %in% print)) {
 
-      print.object <- print.object[, which(colnames(print.object) != "StdX")]
+    if (isTRUE(!"stdx" %in% print)) { print.object <- print.object[, which(colnames(print.object) != "StdX")] }
 
-    }
+    if (isTRUE(!"stdy" %in% print)) { print.object <- print.object[, which(colnames(print.object) != "StdY")] }
 
-    if (isTRUE(!"stdy" %in% print)) {
+    if (isTRUE(!"stdyx" %in% print)) { print.object <- print.object[, which(colnames(print.object) != "StdYX")] }
 
-      print.object <- print.object[, which(colnames(print.object) != "StdY")]
+    if (isTRUE(all(print == "stdy"))) { print.object <- print.object[, which(colnames(print.object) != "SD.x")] }
 
-    }
-
-    if (isTRUE(!"stdyx" %in% print)) {
-
-      print.object <- print.object[, which(colnames(print.object) != "StdYX")]
-
-    }
+    if (isTRUE(all(print == "stdx"))) { print.object <- print.object[, which(colnames(print.object) != "SD.y")] }
 
     #-----------------------------------------
     # Round
-    print.object[, -4L] <- apply(print.object[, -4L], 2L, function(y) formatC(y, digits = digits, format = "f",
-                                                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
 
-    print.object[, 4L] <- formatC(as.numeric(print.object[, 4L]), digits = p.digits, format = "f",
-                                  zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+    # Linear model, lm() function
+    if (isTRUE(class(x$model) == "lm")) {
+
+      print.object[, -4L] <- apply(print.object[, -4L], 2L, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+      print.object[, 4L] <- formatC(as.numeric(print.object[, 4L]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+    # Linear Mixed-Effects Model, lmer() function
+    } else if (isTRUE(class(x$model) %in% c("lmerMod", "lmerModLmerTest"))) {
+
+      print.object[, !colnames(print.object) %in% c("Pr(>|t|)", "Level")] <- apply(print.object[, !colnames(print.object) %in% c("Pr(>|t|)", "Level")], 2L, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+
+      print.object[, "Level"] <- format(print.object[, "Level"], justify = "right")
+
+      if (isTRUE("Pr(>|t|)" %in% colnames(print.object))) { print.object[, colnames(print.object) == "Pr(>|t|)"] <- formatC(as.numeric(print.object[, colnames(print.object) == "Pr(>|t|)"]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")) }
+
+    # Linear Mixed-Effects Model, lme() function
+    } else if (isTRUE(class(x$model) == "lme")) {
+
+      print.object[, !colnames(print.object) %in% c("DF", "p-value", "Level")] <- apply(print.object[, !colnames(print.object) %in% c("DF", "p-value", "Level")], 2L, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+
+      print.object[, "DF"] <- format(print.object[, "DF"], justify = "right")
+      print.object[, "Level"] <- format(print.object[, "Level"], justify = "right")
+
+      if (isTRUE("p-value" %in% colnames(print.object))) { print.object[, colnames(print.object) == "p-value"] <- formatC(as.numeric(print.object[, colnames(print.object) == "p-value"]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")) }
+
+    }
 
     #-----------------------------------------
     # Repace NA with ""
@@ -2972,16 +2979,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     # Print object
     print(print.object, quote = FALSE, right = TRUE)
 
-    # Note for model involving categorical predictors
-    if (isTRUE(any(c("stdy", "stdyx") %in% print))) {
-
-      cat("\n  Note. SD of the criterion variable", names(x$result$sd)[1L], "=", round(x$result$sd[1L], digits = digits))
-
-    }
-
   #_____________________________________________________________________________
   #
-  # Cohen's d ..----------------------------------------------------------------
+  # Cohen's d ------------------------------------------------------------------
   }, cohens.d = {
 
     #......
@@ -5554,7 +5554,6 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     if (isTRUE(check)) {
 
-      #......
       # Check input 'print'
       if (isTRUE(!all(print %in% c("all", "alpha", "item")))) { stop("Character strings in the argument 'print' do not all match with \"all\", \"alpha\", or \"item\".", call. = FALSE) }
 
@@ -5570,53 +5569,37 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     # Alpha
     if (isTRUE("alpha" %in% print)) {
 
-      if (isTRUE(all(c("low", "upp") %in% names(print.object$alpha)))) {
+      print.object$alpha$n <- format(paste(" ", print.object$alpha$n), justify = "right")
 
-        print.object$alpha$n <- format(paste(" ", print.object$alpha$n), justify = "right")
+      print.object$alpha$items <- format(print.object$alpha$items, justify = "right")
 
-        print.object$alpha$items <- format(print.object$alpha$items, justify = "right")
+      print.object$alpha$alpha <- formatC(print.object$alpha$alpha, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
-        print.object$alpha$alpha <- formatC(print.object$alpha$alpha, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$alpha$low <- formatC(print.object$alpha$low, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
-        print.object$alpha$low <- formatC(print.object$alpha$low, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$alpha$upp <- formatC(print.object$alpha$upp, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
-        print.object$alpha$upp <- formatC(print.object$alpha$upp, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$alpha <- rbind(c("n", "Items", "Alpha", "Low", "Upp"), print.object$alpha)
 
-        print.object$alpha <- rbind(c("n", "Items", "Alpha", "Low", "Upp"), print.object$alpha)
+      print.object$alpha <- apply(print.object$alpha, 2L, function(y) format(y, justify = "right"))
 
-        print.object$alpha <- apply(print.object$alpha, 2L, function(y) format(y, justify = "right"))
+      if (isTRUE(x$args$type != "categ")) {
 
         cat(paste0(ifelse(isTRUE(x$args$std), " Standardized ", " Unstandardized "), "Coefficient Alpha with ", x$args$conf.level*100L, "% Confidence Interval\n\n"))
 
-        write.table(print.object$alpha, quote = FALSE, row.names = FALSE, col.names = FALSE)
-
       } else {
 
-        print.object$alpha$alpha <- formatC(print.object$alpha$alpha, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-
-        print.object$alpha <- rbind(c("  Items", "Alpha"), print.object$alpha)
-
-        print.object$alpha <- apply(print.object$alpha, 2L, function(y) format(y, justify = "right"))
-
-        if (!isTRUE(x$args$ordered)) {
-
-          cat(paste0(ifelse(isTRUE(x$args$std), " Standardized ", " Unstandardized "), "Coefficient Alpha\n\n"))
-
-        } else {
-
-          cat(" Ordinal Coefficient Alpha\n\n")
-
-        }
-
-        write.table(print.object$alpha, quote = FALSE, row.names = FALSE, col.names = FALSE)
+        cat(paste0("Ordinal Coefficient Alpha with ", x$args$conf.level*100L, "% Confidence Interval\n\n"))
 
       }
+
+      write.table(print.object$alpha, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
     }
 
     #-----------------------------------------
     # Item statistics
-    if (isTRUE("item" %in% print && !is.null(print.object$itemstat) && nrow(print.object$itemstat) > 2L)) {
+    if (isTRUE("item" %in% print)) {
 
       print.object$itemstat$pNA <- paste0(formatC(print.object$itemstat$pNA, digits = 2L, format = "f", zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = ""))), "%")
 
@@ -5628,11 +5611,11 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       print.object$itemstat$max <- formatC(print.object$itemstat$max, digits = 2L, format = "f", zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
 
-      print.object$itemstat$it.cor <- formatC(print.object$itemstat$it.cor, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$itemstat$std.ld <- formatC(print.object$itemstat$std.ld, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
       print.object$itemstat$alpha <- formatC(print.object$itemstat$alpha, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
-      print.object$itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "It.Cor", "Alpha"), print.object$itemstat)
+      print.object$itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Std.Ld", "Alpha"), print.object$itemstat)
 
       # Format
       print.object$itemstat[, 1L] <- format(paste(" ", print.object$itemstat[, 1L]), justify = "left")
@@ -5640,7 +5623,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       if (isTRUE("alpha" %in% print)) { cat("\n") }
 
-      cat(" Item-Total Correlation and Coefficient Alpha if Item Deleted\n\n")
+      cat(paste0(" Standardized Factor Loadings and ", ifelse(x$args$type != "categ", "Coefficient Alpha ", "Ordinal Coefficient Alpha "), "if Item Deleted\n\n"))
 
       write.table(print.object$itemstat, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
@@ -6299,7 +6282,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       if (isTRUE(!x$arg$long)) {
 
-        print.summary2[8L:(8L + (length(na.omit(unique(x$data$.group))) - 1L)), 1L] <- paste0(" ", unlist(print.summary2[8L:(8L + (length(unique(na.omit(x$data$.group))) - 1L)), 1L]))
+        print.summary2[(which(print.summary2[, 1L] == "  Number of Observations per Group") + 1L) |> (\(y) y:(y + length(na.omit(unique(x$data$.group))) - 1L))(), 1L] <- paste0(" ", unlist(print.summary2[(which(print.summary2[, 1L] == "  Number of Observations per Group") + 1L) |> (\(y) y:(y + length(na.omit(unique(x$data$.group))) - 1L))(), 1L]))
+
+        if (isTRUE(!is.null(x$args$cluster))) { print.summary2[(which(print.summary2[, 1L] == "  Number of Clusters") + 1L) |> (\(y) y:(y + length(na.omit(unique(x$data$.group))) - 1L))(), 1L] <- paste0(" ", unlist(print.summary2[(which(print.summary2[, 1L] == "  Number of Clusters") + 1L) |> (\(y) y:(y + length(na.omit(unique(x$data$.group))) - 1L))(), 1L])) }
 
       }
 
@@ -7311,24 +7296,16 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     if (isTRUE("item" %in% print)) {
 
-      print.object$itemstat$pNA <- paste0(formatC(print.object$itemstat$pNA, digits = 2L, format = "f",
-                                                  zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), "%")
-      print.object$itemstat$m <- formatC(print.object$itemstat$m, digits = 2L, format = "f",
-                                         zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
-      print.object$itemstat$sd <- formatC(print.object$itemstat$sd, digits = 2L, format = "f",
-                                          zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
-      print.object$itemstat$min <- formatC(print.object$itemstat$min, digits = 2L, format = "f",
-                                           zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
-      print.object$itemstat$max <- formatC(print.object$itemstat$max, digits = 2L, format = "f",
-                                           zero.print = paste0("0.", paste(rep(0L, times = digits), collapse = "")))
+      print.object$itemstat$pNA <- paste0(formatC(print.object$itemstat$pNA, digits = 2L, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = 2L), collapse = "")), "0")), "%")
+      print.object$itemstat$m <- formatC(print.object$itemstat$m, digits = 2L, format = "f", zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
+      print.object$itemstat$sd <- formatC(print.object$itemstat$sd, digits = 2L, format = "f", zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
+      print.object$itemstat$min <- formatC(print.object$itemstat$min, digits = 2L, format = "f", zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
+      print.object$itemstat$max <- formatC(print.object$itemstat$max, digits = 2L, format = "f", zero.print = paste0("0.", paste(rep(0L, times = 2L), collapse = "")))
 
-      print.object$itemstat$std.ld <- formatC(print.object$itemstat$std.ld, digits = digits, format = "f",
-                                              zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
-      print.object$itemstat$omega <- formatC(print.object$itemstat$omega, digits = digits, format = "f",
-                                             zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$itemstat$std.ld <- formatC(print.object$itemstat$std.ld, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+      print.object$itemstat$omega <- formatC(print.object$itemstat$omega, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
 
-      print.object$itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Std.Ld", "Omega"),
-                                     print.object$itemstat)
+      print.object$itemstat <- rbind(c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Std.Ld", "Omega"), print.object$itemstat)
 
       # Format
       print.object$itemstat[, 1L] <- format(paste(" ", print.object$itemstat[, 1L]), justify = "left")
@@ -12391,6 +12368,11 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE, na = "")
 
     })
+
+  #_____________________________________________________________________________
+  #
+  # z-Test ---------------------------------------------------------------------
+  }, uniq = {
 
   })
 

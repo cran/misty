@@ -310,7 +310,7 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## All Missing ####
 
-  x <- misty::na.prop(x) |>
+  x <- misty::na.prop(x, append = FALSE) |>
     (\(y) if (isTRUE(any(y == 1L))) {
 
       warning("Cases with missing on all variables were removed from the analysis: ", sum(y == 1L), call. = FALSE)

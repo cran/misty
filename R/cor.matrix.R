@@ -444,7 +444,6 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
 
       cor.mat[lower.tri(cor.mat)] <- sapply(cor.test.res, function(y) y$tau.c)
       cor.mat[upper.tri(cor.mat)] <- t(cor.mat)[upper.tri(cor.mat)]
-
       diag(cor.mat) <- 1L
 
     }, "tetra" = {

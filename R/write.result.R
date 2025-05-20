@@ -1937,24 +1937,13 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   }, item.alpha = {
 
-    if (is.null(write.object$itemstat)) {
+    names(write.object) <- c("Alpha", "Itemstat")
 
-      write.object <- write.object$alpha
-      names(write.object) <- c("Items", "Alpha")
+    names(write.object$Alpha) <- c("n", "Items", "Alpha", "Low", "Upp")
+    names(write.object$Itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Std.Ld", "Alpha")
 
-      write.object$Alpha <- round(write.object$Alpha, digits = digits)
-
-    } else {
-
-      names(write.object)  <- c("Alpha", "Itemstat")
-
-      names(write.object$Alpha) <- c("n", "Items", "Alpha", "Low", "Upp")
-      names(write.object$Itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "It.Cor", "Alpha")
-
-      write.object$Alpha <- round(write.object$Alpha, digits = digits)
-      write.object$Itemstat[, -1L] <- round(write.object$Itemstat[, -1L], digits = digits)
-
-    }
+    write.object$Alpha <- round(write.object$Alpha, digits = digits)
+    write.object$Itemstat[, -1L] <- round(write.object$Itemstat[, -1L], digits = digits)
 
     # Print
     if (isTRUE(!"alpha" %in% x$args$print)) { write.object$Alpha <- NULL }
@@ -3485,32 +3474,38 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   # Standardized Coefficients, std.coef() --------------------------------------
   }, std.coef = {
 
-    #...................
-    ### Coefficient result table ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Round ####
 
-    write.coef <- write.object$coef
+    # Linear model, lm() function
+    if (isTRUE(class(x$model) == "lm")) {
 
-    # Round
-    write.coef[, -4L] <- sapply(write.coef[, -4L], round, digits = digits)
-    write.coef[, 4L] <- round(write.coef[, 4L], digits = p.digits)
+      write.object[, -4L] <- apply(write.object[, -4L], 2L, round, digits)
+      write.object[, 4L] <- round(write.object[, 4L], digits = p.digits)
+
+    # Linear Mixed-Effects Model, lmer() function
+    } else if (isTRUE(class(x$model) %in% c("lmerMod", "lmerModLmerTest"))) {
+
+      write.object[, !colnames(write.object) %in% c("Pr(>|t|)", "Level")] <- apply(write.object[, !colnames(write.object) %in% c("Pr(>|t|)", "Level")], 2L, round, digits)
+
+      if (isTRUE("Pr(>|t|)" %in% colnames(write.object))) { write.object[, colnames(write.object) == "Pr(>|t|)"] <- round(write.object[, colnames(write.object) == "Pr(>|t|)"], digits = p.digits) }
+
+    # Linear Mixed-Effects Model, lme() function
+    } else if (isTRUE(class(x$model) == "lme")) {
+
+      write.object[, !colnames(write.object) %in% c("p-value", "Level")] <- apply(write.object[, !colnames(write.object) %in% c("p-value", "Level")], 2L, round, digits)
+
+      if (isTRUE("p-value" %in% colnames(write.object))) { write.object[, colnames(write.object) == "p-value"] <- round(write.object[, colnames(write.object) == "p-value"], digits = p.digits) }
+
+    }
 
     # Row names
-    write.coef <- data.frame(row.names(write.coef), write.coef,
-                             fix.empty.names = FALSE, check.names = FALSE)
-
-    #...................
-    ### Standard deviation ####
-
-    write.sd <- data.frame(sd = round(write.object$sd, digits = digits))
-
-    # Row names
-    write.sd <- data.frame(row.names(write.sd), write.sd,
-                           fix.empty.names = FALSE, check.names = FALSE)
+    write.coef <- data.frame(row.names(write.object), write.object, fix.empty.names = FALSE, check.names = FALSE)
 
     #...................
     ### Write object ####
 
-    write.object <- list(coef = write.coef, sd = write.sd)
+    write.object <- list(Coef = write.coef)
 
   })
 

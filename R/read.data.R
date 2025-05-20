@@ -171,12 +171,12 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
     if (isTRUE(sep == "auto" && dec == "auto")) {
 
       # Separator ";"
-      if (isTRUE(all(grepl(";", readLines(file, n = 10L))))) {
+      if (isTRUE(all(suppressWarnings(grepl(";", suppressWarnings(readLines(file, n = 10L)), useBytes = TRUE))))) {
 
         object <- data.table::fread(file = file, sep = ";", dec = ",", select = select, drop = drop, na.strings = na.strings, stringsAsFactors = stringsAsFactors, data.table = !as.data.frame, encoding = encoding)
 
       # Separator ","
-      } else if (isTRUE(all(grepl(",", readLines(file, n = 10L))))) {
+      } else if (isTRUE(all(suppressWarnings(grepl(",", suppressWarnings(readLines(file, n = 10L)), useBytes = TRUE))))) {
 
         object <- data.table::fread(file = file, sep = ",", dec = ".", select = select, drop = drop, na.strings = na.strings, stringsAsFactors = stringsAsFactors, data.table = !as.data.frame, encoding = encoding)
 

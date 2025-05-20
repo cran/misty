@@ -5,14 +5,16 @@
 \title{Coefficient Omega, Hierarchical Omega, and Categorical Omega}
 \usage{
 item.omega(data, ..., rescov = NULL, type = c("omega", "hierarch", "categ"),
-           exclude = NULL, std = FALSE, na.omit = FALSE,
+           exclude = NULL, std = FALSE,
+           estimator = c("ML", "GLS", "WLS", "DWLS", "ULS", "PML"),
+           missing = c("listwise", "pairwise", "fiml"),
            print = c("all", "omega", "item"), digits = 2, conf.level = 0.95,
            as.na = NULL, write = NULL, append = TRUE, check = TRUE,
            output = TRUE)
 }
 \arguments{
-\item{data}{a data frame. Note that at least three items are
-needed for computing coefficient omega.}
+\item{data}{a data frame. Note that at least three items are needed for
+computing coefficient omega}
 
 \item{...}{an expression indicating the variable names in \code{data}
 e.g., \code{item.omega(dat, x1, x2, x3)}. Note that the
@@ -20,17 +22,18 @@ operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
 \code{::}, and \code{!} can also be used to select variables,
 see 'Details' in the \code{\link{df.subset}} function.}
 
-\item{rescov}{a character vector or a list of character vectors for specifying
-residual covariances when computing coefficient omega, e.g.
-\code{rescov = c("x1", "x2")} for specifying a residual
-covariance between items \code{x1} and \code{x2} or
-\code{rescov = list(c("x1", "x2"), c("x3", "x4"))} for specifying
-residual covariances between items \code{x1} and \code{x2},
-and items \code{x3} and \code{x4}.}
+\item{rescov}{a character vector or a list of character vectors for
+specifying residual covariances when computing coefficient
+omega, e.g. \code{rescov = c("x1", "x2")} for specifying
+a residual covariance between items \code{x1} and \code{x2}
+or \code{rescov = list(c("x1", "x2"), c("x3", "x4"))} for
+specifying residual covariances between items \code{x1} and
+\code{x2}, and items \code{x3} and \code{x4}.}
 
-\item{type}{a character string indicating the type of omega to be computed, i.e.,
-\code{omega} (default) for coefficient omega, \code{hierarch} for
-hierarchical omega, and \code{categ} for categorical omega.}
+\item{type}{a character string indicating the type of omega to be computed,
+i.e., \code{omega} (default) for coefficient omega, \code{hierarch}
+for hierarchical coefficient omega, and \code{categ} for
+categorical coefficient omega.}
 
 \item{exclude}{a character vector indicating items to be excluded from the
 analysis.}
@@ -38,21 +41,30 @@ analysis.}
 \item{std}{logical: if \code{TRUE}, the standardized coefficient omega
 is computed.}
 
-\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed before
-conducting the analysis (i.e., listwise deletion); if \code{FALSE},
-full information maximum likelihood (FIML) is used for computing
-coefficient omega or hierarchical omega, while pairwise deletion
-is used for computing categorical omega.}
+\item{estimator}{a character string indicating the estimator to be used
+(see 'Details' in the \code{\link{item.cfa}} function).
+By default, \code{"ULS"} is used for computing (hierarchical)
+coefficient omega and \code{"DWLS"} is used for computing
+ordinal coefficient omega.}
+
+\item{missing}{a character string indicating how to deal with missing data.
+(see 'Details' in the \code{\link{item.cfa}} function). By
+default, pairwise deletion (\code{missing = "pairwise"}) is
+used for computing (hierarchical) coefficient omega and ordinal
+coefficient omega. Full information maximum likelihood method
+is available for estimating (hierarchical) coefficient omega
+and is requested by specifying \code{missing = "fiml"}
+along with \code{estimator = "ML"}.}
 
 \item{print}{a character vector indicating which results to show, i.e.
-\code{"all"} (default), for all results \code{"omega"} for omega,
- and \code{"item"} for item statistics.}
+\code{"all"} for all results \code{"omega"} (default) for
+the coefficient omega, and \code{"item"} for item statistics.}
 
-\item{digits}{an integer value indicating the number of decimal places to be
-used for displaying omega and standardized factor loadings.}
+\item{digits}{an integer value indicating the number of decimal places to
+be used for displaying omega and standardized factor loadings.}
 
-\item{conf.level}{a numeric value between 0 and 1 indicating the confidence level
-of the interval.}
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence
+level of the interval.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
 i.e. these values are converted to \code{NA} before conducting
@@ -68,115 +80,130 @@ be written.}
 \item{append}{logical: if \code{TRUE} (default), output will be appended
 to an existing text file with extension \code{.txt} specified
 in \code{write}, if \code{FALSE} existing text file will be
-overwritten.}
+ overwritten.}
 
-\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification
+is checked.}
 
 \item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-  \item{\code{call}}{function call}
-  \item{\code{type}}{type of analysis}
-  \item{\code{data}}{data frame used for the current analysis}
-  \item{\code{args}}{specification of function arguments}
-  \item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
-  \item{\code{result}}{list with result tables, i.e., \code{omega} for a table
-                       with coefficient omega and \code{itemstat} for a table with
-                       item statistics}
+\item{\code{call}}{function call}
+\item{\code{type}}{type of analysis}
+\item{\code{data}}{data frame used for the current analysis}
+\item{\code{args}}{specification of function arguments}
+\item{\code{model.fit}}{fitted lavaan object (\code{mod.fit})}
+\item{\code{result}}{list with result tables, i.e., \code{omega} for a table
+                     with coefficient omega and \code{itemstat} for a table
+                     with item statistics}
 }
 \description{
 This function computes point estimate and confidence interval for the coefficient
-omega (McDonald, 1978), hierarchical omega (Kelley & Pornprasertmanit, 2016),
-and categorical omega (Green & Yang, 2009) along with standardized factor loadings
-and omega if item deleted.
+omega (McDonald, 1978), hierarchical coefficient omega (Kelley & Pornprasertmanit,
+2016), and categorical coefficient omega (Green & Yang, 2009) along with
+standardized factor loadings and omega if item deleted. By default, the function
+computes coefficient omega based on maximum likelihood parameter (ML) estimates
+using full information maximum likelihood (FIML) method in the presence of
+missing data.
 }
 \details{
-Omega is computed by estimating a confirmatory factor analysis model using the
-\code{cfa()} function in the \pkg{lavaan} package by Yves Rosseel (2019). Maximum
-likelihood (\code{"ML"}) estimator is used for computing coefficient omega and
-hierarchical omega, while diagonally weighted least squares estimator (\code{"DWLS"})
-is used for computing categorical omega.
+Coefficient omega is computed by conducting a confirmatory factor analysis based
+on the congeneric measurement model (Graham, 2006) using the \code{cfa()} function in the \pkg{lavaan}
+package by Yves Rosseel (2019).
 
-Approximate confidence intervals are computed using the procedure by Feldt, Woodruff
-and Salih (1987). Note that there are at least 10 other procedures for computing
-the confidence interval (see Kelley and Pornprasertmanit, 2016), which are implemented
-in the \code{ci.reliability()} function in the \pkg{MBESSS} package by Ken Kelley (2019).
+Approximate confidence intervals are computed using the procedure by Feldt,
+Woodruff and Salih (1987). Note that there are at least 10 other procedures
+for computing the confidence interval (see Kelley and Pornprasertmanit, 2016),
+which are implemented in the \code{ci.reliability()} function in the
+\pkg{MBESSS} package by Ken Kelley (2019).
 }
 \note{
-Computation of the hierarchical and categorical omega is based on
-the \code{ci.reliability()} function in the \pkg{MBESS} package by Ken Kelley
+Computation of the hierarchical and categorical omega is based on the
+\code{ci.reliability()} function in the \pkg{MBESS} package by Ken Kelley
 (2019).
 }
 \examples{
 \dontrun{
+dat <- data.frame(item1 = c(3, NA, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 2, 2, 1, 3, 1),
+                  item3 = c(4, 2, 4, 2, 1, 3, 4, 1), item4 = c(4, 1, 2, 2, 1, 3, 4, 3))
 
-dat <- data.frame(item1 = c(5, 2, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 5, 2, 2, 5, 1),
-                  item3 = c(4, 2, 4, 5, 1, 3, 5, 1), item4 = c(5, 1, 2, 5, 2, 3, 4, 2))
-
-# Example 1a: Compute unstandardized coefficient omega and item statistics
+# Example 1a: Coefficient omega and item statistics, pairwise deletion
 item.omega(dat)
 
-# Example 2: Compute unstandardized coefficient omega and item statistics while excluding item3
+# Example 1b: Coefficient omega and item statistics, listwise deletion
+item.omega(dat, missing = "listwise")
+
+# Example 2: Coefficient omega and item statistics after excluding item3
 item.omega(dat, exclude = "item3")
 
-# Example 3: Compute unstandardized coefficient omega with a residual covariance
+# Example 3a: Coefficient omega with a residual covariance
 # and item statistics
 item.omega(dat, rescov = c("item1", "item2"))
 
-# Example 4: Compute unstandardized coefficient omega with residual covariances
+# Example 3b: Coefficient omega with residual covariances
 # and item statistics
 item.omega(dat, rescov = list(c("item1", "item2"), c("item1", "item3")))
 
-# Example 5: Compute unstandardized hierarchical omega and item statistics
-item.omega(dat, type = "hierarch")
-
-# Example 6: Compute categorical omega and item statistics
+# Example 4: Ordinal coefficient omega and item statistics
 item.omega(dat, type = "categ")
 
-# Example 7: Compute standardized coefficient omega and item statistics
-item.omega(dat, std = TRUE)
-
-# Example 8: Compute unstandardized coefficient omega
-item.omega(dat, print = "omega")
-
-# Example 9: Print only item statistics
-item.omega(dat, print = "item")
-
-# Example 10: Summary of the CFA model used to compute coefficient omega
+# Example 6: Summary of the CFA model used to compute coefficient omega
 lavaan::summary(item.omega(dat, output = FALSE)$model.fit,
                 fit.measures = TRUE, standardized = TRUE)
 
-# Example 11a: Write Results into a text file
+# Example 7a: Write Results into a text file
 item.omega(dat, write = "Omega.txt")
 
-# Example 11b: Write Results into a Excel file
+# Example 7b: Write Results into a Excel file
 item.omega(dat, write = "Omega.xlsx")
 }
 }
 \references{
+Chalmers, R. P. (2018). On misconceptions and the limited usefulness of ordinal alpha.
+\emph{Educational and Psychological Measurement, 78}, 1056-1071.
+https://doi.org/10.1177/0013164417727036
+
+Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests.
+\emph{Psychometrika, 16}, 297-334. https://doi.org/10.1007/BF02310555
+
+Cronbach, L.J. (2004). My current thoughts on coefficient alpha and successor
+procedures. \emph{Educational and Psychological Measurement, 64}, 391-418.
+https://doi.org/10.1177/0013164404266386
+
 Feldt, L. S., Woodruff, D. J., & Salih, F. A. (1987). Statistical inference for
 coefficient alpha. \emph{Applied Psychological Measurement}, 11 93-103.
+https://doi.org/10.1177/014662168701100107
 
-Green, S. B., & Yang, Y. (2009). Reliability of summed item scores using structural
-equation modeling: An alternative to coefficient alpha. \emph{Psychometrika, 74},
-155-167. https://doi.org/10.1007/s11336-008-9099-3
+Graham, J. M. (2006). Congeneric and (essentially) tau-equivalent estimates of
+score reliability: What they are and how to use them. \emph{Educational and
+Psychological Measurement, 66}(6), 930–944. https://doi.org/10.1177/0013164406288165
 
 Kelley, K., & Pornprasertmanit, S. (2016). Confidence intervals for population
 reliability coefficients: Evaluation of methods, recommendations, and software
 for composite measures. \emph{Psychological Methods, 21}, 69-92.
-http://dx.doi.org/10.1037/a0040086
+https://doi.org/10.1037/a0040086.
 
 Ken Kelley (2019). \emph{MBESS: The MBESS R Package}. R package version 4.6.0.
 https://CRAN.R-project.org/package=MBESS
 
-McDonald, R. P. (1978). Generalizability in factorable domains: Domain validity
-and generalizability. \emph{Educational and Psychological Measurement, 38}, 75-79.
+Revelle, W. (2025). \emph{psych: Procedures for psychological, psychometric,
+and personality research}.  Northwestern University, Evanston, Illinois.
+R package version 2.5.3,  https://CRAN.R-project.org/package=psych.
+
+Zumbo, B. D., & Kroc, E. (2019). A measurement is a choice and Stevens' scales
+of measurement do not help make it: A response to Chalmers. \emph{Educational
+and Psychological Measurement, 79}, 1184-1197.
+https://doi.org/10.1177/0013164419844305
+
+Zumbo, B. D., Gadermann, A. M., & Zeisser, C. (2007). Ordinal versions of coefficients
+alpha and theta for Likert rating scales. \emph{Journal of Modern Applied Statistical
+Methods, 6}, 21-29. https://doi.org/10.22237/jmasm/1177992180
 }
 \seealso{
-\code{\link{write.result}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
-\code{\link{item.reverse}}, \code{\link{item.scores}}
+\code{\link{item.omega}}, \code{\link{item.cfa}}, \code{\link{item.invar}},
+\code{\link{item.reverse}}, \code{\link{item.scores}}, \code{\link{write.result}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

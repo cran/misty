@@ -2,20 +2,21 @@
 % Please edit documentation in R/std.coef.R
 \name{std.coef}
 \alias{std.coef}
-\title{Standardized Coefficients}
+\title{Standardized Coefficients for Linear, Multilevel and Mixed-Effects Models}
 \usage{
 std.coef(model, print = c("all", "stdx", "stdy", "stdyx"), digits = 3, p.digits = 3,
          write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{model}{a fitted model of class \code{"lm"}.}
+\item{model}{a fitted model of class \code{"lm"}, \code{"lmerMod"},
+\code{"lmerModLmerTest"} or \code{"lme"}.}
 
 \item{print}{a character vector indicating which results to show, i.e. \code{"all"}, for all results,
 \code{"stdx"} for standardizing only the predictor, \code{"stdy"} for for standardizing only
 the criterion, and \code{"stdyx"} for for standardizing both the predictor and the criterion.
 Note that the default setting is depending on the level of measurement of the predictors,
 i.e., if all predictors are continuous, the default setting is \code{print = "stdyx"};
-if all predictors are binary, the default setting is \code{print = "stdy"}; if predictors
+if all predictors are binary, the default setting is \code{print = "stdy"}, and if predictors
 are continuous and binary, the default setting is \code{print = c("stdy", "stdyx")}.}
 
 \item{digits}{an integer value indicating the number of decimal places to be used for displaying
@@ -26,9 +27,10 @@ results.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
-\code{"Output.txt"}) or Excel file with file extension \code{".xlsx"}
-(e.g., \code{"Output.xlsx"}). If the file name does not contain
-any file extension, an Excel file will be written.}
+\code{"Output.txt"}) or Excel file with file extension
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
 
 \item{append}{logical: if \code{TRUE} (default), output will be appended
 to an existing text file with extension \code{.txt} specified
@@ -44,6 +46,7 @@ Returns an object of class \code{misty.object}, which is a list with following
 entries:
   \item{\code{call}}{function call}
   \item{\code{type}}{type of analysis}
+  \item{\code{data}}{data frame with variables used in the analysis}
   \item{\code{model}}{model specified in \code{model} }
   \item{\code{args}}{specification of function arguments}
   \item{\code{result}}{list with result tables, i.e., \code{coef} for the regression
@@ -51,79 +54,212 @@ entries:
                        for the standard deviation of the outcome and predictor(s)}
 }
 \description{
-This function computes standardized coefficients for linear models estimated by using the \code{lm()}
-function.
+This function computes standardized coefficients for linear models estimated
+by using the \code{lm()} function and for multilevel and linear mixed-effects
+models estimated by using the \code{lmer()} or \code{lme()} function from the
+\pkg{lme4} or \pkg{nlme} package.
 }
 \details{
-The slope \eqn{\beta} can be standardized with respect to only \eqn{x}, only \eqn{y}, or both \eqn{y}
-and \eqn{x}:
+\describe{
+\item{\strong{Linear Regression Model}}{The linear regression model is expressed
+as follows:
 
-\deqn{StdX(\beta_1) = \beta_1 SD(x)}
+\deqn{y_i = \beta_0 + \beta_1x_i + \epsilon_i}
 
-\eqn{StdX(\beta_1)} standardizes with respect to \eqn{x} only and is interpreted as the change in
-\eqn{y} when \eqn{x} changes one standard deviation referred to as \eqn{SD(x)}.
+where \eqn{y_i} is the outcome variable for individual \eqn{i}, \eqn{\beta_0}
+is the intercept, \eqn{\beta_1} is the slope (aka regression coefficient),
+\eqn{x_i} is the predictor for individual \eqn{i}, and \eqn{\epsilon_i} is the
+residual for individual \eqn{i}.
 
-\deqn{StdY(\beta_1) = \frac{\beta_1}{SD(x)}}
+The slope \eqn{\beta_1} estimated by using the \code{lm()} function can be
+standardized with respect to only \eqn{x}, only \eqn{y}, or both \eqn{y} and
+\eqn{x}:
 
-\eqn{StdY(\beta_1)} standardizes with respect to \eqn{y} only and is interpreted as the change in
-\eqn{y} standard deviation units, referred to as \eqn{SD(y)}, when \eqn{x} changes one unit.
+   \itemize{
+     \item{\strong{StdX Standardization}}: \eqn{StdX(\beta_1)}
+     standardizes with respect to \eqn{x} only and is interpreted as expected
+     difference in \eqn{y} between individuals that differ one standard
+     deviation referred to as \eqn{SD(x)}:
 
-\deqn{StdYX(\beta_1) = \beta_1 \frac{SD(x)}{SD(y)}}
+     \deqn{StdX(\beta_1) = \beta_1 SD(x)}
 
-\eqn{StdYX(\beta_1)} standardizes with respect to both \eqn{y} and \eqn{x} and is interpreted as the change
-in \eqn{y} standard deviation units when \eqn{x} changes one standard deviation.
+     \item{\strong{StdY Standardization}}: \eqn{StdY(\beta_1)}
+     standardizes with respect to \eqn{y} only and is interpreted as expected
+     difference in \eqn{y} standard deviation units, referred to as \eqn{SD(y)},
+     between individuals that differ one unit in \eqn{x}:
 
-Note that the \eqn{StdYX(\beta_1)} and the \eqn{StdY(\beta_1)} standardizations are not suitable for the
-slope of a binary predictor because a one standard deviation change in a binary variable is generally
-not of interest (Muthen, Muthen, & Asparouhov, 2016).
+     \deqn{StdY(\beta_1) = \frac{\beta_1}{SD(x)}}
 
-The standardization of the slope \eqn{\beta_3} in a regression model with an interaction term uses the
-product of standard deviations \eqn{SD(x_1)SD(x_2)} rather than the standard deviation of the product
-\eqn{SD(x_1 x_2)} for the interaction variable \eqn{x_1}\eqn{x_2} (see Wen, Marsh & Hau, 2010). Likewise,
-the standardization of the slope \eqn{\beta_3} in a polynomial regression model with a quadratic term
-uses the product of standard deviations \eqn{SD(x)SD(x)} rather than the standard deviation of the
-product \eqn{SD(x x)} for the quadratic term \eqn{x^2}.
+     \item{\strong{StdYX Standardization}}: \eqn{StdYX(\beta_1)}
+     standardizes with respect to both \eqn{y} and \eqn{x} and is interpreted
+     as expected difference in \eqn{y} standard deviation units between individuals
+     that differ one standard deviation in \eqn{x}:
+
+     \deqn{StdYX(\beta_1) = \beta_1 \frac{SD(x)}{SD(y)}}
+   }
+Note that the \eqn{StdYX(\beta_1)} and the \eqn{StdY(\beta_1)} standardizations
+are not suitable for the slope of a binary predictor because a one standard
+deviation change in a binary variable is generally not of interest (Muthen et
+al, 2016). Accordingly, the function does not provide the \eqn{StdYX(\beta_1)}
+and the \eqn{StdY(\beta_1)} standardizations whenever a binary vector, factor,
+or character vector is specified for the predictor variable.}
+
+\item{\strong{Moderated Regression Model}}{The moderated regression model is
+expressed as follows:
+
+\deqn{y_i = \beta_0 + \beta_1x_{1i} + \beta_2x_{2i} + \beta_3x_{1i}x_{2i} + \epsilon_i}
+
+where \eqn{\beta_3} is the slope for the interaction variable \eqn{x_1x_2}.
+
+The slope \eqn{\beta_3} is standardized by using the product of standard
+deviations \eqn{SD(x_1)SD(x_2)} rather than the standard deviation of the
+product \eqn{SD(x_1 x_2)} for the interaction variable \eqn{x_1x_2} as
+discussed in Wen et al. (2010).
+
+Note that the function does not use binary variables in the interaction term
+in standardizing the interaction variable. For example, when standardizing the
+interaction term \eqn{x1:x2:x3} with \eqn{x2} being binary, the product
+\eqn{SD(x_1)SD(x_3)} while excluding binary predictor \code{x2} is used to
+standardize the interaction term.}
+
+\item{\strong{Polynomial Regression Model}}{The polynomial regression model
+is expressed as follows:
+
+\deqn{y_i = \beta_0 + \beta_1x_{i} + \beta_2x^2_{i} + \epsilon_i}
+
+where \eqn{\beta_2} is the slope for the quadratic term \eqn{x^2}.
+
+The slope \eqn{\beta_3} is standardized by using the product of standard
+deviations \eqn{SD(x)SD(x)} rather than the standard deviation of the product
+\eqn{SD(x x)} for the quadratic term \eqn{x^2}.}
+
+\item{\strong{Multilevel and Mixed-Effects Model}}{The random intercept and
+slope model in the multiple-equation notation is expressed as follows:
+
+\itemize{
+   \item{Level 1:} \deqn{y_{ij} = \beta_{0j} + \beta_{1j}x_{ij} + r_{ij}}
+   \item{Level 2:} \deqn{\beta_{0j} = \gamma_{00} + \gamma_{01}z_{j} + u_{0j}}
+                   \deqn{\beta_{1j} = \gamma_{10} + u_{1j}}
+}
+
+The model expressed in the single-equation notation is as follows:
+
+\deqn{y_{ij} = \gamma_{00} + \gamma_{10}x_{ij} + \gamma_{01}z_{j} + u_{0j} + u_{1j}x_{ij} + r_{ij}}
+
+where \eqn{y_{ij}} is the outcome variable for individual \eqn{i} in group \eqn{j},
+\eqn{\gamma_{00}} is the fixed-effect average intercept, \eqn{\gamma_{10}} is the
+fixed-effect average slope for the Level-1 predictor \eqn{x}, and \eqn{\gamma_{01}}
+is the fixed-effect slope for the Level-2 predictor \eqn{z}.
+
+The slopes \eqn{\gamma_{10}} and \eqn{\gamma_{01}} are standardized according
+to the within- and between-group or within-and between-person standard deviations,
+i.e., slopes are standardizes with respect to the \eqn{x} and \eqn{y} standard
+deviation relevant for the level of the fixed effect of interest. The resulting
+standardized slopes are called pseudo-standardized coefficients (Hoffman 2015,
+p. 342). The StdYX Standardization for \eqn{\gamma_{10}} and \eqn{\gamma_{10}}
+is expressed as follows:
+
+\itemize{
+  \item{Level-1 Predictor:} \deqn{StdYX(\gamma_{10}) = \gamma_{10} \frac{SD(x_{ij})}{SD(y_{ij})}}
+  \item{Level-2 Predictor:} \deqn{StdYX(\gamma_{01}) = \gamma_{01} \frac{SD(x_{j})}{SD(y_{j})}}
+}
+
+where \eqn{SD(x_{ij})} and \eqn{SD(x_{j})} are the standard deviations of the
+predictors at each analytic level, \eqn{SD(y_{ij})} is the square root of the
+Level-1 residual variance \eqn{\sigma^2_{r}} and \eqn{SD(y_{j})} is square root
+of the Level-2 intercept variance \eqn{\sigma^2_{u_0}} which are estimated in
+a null model using the \code{lmer} function in the \pkg{lme4} package using
+the restricted maximum likelihood estimation method.
+
+The function uses the square root of the Level-1 residual variance \eqn{\sigma^2_{r}}
+to standardize the slope of the cross-level interaction though it should be
+noted that it is unclear whether this is the correct approach to standardize
+the slope of the cross-level interaction.
+}
+}
 }
 \examples{
 #----------------------------------------------------------------------------
-# Linear model
+# Linear Model
 
-# Example 1: Regression model with continuous predictors
+# Example 1a: Continuous predictors
 mod.lm1 <- lm(mpg ~ cyl + disp, data = mtcars)
 std.coef(mod.lm1)
 
-# Example 2: Print all standardized coefficients
+# Example 1b: Print all standardized coefficients
 std.coef(mod.lm1, print = "all")
 
-# Example 3: Regression model with dichotomous predictor
+# Example 1c: Binary predictor
 mod.lm2 <- lm(mpg ~ vs, data = mtcars)
 std.coef(mod.lm2)
 
-# Example 4: Regression model with continuous and dichotomous predictors
+# Example 1d: Continuous and binary predictors
 mod.lm3 <- lm(mpg ~ disp + vs, data = mtcars)
 std.coef(mod.lm3)
 
-# Example 5: Regression model with continuous predictors and an interaction term
+# Example 1e: Continuous predictors with interaction term
 mod.lm4 <- lm(mpg ~ cyl*disp, data = mtcars)
 std.coef(mod.lm4)
 
-# Example 6: Regression model with a quadratic term
-mod.lm5 <- lm(mpg ~ cyl + I(cyl^2), data = mtcars)
+# Example 1f: Continuous and binary predictor with interaction term
+mod.lm5 <- lm(mpg ~ cyl*vs, data = mtcars)
 std.coef(mod.lm5)
+
+# Example 1g: Continuous predictor with a quadratic term
+mod.lm6 <- lm(mpg ~ cyl + I(cyl^2), data = mtcars)
+std.coef(mod.lm6)
 
 \dontrun{
 #----------------------------------------------------------------------------
-# Example 7: Write Results into a Text of Excel file
+# Multilevel and Linear Mixed-Effects Model
 
-# Example 7a: Text file
+# Load lme4, nlme, and ggplot2 package
+misty::libraries(lme4, nlme)
+
+# Load data set "Demo.twolevel" in the lavaan package
+data("Demo.twolevel", package = "lavaan")
+
+# Cluster mean centering, center() from the misty package
+Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
+
+# Grand mean centering, center() from the misty package
+Demo.twolevel <- center(Demo.twolevel, w1, type = "CGM", cluster = "cluster")
+
+# Estimate models using the lme4 package
+mod1a <- lmer(y1 ~ x2.c + w1.c + (1 + x2.c | cluster), data = Demo.twolevel,
+              REML = FALSE)
+mod2a <- lmer(y1 ~ x2.c + w1.c + x2.c:w1.c + (1 + x2.c | cluster),
+              data = Demo.twolevel, REML = FALSE)
+
+# Estimate models using the nlme package
+mod1b <- lme(y1 ~ x2.c + w1.c, random = ~ 1 + x2.c | cluster, data = Demo.twolevel,
+             method = "ML")
+mod2b <- lme(y1 ~ x2.c + w1.c + x2.c:w1.c, random = ~ 1 + x2.c | cluster,
+             data = Demo.twolevel, method = "ML")
+
+# Example 2: Continuous predictors
+std.coef(mod1a)
+std.coef(mod1b)
+
+# Example 2: Continuous predictors with cross-level interaction
+std.coef(mod2a)
+std.coef(mod2b)
+
+#----------------------------------------------------------------------------
+# Example 3: Write Results into a text or Excel file
+
+# Example 3a: Text file
 std.coef(mod.lm1, write = "Std_Coef.txt", output = FALSE, check = FALSE)
 
-# Example 7b: Excel file
+# Example 3b: Excel file
 std.coef(mod.lm1, write = "Std_Coef.xlsx", output = FALSE, check = FALSE)}
 }
 \references{
-Muthen, B. O., Muthen, L. K., & Asparouhov, T. (2016). \emph{Regression and mediation analysis using Mplus}.
-Muthen & Muthen.
+Hoffman, L. (2015). \emph{Longitudinal Analysis: Modeling Within-Person Fluctuation
+and Change}. Routledge.
+
+Muthen, B. O., Muthen, L. K., & Asparouhov, T. (2016). \emph{Regression and mediation
+analysis using Mplus}. Muthen & Muthen.
 
 Wen, Z., Marsh, H. W., & Hau, K.-T. (2010). Structural equation models of latent interactions:
 An appropriate standardized solution and its scale-free properties. \emph{Structural Equation Modeling:

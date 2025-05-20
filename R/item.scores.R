@@ -289,7 +289,7 @@ item.scores <- function(data, ..., fun = c("mean", "sum", "median", "var", "sd",
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Append ####
 
-  if (isTRUE(!is.null(data) && append)) { object <- data.frame(data,  setNames(as.data.frame(object), nm = name)) }
+  if (isTRUE(!missing(...) && append)) { object <- data.frame(data,  setNames(as.data.frame(object), nm = name)) }
 
   #_____________________________________________________________________________
   #

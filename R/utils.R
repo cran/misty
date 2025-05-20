@@ -326,7 +326,7 @@
       # Complement !
       } else {
 
-        var.exclude <- c(var.exclude, grep(misty::chr.omit(var.i, omit = "!", check = FALSE), colnames(data), value = TRUE))
+        var.exclude <- c(var.exclude, misty::chr.grep(misty::chr.omit(var.i, omit = "!", check = FALSE), colnames(data), value = TRUE))
 
         var.names[[i]] <- ""
 
@@ -4894,7 +4894,7 @@
   # At least three cases
   if (isTRUE(nrow(na.omit(data.frame(x = x, y = y))) >= 3L)) {
 
-    object <- suppressWarnings(cor.test(x, y, method = "kendall", exact = FALSE, continuity = FALSE)) |> (\(y) list(stat = y$statistic, df = y$parameter, pval = y$p.value))()
+    object <- suppressWarnings(cor.test(x, y, method = "kendall", exact = FALSE, continuity = FALSE)) |> (\(y) list(stat = y$statistic, df = NA, pval = y$p.value))()
 
   # Less than three cases
   } else {
@@ -6187,10 +6187,10 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the item.omega() function -----------------------------
+# Internal functions for the item.alpha() and item.omega() function ------------
 #
-# - .omega.function
-# - .catOmega
+# - .alpha.omega
+# - .categ.alpha.omega
 # - .getThreshold
 # - .polycorLavaan
 # - .refit
@@ -6199,39 +6199,40 @@
 # MBESS: The MBESS R Package
 # https://cran.r-project.org/web/packages/MBESS/index.html
 
-.omega.function <- function(y, y.rescov = NULL, y.type = type, y.std = std, check = TRUE) {
+.alpha.omega <- function(y, alpha, y.rescov = NULL, y.type = type, y.std = std, estimator = estimator, missing = missing, check = TRUE) {
 
   std <- type <- NULL
 
   # Variable names
-  varnames <- colnames(y)
+  vnames <- colnames(y)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Omega for continuous items ####
+  ## Alpha or Omega for Continuous Items ####
 
   if (isTRUE(y.type != "categ")) {
 
     #...................
     ### Mode specification ####
 
-    # Factor model
-    mod.factor <- paste("f =~", paste(varnames, collapse = " + "))
+    # Factor model: Coefficient Alpha
+    if (isTRUE(alpha)) {
 
-    # Residual covariance
+      mod.factor <- paste("f =~", paste(paste0("L*", vnames), collapse = " + "))
 
-    if (isTRUE(!is.null(y.rescov))) {
+    # Factor model: Coefficient Omega
+    } else {
 
-      mod.rescov <- vapply(y.rescov, function(y) paste(y, collapse = " ~~ "), FUN.VALUE = character(1L))
-
-      # Paste residual covariances
-      mod.factor <- paste(mod.factor, "\n", paste(mod.rescov, collapse = " \n "))
+      mod.factor <- paste("f =~", paste(vnames, collapse = " + "))
 
     }
+
+    # Residual covariance
+    if (isTRUE(!is.null(y.rescov))) { mod.factor <- vapply(y.rescov, function(y) paste(y, collapse = " ~~ "), FUN.VALUE = character(1L)) |> (\(y) paste(mod.factor, "\n", paste(y, collapse = " \n ")))() }
 
     #...................
     ### Model estimation ####
 
-    mod.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = y, ordered = FALSE, se = "none", std.lv = TRUE, estimator = "ML", missing = "fiml"))
+    mod.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = y, ordered = FALSE, se = "none", std.lv = TRUE, estimator = estimator, missing = missing))
 
     #...................
     ### Check for convergence and negative degrees of freedom ####
@@ -6239,25 +6240,17 @@
     if (isTRUE(check)) {
 
       # Model convergence
-      if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) {
-
-        warning("CFA model did not converge, results are most likely unreliable.", call. = FALSE)
-
-      }
+      if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) { warning("CFA model did not converge, results are most likely unreliable.", call. = FALSE) }
 
       # Degrees of freedom
-      if (isTRUE(lavaan::lavInspect(mod.fit, "fit")["df"] < 0L)) {
-
-        warning("CFA model has negative degrees of freedom, results are most likely unreliable.", call. = FALSE)
-
-      }
+      if (isTRUE(lavaan::lavInspect(mod.fit, "fit")["df"] < 0L)) { warning("CFA model has negative degrees of freedom, results are most likely unreliable.", call. = FALSE) }
 
     }
 
     #...................
     ### Parameter estimates ####
 
-    if (!isTRUE(y.std)) {
+    if (isTRUE(!y.std)) {
 
       # Unstandardized parameter estimates
       param <- lavaan::parameterestimates(mod.fit)
@@ -6265,9 +6258,7 @@
     } else {
 
       # Standardized parameter estimates
-      param <- lavaan::standardizedSolution(mod.fit)
-
-      names(param)[grep("est.std", names(param))] <- "est"
+      param <- setNames(lavaan::standardizedSolution(mod.fit), nm = c("lhs", "op", "rhs", "est", "se", "z", "pvalue", "ci.lower", "ci.upper"))
 
     }
 
@@ -6287,12 +6278,12 @@
     param.resid <- param[param$op == "~~" & param$lhs == param$rhs & param$lhs != "f" & param$rhs != "f", ]
 
     #...................
-    ### Omega ####
+    ### Alpha or Omega ####
 
     # Numerator
     load.sum2 <- sum(param.load$est)^2L
 
-    # Total omega
+    # Total alpha
     if (isTRUE(y.type != "hierarch"))  {
 
       resid.sum <- sum(param.resid$est)
@@ -6300,38 +6291,37 @@
       # Residual covariances
       if (isTRUE(!is.null(y.rescov))) { resid.sum <- resid.sum + 2L*sum(param.rcov$est) }
 
-      omega <- load.sum2 / (load.sum2 + resid.sum)
+      coef.alpha.omega <- load.sum2 / (load.sum2 + resid.sum)
 
     #...................
-    ### Hierarchical omega ####
+    ### Hierarchical Alpha or Omega ####
     } else {
 
-      mod.cov <- paste(apply(combn(seq_len(length(varnames)), m = 2L), 2L, function(z) paste(varnames[z[1L]], "~~", varnames[z[2L]])), collapse = " \n ")
+      mod.cov.fit <- paste(apply(combn(seq_len(length(vnames)), m = 2L), 2L, function(z) paste(vnames[z[1L]], "~~", vnames[z[2L]])), collapse = " \n ") |>
+        (\(z) suppressWarnings(lavaan::cfa(z, data = y, ordered = FALSE, se = "none", estimator = estimator, missing = missing)))()
 
-      mod.cov.fit <- suppressWarnings(lavaan::cfa(mod.cov, data = y, ordered = FALSE, se = "none", std.lv = TRUE, estimator = "ML", missing = "fiml"))
+      if (isTRUE(!y.std)) {
 
-      if (!isTRUE(std)) {
-
-        var.total <- sum(lavaan::inspect(mod.cov.fit, "cov.ov")[varnames, varnames])
+        var.total <- lavaan::parameterEstimates(mod.cov.fit) |> (\(y) sum(y[y$lhs == y$rhs, "est"], 2*y[y$lhs != y$rhs & y$op == "~~", "est"]))()
 
       } else {
 
-        var.total <- sum(lavaan::inspect(mod.cov.fit, "cor.ov")[varnames, varnames])
+        var.total <- lavaan::standardizedSolution(mod.cov.fit) |> (\(y) sum(y[y$lhs == y$rhs, "est"], 2*y[y$lhs != y$rhs & y$op == "~~", "est"]))()
 
       }
 
-      omega <- load.sum2 / var.total
+      coef.alpha.omega <- load.sum2 / var.total
 
     }
 
     # Return object
-    object <- list(mod.fit = mod.fit, omega = omega)
+    object <- list(mod.fit = mod.fit, coef.alpha.omega = coef.alpha.omega)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Omega for ordered-categorical items ####
+  ## Alpha or Omega for Ordered-Categorical Items ####
   } else {
 
-    object <- .catOmega(y, y.rescov = y.rescov, check = TRUE)
+    object <- .categ.alpha.omega(dat = y, alpha = alpha, y.rescov = y.rescov, estimator = estimator, missing = missing, check = TRUE)
 
   }
 
@@ -6339,13 +6329,14 @@
 
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## .catOmega Function ####
 
-.catOmega <- function(dat, y.rescov = NULL, check = TRUE) {
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## .categ.alpha.omega Function ####
+
+.categ.alpha.omega <- function(dat, alpha, y.rescov = NULL, estimator = estimator, missing = missing, check = TRUE) {
 
   # Variable names
-  varnames <- colnames(dat)
+  vnames <- colnames(dat)
 
   # Sequence from 1 to the number of columns
   q <- seq_len(ncol(dat))
@@ -6353,27 +6344,23 @@
   # Convert in ordered factor
   dat <- data.frame(lapply(dat, ordered))
 
-  # Factor loadings
-  loadingLine <- paste(paste0(paste0("L", q), "*", varnames), collapse = " + ")
+  # Factor model: Coefficient Alpha
+  if (isTRUE(alpha)) {
 
-  # Factor variance
-  factorLine <- "f1 ~~ 1*f1\n"
+    mod.factor <- paste("f =~", paste(paste0("L*", vnames), collapse = " + "))
 
-  # Paste model syntax
-  model <- paste0("f1 =~ NA*", varnames[1L], " + ", loadingLine, "\n", factorLine)
+  # Factor model: Coefficient Omega
+  } else {
 
-  # Residual covariance
-  if (isTRUE(!is.null(y.rescov))) {
-
-    rescovLine <- vapply(y.rescov, function(y) paste(y, collapse = " ~~ "), FUN.VALUE = character(1L))
-
-    # Paste residual covariances
-    model <- paste0(model, paste(rescovLine, collapse = "\n "))
+    mod.factor <- paste("f =~", paste(vnames, collapse = " + "))
 
   }
 
+  # Residual covariances
+  if (isTRUE(!is.null(y.rescov))) { mod.factor <- vapply(y.rescov, function(y) paste(y, collapse = " ~~ "), FUN.VALUE = character(1L)) |> (\(y) paste(mod.factor, "\n", paste(y, collapse = " \n ")))() }
+
   # Estimate model
-  mod.fit <- suppressWarnings(lavaan::cfa(model, data = dat, estimator = "DWLS", se = "none", ordered = TRUE))
+  mod.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = dat, estimator = estimator, missing = missing, std.lv = TRUE, se = "none", ordered = TRUE))
 
   # Model convergence
   if (isTRUE(check)) { if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) { warning("CFA model did not converge, results are most likely unreliable.", call. = FALSE) } }
@@ -6385,7 +6372,7 @@
 
   threshold <- .getThreshold(mod.fit)[[1L]]
 
-  denom <- .polycorLavaan(mod.fit, dat)[varnames, varnames]
+  denom <- .polycorLavaan(mod.fit, dat, estimator = estimator, missing = missing)[vnames, vnames]
 
   invstdvar <- 1L / sqrt(diag(lavaan::lavInspect(mod.fit, "implied")$cov))
 
@@ -6425,9 +6412,7 @@
 
   }
 
-  object <- list(mod.fit = mod.fit, omega = sumnum / addden)
-
-  return(object)
+  return(list(mod.fit = mod.fit, coef.alpha.omega = sumnum / addden))
 
 }
 
@@ -6476,7 +6461,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## .polycorLavaan Function ####
 
-.polycorLavaan <- function(object, data) {
+.polycorLavaan <- function(object, data, estimator = estimator, missing = missing) {
 
   ngroups <- lavaan::inspect(object, "ngroups")
 
@@ -6496,21 +6481,21 @@
 
   barpos <- sapply(strsplit(targettaunames, ""), function(x) which(x == "|"))
 
-  varnames <- unique(apply(data.frame(targettaunames, barpos - 1L, stringsAsFactors = FALSE), 1L, function(x) substr(x[1L], 1L, x[2L])))
+  vnames <- unique(apply(data.frame(targettaunames, barpos - 1L, stringsAsFactors = FALSE), 1L, function(x) substr(x[1L], 1L, x[2L])))
 
   script <- ""
 
-  for(i in 2L:length(varnames)) {
+  for(i in 2L:length(vnames)) {
 
-    temp <- paste0(varnames[1L:(i - 1L)], collapse = " + ")
+    temp <- paste0(vnames[1L:(i - 1L)], collapse = " + ")
 
-    temp <- paste0(varnames[i], "~~", temp, "\n")
+    temp <- paste0(vnames[i], " ~~ ", temp, "\n")
 
     script <- paste(script, temp)
 
   }
 
-  suppressWarnings(newobject <- .refit(script, data, varnames, object))
+  suppressWarnings(newobject <- .refit(pt = script, data = data, vnames = vnames, object = object, estimator = estimator, missing = missing))
 
   if (isTRUE(ngroups == 1L)) {
 
@@ -6527,7 +6512,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## .refit Function ####
 
-.refit <- function(pt, data, vnames, object) {
+.refit <- function(pt, data, vnames, object, estimator = estimator, missing = missing) {
 
   args <- lavaan::lavInspect(object, "call")
 
@@ -6541,11 +6526,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## .p2 Function ####
 
-.p2 <- function(t1, t2, r) {
-
-  mnormt::pmnorm(c(t1, t2), c(0L, 0L), matrix(c(1L, r, r, 1L), 2L, 2L))
-
-}
+.p2 <- function(t1, t2, r) { mnormt::pmnorm(c(t1, t2), c(0L, 0L), matrix(c(1L, r, r, 1L), 2L, 2L)) }
 
 #_______________________________________________________________________________
 #_______________________________________________________________________________
