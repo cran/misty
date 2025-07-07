@@ -41,15 +41,13 @@ Variables not mentioned in \code{within} or \code{between}
 are measured on the within level and will be modeled on
 both the within and between level.}
 
-\item{estimator}{a character string indicating the estimator to be used:
-\code{"ML"} (default) for maximum likelihood with
-conventional standard errors and \code{"MLR"} for maximum
-likelihood with Huber-White robust standard errors. Note
-that by default, full information maximum likelihood (FIML)
-method is used to deal with missing data when using
-\code{"ML"} (\code{missing = "fiml"}), whereas incomplete
-cases are removed listwise (i.e., \code{missing = "listwise"})
-when using \code{"MLR"}.}
+\item{estimator}{a character string indicating the estimator to be used, i.e.,
+\code{"ML"} for maximum likelihood with conventional
+standard errors and \code{"MLR"} for maximum likelihood with
+Huber-White robust standard errors. The default setting
+depends on the argument \code{sig}, i.e., \code{"ML"} is
+used when specifying \code{sig = FALSE} (default) and
+\code{"MLR"} is used when specifying \code{sig = TRUE}.}
 
 \item{optim.method}{a character string indicating the optimizer, i.e., \code{nlminb}
 (default) for the unconstrained and bounds-constrained
@@ -59,15 +57,16 @@ Expectation Maximization (EM) algorithm.}
 \item{missing}{a character string indicating how to deal with missing
 data, i.e., \code{"listwise"} for listwise deletion or
 \code{"fiml"} (default) for full information maximum
-likelihood (FIML) method. Note that FIML method is only
-available when \code{estimator = "ML"}. Note that it takes
-longer to estimate the model when using FIML and using FIML
-might cause issues in model convergence, these issues might
+likelihood (FIML) method. Note that it takes longer to
+estimate models while using FIML and using FIML is
+prone to issues with model convergence, these issues might
 be resolved by switching to listwise deletion.}
 
 \item{sig}{logical: if \code{TRUE}, statistically significant
 correlation coefficients are shown in boldface on the
-console.}
+console. Note that standard errors, z test statistics, and
+significance values not provided in the return object when
+\code{sig = FALSE} (default).}
 
 \item{alpha}{a numeric value between 0 and 1 indicating the significance
 level at which correlation coefficients are printed
@@ -157,49 +156,49 @@ entries:
                        the between-group correlations}
 }
 \description{
-This function is a wrapper function for computing the within-group and
-between-group correlation matrix by calling the \code{sem} function in the
-R package \pkg{lavaan} and provides standard errors, z test statistics, and
-significance values (\emph{p}-values) for testing the hypothesis
-H0: \eqn{\rho} = 0 for all pairs of variables within and between groups.
+This function computes the within-group and between-group correlation matrix by
+calling the \code{sem} function in the R package \pkg{lavaan} and provides standard
+errors, z test statistics, and significance values (\emph{p}-values) for testing
+the hypothesis H0: \eqn{\rho} = 0 for all pairs of variables within and between
+groups. By default, the function computes the within-group and between-group
+correlation matrix without standard errors, z test statistics, and significance
+value.
 }
 \details{
-The specification of the within-group and between-group variables is in line
-with the syntax in Mplus. That is, the \code{within} argument is used to
-identify the variables in the data frame specified in \code{data} that
-are measured on the individual level and modeled only on the within level.
-They are specified to have no variance in the between part of the model. The
-\code{between} argument is used to identify the variables in the
-data frame specified in \code{data} that are measured on the cluster level and
-modeled only on the between level. Variables not mentioned in the arguments
-\code{within} or \code{between} are measured on the individual level and will
-be modeled on both the within and between level.
-
-The function uses maximum likelihood estimation with conventional standard
-errors (\code{estimator = "ML"}) which are not robust against non-normality
-and full information maximum likelihood (FIML) method (\code{missing = "fiml"})
-to deal with missing data by default. FIML method cannot be used when
-within-group variables have no variance within some clusters. In this cases,
-the function
-will switch to listwise deletion. Note that the current lavaan version 0.6-11
-supports FIML method only for maximum likelihood estimation with conventional
-standard errors (\code{estimator = "ML"}) in multilevel models. Maximum
-likelihood estimation with Huber-White robust standard errors
-(\code{estimator = "MLR"}) uses listwise deletion to deal with missing data.
-When using FIML method there might be issues in model convergence, which might
-be resolved by switching to listwise deletion (\code{missing = "listwise"}).
-
-The lavaan package uses a quasi-Newton optimization method (\code{"nlminb"})
-by default. If the optimizer does not converge, model estimation will switch
-to the Expectation Maximization (EM) algorithm.
-
-Statistically significant correlation coefficients can be shown in boldface
-on the console when specifying \code{sig = TRUE}. However, this option is not
-supported when using R Markdown, i.e., the argument \code{sig} will switch to
-\code{FALSE}.
-
-Adjustment method for multiple testing when specifying the argument \code{p.adj}
-is applied to the within-group and between-group correlation matrix separately.
+\describe{
+\item{\strong{Within-Group and Between-Group Variables}}{The specification of
+the within-group and between-group variables is in line with the syntax in Mplus.
+That is, the \code{within} argument is used to identify variables in the data
+frame specified in \code{data} that are measured at the individual level and
+modeled only at the within level. They are specified to have no variance in
+the between part of the model. The \code{between} argument is used to identify
+the variables in the data frame specified in \code{data} that are measured at
+the cluster level and modeled only at the between level. Variables not mentioned
+in the arguments \code{within} or \code{between} are measured at the individual
+level and will be modeled at both the within and between level.}
+\item{\strong{Estimation Method and Missing Data Handling}}{The default setting
+for the argument \code{estimator} is depending on the setting of the argument
+\code{sig}. If \code{sig = FALSE} (default), maximum likelihood estimation
+(\code{estimator = "ML"}) is used, while maximum likelihood with Huber-White
+robust standard errors (\code{estimator = "MLR"}) that are robust against
+non-normality is used when \code{sig = TRUE}. In the presence of missing data,
+full information maximum likelihood (FIML) method (\code{missing = "fiml"}) is
+used by default. Note that FIML method cannot deal with within-group variables
+that have no variance within some clusters. In this cases, the function will
+switch to listwise deletion. Using FIML method might result in issues with model
+convergence, which will be resolved by switching to listwise deletion
+(\code{missing = "listwise"}).}
+\item{\strong{Optimizer}}{The lavaan package uses a quasi-Newton optimization
+method (\code{"nlminb"}) by default. If the optimizer does not converge, model
+estimation switches to the Expectation Maximization (EM) algorithm (\code{"nlminb"}).}
+\item{\strong{Statistical Significance}}{Statistically significant correlation
+coefficients can be shown in boldface on the console by specifying \code{sig = TRUE}.
+However, this option is not supported when using R Markdown, i.e., the argument
+\code{sig} will switch to \code{FALSE}.}
+\item{\strong{Adjustment Method for Multiple Testing }}{Adjustment method for
+multiple testing when specifying the argument \code{p.adj} is applied to
+the within-group and between-group correlation matrix separately.}
+}
 }
 \note{
 The function uses the functions \code{sem}, \code{lavInspect},
@@ -216,13 +215,13 @@ data("Demo.twolevel", package = "lavaan")
 #----------------------------------------------------------------------------
 # Cluster variable specification
 
-# Example 1a: Specification using the argument '...'
+# Example 1: Specification using the argument '...'
 multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster")
 
-# Example 1b: Alternative specification with cluster variable 'cluster' in 'data'
+# Alternative specification with cluster variable 'cluster' in 'data'
 multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "cluster")], cluster = "cluster")
 
-# Example 1b: Alternative specification with cluster variable 'cluster' not in 'data'
+# Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
 
 #----------------------------------------------------------------------------
@@ -235,12 +234,12 @@ multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", split = TRUE)
 
 # Example 4: Print correlation coefficients, standard errors, z test statistics,
 # and p-values
-multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", print = "all")
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", sig = TRUE, print = "all")
 
 # Example 5: Print correlation coefficients and p-values
 # significance values with Bonferroni correction
-multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", print = c("cor", "p"),
-               p.adj = "bonferroni")
+multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", sig = TRUE,
+               print = c("cor", "p"), p.adj = "bonferroni")
 
 #----------------------------------------------------------------------------
 # Example 6: Variables "y1", "y2", and "y2" modeled at both the within and between level

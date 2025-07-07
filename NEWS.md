@@ -1,3 +1,17 @@
+### misty 0.7.3 (2025-07-20)
+
+##### Minor features and improvements
+* The function `descript` prints the percentage of observations at the minimum (%Min)
+and at the maximum (%Max).
+
+##### User-visible changes
+* The function `multilevel.cor` estimates the model without standard errors to
+speed up model estimation when specifying `sig = FALSE` (default setting).
+
+##### Bug fix
+* Fixed a bug in the function `plot.misty.object()` for plotting results of the
+`na.pattern()` function (thanks Teun van den Brand).
+
 ### misty 0.7.2 (2025-05-20)
 
 ##### New features

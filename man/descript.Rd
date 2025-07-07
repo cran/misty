@@ -6,7 +6,8 @@
 \usage{
 descript(data, ...,
          print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd",
-                   "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
+                   "min", "p.min", "p25", "med", "p75", "max", "p.max", "range",
+                   "iqr", "skew", "kurt"),
          group = NULL, split = NULL, sample = FALSE, sort.var = FALSE,
          na.omit = FALSE, digits = 2, as.na = NULL, write = NULL, append = TRUE,
          check = TRUE, output = TRUE)
@@ -23,16 +24,18 @@ and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
 
 \item{print}{a character vector indicating which statistical measures to be
-printed on the console, i.e. \code{n} (number of observations),
+printed on the console, i.e., \code{n} (number of observations),
 \code{nNA} (number of missing values), \code{pNA} (percentage of
 missing values), \code{m} (arithmetic mean), \code{se.m} (standard
 error of the arithmetic mean), \code{var} (variance), \code{sd}
 (standard deviation), \code{med} (median),\code{min} (minimum),
+\code{p.min} (percentage of observations at the minimum),
 \code{p25} (25th percentile, first quartile), \code{p75} (75th
-percentile, third quartile), \code{max} (maximum),  \code{range}
-(range), \code{iqr} (interquartile range), \code{skew} (skewness),
+percentile, third quartile), \code{max} (maximum), \code{p.max}
+(percentage of observations at the maximum)\code{range} (range),
+\code{iqr} (interquartile range), \code{skew} (skewness),
 and \code{kurt} (excess kurtosis). The default setting is
-\code{print = ("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")}.}
+\code{print = ("n", "nNA", "pNA", "m", "sd", "min", "pmin", "max", "p.max", "skew", "kurt")}.}
 
 \item{group}{a numeric vector, character vector or factor as grouping variable.
 Alternatively, a character string indicating the variable name
@@ -88,7 +91,23 @@ entries:
 }
 \description{
 This function computes summary statistics for one or more than one variable, optionally
-by a grouping and/or split variable.
+by a grouping and/or split variable. By default, the function prints
+the number of observations (\code{n}), number of missing values (\code{nNA}),
+percentage of missing values (\code{\%NA}), arithmetic mean (\code{M}), standard
+deviation (\code{SD}), minimum (\code{Min}), percentage of observations at the
+minimum (\code{\%Min}), maximum (\code{Max}), percentage of observations at the
+maximum (\code{\%Max}), skewness (\code{Skew}), and kurtosis (\code{Kurt}).
+}
+\details{
+\describe{
+\item{\strong{Floor and Ceiling Effects}}{This function computes the percentage
+of observations at both the minimum and maximum to evaluate floor and ceiling
+effects in continuous variables. Historically, floor or ceiling effects are
+considered to be present if more than 15\% of observations are at the lowest
+or highest possible score (McHorney & Tarlov, 1995; Terwee et al., 2007).
+Muthen (2023, see video at 7:58) noted that as a rule of thumb linear models should be
+avoided when the floor or ceiling effect of the outcome variable exceeds 25\%.}
+}
 }
 \examples{
 #----------------------------------------------------------------------------
@@ -138,8 +157,21 @@ descript(mtcars, write = "Descript_Text.txt")
 descript(mtcars, write = "Descript_Excel.xlsx")}
 }
 \references{
+McHorney, C. A., & Tarlov, A. R. (1995). Individual-patient monitoring in clinical
+practice: are available health status surveys adequate?.
+\emph{Quality of Life Research, 4}(4), 293-307. https://doi.org/10.1007/BF01593882
+
+Muthen, B. (2023, Feb. 28). \emph{Mplus Web Talk No. 6 - Using Mplus To Do Dynamic Structural
+Equation Modeling: Segment 3, Descriptive Analyses} [Video]. YouTube. https://www.statmodel.com/Webtalk6.shtml
+
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
 - Using R and SPSS}. John Wiley & Sons.
+
+Terwee, C. B., Bot, S. D., de Boer, M. R., van der Windt, D. A., Knol, D. L.,
+Dekker, J., Bouter, L. M., & de Vet, H. C. (2007). Quality criteria were proposed
+for measurement properties of health status questionnaires.
+\emph{Journal of Clinical Epidemiology, 60}(1), 34-42.
+https://doi.org/10.1016/j.jclinepi.2006.03.012
 }
 \seealso{
 \code{\link{ci.mean}}, \code{\link{ci.mean.diff}}, \code{\link{ci.median}},

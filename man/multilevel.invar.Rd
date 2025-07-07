@@ -216,10 +216,9 @@ entries:
                      the configural, metric, and scalar invariance model}
 }
 \description{
-This function is a wrapper function for evaluating configural, metric, and
-scalar cross-level measurement invariance using multilevel confirmatory factor
-analysis with continuous indicators by calling the \code{cfa} function in the
-R package \pkg{lavaan}.
+This function evaluates configural, metric, and scalar cross-level measurement
+invariance using multilevel confirmatory factor analysis with continuous indicators
+by calling the \code{cfa} function in the R package \pkg{lavaan}.
 }
 \note{
 The function uses the functions \code{lavTestLRT} provided in the R package

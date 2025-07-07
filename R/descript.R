@@ -1,7 +1,12 @@
 #' Descriptive Statistics
 #'
 #' This function computes summary statistics for one or more than one variable,
-#' optionally by a grouping and/or split variable.
+#' optionally by a grouping and/or split variable. By default, the function prints
+#' the number of observations (\code{n}), number of missing values (\code{nNA}),
+#' percentage of missing values (\code{%NA}), arithmetic mean (\code{M}), standard
+#' deviation (\code{SD}), minimum (\code{Min}), percentage of observations at the
+#' minimum (\code{%Min}), maximum (\code{Max}), percentage of observations at the
+#' maximum (\code{%Max}), skewness (\code{Skew}), and kurtosis (\code{Kurt}).
 #'
 #' @param data     a numeric vector or data frame with numeric variables, i.e.,
 #'                 factors and character variables are excluded from \code{data}
@@ -12,16 +17,18 @@
 #'                 and \code{!} can also be used to select variables, see 'Details'
 #'                 in the \code{\link{df.subset}} function.
 #' @param print    a character vector indicating which statistical measures to be
-#'                 printed on the console, i.e. \code{n} (number of observations),
+#'                 printed on the console, i.e., \code{n} (number of observations),
 #'                 \code{nNA} (number of missing values), \code{pNA} (percentage of
 #'                 missing values), \code{m} (arithmetic mean), \code{se.m} (standard
 #'                 error of the arithmetic mean), \code{var} (variance), \code{sd}
 #'                 (standard deviation), \code{med} (median),\code{min} (minimum),
+#'                 \code{p.min} (percentage of observations at the minimum),
 #'                 \code{p25} (25th percentile, first quartile), \code{p75} (75th
-#'                 percentile, third quartile), \code{max} (maximum),  \code{range}
-#'                 (range), \code{iqr} (interquartile range), \code{skew} (skewness),
-#'                 and \code{kurt} (excess kurtosis). The default setting is
-#'                 \code{print = ("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")}.
+#'                 percentile, third quartile), \code{max} (maximum), \code{p.max}
+#'                 (percentage of observations at the maximum),\code{range} (range),
+#'                 \code{iqr} (interquartile range), \code{skew} (skewness), and
+#'                 \code{kurt} (excess kurtosis). The default setting is
+#'                 \code{print = ("n", "nNA", "pNA", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")}.
 #' @param group    a numeric vector, character vector or factor as grouping variable.
 #'                 Alternatively, a character string indicating the variable name
 #'                 of the grouping variable in \code{data} can be specified.
@@ -54,6 +61,17 @@
 #' @param check    logical: if \code{TRUE} (default), argument specification is checked.
 #' @param output   logical: if \code{TRUE} (default), output is shown on the console.
 #'
+#' @details
+#' \describe{
+#' \item{\strong{Floor and Ceiling Effects}}{This function computes the percentage
+#' of observations at both the minimum and maximum to evaluate floor and ceiling
+#' effects in continuous variables. Historically, floor or ceiling effects are
+#' considered to be present if more than 15% of observations are at the lowest
+#' or highest possible score (McHorney & Tarlov, 1995; Terwee et al., 2007).
+#' Muthen (2023, see video at 7:58) noted that as a rule of thumb linear models should be
+#' avoided when the floor or ceiling effect of the outcome variable exceeds 25%.}
+#' }
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
@@ -64,8 +82,22 @@
 #' \code{\link{crosstab}}, \code{\link{multilevel.descript}}, \code{\link{na.descript}}.
 #'
 #' @references
+#' McHorney, C. A., & Tarlov, A. R. (1995). Individual-patient monitoring in clinical
+#' practice: are available health status surveys adequate?.
+#' \emph{Quality of Life Research, 4}(4), 293-307. https://doi.org/10.1007/BF01593882
+#'
+#' Muthen, B. (2023, Feb. 28). \emph{Mplus Web Talk No. 6 - Using Mplus To Do Dynamic Structural
+#' Equation Modeling: Segment 3, Descriptive Analyses} [Video]. YouTube.
+#' https://www.statmodel.com/Webtalk6.shtml
+#'
 #' Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
 #' - Using R and SPSS}. John Wiley & Sons.
+#'
+#' Terwee, C. B., Bot, S. D., de Boer, M. R., van der Windt, D. A., Knol, D. L.,
+#' Dekker, J., Bouter, L. M., & de Vet, H. C. (2007). Quality criteria were proposed
+#' for measurement properties of health status questionnaires.
+#' \emph{Journal of Clinical Epidemiology, 60}(1), 34-42.
+#' https://doi.org/10.1016/j.jclinepi.2006.03.012
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
@@ -127,7 +159,7 @@
 #' descript(mtcars, write = "Descript_Excel.xlsx")
 #' }
 descript <- function(data, ...,
-                     print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt"),
+                     print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt"),
                      group = NULL, split = NULL, sample = FALSE, sort.var = FALSE, na.omit = FALSE,
                      digits = 2, as.na = NULL, write = NULL, append = TRUE,
                      check = TRUE, output = TRUE) {
@@ -256,7 +288,7 @@ descript <- function(data, ...,
 
   # Check inputs
   .check.input(logical = c("sample", "sort.var", "na.omit", "append", "output"),
-               m.character = list(print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt")),
+               m.character = list(print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt")),
                args = c("digits", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
@@ -293,12 +325,12 @@ descript <- function(data, ...,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Statistical measures ####
 
-  print.all <- c("n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt")
+  print.all <- c("n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt")
 
   # Default setting
-  if (isTRUE(all(c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt") %in% print))) {
+  if (isTRUE(all(c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt") %in% print))) {
 
-    print <- c("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")
+    print <- c("n", "nNA", "pNA", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")
 
   # All statistical measures
   } else if (isTRUE("all" %in% print)) {
@@ -308,12 +340,12 @@ descript <- function(data, ...,
   # Default setting with additional statistical measures
   } else if (isTRUE("default" %in% print && length(print > 1L))) {
 
-    print <- print.all[print.all %in% misty::chr.omit(union(c("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt"), print), "default", check = FALSE)]
+    print <- print.all[print.all %in% misty::chr.omit(union(c("n", "nNA", "pNA", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt"), print), "default", check = FALSE)]
 
   # Manual default setting
   } else if (isTRUE(all(print == "default"))) {
 
-    print <- c("n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")
+    print <- c("n", "nNA", "pNA", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")
 
   }
 
@@ -335,10 +367,12 @@ descript <- function(data, ...,
                          var = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, var(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
                          sd = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, sd(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
                          min = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, min(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
+                         p.min = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, sum(y == min(y, na.rm = TRUE)) / length(na.omit(y)) * 100), FUN.VALUE = double(1L)),
                          p25 = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, quantile(y, probs = 0.25, na.rm = TRUE)), FUN.VALUE = double(1L)),
                          med = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, median(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
                          p75 = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, quantile(y, probs = 0.75, na.rm = TRUE)), FUN.VALUE = double(1L)),
                          max = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, max(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
+                         p.max = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, sum(y == max(y, na.rm = TRUE)) / length(na.omit(y)) * 100), FUN.VALUE = double(1L)),
                          range = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, diff(range(y, na.rm = TRUE))), FUN.VALUE = double(1L)),
                          iqr = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, IQR(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
                          skew = suppressWarnings(vapply(x, misty::skewness, sample = sample, check = FALSE, FUN.VALUE = double(1L))),

@@ -1,11 +1,11 @@
 #' Replace User-Specified Values With Missing Values or Missing Values With
 #' User-Specified Values
 #'
-#' The function \code{as.na} replaces user-specified values in the argument
-#' \code{na} in a vector, factor, matrix, array, list, or data frame with
-#' \code{NA}, while the function \code{na.as} replaces \code{NA} in a vector,
-#' factor, matrix or data frame with a user-specified value or character string
-#' in the argument \code{na}.
+#' The function \code{na.as} replaces \code{NA} in a vector, factor, matrix, list
+#' or data frame with a user-specified value or character string in the argument
+#' \code{na}, while  the function \code{as.na} replaces user-specified values in
+#' the argument \code{na} in a vector, factor, matrix, array, list, or data frame
+#' with \code{NA}.
 #'
 #' @param data    a vector, factor, matrix, array, data frame, or list.
 #' @param ...     an expression indicating the variable names in \code{data}, e.g.,
@@ -29,7 +29,7 @@
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
-#' @name as.na
+#' @name na.as
 #'
 #' @seealso
 #' \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
@@ -51,53 +51,53 @@
 #' # Numeric vector
 #' num <- c(1, 3, 2, 4, 5)
 #'
-#' # Example 1a: Replace 2 with NA
+#' # Example 11: Replace NA with 2
+#' na.as(c(1, 3, NA, 4, 5), na = 2)
+#'
+#' # Example 1b: Replace 2 with NA
 #' as.na(num, na = 2)
 #'
-#' # Example 1b: Replace 2, 3, and 4 with NA
+#' # Example 1c: Replace 2, 3, and 4 with NA
 #' as.na(num, na = c(2, 3, 4))
-#'
-#' # Example 1c: Replace NA with 2
-#' na.as(c(1, 3, NA, 4, 5), na = 2)
 #'
 #' #----------------------------------------------------------------------------
 #' # Character vector
 #' chr <- c("a", "b", "c", "d", "e")
 #'
-#' # Example 2a: Replace "b" with NA
+#' # Example 2a: Replace NA with "b"
+#' na.as(c("a", NA, "c", "d", "e"), na = "b")
+#'
+#' # Example 2b: Replace "b" with NA
 #' as.na(chr, na = "b")
 #'
-#' # Example 2b: Replace "b", "c", and "d" with NA
+#' # Example 2c: Replace "b", "c", and "d" with NA
 #' as.na(chr, na = c("b", "c", "d"))
-#'
-#' # Example 2c: Replace NA with "b"
-#' na.as(c("a", NA, "c", "d", "e"), na = "b")
 #'
 #' #----------------------------------------------------------------------------
 #' # Factor
 #' fac <- factor(c("a", "a", "b", "b", "c", "c"))
 #'
-#' # Example 3a: Replace "b" with NA
+#' # Example 3a: Replace NA with "b"
+#' na.as(factor(c("a", "a", NA, NA, "c", "c")), na = "b")
+#'
+#' # Example 3b: Replace "b" with NA
 #' as.na(fac, na = "b")
 #'
-#' # Example 3b: Replace "b" and "c" with NA
+#' # Example 3c: Replace "b" and "c" with NA
 #' as.na(fac, na = c("b", "c"))
-#'
-#' # Example 3c: Replace NA with "b"
-#' na.as(factor(c("a", "a", NA, NA, "c", "c")), na = "b")
 #'
 #' #----------------------------------------------------------------------------
 #' # Matrix
 #' mat <- matrix(1:20, ncol = 4)
 #'
-#' # Example 4a: Replace 8 with NA
+#' # Example 4a: Replace NA with 2
+#' na.as(matrix(c(1, NA, 3, 4, 5, 6), ncol = 2), na = 2)
+#'
+#' # Example 4b: Replace 8 with NA
 #' as.na(mat, na = 8)
 #'
-#' # Example 4b: Replace 8, 14, and 20 with NA
+#' # Example 4c: Replace 8, 14, and 20 with NA
 #' as.na(mat, na = c(8, 14, 20))
-#'
-#' # Example 4c: Replace NA with 2
-#' na.as(matrix(c(1, NA, 3, 4, 5, 6), ncol = 2), na = 2)
 #'
 #' #----------------------------------------------------------------------------
 #' # Array
@@ -113,28 +113,25 @@
 #'
 #' #----------------------------------------------------------------------------
 #' # Data frame
-#' df <- data.frame(x1 = c(1, 2, 3), x2 = c(2, 1, 3), x3 = c(3, 1, 2))
+#' df <- data.frame(x1 = c(1, NA, 3), x2 = c(2, 1, 3), x3 = c(3, NA, 2))
 #'
-#' # Example 7a: Replace 1 with NA
+#' # Example 7a: Replace NA with -99
+#' na.as(df, na = -99)
+#'
+#' # Example 7b: Replace 1 with NA
 #' as.na(df, na = 1)
 #'
-#' # Example 7b: Replace 1 with NA for the variable x2
+#' # Example 7c: Replace 1 with NA for the variable 'x2'
 #' as.na(df, x2, na = 1)
 #'
 #' # Alternative specification
 #' as.na(df$x2, na = 1)
 #'
-#' # Example 7c: Replace 1 and 3 with NA
+#' # Example 7d: Replace 1 and 3 with NA
 #' as.na(df, na = c(1, 3))
 #'
-#' # Example 7d: Replace 1 with NA in 'x2' and 'x3'
+#' # Example 7e: Replace 1 with NA in 'x2' and 'x3'
 #' as.na(df, x2, x3, na = 1)
-#'
-#' # Example 7e: Replace NA with -99
-#' na.as(data.frame(x1 = c(NA, 2, 3), x2 = c(2, NA, 3)), na = -99)
-#'
-#' # Example 7f: Recode by replacing 30 with NA and then replacing NA with 3
-#' na.as(data.frame(x1 = c(1, 2, 30), x2 = c(2, 1, 30)), na = 3, as.na = 30)
 as.na <- function(data, ..., na, replace = TRUE, check = TRUE) {
 
   #_____________________________________________________________________________

@@ -213,11 +213,15 @@ entries:
                      for modification indices.}
 }
 \description{
-This function is a wrapper function for conducting multilevel confirmatory factor
-analysis to investigate four types of constructs, i.e., within-cluster constructs,
-shared cluster-level constructs, configural cluster constructs, and simultaneous
-shared and configural cluster constructs by calling the \code{cfa} function in
-the R package \pkg{lavaan}.
+This function conducts multilevel confirmatory factor analysis to investigate
+four types of constructs, i.e., within-cluster constructs, shared cluster-level
+constructs, configural cluster constructs, and simultaneous shared and configural
+cluster constructs by calling the \code{cfa} function in the R package \pkg{lavaan}.
+By default, the function specifies and estimates a configural cluster construct
+and provides a table with univariate sample statistics, model fit information,
+and parameter estimates. Additionally, variance-covariance coverage of the data,
+modification indices, and residual correlation matrix can be requested by specifying
+the argument \code{print}.
 }
 \note{
 The function uses the functions \code{cfa}, \code{lavInspect}, \code{lavTech},

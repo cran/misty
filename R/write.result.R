@@ -1390,7 +1390,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   }, descript = {
 
     # Variables to round
-    write.round <- c("pNA", "m", "se.m", "var", "sd", "min", "p25", "med", "p75", "max", "range", "iqr", "skew", "kurt")
+    write.round <- c("pNA", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt")
 
     #...................
     ### No Grouping, No Split ####
@@ -1405,7 +1405,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
       print <- match(x$args$print, names(write.object))
 
       # Variable names
-      names(write.object) <- c("Variable", "n", "nNA", "pNA", "M", "SE.M", "Var", "SD", "Min", "p25", "Med", "p75", "Max", "Range", "IQR", "Skew", "Kurt")
+      names(write.object) <- c("Variable", "n", "nNA", "%NA", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")
 
       # One variable
       if (isTRUE(ncol(x$data$x) == 1L)) {
@@ -1434,7 +1434,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
       print <- match(x$args$print, names(write.object))
 
       # Variable names
-      names(write.object) <- c("Group", "Variable", "n", "nNA", "pNA", "M", "SE.M", "Var", "SD", "Min", "p25", "Med", "p75", "Max", "Range", "IQR", "Skew", "Kurt")
+      names(write.object) <- c("Group", "Variable", "n", "nNA", "%NA", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")
 
       # One variable
       if (isTRUE(ncol(x$data$x) == 1L)) {
@@ -1475,7 +1475,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
         print <- match(x$args$print, names(write.object[[1]]))
 
         # Variable names
-        write.object <- lapply(write.object, function(y) misty::df.rename(y, from = names(y), to = c("Variable", "n", "nNA", "pNA", "M", "SE.M", "Var", "SD", "Min", "p25", "Med", "p75", "Max", "Range", "IQR", "Skew", "Kurt")))
+        write.object <- lapply(write.object, function(y) misty::df.rename(y, from = names(y), to = c("Variable", "n", "nNA", "%NA", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")))
 
         # One variable
         if (isTRUE(ncol(x$data$x) == 1L)) {
@@ -1501,7 +1501,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
         print <- match(x$args$print, names(write.object[[1]]))
 
         # Variable names
-        write.object <- lapply(write.object, function(y) misty::df.rename(y, from = names(y), to = c("Group", "Variable", "n", "nNA", "pNA", "M", "SE.M", "Var", "SD", "Min", "p25", "Med", "p75", "Max", "Range", "IQR", "Skew", "Kurt")))
+        write.object <- lapply(write.object, function(y) misty::df.rename(y, from = names(y), to = c("Group", "Variable", "n", "nNA", "%NA", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")))
 
         # One variable
         if (isTRUE(ncol(x$data$x) == 1L)) {

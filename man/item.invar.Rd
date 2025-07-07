@@ -287,17 +287,17 @@ entries:
                      strict invariance model}
 }
 \description{
-This function is a wrapper function for evaluating configural, metric, scalar,
-and strict between-group or longitudinal (partial) measurement invariance using
-confirmatory  factor analysis with continuous indicators by calling the \code{cfa}
-function in the R package \pkg{lavaan}. By default, the function evaluates
-configural, metric, and scalar measurement invariance by providing a table
-with model fit information (i.e., chi-square test, fit indices based on a proper
-null model, and information criteria) and model comparison (i.e., chi-square
-difference test, change in fit indices, and change in information criteria).
-Additionally, variance-covariance coverage of the data, descriptive statistics,
-parameter estimates, modification indices, and residual correlation matrix can
-be requested by specifying the argument \code{print}.
+This function evaluates configural, metric, scalar, and strict between-group or
+longitudinal (partial) measurement invariance using confirmatory  factor analysis
+with continuous indicators by calling the \code{cfa} function in the R package
+\pkg{lavaan}. By default, the function evaluates configural, metric, and scalar
+measurement invariance by providing a table with model fit information (i.e.,
+chi-square test, fit indices based on a proper null model, and information criteria)
+and model comparison (i.e., chi-square difference test, change in fit indices,
+and change in information criteria). Additionally, variance-covariance coverage
+of the data, descriptive statistics, parameter estimates, modification indices,
+and residual correlation matrix can be requested by specifying the argument
+\code{print}.
 }
 \note{
 The function uses the functions \code{cfa}, \code{fitmeasures} ,\code{lavInspect},

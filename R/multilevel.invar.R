@@ -1,16 +1,15 @@
 #' Cross-Level Measurement Invariance Evaluation
 #'
-#' This function is a wrapper function for evaluating configural, metric, and
-#' scalar cross-level measurement invariance using multilevel confirmatory factor
-#' analysis with continuous indicators by calling the \code{cfa} function in the
-#' R package \pkg{lavaan}. By default, the function evaluates configural and metric
-#' cross-level measurement invariance by providing a table with model fit
-#' information (i.e., chi-square test, fit indices and information criteria), and
-#' model comparison (i.e., chi-square difference test, change in fit indices, and
-#' change in information criteria). Additionally, variance-covariance coverage of
-#' the data, descriptive statistics, parameter estimates, modification indices,
-#' and residual correlation matrix can be requested by specifying the argument
-#' \code{print}.
+#' This function evaluates configural, metric, and scalar cross-level measurement
+#' invariance using multilevel confirmatory factor analysis with continuous indicators
+#' by calling the \code{cfa} function in the R package \pkg{lavaan}. By default,
+#' the function evaluates configural and metric cross-level measurement invariance
+#' by providing a table with model fit information (i.e., chi-square test, fit
+#' indices and information criteria), and model comparison (i.e., chi-square
+#' difference test, change in fit indices, and change in information criteria).
+#' Additionally, variance-covariance coverage of the data, descriptive statistics,
+#' parameter estimates, modification indices, and residual correlation matrix can
+#' be requested by specifying the argument \code{print}.
 #'
 #' @param data         a data frame. If \code{model} is \code{NULL},
 #'                     multilevel confirmatory factor analysis based on a

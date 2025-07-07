@@ -660,6 +660,7 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
       n.pattern.exclude <- NULL
 
     }
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Create ggplot ####
 
@@ -668,12 +669,12 @@ plot.misty.object <- function(x, plot = x$args$plot, bar = x$args$bar,
       ggplot2::scale_fill_manual(values = c("Missing" = color[1L], "Observed" = color[2L])) +
       ggplot2::scale_alpha_continuous(limits = c(0, 1), guide = "none") +
       ggplot2::scale_x_continuous("Number of Missing Entries per Variable",
-                                  breaks = seq_len(length(colnames(x$data))), labels = x$result[nrow(x$result), colnames(x$data)],
+                                  breaks = seq_len(length(colnames(x$data))),
+                                  labels = as.character(x$result[nrow(x$result), colnames(x$data)]),
                                   sec.axis = ggplot2::dup_axis(labels = colnames(x$data), name = "Variable")) +
-      ggplot2::scale_y_reverse("Number of Missing Entries per Pattern",
-                               breaks = seq_len(length(x$result$n) - 1L), labels = x$result[-nrow(x$result), "n"],
-                               sec.axis = ggplot2::dup_axis(labels = x$result[-nrow(x$result), "nNA"])) +
-      ggplot2::ylab("Pattern Frequency") +
+      ggplot2::scale_y_reverse("Pattern Frequency",
+                                breaks = seq_len(length(x$result$n) - 1L), labels = x$result[-nrow(x$result), "n"],
+                                sec.axis = ggplot2::dup_axis(labels = x$result[-nrow(x$result), "nNA"], name = "Number of Missing Entries per Pattern")) +
       ggplot2::theme(plot.margin = ggplot2::margin(t = plot.margin[1L], r = plot.margin[2L], b = plot.margin[3L], l = plot.margin[4L]),
                      legend.title = ggplot2::element_blank(),
                      legend.position = "bottom",

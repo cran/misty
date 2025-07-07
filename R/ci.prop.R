@@ -354,7 +354,7 @@
 #'
 #' @examples
 #' #----------------------------------------------------------------------------
-#' # Confidence Interval (CI) forproportions
+#' # Confidence Interval (CI) for proportions
 #'
 #' # Example 1a: Two-Sided 95% CI
 #' ci.prop(mtcars, vs, am)
