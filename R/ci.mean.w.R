@@ -3,6 +3,40 @@
 #' This function computes difference-adjusted Cousineau-Morey within-subjects
 #' confidence interval for the arithmetic mean.
 #'
+#' @param data         a data frame with numeric variables representing the levels
+#'                     of the within-subject factor, i.e., data are specified in
+#'                     wide-format (i.e., multivariate person level format).
+#' @param ...          an expression indicating the variable names in \code{data},
+#'                     e.g., \code{ci.mean.w(dat, time1, time2, time3)}. Note that
+#'                     the operators \code{+}, \code{-}, \code{~}, \code{:},
+#'                     \code{::}, and \code{!} can also be used to select variables,
+#'                     see 'Details' in the \code{\link{df.subset}} function.
+#' @param adjust       logical: if \code{TRUE} (default), difference-adjustment
+#'                     for the Cousineau-Morey within-subjects confidence intervals
+#'                     is applied.
+#' @param alternative  a character string specifying the alternative hypothesis,
+#'                     must be one of \code{"two.sided"} (default), \code{"greater"}
+#'                     or \code{"less"}.
+#' @param conf.level   a numeric value between 0 and 1 indicating the confidence
+#'                     level of the interval.
+#' @param na.omit      logical: if \code{TRUE} (default), incomplete cases are removed
+#'                     before conducting the analysis (i.e., listwise deletion).
+#' @param digits       an integer value indicating the number of decimal places
+#'                     to be used.
+#' @param as.na        a numeric vector indicating user-defined missing values,
+#'                     i.e. these values are converted to \code{NA} before
+#'                     conducting the analysis.
+#' @param write        a character string naming a text file with file extension
+#'                     \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                     output into a text file.
+#' @param append       logical: if \code{TRUE} (default), output will be appended
+#'                     to an existing text file with extension \code{.txt} specified
+#'                     in \code{write}, if \code{FALSE} existing text file will be
+#'                     overwritten.
+#' @param check        logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output       logical: if \code{TRUE} (default), output is shown on the console.
+#'
+#' @details#'
 #' The Cousineau within-subjects confidence interval(CI, Cousineau, 2005) is an
 #' alternative to the Loftus-Masson within-subjects CI (Loftus & Masson, 1994)
 #' that does not assume sphericity or homogeneity of covariances. This approach
@@ -39,39 +73,6 @@
 #'
 #' The adjusted Cousineau-Morey interval is informative about the pattern of
 #' differences between means and is computed by default (i.e., \code{adjust = TRUE}).
-#'
-#' @param data         a data frame with numeric variables representing the levels
-#'                     of the within-subject factor, i.e., data are specified in
-#'                     wide-format (i.e., multivariate person level format).
-#' @param ...          an expression indicating the variable names in \code{data},
-#'                     e.g., \code{ci.mean.w(dat, time1, time2, time3)}. Note that
-#'                     the operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
-#'                     \code{::}, and \code{!} can also be used to select variables,
-#'                     see 'Details' in the \code{\link{df.subset}} function.
-#' @param adjust       logical: if \code{TRUE} (default), difference-adjustment
-#'                     for the Cousineau-Morey within-subjects confidence intervals
-#'                     is applied.
-#' @param alternative  a character string specifying the alternative hypothesis,
-#'                     must be one of \code{"two.sided"} (default), \code{"greater"}
-#'                     or \code{"less"}.
-#' @param conf.level   a numeric value between 0 and 1 indicating the confidence
-#'                     level of the interval.
-#' @param na.omit      logical: if \code{TRUE} (default), incomplete cases are removed
-#'                     before conducting the analysis (i.e., listwise deletion).
-#' @param digits       an integer value indicating the number of decimal places
-#'                     to be used.
-#' @param as.na        a numeric vector indicating user-defined missing values,
-#'                     i.e. these values are converted to \code{NA} before
-#'                     conducting the analysis.
-#' @param write        a character string naming a text file with file extension
-#'                     \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
-#'                     output into a text file.
-#' @param append       logical: if \code{TRUE} (default), output will be appended
-#'                     to an existing text file with extension \code{.txt} specified
-#'                     in \code{write}, if \code{FALSE} existing text file will be
-#'                     overwritten.
-#' @param check        logical: if \code{TRUE} (default), argument specification is checked.
-#' @param output       logical: if \code{TRUE} (default), output is shown on the console.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -146,15 +147,15 @@ ci.mean.w <- function(data, ..., adjust = TRUE,
   data.id <- var.formula <- variable <- NULL
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(..., data = data), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[, .var.names(data = data, ...), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

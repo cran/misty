@@ -1,30 +1,37 @@
 #' Auxiliary Variables Analysis
 #'
-#' This function computes (1) Pearson product-moment correlation matrix to identify
-#' variables related to the incomplete variable (i.e., correlates of incomplete
-#' variables), (2) Cohen's d matrix comparing cases with and without missing values
-#' to identify variables related to the probability of missingness(i.e., correlates
-#' of missingness), and (3) semi-partial correlations of an outcome variable
-#' conditional on the predictor variables of a substantive model with a set of
-#' candidate auxiliary variables to identify correlates of an incomplete outcome
-#' variable as suggested by Raykov and West (2016).
-#'
-#' Note that non-numeric variables (i.e., factors, character vectors, and logical
-#' vectors) are excluded from to the analysis.
+#' This function computes (1) a matrix with Pearson product-moment correlation
+#' for continuous variables, multiple correlation coefficient for categorical and
+#' continuous variables, and Phi coefficient and Cramer's \emph{V} for categorical
+#' variables to identify variables related to the incomplete variable (i.e.,
+#' correlates of incomplete variables), (2) a matrix with Cohen's d, Phi coefficient
+#' and Cramer's \emph{V} for comparing cases with and without missing values, and
+#' (3) semi-partial correlations of an outcome variable conditional on the predictor
+#' variables of a substantive model with a set of candidate auxiliary variables
+#' to identify correlates of an incomplete outcome variable as suggested by Raykov
+#' and West (2016).
 #'
 #' @param data      a data frame with incomplete data, where missing
 #'                  values are coded as \code{NA}.
 #' @param ...       an expression indicating the variable names in \code{data},
-#'                  e.g., \code{na.auxiliary(dat, x1, x2, x3)}. Note that the
-#'                  operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
-#'                  \code{::}, and \code{!} can also be used to select variables,
-#'                  see 'Details' in the \code{\link{df.subset}} function.
+#'                  e.g., \code{na.auxiliary(dat, x1, x2, x3)}. Categorical
+#'                  variables specified in the argument \code{categ} can be, but
+#'                  do not need to be selected using the \code{...} argument.
+#'                  Note that the operators \code{+}, \code{-}, \code{~},
+#'                  \code{:}, \code{::}, and \code{!} can also be used to select
+#'                  variables, see 'Details' in the \code{\link{df.subset}} function.
 #' @param model     a character string specifying the substantive model predicting
-#'                  an continuous outcome variable using a set of predictor variables
+#'                  a continuous outcome variable using a set of predictor variables
 #'                  to estimate semi-partial correlations between the outcome
 #'                  variable and a set of candidate auxiliary variables. The default
 #'                  setting is \code{model = NULL}, i.e., the function computes
 #'                  Pearson product-moment correlation matrix and Cohen's d matrix.
+#' @param categ     a character vector specifying the variables that are treated
+#'                  as categorical (see 'Details'). Note that variables that are
+#'                  factors or character vectors will be automatically added to
+#'                  the argument \code{categ}. Categorical variables will be
+#'                  excluded from the analysis when specifying the \code{model}
+#'                  argument to compute semi-partial correlations.
 #' @param estimator a character string indicating the estimator to be used
 #'                  when estimating semi-partial correlation coefficients, i.e.,
 #'                  \code{"ML"} for maximum likelihood parameter estimates with
@@ -39,14 +46,17 @@
 #'                  method, and \code{doubly-robust} for doubly-robust method (see
 #'                  'Details' in the \code{\link{item.cfa}} function). The default
 #'                  setting is \code{missing = "fiml"}.
+#' @param adjust    logical: if \code{TRUE} (default), phi coefficient is adjusted
+#'                  by relating the coefficient to the possible maximum and Cramer's
+#'                  \emph{V} is corrected for small-sample bias.
+#' @param weighted  logical: if \code{TRUE} (default), the weighted pooled standard
+#'                  deviation is used when computing Cohen's d.
+#' @param correct   logical: if \code{TRUE}, correction factor for Cohen's d to
+#'                  remove positive bias in small samples is used.
 #' @param tri       a character string indicating which triangular of the correlation
 #'                  matrix to show on the console, i.e., \code{both} for upper and
 #'                  lower triangular, \code{lower} (default) for the lower triangular,
 #'                  and \code{upper} for the upper triangular.
-#' @param weighted  logical: if \code{TRUE} (default), the weighted pooled standard
-#'                  deviation is used.
-#' @param correct   logical: if \code{TRUE}, correction factor for Cohen's d to
-#'                  remove positive bias in small samples is used.
 #' @param digits    integer value indicating the number of decimal places digits
 #'                  to be used for displaying correlation coefficients and Cohen's
 #'                  d estimates.
@@ -73,13 +83,53 @@
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
+#' @details
+#' \describe{
+#' The function computes matrices with statistical measures depending on the level
+#' of measurement of the variables involved in the analysis:
+#' \item{\strong{Variables Related to the Incomplete Variable}}{
+#' \itemize{
+#'    \item{\emph{Continuous variables}}: Product-moment correlation coefficient
+#'    is computed for continuous variables.
+#'    \item{\emph{Continuous and categorical variable}}: Multiple correlation
+#'    coefficient (R) is computed based on a linear model with a dummy-coded
+#'    categorical variable as predictor, where the multiple correlation coefficient
+#'    is the square root of the coefficient of determination of this model. Note
+#'    that the multiple R for a binary predictor variable is equivalent to the
+#'    point-biserial correlation coefficient between the binary variable and
+#'    the continuous outcome.
+#'    \item{\emph{Categorical variables}}: Phi coefficient is computed for two
+#'    dichotomous variables, while Cramer's \emph{V} is computed when one of the
+#'    categorical variables is polytomous.
+#'  }}
+#' \item{\strong{Variables Related to the Probability of Missigness}}{
+#' \itemize{
+#'    \item{\emph{Continuous variable}}: Cohen's d is computed to investigate
+#'    mean differences in the continuous variable depending on cases with and
+#'    without missing values.
+#'    \item{\emph{Categorical variable}}: Phi coefficient is computed to investigate
+#'    the association between the grouping variable (0 = observed, 1 = missing)
+#'    and a dichotomous variable, while Cramer's \emph{V} is computed when the
+#'    categorical variable is polytomous.
+#'  }}
+#' \item{\strong{Substantive model predicting a continuous outcome variable}}{
+#' Categorical variables are removed before computing semi-partial correlations
+#' based on the approach suggested by Raykov and West (2016).
+#' }
+#' Note that factors and characters are treated as categorical variables regardless
+#' of the specification for the argument \code{categ}, while numeric vectors in the data
+#' frame are treated as continuous variables if they are not specified in the
+#' argument \code{categ}.
+#' }
+#' }
+#'
 #' @seealso
 #' \code{\link{as.na}}, \code{\link{na.as}}, \code{\link{na.coverage}},
 #' \code{\link{na.descript}}, \code{\link{na.indicator}}, \code{\link{na.pattern}},
 #' \code{\link{na.prop}}, \code{\link{na.test}}
 #'
 #' @references
-#' Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
+#' Enders, C. K. (2022). \emph{Applied missing data analysis} (2nd ed.). The Guilford Press.
 #'
 #' Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 #' \emph{Annual Review of Psychology, 60}, 549-576.
@@ -107,23 +157,25 @@
 #' @export
 #'
 #' @examples
-#' # Example 1: Auxiliary variables
+#' # Example 1a: Auxiliary variables
 #' na.auxiliary(airquality)
+#'
+#' # Example 1b: Auxiliary variables, "Month" as categorical variable
+#' na.auxiliary(airquality, categ = "Month")
 #'
 #' # Example 2: Semi-partial correlation coefficients
 #' na.auxiliary(airquality, model = "Ozone ~ Solar.R + Wind")
 #'
-#' \dontrun{
 #' # Example 3a: Write Results into a text file
 #' na.auxiliary(airquality, write = "NA_Auxiliary.txt")
 #'
 #' # Example 3a: Write Results into an Excel file
 #' na.auxiliary(airquality, write = "NA_Auxiliary.xlsx")
-#' }
-na.auxiliary <- function(data, ..., model = NULL, estimator = c("ML", "MLR"),
+na.auxiliary <- function(data, ..., model = NULL, categ = NULL, estimator = c("ML", "MLR"),
                          missing = c("fiml", "two.stage", "robust.two.stage", "doubly.robust"),
-                         tri = c("both", "lower", "upper"), weighted = FALSE, correct = FALSE,
-                         digits = 2, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
+                         adjust = TRUE, weighted = FALSE, correct = FALSE,
+                         tri = c("both", "lower", "upper"), digits = 2, p.digits = 3,
+                         as.na = NULL, write = NULL, append = TRUE,
                          check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
@@ -141,34 +193,32 @@ na.auxiliary <- function(data, ..., model = NULL, estimator = c("ML", "MLR"),
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
+    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 
-    # Data frame
     x <- as.data.frame(data)
 
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Exclude factors, character vectors and logical vectors ####
+  ## Categorical Variables ####
 
-  x.num <- vapply(x, function(y) is.numeric(y), FUN.VALUE = logical(1L))
+  if (isTRUE(!is.null(categ))) {
 
-  if (isTRUE(any(!x.num))) {
+    # Check input 'categ'
+    (!categ %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in 'categ' were not all found in 'data' or were not selected using '...': ", paste(categ[y], collapse = ", ")), call. = FALSE) })()
 
-    # Select numeric variables
-    x <- x[, which(x.num)]
-
-    warning(paste0("Non-numeric variables excluded from the analysis: ", paste(names(x.num)[!x.num], collapse = ", ")), call. = FALSE)
+    #  Categorical variable in 'x'
+    if (isTRUE(any(!categ %in% colnames(x)))) { x <- data.frame(x, data[, categ[!categ %in% colnames(x)] , drop = FALSE]) |> (\(y) y[, names(sort(sapply(colnames(y), grep, colnames(data))))])() }
 
   }
 
@@ -177,30 +227,48 @@ na.auxiliary <- function(data, ..., model = NULL, estimator = c("ML", "MLR"),
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Factors and Character Vectors ####
+
+  #...................
+  ### Factor ####
+
+  if (isTRUE(any(sapply(x, is.factor)))) {
+
+    categ <- unique(c(categ, names(which(sapply(x, is.factor)))))
+
+    for (i in names(which(sapply(x, is.factor)))) { x[, i] <- as.numeric(x[, i]) }
+
+  }
+
+  #...................
+  ### Character ####
+
+  if (isTRUE(any(sapply(x, is.character)))) {
+
+    categ <- unique(c(categ, names(which(sapply(x, is.character)))))
+
+    for (i in names(which(sapply(x, is.character)))) { x[, i] <- as.numeric(as.factor(x[, i])) }
+
+  }
+
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical = c("weighted", "correct", "append", "output"),
+  .check.input(logical = c("adjust", "weighted", "correct", "append", "output"),
                s.character = list(estimator = c("ML", "MLR"), missing = c("fiml", "two.stage", "robust.two.stage", "doubly.robust"), tri = c("both", "lower", "upper")),
                args = c("digits", "p.digits", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
 
+    # Missing values
+    if (isTRUE(all(!is.na(x)))) { stop("There are no missing values in the data frame 'data' or variables selected using '...'.", call. = FALSE) }
+
     # Check input 'model'
-    if (isTRUE(!is.null(model))) {
-
-      # One outcome variable
-      if (isTRUE(grepl("\n", model))) { stop("Please specify a substantive model with one outcome variable in the argument 'model'.", call. = FALSE) }
-
-    } else {
-
-      # No missing values
-      if (isTRUE(all(!is.na(x)))) { stop("There are no missing values (NA) in the data frame specified in 'data'.", call. = FALSE) }
-
-    }
+    if (isTRUE(!is.null(model) && grepl("\n", model))) { stop("Please specify a substantive model with one outcome variable in the argument 'model'.", call. = FALSE) }
 
   }
 
@@ -225,21 +293,62 @@ na.auxiliary <- function(data, ..., model = NULL, estimator = c("ML", "MLR"),
 
   #_____________________________________________________________________________
   #
-  # Main Function Product-Moment Correlation Matrix and Cohen's d Matrix -------
+  # Main Function Product-Moment Correlation, Cramer's V and Cohen's d Matrix -------
 
   if (isTRUE(is.null(model))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Variables related to the incomplete variable ####
+    # No substantive model
+    mod.na <- mod.na.fit <- mod.na.fit.stand <- NULL
 
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Variables Related to the Incomplete Variable ####
+
+    #...................
+    ### Continuous Variables ####
+
+    # Product-moment correlation coefficient matrix
     cor.mat <- cor(x, use = "pairwise.complete.obs")
 
+    #...................
+    ### Categorical Variables ####
+
+    if (isTRUE(!is.null(categ))) {
+
+      ##### Categorical and Continuous Variable
+
+      if (isTRUE(!all(categ %in% colnames(x)))) {
+
+        # Variable names of the continuous variables
+        continu <- setdiff(colnames(x), categ)
+
+        # Multiple R, loop through categorical variables and sapply through continuous variables
+        for (i in categ) { cor.mat[continu, i] <- cor.mat[i, continu] <- sapply(continu, function(y) { sqrt(summary(eval(parse(text = paste0("lm(", y, " ~ ", "as.factor(", i, "), data = x)"))))$r.squared) }) }
+
+      }
+
+      ##### Categorical Variables
+
+      if (isTRUE(length(categ) > 1L)) {
+
+        for (i in categ) {
+
+          # Variable names excluding i
+          categ.j <- setdiff(categ, i)
+
+          # Cramer's V or Phi coefficient, loop through categorical variables
+          cor.mat[categ.j, i] <- cor.mat[i, categ.j] <- sapply(categ.j, function(y) { misty::effsize(x[, c(i, y)], type = if (isTRUE(misty::uniq.n(x[, i]) == 2L && misty::uniq.n(x[, y]) == 2L)) { "phi" } else { "cramer" }, adjust = adjust, check = FALSE, output = FALSE)$result[, 2L] })
+
+        }
+
+      }
+
+    }
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Variables related to the probability of missingness ####
+    ## Variables Related to the Probability of Missingness ####
 
     # Indicator matrix
-    ind <- misty::na.indicator(x, na = 0L, append = FALSE)
-    colnames(ind) <- paste0(colnames(ind), "_ind")
+    ind <- setNames(misty::na.indicator(x, na = 1L, append = FALSE), nm = paste0(colnames(x), "_ind"))
 
     # Pairwise combinations
     x.combn <- combn(ncol(x), m = 2L)
@@ -278,7 +387,7 @@ na.auxiliary <- function(data, ..., model = NULL, estimator = c("ML", "MLR"),
     }
 
     #...................
-    ### Cohen's d matrix ####
+    ### Cohen's d Matrix ####
 
     d.mat <- matrix(NA, ncol = ncol(x), nrow = ncol(x), dimnames = list(names(x), names(x)))
 
@@ -288,26 +397,37 @@ na.auxiliary <- function(data, ..., model = NULL, estimator = c("ML", "MLR"),
     d.mat[lower.tri(d.mat)] <- result.d.low
 
     # Remove empty rows
-    d.mat <- d.mat[apply(d.mat, 1L, function(y) any(!is.na(y))), ]
+    d.mat <- d.mat[apply(d.mat, 1L, function(y) any(!is.na(y))), , drop = FALSE]
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Return object ####
+    #...................
+    ### Categorical Variables ####
 
-    object <- list(call = match.call(),
-                   type = "na.auxiliary",
-                   data = x,
-                   model = NULL,
-                   model.fit = NULL, model.fit.stand = NULL,
-                   args = list(model = model, estimator = estimator, missing = missing, tri = tri, weighted = weighted, correct = correct, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
-                   result = list(cor = cor.mat, d = d.mat))
+    if (isTRUE(!is.null(categ))) {
 
-    class(object) <- "misty.object"
+      # Indicator variables
+      indvar <- rownames(d.mat)
+
+      # Cramer's V or Phi coefficient, loop through categorical variables
+      for (i in categ) {
+
+        # Variable names excluding i
+        indvar.j <- setdiff(indvar, i)
+
+        # Cramer's V or Phi coefficient, sapply through indicator variables
+        if (isTRUE(length(indvar.j) != 0L)) { d.mat[indvar.j, i] <- sapply(paste0(indvar.j, "_ind"), function(y) { misty::effsize(x.ind[, c(i, y)], type = if (isTRUE(misty::uniq.n(x[, i]) == 2L)) { "phi" } else { "cramer" }, adjust = adjust, check = FALSE, output = FALSE)$result[, 2L] }) }
+
+      }
+
+    }
 
   #_____________________________________________________________________________
   #
   # Main Function Semi-Partial Correlations ------------------------------------
 
   } else {
+
+    # No correlation matrix or Cohen's d matrix
+    cor.mat <- d.mat <- NULL
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Variables ####
@@ -319,10 +439,9 @@ na.auxiliary <- function(data, ..., model = NULL, estimator = c("ML", "MLR"),
     var.formula <- all.vars(formula)
 
     # Check if model variables are available
-    if (!is.null(data)) {
+    if (isTRUE(!is.null(data))) {
 
-      which(!var.formula %in% colnames(data)) |>
-        (\(z) if (isTRUE(length(z) != 0L)) {
+      which(!var.formula %in% colnames(data)) |> (\(z) if (isTRUE(length(z) != 0L)) {
 
           stop(paste0("Variables specified in the argument 'model' were not all found in 'data': ", paste(var.formula[z], collapse = ", ")), call. = FALSE)
 
@@ -330,8 +449,7 @@ na.auxiliary <- function(data, ..., model = NULL, estimator = c("ML", "MLR"),
 
     } else {
 
-      which(!var.formula %in% colnames(x)) |>
-        (\(z) if (isTRUE(length(z) != 0L)) {
+      which(!var.formula %in% colnames(x)) |> (\(z) if (isTRUE(length(z) != 0L)) {
 
           stop(paste0("Variables specified in the argument 'model' were not all found in 'data': ", paste(var.formula[z], collapse = ", ")), call. = FALSE)
 
@@ -339,10 +457,13 @@ na.auxiliary <- function(data, ..., model = NULL, estimator = c("ML", "MLR"),
 
     }
 
+    #...................
+    ### Predictor and Outcome Variables ####
+
     # Predictor variables
     pred.var <- attr(terms(formula[-2L]), "term.labels")
 
-    # Outcome
+    # Outcome variable
     y.var <- setdiff(var.formula, pred.var)
 
     if (isTRUE(length(y.var) != 1L)) { stop("Please specify a substantive model with one outcome variable in the argument 'model'.", call. = FALSE) }
@@ -350,12 +471,27 @@ na.auxiliary <- function(data, ..., model = NULL, estimator = c("ML", "MLR"),
     # All variable including candidate auxiliary variables
     var.all <- unique(c(y.var, pred.var, colnames(x)))
 
+    #...................
+    ### Exclude Categorical Variables ####
+
+    if (isTRUE(!is.null(categ))) {
+
+      var.all <- setdiff(var.all, categ)
+
+      if (isTRUE(!y.var %in% var.all)) { stop("Please specify a continuous outcome variable in the argument 'model'", call. = FALSE) }
+      if (isTRUE(length(setdiff(var.all, c(y.var, pred.var))) == 0L)) { stop("There are no candidate auxiliary variables left after excluding categorical variables.", call. = FALSE) }
+
+      warning(paste0("Categorical variables specified in 'categ' were removed from the analyis: ", paste(categ, collapse = ", ")), call. = FALSE)
+
+    }
+
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Data ####
 
-    if (!is.null(data)) { x <- data[, var.all] }
+    # Select all variables
+    x <- data[, var.all]
 
-    if (isTRUE(all(!is.na(x[, y.var])))) { stop("There are no missing values (NA) in the outcome variable specified in the substantive model.", call. = FALSE) }
+    if (isTRUE(all(!is.na(x[, y.var])))) { stop("There are no missing values in the outcome variable specified in the substantive model.", call. = FALSE) }
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## lavaan ####
@@ -391,20 +527,21 @@ na.auxiliary <- function(data, ..., model = NULL, estimator = c("ML", "MLR"),
     # Standardized Solution
     mod.na.fit.stand <- lavaan::standardizedSolution(mod.na.fit)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Return object ####
-
-    object <- list(call = match.call(),
-                   type = "na.auxiliary",
-                   data = x,
-                   model = mod.na,
-                   model.fit = mod.na.fit, model.fit.stand = mod.na.fit.stand,
-                   args = list(model = model, estimator = estimator, missing = missing, tri = tri, weighted = weighted, correct = correct, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
-                   result = list(cor = NULL, d = NULL))
-
-    class(object) <- "misty.object"
-
   }
+
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
+
+  object <- list(call = match.call(),
+                 type = "na.auxiliary",
+                 data = x,
+                 model = mod.na,
+                 model.fit = mod.na.fit, model.fit.stand = mod.na.fit.stand,
+                 args = list(model = model, categ = categ, adjust = adjust, estimator = estimator, missing = missing, tri = tri, weighted = weighted, correct = correct, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
+                 result = list(cor = cor.mat, d = d.mat))
+
+  class(object) <- "misty.object"
 
   #_____________________________________________________________________________
   #

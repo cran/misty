@@ -6,7 +6,7 @@
 \title{Extract Unique Elements and Count Number of Unique Elements}
 \usage{
 uniq(data, ..., na.rm = TRUE, sort = TRUE, decreasing = FALSE, digits = NULL,
-     table = TRUE, check = TRUE )
+     table = TRUE, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 
 uniq.n(data, ..., na.rm = TRUE, digits = NULL, check = TRUE)
 }
@@ -16,17 +16,19 @@ uniq.n(data, ..., na.rm = TRUE, digits = NULL, check = TRUE)
 \item{...}{an expression indicating the variable names in \code{data},
 e.g., \code{uniq(dat, x1, x2)} for selecting the variables
 \code{x1} and \code{x2} from the data frame \code{dat}. Note
-that the operators \code{.}, \code{+}, \code{-}, \code{~},
+that the operators \code{+}, \code{-}, \code{~},
 \code{:}, \code{::}, and \code{!} can also be used to select
 variables, see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{na.rm}{logical: if \code{TRUE} (default), missing values are omitted
-before extracting unique elements.}
+before extracting unique elements. Note that missing values are always omitted
+when writing the output into an Excel file, i.e., \code{na.rm = TRUE}.}
 
 \item{sort}{logical: if \code{TRUE} (default), unique elements are sorted
-after.}
+after extracting unique elements.}
 
-\item{decreasing}{logical: if \code{TRUE}, unique elements are sorted decreasing.}
+\item{decreasing}{logical: if \code{TRUE}, unique elements are sorted decreasing
+when specifying \code{sort = TRUE}}
 
 \item{digits}{an integer value indicating the number of decimal places to
 be used when rounding numeric values before extracting unique
@@ -35,18 +37,43 @@ rounding, i.e., \code{digits = NULL}.}
 
 \item{table}{logical: if \code{TRUE} (default), unique elements are printed
 in a data frame, if \code{FALSE} unique elements are printed
-in a list.}
+in a list. Note that unique elements are always printed in
+a data frame when writing the output into an Excel file, i.e.
+\code{table = TRUE}.}
 
-\item{check}{logical: if \code{TRUE} (default), argument specification is
-checked.}
+\item{write}{a character string naming a file for writing the output into
+either a text file with file extension \code{".txt"} (e.g.,
+\code{"Output.txt"}) or Excel file with file extension
+\code{".xlsx"}  (e.g., \code{"Output.xlsx"}). If the file
+name does not contain any file extension, an Excel file will
+be written.}
+
+\item{append}{logical: if \code{TRUE} (default), output will be appended
+to an existing text file with extension \code{.txt} specified
+in \code{write}, if \code{FALSE} existing text file will be
+overwritten.}
+
+\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+
+\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
 }
 \value{
-Returns a vector, factor, data frame, or list.
+Returns an object of class \code{misty.object} when using the \code{uniq} function,
+which is a list with following entries:
+
+\item{\code{call}}{function call}
+\item{\code{type}}{type of analysis}
+\item{\code{data}}{a vector, factor, matrix, or data frame}
+\item{\code{args}}{specification of function arguments}
+\item{\code{result}}{list with unique elements}
+
+or a vector with the count number of unique elements for a vector, factor or
+each column in a matrix or data frame when using the \code{uniq.n} function.
 }
 \description{
-The function \code{uniq} returns a vector or data frame with duplicated elements
-removed. By default, missing values are omitted and unique elements are sorted
-increasing. The function \code{uniq.n} counts the number of unique elements
+The function \code{uniq} returns a vector, list or data frame with duplicated elements
+removed. By default, the function prints a data frame with missing values omitted
+and unique elements sorted increasing. The function \code{uniq.n} counts the number of unique elements
 in a vector or for each column in a matrix or data frame. By default, missing
 values are omitted before counting the number of unique elements.
 }

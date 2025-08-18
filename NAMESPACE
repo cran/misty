@@ -42,8 +42,11 @@ export(ci.prop.diff)
 export(ci.sd)
 export(ci.var)
 export(clear)
+export(cluster.rwg)
 export(cluster.scores)
 export(coding)
+export(coeff.robust)
+export(coeff.std)
 export(cohens.d)
 export(cor.matrix)
 export(crosstab)
@@ -51,6 +54,7 @@ export(descript)
 export(df.check)
 export(df.duplicated)
 export(df.head)
+export(df.long)
 export(df.merge)
 export(df.move)
 export(df.rbind)
@@ -59,6 +63,7 @@ export(df.sort)
 export(df.unique)
 export(df.subset)
 export(df.tail)
+export(df.wide)
 export(dominance.manual)
 export(dominance)
 export(effsize)
@@ -109,8 +114,6 @@ export(read.xlsx)
 export(rec)
 export(restart)
 export(result.lca)
-export(robust.coef)
-export(rwg.lindell)
 export(script.copy)
 export(script.close)
 export(script.new)
@@ -122,13 +125,15 @@ export(size.cor)
 export(size.mean)
 export(size.prop)
 export(skewness)
-export(std.coef)
+export(summa)
 export(test.levene)
 export(test.t)
 export(test.welch)
 export(test.z)
 export(uniq)
 export(uniq.n)
+export(write.data)
+export(write.data1)
 export(write.dta)
 export(write.mplus)
 export(write.result)
@@ -136,13 +141,14 @@ export(write.sav)
 export(write.xlsx)
 importFrom("stats", "aov", "as.formula", "chisq.test", "contrasts", "contr.helmert",
            "contr.poly", "contr.sum", "contr.treatment", "coef", "coefficients",
-           "cooks.distance", "cor", "cor.test", "cov", "cov2cor", "density", "df",
-           "dfbetas", "df.residual", "dnorm", "dt", "fft", "formula", "hatvalues", "integrate",
-           "IQR", "lag", "lm", "loess", "logLik", "mad", "mahalanobis", "median", "model.frame", 
-           "model.matrix", "na.omit", "nextn", "nobs", "oneway.test", "optim", "optimize", "pnorm",
-           "predict", "residuals", "rnorm", "rstandard", "rstudent", "runif", "setNames", "sigma", 
-           "summary.lm", "pchisq", "qbeta", "qbinom", "qchisq", "qf", "qnorm", "qt", "quantile", 
-           "reshape", "sd", "terms", "time", "t.test", "p.adjust", "pf", "pt", "uniroot", "update",
+           "cooks.distance", "confint", "cor", "cor.test", "cov", "cov2cor", "density", "df",
+           "dfbetas", "df.residual", "dnorm", "dt", "fft", "formula", "hatvalues",
+           "integrate", "IQR", "lag", "lm", "loess", "logLik", "mad", "mahalanobis", "median",
+           "model.frame", "model.matrix", "na.omit", "nextn", "nobs", "oneway.test", "optim",
+           "optimize", "pnorm", "predict", "residuals", "rnorm", "rstandard", "rstudent", "runif",
+           "setNames", "sigma", "summary.lm", "pchisq", "qbeta", "qbinom", "qchisq", "qf", "qnorm",
+           "qt", "quantile", "reshape", "sd", "terms", "time", "t.test", "p.adjust", "pf", "pt",
+           "uniroot", "update",
            "var", "vcov", "weights")
 importFrom("grDevices", "hcl.colors", "hcl.pals")
 importFrom("utils", "as.relistable", "available.packages", "combn", "head",

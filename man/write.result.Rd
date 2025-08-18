@@ -49,20 +49,20 @@ This function writes the results of a \code{misty.object}) into an Excel file.
 Currently the function supports result objects from the following functions:
 \code{\link{blimp.bayes}}, \code{\link{ci.cor}}, \code{\link{ci.mean}},
 \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
-\code{\link{ci.sd}}, \code{\link{cor.matrix}}, \code{\link{crosstab}},
-\code{\link{descript}}, \code{\link{dominance.manual}}, \code{\link{dominance}},
-\code{\link{effsize}}, \code{\link{freq}}, \code{\link{item.alpha}},
-\code{\link{item.cfa}}, \code{\link{item.invar}}, \code{\link{item.omega}},
-\code{\link{mplus.bayes}}, \code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
+\code{\link{ci.sd}}, \code{\link{coeff.robust}}, \code{\link{coeff.std}},
+\code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{descript}},
+\code{\link{dominance.manual}}, \code{\link{dominance}}, \code{\link{effsize}},
+\code{\link{freq}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
+\code{\link{item.invar}}, \code{\link{item.omega}}, \code{\link{mplus.bayes}},
+\code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
 \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
 \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}},
 \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-\code{\link{na.pattern}}, \code{\link{result.lca}}, \code{\link{robust.coef}},
-and \code{\link{std.coef}}.
+\code{\link{na.pattern}}, \code{\link{result.lca}},
+\code{\link{summa}} and \code{\link{uniq}}
 }
 \examples{
 \dontrun{
-
 #----------------------------------------------------------------------------
 # Example 1: item.cfa() function
 

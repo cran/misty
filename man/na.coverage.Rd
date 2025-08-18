@@ -14,7 +14,7 @@ values are coded as \code{NA}.}
 
 \item{...}{an expression indicating the variable names in \code{data}, e.g.,
 \code{na.coverage(dat, x1, x2, x3)}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+\code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
 
@@ -68,10 +68,11 @@ na.coverage(airquality)
 na.coverage(airquality, write = "Coverage.txt")
 
 # Example 2b: Write Results into a Excel file
-na.coverage(airquality, write = "Coverage.xlsx")}
+na.coverage(airquality, write = "Coverage.xlsx")
+}
 }
 \references{
-Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
+Enders, C. K. (2022). \emph{Applied missing data analysis} (2nd ed.). The Guilford Press.
 
 Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 \emph{Annual Review of Psychology, 60}, 549-576. https://doi.org/10.1146/annurev.psych.58.110405.085530

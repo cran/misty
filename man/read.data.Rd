@@ -2,7 +2,7 @@
 % Please edit documentation in R/read.data.R
 \name{read.data}
 \alias{read.data}
-\title{Read Data File in Table format, SPSS, Excel, or Stata DTA File}
+\title{Read Data File in Table Format, SPSS, Excel, or Stata DTA File}
 \usage{
 read.data(file, sheet = NULL, header = TRUE, select = NULL, drop = NULL,
           sep = "auto", dec = "auto", use.value.labels = FALSE,
@@ -97,22 +97,22 @@ package.
 \examples{
 \dontrun{
 
-# Read CSV data file
+# Example 1: Read CSV data file
 dat <- read.data("CSV_Data.csv")
 
-# Read DAT data file
+# Example 2: Read DAT data file
 dat <- read.data("DAT_Data.dat")
 
-# Read TXT data file
+# Example 3: Read TXT data file
 dat <- read.data("TXT_Data.txt")
 
-# Read SPSS data file
+# Example 4: Read SPSS data file
 dat <- read.data("SPSS_Data.sav")
 
-# Read Excel data file
+# Example 5: Read Excel data file
 dat <- read.data("Excel_Data.xlsx")
 
-# Read Stata data file
+# Example 6: Read Stata data file
 dat <- read.data("Stata_Data.dta")
 }
 }
@@ -126,8 +126,10 @@ Wickham H, Miller E, Smith D (2023). \emph{haven: Import and Export 'SPSS',
 \url{https://CRAN.R-project.org/package=haven}
 }
 \seealso{
-\code{\link{read.sav}}, \code{\link{read.xlsx}}, \code{\link{read.dta}},
-\code{\link{read.mplus}}
+\code{\link{write.data}}, \code{\link{read.sav}},
+\code{\link{write.sav}}, \code{\link{write.xlsx}},
+\code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.mplus}},
+\code{\link{write.mplus}}
 }
 \author{
 Takuya Yanagida

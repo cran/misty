@@ -52,8 +52,9 @@ Wickham, H. (2019). plyr: Tools for Splitting, Applying and Combining Data. R pa
 version 1.8.5.
 }
 \seealso{
-\code{\link{df.duplicated}}, \code{\link{df.merge}},
-\code{\link{df.move}},
+\code{\link{df.check}}, \code{\link{df.duplicated}}, \code{\link{df.unique}},
+\code{\link{df.head}}, \code{\link{df.tail}}, \code{\link{df.long}},
+\code{\link{df.wide}}, \code{\link{df.merge}}, \code{\link{df.move}},
 \code{\link{df.rename}}, \code{\link{df.sort}},
 \code{\link{df.subset}}
 }

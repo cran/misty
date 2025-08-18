@@ -1576,7 +1576,7 @@ mplus.print <- function(x, print = c("all", "input", "result"),
     #...................
     ### ERROR in Output ####
 
-    if (isTRUE(any(grepl("\\*\\*\\* ERROR", return.object$input$message)))) {
+    if (isTRUE(any(grepl("\\*\\*\\* ERROR", return.object$input$message)) || any(grepl("\\*\\*\\* FATAL ERROR", return.object$input$message)) )) {
 
       print <- "input"
       not.result <- not.input <- FALSE

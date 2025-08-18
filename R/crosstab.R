@@ -6,7 +6,7 @@
 #' @param data    a data frame with two or three columns.
 #' @param ...     an expression indicating the variable names in \code{data}, e.g.,
 #'                \code{crosstab(dat, x1, x2, x3)}. Note that the operators
-#'                \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'                and \code{!} can also be used to select variables, see 'Details'
 #'                in the \code{\link{df.subset}} function.
 #' @param print   a character string or character vector indicating which
@@ -104,13 +104,11 @@
 #' # Example 9: Cross Tabulation, print all percentages, split output table
 #' crosstab(mtcars, vs:gear, print = "all", split = TRUE)
 #'
-#' \dontrun{
 #' # Example 10a: Write Results into a text file
 #' crosstab(mtcars, vs:gear, print = "all", write = "Crosstab.txt")
 #'
 #' # Example 10b: Write Results into a Excel file
 #' crosstab(mtcars, vs:gear, print = "all", write = "Crosstab.xlsx")
-#' }
 crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
                      freq = TRUE, split = FALSE, na.omit = TRUE, digits = 2,
                      as.na = NULL, write = NULL, append = TRUE, check = TRUE,
@@ -131,15 +129,15 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(..., data = data)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { as.data.frame(y) } else { y })()
+    x <- data[, .var.names(data = data, ...)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { as.data.frame(y) } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 
@@ -297,7 +295,7 @@ crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
 
         }
 
-      ####  Character
+      #### Character
       } else {
 
         # 'NA' character

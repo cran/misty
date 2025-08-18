@@ -7,10 +7,9 @@
 #'
 #' @param data   a data frame.
 #' @param ...    an expression indicating the variable names in \code{data} to
-#'               move. Note that the operators \code{.}, \code{+}, \code{-},
-#'               \code{~}, \code{:}, \code{::}, and \code{!} can also be used to
-#'               select variables, see Details in the \code{\link{df.subset}}
-#'               function.
+#'               move. Note that the operators \code{+}, \code{-}, \code{~},
+#'               \code{:}, \code{::}, and \code{!} can also be used to select
+#'               variables, see Details in the \code{\link{df.subset}} function.
 #' @param before a character string indicating a variable in \code{data}.
 #'               Variable(s) specified in \code{...} are moved to the left-hand
 #'               side of this variable.
@@ -27,7 +26,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{df.duplicated}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
+#' \code{\link{df.check}}, \code{\link{df.duplicated}}, \code{\link{df.unique}},
+#' \code{\link{df.head}}, \code{\link{df.tail}}, \code{\link{df.long}},
+#' \code{\link{df.wide}}, \code{\link{df.merge}}, \code{\link{df.rbind}},
 #' \code{\link{df.rename}}, \code{\link{df.sort}}, \code{\link{df.subset}}
 #'
 #' @references
@@ -74,7 +75,7 @@ df.move <- function(data, ..., before = NULL, after = NULL, first = TRUE, check 
   # Data -----------------------------------------------------------------------
 
   # Variable names
-  var.names <- .var.names(..., data = data)
+  var.names <- .var.names(data = data, ...)
 
   #_____________________________________________________________________________
   #

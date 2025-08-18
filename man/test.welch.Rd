@@ -221,7 +221,8 @@ test.welch(mpg ~ gear, data = mtcars, plot = TRUE)
 \dontrun{
 # Example 2e: Welch's ANOVA, save plot
 test.welch(mpg ~ gear, data = mtcars, plot = TRUE,
-           filename = "Multiple-sample_Welch-test.png", width = 6, height = 5)}
+           filename = "Multiple-sample_Welch-test.png", width = 6, height = 5)
+}
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology

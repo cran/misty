@@ -1,4 +1,4 @@
-#' Read Data File in Table format, SPSS, Excel, or Stata DTA File
+#' Read Data File in Table Format, SPSS, Excel, or Stata DTA File
 #'
 #' This function reads a (1) data file in CSV (\code{.csv}), DAT (\code{.dat}),
 #' or TXT (\code{.txt}) format using the \code{fread} function from the \pkg{data.table}
@@ -64,8 +64,10 @@
 #' Takuya Yanagida
 #'
 #' @seealso
-#' \code{\link{read.sav}}, \code{\link{read.xlsx}}, \code{\link{read.dta}},
-#' \code{\link{read.mplus}}
+#' \code{\link{write.data}}, \code{\link{read.sav}},
+#' \code{\link{write.sav}}, \code{\link{read.xlsx}}, \code{\link{write.xlsx}},
+#' \code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.mplus}},
+#' \code{\link{write.mplus}}
 #'
 #' @references
 #' Barrett, T., Dowle, M., Srinivasan, A., Gorecki, J., Chirico, M., Hocking, T.,
@@ -83,22 +85,22 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Read CSV data file
+#' # Example 1: Read CSV data file
 #' dat <- read.data("CSV_Data.csv")
 #'
-#' # Read DAT data file
+#' # Example 2: Read DAT data file
 #' dat <- read.data("DAT_Data.dat")
 #'
-#' # Read TXT data file
+#' # Example 3: Read TXT data file
 #' dat <- read.data("TXT_Data.txt")
 #'
-#' # Read SPSS data file
+#' # Example 4: Read SPSS data file
 #' dat <- read.data("SPSS_Data.sav")
 #'
-#' # Read Excel data file
+#' # Example 5: Read Excel data file
 #' dat <- read.data("Excel_Data.xlsx")
 #'
-#' # Read Stata data file
+#' # Example 6: Read Stata data file
 #' dat <- read.data("Stata_Data.dta")
 #' }
 read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = NULL,
@@ -118,8 +120,7 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
   # File extension
   if (isTRUE(!grepl("\\.", file))) { stop("Please specify a data file with extension \"csv\", \"dat\", \"txt\", \"sav\", \"xlsx\", or \"dts\" for the argument 'file'.", call. = FALSE) }
 
-  assign("file.exten", rev(unlist(strsplit(file, "\\.")))[1L]) |>
-    (\(y) if (isTRUE(!y %in% c("csv", "dat", "txt", "dta", "sav", "xlsx"))) { stop("Data file with extension ", dQuote(y), " is not support by this function.", call. = FALSE) })()
+  assign("file.exten", rev(unlist(strsplit(file, "\\.")))[1L]) |> (\(y) if (isTRUE(!y %in% c("csv", "dat", "txt", "dta", "sav", "xlsx"))) { stop("Data file with extension ", dQuote(y), " is not support by this function.", call. = FALSE) })()
 
   # Check if 'file' exists
   if (isTRUE(!file.exists(file))) { stop(paste0("Unable to open the data file: ", sQuote(file), " does not exist."), call. = FALSE) }
@@ -193,24 +194,27 @@ read.data <- function(file, sheet = NULL, header = TRUE, select = NULL, drop = N
 
     }
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## SPSS, Excel, or Stat file ####
+
   } else {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## SPSS file ####
+    #...................
+    ### SPSS File ####
 
     switch(file.exten, "sav" = {
 
       object <- misty::read.sav(file = file, use.value.labels = use.value.labels, use.missings = use.missings, formats = formats, label = label, labels = labels, missing = missing, widths = widths, as.data.frame = as.data.frame, check = check)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
+    #...................
+    ### Excel File ####
 
     }, "xlsx" =  {
 
       object <- misty::read.xlsx(file = file, sheet = sheet, header = header, na = na.strings, as.data.frame = as.data.frame, check = TRUE)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Stata file ####
+    #...................
+    ### Stata File ####
 
     }, "dta" = {
 

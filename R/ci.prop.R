@@ -7,23 +7,14 @@
 #' confidence intervals) and plots the bootstrap samples with histograms and
 #' density curves.
 #'
-#' The Wald confidence interval which is based on the normal approximation to the
-#' binomial distribution are computed by specifying \code{method = "wald"}, while
-#' the Wilson (1927) confidence interval (aka Wilson score interval) is requested
-#' by specifying \code{method = "wilson"}. By default, Wilson confidence interval
-#' is computed which have been shown to be reliable in small samples of n = 40 or
-#' less, and larger samples of n > 40 (Brown, Cai & DasGupta, 2001), while the
-#' Wald confidence intervals is inadequate in small samples and when \emph{p} is
-#' near 0 or 1 (Agresti & Coull, 1998).
-#'
 #' @param data              a numeric vector or data frame with numeric variables
 #'                          with 0 and 1 values.
 #' @param ...               an expression indicating the variable names in \code{data},
 #'                          e.g., \code{ci.prop(dat, x1, x2, x3)}. Note that the
-#'                          operators \code{.}, \code{+}, \code{-}, \code{~},
-#'                          \code{:}, \code{::}, and \code{!} can also be used
-#'                          to select variables, see 'Details' in the
-#'                          \code{\link{df.subset}} function.
+#'                          operators \code{+}, \code{-}, \code{~}, \code{:},
+#'                          \code{::}, and \code{!} can also be used to select
+#'                          variables, see 'Details' in the \code{\link{df.subset}}
+#'                          function.
 #' @param method            a character string specifying the method for computing
 #'                          the confidence interval, must be one of \code{"wald"},
 #'                          or \code{"wilson"} (default).
@@ -309,6 +300,16 @@
 #' @param output            logical: if \code{TRUE} (default), output is shown on
 #'                          the console.
 #'
+#' @details
+#' The Wald confidence interval which is based on the normal approximation to the
+#' binomial distribution are computed by specifying \code{method = "wald"}, while
+#' the Wilson (1927) confidence interval (aka Wilson score interval) is requested
+#' by specifying \code{method = "wilson"}. By default, Wilson confidence interval
+#' is computed which have been shown to be reliable in small samples of n = 40 or
+#' less, and larger samples of n > 40 (Brown, Cai & DasGupta, 2001), while the
+#' Wald confidence intervals is inadequate in small samples and when \emph{p} is
+#' near 0 or 1 (Agresti & Coull, 1998).
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
@@ -482,10 +483,13 @@ ci.prop <- function(data, ..., method = c("wald", "wilson"),
   #
   # Data -----------------------------------------------------------------------
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data using the argument '...' ####
+
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(..., data = data, group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[, .var.names(data = data, ..., group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -494,7 +498,7 @@ ci.prop <- function(data, ..., method = c("wald", "wilson"),
     if (isTRUE(!is.null(split))) { split <- data[, split] }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

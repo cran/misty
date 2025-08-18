@@ -3,12 +3,6 @@
 #' The function \code{df.duplicated} extracts duplicated rows and the function
 #' \code{df.unique} extracts unique rows from a matrix or data frame.
 #'
-#' Note that \code{df.unique(x)} is equivalent to \code{unique(x)}. That is, the
-#' main difference between the \code{df.unique()} and the \code{unique()} function
-#' is that the \code{df.unique()} function provides the \code{...} argument to
-#' specify a variable or multiple variables which are used to determine unique
-#' rows.
-#'
 #' @param data           a data frame.
 #' @param ...            an expression indicating the variable names in \code{data}
 #'                       used to determine duplicated or unique rows.e.g.,
@@ -33,14 +27,23 @@
 #' @param check          logical: if \code{TRUE} (default), argument specification
 #'                       is checked.
 #'
+#' @details
+#' Note that \code{df.unique(x)} is equivalent to \code{unique(x)}. That is, the
+#' main difference between the \code{df.unique()} and the \code{unique()} function
+#' is that the \code{df.unique()} function provides the \code{...} argument to
+#' specify a variable or multiple variables which are used to determine unique
+#' rows.
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @name df.duplicated
 #'
 #' @seealso
-#' \code{\link{df.merge}}, \code{\link{df.move}}, \code{\link{df.rbind}},
-#' \code{\link{df.rename}}, \code{\link{df.sort}}, \code{\link{df.subset}}
+#' \code{\link{df.check}}, \code{\link{df.head}}, \code{\link{df.tail}},
+#' \code{\link{df.long}}, \code{\link{df.wide}}, \code{\link{df.merge}},
+#' \code{\link{df.move}}, \code{\link{df.rbind}}, \code{\link{df.rename}},
+#' \code{\link{df.sort}}, \code{\link{df.subset}}
 #'
 #' @references
 #' Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}.

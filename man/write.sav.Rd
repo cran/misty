@@ -131,7 +131,9 @@ Robitzsch, A., Grund, S., & Henke, T. (2019). \emph{miceadds: Some additional
 multiple imputation functions, especially for mice}. R package version 3.4-17.
 }
 \seealso{
-\code{\link{read.sav}}, \code{\link{write.xlsx}}, \code{\link{write.dta}},
+\code{\link{read.data}}, \code{\link{write.data}}, \code{\link{read.sav}},
+\code{\link{write.xlsx}},
+\code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.mplus}},
 \code{\link{write.mplus}}
 }
 \author{

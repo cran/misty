@@ -13,7 +13,7 @@ frame.}
 
 \item{...}{an expression indicating the variable names in \code{data},
 e.g., \code{rec(dat, x1, x2, x3, spec = "1 = 0"))}. Note that
-the operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+the operators \code{+}, \code{-}, \code{~}, \code{:},
 \code{::}, and \code{!} can also be used to select variables,
 see 'Details' in the \code{\link{df.subset}} function.}
 

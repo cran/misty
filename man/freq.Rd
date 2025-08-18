@@ -14,7 +14,7 @@ freq(data, ..., print = c("no", "all", "perc", "v.perc"), freq = TRUE,
 
 \item{...}{an expression indicating the variable names in \code{data},
 e.g., \code{freq(dat, x1, x2, x3)}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+\code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
 
@@ -131,7 +131,8 @@ freq(mtcars, exclude = 5)
 freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.txt")
 
 # Example 8b: Write Results into a Excel file
-freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.xlsx")}
+freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.xlsx")
+}
 }
 \references{
 Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New  S Language}.

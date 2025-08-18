@@ -29,7 +29,7 @@ and \code{model.b} is specified, the data frame needs to
 contain all variables used in the \code{model} argument(s).}
 
 \item{...}{an expression indicating the variable names in \code{data}.
-Note that the operators \code{.}, \code{+}, \code{-},
+Note that the operators \code{+}, \code{-},
 \code{~}, \code{:}, \code{::}, and \code{!} can also be
 used to select variables, see 'Details' in the
 \code{\link{df.subset}} function.}

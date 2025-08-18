@@ -4,17 +4,6 @@
 #' provides descriptive statistics, effect size measure, and a plot showing error
 #' bars for (difference-adjusted) confidence intervals with jittered data points.
 #'
-#' Cohen's d reported when argument \code{effsize = TRUE} is based on the population
-#' standard deviation specified in \code{sigma} or the square root of the population
-#' variance specified in \code{sigma2}. In a one-sample and paired-sample design,
-#' Cohen's d is the mean of the difference scores divided by the population standard
-#' deviation of the difference scores (i.e., equivalent to Cohen's \eqn{d_z} according
-#' to Lakens, 2013). In a two-sample design, Cohen's d is the difference between
-#' means of the two groups of observations divided by either the population standard
-#' deviation when assuming and specifying equal standard deviations or the unweighted
-#' pooled population standard deviation when assuming and specifying unequal standard
-#' deviations.
-#'
 #' @param x              a numeric vector of data values.
 #' @param y              a numeric vector of data values.
 #' @param sigma          a numeric vector indicating the population standard deviation(s).
@@ -134,6 +123,18 @@
 #'                       formula \code{formula}.
 #' @param ...            further arguments to be passed to or from methods.
 #'
+#' @details
+#' Cohen's d reported when argument \code{effsize = TRUE} is based on the population
+#' standard deviation specified in \code{sigma} or the square root of the population
+#' variance specified in \code{sigma2}. In a one-sample and paired-sample design,
+#' Cohen's d is the mean of the difference scores divided by the population standard
+#' deviation of the difference scores (i.e., equivalent to Cohen's \eqn{d_z} according
+#' to Lakens, 2013). In a two-sample design, Cohen's d is the difference between
+#' means of the two groups of observations divided by either the population standard
+#' deviation when assuming and specifying equal standard deviations or the unweighted
+#' pooled population standard deviation when assuming and specifying unequal standard
+#' deviations.
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
@@ -178,11 +179,9 @@
 #' # plot results
 #' test.z(mtcars$mpg, sigma = 6, mu = 20, plot = TRUE)
 #'
-#' \dontrun{
 #' # Example 1d: Two-sided one-sample z-test, save plot
 #' test.z(mtcars$mpg, sigma = 6, mu = 20, plot = TRUE, filename = "One-sample_z-test.png",
 #'        width = 4, height = 5)
-#' }
 #'
 #' #----------------------------------------------------------------------------
 #' # Two-Sample Design
@@ -205,11 +204,9 @@
 #' # plot results
 #' test.z(mpg ~ vs, data = mtcars, sigma = 6, plot = TRUE)
 #'
-#' \dontrun{
 #' # Example 2f: Two-sided two-sample z-test, save plot
 #' test.z(mpg ~ vs, data = mtcars, sigma = 6, plot = TRUE, filename = "Two-sample_z-test.png",
 #'        width = 5, height = 6)
-#' }
 #'
 #' #----------------------------------------------------------------------------
 #' # Paired-Sample Design
@@ -226,11 +223,9 @@
 #' # plot results
 #' test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE, plot = TRUE)
 #'
-#' \dontrun{
 #' # Example 3d: Two-sided paired-sample z-test, save plot
 #' test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE, plot = TRUE,
 #'        filename = "Paired-sample_z-test.png", width = 4, height = 5)
-#' }
 test.z <- function(x, ...) {
 
   UseMethod("test.z")
@@ -442,8 +437,8 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                          m = x.ci[["m"]], sd = x.ci[["sd"]],
                          m.diff = x.ci[["m"]] - mu, se = se,
                          m.low = x.ci[["low"]], m.upp = x.ci[["upp"]], z = z,
-                         pval = switch(alternative, two.sided = pnorm(abs(z), lower.tail = FALSE) * 2, less = pnorm(z, lower.tail = TRUE), greater = pnorm(z, lower.tail = FALSE)),
-                          d = d, row.names = NULL)
+                         p = switch(alternative, two.sided = pnorm(abs(z), lower.tail = FALSE) * 2, less = pnorm(z, lower.tail = TRUE), greater = pnorm(z, lower.tail = FALSE)),
+                         d = d, row.names = NULL)
 
     sample <- "one"
 
@@ -466,7 +461,7 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
     result <- data.frame(cbind(x.ci[, c("group", "n", "nNA", "m", "sd", "m.diff")],
                                se = c(NA, se), x.ci[, c("m.low", "m.upp")], z = c(NA, z),
-                               pval = c(NA, switch(alternative, two.sided = pnorm(abs(z), lower.tail = FALSE) * 2L, less = pnorm(z, lower.tail = TRUE), greater = pnorm(z, lower.tail = FALSE))),
+                               p = c(NA, switch(alternative, two.sided = pnorm(abs(z), lower.tail = FALSE) * 2L, less = pnorm(z, lower.tail = TRUE), greater = pnorm(z, lower.tail = FALSE))),
                                d = c(NA, d)), row.names = NULL)
 
     sample <- "two"
@@ -491,7 +486,7 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                          m1 = x.ci[["m1"]], m2 = x.ci[["m2"]],
                          m.diff = x.ci[["m.diff"]], sd.diff = x.ci[["sd.diff"]],
                          se = se, m.low = x.ci[["low"]], m.upp = x.ci[["upp"]], z = z,
-                         pval = switch(alternative, two.sided = pnorm(abs(z), lower.tail = FALSE) * 2L, less = pnorm(z, lower.tail = TRUE), greater = pnorm(z, lower.tail = FALSE)),
+                         p = switch(alternative, two.sided = pnorm(abs(z), lower.tail = FALSE) * 2L, less = pnorm(z, lower.tail = TRUE), greater = pnorm(z, lower.tail = FALSE)),
                          d = d, row.names = NULL)
 
 

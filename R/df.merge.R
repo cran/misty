@@ -2,6 +2,17 @@
 #'
 #' This function merges data frames by a common column (i.e., matching variable).
 #'
+#' @param ...    a sequence of matrices or data frames and/or matrices to be
+#'               merged to one.
+#' @param by     a character string indicating the column used for merging
+#'               (i.e., matching variable), see 'Details'.
+#' @param all    logical: if \code{TRUE} (default), then extra rows with \code{NA}s
+#'               will be added to the output for each row in a data frame that
+#'               has no matching row in another data frame.
+#' @param check  logical: if \code{TRUE} (default), argument specification is checked.
+#' @param output logical: if \code{TRUE} (default), output is shown on the console.
+#'
+#' @details
 #' There are following requirements for merging multiple data frames: First, each
 #' data frame has the same matching variable specified in the \code{by} argument.
 #' Second, matching variable in the data frames have all the same class. Third,
@@ -13,21 +24,13 @@
 #' Note that it is possible to specify data frames matrices and/or in the argument
 #' \code{...}. However, the function always returns a data frame.
 #'
-#' @param ...    a sequence of matrices or data frames and/or matrices to be
-#'               merged to one.
-#' @param by     a character string indicating the column used for merging
-#'               (i.e., matching variable), see 'Details'.
-#' @param all    logical: if \code{TRUE} (default), then extra rows with \code{NA}s
-#'               will be added to the output for each row in a data frame that
-#'               has no matching row in another data frame.
-#' @param check  logical: if \code{TRUE} (default), argument specification is checked.
-#' @param output logical: if \code{TRUE} (default), output is shown on the console.
-#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{df.duplicated}}, \code{\link{df.move}}, \code{\link{df.rbind}},
+#' \code{\link{df.check}}, \code{\link{df.duplicated}}, \code{\link{df.unique}},
+#' \code{\link{df.head}}, \code{\link{df.tail}}, \code{\link{df.long}},
+#' \code{\link{df.wide}}, \code{\link{df.move}}, \code{\link{df.rbind}},
 #' \code{\link{df.rename}}, \code{\link{df.sort}}, \code{\link{df.subset}}
 #'
 #' @return
@@ -150,8 +153,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
   match.cases <- Reduce(function(xx, yy) misty::df.rbind(xx, yy), x = lapply(var.match, function(xx) data.frame(matrix(xx, ncol = length(xx), dimnames = list(NULL, xx)), stringsAsFactors = FALSE)))
 
   # Number of pattern
-  match.cases.table <- table(apply(ifelse(is.na(match.cases), 0L, 1L), 2L, paste, collapse = " ")) |>
-    (\(y) y[rev(order(as.numeric(gsub(" ", "", names(y)))))])()
+  match.cases.table <- table(apply(ifelse(is.na(match.cases), 0L, 1L), 2L, paste, collapse = " ")) |> (\(y) y[rev(order(as.numeric(gsub(" ", "", names(y)))))])()
 
   match.info <- data.frame(n = unname(unclass(match.cases.table)),
                            matrix(unlist(strsplit(names(match.cases.table), " ")), byrow = TRUE, ncol = no.dfs,
@@ -159,8 +161,7 @@ df.merge <- function(..., by, all = TRUE, check = TRUE, output = TRUE) {
                            stringsAsFactors = FALSE)
 
   # Match data frames and sort by matching variable
-  object <- Reduce(function(xx, yy) merge(xx, yy, by = by, all = all), x = df) |>
-    (\(y) y[order(y[, by]), ])()
+  object <- Reduce(function(xx, yy) merge(xx, yy, by = by, all = all), x = df) |> (\(y) y[order(y[, by]), ])()
 
   #_____________________________________________________________________________
   #

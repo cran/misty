@@ -115,8 +115,10 @@ Wickham H, Miller E, Smith D (2023). \emph{readxl: Read Excel Files}. R package
 version 1.4.3. \url{https://CRAN.R-project.org/package=readxl}
 }
 \seealso{
-\code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.sav}},
-\code{\link{write.sav}}, \code{\link{read.mplus}}, \code{\link{write.mplus}}
+\code{\link{read.data}}, \code{\link{write.data}}, \code{\link{read.sav}},
+\code{\link{write.sav}}, \code{\link{write.xlsx}},
+\code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.mplus}},
+\code{\link{write.mplus}}
 }
 \author{
 Hadley Wickham and Jennifer Bryan

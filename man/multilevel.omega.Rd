@@ -24,7 +24,7 @@ cluster variable.}
 
 \item{...}{an expression indicating the variable names in \code{data},
 e.g., \code{multilevel.omega(dat, x1, x2, x3, cluster = "cluster")}.
-Note that the operators \code{.}, \code{+}, \code{-},
+Note that the operators \code{+}, \code{-},
 \code{~}, \code{:}, \code{::}, and \code{!} can also be
 used to select variables, see 'Details' in the
 \code{\link{df.subset}} function.}

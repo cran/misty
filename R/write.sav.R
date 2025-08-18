@@ -5,32 +5,6 @@
 #' and Evan Miller (2019) or the free software \emph{PSPP} (see:
 #' \url{https://www.gnu.org/software/pspp/pspp.html}).
 #'
-#' If arguments \code{pspp.path} is not specified (i.e., \code{pspp.path = NULL}),
-#' \code{write_sav()} function in the \pkg{haven} is used. Otherwise the object
-#' \code{x} is written as CSV file, which is subsequently imported into SPSS using
-#' the free software \emph{PSPP} by executing a SPSS syntax written in R. Note that
-#' \emph{PSPP} needs to be installed on your computer when using the \code{pspp.path}
-#' argument.
-#'
-#' A SPSS file with 'variable labels', 'value labels', and 'user-missing values' is
-#' written by specifying the \code{var.attr} argument. Note that the number of rows
-#' in the matrix or data frame specified in \code{var.attr} needs to match with the
-#' number of columns in the data frame or matrix specified in \code{x}, i.e., each
-#' row in \code{var.attr} represents the variable attributes of the corresponding
-#' variable in \code{x}. In addition, column names of the matrix or data frame
-#' specified in \code{var.attr} needs to be labeled as \code{label} for 'variable
-#' labels, \code{values} for 'value labels', and \code{missing} for 'user-missing
-#' values'.
-#'
-#' Labels for the values are defined in the column \code{values} of the matrix or
-#' data frame in \code{var.attr} using the equal-sign (e.g., \code{0 = female}) and
-#' are separated by a semicolon (e.g., \code{0 = female; 1 = male}).
-#'
-#' User-missing values are defined in the column \code{missing} of the matrix or
-#' data frame in \code{var.attr}, either specifying one user-missing value (e.g.,
-#' \code{-99}) or more than one but up to three user-missing values separated
-#' by a semicolon (e.g., \code{-77; -99}.
-#'
 #' @param x         a matrix or data frame to be written in SPSS, vectors are
 #'                  coerced to a data frame.
 #' @param file      a character string naming a file with or without file extension
@@ -58,11 +32,40 @@
 #' @param check     logical: if \code{TRUE} (default), variable attributes
 #'                  specified in the argument \code{var.attr} is checked.
 #'
+#' @details
+#' If arguments \code{pspp.path} is not specified (i.e., \code{pspp.path = NULL}),
+#' \code{write_sav()} function in the \pkg{haven} is used. Otherwise the object
+#' \code{x} is written as CSV file, which is subsequently imported into SPSS using
+#' the free software \emph{PSPP} by executing a SPSS syntax written in R. Note that
+#' \emph{PSPP} needs to be installed on your computer when using the \code{pspp.path}
+#' argument.
+#'
+#' A SPSS file with 'variable labels', 'value labels', and 'user-missing values' is
+#' written by specifying the \code{var.attr} argument. Note that the number of rows
+#' in the matrix or data frame specified in \code{var.attr} needs to match with the
+#' number of columns in the data frame or matrix specified in \code{x}, i.e., each
+#' row in \code{var.attr} represents the variable attributes of the corresponding
+#' variable in \code{x}. In addition, column names of the matrix or data frame
+#' specified in \code{var.attr} needs to be labeled as \code{label} for 'variable
+#' labels, \code{values} for 'value labels', and \code{missing} for 'user-missing
+#' values'.
+#'
+#' Labels for the values are defined in the column \code{values} of the matrix or
+#' data frame in \code{var.attr} using the equal-sign (e.g., \code{0 = female}) and
+#' are separated by a semicolon (e.g., \code{0 = female; 1 = male}).
+#'
+#' User-missing values are defined in the column \code{missing} of the matrix or
+#' data frame in \code{var.attr}, either specifying one user-missing value (e.g.,
+#' \code{-99}) or more than one but up to three user-missing values separated
+#' by a semicolon (e.g., \code{-77; -99}.
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{read.sav}}, \code{\link{write.xlsx}}, \code{\link{write.dta}},
+#' \code{\link{read.data}}, \code{\link{write.data}}, \code{\link{read.sav}},
+#' \code{\link{read.xlsx}}, \code{\link{write.xlsx}},
+#' \code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.mplus}},
 #' \code{\link{write.mplus}}
 #'
 #' @references

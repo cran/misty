@@ -1,4 +1,51 @@
-### misty 0.7.3 (2025-07-20)
+### misty 0.7.4 (2025-08-18)
+
+##### New features
+* New function `write.data()` and `write.data1()` to write data files in CSV, DAT, 
+TXT, SPSS, Excel, or Stata DTA format.
+* New functions `df.long()` and `df.wide()` to reshape data frames between 
+'wide' and 'long' format.
+* New function `summa()` for printing a summary output of the object returned by 
+the functions `lm()` and `lmer()` from the lme4 package.
+
+##### Minor features and improvements
+* The function `descript` prints the number of unique elements `nUQ` after omitting
+missing values.
+* Added the arguments `write`, `append` and `output` to the function `uniq`.
+* Added the arguments `categ` and `adjust` to the function `na.auxiliary` that
+allows specifying categorical variables to compute Phi coefficient and Cramer's V.
+* Added the argument `optim.switch` to the function `multilevel.cor`.
+* The function `multilevel.cor` computes the within-group correlation (or 
+between-group correlation) in the presence of only one between-group (or within-group) 
+variable.
+* The function `check.resid` performs residual diagnostics for linear mixed-effects
+models estimated by using the `lmer()` function.
+
+##### Bug fix
+* Fixed a bug in the function `multilevel.icc()`, computation of the ICC(2) was 
+wrong (thanks to Ammar Ansari and Tetsuhiro Yamada).
+
+##### User-visible changes
+* Changed the column name `pNA` to `%NA` in the output of the functions `ci.cor`, 
+`ci.mean`, `ci.median`, `ci.mean.w`, `ci.prop`, `ci.var`, `ci.sd`, `descript`,
+`item.alpha`, `item.cfa`, `item.omega`, `multilevel.cfa`, `multilevel.omega`, and
+`na.descript`. 
+* Changed the column names `nObs` and `%Obs` to `nOb` and `%Ob` in the frequency 
+table of the `na.descript()` function.
+* Functions `descript()`, `item.alpha()`, `item.cfa`, `item.omega()`, `multilevel.cfa`, 
+and `multilevel.omega` print the column `%NA` with zero digits if all variables 
+have no missing values. 
+* Changed the column names from `SD.x` and `SD.y` to `SDx` and `SDy`in the output 
+of the `std.coef()` function.
+* Changed the default setting of the argument `digits` in the function `std.coef` 
+to `2`.
+* Changed the column name `pval` to `p` in the output of the functions 
+`aov.b`, `aov.w`, `na.test`, `test.t`, `test.welch`, and `test.z`.
+* Renamed the functions `robust.coef()`, `std.coef()`, and  `rwg.lindell()` to 
+`coeff.robust()`, `coeff.std()` and `cluster.rwg()`.
+* Removed the . (dot) operator from the function `df.subset()`.
+
+### misty 0.7.3 (2025-07-07)
 
 ##### Minor features and improvements
 * The function `descript` prints the percentage of observations at the minimum (%Min)

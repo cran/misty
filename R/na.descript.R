@@ -9,7 +9,7 @@
 #'                coded as \code{NA}.
 #' @param ...     an expression indicating the variable names in \code{data},
 #'                e.g., \code{na.descript(dat, x1, x2, x3)}. Note that the operators
-#'                \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'                and \code{!} can also be used to select variables, see 'Details'
 #'                in the \code{\link{df.subset}} function.
 #' @param cluster a character string indicating the name of the cluster
@@ -22,8 +22,8 @@
 #'                Note that the cluster variable at Level 3 come first in a
 #'                three-level model, i.e., \code{cluster = c("level3", "level2")}.
 #' @param table   logical: if \code{TRUE}, a frequency table with number of
-#'                observed values (\code{"nObs"}), percent of observed values
-#'                (\code{"pObs"}), number of missing values (\code{"nNA"}),
+#'                observed values (\code{"nOb"}), percent of observed values
+#'                (\code{"pOb"}), number of missing values (\code{"nNA"}),
 #'                and percent of missing values (\code{"pNA"}) is printed for
 #'                each variable on the console.
 #' @param digits  an integer value indicating the number of decimal places to
@@ -53,7 +53,7 @@
 #' \code{\link{na.prop}}, \code{\link{na.test}}, \code{\link{write.result}}
 #'
 #' @references
-#' Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
+#' Enders, C. K. (2022). \emph{Applied missing data analysis} (2nd ed.). The Guilford Press.
 #'
 #' Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 #' \emph{Annual Review of Psychology, 60}, 549-576.
@@ -105,7 +105,6 @@
 #' # Example 5: Descriptive statistics for missing data
 #' na.descript(Demo.threelevel, cluster = c("cluster3", "cluster2"))
 #'
-#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Write Results
 #'
@@ -114,7 +113,6 @@
 #'
 #' # Example 6b: Write Results into a Excel file
 #' na.descript(airquality, table = TRUE, write = "NA_Descriptives.xlsx")
-#' }
 na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
                         as.na = NULL, write = NULL, append = TRUE, check = TRUE,
                         output = TRUE) {
@@ -134,18 +132,18 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data
-    x <- as.data.frame(data[, .var.names(..., data = data, cluster = cluster), drop = FALSE])
+    x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
 
     # Cluster variable
     if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 
@@ -331,7 +329,7 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
     # Frequency table
     table.missing.l1 <- data.frame(Var = colnames(x.L1),
                                    matrix(c(no.observed.var.l1, perc.observed.var.l1, no.missing.var.l1, perc.missing.var.l1), ncol = 4L,
-                                          dimnames = list(NULL, c("nObs", "pObs", "nNA", "pNA"))))
+                                          dimnames = list(NULL, c("nOb", "pOb", "nNA", "pNA"))))
 
   # No Level-1 Variables
   } else {
@@ -414,7 +412,7 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
       # Frequency table
       table.missing.l2 <- data.frame(Var = colnames(x.L2),
                                      matrix(c(no.observed.var.l2, perc.observed.var.l2, no.missing.var.l2, perc.missing.var.l2), ncol = 4L,
-                                            dimnames = list(NULL, c("nObs", "pObs", "nNA", "pNA"))))
+                                            dimnames = list(NULL, c("nOb", "pOb", "nNA", "pNA"))))
 
     # No Level-2 Variables
     } else {
@@ -489,7 +487,7 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
       # Frequency table
       table.missing.l3 <- data.frame(Var = colnames(x.l3),
                                      matrix(c(no.observed.var.l3, perc.observed.var.l3, no.missing.var.l3, perc.missing.var.l3), ncol = 4L,
-                                            dimnames = list(NULL, c("nObs", "pObs", "nNA", "pNA"))))
+                                            dimnames = list(NULL, c("nOb", "pOb", "nNA", "pNA"))))
 
     # No Level-3 Variables
     } else {

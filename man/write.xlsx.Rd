@@ -49,7 +49,9 @@ Jeroen O. (2021). \emph{writexl: Export Data Frames to Excel 'xlsx' Format}.
 R package version 1.4.0. https://CRAN.R-project.org/package=writexl
 }
 \seealso{
-\code{\link{read.xlsx}}, \code{\link{write.sav}}, \code{\link{write.dta}},
+\code{\link{read.data}}, \code{\link{write.data}}, \code{\link{read.sav}},
+\code{\link{write.sav}},
+\code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.mplus}},
 \code{\link{write.mplus}}
 }
 \author{

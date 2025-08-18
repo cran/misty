@@ -178,11 +178,10 @@
 #
 # Extract Variable Names Specified in the ... Argument  ------------------------
 
-.var.names <- function(..., data, group = NULL, split = NULL, cluster = NULL,
-                       id = NULL, obs = NULL, day = NULL, time = NULL) {
+.var.names <- function(data, ..., group = NULL, split = NULL, cluster = NULL, id = NULL, obs = NULL, day = NULL, time = NULL) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Check if input 'data' is data frame ####
+  ## Check if input 'data' is a data frame ####
 
   # Check if input 'data' is data frame
   if (isTRUE(!is.data.frame(data))) { stop("Please specify a data frame for the argument 'data'.", call. = FALSE) }
@@ -190,12 +189,12 @@
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert tibble into data frame ####
 
-  if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- data.frame(data) }
+  if (isTRUE("tbl" %in% substr(class(data), 1L, 3L))) { data <- as.data.frame(data) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Elements in the '...' Argument ####
 
-  var.names <- sapply(substitute(list(...)), as.character)
+  var.names <- sapply(substitute(list(...)), as.character)[-1L]
 
   #...................
   ### Check for ! operators ####
@@ -208,22 +207,27 @@
 
       var.names.i <- unlist(strsplit(var.names[[i]], ""))
 
+      # Plus (+) Operator
       if (isTRUE("+" %in% var.names.i)) {
 
          var.names[[i]] <- unlist(strsplit(var.names[[i]], "(?=[/+])", perl = TRUE))
 
+      # Minus (-) Operator
       } else if (isTRUE("-" %in% var.names.i)) {
 
         var.names[[i]] <- unlist(strsplit(var.names[[i]], "(?=[/-])", perl = TRUE))
 
+      # Tilde (~) Operator
       } else if (isTRUE("~" %in% var.names.i)) {
 
         var.names[[i]] <- unlist(strsplit(var.names[[i]], "(?=[/~])", perl = TRUE))
 
+      # Colon (:) operator
       } else if (isTRUE(sum(var.names.i %in% ":") == 1L)) {
 
         var.names[[i]] <- c("!", ":", unlist(strsplit(var.names[[i]], ":"))[2L:3L])
 
+      # Double Colon (::) Operator
       } else if (isTRUE(sum(var.names.i %in% ":") == 2L)) {
 
         var.names[[i]] <- c("!", "::", unlist(strsplit(var.names[[i]], "::"))[2L:3L])
@@ -397,9 +401,9 @@
       var.i2.split <- unlist(strsplit(var.j[2L], "", fixed = TRUE))
 
       # Numeric values starting variable
-      var.i1.log <- sapply(var.i1.split, function(y) y %in% as.character(0:9))
+      var.i1.log <- sapply(var.i1.split, function(y) y %in% as.character(0L:9L))
       # Numeric values ending variable
-      var.i2.log <- sapply(var.i2.split, function(y) y %in% as.character(0:9))
+      var.i2.log <- sapply(var.i2.split, function(y) y %in% as.character(0L:9L))
 
       # Variable name root starting variable
       var.i1.root <- paste0(var.i1.split[-((max(which(var.i1.log == FALSE)) + 1L):length(var.i1.split))], collapse = "")
@@ -439,9 +443,9 @@
   var.names <- var.names[which(sapply(var.names, function(y) !"!" %in% y))]
 
   #...................
-  ### Remove "list" and "" elements ####
+  ### Remove "" elements ####
 
-  var.names <- misty::chr.omit(var.names, omit = c("list", ""), check = FALSE)
+  var.names <- misty::chr.omit(var.names, omit = "", check = FALSE)
 
   #...................
   ### Unique element ####
@@ -451,7 +455,7 @@
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Select all Variables ####
 
-  if (isTRUE(any(var.names == "."))) { var.names <- colnames(data) }
+  if (isTRUE(length(var.names) == 0L)) { var.names <- colnames(data) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping, Split, Cluster and Other Variables ####
@@ -536,8 +540,7 @@
     if (isTRUE(!is.character(obs) || length(obs) != 1L)) { stop("Please specify a character string for the argument 'obs'.", call. = FALSE) }
     if (isTRUE(!id %in% colnames(data))) { stop("Observation number variable specifed in 'obs' was not found in 'data'.", call. = FALSE) }
 
-    check.obs.dupli <- sapply(split(obs, id), function(x) length(x) != length(unique(x)))
-    if (isTRUE(any(check.obs.dupli))) { stop("There are duplicated observations specified in 'obs' within subjects specified in 'id'.", call. = FALSE) }
+    if (isTRUE(any(sapply(split(obs, id), function(x) length(x) != length(unique(x)))))) { stop("There are duplicated observations specified in 'obs' within subjects specified in 'id'.", call. = FALSE) }
 
     var.names <- setdiff(var.names, obs )
 
@@ -1647,6 +1650,80 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
+# Internal functions for the check.resid() function ----------------------------
+#
+# - .resid.partial
+# - .calc_ranef
+#
+# remef: Remove Partial Effects
+# https://github.com/hohenstein/remef/
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Calculate partial effects ####
+#
+# Adapted function partial()
+
+.resid.partial <- function(model, fix = NULL, ran = "all") {
+
+  #---------------------------------------------------------------------------
+  # Part 1: Fixed Effects
+
+  is.na(match(fix, colnames(model.matrix(model)) |> (\(y) if (isTRUE(as.logical(attr(terms(model), "intercept")))) { y[-1L] } else { y })())) |> (\(y) if (isTRUE(any(y))) { stop("The following effects are not present in the model: ", paste(fix[y], collapse = ", "), call. = FALSE) })()
+
+  DV <- lme4::getME(model, "y") - as.vector(model.matrix(model)[ , fix, drop = FALSE] %*% lme4::fixef(model)[fix])
+
+  #---------------------------------------------------------------------------
+  # Part 2: Random effects
+
+  DV <- DV - .calc_ranef(model, lapply(lapply(lme4::ranef(model), names), seq_along))
+
+  return(unname(DV))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Calculate random effects based on a subset of variance terms ####
+#
+# Adapted function calc_ranef()
+
+.calc_ranef <- function(model, ran) {
+
+  if (isTRUE(length(ran) == 0L)) { return(numeric(length = lme4::getME(model, "n"))) }
+
+  if (isTRUE(is.list(ran) && length(ran) > 0L)) {
+
+    stopifnot(is.numeric(unlist(ran)))
+
+    ran <- lapply(ran, unique)
+    ran <- ran[vapply(ran, length, 1L) > 0L]
+
+  }
+
+  ran_labs <- lapply(lme4::ranef(model), names)
+
+  if (isTRUE(is.null(names(ran)) || any( !names(ran) %in% names(ran_labs)) || any(duplicated(names(ran))))) { stop("The list 'ran' has invalid names.", call. = FALSE) }
+
+  num_re <- vapply(ran_labs, length, FUN.VALUE = 1L, USE.NAMES = FALSE)
+  num_re_previous <- c(0L, cumsum(head(num_re, -1L)))
+  rf_idx <- match(names(ran), names(ran_labs))
+  ran_model <- lme4::ranef(model)
+
+  ran_model_sub <- lapply(mapply(`[`, ran_model[rf_idx], ran, SIMPLIFY = FALSE), unlist)
+
+  re_list <- lapply(mapply(function(x, y) seq_len(x) + y, num_re, num_re_previous, SIMPLIFY = FALSE), function(x) lme4::getME(model, "Ztlist")[x])
+
+  re_list_sub <- mapply(`[`, re_list[rf_idx], ran, SIMPLIFY = FALSE)
+  ran_model_sub <- mapply(`[`, ran_model[rf_idx], ran, SIMPLIFY = FALSE)
+
+  ranef_sums <- rowSums(do.call(cbind, mapply(function(mats, vecs) mapply(function(v, m) as.vector(v %*% m), vecs, mats), re_list_sub, ran_model_sub, SIMPLIFY = FALSE)))
+
+  return(ranef_sums)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
 # Internal functions for the chr.gsub() function -------------------------------
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1681,6 +1758,7 @@
 # Argument x: a matrix of gregexpr() results, 4 columns, index of column matched,
 #             start of match, length of match, end of match. Produced exclusively from
 #             a .worker function in chr.gsub
+
 .filterOverlap <- function(x) {
 
   for (i in nrow(x):2L) {
@@ -5922,42 +6000,40 @@
   if (isTRUE(is.null(p))) { p <- rep(1 / length(tab), times = length(tab)) }
 
   # Chi-squared Test
-  model <- suppressWarnings(chisq.test(tab, correct = FALSE, p = p))
+  model <- tryCatch(suppressWarnings(chisq.test(tab, correct = FALSE, p = p)), error = function(y) { list(statistic = NA, parameter = NA) })
 
-  # Test statistic
-  chisq <- model$statistic
+  # Table with at least two rows and two columns and chi-square statistic is not NA or NaN
+  if (isTRUE(ncol(tab) >= 2L && nrow(tab) >= 2L && !is.na(model$parameter) && !is.nan(model$statistic))) {
 
-  # Degrees of freedom
-  df <- model$parameter
+    # Test statistic
+    chisq <- model$statistic
 
-  # Sample size
-  n <- sum(tab)
+    # Degrees of freedom
+    df <- model$parameter
 
-  # Noncentral parameter
-  chisqs <- vapply(chisq, .get_ncp_chi, FUN.VALUE = numeric(2L), df = df, conf.level = conf.level, alternative = alternative)
+    # Sample size
+    n <- sum(tab)
 
-  # Convert into phi coefficient
-  low <- sqrt(chisqs[1L, ] / n)
-  upp <- sqrt(chisqs[2L, ] / n)
+    # Noncentral parameter
+    chisqs <- vapply(chisq, .get_ncp_chi, FUN.VALUE = numeric(2L), df = df, conf.level = conf.level, alternative = alternative)
 
-  # Result table
-  result <- data.frame(phi = sqrt(chisq / n), low = low, upp = upp, row.names = NULL)
+    # Result table
+    result <- data.frame(phi = sqrt(chisq / n), low = sqrt(chisqs[1L, ] / n), upp = sqrt(chisqs[2L, ] / n), row.names = NULL)
 
-  # Adjusted phi coefficient
-  if (isTRUE(adjust)) {
+    # Adjusted phi coefficient
+    if (isTRUE(adjust)) { result <- result / min(c(sqrt((sum(tab[1L, ])*sum(tab[, 2L])) / (sum(tab[, 1L])*sum(tab[2L, ]))), sqrt((sum(tab[, 1L])*sum(tab[2L, ])) / (sum(tab[1L, ])*sum(tab[, 2L]))))) }
 
-    phi.max <- min(c(sqrt((sum(tab[1L, ])*sum(tab[, 2L])) / (sum(tab[, 1L])*sum(tab[2L, ]))),
-                     sqrt((sum(tab[, 1L])*sum(tab[2L, ])) / (sum(tab[1L, ])*sum(tab[, 2L])))))
+    # One-sided confidence interval
+    switch(alternative, less = { result$low <- 0L }, greater = { result$upp <- 1L })
 
-    result <- result / phi.max
+    # Add sample size
+    result <- data.frame(n = n, result)
+
+  } else {
+
+    result <- data.frame(n = sum(tab), phi = NA, low = NA, upp = NA)
 
   }
-
-  # One-sided confidence interval
-  switch(alternative, less = { result$low <- 0L }, greater = { result$upp <- 1L })
-
-  # Add sample size
-  result <- data.frame(n = n, result)
 
   return(result)
 
@@ -5978,33 +6054,42 @@
   # Phi coefficient
   result <- .phi(x, adjust = FALSE, conf.level = conf.level, alternative = alternative)[, -1L]
 
-  #...................
-  ### Finite sample bias-correction ####
-  if (isTRUE(adjust)) {
+  # Phi is not NA
+  if (isTRUE(!is.na(result$phi))) {
 
-    # Sample size
-    n <- sum(tab)
+    #...................
+    ### Finite sample bias-correction ####
+    if (isTRUE(adjust)) {
 
-    # Correction
-    result <- lapply(result, function(y) { sqrt(pmax(0, y^2L - ((nrow - 1L)*(ncol - 1L)) / (n - 1L))) })
+      # Sample size
+      n <- sum(tab)
 
-    # Cramer's V
-    result <- data.frame(lapply(result, function(y) y / sqrt(pmin((nrow - ((nrow - 1L)^2L) / (n - 1L)) - 1L, (ncol - ((ncol - 1L)^2L) / (n - 1L)) - 1L))))
+      # Correction
+      result <- lapply(result, function(y) { sqrt(pmax(0, y^2L - ((nrow - 1L)*(ncol - 1L)) / (n - 1L))) })
 
-  #...................
-  ### No finite sample bias-correction ####
+      # Cramer's V
+      result <- data.frame(lapply(result, function(y) y / sqrt(pmin((nrow - ((nrow - 1L)^2L) / (n - 1L)) - 1L, (ncol - ((ncol - 1L)^2L) / (n - 1L)) - 1L))))
+
+    #...................
+    ### No finite sample bias-correction ####
+    } else {
+
+      # Cramer's V
+      result <- data.frame(lapply(result, function(y) y / sqrt(pmin(nrow - 1L, ncol - 1L))))
+
+    }
+
+    # One-sided confidence interval
+    switch(alternative, less = { result$low <- 0L }, greater = { result$upp <- 1L })
+
+    # Add sample size and column names
+    result <- data.frame(n = sum(tab), setNames(result, nm = c("v", "low", "upp")))
+
   } else {
 
-    # Cramer's V
-    result <- data.frame(lapply(result, function(y) y / sqrt(pmin(nrow - 1L, ncol - 1L))))
+    result <- data.frame(n = sum(tab), v = NA, low = NA, upp = NA)
 
   }
-
-  # One-sided confidence interval
-  switch(alternative, less = { result$low <- 0L }, greater = { result$upp <- 1L })
-
-  # Add sample size and column names
-  result <- data.frame(n = sum(tab), setNames(result, nm = c("v", "low", "upp")))
 
   return(result)
 
@@ -6028,31 +6113,40 @@
   # Phi coefficient
   result <- .phi(x, adjust = FALSE, conf.level = conf.level, alternative = alternative)[, -1L]
 
-  #...................
-  ### Finite sample bias-correction ####
-  if (isTRUE(adjust)) {
-
-    # Correction
-    result <- lapply(result, function(y) { sqrt(pmax(0, y^2L - ((nrow - 1L)*(ncol - 1L)) / (n - 1L))) })
-
-    # Tschuprow's T
-    result <- data.frame(lapply(result, function(y) y / sqrt(sqrt(((nrow - ((nrow - 1L)^2L) / (n - 1L)) - 1L) * ((ncol - ((ncol - 1L)^2L) / (n - 1L)) - 1L)))))
+  # Phi is not NA
+  if (isTRUE(!is.na(result$phi))) {
 
     #...................
-    ### No finite sample bias-correction ####
+    ### Finite sample bias-correction ####
+    if (isTRUE(adjust)) {
+
+      # Correction
+      result <- lapply(result, function(y) { sqrt(pmax(0, y^2L - ((nrow - 1L)*(ncol - 1L)) / (n - 1L))) })
+
+      # Tschuprow's T
+      result <- data.frame(lapply(result, function(y) y / sqrt(sqrt(((nrow - ((nrow - 1L)^2L) / (n - 1L)) - 1L) * ((ncol - ((ncol - 1L)^2L) / (n - 1L)) - 1L)))))
+
+      #...................
+      ### No finite sample bias-correction ####
+    } else {
+
+      # Tschuprow's T
+      result <- data.frame(lapply(result, function(y) y / sqrt(sqrt((nrow - 1L) * (ncol - 1L)))))
+
+
+    }
+
+    # One-sided confidence interval
+    switch(alternative, less = { result$low <- 0L }, greater = { result$upp <- 1L })
+
+    # Add sample size and column names
+    result <- data.frame(n = n, setNames(result, nm = c("t", "low", "upp")))
+
   } else {
 
-    # Tschuprow's T
-    result <- data.frame(lapply(result, function(y) y / sqrt(sqrt((nrow - 1L) * (ncol - 1L)))))
-
+    result <- data.frame(n = sum(tab), t = NA, low = NA, upp = NA)
 
   }
-
-  # One-sided confidence interval
-  switch(alternative, less = { result$low <- 0L }, greater = { result$upp <- 1L })
-
-  # Add sample size and column names
-  result <- data.frame(n = n, setNames(result, nm = c("t", "low", "upp")))
 
   return(result)
 
@@ -6069,23 +6163,32 @@
   # Phi coefficient
   result <- .phi(x, adjust = FALSE, p = p, conf.level = conf.level, alternative = alternative)[, -1L]
 
-  # Contingency coefficient
-  result <- data.frame(lapply(result, function(y) y / sqrt(y^2L + 1L)))
+  # Phi is not NA
+  if (isTRUE(!is.na(result$phi))) {
 
-  # Sakoda's adjustment
-  if (isTRUE(adjust)) {
+    # Contingency coefficient
+    result <- data.frame(lapply(result, function(y) y / sqrt(y^2L + 1L)))
 
-    k <- min(c(nrow(tab), ncol(tab)))
+    # Sakoda's adjustment
+    if (isTRUE(adjust)) {
 
-    result <- result / sqrt((k - 1L) / k)
+      k <- min(c(nrow(tab), ncol(tab)))
+
+      result <- result / sqrt((k - 1L) / k)
+
+    }
+
+    # One-sided confidence interval
+    switch(alternative, less = { result$low <- 0L }, greater = { result$upp <- 1L })
+
+    # Add sample size and column names
+    result <- data.frame(n = sum(tab), setNames(result, nm = c("c", "low", "upp")))
+
+  } else {
+
+    result <- data.frame(n = sum(tab), c = NA, low = NA, upp = NA)
 
   }
-
-  # One-sided confidence interval
-  switch(alternative, less = { result$low <- 0L }, greater = { result$upp <- 1L })
-
-  # Add sample size and column names
-  result <- data.frame(n = sum(tab), setNames(result, nm = c("c", "low", "upp")))
 
   return(result)
 
@@ -6107,30 +6210,39 @@
   # Phi coefficient
   result <- .phi(x, adjust = FALSE, p = p, conf.level = conf.level, alternative = alternative)[, -1L]
 
-  # Cohen's w
-  if (isTRUE(ncol == 1L || nrow == 1L)) {
+  # Phi is not NA
+  if (isTRUE(!is.na(result$phi))) {
 
-    if (isTRUE(is.null(p))) {
+    # Cohen's w
+    if (isTRUE(ncol == 1L || nrow == 1L)) {
 
-      max.poss <- Inf
+      if (isTRUE(is.null(p))) {
+
+        max.poss <- Inf
+
+      } else {
+
+        max.poss <- sqrt((1L / min(p / sum(p))) - 1L)
+
+      }
 
     } else {
 
-      max.poss <- sqrt((1L / min(p / sum(p))) - 1L)
+      max.poss <- sqrt((pmin(ncol, nrow) - 1L))
 
     }
 
+    # One-sided confidence interval
+    switch(alternative, less = { result$upp <- pmin(result$upp, max.poss) }, greater = { result$upp <- max.poss })
+
+    # Add sample size and column names
+    result <- data.frame(n = sum(tab), setNames(result, nm = c("w", "low", "upp")))
+
   } else {
 
-    max.poss <- sqrt((pmin(ncol, nrow) - 1L))
+    result <- data.frame(n = sum(tab), w = NA, low = NA, upp = NA)
 
   }
-
-  # One-sided confidence interval
-  switch(alternative, less = { result$upp <- pmin(result$upp, max.poss) }, greater = { result$upp <- max.poss })
-
-  # Add sample size and column names
-  result <- data.frame(n = sum(tab), setNames(result, nm = c("w", "low", "upp")))
 
   return(result)
 
@@ -6145,18 +6257,27 @@
   tab <- table(x)
 
   # Vector of probabilities
-  if (isTRUE(is.null(p))) { p <- rep(1 / length(tab), times = length(tab)) }
+  if (isTRUE(is.null(p))) { p <- rep(1L / length(tab), times = length(tab)) }
 
   # Fei
   result <- .phi(x, adjust = FALSE, p = p, conf.level = conf.level, alternative = alternative)[, -1L]
 
-  result <- data.frame(lapply(result, function(y) y / sqrt(1 / min(p) - 1L)))
+  # Phi is not NA
+  if (isTRUE(!is.na(result$phi))) {
 
-  # One-sided confidence interval
-  switch(alternative, less = { result$upp <- pmin(result$upp, 1) }, greater = { result$upp <- 1})
+    result <- data.frame(lapply(result, function(y) y / sqrt(1L / min(p) - 1L)))
 
-  # Add sample size and column names
-  result <- data.frame(n = sum(tab), setNames(result, nm = c("fei", "low", "upp")))
+    # One-sided confidence interval
+    switch(alternative, less = { result$upp <- pmin(result$upp, 1L) }, greater = { result$upp <- 1L})
+
+    # Add sample size and column names
+    result <- data.frame(n = sum(tab), setNames(result, nm = c("fei", "low", "upp")))
+
+  } else {
+
+    result <- data.frame(n = sum(tab), fei = NA, low = NA, upp = NA)
+
+  }
 
   return(result)
 
@@ -6258,7 +6379,7 @@
     } else {
 
       # Standardized parameter estimates
-      param <- setNames(lavaan::standardizedSolution(mod.fit), nm = c("lhs", "op", "rhs", "est", "se", "z", "pvalue", "ci.lower", "ci.upper"))
+      param <- misty::df.rename(lavaan::standardizedSolution(mod.fit), from = "est.std", to = "est")
 
     }
 
@@ -6973,7 +7094,654 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the mplus.update() function ----------------------------
+# Internal functions for the multilevel.r2() function ---------------------------
+#
+# - .variable.section
+# - .r2mlm
+# - .r2mlm_lmer
+# - .r2mlm_nlme
+# - .r2mlm_manual
+# - .prepare_data
+# - .add_interaction_vars_to_data
+# - .get_random_slope_vars
+# - .get_cwc
+# - .get_interaction_vars
+# - .sort_variables
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Internal functions from the r2mlm package ####
+
+### .r2mlm() Function ####
+.r2mlm <- function(model) {
+
+  temp_formula <- formula(model)
+  grepl_array <- grepl("I(", temp_formula, fixed = TRUE)
+
+  for (bool in grepl_array) {
+
+    if (isTRUE(bool)) {
+
+      stop("Error: r2mlm does not allow for models fit using the I() function; user must thus manually include any desired transformed predictor variables such as x^2 or x^3 as separate columns in dataset.")
+
+    }
+
+  }
+
+  # call appropriate .r2mlm helper function
+  if (isTRUE(typeof(model) == "list")) {
+
+    .r2mlm_nlme(model)
+
+  } else if (isTRUE(typeof(model) == "S4")) {
+
+    .r2mlm_lmer(model)
+
+  } else {
+
+    stop("You must input a model generated using either the lme4 or nlme package.")
+
+  }
+
+}
+
+### .r2mlm_lmer() Function ####
+.r2mlm_lmer <- function(model) {
+
+  # Visible global function definition
+  is <- fixef <- getME <- NULL
+
+  # Step 1) check if model has_intercept
+  if (isTRUE(attr(terms(model), which = "intercept") == 1L)) {
+
+    has_intercept <- TRUE
+
+  } else {
+
+    has_intercept <- FALSE
+
+  }
+
+  # Step 2) Pull all variable names from the formula
+  all_variables <- all.vars(formula(model))
+  cluster_variable <- all_variables[length(all_variables)]
+
+  # Step 3a) Pull and prepare data
+  data <- .prepare_data(model, "lme4", cluster_variable)
+
+  # Step 3b) Determine whether data is appropriate format
+  # a) Pull all variables except for cluster
+  outcome_and_predictors <- all_variables[1L:(length(all_variables) - 1L)]
+
+  # b) If any of those variables is non-numeric, then throw an error
+  for (variable in outcome_and_predictors) {
+
+    if (isTRUE(!is(data[[variable]], "integer") && !is(data[[variable]], "numeric"))) {
+
+      stop("Your data must be numeric. Only the cluster variable can be a factor.")
+
+    }
+
+  }
+
+  # Step 4a) Define variables you'll be sorting
+  if (isTRUE(length(outcome_and_predictors) == 1L)) {
+
+    predictors <- .get_interaction_vars(model)
+
+  } else {
+
+    predictors <- append(outcome_and_predictors[2L:length(outcome_and_predictors)], .get_interaction_vars(model))
+
+  }
+
+  # Step 4b) Create and fill vectors
+  l1_vars <- .sort_variables(data, predictors, cluster_variable)$l1_vars
+  l2_vars <- .sort_variables(data, predictors, cluster_variable)$l2_vars
+
+  # Step 5) Pull variable names for L1 predictors with random slopes into a variable called random_slope_vars
+  random_slope_vars <- .get_random_slope_vars(model, has_intercept, "lme4")
+
+  # Step 6) Determine value of centered within cluster
+  if (is.null(l1_vars)) {
+
+    centeredwithincluster <- TRUE
+
+  } else {
+
+    centeredwithincluster <- .get_cwc(l1_vars, cluster_variable, data)
+
+  }
+
+  # 7a) within_covs (l1 variables)
+  within <- .get_covs(l1_vars, data)
+
+  # 7b) pull column numbers for between_covs (l2 variables)
+  between <- .get_covs(l2_vars, data)
+
+  # 7c) pull column numbers for random_covs (l1 variables with random slopes)
+  random <- .get_covs(random_slope_vars, data)
+
+  # 8a) gamma_w, fixed slopes for L1 variables (from l1_vars list)
+  gammaw <- c()
+  i <- 1L
+  for (variable in l1_vars) {
+
+    gammaw[i] <- fixef(model)[variable]
+
+    i <- i + 1L
+
+  }
+
+  # 8b) gamma_b, intercept value if hasintercept = TRUE, and fixed slopes for L2 variables (from between list)
+  gammab <- c()
+  if (isTRUE(has_intercept)) {
+
+    gammab[1L] <- fixef(model)[1L]
+
+    i <- 2L
+
+  } else {
+
+    i <- 1L
+
+  }
+
+  for (var in l2_vars) {
+
+    gammab[i] <- fixef(model)[var]
+
+    i = i + 1L
+
+  }
+
+  # Step 9) Tau matrix, results from VarCorr(model)
+  vcov <- VarCorr(model)
+  tau <- as.matrix(Matrix::bdiag(vcov))
+
+  # Step 10) Sigma^2 value, Rij
+  sigma2 <- getME(model, "sigma")^2L
+
+  # Step 11) Input everything into r2mlm_manual
+  .r2mlm_manual(as.data.frame(data), within_covs = within, between_covs = between, random_covs = random,
+                gamma_w = gammaw, gamma_b = gammab, Tau = tau, sigma2 = sigma2, has_intercept = has_intercept, clustermeancentered = centeredwithincluster)
+
+}
+
+### .r2mlm_nlme() Function ####
+.r2mlm_nlme <- function(model) {
+
+  # Visible global function definition
+  is <- getME <- NULL
+
+  # Step 1) check if model has_intercept
+  if (isTRUE(attr(terms(model), which = "intercept") == 1L)) {
+
+    has_intercept = TRUE
+
+  } else {
+
+    has_intercept = FALSE
+
+  }
+
+  # Step 2) Pull all variable names from the formula
+  all_variables <- all.vars(formula(model))
+  cluster_variable <- attr(nlme::getGroups(model), which = "label")
+
+  # Add the grouping var to list of all variables, and calculate formula length (for later use, to iterate)
+  all_variables[length(all_variables) + 1L] <- cluster_variable
+  formula_length <- length(all_variables) # this returns the number of elements in the all_vars list TODO remove this
+
+  # Step 3a) Pull and prepare data
+  data <- .prepare_data(model, "nlme", cluster_variable)
+
+  # Step 3b) Determine whether data is appropriate format. Only the cluster variable can be a factor, for now
+
+  outcome_and_predictors <-  all_variables[1L:length(all_variables) - 1L]
+
+  for (variable in outcome_and_predictors) {
+
+    if (isTRUE(!is(data[[variable]], "integer") && !is(data[[variable]], "numeric"))) {
+
+      stop("Your data must be numeric. Only the cluster variable can be a factor.")
+
+    }
+
+  }
+
+  # Step 4a) Define variables you'll be sorting
+  if (isTRUE(length(outcome_and_predictors) == 1L)) {
+
+    predictors <- .get_interaction_vars(model)
+
+  } else {
+
+    predictors <- append(outcome_and_predictors[2:length(outcome_and_predictors)], .get_interaction_vars(model))
+
+  }
+
+  # Step 4b) Create and fill vectors
+  l1_vars <- .sort_variables(data, predictors, cluster_variable)$l1_vars
+  l2_vars <- .sort_variables(data, predictors, cluster_variable)$l2_vars
+
+  # Step 5) pull variable names for L1 predictors with random slopes into a variable called random_slope_vars
+  random_slope_vars <- .get_random_slope_vars(model, has_intercept, "nlme")
+
+  # Step 6) determine value of centeredwithincluster
+  if (isTRUE(is.null(l1_vars))) {
+
+    centeredwithincluster <- TRUE
+
+  } else {
+
+    centeredwithincluster <- .get_cwc(l1_vars, cluster_variable, data)
+
+  }
+
+  # 7a) within_covs (l1 variables)
+  within <- .get_covs(l1_vars, data)
+
+  # 7b) Pull column numbers for between_covs (l2 variables)
+  between <- .get_covs(l2_vars, data)
+
+  # 7c) Pull column numbers for random_covs (l1 variables with random slopes)
+  random <- .get_covs(random_slope_vars, data)
+
+  # 8a) gamma_w, fixed slopes for L1 variables (from l1_vars list)
+  gammaw <- c()
+  i = 1L
+  for (variable in l1_vars) {
+
+    gammaw[i] <- nlme::fixef(model)[variable]
+
+    i = i + 1L
+
+  }
+
+  # 8b) gamma_b, intercept value if hasintercept = TRUE, and fixed slopes for L2 variables (from between list)
+  gammab <- c()
+  if (isTRUE(has_intercept)) {
+
+    gammab[1L] <- nlme::fixef(model)[1L]
+
+    i = 2L
+
+  } else {
+
+    i = 1L
+
+  }
+
+  for (variable in l2_vars) {
+
+    gammab[i] <- nlme::fixef(model)[variable]
+
+    i = i + 1L
+  }
+
+  # Step 9) Tau matrix
+  tau <- nlme::getVarCov(model)
+
+  # Step 10) sigma^2 value, Rij
+  sigma2 <- model$sigma^2
+
+  # Step 11) Input everything into r2mlm_manual
+  .r2mlm_manual(as.data.frame(data), within_covs = within, between_covs = between, random_covs = random,
+                gamma_w = gammaw, gamma_b = gammab, Tau = tau, sigma2 = sigma2, has_intercept = has_intercept, clustermeancentered = centeredwithincluster)
+
+}
+
+### .r2mlm_manual() Function ####
+.r2mlm_manual <- function(data, within_covs, between_covs, random_covs,
+                          gamma_w, gamma_b, Tau, sigma2, has_intercept = TRUE, clustermeancentered = TRUE) {
+
+  if (isTRUE(has_intercept)) {
+
+    if (isTRUE(length(gamma_b) > 1L)) gamma <- c(1L, gamma_w, gamma_b[2:length(gamma_b)])
+    if (isTRUE(length(gamma_b) == 1L)) gamma <- c(1L, gamma_w)
+    if (isTRUE(is.null(within_covs))) gamma_w <- 0L
+
+  }
+
+  if (isTRUE(!has_intercept)) {
+
+    gamma <- c(gamma_w, gamma_b)
+    if (isTRUE(is.null(within_covs))) gamma_w <- 0L
+    if (isTRUE(is.null(between_covs))) gamma_b <- 0L
+
+  }
+
+  if (isTRUE(is.null(gamma))) gamma <- 0L
+
+  # Compute phi
+  phi <- var(cbind(1L, data[, c(within_covs)], data[, c(between_covs)]), na.rm = TRUE)
+  if (isTRUE(!has_intercept)) phi <- var(cbind(data[, c(within_covs)], data[, c(between_covs)]), na.rm = TRUE)
+  if (isTRUE(is.null(within_covs) && is.null(within_covs) && !has_intercept)) phi <- 0L
+  phi_w <- var(data[, within_covs], na.rm = TRUE)
+  if (isTRUE(is.null(within_covs))) phi_w <- 0L
+  phi_b <- var(cbind(1L, data[, between_covs]), na.rm = TRUE)
+  if (isTRUE(is.null(between_covs))) phi_b <- 0L
+
+  # Compute psi and kappa
+  var_randomcovs <- var(cbind(1, data[, c(random_covs)]), na.rm = TRUE)
+  if (isTRUE(length(Tau) > 1L)) psi <- matrix(c(diag(Tau)), ncol = 1L)
+  if (isTRUE(length(Tau) == 1L)) psi <- Tau
+  if (isTRUE(length(Tau) > 1L)) kappa <- matrix(c(Tau[lower.tri(Tau) == TRUE]), ncol = 1)
+  if (isTRUE(length(Tau) == 1L)) kappa <- 0L
+
+  v <- matrix(c(diag(var_randomcovs)), ncol = 1L)
+  r <- matrix(c(var_randomcovs[lower.tri(var_randomcovs) == TRUE]), ncol = 1L)
+
+  if (isTRUE(is.null(random_covs))) {
+
+    v <- 0L
+    r <- 0L
+    m <- matrix(1L, ncol = 1L)
+
+  }
+
+  if (isTRUE(length(random_covs) > 0L)) m <- matrix(c(colMeans(cbind(1, data[, c(random_covs)]), na.rm = TRUE)), ncol = 1L)
+
+  # Total variance
+  totalvar_notdecomp <- t(v)%*%psi + 2L*(t(r)%*%kappa) + t(gamma)%*%phi%*%gamma + t(m)%*%Tau%*%m + sigma2
+  totalwithinvar <- (t(gamma_w)%*%phi_w%*%gamma_w) + (t(v)%*%psi + 2L*(t(r)%*%kappa)) + sigma2
+  totalbetweenvar <- (t(gamma_b)%*%phi_b%*%gamma_b) + Tau[1L]
+  totalvar <- totalwithinvar + totalbetweenvar
+
+  # Total decomp
+  decomp_fixed_notdecomp <- (t(gamma)%*%phi%*%gamma) / totalvar_notdecomp
+  decomp_varslopes_notdecomp <- (t(v)%*%psi + 2L*(t(r)%*%kappa)) / totalvar_notdecomp
+  decomp_varmeans_notdecomp <- (t(m)%*%Tau%*%m) / totalvar_notdecomp
+  decomp_sigma_notdecomp <- sigma2/totalvar_notdecomp
+  decomp_fixed_within <- (t(gamma_w)%*%phi_w%*%gamma_w) / totalvar
+  decomp_fixed_between <- (t(gamma_b)%*%phi_b%*%gamma_b) / totalvar
+  decomp_fixed <- decomp_fixed_within + decomp_fixed_between
+  decomp_varslopes <- (t(v)%*%psi + 2L*(t(r)%*%kappa)) / totalvar
+  decomp_varmeans <- (t(m)%*%Tau%*%m) / totalvar
+  decomp_sigma <- sigma2 / totalvar
+
+  # Within decomp
+  decomp_fixed_within_w <- (t(gamma_w)%*%phi_w%*%gamma_w) / totalwithinvar
+  decomp_varslopes_w <- (t(v)%*%psi + 2L*(t(r)%*%kappa)) / totalwithinvar
+  decomp_sigma_w <- sigma2 / totalwithinvar
+
+  # Between decomp
+  decomp_fixed_between_b <- (t(gamma_b)%*%phi_b%*%gamma_b) / totalbetweenvar
+  decomp_varmeans_b <- Tau[1L] / totalbetweenvar
+
+  # New measures
+  if (isTRUE(clustermeancentered)) {
+
+    R2_f <- decomp_fixed
+    R2_f1 <- decomp_fixed_within
+    R2_f2 <- decomp_fixed_between
+    R2_fv <- decomp_fixed + decomp_varslopes
+    R2_fvm <- decomp_fixed + decomp_varslopes + decomp_varmeans
+    R2_v <- decomp_varslopes
+    R2_m <- decomp_varmeans
+    R2_f_w <- decomp_fixed_within_w
+    R2_f_b <- decomp_fixed_between_b
+    R2_fv_w <- decomp_fixed_within_w + decomp_varslopes_w
+    R2_v_w <- decomp_varslopes_w
+    R2_m_b <- decomp_varmeans_b
+
+  }
+
+  if (isTRUE(!clustermeancentered)) {
+
+    R2_f <- decomp_fixed_notdecomp
+    R2_fv <- decomp_fixed_notdecomp + decomp_varslopes_notdecomp
+    R2_fvm <- decomp_fixed_notdecomp + decomp_varslopes_notdecomp + decomp_varmeans_notdecomp
+    R2_v <- decomp_varslopes_notdecomp
+    R2_m <- decomp_varmeans_notdecomp
+
+  }
+
+  if (isTRUE(clustermeancentered)) {
+
+    decomp_table <- matrix(c(decomp_fixed_within, decomp_fixed_between, decomp_varslopes, decomp_varmeans, decomp_sigma,
+                             decomp_fixed_within_w, "NA", decomp_varslopes_w, "NA", decomp_sigma_w,
+                             "NA", decomp_fixed_between_b, "NA", decomp_varmeans_b, "NA"), ncol = 3L)
+
+    decomp_table <- suppressWarnings(apply(decomp_table, 2, as.numeric))
+    rownames(decomp_table) <- c("fixed, within", "fixed, between", "slope variation", "mean variation", "sigma2")
+    colnames(decomp_table) <- c("total", "within", "between")
+    R2_table <- matrix(c(R2_f1, R2_f2, R2_v, R2_m, R2_f, R2_fv, R2_fvm,
+                         R2_f_w, "NA", R2_v_w, "NA", "NA", R2_fv_w, "NA",
+                         "NA", R2_f_b, "NA", R2_m_b, "NA", "NA", "NA"), ncol = 3L)
+    R2_table <- suppressWarnings(apply(R2_table, 2, as.numeric)) # make values numeric, not character
+    rownames(R2_table) <- c("f1", "f2", "v", "m", "f", "fv", "fvm")
+    colnames(R2_table) <- c("total", "within", "between")
+
+  }
+
+  if (isTRUE(!clustermeancentered)) {
+    decomp_table <- matrix(c(decomp_fixed_notdecomp, decomp_varslopes_notdecomp, decomp_varmeans_notdecomp, decomp_sigma_notdecomp), ncol = 1L)
+    decomp_table <- suppressWarnings(apply(decomp_table, 2L, as.numeric))
+    rownames(decomp_table) <- c("fixed", "slope variation", "mean variation", "sigma2")
+    colnames(decomp_table) <- c("total")
+    R2_table <- matrix(c(R2_f, R2_v, R2_m, R2_fv, R2_fvm), ncol = 1L)
+    R2_table <- suppressWarnings(apply(R2_table, 2L, as.numeric))
+    rownames(R2_table) <- c("f", "v", "m", "fv", "fvm")
+    colnames(R2_table) <- c("total")
+
+  }
+
+  Output <- list(noquote(decomp_table), noquote(R2_table))
+  names(Output) <- c("Decompositions", "R2s")
+  return(Output)
+
+}
+
+### .prepare_data() Function ####
+.prepare_data <- function(model, calling_function, cluster_variable, second_model = NULL) {
+
+  # Step 1a: Pull dataframe associated with model
+  if (isTRUE(calling_function == "lme4")) {
+
+    data <- model@frame
+
+  } else {
+
+    data <- model[["data"]]
+
+  }
+
+  # Step 2a) pull interaction terms into list
+  interaction_vars <- .get_interaction_vars(model)
+
+  if (isTRUE(!is.null(second_model))) {
+
+    interaction_vars_2 <- .get_interaction_vars(second_model)
+    interaction_vars <-  unique(append(interaction_vars, interaction_vars_2))
+
+  }
+
+  # Step 2b) split interaction terms into halves, multiply halves to create new columns in dataframe
+  data <- .add_interaction_vars_to_data(data, interaction_vars)
+
+  return(data)
+
+}
+
+### .add_interaction_vars_to_data() Function ####
+.add_interaction_vars_to_data <- function(data, interaction_vars) {
+
+  for (whole in interaction_vars) {
+
+    half1 <- unlist(strsplit(whole, ":"))[1L]
+    half2 <- unlist(strsplit(whole, ":"))[2L]
+
+    newcol <- data[[half1]] * data[[half2]]
+
+    data <- within(data, assign(whole, newcol))
+
+  }
+
+  return(data)
+
+}
+
+### .get_covs() Function ####
+.get_covs <- function(variable_list, data) {
+
+  cov_list <- c()
+
+  i <- 1L
+  for (variable in variable_list) {
+    tmp <- match(variable, names(data))
+    cov_list[i] <- tmp
+    i <- i + 1L
+  }
+
+  return(cov_list)
+
+}
+
+### .get_random_slope_vars() Function ####
+.get_random_slope_vars <- function(model, has_intercept, calling_function) {
+
+  # Visible global function defnition
+  ranef <- NULL
+
+  if (isTRUE(calling_function == "lme4")) {
+
+    temp_cov_list <- ranef(model)[[1L]]
+
+  } else if (calling_function == "nlme") {
+
+    temp_cov_list <- nlme::ranef(model)
+
+  }
+
+  if (isTRUE(has_intercept == 1L)) {
+
+    running_count <- 2L
+
+  } else {
+
+    running_count <- 1L
+
+  }
+
+  random_slope_vars <- c()
+  x <- 1L
+
+  while (running_count <= length(temp_cov_list)) {
+
+    random_slope_vars[x] <- names(temp_cov_list[running_count])
+
+    x <- x + 1L
+
+    running_count <- running_count + 1L
+
+  }
+
+  return(random_slope_vars)
+
+}
+
+### .get_cwc() Function ####
+.get_cwc <- function(l1_vars, cluster_variable, data) {
+
+  for (variable in l1_vars) {
+
+    t <- tapply(data[, variable], data[, cluster_variable], sum, na.rm = TRUE)
+
+    temp_tracker <- 0L
+
+    # sum all of the sums
+    for (i in t) { temp_tracker <- temp_tracker + i }
+
+    if (abs(temp_tracker) < 0.0000001) {
+
+      centeredwithincluster <- TRUE
+
+    } else {
+
+      centeredwithincluster <- FALSE
+
+      break
+
+    }
+
+  }
+
+  return(centeredwithincluster)
+
+}
+
+### .get_interaction_vars() Function ####
+.get_interaction_vars <- function(model) {
+
+  interaction_vars <- c()
+
+  x <- 1L
+  for (term in attr(terms(model), "term.labels")) {
+
+    if (isTRUE(grepl(":", term))) {
+
+      interaction_vars[x] <- term
+
+      x <- x + 1L
+
+    }
+
+  }
+
+  return(interaction_vars)
+
+}
+
+### .sort_variables() Function ####
+.sort_variables <- function(data, predictors, cluster_variable) {
+
+  l1_vars <- c()
+  l2_vars <- c()
+
+  l1_counter <- 1L
+  l2_counter <- 1L
+
+  for (variable in predictors) {
+
+    t <- tapply(data[, variable], data[, cluster_variable], var, na.rm = TRUE)
+
+    counter <- 1L
+
+    while (counter <= length(t)) {
+
+      if (is.na(t[[counter]])) { t[[counter]] <- 0L }
+
+      counter <- counter + 1L
+
+    }
+
+    variance_tracker <- 0L
+
+    for (i in t) { variance_tracker <- variance_tracker + i }
+
+    if (isTRUE(variance_tracker == 0L)) {
+
+      l2_vars[l2_counter] <- variable
+      l2_counter <- l2_counter + 1L
+
+    } else {
+
+      l1_vars[l1_counter] <- variable
+      l1_counter <- l1_counter + 1L
+
+    }
+
+  }
+
+  return(list("l1_vars" = l1_vars, "l2_vars" = l2_vars))
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the mplus.update() function ---------------------------
 #
 # - .variable.section
 
@@ -7141,6 +7909,44 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 
   dimnames(X) <- list(nm, NULL)
   if (n == 1L) { drop(X) } else { t(X) }
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the multilevel.r2() function --------------------------
+#
+# - .var.random
+
+# Variance of random effects
+.var.random <- function(model) {
+
+  .sigma_sum <- function(Sigma) {
+
+    X <- lme4::getME(model, "X")
+    rn <- rownames(Sigma)
+
+    if (isTRUE(!any(colnames(X) == "(Intercept)"))) { X <- cbind("(Intercept)" = 1L, X) }
+
+    if (isTRUE(!is.null(rn))) {
+
+      valid <- rownames(Sigma) %in% colnames(X)
+
+      if (isTRUE(!all(valid))) {
+
+        rn <- rn[valid]
+        Sigma <- Sigma[valid, valid, drop = FALSE]
+
+      }
+
+    }
+
+    X[, rn, drop = FALSE] |> (\(y) sum(diag(crossprod(y %*% Sigma, y))) / nobs(model))()
+
+  }
+
+  sum(sapply(lme4::VarCorr(model)[vapply(lme4::ranef(model), nrow, numeric(1L)) |> (\(y) names(y[y != nobs(model)]))()], .sigma_sum))
 
 }
 

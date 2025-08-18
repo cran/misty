@@ -10,8 +10,8 @@
 #'
 #' @param data     a numeric vector or data frame.
 #' @param ...      an expression indicating the variable names in \code{data}, e.g.,
-#'                 \code{skewness(dat, x1)}. Note that the operators \code{.},
-#'                 \code{+}, \code{-}, \code{~}, \code{:}, \code{::}, and \code{!}
+#'                 \code{skewness(dat, x1)}. Note that the operators \code{+},
+#'                 \code{-}, \code{~}, \code{:}, \code{::}, and \code{!}
 #'                 can also be used to select variables, see 'Details' in the
 #'                 \code{\link{df.subset}} function.
 #' @param sample   logical: if \code{TRUE} (default), the univariate sample skewness
@@ -141,15 +141,15 @@ skewness <- function(data, ..., sample = TRUE, digits = 2, p.digits = 3,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(..., data = data)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[, .var.names(data = data, ...)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

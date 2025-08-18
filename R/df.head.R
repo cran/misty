@@ -36,8 +36,10 @@
 #' @name df.head
 #'
 #' @seealso
-#' \code{\link{df.check}}, \code{\link{head}}, \code{\link{tail}}, \code{\link{freq}},
-#' \code{\link{descript}}
+#' \code{\link{df.check}}, \code{\link{df.duplicated}}, \code{\link{df.unique}},
+#' \code{\link{df.long}}, \code{\link{df.wide}}, \code{\link{df.merge}},
+#' \code{\link{df.move}}, \code{\link{df.rbind}}, \code{\link{df.rename}},
+#' \code{\link{df.sort}}, \code{\link{df.subset}}
 #'
 #' @return
 #' Returns a list with following entries:

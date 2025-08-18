@@ -5,35 +5,36 @@
 #  Currently the function supports result objects from the following functions:
 #' \code{\link{blimp.bayes}}, \code{\link{ci.cor}}, \code{\link{ci.mean}},
 #' \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
-#' \code{\link{ci.sd}}, \code{\link{cor.matrix}}, \code{\link{crosstab}},
-#' \code{\link{descript}}, \code{\link{dominance.manual}}, \code{\link{dominance}},
-#' \code{\link{effsize}}, \code{\link{freq}}, \code{\link{item.alpha}},
-#' \code{\link{item.cfa}}, \code{\link{item.invar}}, \code{\link{item.omega}},
-#' \code{\link{mplus.bayes}}, \code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
+#' \code{\link{ci.sd}}, code{\link{coeff.robust}}, \code{\link{coeff.std}},
+#' \code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{descript}},
+#' \code{\link{dominance.manual}}, \code{\link{dominance}}, \code{\link{effsize}},
+#' \code{\link{freq}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
+#' \code{\link{item.invar}}, \code{\link{item.omega}}, \code{\link{mplus.bayes}},
+#' \code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
 #' \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
 #' \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}},
 #' \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-#' \code{\link{na.pattern}}, \code{\link{result.lca}}, \code{\link{robust.coef}},
-#' and \code{\link{std.coef}}.
+#' \code{\link{na.pattern}}, \code{\link{result.lca}}, \
+#' \code{\link{summa}} and \code{\link{uniq}}
 #'
-#' @param x          misty object (\code{misty.object}) resulting from a misty
-#'                   function supported by the \code{write.result} function (see
-#'                   'Details').
-#' @param file       a character string naming a file with or without file extension
-#'                   '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.
-#' @param tri        a character string or character vector indicating which
-#'                   triangular of the matrix to show on the console, i.e.,
-#'                   \code{both} for upper and lower triangular, \code{lower}
-#'                   for the lower triangular, and \code{upper} for the upper
-#'                   triangular.
-#' @param digits     an integer value indicating the number of decimal places
-#'                   digits to be used for displaying results.
-#' @param p.digits   an integer indicating the number of decimal places to be
-#'                   used for displaying \emph{p}-values.
-#' @param icc.digits an integer indicating the number of decimal places to be
-#'                   used for displaying intraclass correlation coefficients
-#'                   (\code{multilevel.descript()} and \code{multilevel.icc()}
-#'                   function).
+#' @param x           misty object (\code{misty.object}) resulting from a misty
+#'                    function supported by the \code{write.result} function (see
+#'                    'Details').
+#' @param file        a character string naming a file with or without file extension
+#'                    '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.
+#' @param tri         a character string or character vector indicating which
+#'                    triangular of the matrix to show on the console, i.e.,
+#'                    \code{both} for upper and lower triangular, \code{lower}
+#'                    for the lower triangular, and \code{upper} for the upper
+#'                    triangular.
+#' @param digits      an integer value indicating the number of decimal places
+#'                    digits to be used for displaying results.
+#' @param p.digits    an integer indicating the number of decimal places to be
+#'                    used for displaying \emph{p}-values.
+#' @param icc.digits  an integer indicating the number of decimal places to be
+#'                    used for displaying intraclass correlation coefficients
+#'                    (\code{multilevel.descript()} and \code{multilevel.icc()}
+#'                    function).
 #' @param r.digits    an integer value indicating the number of decimal places
 #'                    to be used for displaying R-hat values.
 #' @param ess.digits  an integer value indicating the number of decimal places
@@ -86,7 +87,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   if (isTRUE(!inherits(x, "misty.object"))) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is supported by the function
-  if (isTRUE(!x$type %in% c("blimp.bayes", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "result.lca",  "robust.coef", "std.coef"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
+  if (isTRUE(!x$type %in% c("blimp.bayes", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "coeff.robust", "coeff.std", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "result.lca", "summa", "uniq"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -1405,7 +1406,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
       print <- match(x$args$print, names(write.object))
 
       # Variable names
-      names(write.object) <- c("Variable", "n", "nNA", "%NA", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")
+      names(write.object) <- c("Variable", "n", "nNA", "%NA", "nUQ", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")
 
       # One variable
       if (isTRUE(ncol(x$data$x) == 1L)) {
@@ -1434,7 +1435,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
       print <- match(x$args$print, names(write.object))
 
       # Variable names
-      names(write.object) <- c("Group", "Variable", "n", "nNA", "%NA", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")
+      names(write.object) <- c("Group", "Variable", "n", "nNA", "%NA", "nUQ", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")
 
       # One variable
       if (isTRUE(ncol(x$data$x) == 1L)) {
@@ -2008,7 +2009,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     param[, -c(1L, 2L, 6L)] <- sapply(param[, -c(1L, 2L, 6L)], round, digits = digits)
     param[, 6L] <- sapply(param[, 6L], round, digits = p.digits)
 
-    colnames(param) <- c("Parameter", "Variable", "Estimate", "SE", "z", "pvalue", "StdYX")
+    colnames(param) <- c("Parameter", "Variable", "Estimate", "SE", "z", "p", "StdYX")
 
     #...................
     ### Modification indices ####
@@ -3164,7 +3165,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
       write.object$L1$perc.missing.min <- round(write.object$L1$perc.missing.min, digits = digits)
       write.object$L1$perc.missing.max <- round(write.object$L1$perc.missing.max, digits = digits)
 
-      write.object$L1$table.miss.l1$pObs <- round(write.object$L1$table.miss.l1$pObs, digits = digits)
+      write.object$L1$table.miss.l1$pOb <- round(write.object$L1$table.miss.l1$pOb, digits = digits)
       write.object$L1$table.miss.l1$pNA <- round(write.object$L1$table.miss.l1$pNA, digits = digits)
 
       write.object.L1 <- data.frame(c("No. of cases", "No. of complete cases", "No. of incomplete cases", NA,
@@ -3210,7 +3211,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
       write.object$L2$perc.missing.min <- round(write.object$L2$perc.missing.min, digits = digits)
       write.object$L2$perc.missing.max <- round(write.object$L2$perc.missing.max, digits = digits)
 
-      write.object$L2$table.miss.l2$pObs <- round(write.object$L2$table.miss.l2$pObs, digits = digits)
+      write.object$L2$table.miss.l2$pOb <- round(write.object$L2$table.miss.l2$pOb, digits = digits)
       write.object$L2$table.miss.l2$pNA <- round(write.object$L2$table.miss.l2$pNA, digits = digits)
 
       write.object.L2 <- data.frame(c("No. of cases", "No. of complete cases", "No. of incomplete cases", NA,
@@ -3256,7 +3257,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
       write.object$L3$perc.missing.min <- round(write.object$L3$perc.missing.min, digits = digits)
       write.object$L3$perc.missing.max <- round(write.object$L3$perc.missing.max, digits = digits)
 
-      write.object$L3$table.miss.l3$pObs <- round(write.object$L3$table.miss.l3$pObs, digits = digits)
+      write.object$L3$table.miss.l3$pOb <- round(write.object$L3$table.miss.l3$pOb, digits = digits)
       write.object$L3$table.miss.l3$pNA <- round(write.object$L3$table.miss.l3$pNA, digits = digits)
 
       write.object.L3 <- data.frame(c("No. of cases", "No. of complete cases", "No. of incomplete cases", NA,
@@ -3424,8 +3425,8 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Heteroscedasticity-Consistent Standard Errors, robust.coef() ---------------
-  }, robust.coef = {
+  # Heteroscedasticity-Consistent Standard Errors, coef.robust() ---------------
+  }, coef.robust = {
 
     #...................
     ### Coefficient result table ####
@@ -3471,8 +3472,8 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Standardized Coefficients, std.coef() --------------------------------------
-  }, std.coef = {
+  # Standardized Coefficients --------------------------------------------------
+  }, coeff.std = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Round ####
@@ -3506,6 +3507,238 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ### Write object ####
 
     write.object <- list(Coef = write.coef)
+
+  #_____________________________________________________________________________
+  #
+  # Print Summary Output -------------------------------------------------------
+  }, summa = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Linear Regression, lm() ####
+
+    if (isTRUE(all(class(x$model) == "lm"))) {
+
+      #...................
+      ### Call ####
+
+      if (isTRUE(!is.null(write.object$call))) { write.object$call <- data.frame(c("Formula", "Data"), c(write.object$call$formula, write.object$call$data), fix.empty.names = FALSE) }
+
+      #...................
+      ### Descriptive Statistics ####
+
+      if (isTRUE(!is.null(write.object$descript))) {
+
+        # Round variables
+        write.object$descript[, c("m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")] <- round(write.object$descript[, c("m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")], digits = digits)
+
+        # Row names
+        colnames(write.object$descript) <- c("Variable", "n", "nUQ", "M", "SD", "Min", "%Min", "Max", "%Max", "Skew", "Kurt")
+
+      }
+
+      #...................
+      ### Correlation Matrix ####
+
+      if (isTRUE(!is.null(write.object$cormat))) {
+
+        # Round variables
+        write.object$cormat <- sapply(data.frame(write.object$cormat), round, digits = digits)
+
+        # Diagonal
+        diag(write.object$cormat) <- NA
+
+        # Lower triangular
+        write.object$cormat[upper.tri(write.object$cormat)] <- NA
+
+        # Row names
+        write.object$cormat <- data.frame(colnames(write.object$cormat), write.object$cormat, fix.empty.names = FALSE)
+
+      }
+
+      #...................
+      ### Model Summary ####
+
+      if (isTRUE(!is.null(write.object$modsum))) {
+
+        # Round variables
+        write.object$modsum[, c("R", "R2", "R2.adj", "p")] <- sapply(c("R", "R2", "R2.adj", "p"), function(y) round(write.object$modsum[, y], digits = p.digits))
+        write.object$modsum[, "F"] <- round(write.object$modsum[, "F"], digits = digits)
+
+      }
+
+      #...................
+      ### Coefficients ####
+
+      if (isTRUE(!is.null(write.object$coef))) {
+
+        # Round variables
+        write.object$coef[, setdiff(colnames(write.object$coef), c("df", "p"))] <- sapply(setdiff(colnames(write.object$coef), c("df", "p")), function(y) round(write.object$coef[, y], digits = digits))
+        write.object$coef[, "p"] <- round(write.object$coef[, "p"], digits = p.digits)
+
+        # Row names
+        write.object$coef <- data.frame(row.names(write.object$coef), write.object$coef, fix.empty.names = FALSE, row.names = NULL)
+
+      }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Linear Mixed-Effects Model, lmer() ####
+
+    } else if (all(class(x$model) %in% c("lmerMod", "lmerModLmerTest"))) {
+
+      # Two-level model
+      model.twolevel <- ifelse(lme4::getME(x$model, name = "n_rtrms") == 1L, TRUE, FALSE)
+
+      #...................
+      ### Call ####
+
+      if (isTRUE(!is.null(write.object$call))) { write.object$call <- data.frame(c("Formula", "Data"), c(write.object$call$formula, write.object$call$data), fix.empty.names = FALSE) }
+
+      #...................
+      ### Descriptive Statistics ####
+
+      if (isTRUE(!is.null(write.object$descript))) {
+
+        # Round variables
+        write.object$descript[, c("m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")] <- round(write.object$descript[, c("m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")], digits = digits)
+
+        # Two-Level Model
+        if (isTRUE(model.twolevel)) {
+
+          # Round ICC(1)
+          write.object$descript[, "icc"] <- round(write.object$descript[, "icc"], digits = p.digits)
+
+          # Row names
+          colnames(write.object$descript) <- c("Variable", "n", "nUQ", "M", "SD", "Min", "%Min", "Max", "%Max", "Skew", "Kurt", "ICC(1)")
+
+        # Three-Level Model
+        } else {
+
+          # Round ICC(1)
+          write.object$descript[, c("icc.l2", "icc.l3")] <- sapply(c("icc.l2", "icc.l3"), function(y) round(write.object$descript[, y], digits = p.digits))
+
+          # Row names
+          colnames(write.object$descript) <- c("Variable", "n", "nUQ", "M", "SD", "Min", "%Min", "Max", "%Max", "Skew", "Kurt", "ICC(1)2", "ICC(1)3")
+
+        }
+
+      }
+
+      #...................
+      ### Correlation Matrix ####
+
+      if (isTRUE(!is.null(write.object$cormat))) {
+
+        # Round and format
+        write.object$cormat <- round(write.object$cormat, digits = digits)
+
+        # Diagonal
+        diag(write.object$cormat) <- NA
+
+        # Row names
+        write.object$cormat <- data.frame(colnames(write.object$cormat), write.object$cormat, fix.empty.names = FALSE)
+
+      }
+
+      #...................
+      ### Model Summary ####
+
+      if (isTRUE(!is.null(write.object$modsum))) {
+
+        # Round variables
+        write.object$modsum[, c("margR2", "condR2")] <- sapply(c("margR2", "condR2"), function(y) round(write.object$modsum[, y], digits = p.digits))
+        write.object$modsum[, c("loglik", "deviance")] <- sapply(c("loglik", "deviance"), function(y) round(write.object$modsum[, y], digits = digits))
+
+        # Two-Level Model
+        if (isTRUE(model.twolevel)) {
+
+          # Row names
+          if (isTRUE("nNA" %in% colnames(write.object$modsum))) {
+
+            colnames(write.object$modsum) <-  c("n", "nNA", "nCL", "nPar", "Method", "logLik", "Deviance", "margR2", "condR2")
+
+          } else {
+
+            colnames(write.object$modsum) <-  c("n", "nCL", "nPar", "Method", "logLik", "Deviance", "margR2", "condR2")
+
+          }
+
+        # Three-Level Model
+        } else {
+
+          if (isTRUE("nNA" %in% colnames(write.object$modsum))) {
+
+            colnames(write.object$modsum) <-  c("n", "nNA", "nCL2", "nCL3", "nPar", "Method", "logLik", "Deviance", "margR2", "condR2")
+
+          } else {
+
+            colnames(write.object$modsum) <-  c("n", "nCL2", "nCL3", "Method", "logLik", "Deviance", "margR2", "condR2")
+
+          }
+
+        }
+
+      }
+
+      #...................
+      ### Coefficients ####
+
+      if (isTRUE(!is.null(write.object$coef))) {
+
+        #### Random Effects ####
+
+        # Round variables
+        write.object$randeff[, c("var", "sd")] <- sapply(c("var", "sd"), function(y) round(write.object$randeff[, y], digits = p.digits))
+        write.object$randeff[, (grep("cor", colnames(write.object$randeff)):ncol(write.object$randeff))] <- round(write.object$randeff[, (grep("cor", colnames(write.object$randeff)):ncol(write.object$randeff))], digits = digits)
+
+        # Replace NA with ""
+        write.object$randeff[, c("groups", "name")] <- apply(write.object$randeff[, c("groups", "name")], 2L, function(y) gsub("NA", "  ", y))
+
+        # Columns
+        colnames(write.object$randeff) <- c("Groups", "Name", "Var", "SD", "Intercept", setdiff(colnames(write.object$randeff), c("groups", "name", "var", "sd", "cor")))
+
+        #...................
+        ### Coefficients ####
+
+        if (isTRUE(all(class(x$model) == "lmerMod"))) {
+
+          # Round variables
+          write.object$coef[, setdiff(colnames(write.object$coef), "Level")] <- sapply(setdiff(colnames(write.object$coef), "Level"), function(y) round(write.object$coef[, y], digits = digits))
+
+          # Columns
+          write.object$coef <- data.frame(row.names(write.object$coef), write.object$coef, fix.empty.names = FALSE, row.names = NULL)
+
+        } else if (isTRUE(all(class(x$model) == "lmerModLmerTest"))) {
+
+          # Round variables
+          write.object$coef[, setdiff(colnames(write.object$coef), c("p", "Level"))] <- sapply(setdiff(colnames(write.object$coef), c("p", "Level")), function(y) round(write.object$coef[, y], digits = digits))
+          write.object$coef[, "p"] <- round(write.object$coef[, "p"], digits = p.digits)
+
+        }
+
+        # Row names
+        write.object$coef <- data.frame(row.names(write.object$coef), write.object$coef, fix.empty.names = FALSE, row.names = NULL)
+
+      }
+
+      #...................
+      ### Model Convergence ####
+
+      if (isTRUE(!is.null(write.object$converg))) { write.object$converg <- data.frame(switch(as.character(write.object$converg), "1" = "Model converged", "0" = "Model singular", "-1" = "Model not converged"), fix.empty.names = FALSE) }
+
+    }
+
+    #...................
+    ### Write object ####
+
+    write.object <- list(Call = write.object$call, Descript = write.object$descript, Cormat = write.object$cormat, Modsum = write.object$modsum, Randeff = write.object$randeff, Coef = write.object$coef, Conv = write.object$converg) |> (\(y) y[!sapply(y, is.null)])()
+
+  #_____________________________________________________________________________
+  #
+  # Extract Unique Elements and Count Number of Unique Elements ----------------
+  }, uniq = {
+
+    # Convert into data frame
+    write.object <- list(Uniq = as.data.frame(lapply(write.object, function(z) c(z, rep(NA, times = max(sapply(write.object, length)) - length(z))))))
 
   })
 

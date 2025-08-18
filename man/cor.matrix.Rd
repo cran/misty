@@ -21,7 +21,7 @@ analysis.}
 
 \item{...}{an expression indicating the variable names in \code{data},
 e.g., \code{cor.matrix(dat, x1, x2, x3)}. Note that the
-operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+operators \code{+}, \code{-}, \code{~}, \code{:},
 \code{::}, and \code{!} can also be used to select variables,
 see 'Details' in the \code{\link{df.subset}} function.}
 
@@ -185,7 +185,9 @@ cor.matrix(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.txt")
 
 # Example 10b: Write Results into a Excel file
-cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.xlsx")}}
+cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.xlsx")
+}
+}
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
 - Using R and SPSS}. John Wiley & Sons.

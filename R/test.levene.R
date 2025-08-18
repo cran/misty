@@ -4,13 +4,6 @@
 #' or more independent groups including a plot showing violin plots and boxplots
 #' representing the distribution of the outcome variable for each group.
 #'
-#' Levene's test is equivalent to a one-way analysis of variance (ANOVA) with the
-#' absolute deviations of observations from the mean of each group as dependent
-#' variable (\code{center = "mean"}). Brown and Forsythe (1974) modified the
-#' Levene's test by using the absolute deviations of observations from the median
-#' (\code{center = "median"}). By default, the Levene's test uses the absolute
-#' deviations of observations from the median.
-#'
 #' @param formula       a formula of the form \code{y ~ group} where \code{y} is
 #'                      a numeric variable giving the data values and \code{group}
 #'                      a numeric variable, character variable or factor with two
@@ -107,6 +100,14 @@
 #'                      is checked.
 #' @param output        logical: if \code{TRUE} (default), output is shown.
 #'
+#' @details
+#' Levene's test is equivalent to a one-way analysis of variance (ANOVA) with the
+#' absolute deviations of observations from the mean of each group as dependent
+#' variable (\code{center = "mean"}). Brown and Forsythe (1974) modified the
+#' Levene's test by using the absolute deviations of observations from the median
+#' (\code{center = "median"}). By default, the Levene's test uses the absolute
+#' deviations of observations from the median.
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
@@ -144,14 +145,12 @@
 #' # Example 3: Levene's test based on the median, plot results
 #' test.levene(mpg ~ gear, data = mtcars, plot = TRUE)
 #'
-#' \dontrun{
 #' # Example 4: Write results into a text file
 #' test.levene(mpg ~ gear, data = mtcars, write = "Levene.txt")
 
 #' # Example 5: Levene's test based on the median, save plot
 #' test.levene(mpg ~ gear, data = mtcars, plot = TRUE,
 #'             filename = "Levene-test.png", dpi = 600, width = 6, height = 5)
-#' }
 test.levene <- function(formula, data, method = c("median", "mean"),
                         conf.level = 0.95, hypo = TRUE, descript = TRUE,
                         digits = 2, p.digits = 3, as.na = NULL, plot = FALSE,

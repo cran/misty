@@ -5,9 +5,9 @@
 \title{Descriptive Statistics}
 \usage{
 descript(data, ...,
-         print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd",
-                   "min", "p.min", "p25", "med", "p75", "max", "p.max", "range",
-                   "iqr", "skew", "kurt"),
+         print = c("all", "default", "n", "nNA", "pNA", "nUQ", "m", "se.m",
+                   "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max",
+                   "range", "iqr", "skew", "kurt"),
          group = NULL, split = NULL, sample = FALSE, sort.var = FALSE,
          na.omit = FALSE, digits = 2, as.na = NULL, write = NULL, append = TRUE,
          check = TRUE, output = TRUE)
@@ -19,23 +19,24 @@ i.e., factors and character variables are excluded from
 
 \item{...}{an expression indicating the variable names in \code{data},
 e.g., \code{descript(dat, x1, x2, x3)}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+\code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
 
 \item{print}{a character vector indicating which statistical measures to be
 printed on the console, i.e., \code{n} (number of observations),
 \code{nNA} (number of missing values), \code{pNA} (percentage of
-missing values), \code{m} (arithmetic mean), \code{se.m} (standard
-error of the arithmetic mean), \code{var} (variance), \code{sd}
-(standard deviation), \code{med} (median),\code{min} (minimum),
+missing values), \code{nUQ} (number of unique elements after
+omitting missing values), \code{m} (arithmetic mean), \code{se.m}
+(standard error of the arithmetic mean), \code{var} (variance),
+\code{sd} (standard deviation), \code{med} (median),\code{min} (minimum),
 \code{p.min} (percentage of observations at the minimum),
 \code{p25} (25th percentile, first quartile), \code{p75} (75th
 percentile, third quartile), \code{max} (maximum), \code{p.max}
 (percentage of observations at the maximum)\code{range} (range),
 \code{iqr} (interquartile range), \code{skew} (skewness),
 and \code{kurt} (excess kurtosis). The default setting is
-\code{print = ("n", "nNA", "pNA", "m", "sd", "min", "pmin", "max", "p.max", "skew", "kurt")}.}
+\code{print = c("n", "nNA", "pNA", "nUQ", "m", "sd", "min", "pmin", "max", "p.max", "skew", "kurt")}.}
 
 \item{group}{a numeric vector, character vector or factor as grouping variable.
 Alternatively, a character string indicating the variable name
@@ -93,10 +94,11 @@ entries:
 This function computes summary statistics for one or more than one variable, optionally
 by a grouping and/or split variable. By default, the function prints
 the number of observations (\code{n}), number of missing values (\code{nNA}),
-percentage of missing values (\code{\%NA}), arithmetic mean (\code{M}), standard
-deviation (\code{SD}), minimum (\code{Min}), percentage of observations at the
-minimum (\code{\%Min}), maximum (\code{Max}), percentage of observations at the
-maximum (\code{\%Max}), skewness (\code{Skew}), and kurtosis (\code{Kurt}).
+percentage of missing values (\code{\%NA}), number of unique elements after omitting
+missing values (\code{nUQ}), arithmetic mean (\code{M}), standard deviation (\code{SD}),
+minimum (\code{Min}), percentage of observations at the minimum (\code{\%Min}),
+maximum (\code{Max}), percentage of observations at the maximum (\code{\%Max}),
+skewness (\code{Skew}), and kurtosis (\code{Kurt}).
 }
 \details{
 \describe{
@@ -105,7 +107,7 @@ of observations at both the minimum and maximum to evaluate floor and ceiling
 effects in continuous variables. Historically, floor or ceiling effects are
 considered to be present if more than 15\% of observations are at the lowest
 or highest possible score (McHorney & Tarlov, 1995; Terwee et al., 2007).
-Muthen (2023, see video at 7:58) noted that as a rule of thumb linear models should be
+Muthen (2023, see video at 7:58) noted the rule of thumb that linear models should be
 avoided when the floor or ceiling effect of the outcome variable exceeds 25\%.}
 }
 }
@@ -146,15 +148,16 @@ descript(mtcars, mpg, cyl, hp, group = "vs", split = "am")
 # Alternative specification without using the '...' argument
 descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs, split = mtcars$am)
 
+\dontrun{
 #----------------------------------------------------------------------------
 # Write Output
 
-\dontrun{
 # Example 3a: Text file
 descript(mtcars, write = "Descript_Text.txt")
 
 # Example 3b: Excel file
-descript(mtcars, write = "Descript_Excel.xlsx")}
+descript(mtcars, write = "Descript_Excel.xlsx")
+}
 }
 \references{
 McHorney, C. A., & Tarlov, A. R. (1995). Individual-patient monitoring in clinical

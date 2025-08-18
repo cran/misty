@@ -25,8 +25,10 @@
 #' Hadley Wickham, Evan Miller and Danny Smith
 #'
 #' @seealso
-#' \code{\link{read.dta}}, \code{\link{write.sav}}, \code{\link{write.mplus}},
-#' \code{\link{write.xlsx}}
+#' \code{\link{read.data}}, \code{\link{write.data}}, \code{\link{read.sav}},
+#' \code{\link{write.sav}}, \code{\link{read.xlsx}}, \code{\link{write.xlsx}},
+#' \code{\link{read.dta}}, \code{\link{read.mplus}},
+#' \code{\link{write.mplus}}
 #'
 #' @references
 #' Wickham H, Miller E, Smith D (2023). \emph{haven: Import and Export 'SPSS',

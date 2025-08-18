@@ -18,7 +18,7 @@ computing coefficient omega}
 
 \item{...}{an expression indicating the variable names in \code{data}
 e.g., \code{item.omega(dat, x1, x2, x3)}. Note that the
-operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+operators \code{+}, \code{-}, \code{~}, \code{:},
 \code{::}, and \code{!} can also be used to select variables,
 see 'Details' in the \code{\link{df.subset}} function.}
 
@@ -43,18 +43,15 @@ is computed.}
 
 \item{estimator}{a character string indicating the estimator to be used
 (see 'Details' in the \code{\link{item.cfa}} function).
-By default, \code{"ULS"} is used for computing (hierarchical)
+By default, \code{"ML"} is used for computing (hierarchical)
 coefficient omega and \code{"DWLS"} is used for computing
 ordinal coefficient omega.}
 
 \item{missing}{a character string indicating how to deal with missing data.
 (see 'Details' in the \code{\link{item.cfa}} function). By
-default, pairwise deletion (\code{missing = "pairwise"}) is
-used for computing (hierarchical) coefficient omega and ordinal
-coefficient omega. Full information maximum likelihood method
-is available for estimating (hierarchical) coefficient omega
-and is requested by specifying \code{missing = "fiml"}
-along with \code{estimator = "ML"}.}
+default, full information maximum likelihood method (\code{missing = "fiml"})
+is used for computing (hierarchical) coefficient omega and
+pairwise deletion (\code{missing = "pairwise"}) is used to compute coefficient omega. }
 
 \item{print}{a character vector indicating which results to show, i.e.
 \code{"all"} for all results \code{"omega"} (default) for
@@ -129,25 +126,23 @@ Computation of the hierarchical and categorical omega is based on the
 dat <- data.frame(item1 = c(3, NA, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 2, 2, 1, 3, 1),
                   item3 = c(4, 2, 4, 2, 1, 3, 4, 1), item4 = c(4, 1, 2, 2, 1, 3, 4, 3))
 
-# Example 1a: Coefficient omega and item statistics, pairwise deletion
+# Example 1a: Coefficient omega, full information maximum likelihood method
 item.omega(dat)
 
-# Example 1b: Coefficient omega and item statistics, listwise deletion
+# Example 1b: Coefficient omega, listwise deletion
 item.omega(dat, missing = "listwise")
 
 # Example 2: Coefficient omega and item statistics after excluding item3
-item.omega(dat, exclude = "item3")
+item.omega(dat, exclude = "item3", print = "all")
 
 # Example 3a: Coefficient omega with a residual covariance
-# and item statistics
 item.omega(dat, rescov = c("item1", "item2"))
 
 # Example 3b: Coefficient omega with residual covariances
-# and item statistics
 item.omega(dat, rescov = list(c("item1", "item2"), c("item1", "item3")))
 
 # Example 4: Ordinal coefficient omega and item statistics
-item.omega(dat, type = "categ")
+item.omega(dat, type = "categ", print = "all")
 
 # Example 6: Summary of the CFA model used to compute coefficient omega
 lavaan::summary(item.omega(dat, output = FALSE)$model.fit,

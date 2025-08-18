@@ -7,7 +7,7 @@
 #'
 #' @param model    a fitted model of class \code{"lm"}, \code{"lmerMod"},
 #'                 \code{"lmerModLmerTest"} or \code{"lme"}.
-#' @param print    a character vector indicating which results to show, i.e.
+#' @param print    a character vector indicating which results to print, i.e.
 #'                 \code{"all"}, for all results, \code{"stdx"} for standardizing
 #'                 only the predictor, \code{"stdy"} for for standardizing only
 #'                 the criterion, and \code{"stdyx"} for for standardizing both
@@ -191,45 +191,44 @@
 #'
 #' # Example 1a: Continuous predictors
 #' mod.lm1 <- lm(mpg ~ cyl + disp, data = mtcars)
-#' std.coef(mod.lm1)
+#' coeff.std(mod.lm1)
 #'
 #' # Example 1b: Print all standardized coefficients
-#' std.coef(mod.lm1, print = "all")
+#' coeff.std(mod.lm1, print = "all")
 #'
 #' # Example 1c: Binary predictor
 #' mod.lm2 <- lm(mpg ~ vs, data = mtcars)
-#' std.coef(mod.lm2)
+#' coeff.std(mod.lm2)
 #'
 #' # Example 1d: Continuous and binary predictors
 #' mod.lm3 <- lm(mpg ~ disp + vs, data = mtcars)
-#' std.coef(mod.lm3)
+#' coeff.std(mod.lm3)
 #'
 #' # Example 1e: Continuous predictors with interaction term
 #' mod.lm4 <- lm(mpg ~ cyl*disp, data = mtcars)
-#' std.coef(mod.lm4)
+#' coeff.std(mod.lm4)
 #'
 #' # Example 1f: Continuous and binary predictor with interaction term
 #' mod.lm5 <- lm(mpg ~ cyl*vs, data = mtcars)
-#' std.coef(mod.lm5)
+#' coeff.std(mod.lm5)
 #'
 #' # Example 1g: Continuous predictor with a quadratic term
 #' mod.lm6 <- lm(mpg ~ cyl + I(cyl^2), data = mtcars)
-#' std.coef(mod.lm6)
+#' coeff.std(mod.lm6)
 #'
-#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Multilevel and Linear Mixed-Effects Model
 #'
-#' # Load misty, lme4, nlme, and ggplot2 package
-#' misty::libraries(misty, me4, nlme)
+#' # Load lme4 and nlme package
+#' misty::libraries(lme4, nlme)
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' # Cluster mean centering, center() from the misty package
+#' # Cluster-mean centering, center() from the misty package
 #' Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
 #'
-#' # Grand mean centering, center() from the misty package
+#' # Grand-mean centering, center() from the misty package
 #' Demo.twolevel <- center(Demo.twolevel, w1, type = "CGM", cluster = "cluster")
 #'
 #' # Estimate models using the lme4 package
@@ -241,25 +240,24 @@
 #' mod2b <- lme(y1 ~ x2.c + w1.c + x2.c:w1.c, random = ~ 1 + x2.c | cluster, data = Demo.twolevel, method = "ML")
 #'
 #' # Example 2: Continuous predictors
-#' std.coef(mod1a)
-#' std.coef(mod1b)
+#' coeff.std(mod1a)
+#' coeff.std(mod1b)
 #'
 #' # Example 2: Continuous predictors with cross-level interaction
-#' std.coef(mod2a)
-#' std.coef(mod2b)
+#' coeff.std(mod2a)
+#' coeff.std(mod2b)
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 3: Write Results into a text or Excel file
 #'
 #' # Example 3a: Text file
-#' std.coef(mod.lm1, write = "Std_Coef.txt", output = FALSE, check = FALSE)
+#' coeff.std(mod.lm1, write = "Std_Coef.txt", output = FALSE, check = FALSE)
 #'
 #' # Example 3b: Excel file
-#' std.coef(mod.lm1, write = "Std_Coef.xlsx", output = FALSE, check = FALSE)
-#'}
-std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
-                     digits = 3, p.digits = 3, write = NULL, append = TRUE,
-                     check = TRUE, output = TRUE) {
+#' coeff.std(mod.lm1, write = "Std_Coef.xlsx", output = FALSE, check = FALSE)
+coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
+                      digits = 2, p.digits = 3, write = NULL, append = TRUE,
+                      check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -272,7 +270,7 @@ std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
   if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
 
   # Check if input 'model' is not 'lm', "lmerMod", "lmerModLmerTest" or "lme"
-  if (isTRUE(!class(model) %in% c("lm", "lmerMod", "lmerModLmerTest", "lme"))) { stop("Please specify a fitted model object from the \"lm\" or \"lmer\" function for the argument 'model'.", call. = FALSE) }
+  if (isTRUE(all(!class(model) %in% c("lm", "lmerMod", "lmerModLmerTest", "lme")))) { stop("Please specify a fitted model object from the \"lm\", \"lmer\", or \"lme\" function for the argument 'model'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -753,12 +751,12 @@ std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
     # Model with intercept
     if (isTRUE("(Intercept)" %in% names(model$coefficients))) {
 
-      restab <- cbind(summary(model)$coefficients, SD.y = c(NA, rep(sd.crit, times = length(sd.pred))), SD.x = c(NA, sd.pred), StdX = c(NA, coeff * sd.pred), StdY = c(NA, coeff / sd.crit), StdYX = c(NA, coeff * (sd.pred / sd.crit)))
+      restab <- cbind(summary(model)$coefficients, SDy = c(NA, rep(sd.crit, times = length(sd.pred))), SDx = c(NA, sd.pred), StdX = c(NA, coeff * sd.pred), StdY = c(NA, coeff / sd.crit), StdYX = c(NA, coeff * (sd.pred / sd.crit)))
 
     # Model without intercept
     } else {
 
-      restab <- cbind(summary(model)$coefficients, SD.y = rep(sd.crit, times = length(sd.pred)), SD.x = sd.pred, StdX = coeff * sd.pred, StdY = coeff / sd.crit, StdYX = coeff * (sd.pred / sd.crit))
+      restab <- cbind(summary(model)$coefficients, SDy = rep(sd.crit, times = length(sd.pred)), SDx = sd.pred, StdX = coeff * sd.pred, StdY = coeff / sd.crit, StdYX = coeff * (sd.pred / sd.crit))
 
     }
 
@@ -768,12 +766,12 @@ std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
     # Model with intercept
     if (isTRUE("(Intercept)" %in% names(lme4::fixef(model)))) {
 
-      restab <- cbind(if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest"))) { summary(model)$coefficients } else { summary(model)$tTable }, Level = c(NA, pred.level), SD.y = c(NA, sd.crit), SD.x = c(NA, sd.pred), StdX = c(NA, coeff * sd.pred), StdY = c(NA, coeff / sd.crit), StdYX = c(NA, coeff * (sd.pred / sd.crit)))
+      restab <- cbind(if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest"))) { summary(model)$coefficients } else { summary(model)$tTable }, Level = c(NA, pred.level), SDy = c(NA, sd.crit), SDx = c(NA, sd.pred), StdX = c(NA, coeff * sd.pred), StdY = c(NA, coeff / sd.crit), StdYX = c(NA, coeff * (sd.pred / sd.crit)))
 
     # Model without intercept
     } else {
 
-      restab <- cbind(if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest"))) { summary(model)$coefficients } else { summary(model)$tTable }, Level = (pred.level), SD.y = sd.crit, SD.x = sd.pred, StdX = coeff * sd.pred, StdY = coeff / sd.crit, StdYX = coeff * (sd.pred / sd.crit))
+      restab <- cbind(if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest"))) { summary(model)$coefficients } else { summary(model)$tTable }, Level = (pred.level), SDy = sd.crit, SDx = sd.pred, StdX = coeff * sd.pred, StdY = coeff / sd.crit, StdYX = coeff * (sd.pred / sd.crit))
 
     }
 
@@ -784,7 +782,7 @@ std.coef <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
   # Return Object --------------------------------------------------------------
 
   object <- list(call = match.call(),
-                 type = "std.coef",
+                 type = "coeff.std",
                  data = model.data,
                  model = model,
                  args = list(print = print, digits = digits, p.digits = p.digits, write = write, append = append, check = check, output = output),

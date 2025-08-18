@@ -52,8 +52,8 @@ when specifying more than one variable in \code{x}
 (\code{\link{freq}}).}
 
 \item{table}{logical: if \code{TRUE}, a frequency table with number of
-observed values (\code{"nObs"}), percent of observed values
-(\code{"pObs"}), number of missing values (\code{"nNA"}),
+observed values (\code{"nOb"}), percent of observed values
+(\code{"pOb"}), number of missing values (\code{"nNA"}),
 and percent of missing values (\code{"pNA"}) is printed for
 each variable on the console (\code{na.descript()} function).}
 

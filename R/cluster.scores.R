@@ -6,9 +6,9 @@
 #'                data frame for centering more than one predictor variable.
 #' @param ...     an expression indicating the variable names in \code{data} e.g.,
 #'                \code{cluster.scores(dat, x1, x2, cluster = "cluster")}. Note
-#'                that the operators \code{.}, \code{+}, \code{-}, \code{~},
-#'                \code{:}, \code{::}, and \code{!} can also be used to select
-#'                variables, see 'Details' in the \code{\link{df.subset}} function.
+#'                that the operators \code{+}, \code{-}, \code{~}, \code{:},
+#'                \code{::}, and \code{!} can also be used to select variables,
+#'                see 'Details' in the \code{\link{df.subset}} function.
 #' @param cluster a character string indicating the variable name of the cluster
 #'                variable in \code{data}, or a vector representing the nested
 #'                grouping structure (i.e., group or cluster variable).
@@ -101,12 +101,12 @@ cluster.scores <- function(data, ..., cluster,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Variable names
-    var.names <- .var.names(..., data = data, cluster = cluster)
+    var.names <- .var.names(data = data, ..., cluster = cluster)
 
     # Extract data and convert tibble into data frame or vector
     x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
@@ -115,7 +115,7 @@ cluster.scores <- function(data, ..., cluster,
     cluster <- data[, cluster]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

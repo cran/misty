@@ -16,22 +16,26 @@ check.resid(model, type = c("linear", "homo", "normal"),
             ybreaks = ggplot2::waiver(), check = TRUE)
 }
 \arguments{
-\item{model}{a fitted model of class \code{lm}.}
+\item{model}{a fitted model of class \code{"lm"}, \code{"lmerMod"}, or
+\code{"lmerModLmerTest"}.}
 
 \item{type}{a character string specifying the type of the plot, i.e.,
-\code{"linear"} for partial (component-plus-residual) plots,
-\code{"homo"} (default) for predicted values vs. residuals
-plot, and \code{"normal"} for Q-Q plot and histogram with
-a density plot. Note that partial plots are not available
-for models with interaction terms.}
+\code{"linear"} for partial (component-plus-residual)
+plots, \code{"homo"} (default) for predicted values vs.
+residuals plot, and \code{"normal"} for Q-Q plot and
+histogram with a density plot. Note that partial residual
+or component-plus-residual plots are not available for
+models with interaction terms}
 
 \item{resid}{a character string specifying the type of residual used for
 the partial (component-plus-residual) plots or Q-Q plot and
 histogram, i.e., \code{"unstand"} for unstandardized residuals
 \code{"stand"} for standardized residuals, and \code{"student"}
-for studentized residual. By default, studentized residuals
+for studentized residuals. By default, studentized residuals
 are used for predicted values vs. residuals plot and unstandardized
-residuals are used for Q-Q plot and histogram.}
+residuals are used for Q-Q plot and histogram. Note that studentized residuals
+are not available for multilevel and linear mixed-effects
+models when requesting Q-Q plots and histograms.}
 
 \item{plot}{logical: if \code{TRUE} (default), a plot is drawn.}
 
@@ -128,10 +132,11 @@ entries:
 }
 \description{
 This function performs residual diagnostics for linear models estimated by
-using the \code{lm()} function for detecting nonlinearity (partial residual or
-component-plus-residual plots), nonconstant error variance (predicted values
-vs. residuals plot), and non-normality of residuals (Q-Q plot and histogram
-with density plot).
+using the \code{lm()} function and for multilevel and linear mixed-effects
+models estimated by using the \code{lmer()} function from the \pkg{lme4} package
+to detect nonlinearity (partial residual or component-plus-residual plots),
+nonconstant error variance (predicted values vs. residuals plot), and non-normality
+of residuals (Q-Q plot and histogram with density plot).
 }
 \details{
 \describe{
@@ -160,9 +165,8 @@ nonlinear component. Then, the partial residual \eqn{e_i^{(j)}} is plotted
 against the predictor variable \eqn{X_j}. Nonlinearity may become apparent when
 a non-parametric regression smoother is applied.
 
-By default, the function plots
-each predictor against the partial residuals, and draws the linear regression
-and the loess smooth line to the partial residual plots.}
+By default, the function plots each predictor against the partial residuals, and
+draws the linear regression and the loess smooth line to the partial residual plots.}
 
 \item{\strong{Nonconstant Error Variance}}{The violation of the assumption of
 constant error variance, often referred to as heteroscedasticity, implies that
@@ -214,38 +218,59 @@ are correlated with each other depending on the configuration of the predictor
 values. The correlation is generally negligible unless the sample size is small.}
 }
 }
+\note{
+This function uses a modified copy of the \code{partial()} and \code{calc_ranef()}
+function in the \pkg{remef} package by Sven Hohenstein and Reinhold Kliegl (2025)
+when requesting partial residual plots for linear mixed-effects models.
+}
 \examples{
-\dontrun{
+#----------------------------------------------------------------------------
+# Linear Model
 
-#-------------------------------------------------------------------------------
-# Residual diagnostics for a linear model
+# Estimate linear model
+mod.lm <- lm(Ozone ~ Solar.R + Wind + Temp, data = airquality)
 
-mod <- lm(Ozone ~ Solar.R + Wind + Temp, data = airquality)
+# Example 1a: Partial (component-plus-residual) plots
+check.resid(mod.lm, type = "linear")
 
-# Example 1: Partial (component-plus-residual) plots
-check.resid(mod, type = "linear")
+# Example 1b: Predicted values vs. residuals plot
+check.resid(mod.lm, type = "homo")
 
-# Example 2: Predicted values vs. residuals plot
-check.resid(mod, type = "homo")
+# Example 1c: Q-Q plot and histogram with density plot
+check.resid(mod.lm, type = "normal")
 
-# Example 3: Q-Q plot and histogram with density plot
-check.resid(mod, type = "normal")
-
-#-------------------------------------------------------------------------------
-# Extract data and ggplot2 object
-
-object <- check.resid(mod, type = "linear", plot = FALSE)
+# Example 1d: Extract data and ggplot2 object
+object <- check.resid(mod.lm, type = "linear", plot = FALSE)
 
 # Data frame
 object$plotdat
 
 # ggplot object
 object$plot
+
+\dontrun{
+#----------------------------------------------------------------------------
+# Multilevel and Linear Mixed-Effects Model
+
+# Estimate two-level mixed-effects model
+mod.lmer <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy)
+
+# Example 2a: Partial (component-plus-residual) plots
+check.resid(mod.lmer, type = "linear")
+
+# Example 2b: Predicted values vs. residuals plot
+check.resid(mod.lmer, type = "homo")
+
+# Example 2c: Q-Q plot and histogram with density plot
+check.resid(mod.lmer, type = "normal")
 }
 }
 \references{
 Fox, J. (2016). \emph{Applied regression analysis and generalized linear models}
 (3rd ed.). Sage Publications, Inc.
+
+Hohenstein, S., & Kliegl, R. (2025). \emph{remef: Remove Partial Effects}.
+R package version 1.0.7, \url{https://github.com/hohenstein/remef}
 
 Meuleman, B., Loosveldt, G., & Emonds, V. (2015). Regression analysis: Assumptions
 and diagnostics. In H. Best & C. Wolf (Eds.), \emph{The SAGE handbook of regression analysis and causal inference (pp. 83-110)}.

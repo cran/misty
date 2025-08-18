@@ -224,7 +224,8 @@ ggplot(object$data, aes(group, y)) +
                 aes(group, m, ymin = low, ymax = upp), width = 0.1) +
   scale_x_discrete(name = NULL) +
   labs(subtitle = "Two-Sided Difference-Adjusted Confidence Interval") +
-  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))}
+  theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
+}
 }
 \references{
 Baguley, T. S. (2012a). \emph{Serious stats: A guide to advanced statistics for

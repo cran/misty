@@ -7,7 +7,7 @@
 #'
 #' @param data    a numeric vector or data frame.
 #' @param ...     an expression indicating the variable names in \code{data}.
-#'                Note that the operators \code{.}, \code{+}, \code{-}, \code{~},
+#'                Note that the operators \code{+}, \code{-}, \code{~},
 #'                \code{:}, \code{::}, and \code{!} can also be used to select
 #'                variables, see 'Details' in the \code{\link{df.subset}}
 #'                function.
@@ -238,18 +238,18 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[,  .var.names(..., data = data, cluster = cluster)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[,  .var.names(data = data, ..., cluster = cluster)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Cluster variable
     cluster <- data[, cluster]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 
@@ -269,6 +269,23 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
 
   # Convert 'cluster' as tibble into data frame
   if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unname(unlist(cluster)) } else { cluster <- as.data.frame(cluster) } }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Numeric Variables ####
+
+  x <- (!vapply(as.data.frame(x), is.numeric, FUN.VALUE = logical(1L))) |> (\(y) if (isTRUE(any(y))) {
+
+    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(y)), collapse = ", ")), call. = FALSE)
+
+    return(as.data.frame(x)[, -which(y), drop = FALSE])
+
+  } else {
+
+    return(x)
+
+  })()
+
+  if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Cluster variables ####
@@ -398,7 +415,7 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
           ifelse(isTRUE(REML), REML <- "REML", REML <- "ML")
 
           # Estimate model
-          mod <- suppressMessages(nlme::lme(x ~ 1, random = ~1 | cluster, na.action = na.omit, method = REML))
+          mod <- suppressMessages(nlme::lme(x ~ 1, random = ~ 1 | cluster, na.action = na.omit, method = REML))
 
           # Variance components
           vartab <- nlme::VarCorr(mod)
@@ -426,7 +443,7 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
           } else if (isTRUE(type == "2")) {
 
             # Intraclass correlation coefficient, ICC(2)
-            object <- var.u / ( (var.u + var.r) / mean(table(cluster)))
+            object <- var.u / (var.u + (var.r / mean(table(cluster))))
 
           }
 
@@ -504,11 +521,11 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
           cluster.size.l2 <- mean(table(l2.cluster))
           cluster.size.l3 <- mean(table(cluster[which(!duplicated(cluster[, 2L])), 1L]))
 
-          # Formula 10.25, Hox et al. (2018, p. 185) and Formula 8.8, Raudenbush and Bryk (2002, p. 230)
-          icc.l3 <- var.v / (((var.v + var.u) / cluster.size.l3) + (var.r / (cluster.size.l2 * cluster.size.l3)))
-
-          # Formula 10.27, Hox et al. (2018, p. 186)
+          # ICC(2) Level 2, Formula 10.27, Hox et al. (2018, p. 186)
           icc.l2 <- var.u / (var.u + (var.r / cluster.size.l2))
+
+          # ICC(2) Level 3, Formula 10.25, Hox et al. (2018, p. 185) and Formula 8.8, Raudenbush and Bryk (2002, p. 230)
+          icc.l3 <- var.v / (var.v + (var.u / cluster.size.l3) + (var.r / (cluster.size.l2 * cluster.size.l3)))
 
         }
 

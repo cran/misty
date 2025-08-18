@@ -13,7 +13,7 @@
 #'               reverse coding more than one item.
 #' @param ...    an expression indicating the variable names in \code{data} e.g.,
 #'               \code{item.reverse(x1, x2, x3, data = dat)}. Note that the operators
-#'               \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'               \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'               and \code{!} can also be used to select variables, see 'Details'
 #'               in the \code{\link{df.subset}} function.
 #' @param min    an integer indicating the minimum of the item (i.e., lowest
@@ -96,18 +96,18 @@ item.reverse <- function(data, ..., min = NULL, max = NULL, keep = NULL,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Variable names
-    var.names <- .var.names(..., data = data)
+    var.names <- .var.names(data = data, ...)
 
     # Extract data and convert tibble into data frame or vector
     x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

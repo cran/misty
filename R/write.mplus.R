@@ -30,8 +30,9 @@
 #' Muthen & Muthen.
 #'
 #' @seealso
-#' \code{\link{read.mplus}}, \code{\link{mplus.run}}, \code{\link{write.sav}},
-#' \code{\link{write.xlsx}}, \code{\link{write.dta}}
+#' \code{\link{read.data}}, \code{\link{write.data}}, \code{\link{read.sav}},
+#' \code{\link{write.sav}}, \code{\link{read.xlsx}}, \code{\link{write.xlsx}},
+#' \code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.mplus}},
 #'
 #' @return
 #' Returns a character string indicating the variable names for the Mplus input file.

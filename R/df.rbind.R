@@ -1,5 +1,11 @@
 #' Combine Data Frames by Rows, Filling in Missing Columns
 #'
+#' @param ...      a sequence of data frame to be row bind together. This argument
+#'                 can be a list of data frames, in which case all other arguments
+#'                 are ignored. Any \code{NULL} inputs are silently dropped. If
+#'                 all inputs are \code{NULL}, the output is also \code{NULL}.
+#'
+#' @details
 #' This function takes a sequence of data frames and combines them by rows, while
 #' filling in missing columns with \code{NA}s.
 #'
@@ -16,16 +22,13 @@
 #' dimensions after the row count. Aside from these there are no general checks
 #' that each column is of consistent data type.
 #'
-#' @param ...      a sequence of data frame to be row bind together. This argument
-#'                 can be a list of data frames, in which case all other arguments
-#'                 are ignored. Any \code{NULL} inputs are silently dropped. If
-#'                 all inputs are \code{NULL}, the output is also \code{NULL}.
-#'
 #' @author
 #' Hadley Wickham
 #'
 #' @seealso
-#' \code{\link{df.duplicated}}, \code{\link{df.merge}},  \code{\link{df.move}},
+#' \code{\link{df.check}}, \code{\link{df.duplicated}}, \code{\link{df.unique}},
+#' \code{\link{df.head}}, \code{\link{df.tail}}, \code{\link{df.long}},
+#' \code{\link{df.wide}}, \code{\link{df.merge}}, \code{\link{df.move}},
 #' \code{\link{df.rename}}, \code{\link{df.sort}}, \code{\link{df.subset}}
 #'
 #' @references

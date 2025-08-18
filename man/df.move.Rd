@@ -10,8 +10,7 @@ df.move(data, ..., before = NULL, after = NULL, first = TRUE, check = TRUE)
 \item{data}{a data frame.}
 
 \item{...}{an expression indicating the variable names in \code{data} to
-move. Note that the operators \code{.}, \code{+}, \code{-},
-\code{~}, \code{:}, \code{::}, and \code{!} can also be used to
+move. Note that the operators \code{+}, \code{-}, \code{~}, \code{:}, \code{::}, and \code{!} can also be used to
 select variables, see Details in the \code{\link{df.subset}}
 function.}
 
@@ -57,9 +56,10 @@ Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}
 Wadsworth & Brooks/Cole.
 }
 \seealso{
-\code{\link{df.duplicated}}, \code{\link{df.merge}},
-\code{\link{df.rbind}},
-\code{\link{df.rename}}, \code{\link{df.sort}},
+\code{\link{df.check}}, \code{\link{df.duplicated}}, \code{\link{df.unique}},
+\code{\link{df.head}}, \code{\link{df.tail}}, \code{\link{df.long}},
+\code{\link{df.wide}}, \code{\link{df.merge}},
+\code{\link{df.rbind}}, \code{\link{df.rename}}, \code{\link{df.sort}},
 \code{\link{df.subset}}
 }
 \author{

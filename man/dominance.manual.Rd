@@ -190,7 +190,7 @@ models. \emph{Structural Equation Modeling: A Multidisciplinary Journal, 4}, 569
 https://doi.org/10.1080/10705511.2021.2025377
 }
 \seealso{
-\code{\link{dominance}}, \code{\link{std.coef}}, \code{\link{write.result}}
+\code{\link{dominance}}, \code{\link{coeff.std}}, \code{\link{write.result}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

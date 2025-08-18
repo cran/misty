@@ -30,7 +30,7 @@ the cluster variable when specifying \code{cluster}.}
 
 \item{...}{an expression indicating the variable names in \code{data},
 e.g., \code{item.cfa(x1, x2, x3, data = dat)}. Note
-that the operators \code{.}, \code{+}, \code{-},
+that the operators \code{+}, \code{-},
 \code{~}, \code{:}, \code{::}, and \code{!} can also
 be used to select variables, see 'Details' in the
 \code{\link{df.subset}} function.}
@@ -510,7 +510,8 @@ lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 item.cfa(HolzingerSwineford1939, x1, x2, x3, write = "CFA.txt")
 
 # Example 9b: Write Results into a Excel file
-item.cfa(HolzingerSwineford1939, x1, x2, x3, write = "CFA.xlsx")}
+item.cfa(HolzingerSwineford1939, x1, x2, x3, write = "CFA.xlsx")
+}
 }
 \references{
 Brosseau-Liard, P. E., Savalei, V., & Li. L. (2012). An investigation of the

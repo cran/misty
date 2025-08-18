@@ -4,10 +4,11 @@
 \alias{na.auxiliary}
 \title{Auxiliary Variables Analysis}
 \usage{
-na.auxiliary(data, ..., model = NULL, estimator = c("ML", "MLR"),
+na.auxiliary(data, ..., model = NULL, categ = NULL, estimator = c("ML", "MLR"),
              missing = c("fiml", "two.stage", "robust.two.stage", "doubly.robust"),
-             tri = c("both", "lower", "upper"), weighted = FALSE, correct = FALSE,
-             digits = 2, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
+             adjust = TRUE, weighted = FALSE, correct = FALSE,
+             tri = c("both", "lower", "upper"), digits = 2, p.digits = 3,
+             as.na = NULL, write = NULL, append = TRUE,
              check = TRUE, output = TRUE)
 }
 \arguments{
@@ -15,17 +16,25 @@ na.auxiliary(data, ..., model = NULL, estimator = c("ML", "MLR"),
 values are coded as \code{NA}.}
 
 \item{...}{an expression indicating the variable names in \code{data},
-e.g., \code{na.auxiliary(dat, x1, x2, x3)}. Note that the
-operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
-\code{::}, and \code{!} can also be used to select variables,
+e.g., \code{na.auxiliary(dat, x1, x2, x3)}. Categorical variables specified
+in the argument \code{categ} can be, but do not need to be selected using the
+\code{...} argument. Note that the operators \code{+}, \code{-},
+\code{~}, \code{:}, \code{::}, and \code{!} can also be used to select variables,
 see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{model}{a character string specifying the substantive model predicting
-an continuous outcome variable using a set of predictor variables
+a continuous outcome variable using a set of predictor variables
 to estimate semi-partial correlations between the outcome
 variable and a set of candidate auxiliary variables. The default
 setting is \code{model = NULL}, i.e., the function computes
 Pearson product-moment correlation matrix and Cohen's d matrix.}
+
+\item{categ}{a character vector specifying the variables that are treated
+as categorical (see 'Details'). Note that variables that are
+factors or character vectors will be automatically added to
+the argument \code{categ}. Categorical variables will be
+excluded from the analysis when specifying the \code{model}
+argument to compute semi-partial correlations.}
 
 \item{estimator}{a character string indicating the estimator to be used
 when estimating semi-partial correlation coefficients, i.e.,
@@ -43,16 +52,20 @@ likelihood method, and \code{doubly-robust} for doubly-robust
 method (see 'Details' in the \code{\link{item.cfa}} function).
 The default setting is \code{missing = "fiml"}.}
 
+\item{adjust}{logical: if \code{TRUE} (default), phi coefficient is adjusted
+by relating the coefficient to the possible maximum and Cramer's
+\emph{V} is corrected for small-sample bias.}
+
+\item{weighted}{logical: if \code{TRUE} (default), the weighted pooled standard
+deviation is used when computing Cohen's d.}
+
+\item{correct}{logical: if \code{TRUE}, correction factor for Cohen's d to
+remove positive bias in small samples is used.}
+
 \item{tri}{a character string indicating which triangular of the correlation
 matrix to show on the console, i.e., \code{both} for upper and
 lower triangular, \code{lower} (default) for the lower triangular,
 and \code{upper} for the upper triangular.}
-
-\item{weighted}{logical: if \code{TRUE} (default), the weighted pooled standard
-deviation is used.}
-
-\item{correct}{logical: if \code{TRUE}, correction factor for Cohen's d to
-remove positive bias in small samples is used.}
 
 \item{digits}{integer value indicating the number of decimal places digits
 to be used for displaying correlation coefficients and Cohen's d
@@ -93,22 +106,61 @@ entries:
 \item{\code{result}}{list with result tables}
 }
 \description{
-This function computes (1) Pearson product-moment correlation matrix to identify
-variables related to the incomplete variable (i.e., correlates of incomplete
-variables), (2) Cohen's d matrix comparing cases with and without missing values
-to identify variables related to the probability of missingness(i.e., correlates
-of missingness), and (3) semi-partial correlations of an outcome variable
-conditional on the predictor variables of a substantive model with a set of
-candidate auxiliary variables to identify correlates of an incomplete outcome
-variable as suggested by Raykov and West (2016).
+This function computes (1) a matrix with Pearson product-moment correlation
+for continuous variables, multiple correlation coefficient for categorical and
+continuous variables, and Phi coefficient and Cramer's \emph{V} for categorical variables
+to identify variables related to the incomplete variable (i.e., correlates of
+incomplete variables), (2) a matrix with Cohen's d, Phi coefficient and Cramer's \emph{V}
+for comparing cases with and without missing values, and (3) semi-partial correlations
+of an outcome variable conditional on the predictor variables of a substantive model
+with a set of candidate auxiliary variables to identify correlates of an incomplete
+outcome variable as suggested by Raykov and West (2016).
 }
 \details{
-Note that non-numeric variables (i.e., factors, character vectors, and logical
-vectors) are excluded from to the analysis.
+\describe{
+The function computes matrices with statistical measures depending on the level
+of measurement of the variables involved in the analysis:
+\item{\strong{Variables Related to the Incomplete Variable}}{
+\itemize{
+   \item{\emph{Continuous variables}}: Product-moment correlation coefficient
+   is computed for continuous variables.
+   \item{\emph{Continuous and categorical variable}}: Multiple correlation
+   coefficient (R) is computed based on a linear model with a dummy-coded categorical
+   variable as predictor, where the multiple correlation coefficient is the
+   square root of the coefficient of determination of this model. Note that
+   the multiple R for a binary predictor variable is equivalent to the
+   point-biserial correlation coefficient between the binary variable and
+   the continuous outcome.
+   \item{\emph{Categorical variables}}: Phi coefficient is computed for two
+   dichotomous variables, while Cramer's \emph{V} is computed when one of the
+   categorical variables is polyotomous
+ }}
+\item{\strong{Variables Related to the Probability of Missigness}}{
+\itemize{
+   \item{\emph{Continuous variable}}: Cohen's d is computed to investigate
+   mean differences in the continuous variable depending on cases with and
+   without missing values.
+   \item{\emph{Categorical variable}}: Phi coefficient is computed to investigate
+   the association between the grouping variable (0 = observed, 1 = missing)
+   and a dichotomous variable, while Cramer's \emph{V} is computed when the
+   categorical variable is polytomous.
+ }}
+ \item{\strong{Substantive model predicting a continuous outcome variable}}{
+ Categorical variables are removed before computing semi-partial correlations
+ based on the approach suggested by Raykov and West (2016).
+}
+Note that factors and characters are treated as categorical variables regardless
+of the specification of the argument \code{categ}, while numeric vectors in the data
+frame are treated as continuous variables if they are not specified in the
+argument \code{categ}.
+}
 }
 \examples{
-# Example 1: Auxiliary variables
+# Example 1a: Auxiliary variables
 na.auxiliary(airquality)
+
+# Example 1b: Auxiliary variables, "Month" as categorical variable
+na.auxiliary(airquality, categ = "Month")
 
 # Example 2: Semi-partial correlation coefficients
 na.auxiliary(airquality, model = "Ozone ~ Solar.R + Wind")
@@ -118,10 +170,11 @@ na.auxiliary(airquality, model = "Ozone ~ Solar.R + Wind")
 na.auxiliary(airquality, write = "NA_Auxiliary.txt")
 
 # Example 3a: Write Results into an Excel file
-na.auxiliary(airquality, write = "NA_Auxiliary.xlsx")}
+na.auxiliary(airquality, write = "NA_Auxiliary.xlsx")
+}
 }
 \references{
-Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
+Enders, C. K. (2022). \emph{Applied missing data analysis} (2nd ed.). The Guilford Press.
 
 Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 \emph{Annual Review of Psychology, 60}, 549-576.

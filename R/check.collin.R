@@ -4,27 +4,6 @@
 #' inflation factor, eigenvalues, condition index, and variance proportions for
 #' linear, generalized linear, and mixed-effects models.
 #'
-#' Collinearity diagnostics can be conducted for objects returned from the \code{lm()}
-#' and \code{glm()} function, but also from objects returned from the \code{lmer()}
-#' and \code{glmer()} function from the \pkg{lme4} package, \code{lme()} function
-#' from the \pkg{nlme} package, and the \code{glmmTMB()} function from the \pkg{glmmTMB}
-#' package.
-#'
-#' The generalized variance inflation factor (Fox & Monette, 1992) is computed
-#' for terms with more than 1 df resulting from factors with more than two levels.
-#' The generalized VIF (GVIF) is interpretable as the inflation in size of the
-#' confidence ellipse or ellipsoid for the coefficients of the term in comparison
-#' with what would be obtained for orthogonal data. GVIF is invariant to the
-#' coding of the terms in the model. In order to adjust for the dimension of the
-#' confidence ellipsoid, GVIF\eqn{^\frac{1}{2df}} is computed. Note that the
-#' adjusted GVIF (aGVIF) is actually a generalized standard error inflation factor
-#' (GSIF). Thus, the aGIF needs to be squared before applying a common cutoff
-#' threshold for the VIF (e.g., VIF > 10). Note that the output of \code{check.collin()}
-#' function reports either the variance inflation factor or the squared generalized
-#' variance inflation factor in the column \code{VIF}, while the standard error
-#' inflation factor or the adjusted generalized variance inflation factor is
-#' reported in the column \code{SIF}.
-#'
 #' @param model    a fitted model of class \code{"lm"}, \code{"glm"},
 #'                 \code{"lmerMod"}, \code{"lmerModLmerTest"}, \code{"glmerMod"},
 #'                 \code{"lme"}, or \code{"glmmTMB"}.
@@ -48,6 +27,28 @@
 #'                 checked.
 #' @param output   logical: if \code{TRUE} (default), output is shown on the
 #'                 console.
+#'
+#' @details
+#' Collinearity diagnostics can be conducted for objects returned from the \code{lm()}
+#' and \code{glm()} function, but also from objects returned from the \code{lmer()}
+#' and \code{glmer()} function from the \pkg{lme4} package, \code{lme()} function
+#' from the \pkg{nlme} package, and the \code{glmmTMB()} function from the \pkg{glmmTMB}
+#' package.
+#'
+#' The generalized variance inflation factor (Fox & Monette, 1992) is computed
+#' for terms with more than 1 df resulting from factors with more than two levels.
+#' The generalized VIF (GVIF) is interpretable as the inflation in size of the
+#' confidence ellipse or ellipsoid for the coefficients of the term in comparison
+#' with what would be obtained for orthogonal data. GVIF is invariant to the
+#' coding of the terms in the model. In order to adjust for the dimension of the
+#' confidence ellipsoid, GVIF\eqn{^\frac{1}{2df}} is computed. Note that the
+#' adjusted GVIF (aGVIF) is actually a generalized standard error inflation factor
+#' (GSIF). Thus, the aGIF needs to be squared before applying a common cutoff
+#' threshold for the VIF (e.g., VIF > 10). Note that the output of \code{check.collin()}
+#' function reports either the variance inflation factor or the squared generalized
+#' variance inflation factor in the column \code{VIF}, while the standard error
+#' inflation factor or the adjusted generalized variance inflation factor is
+#' reported in the column \code{SIF}.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -127,11 +128,11 @@
 #' check.collin(mod.glm)
 #'
 #' \dontrun{
-#' # Load lme4, nlme, and glmmTMB package
-#' libraries(lme4, nlme, glmmTMB)
-#'
 #' #----------------------------------------------------------------------------
 #' # Linear mixed-effects model
+#'
+#' # Load lme4, nlme, and glmmTMB package
+#' libraries(lme4, nlme, glmmTMB)
 #'
 #' # Estimate linear mixed-effects model using lme4 package
 #' mod.lmer <- lmer(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
@@ -230,7 +231,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
       R <- cov2cor(vcov(model)[-1, -1])
       assign <- attr(model.matrix(model, data = model$model), "assign")[-1L]
 
-      # Regression model without intercept
+    # Regression model without intercept
     } else {
 
       intercept <- FALSE

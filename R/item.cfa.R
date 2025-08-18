@@ -19,7 +19,7 @@
 #'                         specifying \code{cluster}.
 #' @param ...              an expression indicating the variable names in \code{data},
 #'                         e.g., \code{item.cfa(x1, x2, x3, data = dat)}. Note
-#'                         that the operators \code{.}, \code{+}, \code{-},
+#'                         that the operators \code{+}, \code{-},
 #'                         \code{~}, \code{:}, \code{::}, and \code{!} can also
 #'                         be used to select variables, see 'Details' in the
 #'                         \code{\link{df.subset}} function.
@@ -510,7 +510,6 @@
 #'
 #' lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 #'
-#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Write Results
 #'
@@ -519,7 +518,6 @@
 #'
 #' # Example 9b: Write Results into a Excel file
 #' item.cfa(HolzingerSwineford1939, x1, x2, x3, write = "CFA.xlsx")
-#' }
 item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
                      meanstructure = TRUE, ident = c("marker", "var", "effect"),
                      parameterization = c("delta", "theta"), ordered = NULL, cluster = NULL,
@@ -549,18 +547,18 @@ item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data
-    x <- as.data.frame(data[, .var.names(..., data = data, cluster = cluster), drop = FALSE])
+    x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
 
     # Cluster variable
     if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

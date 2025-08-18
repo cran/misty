@@ -32,7 +32,7 @@ variables with 0 and 1 values.}
 
 \item{...}{an expression indicating the variable names in \code{data},
 e.g., \code{ci.prop(dat, x1, x2, x3)}. Note that the
-operators \code{.}, \code{+}, \code{-}, \code{~},
+operators \code{+}, \code{-}, \code{~},
 \code{:}, \code{::}, and \code{!} can also be used
 to select variables, see 'Details' in the
 \code{\link{df.subset}} function.}

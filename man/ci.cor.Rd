@@ -36,7 +36,7 @@ factors and character variables are excluded from
 
 \item{...}{an expression indicating the variable names in \code{data}
 e.g., \code{ci.cor(x1, x2, data = dat)}. Note that the
-operators \code{.}, \code{+}, \code{-}, \code{~},
+operators \code{+}, \code{-}, \code{~},
 \code{:}, \code{::}, and \code{!} can also be used
 to select variables, see 'Details' in the
 \code{\link{df.subset}} function.}

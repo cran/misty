@@ -3,32 +3,34 @@
 #' This function computes summary statistics for one or more than one variable,
 #' optionally by a grouping and/or split variable. By default, the function prints
 #' the number of observations (\code{n}), number of missing values (\code{nNA}),
-#' percentage of missing values (\code{%NA}), arithmetic mean (\code{M}), standard
-#' deviation (\code{SD}), minimum (\code{Min}), percentage of observations at the
-#' minimum (\code{%Min}), maximum (\code{Max}), percentage of observations at the
-#' maximum (\code{%Max}), skewness (\code{Skew}), and kurtosis (\code{Kurt}).
+#' percentage of missing values (\code{%NA}), number of unique elements after omitting
+#' missing values (\code{nUQ}), arithmetic mean (\code{M}), standard deviation
+#' (\code{SD}), minimum (\code{Min}), percentage of observations at the minimum
+#' (\code{%Min}), maximum (\code{Max}), percentage of observations at the maximum
+#' (\code{%Max}), skewness (\code{Skew}), and kurtosis (\code{Kurt}).
 #'
 #' @param data     a numeric vector or data frame with numeric variables, i.e.,
 #'                 factors and character variables are excluded from \code{data}
 #'                 before conducting the analysis.
 #' @param ...      an expression indicating the variable names in \code{data},
 #'                 e.g., \code{descript(dat, x1, x2, x3)}. Note that the operators
-#'                 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                 \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'                 and \code{!} can also be used to select variables, see 'Details'
 #'                 in the \code{\link{df.subset}} function.
 #' @param print    a character vector indicating which statistical measures to be
 #'                 printed on the console, i.e., \code{n} (number of observations),
 #'                 \code{nNA} (number of missing values), \code{pNA} (percentage of
-#'                 missing values), \code{m} (arithmetic mean), \code{se.m} (standard
-#'                 error of the arithmetic mean), \code{var} (variance), \code{sd}
-#'                 (standard deviation), \code{med} (median),\code{min} (minimum),
-#'                 \code{p.min} (percentage of observations at the minimum),
+#'                 missing values), \code{nUQ} (number of unique elements after
+#'                 omitting missing values), \code{m} (arithmetic mean), \code{se.m}
+#'                 (standard error of the arithmetic mean), \code{var} (variance),
+#'                 \code{sd} (standard deviation), \code{med} (median),\code{min}
+#'                 (minimum), \code{p.min} (percentage of observations at the minimum),
 #'                 \code{p25} (25th percentile, first quartile), \code{p75} (75th
 #'                 percentile, third quartile), \code{max} (maximum), \code{p.max}
 #'                 (percentage of observations at the maximum),\code{range} (range),
 #'                 \code{iqr} (interquartile range), \code{skew} (skewness), and
 #'                 \code{kurt} (excess kurtosis). The default setting is
-#'                 \code{print = ("n", "nNA", "pNA", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")}.
+#'                 \code{print = c("n", "nNA", "pNA", "nUQ", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")}.
 #' @param group    a numeric vector, character vector or factor as grouping variable.
 #'                 Alternatively, a character string indicating the variable name
 #'                 of the grouping variable in \code{data} can be specified.
@@ -68,8 +70,9 @@
 #' effects in continuous variables. Historically, floor or ceiling effects are
 #' considered to be present if more than 15% of observations are at the lowest
 #' or highest possible score (McHorney & Tarlov, 1995; Terwee et al., 2007).
-#' Muthen (2023, see video at 7:58) noted that as a rule of thumb linear models should be
-#' avoided when the floor or ceiling effect of the outcome variable exceeds 25%.}
+#' Muthen (2023, see video at 7:58) noted the rule of thumb that linear models
+#' should be avoided when the floor or ceiling effect of the outcome variable
+#' exceeds 25%.}
 #' }
 #'
 #' @author
@@ -148,7 +151,6 @@
 #' # Alternative specification without using the '...' argument
 #' descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs, split = mtcars$am)
 #'
-#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Write Output
 #'
@@ -157,9 +159,8 @@
 #'
 #' # Example 3b: Excel file
 #' descript(mtcars, write = "Descript_Excel.xlsx")
-#' }
 descript <- function(data, ...,
-                     print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt"),
+                     print = c("all", "default", "n", "nNA", "pNA", "nUQ", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt"),
                      group = NULL, split = NULL, sample = FALSE, sort.var = FALSE, na.omit = FALSE,
                      digits = 2, as.na = NULL, write = NULL, append = TRUE,
                      check = TRUE, output = TRUE) {
@@ -179,12 +180,12 @@ descript <- function(data, ...,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(..., data = data, group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[, .var.names(data = data, ..., group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -193,7 +194,7 @@ descript <- function(data, ...,
     if (isTRUE(!is.null(split))) { split <- data[, split] }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 
@@ -221,11 +222,11 @@ descript <- function(data, ...,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
 
-  x <- x |> (\(y) !vapply(y, is.numeric, FUN.VALUE = logical(1L)))() |> (\(z) if (isTRUE(any(z))) {
+  x <- (!vapply(as.data.frame(x), is.numeric, FUN.VALUE = logical(1L))) |> (\(y) if (isTRUE(any(y))) {
 
-    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(z)), collapse = ", ")), call. = FALSE)
+    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(y)), collapse = ", ")), call. = FALSE)
 
-    return(x[, -which(z), drop = FALSE])
+    return(as.data.frame(x)[, -which(y), drop = FALSE])
 
   } else {
 
@@ -288,7 +289,7 @@ descript <- function(data, ...,
 
   # Check inputs
   .check.input(logical = c("sample", "sort.var", "na.omit", "append", "output"),
-               m.character = list(print = c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt")),
+               m.character = list(print = c("all", "default", "n", "nNA", "pNA", "m", "nUQ", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt")),
                args = c("digits", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
@@ -325,12 +326,12 @@ descript <- function(data, ...,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Statistical measures ####
 
-  print.all <- c("n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt")
+  print.all <- c("n", "nNA", "pNA", "nUQ", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt")
 
   # Default setting
-  if (isTRUE(all(c("all", "default", "n", "nNA", "pNA", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt") %in% print))) {
+  if (isTRUE(all(c("all", "default", "n", "nNA", "pNA", "nUQ", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt") %in% print))) {
 
-    print <- c("n", "nNA", "pNA", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")
+    print <- c("n", "nNA", "pNA", "nUQ", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")
 
   # All statistical measures
   } else if (isTRUE("all" %in% print)) {
@@ -340,12 +341,12 @@ descript <- function(data, ...,
   # Default setting with additional statistical measures
   } else if (isTRUE("default" %in% print && length(print > 1L))) {
 
-    print <- print.all[print.all %in% misty::chr.omit(union(c("n", "nNA", "pNA", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt"), print), "default", check = FALSE)]
+    print <- print.all[print.all %in% misty::chr.omit(union(c("n", "nNA", "pNA", "nUQ", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt"), print), "default", check = FALSE)]
 
   # Manual default setting
   } else if (isTRUE(all(print == "default"))) {
 
-    print <- c("n", "nNA", "pNA", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")
+    print <- c("n", "nNA", "pNA", "nUQ", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")
 
   }
 
@@ -359,24 +360,25 @@ descript <- function(data, ...,
   if (isTRUE(is.null(group) && is.null(split))) {
 
     result <- data.frame(variable = colnames(x),
-                         n = vapply(x, function(y) length(na.omit(y)), FUN.VALUE = 1L),
-                         nNA = vapply(x, function(y) sum(is.na(y)), FUN.VALUE = 1L),
-                         pNA = vapply(x, function(y) sum(is.na(y)) / length(y) * 100L, FUN.VALUE = double(1)),
-                         m = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, mean(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
-                         se.m = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, sd(y, na.rm = TRUE) / sqrt(length(na.omit(y)))), FUN.VALUE = double(1L)),
-                         var = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, var(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
-                         sd = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, sd(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
-                         min = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, min(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
-                         p.min = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, sum(y == min(y, na.rm = TRUE)) / length(na.omit(y)) * 100), FUN.VALUE = double(1L)),
-                         p25 = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, quantile(y, probs = 0.25, na.rm = TRUE)), FUN.VALUE = double(1L)),
-                         med = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, median(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
-                         p75 = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, quantile(y, probs = 0.75, na.rm = TRUE)), FUN.VALUE = double(1L)),
-                         max = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, max(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
-                         p.max = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, sum(y == max(y, na.rm = TRUE)) / length(na.omit(y)) * 100), FUN.VALUE = double(1L)),
-                         range = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, diff(range(y, na.rm = TRUE))), FUN.VALUE = double(1L)),
-                         iqr = vapply(x, function(y) ifelse(length(na.omit(y)) <= 1L, NA, IQR(y, na.rm = TRUE)), FUN.VALUE = double(1L)),
-                         skew = suppressWarnings(vapply(x, misty::skewness, sample = sample, check = FALSE, FUN.VALUE = double(1L))),
-                         kurt = suppressWarnings(vapply(x, misty::kurtosis, sample = sample, check = FALSE, FUN.VALUE = double(1L))),
+                         n     = vapply(x, function(y) length(y[!is.na(y)]), FUN.VALUE = integer(1L)),
+                         nNA   = vapply(x, function(y) sum(is.na(y)), FUN.VALUE = integer(1L)),
+                         pNA   = vapply(x, function(y) sum(is.na(y)) / length(y) * 100L, FUN.VALUE = double(1L)),
+                         nUQ   = vapply(x, function(y) misty::uniq.n(y), FUN.VALUE = integer(1L)),
+                         m     = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, mean(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         se.m  = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <= 1L, NA, sd(z, na.rm = FALSE) / sqrt(length(z))))(), FUN.VALUE = double(1L)),
+                         var   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <= 1L, NA, var(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         sd    = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <= 1L, NA, sd(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         min   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, min(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         p.min = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, sum(z == min(z, na.rm = FALSE)) / length(z) * 100L))(), FUN.VALUE = double(1L)),
+                         p25   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, quantile(z, probs = 0.25, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         med   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, median(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         p75   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, quantile(z, probs = 0.75, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         max   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, max(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         p.max = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, sum(z == max(z, na.rm = FALSE)) / length(z) * 100L))(), FUN.VALUE = double(1L)),
+                         range = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, diff(range(z, na.rm = FALSE))))(), FUN.VALUE = double(1L)),
+                         iqr   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, IQR(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         skew  = suppressWarnings(vapply(x, misty::skewness, sample = sample, check = FALSE, FUN.VALUE = double(1L))),
+                         kurt  = suppressWarnings(vapply(x, misty::kurtosis, sample = sample, check = FALSE, FUN.VALUE = double(1L))),
                          row.names = NULL, check.names = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

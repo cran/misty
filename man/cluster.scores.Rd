@@ -15,7 +15,7 @@ data frame for centering more than one predictor variable.}
 
 \item{...}{an expression indicating the variable names in \code{data} e.g.,
 \code{cluster.scores(dat, x1, x2, cluster = "cluster")}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::}, and \code{!} can also
+\code{+}, \code{-}, \code{~}, \code{:}, \code{::}, and \code{!} can also
 be used to select variables, see 'Details' in the
 \code{\link{df.subset}} function.}
 

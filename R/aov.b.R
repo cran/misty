@@ -169,14 +169,26 @@
 #' # Example 4: Between-subject ANOVA, plot results
 #' aov.b(mpg ~ gear, data = mtcars, plot = TRUE)
 #'
-#' \dontrun{
 #' # Example 5: Write Results into a text file
 #' aov.b(mpg ~ gear, data = mtcars, write = "ANOVA.txt")
 #'
 #' # Example 6: Save plot
 #' aov.b(mpg ~ gear, data = mtcars, plot = TRUE, filename = "Between-Subject_ANOVA.png",
 #'       width = 7, height = 6)
-#' }
+#'
+#' # Example 7: Draw plot in line with the default setting of aov.b()
+#'library(ggplot2)
+#'
+#'object <- aov.b(mpg ~ gear, data = mtcars, output = FALSE)
+#'
+#'ggplot(object$data, aes(group, y)) +
+#'       geom_bar(stat = "summary", fun = "mean") +
+#'       geom_errorbar(data = ci.mean(object$data, y, group = "group", adjust = TRUE,
+#'                     output = FALSE)$result,
+#'                     aes(group, m, ymin = low, ymax = upp), width = 0.1) +
+#'       scale_x_discrete(name = NULL) +
+#'       labs(subtitle = "Two-Sided Difference-Adjusted Confidence Interval") +
+#'       theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
 aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95, hypo = TRUE,
                   descript = TRUE, effsize = FALSE, weighted = FALSE, correct = FALSE,
                   digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE,

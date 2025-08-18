@@ -16,9 +16,9 @@
 #'                    one variable, the first variable is always the focal variable
 #'                    in the Chi-square test of independence which association
 #'                    with all other variables is investigated. Note that the
-#'                    operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
-#'                    \code{::}, and \code{!} can also be used to select variables,
-#'                    see 'Details' in the \code{\link{df.subset}} function.
+#'                    operators \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                    and \code{!} can also be used to select variables, see 'Details'
+#'                    in the \code{\link{df.subset}} function.
 #' @param type        a character string indicating the type of effect size, i.e.,
 #'                    \code{phi} for phi coefficient, \code{cramer} for Cramer's
 #'                    V, \code{tschuprow} for Tschuprow’s T, \code{cont} for
@@ -133,13 +133,11 @@
 #' # Alternative specification without using the '...' argument
 #' effsize(mtcars[, c("cyl", "vs", "am", "gear", "carb")])
 #'
-#' \dontrun{
 #' # Example 7a: Write Results into a text file
 #' effsize(mtcars, cyl, vs:carb, write = "Cramer.txt")
 #'
 #' # Example 7b: Write Results into a Excel file
 #' effsize(mtcars, cyl, vs:carb, write = "Cramer.xlsx")
-#' }
 effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w", "fei"),
                     alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
                     adjust = TRUE, indep = TRUE, p = NULL, digits = 3, as.na = NULL,
@@ -160,15 +158,15 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(..., data = data)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[, .var.names(data = data, ...)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 
@@ -232,7 +230,7 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
     } else {
 
       # All dichotomous variables
-      if (isTRUE(all(apply(x, 2L, function(y) length(unique(y)) == 2L)))) {
+      if (isTRUE(all(sapply(x, function(y) misty::uniq.n(y) <= 2L)))) {
 
         type <- "phi"
 
@@ -264,7 +262,7 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
     } else {
 
       # Phi
-      if (isTRUE(any(apply(x, 2L, function(y) length(na.omit(unique(y))) != 2L)) && type == "phi")) { stop("Phi is only available for dichotomous variables.", call. = FALSE) }
+      if (isTRUE(any(sapply(x, function(y) misty::uniq.n(y) > 2L)) && type == "phi")) { stop("Phi is only available for dichotomous variables.", call. = FALSE) }
 
       # Fei
       if (isTRUE(indep && type == "fei")) { stop("Fei is only available for chi-square goodness-of-fit test.", call. = FALSE) }
@@ -313,7 +311,7 @@ effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w
   } else if (isTRUE(indep && ncol(x) == 2L)) {
 
     # Phi
-    switch(type, phi =  {
+    switch(type, phi = {
 
       result <- .phi(x, adjust = adjust, p = NULL, conf.level = conf.level, alternative = alternative)
 

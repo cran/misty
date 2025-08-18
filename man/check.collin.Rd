@@ -121,11 +121,11 @@ mod.glm <- glm(y2 ~ x1 + x2 + x3, data = dat, family = "binomial")
 check.collin(mod.glm)
 
 \dontrun{
-# Load lme4, nlme, and glmmTMB package
-libraries(lme4, nlme, glmmTMB)
-
 #----------------------------------------------------------------------------
 # Linear mixed-effects model
+
+# Load lme4, nlme, and glmmTMB package
+libraries(lme4, nlme, glmmTMB)
 
 # Estimate linear mixed-effects model using lme4 package
 mod.lmer <- lmer(y1 ~ x1 + x2 + x3 + (1|group), data = dat)

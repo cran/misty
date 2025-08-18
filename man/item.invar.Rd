@@ -37,7 +37,7 @@ argument \code{cluster}.}
 
 \item{...}{ an expression indicating the variable names in \code{data},
 e.g., \code{item.invar(dat, x1, x2, x2, group = "group")}.
-Note that the operators \code{.}, \code{+}, \code{-},
+Note that the operators \code{+}, \code{-},
 \code{~}, \code{:}, \code{::}, and \code{!} can also be
 used to select variables, see 'Details' in the
 \code{\link{df.subset}} function.}

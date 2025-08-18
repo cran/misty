@@ -6,7 +6,7 @@
 #'
 #' @param data        a numeric vector or data frame.
 #' @param ...         an expression indicating the variable names in \code{data}.
-#'                    Note that the operators \code{.}, \code{+}, \code{-},
+#'                    Note that the operators \code{+}, \code{-},
 #'                    \code{~}, \code{:}, \code{::}, and \code{!} can also be
 #'                    used to select variables, see 'Details' in the
 #'                    \code{\link{df.subset}} function.
@@ -267,18 +267,18 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[,  .var.names(..., data = data, cluster = cluster)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[,  .var.names(data = data, ..., cluster = cluster)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Cluster variable
     cluster <- data[, cluster]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 
@@ -413,17 +413,17 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
     } else if (isTRUE(no.clust == "two")) {
 
       # Level 1 Variable
-      if (isTRUE(any(na.omit(as.vector(tapply(x, apply(cluster, 1L, paste, collapse = ""), var, na.rm = TRUE))) != 0L))) {
+      if (isTRUE(any(na.omit(as.vector(tapply(x, apply(cluster, 1L, paste, collapse = ""), var, na.rm = TRUE))) > .Machine$double.eps^0.5))) {
 
         vartype <- "L1"
 
       # Level 2 Variable
-      } else if (isTRUE(all(na.omit(as.vector(tapply(x, apply(cluster, 1L, paste, collapse = ""), var, na.rm = TRUE))) == 0L) && any(as.vector(tapply(x, cluster[, 1L], var, na.rm = TRUE)) != 0L))) {
+      } else if (isTRUE(all(na.omit(as.vector(tapply(x, apply(cluster, 1L, paste, collapse = ""), var, na.rm = TRUE))) < .Machine$double.eps^0.5) && any(as.vector(tapply(x, cluster[, 1L], var, na.rm = TRUE)) > .Machine$double.eps^0.5))) {
 
         vartype <- "L2"
 
       # Level 3 Variable
-      } else if (isTRUE(all(na.omit(as.vector(tapply(x, apply(cluster, 1L, paste, collapse = ""), var, na.rm = TRUE))) == 0L) && all(na.omit(as.vector(tapply(x, cluster[, 1L], var, na.rm = TRUE))) == 0L))) {
+      } else if (isTRUE(all(na.omit(as.vector(tapply(x, apply(cluster, 1L, paste, collapse = ""), var, na.rm = TRUE))) < .Machine$double.eps^0.5) && all(na.omit(as.vector(tapply(x, cluster[, 1L], var, na.rm = TRUE))) < .Machine$double.eps^0.5))) {
 
         vartype <- "L3"
 
@@ -544,7 +544,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
           # Intraclass correlation coefficient
           icc1.l2 <- var.u / var.total
-          icc2.l2 <- var.u / (var.u + var.r / mean(table(cluster)))
+          icc2.l2 <- var.u / (var.u + (var.r / mean(table(cluster))))
 
           if (isTRUE(icc1.l2 < 0L)) { icc1.l2 <- 0L }
           if (isTRUE(icc2.l2 < 0L)) { icc2.l2 <- 0L }
@@ -589,8 +589,10 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
           # Mean
           mean.x <- mean(x, na.rm = TRUE)
+
           # Variance
           var.u <- var(x, na.rm = TRUE)
+
           # Standard deviation
           sd.u <- sqrt(var.u)
 
@@ -730,22 +732,22 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
             icc1.l3 <- var.v / var.total
             icc1.l2 <- var.u / var.total
 
-            # ICC(1), estimate of the expected correlation
+          # ICC(1), estimate of the expected correlation
           } else if (isTRUE(type == "1b")) {
 
             icc1.l3 <- var.v / var.total
-            icc1.l2 <- var.v + var.u / var.total
+            icc1.l2 <- (var.v + var.u) / var.total
 
           }
 
-          # ICC(1) Level 2, Formula 10.27, Hox et al. (2018), p. 186
-          icc2.l2 <- var.u / (var.u + var.r / m.cluster.size.l2)
+          # ICC(2) Level 2, Formula 10.27, Hox et al. (2018), p. 186
+          icc2.l2 <- var.u / (var.u + (var.r / m.cluster.size.l2))
 
-          # ICC(1) Level 3, Formula 10.25, Hox et al. (2018), p. 185
-          icc2.l3 <- var.v / (var.v + var.u / m.cluster.size.l3 + var.r / (m.cluster.size.l2 * m.cluster.size.l3))
+          # ICC(2) Level 3, Formula 10.25, Hox et al. (2018), p. 185
+          icc2.l3 <- var.v / (var.v + (var.u / m.cluster.size.l3) + (var.r / (m.cluster.size.l2 * m.cluster.size.l3)))
 
           # Design effect, see: https://www.dougjohnson.in/post/3-stage/
-          deff <- 1 + (m.cluster.size.l2 - 1)*(var.u / var.total) + (m.cluster.size.l3*m.cluster.size.l2 - 1)*(var.v / var.total)
+          deff <- 1L + (m.cluster.size.l2 - 1L)*(var.u / var.total) + (m.cluster.size.l3*m.cluster.size.l2 - 1L)*(var.v / var.total)
 
           # Square root design effect
           deff.sqrt <- sqrt(deff)
@@ -860,7 +862,7 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
           # Intraclass correlation coefficient
           icc1.l3 <- var.v / var.total
-          icc2.l3 <- var.v / (var.v + var.u / mean(table(cluster.l2)))
+          icc2.l3 <- var.v / (var.v + (var.u / mean(table(cluster.l2))))
 
           # Design effect
           deff <- 1L + icc1.l3*(mean(table(cluster.l2)) - 1L)
@@ -945,11 +947,9 @@ multilevel.descript <- function(data, ..., cluster, type = c("1a", "1b"),
 
   object <- list(call = match.call(),
                  type = "multilevel.descript",
-                 data = data.frame(x = x, cluster = cluster, stringsAsFactors = FALSE),
+                 data = data.frame(x = x, cluster = cluster),
                  no.cluster = no.clust,
-                 args = list(print = print, type = type, method = method, REML = REML,
-                             digits = digits, icc.digits = icc.digits, as.na = as.na,
-                             write = write, append = append, check = check, output = output),
+                 args = list(print = print, type = type, method = method, REML = REML, digits = digits, icc.digits = icc.digits, as.na = as.na, write = write, append = append, check = check, output = output),
                  result = list(no.obs = no.obs, no.miss = no.miss,
                                no.cluster.l2 = no.cluster.l2, no.cluster.l3 = no.cluster.l3,
                                m.cluster.size.l2 = m.cluster.size.l2, m.cluster.size.l3 = m.cluster.size.l3,

@@ -6,8 +6,8 @@
 \usage{
 multilevel.cor(data, ..., cluster, within = NULL, between = NULL,
                estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"),
-               missing = c("listwise", "fiml"), sig = FALSE, alpha = 0.05,
-               print = c("all", "cor", "se", "stat", "p"), split = FALSE,
+               optim.switch = TRUE, missing = c("listwise", "fiml"), sig = FALSE,
+               alpha = 0.05, print = c("all", "cor", "se", "stat", "p"), split = FALSE,
                order = FALSE, tri = c("both", "lower", "upper"), tri.lower = TRUE,
                p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel",
                          "BH", "BY", "fdr"), digits = 2, p.digits = 3,
@@ -19,7 +19,7 @@ multilevel.cor(data, ..., cluster, within = NULL, between = NULL,
 
 \item{...}{an expression indicating the variable names in \code{data},
 e.g., \code{multilevel.cor(dat, x1, x2, x3)}. Note that
-the operators \code{.}, \code{+}, \code{-}, \code{~},
+the operators \code{+}, \code{-}, \code{~},
 \code{:}, \code{::}, and \code{!} can also be used to
 select variables, see 'Details' in the \code{\link{df.subset}}
 function.}
@@ -49,10 +49,15 @@ depends on the argument \code{sig}, i.e., \code{"ML"} is
 used when specifying \code{sig = FALSE} (default) and
 \code{"MLR"} is used when specifying \code{sig = TRUE}.}
 
-\item{optim.method}{a character string indicating the optimizer, i.e., \code{nlminb}
+\item{optim.method}{a character string indicating the optimizer, i.e., \code{"nlminb"}
 (default) for the unconstrained and bounds-constrained
 quasi-Newton method optimizer and \code{"em"} for the
 Expectation Maximization (EM) algorithm.}
+
+\item{optim.switch}{logical: if \code{TRUE} (default), model estimation switches
+to Expectation Maximization (EM) algorithm (\code{"em"})
+if the quasi-Newton optimization (\code{"nlminb"} (default))
+does not converge.}
 
 \item{missing}{a character string indicating how to deal with missing
 data, i.e., \code{"listwise"} for listwise deletion or
@@ -190,7 +195,8 @@ convergence, which will be resolved by switching to listwise deletion
 (\code{missing = "listwise"}).}
 \item{\strong{Optimizer}}{The lavaan package uses a quasi-Newton optimization
 method (\code{"nlminb"}) by default. If the optimizer does not converge, model
-estimation switches to the Expectation Maximization (EM) algorithm (\code{"nlminb"}).}
+estimation switches to the Expectation Maximization (EM) algorithm (\code{"em"})
+if the argument \code{optim.switch} is specified as \code{TRUE} (default).}
 \item{\strong{Statistical Significance}}{Statistically significant correlation
 coefficients can be shown in boldface on the console by specifying \code{sig = TRUE}.
 However, this option is not supported when using R Markdown, i.e., the argument

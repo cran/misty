@@ -22,7 +22,7 @@
 #'                   computing coefficient omega
 #' @param ...        an expression indicating the variable names in \code{data}
 #'                   e.g., \code{item.omega(dat, x1, x2, x3)}. Note that the
-#'                   operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+#'                   operators \code{+}, \code{-}, \code{~}, \code{:},
 #'                   \code{::}, and \code{!} can also be used to select variables,
 #'                   see 'Details' in the \code{\link{df.subset}} function.
 #' @param rescov     a character vector or a list of character vectors for
@@ -42,17 +42,15 @@
 #'                   is computed.
 #' @param estimator  a character string indicating the estimator to be used
 #'                   (see 'Details' in the \code{\link{item.cfa}} function).
-#'                   By default, \code{"ULS"} is used for computing (hierarchical)
+#'                   By default, \code{"ML"} is used for computing (hierarchical)
 #'                   coefficient omega and \code{"DWLS"} is used for computing
 #'                   ordinal coefficient omega.
 #' @param missing    a character string indicating how to deal with missing data.
 #'                   (see 'Details' in the \code{\link{item.cfa}} function). By
-#'                   default, pairwise deletion (\code{missing = "pairwise"}) is
-#'                   used for computing (hierarchical) coefficient omega and ordinal
-#'                   coefficient omega. Full information maximum likelihood method
-#'                   is available for estimating (hierarchical) coefficient omega
-#'                   and is requested by specifying \code{missing = "fiml"}
-#'                   along with \code{estimator = "ML"}.
+#'                   default, full information maximum likelihood method (\code{missing = "fiml"})
+#'                   is used for computing (hierarchical) coefficient omega and
+#'                   pairwise deletion (\code{missing = "pairwise"}) is used to
+#'                   compute coefficient omega.
 #' @param print      a character vector indicating which results to show, i.e.
 #'                   \code{"all"} for all results \code{"omega"} (default) for
 #'                   the coefficient omega, and \code{"item"} for item statistics.
@@ -149,25 +147,23 @@
 #' dat <- data.frame(item1 = c(3, NA, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 2, 2, 1, 3, 1),
 #'                   item3 = c(4, 2, 4, 2, 1, 3, 4, 1), item4 = c(4, 1, 2, 2, 1, 3, 4, 3))
 #'
-#' # Example 1a: Coefficient omega and item statistics, pairwise deletion
+#' # Example 1a: Coefficient omega, full information maximum likelihood method
 #' item.omega(dat)
 #'
-#' # Example 1b: Coefficient omega and item statistics, listwise deletion
+#' # Example 1b: Coefficient omega, listwise deletion
 #' item.omega(dat, missing = "listwise")
 #'
 #' # Example 2: Coefficient omega and item statistics after excluding item3
-#' item.omega(dat, exclude = "item3")
+#' item.omega(dat, exclude = "item3", print = "all")
 #'
 #' # Example 3a: Coefficient omega with a residual covariance
-#' # and item statistics
 #' item.omega(dat, rescov = c("item1", "item2"))
 #'
 #' # Example 3b: Coefficient omega with residual covariances
-#' # and item statistics
 #' item.omega(dat, rescov = list(c("item1", "item2"), c("item1", "item3")))
 #'
 #' # Example 4: Ordinal coefficient omega and item statistics
-#' item.omega(dat, type = "categ")
+#' item.omega(dat, type = "categ", print = "all")
 #'
 #' # Example 6: Summary of the CFA model used to compute coefficient omega
 #' lavaan::summary(item.omega(dat, output = FALSE)$model.fit,
@@ -201,15 +197,15 @@ item.omega <- function(data, ..., rescov = NULL,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data Using the Argument 'data' ####
+  ## Data Using the Argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
+    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data Without Using the Argument 'data' ####
+  ## Data Without Using the Argument '...' ####
 
   } else {
 
@@ -455,7 +451,7 @@ item.omega <- function(data, ..., rescov = NULL,
   object <- list(call = match.call(),
                  type = "item.omega",
                  data = x,
-                 args = list(rescov = rescov, type = type, exclude = exclude, std = std, estimator = estimator, missing = missing, print = print, digits = digits, conf.level = conf.level, as.na = as.na, write = write, append = append, check = check, output = output),
+                 args = list(rescov = rescov, type = type, exclude = exclude, estimator = estimator, missing = missing, print = print, digits = digits, conf.level = conf.level, as.na = as.na, write = write, append = append, check = check, output = output),
                  model.fit = omega.mod$mod.fit,
                  result = list(omega = omega.x, itemstat = itemstat))
 

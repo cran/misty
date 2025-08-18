@@ -22,7 +22,9 @@
 #' Jeroen Ooms
 #'
 #' @seealso
-#' \code{\link{read.xlsx}}, \code{\link{write.sav}}, \code{\link{write.dta}},
+#' \code{\link{read.data}}, \code{\link{write.data}}, \code{\link{read.sav}},
+#' \code{\link{write.sav}}, \code{\link{read.xlsx}},
+#' \code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.mplus}},
 #' \code{\link{write.mplus}}
 #'
 #' @references

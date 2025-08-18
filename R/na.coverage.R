@@ -7,7 +7,7 @@
 #'               values are coded as \code{NA}.
 #' @param ...    an expression indicating the variable names in \code{data}, e.g.,
 #'               \code{na.coverage(dat, x1, x2, x3)}. Note that the operators
-#'               \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'               \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'               and \code{!} can also be used to select variables, see 'Details'
 #'               in the \code{\link{df.subset}} function.
 #' @param tri    a character string or character vector indicating which triangular
@@ -41,7 +41,7 @@
 #' \code{\link{na.prop}}, \code{\link{na.test}}, \code{\link{write.result}}
 #'
 #' @references
-#' Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
+#' Enders, C. K. (2022). \emph{Applied missing data analysis} (2nd ed.). The Guilford Press.
 #'
 #' Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 #' \emph{Annual Review of Psychology, 60}, 549-576. https://doi.org/10.1146/annurev.psych.58.110405.085530
@@ -64,13 +64,11 @@
 #' # Example 1: Compute variance-covariance coverage
 #' na.coverage(airquality)
 #'
-#' \dontrun{
 #' # Example 2a: Write Results into a text file
 #' na.coverage(airquality, write = "Coverage.txt")
 #'
 #' # Example 2b: Write Results into a Excel file
 #' na.coverage(airquality, write = "Coverage.xlsx")
-#' }
 na.coverage <- function(data, ..., tri = c("both", "lower", "upper"), digits = 2,
                         as.na = NULL, write = NULL, append = TRUE, check = TRUE,
                         output = TRUE) {
@@ -90,15 +88,15 @@ na.coverage <- function(data, ..., tri = c("both", "lower", "upper"), digits = 2
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
+    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

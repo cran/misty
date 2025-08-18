@@ -41,3 +41,5 @@ restart <- function() {
   rstudioapi::executeCommand("restartR")
 
 }
+
+#_______________________________________________________________________________

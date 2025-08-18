@@ -11,7 +11,7 @@
 #'                the date and time variable (\code{time}) are excluded from
 #'                \code{data} when specifying theses arguments.
 #' @param ...     an expression indicating the variable names in \code{data}.
-#'                Note that the operators \code{.}, \code{+}, \code{-}, \code{~},
+#'                Note that the operators \code{+}, \code{-}, \code{~},
 #'                \code{:}, \code{::}, and \code{!} can also be used to select
 #'                variables, see 'Details' in the \code{\link{df.subset}} function.
 #' @param id      either a character string indicating the variable name of the
@@ -160,12 +160,12 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Variable names
-    var.names <- .var.names(..., data = data, id = id, obs = obs, day = day, time = time)
+    var.names <- .var.names(data = data, ..., id = id, obs = obs, day = day, time = time)
 
     # Extract data and convert tibble into data frame or vector
     x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
@@ -183,7 +183,7 @@ lagged <- function(data, ..., id = NULL, obs = NULL, day = NULL, lag = 1, time =
     if (isTRUE(!is.null(time))) { time <- data[, time] }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

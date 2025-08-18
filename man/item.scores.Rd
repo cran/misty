@@ -13,7 +13,7 @@ item.scores(data, ..., fun = c("mean", "sum", "median", "var", "sd", "min", "max
 
 \item{...}{an expression indicating the variable names in \code{data},
 e.g., \code{item.scores(dat, x1, x2, x3)}. Note that the
-operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+operators \code{+}, \code{-}, \code{~}, \code{:},
 \code{::}, and \code{!} can also be used to select variables,
 see 'Details' in the \code{\link{df.subset}} function.}
 

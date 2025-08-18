@@ -186,7 +186,8 @@ test.levene(mpg ~ gear, data = mtcars, write = "Levene.txt")
 
 # Example 5: Levene's test based on the median, save plot
 test.levene(mpg ~ gear, data = mtcars, plot = TRUE,
-            filename = "Levene-test.png", dpi = 600, width = 6, height = 5)}
+            filename = "Levene-test.png", dpi = 600, width = 6, height = 5)
+}
 }
 \references{
 Brown, M. B., & Forsythe, A. B. (1974). Robust tests for the equality of

@@ -60,8 +60,10 @@ Wickham H, Miller E, & Smith D (2023). \emph{haven: Import and Export 'SPSS', 'S
 R package version 2.5.3. \url{https://CRAN.R-project.org/package=haven}
 }
 \seealso{
-\code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.xlsx}},
-\code{\link{write.xlsx}}, \code{\link{read.mplus}}, \code{\link{write.mplus}}
+\code{\link{read.data}}, \code{\link{write.data}},
+\code{\link{write.sav}}, \code{\link{write.xlsx}},
+\code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.mplus}},
+\code{\link{write.mplus}}
 }
 \author{
 Hadley Wickham, Evan Miller and Danny Smith

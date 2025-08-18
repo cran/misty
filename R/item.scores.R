@@ -21,7 +21,7 @@
 #' @param data     a data frame with numeric vectors.
 #' @param ...      an expression indicating the variable names in \code{data},
 #'                 e.g., \code{item.scores(dat, x1, x2, x3)}. Note that the
-#'                 operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+#'                 operators \code{+}, \code{-}, \code{~}, \code{:},
 #'                 \code{::}, and \code{!} can also be used to select variables,
 #'                 see 'Details' in the \code{\link{df.subset}} function.
 #' @param fun      a character string indicating the function used to compute
@@ -133,15 +133,15 @@ item.scores <- function(data, ..., fun = c("mean", "sum", "median", "var", "sd",
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(..., data = data)])
+    x <- as.data.frame(data[, .var.names(data = data, ...)])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

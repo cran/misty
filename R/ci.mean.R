@@ -15,10 +15,10 @@
 #'                          analysis.
 #' @param ...               an expression indicating the variable names in \code{data}
 #'                          e.g., \code{ci.mean(x1, x2, data = dat)}. Note that the
-#'                          operators \code{.}, \code{+}, \code{-}, \code{~},
-#'                          \code{:}, \code{::}, and \code{!} can also be used
-#'                          to select variables, see 'Details' in the
-#'                          \code{\link{df.subset}} function.
+#'                          operators \code{+}, \code{-}, \code{~}, \code{:},
+#'                          \code{::}, and \code{!} can also be used to select
+#'                          variables, see 'Details' in the \code{\link{df.subset}}
+#'                          function.
 #' @param sigma             a numeric vector indicating the population standard
 #'                          deviation when computing confidence intervals for the
 #'                          arithmetic mean with known standard deviation Note
@@ -508,12 +508,12 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(..., data = data, group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[, .var.names(data = data, ..., group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -522,7 +522,7 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
     if (isTRUE(!is.null(split))) { split <- data[, split] }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

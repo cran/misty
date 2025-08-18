@@ -14,7 +14,7 @@
 #'                     using the variable name of the cluster variable.
 #' @param ...          an expression indicating the variable names in \code{data},
 #'                     e.g., \code{multilevel.omega(dat, x1, x2, x3, cluster = "cluster)}.
-#'                     Note that the operators \code{.}, \code{+}, \code{-},
+#'                     Note that the operators \code{+}, \code{-},
 #'                     \code{~}, \code{:}, \code{::}, and \code{!} can also be
 #'                     used to select variables, see 'Details' in the
 #'                     \code{\link{df.subset}} function.
@@ -202,18 +202,18 @@ multilevel.omega <- function(data, ..., cluster, rescov = NULL,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data
-    x <- as.data.frame(data[, .var.names(..., data = data, cluster = cluster), drop = FALSE])
+    x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
 
     # Cluster variable
     cluster <- data[, cluster]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

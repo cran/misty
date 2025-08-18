@@ -8,7 +8,7 @@
 #'                 coded as \code{NA}.
 #' @param ...      an expression indicating the variable names in \code{data}, e.g.,
 #'                 \code{na.test(dat, x1, x2, x3)}. Note that the operators
-#'                 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                 \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'                 and \code{!} can also be used to select variables, see 'Details'
 #'                 in the \code{\link{df.subset}} function.
 #' @param print    a character vector indicating which results to be printed on
@@ -204,7 +204,7 @@
 #' imputation: Power and applicability analysis. \emph{BMC Medical Research
 #' Methodology}, 17:129. https://doi.org/10.1186/s12874-017-0404-7
 #'
-#' Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
+#' Enders, C. K. (2022). \emph{Applied missing data analysis} (2nd ed.). The Guilford Press.
 #'
 #' Little, R. J. A. (1988). A test of Missing Completely at Random for multivariate
 #' data with missing values. \emph{Journal of the American Statistical Association,
@@ -285,15 +285,15 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
+    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 
@@ -429,7 +429,7 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
     ## Result table ####
 
     restab.little <- data.frame(no.cases = nrow(x), no.incomplete = misty::na.descript(x, output = FALSE)$result$L1$no.incomplete.l1, no.pattern = restab.LittleMCAR$missing.patterns,
-                                statistic = restab.LittleMCAR$chi.square, df = restab.LittleMCAR$df, pval = restab.LittleMCAR$p.value, row.names = NULL)
+                                statistic = restab.LittleMCAR$chi.square, df = restab.LittleMCAR$df, p = restab.LittleMCAR$p.value, row.names = NULL)
 
   } else {
 
@@ -449,10 +449,10 @@ na.test <- function(data, ..., print = c("all", "little", "jamjal"),
     ## Result table ####
 
     restab.hawkins <- data.frame(no.cases = nrow(restab.TestMCARNormality$dat.analysis), no.incomplete = misty::na.descript(restab.TestMCARNormality$dat.analysis, output = FALSE)$result$L1$no.incomplete.l1, no.pattern = restab.TestMCARNormality$g,
-                                 statistic = restab.TestMCARNormality$tsa.hawkins, df = 2L*restab.TestMCARNormality$g, pval = restab.TestMCARNormality$pa.hawkins, row.names = NULL)
+                                 statistic = restab.TestMCARNormality$tsa.hawkins, df = 2L*restab.TestMCARNormality$g, p = restab.TestMCARNormality$pa.hawkins, row.names = NULL)
 
     restab.anderson <- data.frame(no.cases = nrow(restab.TestMCARNormality$dat.analysis), no.incomplete = misty::na.descript(restab.TestMCARNormality$dat.analysis, output = FALSE)$result$L1$no.incomplete.l1, no.pattern = restab.TestMCARNormality$g,
-                                  statistic = restab.TestMCARNormality$tsa.anderson, pval = restab.TestMCARNormality$pa.anderson, row.names = NULL)
+                                  statistic = restab.TestMCARNormality$tsa.anderson, p = restab.TestMCARNormality$pa.anderson, row.names = NULL)
 
   } else {
 

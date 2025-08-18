@@ -245,7 +245,8 @@ test.t(mtcars$mpg, mu = 20, plot = TRUE)
 \dontrun{
 # Example 1d: Two-sided one-sample t-test, population mean = 20, save plot
 test.t(mtcars$mpg, mu = 20, plot = TRUE, filename = "One-sample_t-test.png",
-       width = 4, height = 5)}
+       width = 4, height = 5)
+}
 
 #----------------------------------------------------------------------------
 # Two-Sample Design
@@ -265,7 +266,8 @@ test.t(mpg ~ vs, data = mtcars, plot = TRUE)
 \dontrun{
 # Example 2e: Two-sided two-sample t-test, plot results
 test.t(mpg ~ vs, data = mtcars, plot = TRUE, filename = "Two-sample_t-test.png",
-       width = 5, height = 6)}
+       width = 5, height = 6)
+}
 
 #----------------------------------------------------------------------------
 # Paired-Sample Design
@@ -284,7 +286,8 @@ test.t(mtcars$drat, mtcars$wt, paired = TRUE, plot = TRUE)
 \dontrun{
 # Example 3d: Two-sided paired-sample t-test, save plot
 test.t(mtcars$drat, mtcars$wt, paired = TRUE, plot = TRUE,
-       filename = "Paired-sample_t-test.png", width = 4, height = 5)}
+       filename = "Paired-sample_t-test.png", width = 4, height = 5)
+}
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in

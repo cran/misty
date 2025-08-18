@@ -34,7 +34,7 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{dominance}}, \code{\link{std.coef}}, \code{\link{write.result}}
+#' \code{\link{dominance}}, \code{\link{coeff.std}}, \code{\link{write.result}}
 #'
 #' @references
 #' Azen, R., & Budescu, D. V. (2003). The dominance analysis approach for comparing

@@ -8,24 +8,15 @@
 #' confidence intervals) and plots the bootstrap samples with histograms and
 #' density curves.
 #'
-#' The confidence interval based on the chi-square distribution is computed by
-#' specifying \code{method = "chisq"}, while the Bonett (2006) confidence interval
-#' is requested by specifying \code{method = "bonett"}. By default, the Bonett
-#' confidence interval interval is computed which performs well under moderate
-#' departure from normality, while the confidence interval based on the chi-square
-#' distribution is highly sensitive to minor violations of the normality assumption
-#' and its performance does not improve with increasing sample size. Note that at
-#' least four valid observations are needed to compute the Bonett confidence interval.
-#'
 #' @param data              a numeric vector or data frame with numeric variables,
 #'                          i.e., factors and character variables are excluded
 #'                          from \code{data} before conducting the analysis.
 #' @param ...               an expression indicating the variable names in \code{data},
 #'                          e.g., \code{ci.var(dat, x1, x2, x3)}. Note that the
-#'                          operators \code{.}, \code{+}, \code{-}, \code{~},
-#'                          \code{:}, \code{::}, and \code{!} can also be used
-#'                          to select variables, see 'Details' in the
-#'                          \code{\link{df.subset}} function.
+#'                          operators \code{+}, \code{-}, \code{~}, \code{:},
+#'                          \code{::}, and \code{!} can also be used to select
+#'                          variables, see 'Details' in the \code{\link{df.subset}}
+#'                          function.
 #' @param method            a character string specifying the method for computing
 #'                          the confidence interval, must be one of \code{"chisq"},
 #'                          or \code{"bonett"} (default).
@@ -314,6 +305,16 @@
 #' @param output            logical: if \code{TRUE} (default), output is shown
 #'                          on the console.
 #'
+#' @details#'
+#' The confidence interval based on the chi-square distribution is computed by
+#' specifying \code{method = "chisq"}, while the Bonett (2006) confidence interval
+#' is requested by specifying \code{method = "bonett"}. By default, the Bonett
+#' confidence interval interval is computed which performs well under moderate
+#' departure from normality, while the confidence interval based on the chi-square
+#' distribution is highly sensitive to minor violations of the normality assumption
+#' and its performance does not improve with increasing sample size. Note that at
+#' least four valid observations are needed to compute the Bonett confidence interval.
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
@@ -495,7 +496,7 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(..., data = data, group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[, .var.names(data = data, ..., group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -898,12 +899,12 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(..., data = data, group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[, .var.names(data = data, ..., group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -911,8 +912,8 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
     # Splitting variable
     if (isTRUE(!is.null(split))) { split <- data[, split] }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Data without using the argument 'data' ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data without using the argument '...' ####
 
   } else {
 

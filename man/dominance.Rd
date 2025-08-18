@@ -135,7 +135,7 @@ Luchman J (2023). \emph{domir: Tools to support relative importance analysis}. R
 version 1.0.1, https://CRAN.R-project.org/package=domir.
 }
 \seealso{
-\code{\link{dominance.manual}}, \code{\link{std.coef}}, \code{\link{write.result}}
+\code{\link{dominance.manual}}, \code{\link{coeff.std}}, \code{\link{write.result}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

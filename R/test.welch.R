@@ -173,11 +173,9 @@
 #' # Example 2d: Welch's ANOVA, plot results
 #' test.welch(mpg ~ gear, data = mtcars, plot = TRUE)
 #'
-#' \dontrun{
 #' # Example 2e: Welch's ANOVA, save plot
 #' test.welch(mpg ~ gear, data = mtcars, plot = TRUE,
 #'            filename = "Multiple-sample_Welch-test.png", width = 6, height = 5)
-#' }
 test.welch <- function(formula, data, alternative = c("two.sided", "less", "greater"),
                        posthoc = FALSE, conf.level = 0.95, hypo = TRUE, descript = TRUE,
                        effsize = FALSE, weighted = FALSE, ref = NULL, correct = FALSE,

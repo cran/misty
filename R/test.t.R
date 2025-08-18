@@ -188,11 +188,9 @@
 #' # Example 1c: Two-sided one-sample t-test, population mean = 20, plot results
 #' test.t(mtcars$mpg, mu = 20, plot = TRUE)
 #'
-#' \dontrun{
 #' # Example 1d: Two-sided one-sample t-test, population mean = 20, save plot
 #' test.t(mtcars$mpg, mu = 20, plot = TRUE, filename = "One-sample_t-test.png",
 #'        width = 4, height = 5)
-#' }
 #'
 #' #----------------------------------------------------------------------------
 #' # Two-Sample Design
@@ -209,11 +207,9 @@
 #' # Example 2d: Two-sided two-sample t-test, plot results
 #' test.t(mpg ~ vs, data = mtcars, plot = TRUE)
 #'
-#' \dontrun{
 #' # Example 2e: Two-sided two-sample t-test, plot results
 #' test.t(mpg ~ vs, data = mtcars, plot = TRUE, filename = "Two-sample_t-test.png",
 #'        width = 5, height = 6)
-#' }
 #'
 #' #----------------------------------------------------------------------------
 #' # Paired-Sample Design
@@ -229,11 +225,9 @@
 #' # Example 3c: Two-sided paired-sample t-test, plot results
 #' test.t(mtcars$drat, mtcars$wt, paired = TRUE, plot = TRUE)
 #'
-#' \dontrun{
 #' # Example 3d: Two-sided paired-sample t-test, save plot
 #' test.t(mtcars$drat, mtcars$wt, paired = TRUE, plot = TRUE,
 #'        filename = "Paired-sample_t-test.png", width = 4, height = 5)
-#' }
 test.t <- function(x, ...) {
 
   UseMethod("test.t")
@@ -365,7 +359,7 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
     result <- data.frame(n = x.ci[["n"]], nNA = x.ci[["nNA"]], m = x.ci[["m"]], sd = x.ci[["sd"]],
                          m.diff = x.ci[["m"]] - mu, se = t$stderr, m.low = x.ci[["low"]], m.upp = x.ci[["upp"]],
-                         t = t$statistic, df = t$parameter, pval = t$p.value, d = d$d, d.low = d$low, d.upp = d$upp,
+                         t = t$statistic, df = t$parameter, p = t$p.value, d = d$d, d.low = d$low, d.upp = d$upp,
                          row.names = NULL, check.names = FALSE)
 
     sample <- "one"
@@ -386,7 +380,7 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
     t <- t.test(x = x, y = y, alternative = switch(alternative, two.sided = "two.sided", greater = "less", less = "greater"), var.equal = TRUE)
 
     result <- data.frame(cbind(x.ci[, c("group", "n", "nNA", "m", "sd", "m.diff")], se = c(NA, t$stderr), x.ci[, c("m.low", "m.upp")],
-                               t = c(NA, t$statistic)*-1L, df = c(NA, t$parameter), pval = c(NA, t$p.value), d = d$d, d.low = d$low, d.upp = d$upp),
+                               t = c(NA, t$statistic)*-1L, df = c(NA, t$parameter), p = c(NA, t$p.value), d = d$d, d.low = d$low, d.upp = d$upp),
                          row.names = NULL, check.names = FALSE)
 
     sample <- "two"
@@ -407,7 +401,7 @@ test.t.default <- function(x, y = NULL, mu = 0, paired = FALSE,
 
     result <- data.frame(n = x.ci[["n"]], nNA = x.ci[["nNA"]], m1 = x.ci[["m1"]], m2 = x.ci[["m2"]],
                          m.diff = x.ci[["m.diff"]], sd.diff = x.ci[["sd.diff"]], se = t$stderr, m.low = x.ci[["low"]], m.upp = x.ci[["upp"]],
-                         t = t$statistic*-1, df = t$parameter, pval = t$p.value, d = d$d, d.low = d$low, d.upp = d$upp, row.names = NULL, check.names = FALSE)
+                         t = t$statistic*-1, df = t$parameter, p = t$p.value, d = d$d, d.low = d$low, d.upp = d$upp, row.names = NULL, check.names = FALSE)
 
     sample <- "paired"
 

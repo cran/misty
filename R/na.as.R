@@ -11,7 +11,7 @@
 #' @param ...     an expression indicating the variable names in \code{data}, e.g.,
 #'                \code{as.na(dat, x1, x2)} for selecting the variables \code{x1}
 #'                and \code{x2} from the data frame \code{dat}. Note that the
-#'                operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+#'                operators \code{+}, \code{-}, \code{~}, \code{:},
 #'                \code{::}, and \code{!} can also be used to select variables,
 #'                see 'Details' in the \code{\link{df.subset}} function.
 #' @param na      a vector indicating values or characters to replace with
@@ -160,7 +160,7 @@ as.na <- function(data, ..., na, replace = TRUE, check = TRUE) {
   if (isTRUE(!missing(...))) {
 
     # Variable names
-    var.names <- .var.names(..., data = data)
+    var.names <- .var.names(data = data, ...)
 
     # Extract data and convert tibble into data frame or vector
     x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()

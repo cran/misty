@@ -5,7 +5,7 @@
 \title{Effect Sizes for Categorical Variables}
 \usage{
 effsize(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w", "fei"),
-        alternative = c("two.sided", "less", "greater"),   conf.level = 0.95,
+        alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
         adjust = TRUE, indep = TRUE, p = NULL, digits = 3, as.na = NULL,
         write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
@@ -17,7 +17,7 @@ e.g., \code{effsize(dat, x1, x2)}. When specifying more than
 one variable, the first variable is always the focal variable
 in the Chi-square test of independence which association
 with all other variables is investigated. Note that the
-operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+operators \code{+}, \code{-}, \code{~}, \code{:},
 \code{::}, and \code{!} can also be used to select variables,
 see 'Details' in the \code{\link{df.subset}} function.}
 
@@ -129,7 +129,8 @@ effsize(mtcars[, c("cyl", "vs", "am", "gear", "carb")])
 effsize(mtcars, cyl, vs:carb, write = "Cramer.txt")
 
 # Example 7b: Write Results into a Excel file
-effsize(mtcars, cyl, vs:carb, write = "Cramer.xlsx")}
+effsize(mtcars, cyl, vs:carb, write = "Cramer.xlsx")
+}
 }
 \references{
 Bergsma, W. (2013). A bias correction for Cramer's V and Tschuprow's T.

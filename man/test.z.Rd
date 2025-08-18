@@ -237,7 +237,8 @@ test.z(mtcars$mpg, sigma = 6, mu = 20, plot = TRUE)
 \dontrun{
 # Example 1d: Two-sided one-sample z-test, save plot
 test.z(mtcars$mpg, sigma = 6, mu = 20, plot = TRUE, filename = "One-sample_z-test.png",
-       width = 4, height = 5)}
+       width = 4, height = 5)
+}
 
 #----------------------------------------------------------------------------
 # Two-Sample Design
@@ -263,7 +264,8 @@ test.z(mpg ~ vs, data = mtcars, sigma = 6, plot = TRUE)
 \dontrun{
 # Example 2f: Two-sided two-sample z-test, save plot
 test.z(mpg ~ vs, data = mtcars, sigma = 6, plot = TRUE, filename = "Two-sample_z-test.png",
-       width = 5, height = 6)}
+       width = 5, height = 6)
+}
 
 #----------------------------------------------------------------------------
 # Paired-Sample Design
@@ -283,7 +285,8 @@ test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE, plot = TRUE)
 \dontrun{
 # Example 3d: Two-sided paired-sample z-test, save plot
 test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE, plot = TRUE,
-       filename = "Paired-sample_z-test.png", width = 4, height = 5)}
+       filename = "Paired-sample_z-test.png", width = 4, height = 5)
+}
 }
 \references{
 Lakens, D. (2013). Calculating and reporting effect sizes to facilitate cumulative

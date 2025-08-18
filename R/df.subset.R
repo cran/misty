@@ -5,9 +5,9 @@
 #' @param data   a data frame.
 #' @param ...    an expression indicating variables to select from the data frame
 #'               specified in \code{data}. See Details for the list of operators
-#'               used in this function, i.e., \code{.}, \code{+}, \code{-},
-#'               \code{~}, \code{:}, \code{::}, and \code{!}. Note that all variables
-#'               are selected if the argument \code{...} is not specified.
+#'               used in this function, i.e., \code{+}, \code{-}, \code{~}, \code{:},
+#'               \code{::}, and \code{!}. Note that all variables are selected if
+#'               the argument \code{...} is not specified.
 #' @param subset a logical expression indicating rows to keep, e.g., \code{var == 1},
 #'               \code{var1 == 1 & var2 == 3}, or \code{gender == "female"}. By default,
 #'               all rows of the data frame specified in \code{data} are kept. Note
@@ -20,15 +20,9 @@
 #'
 #' @details
 #' The argument \code{...} is used to specify an expression indicating the
-#' variables to select from the data frame specified in \code{data}, e.g.,
-#' \code{df.subset(dat, x1, x2, x3)}. There are seven operators which
-#' can be used in the expression \code{...}:
+#' variables to select and/or remove from the data frame specified in \code{data}.
+#' There are six operators which can be used in the expression \code{...}:
 #' \describe{
-#' \item{\strong{Dot (\code{.}) Operator}}{The dot operator is used to select
-#' all variables from the data frame specified in \code{data}. For example,
-#' \code{df.subset(dat, .)} selects all variables in \code{dat}. Note
-#' that this operator is similar to the function \code{everything()} from the
-#' \pkg{tidyselect} package.}
 #' \item{\strong{Plus (\code{+}) Operator}}{The plus operator is used to select
 #' variables matching a prefix from the data frame specified in \code{data}. For
 #' example, \code{df.subset(dat, +x)} selects all variables with the
@@ -56,16 +50,15 @@
 #' similar to the function \code{num_range()} from the \pkg{tidyselect}
 #' package.}
 #' \item{\strong{Exclamation Point (\code{!}) Operator}}{The exclamation point
-#' operator is used to drop variables from the data frame specified in \code{data}
-#' or for taking the complement of a set of variables. For example,
-#' \code{df.subset(dat, ., !x)} selects all variables using the dot operator
-#' (\code{.}) but \code{x} in ' \code{dat}., \code{df.subset(dat, ., !~x)}
-#' selects all variables but variables with the prefix \code{x}, or
-#' \code{df.subset(dat, x:z, !x1:x3)} selects all variables from \code{x} to \code{z}
-#' but excludes all variables from \code{x1} to \code{x3}. Note that this operator
-#' is equivalent to the \code{!} operator from the \code{select} function in the
-#' \pkg{dplyr} package.}}
-#' Note that operators can be combined within the same function call. For example,
+#' operator is used to drop variables from the data frame specified in the argument
+#' \code{data} or for taking the complement of a set of variables. For example,
+#' \code{df.subset(dat, !x)} selects all variables except the variable \code{x},
+#' \code{df.subset(dat, !~x)} selects all variables except variables with the
+#' prefix \code{x}, or \code{df.subset(dat, x1:x10, !x3:x5)} selects all variables
+#' from \code{x1} to \code{x10} but excludes all variables from \code{x3} to
+#' \code{x5}. Note that this operator is equivalent to the \code{!} operator from
+#' the \code{select} function in the \pkg{dplyr} package.}}
+#' Operators can be combined within the same function call. For example,
 #' \code{df.subset(dat, +x, -y, !x2:x4, z)} selects all variables with the prefix
 #' \code{x} and with the suffix \code{y} but excludes variables from \code{x2} to
 #' \code{x4} and select variable \code{z}.
@@ -74,8 +67,10 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{df.duplicated}}, \code{\link{df.merge}}, \code{\link{df.move}},
-#' \code{\link{df.rbind}}, \code{\link{df.rename}}, \code{\link{df.sort}}
+#' \code{\link{df.check}}, \code{\link{df.duplicated}}, \code{\link{df.unique}},
+#' \code{\link{df.head}}, \code{\link{df.tail}}, \code{\link{df.long}},
+#' \code{\link{df.wide}}, \code{\link{df.merge}}, \code{\link{df.move}},
+#' \code{\link{df.rbind}}, \code{\link{df.rename}}, \code{\link{df.sort}},
 #'
 #' @references
 #' Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) \emph{The New S Language}.
@@ -136,11 +131,17 @@
 #' #----------------------------------------------------------------------------
 #' # Drop variables using the ! operator
 #'
-#' # Example 8a: Select all variables but 'Sepal.Width'
-#' df.subset(iris, ., !Sepal.Width)
+#' # Example 8a: Select all variables except 'Sepal.Width'
+#' df.subset(iris, !Sepal.Width)
 #'
-#' # Example 8b: Select all variables but 'Sepal.Width' to 'Petal.Width'
-#' df.subset(iris, ., !Sepal.Width:Petal.Width)
+#' # Example 8b: Select all variables except variables with prefix 'Petal'
+#' df.subset(iris, !+Petal)
+#'
+#' # Example 8c: Select all variables except variables with suffix 'Width'
+#' df.subset(iris, !-Width)
+#'
+#' # Example 8d: Select all variables except 'Sepal.Width' to 'Petal.Width'
+#' df.subset(iris, !Sepal.Width:Petal.Width)
 #'
 #' #----------------------------------------------------------------------------
 #' # Combine +, -, !, and : operators
@@ -155,7 +156,7 @@ df.subset <- function(data, ..., subset = NULL, drop = TRUE, check = TRUE) {
   # Initial Check --------------------------------------------------------------
 
   # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify a numeric vector for the argument 'data'", call. = FALSE) }
+  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   # Check if input 'data' is NULL
   if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
@@ -174,7 +175,7 @@ df.subset <- function(data, ..., subset = NULL, drop = TRUE, check = TRUE) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Variables ####
 
-  if (isTRUE(missing(...))) { object <- data } else { object <- data[, .var.names(..., data = data), drop = FALSE] }
+  if (isTRUE(missing(...))) { object <- data } else { object <- data[, .var.names(data = data, ...), drop = FALSE] }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract rows ####

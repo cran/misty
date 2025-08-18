@@ -14,7 +14,7 @@ values are coded as \code{NA}.}
 
 \item{...}{an expression indicating the variable names in \code{data},
 e.g., \code{na.descript(dat, x1, x2, x3)}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+\code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
 
@@ -30,8 +30,8 @@ the cluster variable at Level 3 come first in a three-level
 model, i.e., \code{cluster = c("level3", "level2")}.}
 
 \item{table}{logical: if \code{TRUE}, a frequency table with number of
-observed values (\code{"nObs"}), percent of observed values
-(\code{"pObs"}), number of missing values (\code{"nNA"}),
+observed values (\code{"nOb"}), percent of observed values
+(\code{"pOb"}), number of missing values (\code{"nNA"}),
 and percent of missing values (\code{"pNA"}) is printed for
 each variable on the console.}
 
@@ -113,10 +113,11 @@ na.descript(Demo.threelevel, cluster = c("cluster3", "cluster2"))
 na.descript(airquality, table = TRUE, write = "NA_Descriptives.txt")
 
 # Example 6b: Write Results into a Excel file
-na.descript(airquality, table = TRUE, write = "NA_Descriptives.xlsx")}
+na.descript(airquality, table = TRUE, write = "NA_Descriptives.xlsx")
+}
 }
 \references{
-Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
+Enders, C. K. (2022). \emph{Applied missing data analysis} (2nd ed.). The Guilford Press.
 
 Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 \emph{Annual Review of Psychology, 60}, 549-576.

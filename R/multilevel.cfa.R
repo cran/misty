@@ -22,7 +22,7 @@
 #'                     and \code{model.b} is specified, the data frame needs to
 #'                     contain all variables used in the \code{model} argument(s).
 #' @param ...          an expression indicating the variable names in \code{data}.
-#'                     Note that the operators \code{.}, \code{+}, \code{-},
+#'                     Note that the operators \code{+}, \code{-},
 #'                     \code{~}, \code{:}, \code{::}, and \code{!} can also be
 #'                     used to select variables, see 'Details' in the
 #'                     \code{\link{df.subset}} function.
@@ -402,18 +402,18 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data
-    x <- as.data.frame(data[, .var.names(..., data = data, cluster = cluster), drop = FALSE])
+    x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
 
     # Cluster variable
     cluster <- data[, cluster]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 
@@ -1174,7 +1174,7 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
 
                             stop("There was an estimation problem in lavaan, switching to missing = \"listwise\" might solve the problem.", call. = FALSE)
 
-                          } else if (isTRUE(estimator == "MLR")){
+                          } else if (isTRUE(estimator == "MLR")) {
 
                             stop("There was an estimation problem in lavaan, switching to estimator = \"ML\" might solve the problem.", call. = FALSE)
 

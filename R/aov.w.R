@@ -267,14 +267,12 @@
 #' # Example 5: Repeated measures ANOVA, plot results
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE)
 #'
-#' \dontrun{
 #' # Example 6: Write Results into a text file
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.txt")
 #'
 #' # Example 7: Save plot
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE,
 #'       filename = "Repeated_measures_ANOVA.png", width = 7, height = 6)
-#' }
 aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
                   posthoc = FALSE, conf.level = 0.95,
                   p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
@@ -566,7 +564,7 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
                           df = c(NA, df.e.within, df.r.within, df.id, sum(c(df.e.within, df.r.within, df.id))),
                           mean.sq = c(NA, ms.e.within, ms.r.within, ms.id, ms.t),
                           F = c(NA, aov.table.within[[1L]]["time", "F value"], NA, NA, NA),
-                          pval = c(NA, aov.table.within[[1L]]["time", "Pr(>F)"], NA, NA, NA),
+                          p = c(NA, aov.table.within[[1L]]["time", "Pr(>F)"], NA, NA, NA),
                           eta.sq = c(NA, eta.sq, NA, NA, NA),
                           eta.sq.p = c(NA, eta.sq.p, NA, NA, NA),
                           omega.sq = c(NA, omega.sq, NA, NA, NA),
@@ -584,7 +582,7 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
   test.lb[test.lb$source %in% c("Factor", "Residuals"), "mean.sq"] <- test.lb[test.lb$source %in% c("Factor", "Residuals"), "sum.sq"] / test.lb[test.lb$source %in% c("Factor", "Residuals"), "df"]
 
   # Correct p value
-  test.lb[test.lb$source == "Factor", "pval"] <- pf(test.lb[test.lb$source == "Factor", "F"], df1 = test.lb[test.lb$source == "Factor", "df"], df2 = test.lb[test.lb$source == "Residuals", "df"], lower.tail = FALSE)
+  test.lb[test.lb$source == "Factor", "p"] <- pf(test.lb[test.lb$source == "Factor", "F"], df1 = test.lb[test.lb$source == "Factor", "df"], df2 = test.lb[test.lb$source == "Residuals", "df"], lower.tail = FALSE)
 
   #...................
   ### Sphericity Correction: Greenhouse-Geisser ####
@@ -596,7 +594,7 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
   test.gg[test.gg$source %in% c("Factor", "Residuals"), "mean.sq"] <- test.gg[test.gg$source %in% c("Factor", "Residuals"), "sum.sq"] / test.gg[test.gg$source %in% c("Factor", "Residuals"), "df"]
 
   # Correct p value
-  test.gg[test.gg$source == "Factor", "pval"] <- pf(test.gg[test.gg$source == "Factor", "F"], df1 = test.gg[test.gg$source == "Factor", "df"], df2 = test.gg[test.gg$source == "Residuals", "df"], lower.tail = FALSE)
+  test.gg[test.gg$source == "Factor", "p"] <- pf(test.gg[test.gg$source == "Factor", "F"], df1 = test.gg[test.gg$source == "Factor", "df"], df2 = test.gg[test.gg$source == "Residuals", "df"], lower.tail = FALSE)
 
   #...................
   ### Sphericity Correction: Huynh-Feldt ####
@@ -608,17 +606,17 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
   test.hf[test.hf$source %in% c("Factor", "Residuals"), "mean.sq"] <- test.hf[test.hf$source %in% c("Factor", "Residuals"), "sum.sq"] / test.hf[test.hf$source %in% c("Factor", "Residuals"), "df"]
 
   # Correct p value
-  test.hf[test.hf$source == "Factor", "pval"] <- pf(test.hf[test.hf$source == "Factor", "F"], df1 = test.hf[test.hf$source == "Factor", "df"], df2 = test.hf[test.hf$source == "Residuals", "df"], lower.tail = FALSE)
+  test.hf[test.hf$source == "Factor", "p"] <- pf(test.hf[test.hf$source == "Factor", "F"], df1 = test.hf[test.hf$source == "Factor", "df"], df2 = test.hf[test.hf$source == "Residuals", "df"], lower.tail = FALSE)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Post-hoc test ####
 
   result.ph <- combn(var.formula, m = 2L) |>
-    (\(y) apply(y, 2L, function(y) misty::test.t(data.id[, y[1L]], data.id[, y[2L]], paired = TRUE, conf.level = conf.level, output = FALSE)$result[c("m.diff", "t", "df", "pval", "d", "d.low", "d.upp")]) |>
+    (\(y) apply(y, 2L, function(y) misty::test.t(data.id[, y[1L]], data.id[, y[2L]], paired = TRUE, conf.level = conf.level, output = FALSE)$result[c("m.diff", "t", "df", "p", "d", "d.low", "d.upp")]) |>
        (\(z) data.frame(var1 = t(y)[, 1L], var2 = t(y)[, 2L], eval(parse(text = paste0("rbind(", paste0("z[[", seq_len(length(z)), "]]", collapse = ", "), ")"))), stringsAsFactors = FALSE))())()
 
   # Adjust p-values for multiple comparisons
-  if (isTRUE(p.adj != "none")) { result.ph$pval <- p.adjust(result.ph$pval, method = p.adj) }
+  if (isTRUE(p.adj != "none")) { result.ph$p <- p.adjust(result.ph$p, method = p.adj) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Result object ####

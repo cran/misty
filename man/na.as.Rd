@@ -15,7 +15,7 @@ as.na(data, ..., na, replace = TRUE, check = TRUE)
 \item{...}{an expression indicating the variable names in \code{data}, e.g.,
 \code{as.na(dat, x1, x2)} for selecting the variables \code{x1}
 and \code{x2} from the data frame \code{dat}. Note that the
-operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+operators \code{+}, \code{-}, \code{~}, \code{:},
 \code{::}, and \code{!} can also be used to select variables,
 see 'Details' in the \code{\link{df.subset}} function.}
 

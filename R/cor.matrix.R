@@ -7,24 +7,14 @@
 #' coefficient and computes significance values (\emph{p}-values) for testing the
 #' hypothesis H0: \eqn{\rho} = 0 for all pairs of variables.
 #'
-#' Note that unlike the \code{\link[stats:cor.test]{cor.test}} function, this
-#' function does not compute an exact \emph{p}-value for Spearman's rank-order
-#' correlation coefficient or Kendall's Tau-b correlation coefficient, but uses
-#' the asymptotic \emph{t} approximation.
-#'
-#' Statistically significant correlation coefficients can be shown in boldface
-#' on the console when specifying \code{sig = TRUE}. However, this option is not
-#' supported when using R Markdown, i.e., the argument \code{sig} will switch to
-#' \code{FALSE}.
-#'
 #' @param data       a data frame with numeric variables, i.e., factors and character
 #'                   variables are excluded from \code{data} before conducting the
 #'                   analysis.
 #' @param ...        an expression indicating the variable names in \code{data},
 #'                   e.g., \code{cor.matrix(dat, x1, x2, x3)}. Note that the
-#'                   operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
-#'                   \code{::}, and \code{!} can also be used to select variables,
-#'                   see 'Details' in the \code{\link{df.subset}} function.
+#'                   operators \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                   and \code{!} can also be used to select variables, see 'Details'
+#'                   in the \code{\link{df.subset}} function.
 #' @param method     a character vector indicating which correlation coefficient
 #'                   is to be computed, i.e. \code{"pearson"} for Pearson product-
 #'                   moment correlation coefficient (default), \code{"spearman"}
@@ -87,6 +77,17 @@
 #'                   checked.
 #' @param output     logical: if \code{TRUE} (default), output is shown on the
 #'                   console.
+#'
+#' @details
+#' Note that unlike the \code{\link[stats:cor.test]{cor.test}} function, this
+#' function does not compute an exact \emph{p}-value for Spearman's rank-order
+#' correlation coefficient or Kendall's Tau-b correlation coefficient, but uses
+#' the asymptotic \emph{t} approximation.
+#'
+#' Statistically significant correlation coefficients can be shown in boldface
+#' on the console when specifying \code{sig = TRUE}. However, this option is not
+#' supported when using R Markdown, i.e., the argument \code{sig} will switch to
+#' \code{FALSE}.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -169,13 +170,11 @@
 #' # Alternative specification without using the '...' argument
 #' cor.matrix(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 #'
-#' \dontrun{
 #' # Example 10a: Write Results into a text file
 #' cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.txt")
 #'
 #' # Example 10b: Write Results into a Excel file
 #' cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.xlsx")
-#' }
 cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "kendall-c", "tetra", "poly"),
                        na.omit = FALSE, group = NULL, sig = FALSE, alpha = 0.05,
                        print = c("all", "cor", "n", "stat", "df", "p"),
@@ -199,18 +198,18 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(..., data = data, group = group), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[, .var.names(data = data, ..., group = group), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

@@ -13,7 +13,7 @@ crosstab(data, ..., print = c("no", "all", "row", "col", "total"),
 
 \item{...}{an expression indicating the variable names in \code{data}, e.g.,
 \code{crosstab(dat, x1, x2, x3)}. Note that the operators
-\code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+\code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 and \code{!} can also be used to select variables, see 'Details'
 in the \code{\link{df.subset}} function.}
 
@@ -117,7 +117,8 @@ crosstab(mtcars, vs:gear, print = "all", split = TRUE)
 crosstab(mtcars, vs:gear, print = "all", write = "Crosstab.txt")
 
 # Example 10b: Write Results into a Excel file
-crosstab(mtcars, vs:gear, print = "all", write = "Crosstab.xlsx")}
+crosstab(mtcars, vs:gear, print = "all", write = "Crosstab.xlsx")
+}
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology

@@ -9,9 +9,9 @@
 #' @param ...      an expression indicating the variable names in \code{data} e.g.,
 #'                 \code{center(dat, x1, x2)} for centering the variables \code{x1}
 #'                 and \code{x2} in the data frame \code{dat}. Note that the
-#'                 operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
-#'                 \code{::}, and \code{!} can also be used to select variables,
-#'                 see 'Details' in the \code{\link{df.subset}} function.
+#'                 \code{+}, \code{-}, \code{~}, \code{:}, \code{::}, and \code{!}
+#'                 can also be used to select variables, see 'Details' in the
+#'                 \code{\link{df.subset}} function.
 #' @param cluster  a character string indicating the name of the cluster variable
 #'                 in \code{data} for a two-level model, a character vector
 #'                 indicating the names of the cluster variables in \code{data}
@@ -153,7 +153,7 @@
 #'
 #' @seealso
 #' \code{\link{coding}}, \code{\link{cluster.scores}}, \code{\link{rec}},
-#' \code{\link{item.reverse}}, \code{\link{rwg.lindell}}, \code{\link{item.scores}}.
+#' \code{\link{item.reverse}}, \code{\link{cluster.rwg}}, \code{\link{item.scores}}.
 #'
 #' @references
 #' Brincks, A. M., Enders, C. K., Llabre, M. M., Bulotsky-Shearer, R. J., Prado, G.,
@@ -265,12 +265,12 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC"),
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Variable names
-    var.names <- .var.names(..., data = data, cluster = cluster)
+    var.names <- .var.names(data = data, ..., cluster = cluster)
 
     # Extract data and convert tibble into data frame or vector
     x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
@@ -279,7 +279,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC"),
     if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

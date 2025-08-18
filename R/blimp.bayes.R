@@ -571,7 +571,7 @@ blimp.bayes <- function(x, param = NULL,
   })
 
   # Merge with labels
-  result.table <- merge(misty::df.unique(., data = postdat[, c("param", "latent1", "latent2", "latent3")]), apply(t(post.summary), 2L, unlist), by = "param")
+  result.table <- merge(misty::df.unique(data = postdat[, c("param", "latent1", "latent2", "latent3")]), apply(t(post.summary), 2L, unlist), by = "param")
 
   #_____________________________________________________________________________
   #

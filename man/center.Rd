@@ -15,7 +15,7 @@ data frame for centering more than one predictor variable.}
 \item{...}{an expression indicating the variable names in \code{data} e.g.,
 \code{center(dat, x1, x2)} for centering the variables \code{x1}
 and \code{x2} in the data frame \code{dat}. Note that the
-operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+operators \code{+}, \code{-}, \code{~}, \code{:},
 \code{::}, and \code{!} can also be used to select variables,
 see 'Details' in the \code{\link{df.subset}} function.}
 
@@ -255,7 +255,7 @@ https://doi.org/10.1037/met0000434
 }
 \seealso{
 \code{\link{coding}}, \code{\link{cluster.scores}}, \code{\link{rec}},
-\code{\link{item.reverse}}, \code{\link{rwg.lindell}}, \code{\link{item.scores}}.
+\code{\link{item.reverse}}, \code{\link{cluster.rwg}}, \code{\link{item.scores}}.
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

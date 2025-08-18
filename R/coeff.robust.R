@@ -78,7 +78,7 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{std.coef}}, \code{\link{write.result}}
+#' \code{\link{coeff.std}}, \code{\link{write.result}}
 #'
 #' @references
 #' Darlington, R. B., & Hayes, A. F. (2017). \emph{Regression analysis and linear
@@ -148,25 +148,25 @@
 #' # Example 1: Linear model
 #'
 #' mod.lm <- lm(mpg ~ cyl + disp, data = mtcars)
-#' robust.coef(mod.lm)
+#' coeff.robust(mod.lm)
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 2: Generalized linear model
 #'
 #' mod.glm <- glm(carb ~ cyl + disp, data = mtcars, family = poisson())
-#' robust.coef(mod.glm)
+#' coeff.robust(mod.glm)
 #'
 #' #----------------------------------------------------------------------------
 #' # Write Results
 #'
 #' # Example 3a: Write results into a text file
-#' robust.coef(mod.lm, write = "Robust_Coef.txt", output = FALSE)
+#' coeff.robust(mod.lm, write = "Robust_Coef.txt", output = FALSE)
 #'
 #' # Example 3b: Write results into a Excel file
-#' robust.coef(mod.lm, write = "Robust_Coef.xlsx", output = FALSE)
-robust.coef <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5"),
-                        digits = 3, p.digits = 3, write = NULL, append = TRUE, check = TRUE,
-                        output = TRUE) {
+#' coeff.robust(mod.lm, write = "Robust_Coef.xlsx", output = FALSE)
+coeff.robust <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5"),
+                         digits = 3, p.digits = 3, write = NULL, append = TRUE, check = TRUE,
+                         output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -178,9 +178,8 @@ robust.coef <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m
   # Check if input 'model' is NULL
   if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
 
-  # Check if input 'model' is not 'lm'
-  if (isTRUE(!any(class(model) %in% c("lm", "glm")) )) { stop("Please specify an \"lm\" or \"glm\" object for the argument 'model'.", call. = FALSE) }
-
+  # Check if input 'model' is not 'lm' or 'glm'
+  if (isTRUE(!any(class(model) %in% c("lm", "glm")) )) { stop("Please specify a fitted model object from the \"lm\" or \"glm\"., function for the argument 'model'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -235,10 +234,9 @@ robust.coef <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m
   ## Return object ####
 
   object <- list(call = match.call(),
-                 type = "robust.coef",
+                 type = "coeff.robust",
                  model = model,
-                 args = list(type = type, digits = digits, p.digits = p.digits,
-                             write = write, append = append, check = check, output = output),
+                 args = list(type = type, digits = digits, p.digits = p.digits, write = write, append = append, check = check, output = output),
                  result = list(coef = coef.res, F.test = F.test, sandwich = sandw))
 
   class(object) <- "misty.object"

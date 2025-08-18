@@ -4,29 +4,10 @@
 #' This function computes r*wg(j) within-group agreement index for multi-item
 #' scales as described in Lindell, Brandt and Whitney (1999).
 #'
-#' The r*wg(j) index is calculated by dividing the mean of the item variance by
-#' the expected random variance (i.e., null distribution). The default null
-#' distribution in most research is the rectangular or uniform distribution
-#' calculated with \eqn{\sigma^2_eu = (A^2 - 1) / 12}, where \eqn{A} is the number
-#' of discrete response options of the items. However, what constitutes a reasonable
-#' standard for random variance is highly debated. Note that the r*wg(j) allows
-#' that the mean of the item variances to be larger than the expected random
-#' variances, i.e., r*wg(j) values can be negative.
-#'
-#' Note that the \code{rwg.j.lindell()} function in the \pkg{multilevel} package
-#' uses listwise deletion by default, while the \code{rwg.lindell()} function uses
-#' all available information to compute the r*wg(j) agreement index by default.
-#' In order to obtain equivalent results in the presence of missing values, listwise
-#' deletion (\code{na.omit = TRUE}) needs to be applied.
-#'
-#' Examples for the application of r*wg(j) within-group agreement index for
-#' multi-item scales can be found in Bardach et al. (2018), Bardach et al.
-#' (2019a), and Bardach et al. (2019b).
-#'
 #' @param data    a numeric vector or data frame.
 #' @param ...     an expression indicating the variable names in \code{data},
-#'                e.g., \code{rwg.lindell(dat, x1, x2, x3)}. Note that the
-#'                operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+#'                e.g., \code{cluster.rwg(dat, x1, x2, x3)}. Note that the
+#'                operators \code{+}, \code{-}, \code{~}, \code{:},
 #'                \code{::}, and \code{!} can also be used to select variables,
 #'                see 'Details' in the \code{\link{df.subset}} function.
 #' @param cluster either a character string indicating the variable name of
@@ -60,6 +41,22 @@
 #' @param check   logical: if \code{TRUE} (default), argument specification is
 #'                checked.
 #'
+#' @details
+#' The r*wg(j) index is calculated by dividing the mean of the item variance by
+#' the expected random variance (i.e., null distribution). The default null
+#' distribution in most research is the rectangular or uniform distribution
+#' calculated with \eqn{\sigma^2_eu = (A^2 - 1) / 12}, where \eqn{A} is the number
+#' of discrete response options of the items. However, what constitutes a reasonable
+#' standard for random variance is highly debated. Note that the r*wg(j) allows
+#' that the mean of the item variances to be larger than the expected random
+#' variances, i.e., r*wg(j) values can be negative.
+#'
+#' Note that the \code{rwg.j.lindell()} function in the \pkg{multilevel} package
+#' uses listwise deletion by default, while the \code{cluster.rwg()} function uses
+#' all available information to compute the r*wg(j) agreement index by default.
+#' In order to obtain equivalent results in the presence of missing values, listwise
+#' deletion (\code{na.omit = TRUE}) needs to be applied.
+#'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
@@ -67,21 +64,6 @@
 #' \code{\link{cluster.scores}}
 #'
 #' @references
-#' Bardach, L., Lueftenegger, M., Yanagida, T., & Schober, B. (2019a). Achievement
-#' or agreement - Which comes first? Clarifying the temporal ordering of achievement
-#' and within-class consensus on classroom goal structures. \emph{Learning and
-#' Instruction, 61}, 72-83. https://doi.org/10.1016/j.learninstruc.2019.01.003
-#'
-#' Bardach, L., Lueftenegger, M., Yanagida, T., Schober, B. & Spiel, C. (2019b).
-#' The role of within-class consensus on mastery goal structures in predicting
-#' socio-emotional outcomes. \emph{British Journal of Educational Psychology, 89},
-#' 239-258. https://doi.org/10.1111/bjep.12237
-#'
-#' Bardach, L., Yanagida, T., Schober, B. & Lueftenegger, M. (2018). Within-class
-#' consensus on classroom goal structures: Relations to achievement and achievement
-#' goals in mathematics and language classes. \emph{Learning and Individual
-#' Differences, 67}, 78-90. https://doi.org/10.1016/j.lindif.2018.07.002
-#'
 #' Lindell, M. K., Brandt, C. J., & Whitney, D. J. (1999). A revised index of
 #' interrater agreement for multi-item ratings of a single target. \emph{Applied
 #' Psychological Measurement}, \emph{23}, 127-135. https://doi.org/10.1177/01466219922031257
@@ -109,20 +91,20 @@
 #'                   x3 = c(3, 1, 1, 2, 3, 3, 5, 5, 4))
 #'
 #' # Example 1: Compute Fisher z-transformed r*wg(j) for a multi-item scale with A = 5 response options
-#' rwg.lindell(dat, x1, x2, x3, cluster = "cluster", A = 5)
+#' cluster.rwg(dat, x1, x2, x3, cluster = "cluster", A = 5)
 #'
 #' # Alternative specification without using the '...' argument
-#' rwg.lindell(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, A = 5)
+#' cluster.rwg(dat[, c("x1", "x2", "x3")], cluster = dat$cluster, A = 5)
 #'
 #' # Example 2: Compute Fisher z-transformed r*wg(j) for a multi-item scale with a random variance of 2
-#' rwg.lindell(dat, x1, x2, x3, cluster = "cluster", ranvar = 2)
+#' cluster.rwg(dat, x1, x2, x3, cluster = "cluster", ranvar = 2)
 #'
 #' # Example 3: Compute r*wg(j) for a multi-item scale with A = 5 response options
-#' rwg.lindell(dat, x1, x2, x3, cluster = "cluster", A = 5, z = FALSE)
+#' cluster.rwg(dat, x1, x2, x3, cluster = "cluster", A = 5, z = FALSE)
 #'
 #' # Example 4: Do not expand Fisher z-transformed r*wg(j)
-#' rwg.lindell(dat, x1, x2, x3, cluster = "cluster", A = 5, expand = FALSE)
-rwg.lindell <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
+#' cluster.rwg(dat, x1, x2, x3, cluster = "cluster", A = 5, expand = FALSE)
+cluster.rwg <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
                         expand = TRUE, na.omit = FALSE, append = TRUE, name = "rwg",
                         as.na = NULL, check = TRUE) {
 
@@ -147,23 +129,24 @@ rwg.lindell <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data
-    x <- as.data.frame(data[, .var.names(..., data = data, cluster = cluster), drop = FALSE])
+    x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
 
     # Cluster variable
     cluster <- data[, cluster]
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 
     # Data frame
     x <- as.data.frame(data) |> (\(y) if (isTRUE(ncol(y) == 1L)) { unname(y) } else { y })()
+
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster, drop = FALSE)
@@ -183,6 +166,11 @@ rwg.lindell <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Data frame ####
+
+  x <- data.frame(x, cluster = cluster)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
@@ -243,7 +231,7 @@ rwg.lindell <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
   } else {
 
     object <- data.frame(cluster = names(rwg),
-                         n = vapply(x.split, function(y) sum(apply(y, 1, function(z) sum(is.na(z)) != length(z))), FUN.VALUE = 1L),
+                         n = vapply(x.split, function(y) sum(apply(y, 1L, function(z) sum(is.na(z)) != length(z))), FUN.VALUE = 1L),
                          rwg.lindell = rwg, z.rwg.lindell = ifelse(rwg == 1L | rwg == -1L, NA, atanh(rwg)))
 
   }

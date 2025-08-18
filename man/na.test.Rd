@@ -246,15 +246,13 @@ Camden Jansen, and Mao Kobayashi (2024).
 # Example 1: Perform Little's MCAR test and Jamshidian and Jalal's approach
 na.test(airquality)
 
-# Alternative specification using the 'data' argument,
-na.test(., data = airquality)
-
 # Example 2: Perform Jamshidian and Jalal's approach
 na.test(airquality, print = "jamjal")
 
 \dontrun{
 # Example 3: Write results into a text file
-na.test(airquality, write = "NA_Test.txt")}
+na.test(airquality, write = "NA_Test.txt")
+}
 }
 \references{
 Beaujean, A. A. (2012). \emph{BaylorEdPsych: R Package for Baylor University
@@ -266,7 +264,7 @@ testing of categorical covariates in logistic regression models after multiple
 imputation: Power and applicability analysis. \emph{BMC Medical Research
 Methodology}, 17:129. https://doi.org/10.1186/s12874-017-0404-7
 
-Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
+Enders, C. K. (2022). \emph{Applied missing data analysis} (2nd ed.). The Guilford Press.
 
 Little, R. J. A. (1988). A test of Missing Completely at Random for multivariate
 data with missing values. \emph{Journal of the American Statistical Association,

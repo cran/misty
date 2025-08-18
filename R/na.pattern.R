@@ -8,7 +8,7 @@
 #'                          values are coded as \code{NA}.
 #' @param ...               an expression indicating the variable names in
 #'                          \code{data} e.g., \code{na.pattern(dat, x1, x2, x3)}.
-#'                          Note that the operators \code{.}, \code{+}, \code{-},
+#'                          Note that the operators \code{+}, \code{-},
 #'                          \code{~}, \code{:}, \code{::}, and \code{!} can also
 #'                          be used to select variables, see 'Details' in the
 #'                          \code{\link{df.subset}} function.
@@ -89,7 +89,7 @@
 #' \code{\link{na.prop}}, \code{\link{na.test}}, \code{\link{write.result}}
 #'
 #' @references
-#' Enders, C. K. (2010). \emph{Applied missing data analysis}. Guilford Press.
+#' Enders, C. K. (2022). \emph{Applied missing data analysis} (2nd ed.). The Guilford Press.
 #'
 #' Graham, J. W. (2009). Missing data analysis: Making it work in the real world.
 #' \emph{Annual Review of Psychology, 60}, 549-576.
@@ -133,13 +133,11 @@
 #' # Data frame without cases with missing data pattern 2 and 4
 #' airquality[!dat.pattern$pattern == 2, ]
 #'
-#' \dontrun{
 #' # Example 4a: Write Results into a text file
 #' na.pattern(airquality, write = "NA_Pattern.xlsx")
 #'
 #' # Example 4b: Write Results into a Excel file
 #' na.pattern(airquality, write = "NA_Pattern.xlsx")
-#' }
 na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
                        as.na = NULL,plot = FALSE, square = TRUE, rotate = FALSE,
                        color = c("#B61A51B3", "#006CC2B3"), tile.alpha = 0.6,
@@ -164,15 +162,15 @@ na.pattern <- function(data, ..., order = FALSE, n.pattern = NULL, digits = 2,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
+    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

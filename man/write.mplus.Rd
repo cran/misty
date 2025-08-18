@@ -55,8 +55,9 @@ Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
 Muthen & Muthen.
 }
 \seealso{
-\code{\link{read.mplus}}, \code{\link{mplus.run}}, \code{\link{write.sav}},
-\code{\link{write.xlsx}}, \code{\link{write.dta}}
+\code{\link{read.data}}, \code{\link{write.data}}, \code{\link{read.sav}},
+\code{\link{write.sav}}, \code{\link{write.xlsx}},
+\code{\link{read.dta}}, \code{\link{write.dta}}, \code{\link{read.mplus}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

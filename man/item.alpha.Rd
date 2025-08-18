@@ -18,7 +18,7 @@ computing coefficient alpha}
 
 \item{...}{an expression indicating the variable names in \code{data}
 e.g., \code{item.alpha(dat, x1, x2, x3)}. Note that the
-operators \code{.}, \code{+}, \code{-}, \code{~}, \code{:},
+operators \code{+}, \code{-}, \code{~}, \code{:},
 \code{::}, and \code{!} can also be used to select variables,
 see 'Details' in the \code{\link{df.subset}} function.}
 
@@ -38,7 +38,7 @@ ordinal coefficient alpha.}
 \item{exclude}{a character vector indicating items to be excluded from the
 analysis.}
 
-\item{std}{logical: if \code{TRUE}, the standardized coefficient alpha
+\item{std}{logical: if \code{TRUE}, the standardized coefficient omega
 is computed.}
 
 \item{estimator}{a character string indicating the estimator to be used
@@ -140,28 +140,26 @@ Computation of the hierarchical and ordinal alpha is based on the
 dat <- data.frame(item1 = c(3, NA, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 2, 2, 1, 3, 1),
                   item3 = c(4, 2, 4, 2, 1, 3, 4, 1), item4 = c(4, 1, 2, 2, 1, 3, 4, 3))
 
-# Example 1a: Coefficient alpha and item statistics, pairwise deletion
+# Example 1a: Coefficient alpha, pairwise deletion
 item.alpha(dat)
 
-# Example 1b: Coefficient alpha and item statistics, listwise deletion
+# Example 1b: Coefficient alpha, listwise deletion
 item.alpha(dat, missing = "listwise")
 
-# Example 1c: Coefficient alpha and item statistics, FIML
+# Example 1c: Coefficient alpha, Full information maximum likelihood method
 item.alpha(dat, estimator = "ML", missing = "fiml")
 
 # Example 2: Coefficient alpha and item statistics after excluding item3
-item.alpha(dat, exclude = "item3")
+item.alpha(dat, exclude = "item3", print = "all")
 
 # Example 3a: Coefficient alpha with a residual covariance
-# and item statistics
 item.alpha(dat, rescov = c("item1", "item2"))
 
 # Example 3b: Coefficient alpha with residual covariances
-# and item statistics
 item.alpha(dat, rescov = list(c("item1", "item2"), c("item1", "item3")))
 
 # Example 4: Ordinal coefficient alpha and item statistics
-item.alpha(dat, type = "categ")
+item.alpha(dat, type = "categ", print = "all")
 
 # Example 6: Summary of the CFA model used to compute coefficient alpha
 lavaan::summary(item.alpha(dat, output = FALSE)$model.fit,

@@ -4,16 +4,6 @@
 #' in a two-sample and paired-sample design for one or more variables, optionally
 #' by a grouping and/or split variable.
 #'
-#' The Wald confidence interval which is based on the normal approximation to the
-#' binomial distribution are computed by specifying \code{method = "wald"}, while
-#' the Newcombe Hybrid Score interval (Newcombe, 1998a; Newcombe, 1998b) is
-#' requested by specifying \code{method = "newcombe"}. By default, Newcombe Hybrid
-#' Score interval is computed which have been shown to be reliable in small samples
-#' (less than n = 30 in each sample) as well as moderate to larger samples(n > 30
-#' in each sample) and with proportions close to 0 or 1, while the Wald confidence
-#' intervals does not perform well unless the sample size is large (Fagerland,
-#' Lydersen & Laake, 2011).
-#'
 #' @param x           a numeric vector with 0 and 1 values.
 #' @param y           a numeric vector with 0 and 1 values.
 #' @param method      a character string specifying the method for computing
@@ -65,6 +55,17 @@
 #'                    conducting the analysis (i.e., listwise deletion) when
 #'                    specifying more than one outcome variable.
 #' @param ...         further arguments to be passed to or from methods.
+#'
+#' @details
+#' The Wald confidence interval which is based on the normal approximation to the
+#' binomial distribution are computed by specifying \code{method = "wald"}, while
+#' the Newcombe Hybrid Score interval (Newcombe, 1998a; Newcombe, 1998b) is
+#' requested by specifying \code{method = "newcombe"}. By default, Newcombe Hybrid
+#' Score interval is computed which have been shown to be reliable in small samples
+#' (less than n = 30 in each sample) as well as moderate to larger samples(n > 30
+#' in each sample) and with proportions close to 0 or 1, while the Wald confidence
+#' intervals does not perform well unless the sample size is large (Fagerland,
+#' Lydersen & Laake, 2011).
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}

@@ -15,7 +15,7 @@
 #' @param data     a vector, factor, or data frame.
 #' @param ...      an expression indicating the variable names in \code{data},
 #'                 e.g., \code{freq(dat, x1, x2, x3)}. Note that the operators
-#'                 \code{.}, \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
+#'                 \code{+}, \code{-}, \code{~}, \code{:}, \code{::},
 #'                 and \code{!} can also be used to select variables, see 'Details'
 #'                 in the \code{\link{df.subset}} function.
 #' @param print    a character string indicating which percentage(s) to be printed
@@ -111,13 +111,11 @@
 #' # Example 7: Frequency table, exclude variables with more than 5 unique values
 #' freq(mtcars, exclude = 5)
 #'
-#' \dontrun{
 #' # Example 8a: Write Results into a text file
 #' freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.txt")
 #'
 #' # Example 8b: Write Results into a Excel file
 #' freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.xlsx")
-#' }
 freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
                  freq = TRUE, split = FALSE, labels = TRUE, val.col = FALSE,
                  round = 3, exclude = 15, digits = 2, as.na = NULL,
@@ -138,15 +136,15 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(..., data = data), drop = FALSE])
+    x <- as.data.frame(data[, .var.names(data = data, ...), drop = FALSE])
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

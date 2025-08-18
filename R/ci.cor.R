@@ -20,10 +20,10 @@
 #'                          before conducting the analysis.
 #' @param ...               an expression indicating the variable names in \code{data}
 #'                          e.g., \code{ci.cor(x1, x2, data = dat)}. Note that the
-#'                          operators \code{.}, \code{+}, \code{-}, \code{~},
-#'                          \code{:}, \code{::}, and \code{!} can also be used
-#'                          to select variables, see 'Details' in the
-#'                          \code{\link{df.subset}} function.
+#'                          operators \code{+}, \code{-}, \code{~}, \code{:},
+#'                          \code{::}, and \code{!} can also be used to select
+#'                          variables, see 'Details' in the \code{\link{df.subset}}
+#'                          function.
 #' @param method            a character string indicating which correlation
 #'                          coefficient is to be computed, i.e., \code{"pearson"}
 #'                          for Pearson product-moment correlation coefficient
@@ -824,12 +824,12 @@ ci.cor <- function(data, ...,
   # Data -----------------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data using the argument 'data' ####
+  ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(..., data = data, group = group, split = split)])
+    x <- as.data.frame(data[, .var.names(data = data, ..., group = group, split = split)])
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -838,7 +838,7 @@ ci.cor <- function(data, ...,
     if (isTRUE(!is.null(split))) { split <- data[, split] }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Data without using the argument 'data' ####
+  ## Data without using the argument '...' ####
 
   } else {
 

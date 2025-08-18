@@ -15,7 +15,7 @@ kurtosis(data, ..., sample = TRUE, center = TRUE, digits = 2, p.digits,
 \item{data}{a numeric vector or data frame.}
 
 \item{...}{an expression indicating the variable names in \code{data}, e.g.,
-\code{skewness(dat, x1)}. Note that the operators \code{.},
+\code{skewness(dat, x1)}. Note that the operators
 \code{+}, \code{-}, \code{~}, \code{:}, \code{::}, and \code{!}
 can also be used to select variables, see 'Details' in the
 \code{\link{df.subset}} function.}
