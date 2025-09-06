@@ -119,7 +119,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Between-Subject Analysis of Variance (ANOVA) -------------------------------
+  # Between-Subject Analysis of Variance (ANOVA), aov.b() ----------------------
   switch(x$type, aov.b = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -220,7 +220,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Repeated Measures Analysis of Variance -------------------------------------
+  # Repeated Measures Analysis of Varianceaov.w() ------------------------------
   }, aov.w = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -474,14 +474,14 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Blimp Object ---------------------------------------------------------------
+  # Blimp Object, blimp() ------------------------------------------------------
   }, blimp = {
 
     cat("Please use the blimp.print function to print a \"blimp\" object.")
 
-  #___________________________________________________________________________
+  #_____________________________________________________________________________
   #
-  # Blimp Summary Measures, Convergence and Efficiency Diagnostics -----------
+  # Blimp Summary Measures, Convergence and Efficiency Diagnostics, blimp.bayes
   }, blimp.bayes = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -613,7 +613,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Collinearity Diagnostics --------------------------------------------------
+  # Collinearity Diagnostics, check.collin() -----------------------------------
   }, check.collin = {
 
     if (isTRUE(check)) {
@@ -645,12 +645,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       print.object$coef <- print.object$coef[, which(!colnames(print.object$coef) %in% c("df", "GVIF"))]
 
       # Round
-      if (isTRUE(any(class(x$model) == "lmerMod"))) {
+      if (isTRUE(inherits(x$model, what = "lmerMod"))) {
 
         print.object$coef <- apply(print.object$coef, 2L, function(y) formatC(y, digits = digits, format = "f",
                                                                               zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
 
-      } else if (isTRUE(any(class(x$model) == "lme"))) {
+      } else if (isTRUE(inherits(x$model, what = "lme"))) {
 
         print.object$coef[, -5L] <- apply(print.object$coef[, -5L], 2L, function(y) formatC(y, digits = digits, format = "f",
                                                                                             zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
@@ -721,7 +721,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Confidence Interval for the Correlation Coefficient ------------------------
+  # Confidence Interval for the Correlation Coefficient, ci.cor() --------------
   }, ci.cor = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1097,7 +1097,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Confidence Interval for the Arithmetic Mean --------------------------------
+  # Confidence Interval for the Arithmetic Mean, ci.mean() ---------------------
   }, ci.mean = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1383,7 +1383,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Confidence Interval for the Median -----------------------------------------
+  # Confidence Interval for the Median, ci.median() ----------------------------
   }, ci.median = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1669,7 +1669,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Confidence Interval for the Propotion --------------------------------------
+  # Confidence Interval for the Propotion, ci.prop() ---------------------------
   }, ci.prop = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1956,7 +1956,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Confidence Interval for the Variance ---------------------------------------
+  # Confidence Interval for the Variance, ci.var() -----------------------------
   }, ci.var = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2239,7 +2239,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Confidence Interval for the Standard Deviation -----------------------------
+  # Confidence Interval for the Standard Deviation, ci.sd() --------------------
   }, ci.sd = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2522,7 +2522,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Confidence intervals -------------------------------------------------------
+  # Confidence intervals, ci() -------------------------------------------------
   }, ci = {
 
     #......
@@ -3009,68 +3009,166 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Heteroscedasticity-Consistent Standard Errors ------------------------------
+  # HC and CR Standard Errors, coeff.robust() ----------------------------------
   }, coeff.robust = {
 
-    #...................
-    ### Extract coefficients ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Model Class ####
 
-    print.coef <- print.object$coef
+    # (Generalized) Linear Model
+    if (isTRUE(inherits(x$model, what = "lm"))) {
 
-    #...................
-    ### Round ####
+      model.class <- "lm"
 
-    print.coef[, -4L] <- apply(print.coef[, -4L], 2L, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+    # Multilevel and Linear Mixed-Effects Model
+    } else if (all(class(x$model) %in% c("lmerMod", "lmerModLmerTest"))) {
 
-    print.coef[, 4L] <- formatC(as.numeric(print.coef[, 4L]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
-
-    #...................
-    ### Format ####
-
-    print.coef <- apply(print.coef, 2L, function(y) format(y, justify = "right"))
-
-    row.names(print.coef) <- paste("  ", row.names(print.coef))
-
-    #...................
-    ### Print ####
-
-    cat(paste0("  Heteroscedasticity-Consistent Standard Errors (", x$args$type, ")\n\n"))
-
-    # Print coefficients
-    print(print.coef, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
-
-    #...................
-    ### F-test ####
-
-    if (isTRUE(length(class(x$model)) == 1L)) {
-
-      # Extract F-test
-      print.F <- print.object$F.test[2L, ]
-
-      # Round
-      print.F["F"] <- formatC(print.F["F"], digits = digits - 1L, format = "f", zero.print = ifelse(digits - 1L > 0L, paste0("0.", paste(rep(0L, times = digits - 1L), collapse = "")), "0"))
-      print.F["pval"] <- formatC(as.numeric(print.F["pval"]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
-
-      # Model summary
-      print.summary <- summary(x$model)
-
-      # Negative r-squared
-      if (isTRUE(print.summary$adj.r.squared < 0L)) { print.summary$adj.r.squared <- 0L }
-
-      # Round
-      print.summary$sigma <- formatC(print.summary$sigma, digits = digits - 1L, format = "f", zero.print = ifelse(digits - 1L > 0L, paste0("0.", paste(rep(0L, times = digits - 1L), collapse = "")), "0"))
-      print.summary$r.squared <- formatC(print.summary$r.squared, digits = p.digits - 1L, format = "f", zero.print = ifelse(p.digits - 1L > 0L, paste0("0.", paste(rep(0L, times = p.digits - 1L), collapse = "")), "0"))
-      print.summary$adj.r.squared <- formatC(print.summary$adj.r.squared, digits = p.digits - 1L, format = "f", zero.print = ifelse(p.digits - 1L > 0L, paste0("0.", paste(rep(0L, times = p.digits - 1L), collapse = "")), "0"))
-
-      cat(paste0("\n   Residual standard error: ", print.summary$sigma, " on ", x$model$df.residual, " degrees of freedom\n",
-                 paste0("   Multiple R-squared: ", print.summary$r.squared, ",", " Adjusted R-squared: ", print.summary$adj.r.squared , "\n",
-                        paste0("   Robust F-statistic: ", print.F["F"], " on ",  print.object$F.test[2L, "Df"], " and ", print.object$F.test[2L, "Res.Df"], " df, p-value: ", print.F["pval"]))))
+      model.class <- "lmer"
 
     }
 
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Model Class ####
+
+    switch(model.class,
+
+           #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           ## Linear Regression, lm() ####
+
+           lm = {
+
+             #...................
+             ### Heteroscedasticity-Consistent Standard Error ####
+
+             if (isTRUE(x$args$type %in% c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5"))) {
+
+                #...................
+                ### Extract coefficients ####
+
+                print.coef <- print.object$coef
+
+                #...................
+                ### Round ####
+
+                print.coef[, setdiff(colnames(print.coef), "p")] <- apply(print.coef[, setdiff(colnames(print.coef), "p")], 2L, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+
+                print.coef[, "p"] <- formatC(as.numeric(print.coef[, "p"]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+                #...................
+                ### Format ####
+
+                print.coef <- apply(print.coef, 2L, function(y) format(y, justify = "right"))
+
+                row.names(print.coef) <- paste("  ", row.names(print.coef))
+
+                #...................
+                ### Print ####
+
+                cat(paste0("  Heteroscedasticity-Consistent Standard Errors (", x$args$type, ")\n\n"))
+
+                # Print coefficients
+                print(print.coef, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+                #...................
+                ### F-test ####
+
+                if (isTRUE(length(class(x$model)) == 1L)) {
+
+                  # Extract F-test
+                  print.F <- print.object$F.test[2L, ]
+
+                  # Round
+                  print.F["F"] <- formatC(print.F["F"], digits = digits - 1L, format = "f", zero.print = ifelse(digits - 1L > 0L, paste0("0.", paste(rep(0L, times = digits - 1L), collapse = "")), "0"))
+                  print.F["p"] <- formatC(as.numeric(print.F["p"]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+                  # Model summary
+                  print.summary <- summary(x$model)
+
+                  # Negative r-squared
+                  if (isTRUE(print.summary$adj.r.squared < 0L)) { print.summary$adj.r.squared <- 0L }
+
+                  # Round
+                  print.summary$sigma <- formatC(print.summary$sigma, digits = digits - 1L, format = "f", zero.print = ifelse(digits - 1L > 0L, paste0("0.", paste(rep(0L, times = digits - 1L), collapse = "")), "0"))
+                  print.summary$r.squared <- formatC(print.summary$r.squared, digits = p.digits - 1L, format = "f", zero.print = ifelse(p.digits - 1L > 0L, paste0("0.", paste(rep(0L, times = p.digits - 1L), collapse = "")), "0"))
+                  print.summary$adj.r.squared <- formatC(print.summary$adj.r.squared, digits = p.digits - 1L, format = "f", zero.print = ifelse(p.digits - 1L > 0L, paste0("0.", paste(rep(0L, times = p.digits - 1L), collapse = "")), "0"))
+
+                  cat(paste0("\n   Residual standard error: ", print.summary$sigma, " on ", x$model$df.residual, " degrees of freedom\n",
+                             paste0("   Multiple R-squared: ", print.summary$r.squared, ",", " Adjusted R-squared: ", print.summary$adj.r.squared , "\n",
+                                    paste0("   Robust F-statistic: ", print.F["F"], " on ",  print.object$F.test[2L, "df"], " and ", print.object$F.test[2L, "res.df"], " df, p-value: ", print.F["p"]))))
+
+                }
+
+             #...................
+             ### Cluster-Robust Standard Error ####
+
+             } else {
+
+               #...................
+               ### Extract coefficients ####
+
+               print.coef <- print.object$coef
+
+               #...................
+               ### Round ####
+
+               print.coef[, setdiff(colnames(print.coef), "p")] <- apply(print.coef[, setdiff(colnames(print.coef), "p")], 2L, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+
+               print.coef[, "p"] <- formatC(as.numeric(print.coef[, "p"]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+               #...................
+               ### Format ####
+
+               print.coef <- apply(print.coef, 2L, function(y) format(y, justify = "right"))
+
+               row.names(print.coef) <- paste("  ", row.names(print.coef))
+
+               #...................
+               ### Print ####
+
+               cat(paste0("  Clust-Robust Standard Errors (", x$args$type, ")\n\n"))
+
+               # Print coefficients
+               print(print.coef, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+             }
+
+          #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          ## Linear Mixed-Effects Model, lmer() ####
+
+          }, lmer = {
+
+            #...................
+            ### Extract coefficients ####
+
+            print.coef <- print.object$coef
+
+            #...................
+            ### Round ####
+
+            print.coef[, setdiff(colnames(print.coef), "p")] <- apply(print.coef[, setdiff(colnames(print.coef), "p")], 2L, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+
+            print.coef[, "p"] <- formatC(as.numeric(print.coef[, "p"]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+            #...................
+            ### Format ####
+
+            print.coef <- apply(print.coef, 2L, function(y) format(y, justify = "right"))
+
+            row.names(print.coef) <- paste("  ", row.names(print.coef))
+
+            #...................
+            ### Print ####
+
+            cat(paste0("  Cluster-Robust Standard Error (", x$args$type, ")\n\n"))
+
+            # Print coefficients
+            print(print.coef, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+          })
+
   #_____________________________________________________________________________
   #
-  # Standardized Coefficients --------------------------------------------------
+  # Standardized Coefficients, cieff.std() -------------------------------------
   }, coeff.std = {
 
     if (isTRUE(check)) {
@@ -3105,10 +3203,13 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     # Round
 
     # Linear model, lm() function
-    if (isTRUE(class(x$model) == "lm")) {
+    if (isTRUE(inherits(x$model, what = "lm"))) {
 
       print.object[, -4L] <- apply(print.object[, -4L], 2L, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
       print.object[, 4L] <- formatC(as.numeric(print.object[, 4L]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+      # Rename columns
+      print.object <- misty::df.rename(print.object, from = c("Std. Error", "t value", "Pr(>|t|)"), to = c("SE", "t", "p"))
 
     # Linear Mixed-Effects Model, lmer() function
     } else if (isTRUE(class(x$model) %in% c("lmerMod", "lmerModLmerTest"))) {
@@ -3119,8 +3220,13 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       if (isTRUE("Pr(>|t|)" %in% colnames(print.object))) { print.object[, colnames(print.object) == "Pr(>|t|)"] <- formatC(as.numeric(print.object[, colnames(print.object) == "Pr(>|t|)"]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")) }
 
+      # Rename columns
+      print.object <- misty::df.rename(print.object, from = c("Std. Error", "t value"), to = c("SE", "t"))
+
+      if (isTRUE("Pr(>|t|)" %in% colnames(print.object))) { print.object <- misty::df.rename(print.object, from = "Pr(>|t|)", to = "p") }
+
     # Linear Mixed-Effects Model, lme() function
-    } else if (isTRUE(class(x$model) == "lme")) {
+    } else if (isTRUE(inherits(x$model, what = "lme"))) {
 
       print.object[, !colnames(print.object) %in% c("DF", "p-value", "Level")] <- apply(print.object[, !colnames(print.object) %in% c("DF", "p-value", "Level")], 2L, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
 
@@ -3128,6 +3234,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       print.object[, "Level"] <- format(print.object[, "Level"], justify = "right")
 
       if (isTRUE("p-value" %in% colnames(print.object))) { print.object[, colnames(print.object) == "p-value"] <- formatC(as.numeric(print.object[, colnames(print.object) == "p-value"]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")) }
+
+      # Rename columns
+      print.object <- misty::df.rename(print.object, from = c("Value", "Std.Error", "DF", "t-value", "p-value"), to = c("Estimate", "SE", "df", "t", "p"))
 
     }
 
@@ -3142,6 +3251,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     row.names(print.object) <- paste(" ", row.names(print.object))
 
     #-----------------------------------------
+    # Rename columns
+
+    #-----------------------------------------
     # Print
     cat(" Unstandardized and Standardized Coefficients\n\n")
 
@@ -3150,7 +3262,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Cohen's d ------------------------------------------------------------------
+  # Cohen's d, cohens.d() ------------------------------------------------------
   }, cohens.d = {
 
     #......
@@ -3606,7 +3718,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Correlation Matrix with Statistical Significance Testing -------------------
+  # Correlation Matrix with Statistical Significance Testing, cor.matrix() -----
   }, cor.matrix = {
 
     if (isTRUE(check)) {
@@ -4047,7 +4159,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Cross Tabulation -----------------------------------------------------------
+  # Cross Tabulation, crosstab() -----------------------------------------------
   }, crosstab = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4529,7 +4641,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Descriptive Statistics -----------------------------------------------------
+  # Descriptive Statistics, descript() -----------------------------------------
   }, descript = {
 
     if (isTRUE(check)) {
@@ -4767,7 +4879,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Print the First Rows of a Data Frame ---------------------------------------
+  # Print the First Rows of a Data Frame, df.head() ----------------------------
   }, df.head = {
 
     # Print data frame
@@ -4778,7 +4890,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Print the Last Rows of a Data Frame ----------------------------------------
+  # Print the Last Rows of a Data Frame, df.tail() -----------------------------
   }, df.tail = {
 
     # Print data frame
@@ -4789,7 +4901,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Manual Dominance Analysis --------------------------------------------------
+  # Manual Dominance Analysis, dominance.manual() ------------------------------
   }, dominance.manual = {
 
     cat(" Dominance Analysis: General Dominance\n\n")
@@ -4838,7 +4950,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Dominance Analysis ---------------------------------------------------------
+  # Dominance Analysis, dominance() --------------------------------------------
   }, dominance = {
 
     cat(" Dominance Analysis\n")
@@ -4965,7 +5077,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Effect Sizes for Categorical Variablese ------------------------------------
+  # Effect Sizes for Categorical Variables, effsize() --------------------------
   }, effsize = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5026,7 +5138,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Frequency Table ----------------------------------------------------------------
+  # Frequency Table, freq() ----------------------------------------------------
   }, freq = {
 
     if (isTRUE(check)) {
@@ -5510,7 +5622,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Confidence Intervals for the Indirect Effect -------------------------------
+  # Confidence Intervals for the Indirect Effect, indirect() -------------------
   }, indirect = {
 
     if (isTRUE(check)) {
@@ -5615,7 +5727,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Coefficient Alpha ----------------------------------------------------------
+  # Coefficient Alpha, item.alpha() --------------------------------------------
   }, item.alpha = {
 
     if (isTRUE(check)) {
@@ -5697,7 +5809,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Confirmatory factor analysis -----------------------------------------------
+  # Confirmatory factor analysis, item.cfa() -----------------------------------
   }, item.cfa = {
 
     cat(" Confirmatory Factor Analysis\n")
@@ -6323,7 +6435,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     }
   #_____________________________________________________________________________
   #
-  # Between-Group and Longitudinal Measurement Invariance Evaluation -----------
+  # Between-Group and Longitudinal MI Evaluation, item.invar() -----------------
   }, item.invar = {
 
     if (isTRUE(!x$args$long)) { cat(" Between-Group Measurement Invariance Evaluation\n") } else { cat(" Longitudinal Measurement Invariance Evaluation\n") }
@@ -7106,7 +7218,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat(paste0("   No modification indices for parameter constraints above the minimum value ", round(x$args$mod.minval, digits = 2L), ".\n"))
 
-          #### Score test
+        #### Score test
         } else {
 
           ##### Group
@@ -7293,7 +7405,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Coefficient Omega ----------------------------------------------------------
+  # Coefficient Omega,l item.omega() -------------------------------------------
   }, item.omega = {
 
     #----------------------------------------
@@ -7400,7 +7512,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Multivariate Kurtosis ------------------------------------------------------
+  # Multivariate Kurtosis, kurtosis() ------------------------------------------
   }, kurtosis = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7433,14 +7545,14 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Mplus Object ---------------------------------------------------------------
+  # Mplus Object, mplus() ------------------------------------------------------
   }, mplus = {
 
       cat("Please use the mplus.print function to print a \"mplus\" object.")
 
   #_____________________________________________________________________________
   #
-  # Mplus Summary Measures, Convergence and Efficiency Diagnostics -------------
+  # Mplus Summary Measures, Convergence and Efficiency Diagnostics, mplus.bayes()
   }, mplus.bayes = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7573,7 +7685,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Multilevel Confirmatory Factor Analysis ------------------------------------
+  # Multilevel Confirmatory Factor Analysis, multilevel.cfa() ------------------
   }, multilevel.cfa = {
 
     cat(" Multilevel Confirmatory Factor Analysis\n")
@@ -8496,7 +8608,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Within-Group and Between-Group Correlation Matrix --------------------------
+  # Within-Group and Between-Group Correlation Matrix, multilevel.cor() --------
   }, multilevel.cor = {
 
     # Check input 'print'
@@ -8930,7 +9042,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  #  Multilevel Descriptive Statistics -----------------------------------------
+  #  Multilevel Descriptive Statistics, multilevel.descript() ------------------
   }, multilevel.descript = {
 
 
@@ -9029,7 +9141,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Simultaneous and Level-Specific Multilevel Model Fit Information  -----------
+  # Simultaneous and LS Multilevel Model Fit Information, multilevel.fit() -----
   }, multilevel.fit = {
 
     cat(" Simultaneous and Level-Specific Multilevel Model Fit Information\n")
@@ -9172,7 +9284,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # CI for the Indirect Effect in a 1-1-1 Multilevel Mediation Model -----------
+  # CI for the Indirect Effect in a ML Mediation Model, multilevel.indirect() --
   }, multilevel.indirect = {
 
     #....................
@@ -9212,7 +9324,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # R-Squared Measures for Multilevel and Linear Mixed Effects Models Manual ----
+  # R-Squared Measures for Multilevel and Linear Mixed Effects Models Manual, multilevel.r2.manual()
   }, multilevel.r2.manual = {
 
     print.object$total <- data.frame(sapply(print.object$total[, !is.na(print.object$total)], formatC, digits = digits, format = "f", simplify = FALSE))
@@ -9254,7 +9366,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # R-Squared Measures for Multilevel and Linear Mixed Effects Models ----------
+  # R-Squared Measures for Multilevel and Linear Mixed Effects Models, multilevel.r2()
   }, multilevel.r2 = {
 
     if (isTRUE("RS" %in% x$args$print)) {
@@ -9337,7 +9449,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Cross-Level Measurement Invariance -----------------------------------------
+  # Cross-Level Measurement Invariance, multilevel.invar() ---------------------
   }, multilevel.invar = {
 
     cat(" Cross-Level Measurement Invariance\n")
@@ -10228,7 +10340,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Multilevel Composite Reliability ----
+  # Multilevel Composite Reliability, multilevel.omega() -----------------------
   }, multilevel.omega = {
 
     switch(x$args$const,
@@ -10341,7 +10453,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Auxiliary variables analysis -----------------------------------------------
+  # Auxiliary variables analysis, na.auxiliary() -------------------------------
   }, na.auxiliary = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -10529,7 +10641,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Variance-Covariance Coverage -----------------------------------------------
+  # Variance-Covariance Coverage, na.coverage() --------------------------------
   }, na.coverage = {
 
     #........................................
@@ -10560,7 +10672,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Descriptive Statistics for Missing Data ------------------------------------
+  # Descriptive Statistics for Missing Data, na.descript() ---------------------
   }, na.descript = {
 
     #----------------------------------------
@@ -10837,7 +10949,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Missing Data Pattern -------------------------------------------------------
+  # Missing Data Pattern, na.pattern() -----------------------------------------
   }, na.pattern = {
 
     # NA
@@ -10864,7 +10976,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Missing Completely at Random (MCAR) Test -----------------------------------
+  # Missing Completely at Random (MCAR) Test, na.test() ------------------------
   }, na.test = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -10988,7 +11100,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Result Table for Latent Profile Analysis Estimated in Mplus ----------------
+  # Result Table for LPA Estimated in Mplus, result.lca() ----------------------
   }, result.lca = {
 
     cat(" Latent Class Analysis\n\n")
@@ -11063,7 +11175,300 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Multivariate Skewness ------------------------------------------------------
+  # Robust Estimation of MLM and LMM, robust.lmer() ----------------------------
+  }, robust.lmer = {
+
+    # Two-level model
+    model.twolevel <- ifelse(lme4::getME(x$model, name = "n_rtrms") == 1L, TRUE, FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Title ####
+
+    cat(" Robust Multilevel and Linear Mixed-Effects Model\n\n")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Call ####
+
+    cat("  Formula: ", print.object$call$formula, "\n", " Data:    ", print.object$call$data, "\n")
+
+    cat("  Method:  ", x$model@method, "\n\n")
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Coefficients ####
+
+    #...................
+    ### Random Effects ####
+
+    # Random intercept model
+    if (isTRUE(length(misty::chr.omit(colnames(print.object$randeff), omit = c("groups", "name", "var", "sd", "cor"))) == 0L || (all(na.omit(print.object$randeff[, "cor"]) == 1L) && all(na.omit(print.object$randeff[, ncol(print.object$randeff)]) == 1L)))) {
+
+      # Header
+      cat("  Random Effects: Variance Components", "\n\n")
+
+      print.object$randeff <- print.object$randeff[, -(grep("cor", colnames(print.object$randeff)):ncol(print.object$randeff))]
+
+      # Round variables
+      print.object$randeff[, c("var", "sd")] <- sapply(c("var", "sd"), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+      # Columns
+      print.object$randeff <- data.frame(rbind(c("Groups", "Name", "Var", "SD"), print.object$randeff), fix.empty.names = FALSE, row.names = NULL)
+
+    # Random intercept and slope model
+    } else {
+
+      # Header
+      cat("  Random Effects: Variance and Correlation Components", "\n\n")
+
+      # Round variables
+      print.object$randeff[, c("var", "sd")] <- sapply(c("var", "sd"), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+      print.object$randeff[, setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd"))] <- sapply(setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd")), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+      # Two-Level Model
+      if (isTRUE(model.twolevel)) {
+
+        # Lower triangular
+        print.object$randeff.cor <- print.object$randeff[-nrow(print.object$randeff), setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd"))]
+        print.object$randeff.cor[upper.tri(print.object$randeff.cor)] <- NA
+
+        # Diagonal
+        diag(print.object$randeff.cor) <- ""
+
+        # Combine variance and correlation components
+        print.object$randeff <- cbind(print.object$randeff[, c("groups", "name", "var", "sd")], rbind(print.object$randeff.cor, rep(NA, times = ncol(print.object$randeff.cor))))
+
+        # Columns
+        print.object$randeff <- data.frame(rbind(c("Groups", "Name", "Var", "SD", "Cor", setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd", "cor"))), print.object$randeff), fix.empty.names = FALSE, row.names = NULL)
+
+        # Remove last column
+        print.object$randeff <- print.object$randeff[, -ncol(print.object$randeff)]
+
+      } else {
+
+        # Extract correlation components
+        print.object$randeff.cor <- which(print.object$randeff$groups %in% names(lme4::getME(x$model, name = "cnms")))[2L] |> (\(y) list(print.object$randeff[1L:(y - 1L), setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd"))], print.object$randeff[y:(nrow(print.object$randeff) - 1L), setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd"))]))()
+
+        for (i in seq_along(print.object$randeff.cor)) {
+
+          # Lower triangular
+          print.object$randeff.cor[[i]][upper.tri(print.object$randeff.cor[[i]])] <- NA
+
+          # Diagonal
+          diag(print.object$randeff.cor[[i]]) <- ""
+
+        }
+
+        # Combine variance and correlation components
+        print.object$randeff <- cbind(print.object$randeff[, c("groups", "name", "var", "sd")], rbind(do.call("rbind", print.object$randeff.cor), rep(NA, times = unique(lapply(print.object$randeff.cor, ncol)))))
+
+        # Columns
+        print.object$randeff <- data.frame(rbind(c("Groups", "Name", "Var", "SD", "Cor", setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd", "cor"))), print.object$randeff), fix.empty.names = FALSE, row.names = NULL)
+
+        # Remove last column
+        print.object$randeff <- print.object$randeff[, -ncol(print.object$randeff)]
+
+      }
+
+    }
+
+    # Justify right and left
+    print.object$randeff[, -c(1L, 2L)] <- format(print.object$randeff[, -c(1L, 2L)], justify = "right")
+    print.object$randeff[, c(1L, 2L)] <- format(print.object$randeff[, c(1L, 2L)], justify = "left")
+
+    # Replace NA with ""
+    print.object$randeff <- apply(print.object$randeff, 2L, function(y) gsub("NA", "  ", y))
+
+    # Add blank space
+    print.object$randeff[, 1L] <- paste0("   ", print.object$randeff[, 1L] , sep = "")
+
+    # Print
+    write.table(print.object$randeff, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #...................
+    ### Fixed Effects ####
+
+    cat("\n  Fixed Effects: Unstandardized Coefficients", "\n\n")
+
+    # Coefficient table without dfs and p-values
+    if (isTRUE(!"p" %in% colnames(print.object$coef))) {
+
+      # Round variables
+      print.object$coef[, c("Estimate", "SE", "t")] <- sapply(colnames(print.object$coef), function(y) ifelse(!is.na(print.object$coef[, y]), formatC(print.object$coef[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+      # Columns
+      print.object$coef <- data.frame(row.names(print.object$coef), print.object$coef, fix.empty.names = FALSE, row.names = NULL)
+
+      # Row names
+      print.object$coef <- rbind(c("", colnames(print.object$coef)[-1L]), print.object$coef)
+
+    # Coefficient table with dfs and p-values
+    } else {
+
+      # Round variables
+      print.object$coef[, setdiff(colnames(print.object$coef), "p")] <- sapply(setdiff(colnames(print.object$coef), "p"), function(y) ifelse(!is.na(print.object$coef[, y]), formatC(print.object$coef[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+      print.object$coef[, "p"] <- formatC(print.object$coef[, "p"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+      # Columns
+      print.object$coef <- data.frame(row.names(print.object$coef), print.object$coef, fix.empty.names = FALSE, row.names = NULL)
+
+      # Row names
+      print.object$coef <- rbind(c("", colnames(misty::df.rename(print.object$coef, from = "p", to = "p"))[-1L]), print.object$coef)
+
+    }
+
+    # Justify right and left
+    print.object$coef[, -1L] <- format(print.object$coef[, -1L], justify = "right")
+    print.object$coef[, 1L] <- format(print.object$coef[, 1L], justify = "left")
+
+    # Replace NA with ""
+    print.object$coef[, -1L] <- apply(print.object$coef[, -1L], 2L, function(y) gsub("NA", "  ", y))
+
+    # Add blank space
+    print.object$coef[, 1L] <- paste0("   ", print.object$coef[, 1L] , sep = "")
+
+    # Print
+    write.table(print.object$coef, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #...................
+    ### Weights ####
+
+    #### Two-Level Model ####
+    if (isTRUE(model.twolevel)) {
+
+      ##### Residuals
+
+      cat("\n  Robustness Weights: Residuals", "\n")
+
+      if (isTRUE(print.object$weights$resid$ew0 != 0)) {
+
+        if (isTRUE(print.object$weights$resid$ew0 >= 2)) {
+
+          cat(paste0("   ", print.object$weights$resid$ew1, " weights are 1, ", print.object$weights$resid$ew0, " weights with M = ", formatC(print.object$weights$resid$pdescript[, "m"], digits = digits, format = "f"), " (SD = ", formatC(print.object$weights$resid$pdescript[, "sd"], digits = digits, format = "f"), ", Min = ", formatC(print.object$weights$resid$pdescript[, "min"], digits = digits, format = "f"), ", and Max = ", formatC(print.object$weights$resid$pdescript[, "max"], digits = digits, format = "f"), ")"))
+
+        } else {
+
+          cat(paste0("   ", print.object$weights$resid$ew1, " weights are 1, remaining", print.object$weights$resid$ew0, " weight is ", formatC(print.object$weights$resid$pdescript, digits = digits, format = "f")))
+
+        }
+
+      } else {
+
+        cat(paste0("   All ", print.object$weights$resid$ew1, " weights are 1"))
+
+      }
+
+      ##### Random Effects
+
+      cat("\n\n  Robustness Weights: Random Effects", "\n")
+
+      if (isTRUE(print.object$weights$ranef$bw0 != 0)) {
+
+        # More than two weights < 1
+        if (isTRUE(print.object$weights$ranef$bw0 >= 2)) {
+
+          cat(paste0("   ", print.object$weights$ranef$bw1, " weights are 1, ", print.object$weights$ranef$bw0, " weights with M = ", formatC(print.object$weights$ranef$bdescript[, "m"], digits = digits, format = "f"), " (SD = ", formatC(print.object$weights$ranef$bdescript[, "sd"], digits = digits, format = "f"), ", Min = ", formatC(print.object$weights$ranef$bdescript[, "min"], digits = digits, format = "f"), ", and Max = ", formatC(print.object$weights$ranef$bdescript[, "max"], digits = digits, format = "f"), ")"))
+
+        # One weight < 1
+        } else {
+
+          cat(paste0("   ", print.object$weights$ranef$bw1, " weights are 1, remaining ", print.object$weights$ranef$bw0, " weight is ", formatC(print.object$weights$ranef$bdescript, digits = digits, format = "f")))
+
+        }
+
+      } else {
+
+        cat(paste0("   All ", print.object$weights$ranef$bw1, " weights are 1"))
+
+      }
+
+    #### Three-Level Model ####
+    } else {
+
+      ##### Residuals
+
+      cat("\n  Robustness Weights: Residuals", "\n")
+
+      if (isTRUE(print.object$weights$resid$ew0 != 0)) {
+
+        # More than two weights < 1
+        if (isTRUE(print.object$weights$resid$ew0 >= 2)) {
+
+          cat(paste0("   ", print.object$weights$resid$ew1, " weights are 1, ", print.object$weights$resid$ew0, " weights with M = ", formatC(print.object$weights$resid$pdescript[, "m"], digits = digits, format = "f"), " (SD = ", formatC(print.object$weights$resid$pdescript[, "sd"], digits = digits, format = "f"), ", Min = ", formatC(print.object$weights$resid$pdescript[, "sd"], digits = digits, format = "f"), ", and Max = ", formatC(print.object$weights$resid$pdescript[, "max"], digits = digits, format = "f"), ")"))
+
+        # One weight < 1
+        } else {
+
+          cat(paste0("   ", print.object$weights$resid$ew1, " weights are 1, remaining ", print.object$weights$resid$ew0, " weight is ", formatC(print.object$weights$resid$pdescript, digits = digits, format = "f")))
+
+        }
+
+      } else {
+
+        cat(paste0("   All ", print.object$weights$resid$ew1, " weights are 1"))
+
+      }
+
+      ##### Random Effects: Level 1
+
+      cat(paste0("\n\n  Robustness Weights: Random Effects '", names(lme4::getME(x$model, "w_b"))[1L], "'"), "\n")
+
+      if (isTRUE(print.object$weights$ranef1$b1w0 != 0)) {
+
+        # More than two weights < 1
+        if (isTRUE(print.object$weights$ranef1$b1w0 >= 2)) {
+
+          cat(paste0("   ", print.object$weights$ranef1$b1w1, " weights are 1, ", print.object$weights$ranef1$b1w0, " weights with M = ", formatC(print.object$weights$ranef1$b1descript[, "m"], digits = digits, format = "f"), " (SD = ", formatC(print.object$weights$ranef1$b1descript[, "sd"], digits = digits, format = "f"), ", Min = ", formatC(print.object$weights$ranef1$b1descript[, "sd"], digits = digits, format = "f"), ", and Max = ", formatC(print.object$weights$ranef1$b1descript[, "max"], digits = digits, format = "f"), ")"))
+
+        # One weight < 1
+        } else {
+
+          cat(paste0("   ", print.object$weights$ranef1$b1w1, " weights are 1, remaining ", print.object$weights$ranef1$b1w0, " weight is ", formatC(print.object$weights$ranef1$b1descript, digits = digits, format = "f")))
+
+        }
+
+      } else {
+
+        cat(paste0("   All ", print.object$weights$ranef1$b1w1, " weights are 1"))
+
+      }
+
+      ##### Random Effects: Level 2
+
+      cat(paste0("\n\n  Robustness Weights: Random Effects '", names(lme4::getME(x$model, "w_b"))[2L], "'"), "\n")
+
+      if (isTRUE(print.object$weights$ranef1$b2w0 != 0)) {
+
+        # More than two weights < 1
+        if (isTRUE(print.object$weights$ranef2$b2w0 >= 2)) {
+
+          cat(paste0("   ", print.object$weights$ranef2$b2w1, " weights are 1, ", print.object$weights$ranef2$b2w0, " weights with M = ", formatC(print.object$weights$ranef2$b2descript[, "m"], digits = digits, format = "f"), " (SD = ", formatC(print.object$weights$ranef2$b2descript[, "sd"], digits = digits, format = "f"), ", Min = ", formatC(print.object$weights$ranef2$b2descript[, "sd"], digits = digits, format = "f"), ", and Max = ", formatC(print.object$weights$ranef2$b2descript[, "max"], digits = digits, format = "f"), ")"))
+
+        # One weight < 1
+        } else {
+
+          cat(paste0("   ", print.object$weights$ranef1$b1w1, " weights are 1, remaining ", print.object$weights$ranef2$b2w0, " weight is ", formatC(print.object$weights$ranef2$b2descript, digits = digits, format = "f")))
+
+        }
+
+      } else {
+
+        cat(paste0("   All ", print.object$weights$ranef2$b2w1, " weights are 1"))
+
+      }
+
+    }
+
+    #...................
+    ### Model Convergence ####
+
+    # -1 = not converged, 0 = singular, 1 = model converged
+    switch(as.character(print.object$converg),
+           "-1" = { cat("\n\n Warning. Model failed to converge.", "\n") },
+           "0" = { cat("\n\n Warning. Fitted model is singular, see help page: ?isSingular", "\n")})
+
+
+  #_____________________________________________________________________________
+  #
+  # Multivariate Skewness, skewness() ------------------------------------------
   }, skewness = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -11099,7 +11504,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Sample Size Determination --------------------------------------------------
+  # Sample Size Determination, size() ------------------------------------------
   }, size = {
 
     #----------------------------------------
@@ -11460,7 +11865,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Print Summary Output -------------------------------------------------------
+  # Print Summary Output, summa() ----------------------------------------------
   }, summa = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -11683,7 +12088,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Linear Mixed-Effects Model, lmer() ####
 
-    } else if (all(class(x$model) %in% c("lmerMod", "lmerModLmerTest"))) {
+    } else if (all(class(x$model) %in% c("lmerMod", "rlmerMod", "lmerModLmerTest"))) {
 
       # Two-level model
       model.twolevel <- ifelse(lme4::getME(x$model, name = "n_rtrms") == 1L, TRUE, FALSE)
@@ -11691,12 +12096,26 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #...................
       ### Title ####
 
-      cat(" Multilevel and Linear Mixed-Effects Model \n\n")
+      if (!inherits(x$model, what = "rlmerMod")) {
+
+        cat(" Multilevel and Linear Mixed-Effects Model\n\n")
+
+      } else {
+
+        cat(" Robust Multilevel and Linear Mixed-Effects Model\n\n")
+
+      }
 
       #...................
       ### Call ####
 
-      if (isTRUE("call" %in% x$args$print)) { cat("  Formula: ", print.object$call$formula, "\n", " Data:    ", print.object$call$data, "\n") }
+      if (isTRUE("call" %in% x$args$print)) {
+
+        cat("  Formula: ", print.object$call$formula, "\n", " Data:    ", print.object$call$data, "\n")
+
+        if (isTRUE(inherits(x$model, what = "rlmerMod"))) { cat("  Method:  ",x$model@method, "\n") }
+
+      }
 
       #...................
       ### Descriptive Statistics ####
@@ -11724,7 +12143,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           # Row names
           print.object$descript <- rbind(c("Variable", "n", "nUQ", "M", "SD", "Min", "%Min", "Max", "%Max", "Skew", "Kurt", "ICC(1)"), print.object$descript)
 
-          # Three-Level Model
+        # Three-Level Model
         } else {
 
           # Round ICC(1)
@@ -11891,7 +12310,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
             print.object$randeff <- cbind(print.object$randeff[, c("groups", "name", "var", "sd")], rbind(print.object$randeff.cor, rep(NA, times = ncol(print.object$randeff.cor))))
 
             # Columns
-            print.object$randeff <- data.frame(rbind(c("Groups", "Name", "Var", "SD", "cor", setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd", "cor"))), print.object$randeff), fix.empty.names = FALSE, row.names = NULL)
+            print.object$randeff <- data.frame(rbind(c("Groups", "Name", "Var", "SD", "Cor", setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd", "cor"))), print.object$randeff), fix.empty.names = FALSE, row.names = NULL)
 
             # Remove last column
             print.object$randeff <- print.object$randeff[, -ncol(print.object$randeff)]
@@ -11948,7 +12367,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         } else if (isTRUE(all(!x$args$print %in% c("stdcoef", "vif")))) {
 
-          cat(paste0("  Fixed Effects: Unstandardized Coefficients and ", round(x$args$conf.level * 100L, digits = 2L), "% Confidence Interval"), "\n")
+          cat(paste0("  Fixed Effects: Unstandardized Coefficients and ", round(x$args$conf.level * 100L, digits = 2L), "% Confidence Interval"), "\n\n")
 
         } else if (isTRUE(all(!x$args$print %in% c("confint", "vif")))) {
 
@@ -11976,7 +12395,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         }
 
-        if (isTRUE(all(class(x$model) == "lmerMod"))) {
+        # Coefficient table without dfs and p-values
+        if (isTRUE(!"p" %in% colnames(print.object$coef))) {
 
           # Round variables
           print.object$coef[, setdiff(colnames(print.object$coef), "Level")] <- sapply(setdiff(colnames(print.object$coef), "Level"), function(y) ifelse(!is.na(print.object$coef[, y]), formatC(print.object$coef[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
@@ -11987,7 +12407,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           # Row names
           print.object$coef <- rbind(c("", colnames(print.object$coef)[-1L]), print.object$coef)
 
-        } else if (isTRUE(all(class(x$model) == "lmerModLmerTest"))) {
+        # Coefficient table with dfs and p-values
+        } else {
 
           # Round variables
           print.object$coef[, setdiff(colnames(print.object$coef), c("p", "Level"))] <- sapply(setdiff(colnames(print.object$coef), c("p", "Level")), function(y) ifelse(!is.na(print.object$coef[, y]), formatC(print.object$coef[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
@@ -12014,6 +12435,141 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         # Print
         write.table(print.object$coef, quote = FALSE, row.names = FALSE, col.names = FALSE)
 
+        if (isTRUE(x$args$robust)) { cat("\n  Note. Cluster-Robust Standard Errors (CR2)") }
+
+      }
+
+      #...................
+      ### Weights ####
+
+      if (isTRUE(inherits(x$model, what = "rlmerMod"))) {
+
+        #### Two-Level Model ####
+        if (isTRUE(model.twolevel)) {
+
+          ##### Residuals
+
+          cat("\n  Robustness Weights: Residuals", "\n")
+
+          if (isTRUE(print.object$weights$resid$ew0 != 0)) {
+
+            if (isTRUE(print.object$weights$resid$ew0 >= 2)) {
+
+              cat(paste0("   ", print.object$weights$resid$ew1, " weights are 1, ", print.object$weights$resid$ew0, " weights with M = ", formatC(print.object$weights$resid$pdescript[, "m"], digits = digits, format = "f"), " (SD = ", formatC(print.object$weights$resid$pdescript[, "sd"], digits = digits, format = "f"), ", Min = ", formatC(print.object$weights$resid$pdescript[, "min"], digits = digits, format = "f"), ", and Max = ", formatC(print.object$weights$resid$pdescript[, "max"], digits = digits, format = "f"), ")"))
+
+            } else {
+
+              cat(paste0("   ", print.object$weights$resid$ew1, " weights are 1, remaining", print.object$weights$resid$ew0, " weight is ", formatC(print.object$weights$resid$pdescript, digits = digits, format = "f")))
+
+            }
+
+          } else {
+
+            cat(paste0("   All ", print.object$weights$resid$ew1, " weights are 1"))
+
+          }
+
+          ##### Random Effects
+
+          cat("\n\n  Robustness Weights: Random Effects", "\n")
+
+          if (isTRUE(print.object$weights$ranef$bw0 != 0)) {
+
+            # More than two weights < 1
+            if (isTRUE(print.object$weights$ranef$bw0 >= 2)) {
+
+              cat(paste0("   ", print.object$weights$ranef$bw1, " weights are 1, ", print.object$weights$ranef$bw0, " weights with M = ", formatC(print.object$weights$ranef$bdescript[, "m"], digits = digits, format = "f"), " (SD = ", formatC(print.object$weights$ranef$bdescript[, "sd"], digits = digits, format = "f"), ", Min = ", formatC(print.object$weights$ranef$bdescript[, "min"], digits = digits, format = "f"), ", and Max = ", formatC(print.object$weights$ranef$bdescript[, "max"], digits = digits, format = "f"), ")"))
+
+            # One weight < 1
+            } else {
+
+              cat(paste0("   ", print.object$weights$ranef$bw1, " weights are 1, remaining ", print.object$weights$ranef$bw0, " weight is ", formatC(print.object$weights$ranef$bdescript, digits = digits, format = "f")))
+
+            }
+
+          } else {
+
+            cat(paste0("   All ", print.object$weights$ranef$bw1, " weights are 1"))
+
+          }
+
+        #### Three-Level Model ####
+        } else {
+
+          ##### Residuals
+
+          cat("\n  Robustness Weights: Residuals", "\n")
+
+          if (isTRUE(print.object$weights$resid$ew0 != 0)) {
+
+            # More than two weights < 1
+            if (isTRUE(print.object$weights$resid$ew0 >= 2)) {
+
+              cat(paste0("   ", print.object$weights$resid$ew1, " weights are 1, ", print.object$weights$resid$ew0, " weights with M = ", formatC(print.object$weights$resid$pdescript[, "m"], digits = digits, format = "f"), " (SD = ", formatC(print.object$weights$resid$pdescript[, "sd"], digits = digits, format = "f"), ", Min = ", formatC(print.object$weights$resid$pdescript[, "sd"], digits = digits, format = "f"), ", and Max = ", formatC(print.object$weights$resid$pdescript[, "max"], digits = digits, format = "f"), ")"))
+
+            # One weight < 1
+            } else {
+
+              cat(paste0("   ", print.object$weights$resid$ew1, " weights are 1, remaining ", print.object$weights$resid$ew0, " weight is ", formatC(print.object$weights$resid$pdescript, digits = digits, format = "f")))
+
+            }
+
+          } else {
+
+            cat(paste0("   All ", print.object$weights$resid$ew1, " weights are 1"))
+
+          }
+
+          ##### Random Effects: Level 1
+
+          cat(paste0("\n\n  Robustness Weights: Random Effects '", names(lme4::getME(x$model, "w_b"))[1L], "'"), "\n")
+
+          if (isTRUE(print.object$weights$ranef1$b1w0 != 0)) {
+
+            # More than two weights < 1
+            if (isTRUE(print.object$weights$ranef1$b1w0 >= 2)) {
+
+              cat(paste0("   ", print.object$weights$ranef1$b1w1, " weights are 1, ", print.object$weights$ranef1$b1w0, " weights with M = ", formatC(print.object$weights$ranef1$b1descript[, "m"], digits = digits, format = "f"), " (SD = ", formatC(print.object$weights$ranef1$b1descript[, "sd"], digits = digits, format = "f"), ", Min = ", formatC(print.object$weights$ranef1$b1descript[, "sd"], digits = digits, format = "f"), ", and Max = ", formatC(print.object$weights$ranef1$b1descript[, "max"], digits = digits, format = "f"), ")"))
+
+            # One weight < 1
+            } else {
+
+              cat(paste0("   ", print.object$weights$ranef1$b1w1, " weights are 1, remaining ", print.object$weights$ranef1$b1w0, " weight is ", formatC(print.object$weights$ranef1$b1descript, digits = digits, format = "f")))
+
+            }
+
+          } else {
+
+            cat(paste0("   All ", print.object$weights$ranef1$b1w1, " weights are 1"))
+
+          }
+
+          ##### Random Effects: Level 2
+
+          cat(paste0("\n\n  Robustness Weights: Random Effects '", names(lme4::getME(x$model, "w_b"))[2L], "'"), "\n")
+
+          if (isTRUE(print.object$weights$ranef1$b2w0 != 0)) {
+
+            # More than two weights < 1
+            if (isTRUE(print.object$weights$ranef2$b2w0 >= 2)) {
+
+              cat(paste0("   ", print.object$weights$ranef2$b2w1, " weights are 1, ", print.object$weights$ranef2$b2w0, " weights with M = ", formatC(print.object$weights$ranef2$b2descript[, "m"], digits = digits, format = "f"), " (SD = ", formatC(print.object$weights$ranef2$b2descript[, "sd"], digits = digits, format = "f"), ", Min = ", formatC(print.object$weights$ranef2$b2descript[, "sd"], digits = digits, format = "f"), ", and Max = ", formatC(print.object$weights$ranef2$b2descript[, "max"], digits = digits, format = "f"), ")"))
+
+            # One weight < 1
+            } else {
+
+              cat(paste0("   ", print.object$weights$ranef1$b1w1, " weights are 1, remaining ", print.object$weights$ranef2$b2w0, " weight is ", formatC(print.object$weights$ranef2$b2descript, digits = digits, format = "f")))
+
+            }
+
+          } else {
+
+            cat(paste0("   All ", print.object$weights$ranef2$b2w1, " weights are 1"))
+
+          }
+
+        }
+
       }
 
       #...................
@@ -12028,7 +12584,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Levene's Test for Homogeneity of Variance ----------------------------------
+  # Levene's Test for Homogeneity of Variance, test.levene() -------------------
   }, test.levene = {
 
     #---------------------------------------------------------
@@ -12126,7 +12682,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # t-test ---------------------------------------------------------------------
+  # t-test, test.t() -----------------------------------------------------------
   }, test.t = {
 
     #---------------------------------------------------------
@@ -12546,7 +13102,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Welch Test -----------------------------------------------------------------
+  # Welch Test, test.welch() ---------------------------------------------------
   }, test.welch = {
 
     #---------------------------------------------------------
@@ -12779,7 +13335,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # z-Test ---------------------------------------------------------------------
+  # z-Test, test.z() -----------------------------------------------------------
   }, test.z = {
 
     #---------------------------------------------------------
@@ -13115,7 +13671,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Extract Unique Elements and Count Number of Unique Elements ----------------
+  # Extract Unique Elements and Count Number of Unique Elements, uniq() --------
   }, uniq = {
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

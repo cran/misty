@@ -181,11 +181,8 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'model' is missing
-  if (isTRUE(missing(model))) { stop("Input for the argument 'model' is missing.", call. = FALSE) }
-
-  # Check if input 'model' is NULL
-  if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
+  # Check if input 'model' is missing or NULL
+  if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model for the argument 'model'.", call. = FALSE) }
 
   # Check if input 'model' is "lm", "glm", "lmerMod", "lmerModLmerTest", "glmerMod", "lme", or "glmmTMB"
   if (isTRUE(!all(class(model) %in% c("lm", "glm", "lmerMod", "lmerModLmerTest", "glmerMod", "lme", "glmmTMB")))) { stop("Please specify an \"lm\", \"glm\", \"lmerMod\", \"lmerModLmerTest\", \"glmerMod\", \"lme\", or \"glmmTMB\" object for the argument 'model'.", call. = FALSE) }

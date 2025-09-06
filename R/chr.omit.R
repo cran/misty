@@ -65,11 +65,8 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a numeric vector, character vector or factor for the argument 'x'", call. = FALSE) }
-
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input 'x' is missing or NULL
+  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a numeric vector, character vector or factor for the argument 'x'", call. = FALSE) }
 
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
@@ -85,8 +82,7 @@ chr.omit <- function(x, omit = "", na.omit = FALSE, check = TRUE) {
   if (isTRUE(check)) {
 
     # Check input 'omit': Values in 'x'?
-    (vapply(omit, function(y) !y %in% x, FUN.VALUE = logical(1L))) |>
-      (\(y) if (isTRUE(any(y))) { warning(paste0("Values specified in the argument 'omit' were not found in 'x': ", paste(omit[y], collapse = ", ")), call. = FALSE) })()
+    (vapply(omit, function(y) !y %in% x, FUN.VALUE = logical(1L))) |> (\(y) if (isTRUE(any(y))) { warning(paste0("Values specified in the argument 'omit' were not found in 'x': ", paste(omit[y], collapse = ", ")), call. = FALSE) })()
 
   }
 

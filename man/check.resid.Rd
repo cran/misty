@@ -2,7 +2,7 @@
 % Please edit documentation in R/check.resid.R
 \name{check.resid}
 \alias{check.resid}
-\title{Residual Diagnostics}
+\title{Residual Diagnostics for Linear, Multilevel and Mixed-Effects Models}
 \usage{
 check.resid(model, type = c("linear", "homo", "normal"),
             resid = c("unstand", "stand", "student"), plot = TRUE,

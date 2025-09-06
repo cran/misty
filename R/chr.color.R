@@ -64,11 +64,8 @@ chr.color <- function(x,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a numeric vector, character vector or factor for the argument 'x'", call. = FALSE) }
-
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input 'x' is missing or NULL
+  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a numeric vector, character vector or factor for the argument 'x'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

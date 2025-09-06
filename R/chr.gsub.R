@@ -51,7 +51,14 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, check = TRUE, ...
   #
   # Initial Check --------------------------------------------------------------
 
-  if (isTRUE(all(is.na(x)))) { return(x) }
+  # Check if input 'pattern' is missing or NULL
+  if (isTRUE(missing(pattern) || is.null(pattern))) { stop("Please specify a character vector for the argument 'pattern'", call. = FALSE) }
+
+  # Check if input 'replacement' is missing or NULL
+  if (isTRUE(missing(replacement) || is.null(replacement))) { stop("Please specify a character vector for the argument 'replacement'", call. = FALSE) }
+
+  # Check if input 'x' is missing or NULL
+  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a character vector for the argument 'x'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -93,8 +100,7 @@ chr.gsub <- function(pattern, replacement, x, recycle = FALSE, check = TRUE, ...
 
   }
 
-  result <- vapply(X = x[sna], FUN = .worker, FUN.VALUE = c(""),
-                  USE.NAMES = FALSE, pattern = pattern, replacement = replacement, ...)
+  result <- vapply(X = x[sna], FUN = .worker, FUN.VALUE = c(""), USE.NAMES = FALSE, pattern = pattern, replacement = replacement, ...)
 
   x[sna] <- result
 

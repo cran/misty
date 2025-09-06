@@ -73,11 +73,8 @@ script.open <- function(path, line = 1, col = 1, cursor = TRUE, run = FALSE,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'path' is missing
-  if (isTRUE(missing(path))) { stop("Please specify a character string for the argument 'path'.", call. = FALSE) }
-
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(path))) { stop("Input specified for the argument 'path' is NULL.", call. = FALSE) }
+  # Check if input 'path' is missing or NULL
+  if (isTRUE(missing(path) || is.null(path))) { stop("Please specify a character string for the argument 'path'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

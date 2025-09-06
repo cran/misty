@@ -213,14 +213,8 @@ blimp <- function(x, file = "Blimp_Input.imp", data = NULL, comment = FALSE,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is not missing
-  if (isTRUE(missing(x))) { stop("Please specify a character vector for the argument 'x'", call. = FALSE) }
-
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
-
-  # Check if input 'x' is a character string
-  if (isTRUE(!is.character(x) || length(x) != 1L)) { stop("Please specify a character string indicating the Blimp input text for the argument 'x'", call. = FALSE) }
+  # Check if input 'x' is missing or NULL or not a character string
+  if (isTRUE(missing(x) || is.null(x) || !is.character(x) || length(x) != 1L)) { stop("Please specify a character string indicating the Blimp input text for the argument 'x'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

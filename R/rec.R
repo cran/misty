@@ -140,17 +140,11 @@ rec <- function(data, ..., spec, as.factor = FALSE, levels = NULL,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify a a numeric vector, character vector, factor, or data frame for the argument 'data'", call. = FALSE) }
-
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a a numeric vector, character vector, factor, or data frame for the argument 'data'", call. = FALSE) }
 
   # Check if input 'spec' is missing
-  if (isTRUE(missing(spec))) { stop("Please specify a character string for the argument 'spec'.", call. = FALSE) }
-
-  # Check if input 'spec' is NULL
-  if (isTRUE(is.null(spec))) { stop("Input specified for the argument 'spec' is NULL.", call. = FALSE) }
+  if (isTRUE(missing(spec) || is.null(spec))) { stop("Please specify a character string for the argument 'spec'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

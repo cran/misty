@@ -191,11 +191,8 @@ dominance.manual <- function(x, out = NULL, digits = 3, write = NULL, append = T
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Input for the argument 'x' is missing.", call. = FALSE) }
-
-  # Check if input 'model' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input 'x' is missing or NULL
+  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

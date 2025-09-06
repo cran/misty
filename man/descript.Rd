@@ -136,17 +136,26 @@ descript(mtcars, mpg, cyl, hp, group = "vs")
 # Alternative specification without using the '...' argument
 descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs)
 
+# Another alternative specification without using the '...' argument
+descript(mtcars[, c("mpg", "cyl", "hp", "vs")], group = "vs")
+
 # Example 2b: Split variable
 descript(mtcars, mpg, cyl, hp, split = "am")
 
 # Alternative specification without using the '...' argument
 descript(mtcars[, c("mpg", "cyl", "hp")], split = mtcars$am)
 
+# Another alternative specification without using the '...' argument
+descript(mtcars[, c("mpg", "cyl", "hp", "am")], split = "am")
+
 # Example 2c: Grouping and split variable
 descript(mtcars, mpg, cyl, hp, group = "vs", split = "am")
 
 # Alternative specification without using the '...' argument
 descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs, split = mtcars$am)
+
+# Another alternative specification without using the '...' argument
+descript(mtcars[, c("mpg", "cyl", "hp", "vs", "am")], group = "vs", split = "am")
 
 \dontrun{
 #----------------------------------------------------------------------------

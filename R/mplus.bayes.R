@@ -296,11 +296,8 @@ mplus.bayes <- function(x,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check input 'x'
-  if (isTRUE(missing(x))) { stop("Please specify a character string indicating the name of a Mplus GH5 file for the argument 'x'", call. = FALSE) }
-
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check input 'x' or NULL
+  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a character string indicating the name of a Mplus GH5 file for the argument 'x'", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Character string ####

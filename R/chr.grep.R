@@ -60,17 +60,11 @@ chr.grep <- function(pattern, x, ignore.case = FALSE, perl = FALSE, value = FALS
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'pattern' is missing
-  if (isTRUE(missing(pattern))) { stop("Please specify a character vector for the argument 'pattern'", call. = FALSE) }
+  # Check if input 'pattern' is missing or NULL
+  if (isTRUE(missing(pattern) || is.null(pattern))) { stop("Please specify a character vector for the argument 'pattern'", call. = FALSE) }
 
-  # Check if input 'pattern' is NULL
-  if (isTRUE(is.null(pattern))) { stop("Input specified for the argument 'pattern' is NULL.", call. = FALSE) }
-
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a character vector for the argument 'x'", call. = FALSE) }
-
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input 'x' is missing or NULL
+  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a character vector for the argument 'x'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

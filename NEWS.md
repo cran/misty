@@ -1,3 +1,31 @@
+### misty 0.7.5 (2025-09-06)
+
+##### New features
+* New function `robust.lmer()` to estimate a multilevel and linear mixed-effects 
+model based on a robust estimation method using the `rlmer()` function from the
+`robustlmm` package.
+
+##### Minor features and improvements
+* The function `summa` supports result objects from the `rlmer()` function 
+from the `robustlmm` package.
+* The function `summa` computes confidence intervals based on heteroscedasticity-consistent 
+standard errors when specifying `robust = TRUE`.
+* The function `summa` computes cluster-robust standard errors for multilevel and 
+linear mixed-effects model when specifying `robust = TRUE`.
+* The function `coeff.robust` computes cluster-robust standard errors for 
+(generalized) linear models that are robust to the violation of the
+observation independence due to clustering.
+* The function `coeff.robust` computes cluster-robust standard errors for 
+multilevel and linear mixed-effects model that are robust to the violation of the
+homoscedasticity assumption.
+
+##### User-visible changes
+* Changed the column names of the coefficient table in the function `coeff.std`
+and `coeff.robust` from `Std. Error`, `z value`, `t value` , `Pr(>|z|)`, and 
+`Pr(>|t|)` to `Std. Error`, `z`, `t` , `p`, and `p`.
+* Changed the default setting of the argument `digits` in the function `coeff.robust` 
+to `2`.
+
 ### misty 0.7.4 (2025-08-18)
 
 ##### New features

@@ -185,17 +185,11 @@ multilevel.omega <- function(data, ..., cluster, rescov = NULL,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
-
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   # Check input 'cluster'
-  if (isTRUE(missing(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
-
-  # Check if input 'cluster' is NULL
-  if (isTRUE(is.null(cluster))) { stop("Input specified for the argument 'cluster' is NULL.", call. = FALSE) }
+  if (isTRUE(missing(cluster) ||is.null(cluster))) { stop("Please specify a variable name or vector representing the grouping structure for the argument 'cluster'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

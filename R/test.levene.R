@@ -170,11 +170,8 @@ test.levene <- function(formula, data, method = c("median", "mean"),
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE) }
-
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

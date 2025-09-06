@@ -263,11 +263,8 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'model' is missing
-  if (isTRUE(missing(model))) { stop("Input for the argument 'model' is missing.", call. = FALSE) }
-
-  # Check if input 'model' is NULL
-  if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
+  # Check if input 'model' is missing or NULL
+  if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model for the argument 'model'.", call. = FALSE) }
 
   # Check if input 'model' is not 'lm', "lmerMod", "lmerModLmerTest" or "lme"
   if (isTRUE(all(!class(model) %in% c("lm", "lmerMod", "lmerModLmerTest", "lme")))) { stop("Please specify a fitted model object from the \"lm\", \"lmer\", or \"lme\" function for the argument 'model'.", call. = FALSE) }
@@ -430,7 +427,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
     if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest"))) {
 
       # Check
-      if (isTRUE(lme4::getME(model, name = "n_rtrms") != 1L)) { stop("This function can only deal with two-level models.", call. = FALSE)}
+      if (isTRUE(lme4::getME(model, name = "n_rtrms") != 1L)) { stop("This function supports only two-level models.", call. = FALSE) }
 
       # Unstandardized slopes
       coeff <- lme4::fixef(model) |> (\(y) y[which(names(y) != "(Intercept)")])() |> (\(z) if (isTRUE(length(z) == 0L)) { stop("There are no predictors specified in the fitted model.", call. = FALSE) } else { return(z) })()

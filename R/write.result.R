@@ -77,17 +77,14 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
-
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input 'x' is missing or NULL
+  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is a misty object
   if (isTRUE(!inherits(x, "misty.object"))) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is supported by the function
-  if (isTRUE(!x$type %in% c("blimp.bayes", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "coeff.robust", "coeff.std", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "result.lca", "summa", "uniq"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
+  if (isTRUE(!x$type %in% c("blimp.bayes", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "coeff.robust", "coeff.std", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "result.lca", "robust.lmer", "summa", "uniq"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -1136,6 +1133,156 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
       if (isTRUE(!"p" %in% x$args$print)) { write.object$p <- NULL }
 
     }
+
+  #_____________________________________________________________________________
+  #
+  # HC and CR Stadard Errors, coeff.robust() -----------------------------------
+  }, coeff.robust = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Model Class ####
+
+    # (Generalized) Linear Model
+    if (isTRUE(any(class(x$model) == "lm"))) {
+
+      model.class <- "lm"
+
+      # Multilevel and Linear Mixed-Effects Model
+    } else if (all(class(x$model) %in% c("lmerMod", "lmerModLmerTest"))) {
+
+      model.class <- "lmer"
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Model Class ####
+
+    switch(model.class,
+
+           #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           ## Linear Regression, lm() ####
+
+           lm = {
+
+             #...................
+             ### Coefficient result table ####
+
+             write.coef <- write.object$coef
+
+             # Round
+             write.coef[, setdiff(colnames(write.coef), "p")] <- sapply(write.coef[, setdiff(colnames(write.coef), "p")], round, digits = digits)
+             write.coef[, "p"] <- round(write.coef[, "p"], digits = p.digits)
+
+             # Row names
+             write.coef <- data.frame(row.names(write.coef), write.coef, check.names = FALSE, fix.empty.names = FALSE)
+
+             #...................
+             ### F-test result table ####
+
+             write.F <- NULL
+             if (isTRUE(!is.null(write.object$F.test))) {
+
+               write.F <- write.object$F.test
+
+               write.F[, 3L] <- sapply(write.F[, 3L], round, digits = digits)
+               write.F[, 4L] <- round(write.F[, 4L], digits = p.digits)
+
+             }
+
+             #...................
+             ### Sandwich result table ####
+
+             write.sandwich <-round(as.data.frame(as.matrix(write.object$sandwich)), digits = digits)
+
+             # Row names
+             if (isTRUE(x$args$type %in% c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5"))) {
+
+               write.sandwich <- data.frame(row.names(write.sandwich), write.sandwich, check.names = FALSE, fix.empty.names = FALSE)
+
+             }
+
+             #...................
+             ### Write object ####
+
+             if (isTRUE(!is.null(write.F))) {
+
+               write.object <- list(coef = write.coef, F.test = write.F, sandwich = write.sandwich)
+
+             } else {
+
+               write.object <- list(coef = write.coef,sandwich = write.sandwich)
+
+             }
+
+           #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           ## Linear Mixed-Effects Model, lmer() ####
+
+           }, lmer = {
+
+             #...................
+             ### Extract coefficients ####
+
+             write.coef <- write.object$coef
+
+             #...................
+             ### Round ####
+
+             write.coef[, setdiff(colnames(write.coef), "p")] <- sapply(write.coef[, setdiff(colnames(write.coef), "p")], round, digits = digits)
+
+             if (isTRUE("p" %in% colnames(write.coef))) { write.coef[, "p"] <- round(write.coef[, 4L], digits = p.digits) }
+
+             #...................
+             ### Sandwich result table ####
+
+             write.sandwich <- round(as.data.frame(as.matrix(write.object$sandwich)), digits = digits)
+
+             # Row names
+             write.sandwich <- data.frame(row.names(write.sandwich), write.sandwich, check.names = FALSE, fix.empty.names = FALSE)
+
+             #...................
+             ### Write object ####
+
+             write.object <- list(coef = write.coef, sandwich = write.sandwich)
+
+           })
+
+  #_____________________________________________________________________________
+  #
+  # Standardized Coefficients --------------------------------------------------
+  }, coeff.std = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Round ####
+
+    # Linear model, lm() function
+    if (isTRUE(class(x$model) == "lm")) {
+
+      write.object[, -4L] <- apply(write.object[, -4L], 2L, round, digits)
+      write.object[, 4L] <- round(write.object[, 4L], digits = p.digits)
+
+      # Linear Mixed-Effects Model, lmer() function
+    } else if (isTRUE(class(x$model) %in% c("lmerMod", "lmerModLmerTest"))) {
+
+      write.object[, !colnames(write.object) %in% c("p", "Level")] <- apply(write.object[, !colnames(write.object) %in% c("p", "Level")], 2L, round, digits)
+
+      if (isTRUE("p)" %in% colnames(write.object))) { write.object[, colnames(write.object) == "p"] <- round(write.object[, colnames(write.object) == "p"], digits = p.digits) }
+
+      # Linear Mixed-Effects Model, lme() function
+    } else if (isTRUE(class(x$model) == "lme")) {
+
+      write.object[, !colnames(write.object) %in% c("p", "Level")] <- apply(write.object[, !colnames(write.object) %in% c("p", "Level")], 2L, round, digits)
+
+      if (isTRUE("p" %in% colnames(write.object))) { write.object[, colnames(write.object) == "p"] <- round(write.object[, colnames(write.object) == "p"], digits = p.digits) }
+
+    }
+
+    # Row names
+    write.coef <- data.frame(row.names(write.object), write.object, fix.empty.names = FALSE, check.names = FALSE)
+
+    #...................
+    ### Write object ####
+
+    write.object <- list(Coef = write.coef)
 
   #_____________________________________________________________________________
   #
@@ -3425,88 +3572,79 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Heteroscedasticity-Consistent Standard Errors, coef.robust() ---------------
-  }, coef.robust = {
+  # Robust Estimation of MLM and LMM, robust.lmer() ----------------------------
+  }, robust.lmer = {
 
     #...................
-    ### Coefficient result table ####
+    ### Call ####
 
-    write.coef <- write.object$coef
-
-    # Round
-    write.coef[, -4L] <- sapply(write.coef[, -4L], round, digits = digits)
-    write.coef[, 4L] <- round(write.coef[, 4L], digits = p.digits)
-
-    # Row names
-    write.coef <- data.frame(row.names(write.coef), write.coef,
-                             check.names = FALSE, fix.empty.names = FALSE)
+    write.object$call <- data.frame(c("Formula", "Data"), c(write.object$call$formula, write.object$call$data), fix.empty.names = FALSE)
 
     #...................
-    ### F-test result table ####
+    ### Coefficients ####
 
-    write.F <- NULL
-    if (isTRUE(length(class(x$model)) == 1L)) {
+    #### Random Effects ####
 
-      write.F <- write.object$F.test
+    # Round variables
+    write.object$randeff[, c("var", "sd")] <- sapply(c("var", "sd"), function(y) round(write.object$randeff[, y], digits = p.digits))
+    write.object$randeff[, (grep("cor", colnames(write.object$randeff)):ncol(write.object$randeff))] <- round(write.object$randeff[, (grep("cor", colnames(write.object$randeff)):ncol(write.object$randeff))], digits = digits)
 
-      write.F[, 3L] <- sapply(write.F[, 3L], round, digits = digits)
-      write.F[, 4L] <- round(write.F[, 4L], digits = p.digits)
+    # Replace NA with ""
+    write.object$randeff[, c("groups", "name")] <- apply(write.object$randeff[, c("groups", "name")], 2L, function(y) gsub("NA", "  ", y))
 
-    }
-
-    #...................
-    ### Sandwich result table ####
-
-    write.sandwich <- write.object$sandwich
-
-    write.sandwich <- round(write.sandwich, digits = digits)
-
-    # row names
-    write.sandwich <- data.frame(row.names(write.sandwich), write.sandwich,
-                                 check.names = FALSE, fix.empty.names = FALSE)
+    # Columns
+    colnames(write.object$randeff) <- c("Groups", "Name", "Var", "SD", "Intercept", setdiff(colnames(write.object$randeff), c("groups", "name", "var", "sd", "cor")))
 
     #...................
-    ### Write object ####
+    ### Coefficients ####
 
-    write.object <- list(coef = write.coef, F.test = write.F, sandwich = write.sandwich)
+    if (isTRUE(!"p" %in% colnames(write.object$coef))) {
 
-  #_____________________________________________________________________________
-  #
-  # Standardized Coefficients --------------------------------------------------
-  }, coeff.std = {
+      # Round variables
+      write.object$coef[, colnames(write.object$coef)] <- sapply(colnames(write.object$coef), function(y) round(write.object$coef[, y], digits = digits))
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Round ####
+      # Columns
+      write.object$coef <- data.frame(row.names(write.object$coef), write.object$coef, fix.empty.names = FALSE, row.names = NULL)
 
-    # Linear model, lm() function
-    if (isTRUE(class(x$model) == "lm")) {
+    } else {
 
-      write.object[, -4L] <- apply(write.object[, -4L], 2L, round, digits)
-      write.object[, 4L] <- round(write.object[, 4L], digits = p.digits)
-
-    # Linear Mixed-Effects Model, lmer() function
-    } else if (isTRUE(class(x$model) %in% c("lmerMod", "lmerModLmerTest"))) {
-
-      write.object[, !colnames(write.object) %in% c("Pr(>|t|)", "Level")] <- apply(write.object[, !colnames(write.object) %in% c("Pr(>|t|)", "Level")], 2L, round, digits)
-
-      if (isTRUE("Pr(>|t|)" %in% colnames(write.object))) { write.object[, colnames(write.object) == "Pr(>|t|)"] <- round(write.object[, colnames(write.object) == "Pr(>|t|)"], digits = p.digits) }
-
-    # Linear Mixed-Effects Model, lme() function
-    } else if (isTRUE(class(x$model) == "lme")) {
-
-      write.object[, !colnames(write.object) %in% c("p-value", "Level")] <- apply(write.object[, !colnames(write.object) %in% c("p-value", "Level")], 2L, round, digits)
-
-      if (isTRUE("p-value" %in% colnames(write.object))) { write.object[, colnames(write.object) == "p-value"] <- round(write.object[, colnames(write.object) == "p-value"], digits = p.digits) }
+      # Round variables
+      write.object$coef[, setdiff(colnames(write.object$coef), "p")] <- sapply(setdiff(colnames(write.object$coef), "p"), function(y) round(write.object$coef[, y], digits = digits))
+      write.object$coef[, "p"] <- round(write.object$coef[, "p"], digits = p.digits)
 
     }
 
     # Row names
-    write.coef <- data.frame(row.names(write.object), write.object, fix.empty.names = FALSE, check.names = FALSE)
+    write.object$coef <- data.frame(row.names(write.object$coef), write.object$coef, fix.empty.names = FALSE, row.names = NULL)
+
+    #...................
+    ### Weights ####
+
+    # Two-level model
+    if (isTRUE(lme4::getME(x$model, name = "n_rtrms") == 1L)) {
+
+      write.object$weight <- data.frame(Component = rep(c("Residual", "Random Effect"), each = 2),
+                                        Weight = rep(c("Weight = 1", "Weight != 1"), times = 2),
+                                        n = c(write.object$weight$resid$ew1, write.object$weight$resid$ew0, write.object$weight$ranef$bw1, write.object$weight$ranef$bw0))
+
+    # Three-level model
+    } else {
+
+      write.object$weight <- data.frame(Component = rep(c("Residual", paste0("Random Effect ", names(lme4::getME(x$model, "w_b"))[1L]), paste0("Random Effect ", names(lme4::getME(x$model, "w_b"))[2L])), each = 2),
+                                        Weight = rep(c("Weight = 1", "Weight != 1"), times = 3),
+                                        n = c(write.object$weight$resid$ew1, write.object$weight$resid$ew0, write.object$weight$ranef1$b1w1, write.object$weight$ranef1$b1w0, write.object$weight$ranef2$b2w1, write.object$weight$ranef2$b2w0))
+
+    }
+
+    #...................
+    ### Model Convergence ####
+
+    if (isTRUE(!is.null(write.object$converg))) { write.object$converg <- data.frame(switch(as.character(write.object$converg), "1" = "Model converged", "0" = "Model singular", "-1" = "Model not converged"), fix.empty.names = FALSE) }
 
     #...................
     ### Write object ####
 
-    write.object <- list(Coef = write.coef)
+    write.object <- list(Call = write.object$call, Randeff = write.object$randeff, Coef = write.object$coef, Weight = write.object$weight, Conv = write.object$converg) |> (\(y) y[!sapply(y, is.null)])()
 
   #_____________________________________________________________________________
   #

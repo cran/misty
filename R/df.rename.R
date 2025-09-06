@@ -73,8 +73,8 @@ df.rename <- function(data, ..., from = NULL, to = NULL, check = TRUE) {
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data) || (!is.matrix(data) && !is.data.frame(data)))) { stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE) }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) || is.null(missing(data)) || (!is.matrix(data) && !is.data.frame(data)))) { stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

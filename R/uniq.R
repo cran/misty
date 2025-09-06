@@ -112,11 +112,8 @@ uniq <- function(data, ..., na.rm = TRUE, sort = TRUE, decreasing = FALSE, digit
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify a vector, factor, matrix, or data frame for the argument 'data'", call. = FALSE) }
-
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a vector, factor, matrix, or data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -215,11 +212,8 @@ uniq.n <- function(data, ..., na.rm = TRUE, digits = NULL, check = TRUE) {
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify a vector, factor, matrix, or data frame for the argument 'data'", call. = FALSE) }
-
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a vector, factor, matrix, or data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

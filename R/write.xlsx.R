@@ -51,10 +51,7 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
   # Initial Check --------------------------------------------------------------
 
   # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a matrix, data frame or list of matrices or data frames for the argument 'x'.", call. = FALSE) }
-
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a matrix, data frame or list of matrices or data frames for the argument 'x'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

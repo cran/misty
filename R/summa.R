@@ -2,13 +2,14 @@
 #'
 #' This function prints a summary of the result object returned by the function
 #' \code{"lm"} for estimating linear regression models and for the result object
-#' returned by the function \code{"lmer"} from the \pkg{lme4} package to estimate
-#' two- or three-level multilevel and linear mixed-effects models. By default,
-#' the function prints the function call, model summary, and the regression
-#' coefficient table.
+#' returned by the function \code{"lmer"} from the \pkg{lme4} or \pkg{lmerTest}
+#' package, or by the function \code{"rlmer"} from the \pkg{robustlmm} package
+#' to estimate two- or three-level (robust) multilevel and linear mixed-effects
+#' models. By default, the function prints the function call, model summary, and
+#' the regression coefficient table.
 #'
-#' @param model      a fitted model of class \code{"lm"}, \code{"lmerMod"}, or
-#'                   \code{"lmerModLmerTest"}.
+#' @param model      a fitted model of class \code{"lm"}, \code{"lmerMod"},
+#'                   \code{"rlmerMod"} or \code{"lmerModLmerTest"}.
 #' @param print      a character vector indicating which results to print, i.e.
 #'                   \code{"all"}, for all results, \code{"call"} for the function
 #'                   call, \code{"descript"} for descriptive statistics,
@@ -28,11 +29,20 @@
 #'                   the standardized coefficients (see \code{\link{coeff.std}
 #'                   function}), and \code{vif} for the variance inflation factor
 #'                   (see \code{\link{check.collin}} function). The default setting
-#'                   is \code{print = c("call", "modsum", "coef")}.
+#'                   is \code{print = c("call", "modsum", "coef")}. Note that when
+#'                   a fitted model of class \code{"rlmerMod"} is specified for
+#'                   the argument \code{model}, the argument \code{print} is always
+#'                   \code{c("call", "coef")}, i.e., \code{"descript"}, \code{"cormat"},
+#'                   \code{"modsum"}, \code{"confint"}, \code{"stdcoef"}, and
+#'                   \code{"vif"} are not available for an \code{"rlmerMod"}
+#'                   object.
 #' @param robust     logical: if \code{TRUE}, heteroscedasticity-consistent
-#'                   standard errors and heteroscedasticity-robust F-test using
-#'                   the HC4 estimator is computed for linear models estimated
-#'                   by using the \code{lm()} function (see \code{\link{coeff.robust}}
+#'                   standard errors, confidence intervals, and heteroscedasticity-robust
+#'                   F-test using the HC4 estimator are computed for linear models
+#'                   estimated by using the \code{lm()} function or cluster-robust
+#'                   standard errors using the CR2 estimator is computed for
+#'                   multilevel and linear mixed-effects models estimated by using
+#'                   the \code{lmer()} function (see \code{\link{coeff.robust}}
 #'                   function).
 #' @param ddf        a character string for specifying the method for computing
 #'                   the degrees of freedom when using the \pkg{lmerTest} package
@@ -41,7 +51,10 @@
 #'                   (default) for Satterthwaite's method, \code{"Kenward-Roger"}
 #'                   for the Kenward-Roger's method, and \code{"lme4"} for the
 #'                   lme4-summary without degrees of freedom and significance
-#'                   values (see Kuznetsova et al., 2017).
+#'                   values (see Kuznetsova et al., 2017). Note that when a fitted
+#'                   model of class \code{"rlmerMod"} is specified for the argument
+#'                   \code{model}, Satterthwaite or Kenward-Roger degrees of freedom
+#'                   are computed only if the R package \pkg{lmerTest} is loaded.
 #' @param conf.level a numeric value between 0 and 1 indicating the confidence
 #'                   level of the interval.
 #' @param method     a character string for specifying the method for computing
@@ -81,6 +94,17 @@
 #'                   is checked.
 #' @param output     logical: if \code{TRUE} (default), output is shown on the console.
 #'
+#' \describe{
+#' \item{\strong{Robust Estimation of Multilevel and Linear Mixed-Effects Models}}{
+#' The function \code{rlmer} from the \pkg{robustlmm} package does not provide
+#' any degrees of freedom or significance values. This function re-estimates the
+#' model without using robust estimation to obtain the Satterthwaite or Kenward-Roger
+#' degrees of freedom depending on the argument \code{ddf} before computing
+#' significance values for the regression coefficients based on parameter estimates
+#' and standard error of the robust multilevel mixed-effects (see Sleegers et al.
+#' (2021).}
+#' }
+#'
 #' @author
 #' Takuya Yanagida
 #'
@@ -88,6 +112,10 @@
 #' Kuznetsova, A, Brockhoff, P. B., & Christensen, R. H. B. (2017). lmerTest Package:
 #' Tests in linear mixed effects models. \emph{Journal of Statistical Software, 82}
 #' 13, 1-26. https://doi.org/10.18637/jss.v082.i13.
+#'
+#' Sleegers, W. W. A., Proulx, T., & van Beest, I. (2021). Pupillometry and hindsight bias:
+#' Physiological arousal predicts compensatory behavior. \emph{Social Psychological
+#' and Personality Science, 12}(7), 1146–1154. https://doi.org/10.1177/1948550620966153
 #'
 #' @seealso
 #' \code{\link{descript}}, \code{\link{cor.matrix}}, \code{\link{coeff.std}},
@@ -101,11 +129,12 @@
 #' \item{\code{model}}{model specified in \code{model}}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{result}}{list with results, i.e., \code{call} for the the function
-#' call, \code{call} for descriptive statistics, \code{cormat} for the
+#' call, \code{descript} for descriptive statistics, \code{cormat} for the
 #' correlation matrix, \code{modsum} for the model summary, \code{randeff} for
 #' the variance and correlation components, \code{coef} for the model coefficients,
-#' and \code{converg} for the convergence check, i.e., \code{1} = model converged,
-#' \code{0} = model singular, and \code{-1} model not converged.}
+#' \code{weights} for the robustness weights, and \code{converg} for the convergence
+#' check, i.e., \code{1} = model converged, \code{0} = model singular, and \code{-1}
+#' model not converged.}
 #'
 #' @export
 #'
@@ -132,8 +161,8 @@
 #' #----------------------------------------------------------------------------
 #' # Multilevel and Linear Mixed-Effects Model
 #'
-#' # Load lme4 package
-#' library(lme4)
+#' # Load lme4 and misty package
+#' misty::libraries(lme4, misty)
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
@@ -171,6 +200,18 @@
 #' # Example 2e: Kenward-Roger's method
 #' summa(mod.lmer2, ddf = "Kenward-Roger")
 #'
+#' # Example 2f: Cluster-robust standard errors
+#' summa(mod.lmer2, robust = TRUE)
+#'
+#' #------------------
+#' ## Robust Estimation using the R package robustlmm
+#'
+#' # Estimate two-level mixed-effects model
+#' mod.lmer2r <- robustlmm::rlmer(y1 ~ x2.c + w1.c + x2.c:w1.c + (1 + x2.c | cluster), data = Demo.twolevel)
+#'
+#' # Example 2f: Default setting
+#' summa(mod.lmer2r)
+#'
 #' #------------------
 #' ## Three-Level Data
 #'
@@ -190,8 +231,17 @@
 #' # Example 3a: Default setting
 #' summa(mod.lmer3)
 #'
-#' # Example 3b: DPrint all available results
+#' # Example 3b: Print all available results
 #' summa(mod.lmer3, print = "all")
+#'
+#' #------------------
+#' ## Robust Estimation using the R package robustlmm
+#'
+#' # Estimate three-level model using the lme4 package
+#' mod.lmer3r <- robustlmm::rlmer(y1 ~ x1.c + w1.c + (1 | cluster3/cluster2), data = Demo.threelevel)
+#'
+#'# Example 3c: Default setting
+#' summa(mod.lmer3r)
 #'
 #' #----------------------------------------------------------------------------
 #' # Write Results
@@ -215,14 +265,11 @@ summa <- function(model,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'model' is missing
-  if (isTRUE(missing(model))) { stop("Input for the argument 'model' is missing.", call. = FALSE) }
-
-  # Check if input 'model' is NULL
-  if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
+  # Check if input 'model' is missing or NULL
+  if (isTRUE(missing(model) ||is.null(model))) { stop("Input for the argument 'model' is missing.", call. = FALSE) }
 
   # Check if input 'model' is not 'lm', 'lmerMod', or 'lmerModLmerTest'
-  if (isTRUE(!any(class(model) %in% c("lm", "lmerMod", "lmerModLmerTest")))) { stop("Please specify an \"lm\", \"lmerMod\", or \"lmerModLmerTest\" object for the argument 'model'.", call. = FALSE) }
+  if (isTRUE(!any(class(model) %in% c("lm", "lmerMod", "rlmerMod", "lmerModLmerTest")))) { stop("Please specify a \"lm\", \"lmerMod\", \"rlmerMod\", or \"lmerModLmerTest\" object for the argument 'model'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -245,14 +292,19 @@ summa <- function(model,
 
     model.class <- "lm"
 
-  } else if (all(class(model) %in% c("lmerMod", "lmerModLmerTest"))) {
+  } else if (all(class(model) %in% c("lmerMod", "rlmerMod", "lmerModLmerTest"))) {
 
     model.class <- "lmer"
 
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Argument 'df' ####
+  ## Argument 'robust' ####
+
+  if (isTRUE(robust && model.class == "lmer")) { if (isTRUE(lme4::getME(model, name = "n_rtrms") != 1L)) { stop("Cluster-robust standard errors are supports only for two-level models.", call. = FALSE) } }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Argument 'ddf' ####
 
   ddf <- ifelse(all(c("Satterthwaite", "Kenward-Roger", "lme4") %in% ddf), "Satterthwaite", ddf)
 
@@ -269,28 +321,36 @@ summa <- function(model,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Argument 'print' ####
 
-  # All results
-  print.all <- c("call", "descript", "cormat", "modsum", "coef", "confint", "stdcoef", "vif")
+  if (isTRUE(class(model) != "rlmerMod")) {
 
-  # Default setting
-  if (isTRUE(all(c(c("all", "default", "call", "descript", "cormat", "modsum", "coef", "confint", "stdcoef", "vif")) %in% print))) {
+    # All results
+    print.all <- c("call", "descript", "cormat", "modsum", "coef", "confint", "stdcoef", "vif")
 
-    print <- c("call", "modsum", "coef")
+    # Default setting
+    if (isTRUE(all(c(c("all", "default", "call", "descript", "cormat", "modsum", "coef", "confint", "stdcoef", "vif")) %in% print))) {
 
-  # All print commands
-  } else if (isTRUE("all" %in% print)) {
+      print <- c("call", "modsum", "coef")
 
-    print <- print.all
+    # All print commands
+    } else if (isTRUE("all" %in% print)) {
 
-  # Default setting with additional print commands
-  } else if (isTRUE("default" %in% print && length(print > 1L))) {
+      print <- print.all
 
-    print <- print.all[print.all %in% misty::chr.omit(union(c("call", "modsum", "coef"), print), "default", check = FALSE)]
+    # Default setting with additional print commands
+    } else if (isTRUE("default" %in% print && length(print > 1L))) {
 
-  # Manual default setting
-  } else if (isTRUE(all(print == "default"))) {
+      print <- print.all[print.all %in% misty::chr.omit(union(c("call", "modsum", "coef"), print), "default", check = FALSE)]
 
-    print <- c("call", "modsum", "coef")
+    # Manual default setting
+    } else if (isTRUE(all(print == "default"))) {
+
+      print <- c("call", "modsum", "coef")
+
+    }
+
+  } else {
+
+    print <- c("call", "coef")
 
   }
 
@@ -335,12 +395,12 @@ summa <- function(model,
              model.robust <- misty::coeff.robust(model, output = FALSE)$result
 
              # F test statistic and degrees of freedom
-             model.summary$fstatistic <- c(model.robust$F.test[2L, "F"], model.robust$F.test[2L, "Df"], model.robust$F.test[2L, "Res.Df"])
+             model.summary$fstatistic <- c(model.robust$F.test[2L, "F"], model.robust$F.test[2L, "df"], model.robust$F.test[2L, "res.df"])
 
              # Coefficients
              model.summary$coefficients <- model.robust$coef
 
-            }
+           }
 
            #...................
            ### Call ####
@@ -368,10 +428,25 @@ summa <- function(model,
            if (isTRUE(any(c("coef", "confint", "stdcoef", "vif") %in% print))) {
 
              #### Unstandardized Coefficients ####
-             modcoef <- setNames(misty::df.move(data.frame(model.summary$coefficients, df = model$df.residual), df, before = "t.value"), nm = c("Estimate", "SE", "df", "t", "p"))
+             modcoef <- misty::df.move(cbind(setNames(data.frame(model.summary$coefficients),  nm = c("Estimate", "SE", "t", "p")), df = model$df.residual), df, after = "SE")
 
              #### Confidence intervals ####
-             if (isTRUE("confint" %in% print)) { modcoef <- setNames(data.frame(modcoef, confint(model, level = conf.level)), nm = c("Estimate", "SE", "df", "t", "p", "Low", "Upp")) }
+             if (isTRUE("confint" %in% print)) {
+
+               # Regular Standard Errors
+               if (isTRUE(!robust)) {
+
+                 modcoef <- setNames(data.frame(modcoef, confint(model, level = conf.level)), nm = c("Estimate", "SE", "df", "t", "p", "Low", "Upp"))
+
+               # HC Standard Errors
+               # https://stackoverflow.com/questions/3817182/vcovhc-and-confidence-interval
+               } else {
+
+                 modcoef <- cbind(modcoef, setNames(as.data.frame(coef(model) + sqrt(diag(model.robust$sandwich)) %o% qt(c((1L - conf.level) / 2L, 1L - (1L - conf.level) / 2L), model$df.residual)), nm = c("Low", "Upp")))
+
+               }
+
+             }
 
              #### Standardized Coefficients ####
              if (isTRUE("stdcoef" %in% print)) {
@@ -456,9 +531,9 @@ summa <- function(model,
            # Data in Workspace
            model.data.ws <- tryCatch(if (isTRUE(exists(model.data.name))) {
 
-             eval(parse(text = model.data.name)) |> (\(y) if (isTRUE(nrow(y) >= nobs(model) && all(colnames(model.data) %in% colnames(y)))) {
+             eval(parse(text = model.data.name)) |> (\(y) if (isTRUE(nrow(y) >= nobs(model) && all(colnames(model.frame(model)) %in% colnames(y)))) {
 
-               y[, colnames(model.data), drop = FALSE]
+               y[, colnames(model.frame(model)), drop = FALSE]
 
              } else {
 
@@ -517,6 +592,11 @@ summa <- function(model,
 
            # Factors or Character
            var.factor <- names(which(!sapply(model.data.yx, is.numeric)))
+
+           #...................
+           ### Cluster-Robust Standard Errors ####
+
+           if (isTRUE(robust)) { model.robust <- misty::coeff.robust(model, output = FALSE)$result }
 
            #...................
            ### Model Not Converged or Singular ####
@@ -637,7 +717,7 @@ summa <- function(model,
              # Two-Level Model
              if (isTRUE(model.twolevel)) {
 
-               modsum <- data.frame(modsum, nCl = lme4::ngrps(model), npar = attr(unclass(summary(model)$logLik), "df"), method = ifelse(all(names(model.summary$AICtab) == "REML"), "REML", "FML"),
+               modsum <- data.frame(modsum, nCl = lme4::ngrps(model), npar = attr(unclass(model.summary$logLik), "df"), method = ifelse(all(names(model.summary$AICtab) == "REML"), "REML", "FML"),
                                     loglik = as.numeric(logLik(model)), deviance = -2*as.numeric(logLik(model)),
                                     setNames(misty::multilevel.r2(model, print = "NS", check = FALSE, output = FALSE)$result$ns, nm = c("margR2", "condR2")) , row.names = NULL)
 
@@ -647,7 +727,7 @@ summa <- function(model,
                modsum <- data.frame(modsum,
                                     nCl2 = lme4::ngrps(model)[1L],
                                     nCl3 = lme4::ngrps(model)[2L],
-                                    npar = attr(unclass(summary(model)$logLik), "df"), method = ifelse(all(names(model.summary$AICtab) == "REML"), "REML", "FML"),
+                                    npar = attr(unclass(model.summary$logLik), "df"), method = ifelse(all(names(model.summary$AICtab) == "REML"), "REML", "FML"),
                                     loglik = as.numeric(logLik(model)), deviance = -2*as.numeric(logLik(model)),
                                     setNames(misty::multilevel.r2(model, print = "NS", check = FALSE, output = FALSE)$result$ns, nm = c("margR2", "condR2")) , row.names = NULL)
 
@@ -670,61 +750,131 @@ summa <- function(model,
                                        (\(p) rbind(p, setNames(rep(NA, times = ncol(p)), nm = colnames(p))))(), check.names = FALSE, row.names = NULL)
 
              #### Unstandardized Coefficients ####
-             if (isTRUE(class(model) == "lmerMod")) {
 
-               modcoef <- setNames(as.data.frame(coef(model.summary)), nm = c("Estimate", "SE", "t"))
+             ##### Regular standard errors
+             if (isTRUE(!robust)) {
 
-             } else if (isTRUE(class(model) == "lmerModLmerTest")) {
+               if (isTRUE(class(model) %in% c("lmerMod", "rlmerMod"))) {
 
-               if (isTRUE(ddf != "lmer")) {
+                 modcoef <- setNames(as.data.frame(coef(model.summary)), nm = c("Estimate", "SE", "t"))
 
-                 modcoef <- setNames(as.data.frame(coef(summary(model, ddf = ddf))), nm = c("Estimate", "SE", "df", "t", "p"))
+               } else if (isTRUE(class(model) == "lmerModLmerTest")) {
 
-               } else {
+                 if (isTRUE(ddf != "lmer")) {
 
-                 modcoef <- setNames(as.data.frame(coef(summary(model, ddf = ddf))), nm = c("Estimate", "SE", "t"))
+                   modcoef <- setNames(as.data.frame(coef(summary(model, ddf = ddf))), nm = c("Estimate", "SE", "df", "t", "p"))
+
+                 } else {
+
+                   modcoef <- setNames(as.data.frame(coef(summary(model, ddf = ddf))), nm = c("Estimate", "SE", "t"))
+
+                 }
 
                }
 
+             ##### Cluster-robust standard errors
+             } else {
+
+               modcoef <- model.robust$coef
 
              }
+
+             #...................
+             ### Degrees of Freedom for the rlmerMod Object ####
+
+             # Compute df and significance values only if the lmerTest package is attached
+             if (isTRUE(inherits(model, what = "rlmerMod") && "package:lmerTest" %in% search() && ddf != "lme4")) {
+
+               # Estimate model to obtain dfs
+               modcoef$df <- eval(parse(text = paste0("coef(summary(lmerTest::lmer(", as.character(stats::getCall(model))[2L], ", data = model.frame(model)), ddf = \"", ddf, "\"))[, \"df\"]")))
+
+               # Significance values
+               modcoef$p <- pt(abs(modcoef$t), modcoef$df, lower.tail = FALSE)*2L
+
+               # Rearrange columns
+               modcoef <- modcoef[, c("Estimate", "SE", "df", "t", "p")]
+
+             }
+
+             #...................
+             ### Robustness Weights for the rlmerMod Object ####
+
+             if (isTRUE(class(model) == "rlmerMod")) {
+
+               # Two-Level Model
+               if (isTRUE(model.twolevel)) {
+
+                 weights <- list(resid = lme4::getME(model, "w_e") |> (\(p) list(ew1 = sum(p == 1L), ew0 = sum(p != 1L), pdescript = if (isTRUE(sum(p != 1L) >= 2L)) { misty::descript(p[p != 1L], output = FALSE)$result[, c("m", "sd", "min", "p25", "med", "p75", "max", "range", "iqr")] } else { pdesscript = p[p != 1] }))(),
+                                 ranef = lme4::getME(model, "w_b")[[1L]][, 1L] |> (\(p) list(bw1 = sum(p == 1L), bw0 = sum(p != 1L), bdescript = if (isTRUE(sum(p != 1L) >= 2L)) { misty::descript(p[p != 1L], output = FALSE)$result[, c("m", "sd", "min", "p25", "med", "p75", "max", "range", "iqr")] } else { pdesscript = p[p != 1] }))())
+
+               # Three-Level Model
+               } else {
+
+                 weights <- list(resid  = lme4::getME(model, "w_e") |> (\(p) list(ew1 = sum(p == 1L), ew0 = sum(p != 1L), pdescript = if (isTRUE(sum(p != 1L) >= 2L)) { misty::descript(p[p != 1L], output = FALSE)$result[, c("m", "sd", "min", "p25", "med", "p75", "max", "range", "iqr")] } else { pdesscript = p[p != 1] }))(),
+                                 ranef1 = lme4::getME(model, "w_b")[[1L]][, 1L] |> (\(p) list(b1w1 = sum(p == 1L), b1w0 = sum(p != 1L), b1descript = if (isTRUE(sum(p != 1L) >= 2L)) { misty::descript(p[p != 1L], output = FALSE)$result[, c("m", "sd", "min", "p25", "med", "p75", "max", "range", "iqr")] } else { pdesscript = p[p != 1] }))(),
+                                 ranef2 = lme4::getME(model, "w_b")[[2L]][, 1L] |> (\(p) list(b2w1 = sum(p == 1L), b2w0 = sum(p != 1L), b2descript = if (isTRUE(sum(p != 1L) >= 2L)) { misty::descript(p[p != 1L], output = FALSE)$result[, c("m", "sd", "min", "p25", "med", "p75", "max", "range", "iqr")] } else { pdesscript = p[p != 1] }))())
+
+               }
+
+             } else { weights <- NULL }
 
              #### Confidence intervals ####
              if (isTRUE("confint" %in% print)) {
 
-               if (!isTRUE(converg %in% c(-1L, 0L) && method == "profile")) {
+               ##### Profile ot Bootstrap CI
+               if (method != "wald") {
 
-                 # Set seed when using bootstrap CI
-                 if (isTRUE(method == "boot" && seed != NULL)) { set.seed(seed) }
+                 if (!isTRUE(converg %in% c(-1L, 0L) && method == "profile")) {
 
-                 modcoef <- data.frame(modcoef,
-                                       setNames(as.data.frame(tryCatch(suppressMessages(lme4::confint.merMod(model, parm = "beta_", level = conf.level, method = ifelse(method == "wald", "Wald", method), nsim = R, boot.type = boot)),
+                   # Set seed when using bootstrap CI
+                   if (isTRUE(method == "boot" && seed != NULL)) { set.seed(seed) }
 
-                                                                        error = function(y) {
+                   modcoef <- cbind(modcoef,
+                                    setNames(as.data.frame(tryCatch(suppressMessages(lme4::confint.merMod(model, parm = "beta_", level = conf.level, method = ifelse(method == "wald", "Wald", method), nsim = R, boot.type = boot)),
 
-                                                                          if (isTRUE(method == "profile")) {
+                                                                       error = function(y) {
 
-                                                                            warning("Profile confidence interval computation failed, switched to Wald confidence intervals.", call. = FALSE)
+                                                                         if (isTRUE(method == "profile")) {
 
-                                                                          } else if (isTRUE(method == "boot")) {
+                                                                           warning("Profile confidence interval computation failed, switched to Wald confidence intervals.", call. = FALSE)
 
-                                                                            warning("Bootstrap confidence interval computation failed, switched to Wald confidence intervals.", call. = FALSE)
+                                                                         } else if (isTRUE(method == "boot")) {
 
-                                                                          }
+                                                                           warning("Bootstrap confidence interval computation failed, switched to Wald confidence intervals.", call. = FALSE)
 
-                                                                          method <<- "wald"
+                                                                         }
 
-                                                                          lme4::confint.merMod(model, parm = "beta_", level = conf.level, method = "Wald", nsim = R, boot.type = boot)
+                                                                           method <<- "wald"
+
+                                                                           lme4::confint.merMod(model, parm = "beta_", level = conf.level, method = "Wald", nsim = R, boot.type = boot)
 
                                                                        })), nm = c("Low", "Upp")))
 
-                } else {
+                  } else {
 
-                  print <- setdiff(print, "confint")
+                    print <- setdiff(print, "confint")
 
-                  if (isTRUE(length(print) == 0L)) { stop("Profile confidence intervals are not available when model is singular or not converged.", call. = FALSE) }
+                    if (isTRUE(length(print) == 0L)) { stop("Profile confidence intervals are not available when model is singular or not converged.", call. = FALSE) }
 
-                }
+                  }
+
+               ##### Wald CI
+               } else {
+
+                 # Regular Standard Errors
+                 if (isTRUE(!robust)) {
+
+                   modcoef <- cbind(modcoef, setNames(as.data.frame(suppressMessages(lme4::confint.merMod(model, parm = "beta_", level = conf.level, method = "Wald"))), nm = c("Low", "Upp")))
+
+                 # CR2 Standard Errors
+                 # https://stackoverflow.com/questions/3817182/vcovhc-and-confidence-interval
+                 } else {
+
+                   modcoef <- cbind(modcoef, setNames(as.data.frame(coef(model.summary)[, "Estimate"] + sqrt(diag(model.robust$sandwich)) %o% qnorm(c((1L - conf.level) / 2L, 1L - (1L - conf.level) / 2L))), nm = c("Low", "Upp")))
+
+                 }
+
+               }
 
               }
 
@@ -780,7 +930,7 @@ summa <- function(model,
                  type = "summa",
                  model = model,
                  args = list(print = print, robust = robust, ddf = ddf, conf.level = conf.level, method = method, R = R, boot = boot, seed = seed, digits = digits, p.digits = p.digits, write = write, append = append, check = check, output = output),
-                 result = list(call = call, descript = descript, cormat = cormat, modsum = modsum, randeff = randeff, coef = modcoef, converg = converg))
+                 result = list(call = call, descript = descript, cormat = cormat, modsum = modsum, randeff = randeff, coef = modcoef, weights = weights, converg = converg))
 
   class(object) <- "misty.object"
 

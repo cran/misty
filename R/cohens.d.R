@@ -292,11 +292,12 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
                              digits = 2, as.na = NULL, write = NULL, append = TRUE,
                              check = TRUE, output = TRUE, ...) {
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input 'x' is missing or NULL
+  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
 
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
@@ -701,11 +702,8 @@ cohens.d.formula <- function(formula, data, weighted = TRUE, cor = TRUE,
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
-
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
   # Check 'group'
   if (isTRUE(!is.null(group))) {

@@ -138,17 +138,11 @@ as.na <- function(data, ..., na, replace = TRUE, check = TRUE) {
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify a vector, factor, matrix, array, data frame, or list for the argument 'data'", call. = FALSE) }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) ||is.null(data))) { stop("Please specify a vector, factor, matrix, array, data frame, or list for the argument 'data'", call. = FALSE) }
 
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
-
-  # Check if input 'na' is missing
-  if (isTRUE(missing(na))) { stop("Please specify a numeric vector or character vector for the argument 'na'.", call. = FALSE) }
-
-  # Check if input 'na' is NULL
-  if (isTRUE(is.null(na))) { stop("Input specified for the argument 'na' is NULL.", call. = FALSE) }
+  # Check if input 'na' is missing or NULL
+  if (isTRUE(missing(na) || is.null(na))) { stop("Please specify a numeric vector or character vector for the argument 'na'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

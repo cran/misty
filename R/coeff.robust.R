@@ -1,16 +1,47 @@
-#' Unstandardized Coefficients with Heteroscedasticity-Consistent Standard Errors
+#' Heteroscedasticity-Consistent and Cluster-Robust Standard Errors
 #'
-#' This function computes heteroscedasticity-consistent standard errors and
-#' significance values for linear models estimated by using the \code{lm()}
-#' function and generalized linear models estimated by using the \code{glm()}
-#' function. For linear models the heteroscedasticity-robust F-test is computed
-#' as well. By default, the function uses the HC4 estimator.
+#' This function computes (1) heteroscedasticity-consistent or cluster-robust
+#' standard errors and significance values for (generalized) linear models estimated
+#' by using the \code{lm()} or the \code{glm()} function and (2) cluster-robust
+#' standard errors for multilevel and linear mixed-effects models estimated by
+#' using the \code{lmer()} function from the \pkg{lme4} package that are robust
+#' to the violation of the homoscedasticity assumption. For linear models the
+#' heteroscedasticity-robust F-test is computed as well. By default, the function
+#' uses the HC4 estimator for (generalized) linear models and the heteroscedastic-robust
+#' CR2 estimator for multilevel and linear mixed-effects models. Note that
+#' cluster-robust standard errors are available only for two-level models.
 #'
-#' @param model    a fitted model of class \code{lm} or \code{glm}.
-#' @param type     a character string specifying the estimation type, where
-#'                 \code{"H0"} gives White's estimator and \code{"H1"} to
-#'                 \code{"H5"} are refinement of this estimator. See help page
+#' @param model    a fitted model of class \code{lm}, \code{glm}, \code{lmerMod},
+#'                 or \code{lmerModLmerTest}.
+#' @param cluster  a vector representing the nested grouping structure (i.e., group
+#'                 or cluster variable). This argument is used only when requesting
+#'                 cluster-robust standard errors for (generalized) linear models
+#'                 estimated by using the \code{lm()} or \code{glm()} function.
+#'                 Note that the length of the vector needs to match the number
+#'                 of rows of the data frame used to estimate the (generalized)
+#'                 linear model. In the presence of missing data, the length of
+#'                 the vector needs to match the number of rows of the data frame
+#'                 after listwise deletion of missing data.
+#' @param type     a character string specifying the estimation type for (generalized)
+#'                 linear models estimated by using the \code{lm()} or \code{glm()}
+#'                 function, where \code{"H0"} gives White's estimator and \code{"H1"}
+#'                 to \code{"H5"} are refinement of this estimator. See help page
 #'                 of the \code{vcovHC()} function in the R package \code{sandwich}
+#'                 for more details. Alternatively, a character string specifying
+#'                 the estimation type for multilevel and linear mixed-effects model
+#'                 estimated by using the \code{lmer()} function from the \pkg{lme4}
+#'                 package, where \code{"CR0"} is the original form of the sandwich
+#'                 estimator (Liang & Zeger, 1986), \code{"CR1"} multiplies CR0
+#'                 by \eqn{m / (m - 1)}, where \eqn{m} is the number of clusters,
+#'                 \code{"CR1p"} multiplies CR0 by \eqn{m / (m - p)}, where \eqn{p}
+#'                 is the number of covariates, \code{"CR1S"} multiplies CR0 by
+#'                 \eqn{(m (N-1)) / [(m - 1)(N - p)]}, where \eqn{N} is the total
+#'                 number of observations, \code{"CR2"} (default) is the "bias-reduced
+#'                 linearization" adjustment proposed by Bell and McCaffrey (2002)
+#'                 and further developed in Pustejovsky and Tipton (2017), and
+#'                 \code{"CR3"} approximates the leave-one-cluster-out jackknife
+#'                 variance estimator (Bell & McCaffrey, 2002). See help page of
+#'                 the \code{vcovCR()} function in the R package \code{clubSandwich}
 #'                 for more details.
 #' @param digits   an integer value indicating the number of decimal places
 #'                 to be used for displaying results. Note that information
@@ -32,8 +63,10 @@
 #' @param output   logical: if \code{TRUE} (default), output is shown.
 #'
 #' @details
-#' The family of heteroscedasticity-consistent (HC) standard errors estimator for
-#' the model parameters of a regression model is based on an HC covariance matrix
+#' \describe{
+#' \item{\strong{Heteroscedasticity-Consistent Standard Errors}}{The family of
+#' heteroscedasticity-consistent (HC) standard errors estimator for the model
+#' parameters of a regression model is based on an HC covariance matrix
 #' of the parameter estimates and does not require the assumption of homoscedasticity.
 #' HC estimators approach the correct value with increasing sample size, even in
 #' the presence of heteroscedasticity. On the other hand, the OLS standard error
@@ -42,7 +75,7 @@
 #' the idea of HC covariance matrix to econometricians and derived the asymptotically
 #' justified form of the HC covariance matrix known as HC0 (Long & Ervin, 2000).
 #' Simulation studies have shown that the HC0 estimator tends to underestimate the
-#' true variance in small to moderately large samples (\eqn{N \keq 250}) and in
+#' true variance in small to moderately large samples (\eqn{N \leq 250}) and in
 #' the presence of leverage observations, which leads to an inflated type I error
 #' risk (e.g., Cribari-Neto & Lima, 2014). The alternative estimators HC1 to HC5
 #' are asymptotically equivalent to HC0 but include finite-sample corrections,
@@ -72,7 +105,29 @@
 #' the statistical model of estimated conditional means. Unless heteroscedasticity
 #' is believed to be solely caused by measurement error associated with the predictor
 #' variable(s), it should serve as warning to the researcher regarding the adequacy
-#' of the estimated model.
+#' of the estimated model.}
+#' \item{\strong{Cluster-Robust Standard Errors}}{The family of cluster-robust (CR)
+#' standard errors estimator for the model parameters of a multilevel and linear
+#' mixed-effects model are based on the heteroscedasticity-consistent (HC) standard
+#' errors estimators that have been generalized to clustered data (Zhang & Lai, 2024).
+#' The standard errors of the CR0 estimator (Liang and Zeger, 1986) rely on large
+#' samples, i.e., the CR0 estimator may result in underestimated standard errors
+#' with small number of clusters (Cameron & Miller, 2015; Imbens & Kolesar, 2016).
+#' However, there is no consensus about the minimum number of clusters, e.g., at
+#' least 100 clusters (Maas & Hox, 2004, p. 439), around 40 (Angrist & Pischke, 2008)
+#' or 30 clusters (Huang, 2016). The CR2 estimator, also referred to as Bell and
+#' McCaffrey (2002) bias-reduced linearization method, has been shown to be
+#' effective when used with a small number of clusters (Hugang & Li, 2022). For
+#' example, the CR2 estimator performed well in all conditions of a simulation
+#' study involving 20, 50, or 100 clusters regardless if homoskedasticity was
+#' violated or not. (Huang, et al, 2023). The CR3 estimator tends to over-correct
+#' the bias of the CR0 estiamator, while the CR1 estimator tends to under-correct
+#' the bias (Pustejovsky & Tipton, 2018). Note that the cluster-robust SE are only
+#' robust to violation of the homoscedasticity assumption, while departure from
+#' normality or the presence of outliers can influence its performance (MacKinnon, 2012).
+#' Statistical significance testing of the regression coefficients is based on
+#' the Satterthwaite approximated degrees of freedom (Bell & McCaffrey (2002).}
+#' }
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -81,6 +136,16 @@
 #' \code{\link{coeff.std}}, \code{\link{write.result}}
 #'
 #' @references
+#' Angrist, J. D., & Pischke, J.-S. (2008). \emph{Mostly harmless econometrics:
+#' An empiricist’s companion}. Princeton university press.
+
+#' Bell, R. M., & McCaffrey, D. F. (2002). Bias reduction in standard errors for
+#' linear regression with multi-stage samples. \emph{Survey Methodology, 28}(2),
+#' 169-181
+#'
+#' Cameron, A. C., & Miller, D. L. (2015). A practitioner’s guide to cluster-robust inference.
+#' \emph{Journal of Human Resources, 50}(2), 317-372. https://doi.org/10.3368/jhr.50.2.317
+#'
 #' Darlington, R. B., & Hayes, A. F. (2017). \emph{Regression analysis and linear
 #' models: Concepts, applications, and implementation}. The Guilford Press.
 #'
@@ -89,24 +154,55 @@
 #' https://doi.org/10.1016/S0167-9473(02)00366-3
 #'
 #' Cribari-Neto, F., & Lima, M. G. (2014). New heteroskedasticity-robust standard
-#' errors for the linear regression model. \emph{Brazilian Journal of Probability and Statistics, 28},
-#' 83-95.
+#' errors for the linear regression model. \emph{Brazilian Journal of Probability
+#' and Statistics, 28}, 83-95.
 #'
 #' Cribari-Neto, F., Souza, T., & Vasconcellos, K. L. P. (2007). Inference under
-#' heteroskedasticity and leveraged data. \emph{Communications in Statistics - Theory and Methods, 36},
-#' 1877-1888. https://doi.org/10.1080/03610920601126589
+#' heteroskedasticity and leveraged data. \emph{Communications in Statistics -
+#' Theory and Methods, 36}, 1877-1888. https://doi.org/10.1080/03610920601126589
 #'
 #' Hayes, A.F, & Cai, L. (2007). Using heteroscedasticity-consistent standard error
 #' estimators in OLS regression: An introduction and software implementation.
 #' \emph{Behavior Research Methods, 39}, 709-722. https://doi.org/10.3758/BF03192961
 #'
+#' Huang, F. L., & Li, X. (2022). Using cluster-robust standard errors when analyzing
+#' group-randomized trials with few clusters. \emph{Behavior Research Methods, 54}(3),
+#' 1181–1199. https://doi.org/10.3758/s13428-021-01627-0
+#'
+#' Kuznetsova, A, Brockhoff, P. B., & Christensen, R. H. B. (2017). lmerTest Package:
+#' Tests in linear mixed effects models. \emph{Journal of Statistical Software, 82}
+#' 13, 1-26. https://doi.org/10.18637/jss.v082.i13.
+#'
+#' Imbens, G. W., & Kolesar, M. (2016). Robust standard errors in small samples: Some practical
+#' advice. \emph{Review of Economics and Statistics, 98}(4), 701-712.
+#' https://doi.org/10.1162/REST_a_00552
+#'
+#' Liang, K.-Y., & Zeger, S. L. (1986). Longitudinal data analysis using generalized
+#' linear models. \emph{Biometrika, 73}(1), 13-22. https://doi.org/10.1093/biomet/73.1.13
+#'
 #' Long, J.S., & Ervin, L.H. (2000). Using heteroscedasticity consistent standard
 #' errors in the linear regression model. \emph{The American Statistician, 54},
 #' 217-224. https://doi.org/10.1080/00031305.2000.10474549
 #'
+#' Maas, C., & Hox, J. J. (2004). The influence of violations of assumptions on
+#' multilevel parameter estimates and their standard errors.
+#' \emph{Computational Statistics & Data Analysis, 46}(3), 427-440.
+#' https://doi.org/10.1016/j.csda.2003.08.006
+#'
+#' MacKinnon, J. G. (2012). Thirty years of heteroskedasticity-robust
+#' inference. In X. Chen & N. R. Swanson (Eds.), \emph{Recent advances
+#' and future directions in causality, prediction, and specification
+#' analysis: Essays in honor of Halbert L. White Jr} (pp. 437-461).
+#' Springer. https://doi.org/10.1007/978-1-4614-1653-1_17
+#'
 #' Ng, M., & Wilcoy, R. R. (2009). Level robust methods based on the least squares
 #' regression estimator. \emph{Journal of Modern Applied Statistical Methods, 8},
 #' 284-395. https://doi.org/10.22237/jmasm/1257033840
+#'
+#' Pustejovsky, J. E. & Tipton, E. (2018). Small sample methods for cluster-robust
+#' variance estimation and hypothesis testing in fixed effects models.
+#' \emph{Journal of Business and Economic Statistics, 36}(4),
+#' 672-683. https://doi.org/10.1080/07350015.2016.1247004
 #'
 #' Rosopa, P. J., Schaffer, M. M., & Schroeder, A. N. (2013). Managing heteroscedasticity
 #' in general linear models. \emph{Psychological Methods, 18}(3), 335-351.
@@ -117,12 +213,17 @@
 #' https://doi.org/10.2307/1912934
 #'
 #' Zeileis, A., & Hothorn, T. (2002). Diagnostic checking in regression relationships.
-#' \emph{R News, 2}(3), 7–10. http://CRAN.R-project.org/doc/Rnews/
+#' \emph{R News, 2}(3), 7-10. http://CRAN.R-project.org/doc/Rnews/
 #'
 #' Zeileis A, Köll S, & Graham N (2020). Various versatile variances: An
 #' object-oriented implementation of clustered covariances in R.
 #' \emph{Journal of Statistical Software, 95}(1), 1-36.
 #' https://doi.org/10.18637/jss.v095.i01
+#'
+#' Zhang, Y., & Lai, M. H. C. (2024). Evaluating two small-sample corrections for
+#' fixed-effects standard errors and inferences in multilevel models with heteroscedastic,
+#' unbalanced, clustered data. \emph{Behavior research methods, 56}(6), 5930–5946.
+#' https://doi.org/10.3758/s13428-023-02325-9
 #'
 #' @return
 #' Returns an object of class \code{misty.object}, which is a list with following
@@ -132,14 +233,17 @@
 #' \item{\code{model}}{model specified in \code{model}}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{result}}{list with results, i.e., \code{coef} for the unstandardized
-#' regression coefficients with heteroscedasticity-consistent standard errors,
-#' \code{F.test} for the heteroscedasticity-robust F-Test, and \code{sandwich}
-#' for the sandwich covariance matrix}
+#' regression coefficients with heteroscedasticity-consistent or cluster-robust
+#' standard errors, \code{F.test} for the heteroscedasticity-robust F-Test, and
+#' \code{sandwich} for the sandwich covariance matrix}
 #'
 #' @note
-#' This function is based on the \code{vcovHC} function from the \code{sandwich}
-#' package (Zeileis, Köll, & Graham, 2020) and the functions \code{coeftest} and
-#' \code{waldtest} from the \code{lmtest} package (Zeileis & Hothorn, 2002).
+#' The computation of heteroscedasticity-consistent standard errors is based on
+#' the \code{vcovHC} function from the \pkg{sandwich} package (Zeileis, Köll, &
+#' Graham, 2020) and the functions \code{coeftest} and \code{waldtest} from the
+#' \code{lmtest} package (Zeileis & Hothorn, 2002), while the computation of
+#' cluster-robust standard errors uses the \code{vcovCR} and the \code{coef_test}
+#' function in the \pkg{clubSandwich} package.
 #'
 #' @export
 #'
@@ -147,14 +251,50 @@
 #' #----------------------------------------------------------------------------
 #' # Example 1: Linear model
 #'
+#' # Estimate linear model
 #' mod.lm <- lm(mpg ~ cyl + disp, data = mtcars)
+#'
+#' # Statistical significance testing based on heteroscedasticity-consistent SE
 #' coeff.robust(mod.lm)
+#'
+#' # Statistical significance testing based on cluster-robust SE
+#' # Note that the is an illustrative example, variable 'carb' is not a cluster variable
+#' coeff.robust(mod.lm, cluster = mtcars$carb)
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 2: Generalized linear model
 #'
+#' # Estimate generalized linear model
 #' mod.glm <- glm(carb ~ cyl + disp, data = mtcars, family = poisson())
+#'
+#' # Statistical significance testing based on heteroscedasticity-consistent SE
 #' coeff.robust(mod.glm)
+#'
+#' # Statistical significance testing based on cluster-robust SE
+#' # Note that the is an illustrative example, variable 'carb' is not a cluster variable
+#' coeff.robust(mod.glm, cluster = mtcars$carb)
+#'
+#' \dontrun{
+#' #----------------------------------------------------------------------------
+#' # Example 3: Multilevel and Linear Mixed-Effects Model
+#'
+#' # Load lme4 and misty package
+#' misty::libraries(lme4, misty)
+#'
+#' # Load data set "Demo.twolevel" in the lavaan package
+#' data("Demo.twolevel", package = "lavaan")
+#'
+#' # Cluster-mean centering, center() from the misty package
+#' Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
+#'
+#' # Grand-mean centering, center() from the misty package
+#' Demo.twolevel <- center(Demo.twolevel, w1, type = "CGM", cluster = "cluster")
+#'
+#' # Estimate two-level mixed-effects model
+#' mod.lmer <- lmer(y1 ~ x2.c + w1.c + x2.c:w1.c + (1 + x2.c | cluster), data = Demo.twolevel)
+#'
+#' # Statistical significance testing based on cluster-robust SE
+#' coeff.robust(mod.lmer)
 #'
 #' #----------------------------------------------------------------------------
 #' # Write Results
@@ -164,46 +304,62 @@
 #'
 #' # Example 3b: Write results into a Excel file
 #' coeff.robust(mod.lm, write = "Robust_Coef.xlsx", output = FALSE)
-coeff.robust <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5"),
-                         digits = 3, p.digits = 3, write = NULL, append = TRUE, check = TRUE,
-                         output = TRUE) {
+#' }
+coeff.robust <- function(model, cluster = NULL,
+                         type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5",
+                                  "CR0", "CR1", "CR1p", "CR1S", "CR2", "CR3"),
+                         digits = 2, p.digits = 3, write = NULL, append = TRUE,
+                         check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'model' is missing
-  if (isTRUE(missing(model))) { stop("Input for the argument 'model' is missing.", call. = FALSE) }
+  # Check if input 'model' is missing or NULL
+  if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model for the argument 'model'.", call. = FALSE) }
 
-  # Check if input 'model' is NULL
-  if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
-
-  # Check if input 'model' is not 'lm' or 'glm'
-  if (isTRUE(!any(class(model) %in% c("lm", "glm")) )) { stop("Please specify a fitted model object from the \"lm\" or \"glm\"., function for the argument 'model'.", call. = FALSE) }
+  # Check if input 'model' is not 'lm', 'glm', "lmerMod", or "lmerModLmerTest"
+  if (isTRUE(!any(class(model) %in% c("lm", "glm", "lmerMod", "lmerModLmerTest")) )) { stop("Please specify a fitted model object from the \"lm\", \"glm\", \"lmerMod\", or \"lmerModLmerTest\", function for the argument 'model'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical = c("append", "output"), s.character = list(type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5")), args = c("digits", "p.digits", "write2"), envir = environment(), input.check = check)
+  .check.input(logical = c("append", "output"), s.character = list(type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5", "CR0", "CR1", "CR1p", "CR1S", "CR2", "CR3")), args = c("digits", "p.digits", "write2"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
   # Data and Arguments ---------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Estimation Type ####
+  ## Model Class ####
+
+  # (Generalized) Linear Model
+  if (isTRUE(inherits(model, what = "lm"))) {
+
+    model.class <- "lm"
+
+  # Multilevel and Linear Mixed-Effects Model
+  } else if (all(class(model) %in% c("lmerMod", "lmerModLmerTest"))) {
+
+    model.class <- "lmer"
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Argument 'type' ####
 
   #...................
   ### Default setting ####
-  if (isTRUE(all(c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5") %in% type))) {
 
-    type <- "HC4"
+  if (isTRUE(all(c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5", "CR0", "CR1", "CR1p", "CR1S", "CR2", "CR3") %in% type))) {
 
-  } else {
+    if (isTRUE(model.class == "lm")) {
 
-    if (isTRUE(length(type) != 1L)) { stop("Please specify a character string for the argument 'type'", call. = FALSE)}
+      if (isTRUE(is.null(cluster))) { type <- "HC4"  } else { type <- "CR2" }
+
+    } else if (isTRUE(model.class == "lmer")) { type <- "CR2" }
 
   }
 
@@ -211,20 +367,84 @@ coeff.robust <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4
   #
   # Main Function --------------------------------------------------------------
 
-  # Sandwich
-  sandw <- .sandw(model, type = type)
+  switch(model.class,
 
-  # Inference for estimated coefficients
-  coef.res <- .coeftest(model, vcov = sandw)
+         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         ## (Generalized) Linear Regression, lm() or glm() ####
 
-  # Linear model
-  F.test <- NULL
-  if (isTRUE(length(class(model)) == 1L)) {
+         lm = {
 
-    # Waldtest
-    F.test <- .waldtest(update(model, formula = ~ 1, data = model$model), model, vcov = sandw)
+           #...................
+           ### Heteroscedasticity-Consistent Standard Error ####
 
-  }
+           if (isTRUE(type %in% c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4m", "HC5"))) {
+
+            # Sandwich variance-covariance matrix
+            sandw <- .sandw(model, type = type)
+
+            # Inference for estimated coefficients
+            modcoef <- .coeftest(model, vcov = sandw)
+
+            # Linear model
+            if (isTRUE(length(class(model)) == 1L)) {
+
+              # Waldtest
+              F.test <- .waldtest(update(model, formula = ~ 1, data = model$model), model, vcov = sandw)
+
+            } else {
+
+              F.test <- NULL
+
+            }
+
+           #...................
+           ### Cluster-Robust Standard Error ####
+
+           } else {
+
+             # Cluster variable
+             if (isTRUE(is.null(cluster))) {  stop("Please specify a cluster variable using the argument 'cluster'.", call. = FALSE) }
+
+             # Package clubSandwich installed?
+             if (isTRUE(!nzchar(system.file(package = "clubSandwich")))) { stop("Package \"clubSandwich\" is needed for this function to work, please install the package.", call. = FALSE) }
+
+             if (isTRUE(length(cluster) != nrow(model$model))) { stop(paste0("Length of the cluster variable does not match the data used for the fitted model.\n        This issue might be due to listwise deletion of missing data when fitting the model."), call. = FALSE) }
+
+             # Sandwich variance-covariance matrix
+             sandw <- suppressMessages(clubSandwich::vcovCR(model, cluster = cluster, type = type))
+
+             # Significance testing
+             modcoef <- clubSandwich::coef_test(model, vcov = sandw, test = "Satterthwaite") |> (\(p) setNames(as.data.frame(p)[, c("beta", "SE", "tstat", "df_Satt", "p_Satt")], nm = c("Estimate", "SE", "df", "t", "p")))()
+
+             # Object F.test
+             F.test <- NULL
+
+           }
+
+         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         ## Linear Mixed-Effects Model, lmer() ####
+
+         }, lmer = {
+
+           # Argument 'type'
+           if (isTRUE(!type %in% c("CR0", "CR1", "CR1p", "CR1S", "CR2", "CR3"))) { stop("Please specify a \"CR\" estimator for the argument 'type'.", call. = FALSE) }
+
+           # Package clubSandwich installed?
+           if (isTRUE(!nzchar(system.file(package = "clubSandwich")))) { stop("Package \"clubSandwich\", please install the package.", call. = FALSE) }
+
+           # Two-level model
+           if (isTRUE(lme4::getME(model, name = "n_rtrms") != 1L)) { stop("This function supports only two-level models.", call. = FALSE) }
+
+           # Sandwich variance-covariance matrix
+           sandw <- suppressMessages(clubSandwich::vcovCR(model, type = type))
+
+           # Significance testing
+           modcoef <- clubSandwich::coef_test(model, vcov = sandw, test = "Satterthwaite") |> (\(p) setNames(as.data.frame(p)[, c("beta", "SE", "tstat", "df_Satt", "p_Satt")], nm = c("Estimate", "SE", "df", "t", "p")))()
+
+           # Object F.test
+           F.test <- NULL
+
+         })
 
   #_____________________________________________________________________________
   #
@@ -237,7 +457,7 @@ coeff.robust <- function(model, type = c("HC0", "HC1", "HC2", "HC3", "HC4", "HC4
                  type = "coeff.robust",
                  model = model,
                  args = list(type = type, digits = digits, p.digits = p.digits, write = write, append = append, check = check, output = output),
-                 result = list(coef = coef.res, F.test = F.test, sandwich = sandw))
+                 result = list(coef = modcoef, F.test = F.test, sandwich = sandw))
 
   class(object) <- "misty.object"
 

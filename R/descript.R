@@ -139,11 +139,17 @@
 #' # Alternative specification without using the '...' argument
 #' descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs)
 #'
+#' # Another alternative specification without using the '...' argument
+#' descript(mtcars[, c("mpg", "cyl", "hp", "vs")], group = "vs")
+#'
 #' # Example 2b: Split variable
 #' descript(mtcars, mpg, cyl, hp, split = "am")
 #'
 #' # Alternative specification without using the '...' argument
 #' descript(mtcars[, c("mpg", "cyl", "hp")], split = mtcars$am)
+#'
+#' # Another alternative specification without using the '...' argument
+#' descript(mtcars[, c("mpg", "cyl", "hp", "am")], split = "am")
 #'
 #' # Example 2c: Grouping and split variable
 #' descript(mtcars, mpg, cyl, hp, group = "vs", split = "am")
@@ -151,6 +157,10 @@
 #' # Alternative specification without using the '...' argument
 #' descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs, split = mtcars$am)
 #'
+#' # Another alternative specification without using the '...' argument
+#' descript(mtcars[, c("mpg", "cyl", "hp", "vs", "am")], group = "vs", split = "am")
+#'
+#' \dontrun{
 #' #----------------------------------------------------------------------------
 #' # Write Output
 #'
@@ -159,6 +169,7 @@
 #'
 #' # Example 3b: Excel file
 #' descript(mtcars, write = "Descript_Excel.xlsx")
+#' }
 descript <- function(data, ...,
                      print = c("all", "default", "n", "nNA", "pNA", "nUQ", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt"),
                      group = NULL, split = NULL, sample = FALSE, sort.var = FALSE, na.omit = FALSE,
@@ -169,11 +180,8 @@ descript <- function(data, ...,
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
-
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -185,7 +193,7 @@ descript <- function(data, ...,
   if (isTRUE(!missing(...))) {
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[, .var.names(data = data, ..., group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[, .var.names(data = data, ..., group = group, split = split), drop = FALSE] |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(p)) == 1L)) { unname(unlist(p)) } else { as.data.frame(p) } } else { p })()
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -201,7 +209,7 @@ descript <- function(data, ...,
     # Data frame
     x <- as.data.frame(data)
 
-    # Data and cluster
+    # Remove group and split variable in 'x'
     var.group <- .var.group(data = x, group = group, split = split)
 
     # Data
@@ -215,71 +223,56 @@ descript <- function(data, ...,
 
   }
 
+  # Variables in 'x'
+  if (isTRUE(ncol(as.data.frame(x)) == 0L)) { stop("No variable left for analysis after excluding the grouping and/or split variable.", call. = FALSE) }
+
   # Convert 'group' and 'split' as tibble into a vector
   if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
   if (!is.null(split) && isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { split <- unname(unlist(split)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Numeric Variables ####
+  ## Exclude Non-Numeric Variables ####
 
-  x <- (!vapply(as.data.frame(x), is.numeric, FUN.VALUE = logical(1L))) |> (\(y) if (isTRUE(any(y))) {
+  (!vapply(as.data.frame(x), is.numeric, FUN.VALUE = logical(1L))) |> (\(p) if (isTRUE(any(p))) {
 
-    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(y)), collapse = ", ")), call. = FALSE)
+    x <<- as.data.frame(x)[, -which(p), drop = FALSE]
 
-    return(as.data.frame(x)[, -which(y), drop = FALSE])
+    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(p)), collapse = ", ")), call. = FALSE)
 
-  } else {
-
-    return(x)
+    if (isTRUE(ncol(as.data.frame(x)) == 0L)) { stop("No variable left for analysis after excluding non-numeric variables.", call. = FALSE) }
 
   })()
 
-  if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
-
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Grouping and Split Variable ####
+  ## Missing Data ####
 
-  # Grouping variable
-  if (!is.null(group)) {
-
-    x <- which(sapply(names(x), function(y) identical(group, x[, y]))) |> (\(z) if (isTRUE(length(z) != 0L)) { return(x[, -z]) } else { x })()
-
-    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the grouping variable from the data frame, there are no variables left.") }
-
-  }
-
-  # Split variable
-  if (!is.null(split)) {
-
-    x <- which(sapply(names(x), function(y) identical(split, x[, y]))) |> (\(z) if (isTRUE(length(z) != 0L)) { return(x[, -z]) } else { x })()
-
-    if (isTRUE(ncol(x) == 0L)) { stop("After excluding the split variable from the data frame, there are no variables left.") }
-
-  }
-
-  # Grouping and split variable are identical
-  if (isTRUE(!is.null(group) && !is.null(split) && identical(group, split))) { stop("Grouping and split variables are identical.", call. = FALSE) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #...................
+  ### Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Listwise deletion ####
+  #...................
+  ### Listwise Deletion ####
 
   # Check input 'na.omit'
   .check.input(logical = "na.omit", envir = environment(), input.check = check)
 
   if (isTRUE(na.omit && any(is.na(x)))) {
 
-    assign("x", na.omit(x)) |> (\(y) warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(y)$na.action)), call. = FALSE))()
+    na.omit(x) |> (\(p) {
 
-    # Grouping variable
-    if (isTRUE(!is.null(group))) { group <- group[-attributes(na.omit(x))$na.action] }
+        # Listwise deletion
+        x <<- p
 
-    # Split variable
-    if (isTRUE(!is.null(split))) { split <- split[-attributes(na.omit(x))$na.action] }
+        # Grouping variable
+        if (isTRUE(!is.null(group))) { group <<- group[-attributes(p)$na.action] }
+
+        # Split variable
+        if (isTRUE(!is.null(split))) { split <<- split[-attributes(p)$na.action] }
+
+        warning(paste0("Listwise deletion of incomplete data, number of cases removed from the analysis: ", length(attributes(p)$na.action)), call. = FALSE)
+
+      })()
 
   }
 
@@ -287,35 +280,52 @@ descript <- function(data, ...,
   #
   # Input Check ----------------------------------------------------------------
 
-  # Check inputs
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Check Inputs ####
+
   .check.input(logical = c("sample", "sort.var", "na.omit", "append", "output"),
                m.character = list(print = c("all", "default", "n", "nNA", "pNA", "m", "nUQ", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt")),
                args = c("digits", "write2"), envir = environment(), input.check = check)
 
-  # Additional checks
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Additional Checks ####
+
   if (isTRUE(check)) {
 
-    # Check input 'group'
+    #...................
+    ### Check input 'group' ####
+
     if (isTRUE(!is.null(group))) {
 
       # Input 'group' completely missing
       if (isTRUE(all(is.na(group)))) { stop("The grouping variable specified in 'group' is completely missing.", call. = FALSE) }
+
+      # Grouping variable identical to variable in 'x'
+      if (isTRUE(!is.null(group))) { which(sapply(names(x), function(y) identical(group, x[, y]))) |> (\(p) if (isTRUE(length(p) != 0L)) { stop(paste0("Grouping variable is identical to the variable '", names(p)[1L]), "'.") })() }
 
       # Only one group in 'group'
       if (isTRUE(length(na.omit(unique(group))) == 1L)) { warning("There is only one group represented in the grouping variable specified in 'group'.", call. = FALSE) }
 
     }
 
-    # Check input 'split'
+    #...................
+    ### Check input 'split' ####
+
     if (isTRUE(!is.null(split))) {
 
       # Input 'split' completely missing
       if (isTRUE(all(is.na(split)))) { stop("The split variable specified in 'split' is completely missing.", call. = FALSE) }
 
+      # Split variable identical to variable in 'x'
+      if (isTRUE(!is.null(split))) { which(sapply(names(x), function(y) identical(split, x[, y]))) |> (\(p) if (isTRUE(length(p) != 0L)) { stop(paste0("Split variable is identical to the variable '", names(p)[1L]), "'.") })() }
+
       # Only one group in 'split'
       if (isTRUE(length(na.omit(unique(split))) == 1L)) { warning("There is only one group represented in the split variable specified in 'split'.", call. = FALSE) }
 
     }
+
+    # Grouping and split variable are identical
+    if (isTRUE(!is.null(group) && !is.null(split) && identical(group, split))) { stop("Grouping and split variables are identical.", call. = FALSE) }
 
   }
 
@@ -364,19 +374,19 @@ descript <- function(data, ...,
                          nNA   = vapply(x, function(y) sum(is.na(y)), FUN.VALUE = integer(1L)),
                          pNA   = vapply(x, function(y) sum(is.na(y)) / length(y) * 100L, FUN.VALUE = double(1L)),
                          nUQ   = vapply(x, function(y) misty::uniq.n(y), FUN.VALUE = integer(1L)),
-                         m     = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, mean(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
-                         se.m  = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <= 1L, NA, sd(z, na.rm = FALSE) / sqrt(length(z))))(), FUN.VALUE = double(1L)),
-                         var   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <= 1L, NA, var(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
-                         sd    = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <= 1L, NA, sd(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
-                         min   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, min(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
-                         p.min = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, sum(z == min(z, na.rm = FALSE)) / length(z) * 100L))(), FUN.VALUE = double(1L)),
-                         p25   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, quantile(z, probs = 0.25, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
-                         med   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, median(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
-                         p75   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, quantile(z, probs = 0.75, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
-                         max   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, max(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
-                         p.max = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, sum(z == max(z, na.rm = FALSE)) / length(z) * 100L))(), FUN.VALUE = double(1L)),
-                         range = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, diff(range(z, na.rm = FALSE))))(), FUN.VALUE = double(1L)),
-                         iqr   = vapply(x, function(y) y[!is.na(y)] |> (\(z) ifelse(length(z) <  1L, NA, IQR(z, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         m     = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <  1L, NA, mean(p, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         se.m  = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <= 1L, NA, sd(p, na.rm = FALSE) / sqrt(length(p))))(), FUN.VALUE = double(1L)),
+                         var   = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <= 1L, NA, var(p, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         sd    = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <= 1L, NA, sd(p, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         min   = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <  1L, NA, min(p, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         p.min = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <  1L, NA, sum(p == min(p, na.rm = FALSE)) / length(p) * 100L))(), FUN.VALUE = double(1L)),
+                         p25   = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <  1L, NA, quantile(p, probs = 0.25, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         med   = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <  1L, NA, median(p, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         p75   = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <  1L, NA, quantile(p, probs = 0.75, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         max   = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <  1L, NA, max(p, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
+                         p.max = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <  1L, NA, sum(p == max(p, na.rm = FALSE)) / length(p) * 100L))(), FUN.VALUE = double(1L)),
+                         range = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <  1L, NA, diff(range(p, na.rm = FALSE))))(), FUN.VALUE = double(1L)),
+                         iqr   = vapply(x, function(y) y[!is.na(y)] |> (\(p) ifelse(length(p) <  1L, NA, IQR(p, na.rm = FALSE)))(), FUN.VALUE = double(1L)),
                          skew  = suppressWarnings(vapply(x, misty::skewness, sample = sample, check = FALSE, FUN.VALUE = double(1L))),
                          kurt  = suppressWarnings(vapply(x, misty::kurtosis, sample = sample, check = FALSE, FUN.VALUE = double(1L))),
                          row.names = NULL, check.names = FALSE)

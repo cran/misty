@@ -211,23 +211,14 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE) }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a matrix or data frame for the argument 'data'.", call. = FALSE) }
 
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
+  # Check if input 'tau' is missing or NULL
+  if (isTRUE(missing(tau) || is.null(tau))) { stop("Please specify a matrix for the argument 'tau'.", call. = FALSE) }
 
-  # Check if input 'tau' is missing
-  if (isTRUE(missing(tau))) { stop("Please specify a matrix for the argument 'tau'.", call. = FALSE) }
-
-  # Check if input 'tau' is NULL
-  if (isTRUE(is.null(tau))) { stop("Input specified for the argument 'tau' is NULL.", call. = FALSE) }
-
-  # Check if input 'sigma2' is missing
-  if (isTRUE(missing(sigma2))) { stop("Please specify a numeric value for the argument 'sigma2'.", call. = FALSE) }
-
-  # Check if input 'sigma2' is NULL
-  if (isTRUE(is.null(sigma2))) { stop("Input specified for the argument 'sigma2' is NULL.", call. = FALSE) }
+  # Check if input 'sigma2' is missing or NULL
+  if (isTRUE(missing(sigma2) || is.null(sigma2))) { stop("Please specify a numeric value for the argument 'sigma2'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

@@ -58,17 +58,11 @@ df.move <- function(data, ..., before = NULL, after = NULL, first = TRUE, check 
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify the argument 'data'.", call. = FALSE) }
-
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   # Check if input '...' is missing
-  if (isTRUE(missing(...))) { stop("Please specify the argument '...'.", call. = FALSE) }
-
-  # Check if input '...' is NULL
-  if (isTRUE(is.null(substitute(...)))) { stop("Input specified for the argument '...' is NULL.", call. = FALSE) }
+  if (isTRUE(missing(...) || is.null(substitute(...)) )) { stop("Please specify the argument '...'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

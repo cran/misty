@@ -125,10 +125,7 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
   # Initial Check --------------------------------------------------------------
 
   # Check if input 'model' is missing
-  if (isTRUE(missing(model))) { stop("Please specify a fitted model of class 'lavaan' for the argument 'model'.", call. = FALSE) }
-
-  # Check if input 'model' is NULL
-  if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
+  if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model of class 'lavaan' for the argument 'model'.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Check if model is a lavaan object ####

@@ -46,11 +46,8 @@ chr.trim <- function(x, side = c("both", "left", "right"), check = TRUE) {
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check input 'x'
-  if (isTRUE(missing(x))) { stop("Please specify a character vector for the argument 'x'", call. = FALSE) }
-
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
+  # Check if input 'x' is missing or NULL
+  if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a character vector for the argument 'x'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

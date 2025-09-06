@@ -54,20 +54,11 @@ chr.trunc <- function (x, width, side = c("right", "left", "center"), ellipsis =
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is missing
-  if (isTRUE(missing(x))) { stop("Please specify a character vector or factor for the argument 'x'", call. = FALSE) }
+  # Check if input 'x' is missing or NULL
+  if (isTRUE(missing(x) || is.null(x) || (!is.character(x) && !is.factor(x)))) { stop("Please specify a character vector or factor for the argument 'x'", call. = FALSE) }
 
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
-
-  # Check if input 'x' is a character vector or factor
-  if (isTRUE(!is.character(x) && !is.factor(x))) { stop("Please specify a character vector or factor for the argument 'x'", call. = FALSE) }
-
-  # Check if input 'width' is missing
-  if (isTRUE(missing(width))) { stop("Please specify a numeric value for the argument 'width'", call. = FALSE) }
-
-  # Check if input 'width' is NULL
-  if (isTRUE(is.null(width))) { stop("Input specified for the argument 'width' is NULL.", call. = FALSE) }
+  # Check if input 'width' is missing or NULL
+  if (isTRUE(missing(width) || is.null(width))) { stop("Please specify a numeric value for the argument 'width'", call. = FALSE) }
 
   # Convert 'x' into a character vector
   if (isTRUE(is.factor(x))) { x <- as.character(x) }

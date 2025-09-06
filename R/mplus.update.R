@@ -240,14 +240,8 @@ mplus.update <- function(x, update, file = "Mplus_Input_Update.inp", comment = F
   # Check if input 'x' is a misty.object
   if (isTRUE(x$type != "mplus")) { stop("Please specify a misty.object of type 'mplus' for the argument 'x'", call. = FALSE) }
 
-  # Check if input 'update' is not missing
-  if (isTRUE(missing(update))) { stop("Please specify a character vector for the argument 'update'", call. = FALSE) }
-
-  # Check if input 'update' is NULL
-  if (isTRUE(is.null(update))) { stop("Input specified for the argument 'update' is NULL.", call. = FALSE) }
-
-  # Check if input 'update' is a character string
-  if (isTRUE(!is.character(update) || length(update) != 1L)) { stop("Please specify a character string indicating the updated Mplus input text for the argument 'update'", call. = FALSE) }
+  # Check if input 'update' is missing or NULL or character string
+  if (isTRUE(missing(update) || is.null(update) || !is.character(update) || length(update) != 1L)) { stop("Please specify a character string indicating the updated Mplus input text for the argument 'update'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

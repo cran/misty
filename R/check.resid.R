@@ -1,4 +1,4 @@
-#' Residual Diagnostics
+#' Residual Diagnostics for Linear, Multilevel and Mixed-Effects Models
 #'
 #' This function performs residual diagnostics for linear models estimated by
 #' using the \code{lm()} function and for multilevel and linear mixed-effects
@@ -259,11 +259,8 @@ check.resid <- function(model, type = c("linear", "homo", "normal"),
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'model' is missing
-  if (isTRUE(missing(model))) { stop("Input for the argument 'model' is missing.", call. = FALSE) }
-
-  # Check if input 'model' is NULL
-  if (isTRUE(is.null(model))) { stop("Input specified for the argument 'model' is NULL.", call. = FALSE) }
+  # Check if input 'model' is missing or NULL
+  if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model for the argument 'model'.", call. = FALSE) }
 
   # Check if input 'model' is not 'lm', 'lmerMod', or 'lmerModLmerTest'
   if (isTRUE(!any(class(model) %in% c("lm", "lmerMod", "lmerModLmerTest")))) { stop("Please specify an \"lm\", \"lmerMod\", or \"lmerModLmerTest\" object for the argument 'model'.", call. = FALSE) }

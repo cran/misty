@@ -51,6 +51,9 @@ setsource <- function(path = TRUE, check = TRUE) {
   # Check inputs
   .check.input(logical = "path", package = "rstudioapi", envir = environment(), input.check = check)
 
+  # Check if R is running in RStudio
+  if (isTRUE(!rstudioapi::isAvailable())) { stop("This function can only be used when working in RStudio.", call. = FALSE) }
+
   #_____________________________________________________________________________
   #
   # Main Function --------------------------------------------------------------
@@ -65,7 +68,7 @@ setsource <- function(path = TRUE, check = TRUE) {
   setwd(path.source)
 
   # Print source file location
-  if (isTRUE(path)) { cat(paste0("  ", path.source)) }
+  if (isTRUE(path)) { cat(paste0("  ", path.source, "\n")) }
 
   #_____________________________________________________________________________
   #

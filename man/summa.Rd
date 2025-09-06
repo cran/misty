@@ -12,8 +12,8 @@ summa(model, print = c("all", "default", "call", "descript", "cormat", "modsum",
       write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{model}{a fitted model of class \code{"lm"}, \code{"lmerMod"}, or
-\code{"lmerModLmerTest"}}
+\item{model}{a fitted model of class \code{"lm"}, \code{"lmerMod"}, \code{"rlmerMod"},
+or \code{"lmerModLmerTest"}}
 
 \item{print}{a character vector indicating which results to print, i.e.
 \code{"all"}, for all results, \code{"call"} for the function
@@ -34,12 +34,21 @@ for unstandardized coefficients, \code{stdcoef} for the
 standardized coefficients (see \code{\link{coeff.std} function}),
 and \code{vif} for the variance inflation factor (see
 \code{\link{check.collin}} function). The default setting is
-\code{print = c("call", "modsum", "coef")}.}
+\code{print = c("call", "modsum", "coef")}. Note that when
+a fitted model of class \code{"rlmerMod"} is specified for
+the argument \code{model}, the argument \code{print} is always
+\code{c("call", "coef")}, i.e., \code{"descript"}, \code{"cormat"},
+\code{"modsum"}, \code{"confint"}, \code{"stdcoef"}, and
+\code{"vif"} are not available for an \code{"rlmerMod"}
+object.}
 
 \item{robust}{logical: if \code{TRUE}, heteroscedasticity-consistent
-standard errors and heteroscedasticity-robust F-test using
-the HC4 estimator is computed for linear models estimated
-by using the \code{lm()} function (see \code{\link{coeff.robust}}
+standard errors, confidence intervals, and heteroscedasticity-robust
+F-test using the HC4 estimator are computed for linear models
+estimated by using the \code{lm()} function or cluster-robust
+standard errors using the CR2 estimator is computed for
+multilevel and linear mixed-effects models estimated by using
+the \code{lmer()} function (see \code{\link{coeff.robust}}
 function).}
 
 \item{ddf}{a character string for specifying the method for computing
@@ -49,7 +58,10 @@ and linear mixed-effects models, i.e., \code{"Satterthwaite"}
 (default) for Satterthwaite's method, \code{"Kenward-Roger"}
 for the Kenward-Roger's method, and \code{"lme4"} for the
 lme4-summary without degrees of freedom and significance
-values (see Kuznetsova et al., 2017).}
+values (see Kuznetsova et al., 2017). Note that when a fitted
+model of class \code{"rlmerMod"} is specified for the argument
+\code{model}, Satterthwaite or Kenward-Roger degrees of freedom
+are computed only if the R package \pkg{lmerTest} is loaded.}
 
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence
 level of the interval.}
@@ -108,20 +120,33 @@ entries:
 \item{\code{model}}{model specified in \code{model}}
 \item{\code{args}}{specification of function arguments}
 \item{\code{result}}{list with results, i.e., \code{call} for the the function
-call, \code{call} for descriptive statistics, \code{cormat} for the
+call, \code{descript} for descriptive statistics, \code{cormat} for the
 correlation matrix, \code{modsum} for the model summary, \code{randeff} for
 the variance and correlation components,\code{coef} for the model coefficients,
-and \code{converg} for the convergence check, i.e., \code{1} = model converged,
-\code{0} = model singular, and \code{-1} model not converged.}
+\code{weights} for the robustness weights and \code{converg} for the convergence
+check, i.e., \code{1} = model converged, \code{0} = model singular, and \code{-1}
+model not converged.}
 }
 \description{
 This function prints a summary of the result object returned by the function
 \code{"lm"} for estimating linear regression models and for the result object
-returned by the function \code{"lmer"} from the \pkg{lme4} package to estimate
-two- or three-level multilevel and linear mixed-effects models. By default,
-the function prints the function call, model summary, and the regression
+returned by the function \code{"lmer"} from the \pkg{lme4} or \pkg{lmerTest}
+package, or by the function \code{"rlmer"} from the \pkg{robustlmm} package to
+estimate two- or three-level (robust) multilevel and linear mixed-effects models.
+By default, the function prints the function call, model summary, and the regression
 coefficient table.
 }
+\details{
+\describe{
+\item{\strong{Robust Estimation of Multilevel and Linear Mixed-Effects Models}}{
+The function \code{rlmer} from the \pkg{robustlmm} package does not provide
+any degrees of freedom or significance values. This function re-estimates the
+model without using robust estimation to obtain the Satterthwaite or Kenward-Roger
+degrees of freedom depending on the argument \code{ddf} before computing
+significance values for the regression coefficients based on parameter estimates
+and standard error of the robust multilevel mixed-effects (see Sleegers et al.
+(2021).}
+}}
 \examples{
 #----------------------------------------------------------------------------
 # Linear Model
@@ -145,8 +170,8 @@ summa(mod.lm, print = c("default", "stdcoef"))
 #----------------------------------------------------------------------------
 # Multilevel and Linear Mixed-Effects Model
 
-# Load lme4 package
-library(lme4)
+# Load lme4 and misty package
+misty::libraries(lme4, misty)
 
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
@@ -185,6 +210,19 @@ summa(mod.lmer2)
 # Example 2e: Kenward-Roger's method
 summa(mod.lmer2, ddf = "Kenward-Roger")
 
+# Example 2f: Cluster-robust standard errors
+summa(mod.lmer2, robust = TRUE)
+
+#------------------
+## Robust Estimation using the R package robustlmm
+
+# Estimate two-level mixed-effects model
+mod.lmer2r <- robustlmm::rlmer(y1 ~ x2.c + w1.c + x2.c:w1.c + (1 + x2.c | cluster),
+                               data = Demo.twolevel)
+
+# Example 2f: Default setting
+summa(mod.lmer2r)
+
 #------------------
 ## Three-Level Data
 
@@ -193,22 +231,29 @@ Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
                                              cluster3 = rep(1:10, each = 250))
 
 # Cluster-mean centering, center() from the misty package
-Demo.threelevel <- center(Demo.threelevel, x1, type = "CWC",
-                          cluster = c("cluster3", "cluster2"))
+Demo.threelevel <- center(Demo.threelevel, x1, type = "CWC", cluster = c("cluster3", "cluster2"))
 
 # Cluster-mean centering, center() from the misty package
-Demo.threelevel <- center(Demo.threelevel, w1, type = "CWC",
-                          cluster = c("cluster3", "cluster2"))
+Demo.threelevel <- center(Demo.threelevel, w1, type = "CWC", cluster = c("cluster3", "cluster2"))
 
-# Estimate three-level mixed-effects model
-mod.lmer3 <- lmer(y1 ~ x1.c + w1.c + (1 | cluster3/cluster2),
-                  data = Demo.threelevel)
+# Estimate three-level model using the lme4 package
+mod.lmer3 <- lmer(y1 ~ x1.c + w1.c + (1 | cluster3/cluster2), data = Demo.threelevel)
 
 # Example 3a: Default setting
 summa(mod.lmer3)
 
-# Example 3b: DPrint all available results
+# Example 3b: Print all available results
 summa(mod.lmer3, print = "all")
+
+#------------------
+## Robust Estimation using the R package robustlmm
+
+# Estimate three-level model using the lme4 package
+mod.lmer3r <- robustlmm::rlmer(y1 ~ x1.c + w1.c + (1 | cluster3/cluster2),
+                               data = Demo.threelevel)
+
+# Example 3c: Default setting
+summa(mod.lmer3r)
 
 #----------------------------------------------------------------------------
 # Write Results
@@ -223,7 +268,11 @@ summa(mod.lm, print = "all", write = "Linear_Model.xlsx")
 \references{
 Kuznetsova, A, Brockhoff, P. B., & Christensen, R. H. B. (2017). lmerTest Package:
 Tests in linear mixed effects models. \emph{Journal of Statistical Software, 82}
-13, 1-26. https://doi.org/10.18637/jss.v082.i13.
+13, 1-26. https://doi.org/10.18637/jss.v082.i13
+
+Sleegers, W. W. A., Proulx, T., & van Beest, I. (2021). Pupillometry and hindsight bias:
+Physiological arousal predicts compensatory behavior. \emph{Social Psychological
+and Personality Science, 12}(7), 1146–1154. https://doi.org/10.1177/1948550620966153
 }
 \seealso{
 \code{\link{descript}}, \code{\link{cor.matrix}}, \code{\link{coeff.std}},

@@ -9215,14 +9215,14 @@ splitFilePath <- function(filepath, normalize = FALSE) {
   if (isTRUE(inherits(x, "glm"))) {
 
     pval <- 2L * pnorm(abs(stat), lower.tail = FALSE)
-    cnames <- c("Estimate", "Std. Error", "z value", "Pr(>|z|)")
+    cnames <- c("Estimate", "SE", "z", "p")
     mthd <- "z"
 
   # Linear Model
   } else {
 
     pval <- 2L * pt(abs(stat), df = df, lower.tail = FALSE)
-    cnames <- c("Estimate", "Std. Error", "t value", "Pr(>|t|)")
+    cnames <- c("Estimate", "SE", "t", "p")
     mthd <- "t"
 
   }
@@ -9436,7 +9436,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
   # ANOVA matrix
   object <- matrix(rep(NA, 4L * nmodels), ncol = 4L)
 
-  colnames(object) <- c("Res.Df", "Df", "F", "pval")
+  colnames(object) <- c("res.df", "df", "F", "p")
   rownames(object) <- 1L:nmodels
 
   object[, 1L] <- as.numeric(sapply(objects, df.residual0))

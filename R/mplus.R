@@ -169,14 +169,8 @@ mplus <- function(x, file = "Mplus_Input.inp", data = NULL, comment = FALSE, rep
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'x' is not missing
-  if (isTRUE(missing(x))) { stop("Please specify a character vector for the argument 'x'", call. = FALSE) }
-
-  # Check if input 'x' is NULL
-  if (isTRUE(is.null(x))) { stop("Input specified for the argument 'x' is NULL.", call. = FALSE) }
-
-  # Check if input 'x' is a character string
-  if (isTRUE(!is.character(x) || length(x) != 1L)) { stop("Please specify a character string indicating the Mplus input text for the argument 'x'", call. = FALSE) }
+  # Check if input 'x' is missing or NULL or character string
+  if (isTRUE(missing(x) ||is.null(x) || !is.character(x) || length(x) != 1L)) { stop("Please specify a character string indicating the Mplus input text for the argument 'x'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #

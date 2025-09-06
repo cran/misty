@@ -80,23 +80,23 @@ entries:
   \item{\code{type}}{type of analysis}
   \item{\code{data}}{data frame used for the current analysis}
   \item{\code{args}}{specification of function arguments}
-  \item{\code{result}}{list with result tables, i.e., \code{freq} for absolute
+  \item{\code{result}}{data frame with absolute frequencies and percentages or
+                       list with result tables, i.e., \code{freq} for absolute
                        frequencies, \code{perc} for percentages, and \code{v.perc}
                        for valid percentages}
 }
 \description{
 This function computes a frequency table with absolute and percentage frequencies
-for one or more than one variable.
+for one or more than one variable. By default, the function displays the absolute
+and percentage frequencies when specifying one variable, while the function displays
+only the absolute frequencies when specifying more than one variable.
 }
 \details{
-By default, the function displays the absolute and percentage frequencies when
-specifying one variable, while the function displays only the absolute frequencies
-when more than one variable is specified. The function displays valid percentage
-frequencies only in the presence of missing values and excludes variables with
-all values missing from the analysis. Note that it is possible to mix numeric
-variables, factors, and character variables in the data frame specified in the
-argument \code{data}. By default, numeric variables are rounded to three digits
-before computing the frequency table.
+The function displays valid percentage frequencies only in the presence of missing
+values and excludes variables with all values missing from the analysis. Note that
+it is possible to mix numeric variables, factors, and character variables in the
+data frame specified in the argument \code{data}. By default, numeric variables
+are rounded to three digits before computing the frequency table.
 }
 \examples{
 # Example 1: Frequency table for 'cyl'
@@ -131,8 +131,7 @@ freq(mtcars, exclude = 5)
 freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.txt")
 
 # Example 8b: Write Results into a Excel file
-freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.xlsx")
-}
+freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.xlsx")}
 }
 \references{
 Becker, R. A., Chambers, J. M., & Wilks, A. R. (1988). \emph{The New  S Language}.

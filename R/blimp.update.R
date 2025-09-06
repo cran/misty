@@ -211,14 +211,8 @@ blimp.update <- function(x, update, file = "Blimp_Input_Update.imp", comment = F
   # Check if input 'x' is a misty.object
   if (isTRUE(x$type != "blimp")) { stop("Please specify a misty.object of type 'blimp' for the argument 'x'", call. = FALSE) }
 
-  # Check if input 'update' is not missing
-  if (isTRUE(missing(update))) { stop("Please specify a character vector for the argument 'update'", call. = FALSE) }
-
-  # Check if input 'update' is NULL
-  if (isTRUE(is.null(update))) { stop("Input specified for the argument 'update' is NULL.", call. = FALSE) }
-
-  # Check if input 'update' is a character string
-  if (isTRUE(!is.character(update) || length(update) != 1L)) { stop("Please specify a character string indicating the updated Blimp input text for the argument 'update'", call. = FALSE) }
+  # Check if input 'update' is missing or NULL or not a character string
+  if (isTRUE(missing(update) || is.null(update) || !is.character(update) || length(update) != 1)) { stop("Please specify a character string indicating the updated Blimp input text for the argument 'update'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
