@@ -20,14 +20,9 @@
 #'                     the nested grouping structure (i.e., group or cluster variable).
 #' @param within       a character vector representing variables that are measured
 #'                     at the within level and modeled only at the within level.
-#'                     Variables not mentioned in \code{within} or \code{between}
-#'                     are measured at the within level and will be modeled on both
-#'                     the within and between level.
-#' @param between      a character vector representing variables that are measured
-#'                     at the between level and modeled only at the between level.
-#'                     Variables not mentioned in \code{within} or \code{between}
-#'                     are measured at the within level and will be modeled on
-#'                     both the within and between level.
+#'                     Variables not mentioned in \code{within} are measured at
+#'                     the within level and will be modeled on both the within
+#'                     and between level.
 #' @param estimator    a character string indicating the estimator to be used, i.e.,
 #'                     \code{"ML"} for maximum likelihood with conventional
 #'                     standard errors and \code{"MLR"} for maximum likelihood with
@@ -111,11 +106,12 @@
 #' That is, the \code{within} argument is used to identify variables in the data
 #' frame specified in \code{data} that are measured at the individual level and
 #' modeled only at the within level. They are specified to have no variance in
-#' the between part of the model. The \code{between} argument is used to identify
-#' the variables in the data frame specified in \code{data} that are measured at
-#' the cluster level and modeled only at the between level. Variables not mentioned
-#' in the arguments \code{within} or \code{between} are measured at the individual
-#' level and will be modeled at both the within and between level.}
+#' the between part of the model. Note that the function automatically identifies
+#' variables in the data frame  specified in \code{data} that are measured at the
+#' cluster level and modeled only at the between level, i.e., these variables do
+#' not have any variance within clusters. Variables not mentioned in the arguments
+#' \code{within} are measured at the individual level and will be modeled at both
+#' the within and between level.}
 #' \item{\strong{Estimation Method and Missing Data Handling}}{The default setting
 #' for the argument \code{estimator} is depending on the setting of the argument
 #' \code{sig}. If \code{sig = FALSE} (default), maximum likelihood estimation
@@ -229,18 +225,16 @@
 #' #----------------------------------------------------------------------------
 #' # Example 6: Variables "y1", "y2", and "y2" modeled at both the within and between level
 #' # Variables "w1" and "w2" modeled at the cluster level
-#' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
-#'                between = c("w1", "w2"))
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster")
 #'
 #' # Example 7: Show variables specified in the argument 'between' first
-#' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
-#'                between = c("w1", "w2"), order = TRUE)
+#' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster", order = TRUE)
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 8: Variables "y1", "y2", and "y2" modeled only at the within level
 #' # Variables "w1" and "w2" modeled at the cluster level
 #' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
-#'                within = c("y1", "y2", "y3"), between = c("w1", "w2"))
+#'                within = c("y1", "y2", "y3"))
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 9: lavaan model and summary of the multilevel model used to compute the
@@ -265,7 +259,7 @@
 #' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
 #'                write = "Multilevel_Correlation.xlsx")
 #' }
-multilevel.cor <- function(data, ..., cluster, within = NULL, between = NULL,
+multilevel.cor <- function(data, ..., cluster, within = NULL,
                            estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"),
                            optim.switch = TRUE, missing = c("listwise", "fiml"),
                            sig = FALSE, alpha = 0.05, print = c("all", "cor", "se", "stat", "p"),
@@ -342,6 +336,11 @@ multilevel.cor <- function(data, ..., cluster, within = NULL, between = NULL,
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Between Variables ####
+
+  between <- names(which(vapply(x, function(y) all(tapply(y, cluster, var, na.rm = TRUE) < .Machine$double.eps^0.5), FUN.VALUE = logical(1L)))) |> (\(p) if (isTRUE(length(p) == 0)) { NULL } else { p })()
 
   #_____________________________________________________________________________
   #

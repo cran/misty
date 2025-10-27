@@ -173,9 +173,9 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus}},
-#' \code{\link{mplus.update}}, \code{\link{mplus.print}}, \code{\link{mplus.plot}},
-#' \code{\link{mplus.bayes}}, \code{\link{mplus.run}}
+#' \code{\link{mplus.lca.summa}}, \code{\link{read.mplus}}, \code{\link{write.mplus}},
+#' \code{\link{mplus}}, \code{\link{mplus.update}}, \code{\link{mplus.print}},
+#' \code{\link{mplus.plot}}, \code{\link{mplus.bayes}}, \code{\link{mplus.run}}
 #'
 #' @references
 #' Masyn, K. E. (2013). Latent class analysis and finite mixture modeling. In T. D.

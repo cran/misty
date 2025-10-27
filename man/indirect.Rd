@@ -82,29 +82,28 @@ entries:
 \description{
 This function computes confidence intervals for the indirect effect based on the
 asymptotic normal method, distribution of the product method and the Monte Carlo
-method. By default, the function uses the distribution of the product method
-for computing the two-sided 95\% asymmetric confidence intervals for the indirect
-effect product of coefficient estimator \eqn{\hat{a}\hat{b}}.
+method. By default, the function uses the Monte Carlo method for computing the
+two-sided 95\% asymmetric confidence intervals for the indirect effect product
+of coefficient estimator \eqn{\hat{a}\hat{b}}.
 }
 \details{
-In statistical mediation analysis (MacKinnon & Tofighi, 2013), the indirect effect
-refers to the effect of the independent variable \eqn{X} on the outcome variable
-\eqn{Y} transmitted by the mediator variable \eqn{M}. The magnitude of the indirect
-effect \eqn{ab} is quantified by the product of the the coefficient \eqn{a}
-(i.e., effect of \eqn{X} on \eqn{M}) and the coefficient \eqn{b} (i.e., effect of
-\eqn{M} on \eqn{Y} adjusted for \eqn{X}). In practice, researchers are often
-interested in confidence limit estimation for the indirect effect. This function
-offers three different methods for computing the confidence interval for the
-product of coefficient estimator \eqn{\hat{a}\hat{b}}:
+\describe{
+In statistical mediation analysis (MacKinnon & Tofighi, 2013), the indirect
+effect refers to the effect of the independent variable \eqn{X} on the outcome
+variable \eqn{Y} transmitted by the mediator variable \eqn{M}. The magnitude
+of the indirect effect \eqn{ab} is quantified by the product of the the
+coefficient \eqn{a} (i.e., effect of \eqn{X} on \eqn{M}) and the coefficient
+\eqn{b} (i.e., effect of \eqn{M} on \eqn{Y} adjusted for \eqn{X}). In practice,
+researchers are often interested in confidence limit estimation for the indirect
+effect. This function offers three different methods for computing the confidence
+interval for the product of coefficient estimator \eqn{\hat{a}\hat{b}}:
 
-\strong{(1) Asymptotic normal method}
-
-In the asymptotic normal method, the standard error for the product of the
-coefficient estimator \eqn{\hat{a}\hat{b}} is computed which is used to create
-a symmetrical confidence interval based on the z-value of the standard normal
-(\eqn{z}) distribution assuming that the indirect effect is normally distributed.
-Note that the function provides three formulas for computing the standard error
-by specifying the argument \code{se}:
+\item{\strong{Asymptotic Normal Method}}{In the asymptotic normal method, the
+standard error for the product of the coefficient estimator \eqn{\hat{a}\hat{b}}
+is computed which is used to create a symmetrical confidence interval based on
+the z-value of the standard normal (\eqn{z}) distribution assuming that the
+indirect effect is normally distributed. Note that the function provides three
+formulas for computing the standard error by specifying the argument \code{se}:
 
 \describe{
   \item{\code{"sobel"}}{Approximate standard error by Sobel (1982) using the
@@ -123,50 +122,50 @@ by specifying the argument \code{se}:
 
 The asymptotic normal method is known to have low statistical power because
 the distribution of the product \eqn{\hat{a}\hat{b}} is not normally distributed.
-(Kisbu-Sakarya, MacKinnon, & Miocevic, 2014). In the null case, where both random
-variables have mean equal to zero, the distribution is symmetric with kurtosis of
-six. When the product of the means of the two random variables is nonzero, the
-distribution is skewed (up to a maximum value of \eqn{\pm} 1.5) and has a excess
-kurtosis (up to a maximum value of 6). However, the product approaches a normal
-distribution as one or both of the ratios of the means to standard errors of each
-random variable get large in absolute value (MacKinnon, Lockwood & Williams, 2004).
+(Kisbu-Sakarya, MacKinnon, & Miocevic, 2014). In the null case, where both
+random variables have mean equal to zero, the distribution is symmetric with
+kurtosis of six. When the product of the means of the two random variables is
+nonzero, the distribution is skewed (up to a maximum value of \eqn{\pm} 1.5)
+and has a excess kurtosis (up to a maximum value of 6). However, the product
+approaches a normal distribution as one or both of the ratios of the means to
+standard errors of each random variable get large in absolute value (MacKinnon,
+Lockwood & Williams, 2004).}
 
-\strong{(2) Distribution of the product method}
+\item{\strong{Distribution of the product method}}{The distribution of the
+product method (MacKinnon et al., 2002) relies on an analytical approximation
+of the distribution of the product of two normally distributed variables.
+The method uses the standardized \eqn{a} and \eqn{b} coefficients to compute
+\eqn{ab} and then uses the critical values for the distribution of the product
+(Meeker, Cornwell, & Aroian, 1981) to create asymmetric confidence intervals.
+The distribution of the product approaches the gamma distribution (Aroian, 1947).
+The analytical solution for the distribution of the product is provided by the
+Bessel function used to the solution of differential equations and is approximately
+proportional to the Bessel function of the second kind with a purely imaginary
+argument (Craig, 1936).}
 
-The distribution of the product method (MacKinnon et al., 2002) relies on an
-analytical approximation of the distribution of the product of two normally
-distributed variables. The method uses the standardized \eqn{a} and \eqn{b}
-coefficients to compute \eqn{ab} and then uses the critical values for the
-distribution of the product (Meeker, Cornwell, & Aroian, 1981) to create
-asymmetric confidence intervals. The distribution of the product approaches
-the gamma distribution (Aroian, 1947). The analytical solution for the distribution
-of the product is provided by the Bessel function used to the solution of
-differential equations and is approximately proportional to the Bessel function
-of the second kind with a purely imaginary argument (Craig, 1936).
-
-\strong{(3) Monte Carlo method}
-
-The Monte Carlo (MC) method (MacKinnon et al., 2004) relies on the assumption
-that the parameters \eqn{a} and \eqn{b} have a joint normal sampling distribution.
-Based on the parametric assumption, a sampling distribution of the product
-\eqn{a}\eqn{b} using random samples with population values equal to the sample
-estimates \eqn{\hat{a}}, \eqn{\hat{b}}, \eqn{\hat{\sigma}_a}, and \eqn{\hat{\sigma}_b}
-is generated. Percentiles of the sampling distribution are identified to serve as
-limits for a \eqn{100(1 - \alpha)}\% asymmetric confidence interval about the sample
+\item{\strong{ Monte Carlo Method}}{The Monte Carlo (MC) method (MacKinnon et
+al., 2004) relies on the assumption that the parameters \eqn{a} and \eqn{b}
+have a joint normal sampling distribution. Based on the parametric assumption,
+a sampling distribution of the product \eqn{a}\eqn{b} using random samples
+with population values equal to the sample estimates \eqn{\hat{a}}, \eqn{\hat{b}},
+\eqn{\hat{\sigma}_a}, and \eqn{\hat{\sigma}_b} is generated. Percentiles of
+the sampling distribution are identified to serve as limits for a
+\eqn{100(1 - \alpha)}\% asymmetric confidence interval about the sample
 \eqn{\hat{a}\hat{b}} (Preacher & Selig, 2012). Note that parametric assumptions
 are invoked for \eqn{\hat{a}} and \eqn{\hat{b}}, but no parametric assumptions
-are made about the distribution of \eqn{\hat{a}\hat{b}}.
+are made about the distribution of \eqn{\hat{a}\hat{b}}.}
+}
 }
 \note{
 The function was adapted from the \code{medci()} function in the \pkg{RMediation}
 package by Davood Tofighi and David P. MacKinnon (2016).
 }
 \examples{
-# Example 1: Distribution of the Product Method
+# Example 1: Monte Carlo Method
 indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18)
 
-# Example 2: Monte Carlo Method
-indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18, print = "mc")
+# Example 2: Distribution of the Product Method
+indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18, print = "dop")
 
 # Example 3: Asymptotic Normal Method
 indirect(a = 0.35, b = 0.27, se.a = 0.12, se.b = 0.18, print = "asymp")

@@ -118,7 +118,8 @@
 #'                           Provided only when \code{OUTPUT: TECH11}.
 #'    \item{\code{"BLRT"}}: Significance value (\emph{p}-value) of the bootstrapped
 #'                          likelihood ratio test. Provided only when \code{OUTPUT: TECH14}.
-#'    \item{\code{"Entropy"}}: Sample-size adjusted BIC (i.e., \code{Entropy}).
+#'    \item{\code{"Entropy"}}: Summary of the class probabilities across classes
+#'                             and individuals in the sample (i.e., \code{Entropy}).
 #'    \item{\code{"p1"}}: Class proportion of the first class based on the estimated
 #'                        posterior probabilities (i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}).
 #'    \item{\code{"p2"}}: Class proportion of the second class based on the estimated
@@ -166,10 +167,10 @@
 #'           mplus.run = TRUE)
 #'
 #' # Example 1a: Read Mplus output files, create result table, write table, and save plots
-#' result.lca(write = "LCA.xlsx", plot = TRUE)
+#' mplus.lca.summa(write = "LCA.xlsx", plot = TRUE)
 #'
 #' # Example 1b: Write results into a text file
-#' result.lca(write = "LCA.txt")
+#' mplus.lca.summa(write = "LCA.txt")
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 2: Draw bar chart manually
@@ -177,7 +178,7 @@
 #' library(ggplot2)
 #'
 #' # Collect LCA results
-#' lca.result <- result.lca()
+#' lca.result <- mplus.lca.summa()
 #'
 #' # Result table with means
 #' means <- lca.result$result$mean
@@ -207,14 +208,14 @@
 #' # Save bar chart
 #' ggsave("LCA_4-Class.png", dpi = 600, width = 6, height = 4)
 #' }
-result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p = TRUE,
-                       plot = FALSE, group.ind = TRUE, ci = TRUE, conf.level = 0.95, adjust = TRUE,
-                       axis.title = 7, axis.text = 7, levels = NULL, labels = NULL,
-                       ylim = NULL, ylab = "Mean Value", breaks = ggplot2::waiver(),
-                       errorbar.width = 0.1, legend.title = 7, legend.text = 7,
-                       legend.key.size = 0.4, gray = FALSE, start = 0.15, end = 0.85,
-                       dpi = 600, width = "n.ind", height = 4, digits = 1, p.digits = 3,
-                       write = NULL, append = TRUE, check = TRUE, output = TRUE) {
+mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p = TRUE,
+                            plot = FALSE, group.ind = TRUE, ci = TRUE, conf.level = 0.95, adjust = TRUE,
+                            axis.title = 7, axis.text = 7, levels = NULL, labels = NULL,
+                            ylim = NULL, ylab = "Mean Value", breaks = ggplot2::waiver(),
+                            errorbar.width = 0.1, legend.title = 7, legend.text = 7,
+                            legend.key.size = 0.4, gray = FALSE, start = 0.15, end = 0.85,
+                            dpi = 600, width = "n.ind", height = 4, digits = 1, p.digits = 3,
+                            write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -636,7 +637,7 @@ result.lca <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p =
   # Return object --------------------------------------------------------------
 
   object <- list(call = match.call(),
-                 type = "result.lca",
+                 type = "mplus.lca.summa",
                  output = lca.out,
                  args = list(folder = folder, exclude = exclude, sort.n = sort.n, sort.p = sort.p,
                              plot = plot, ci = ci, conf.level = conf.level, adjust = adjust,

@@ -998,7 +998,7 @@ item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
   itemstat <- misty::descript(x[, var], output = FALSE)$result[, c("variable", "n", "nNA", "pNA", "m", "sd", "min", "max", "skew", "kurt")]
 
   # Frequency table
-  itemfreq <- misty::freq(x[, var], val.col = TRUE, exclude = 9999, output = FALSE)$result
+  itemfreq <- suppressWarnings(misty::freq(x[, var], val.col = TRUE, exclude = 9999, output = FALSE)$result)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model specification ####
@@ -1204,16 +1204,19 @@ item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
                                  # Optimization method
                                  toupper(lavaan::lavTech(model.fit, what = "options")$optim.method), "",
                                  # Test statistic
-                                 switch(lavaan::lavTech(model.fit, what = "options")$test,
+                                 switch(lavaan::lavTech(model.fit, what = "options")$test |> (\(p) if (isTRUE(length(p) != 1L)) { misty::chr.omit(p, omit = "standard") } else { p })(),
                                         "standard" = "Conventional",
                                         "satorra.bentler" = "Satorra-Bentler",
                                         "scaled.shifted" = "Scale-Shifted",
                                         "mean.var.adjusted" = "Satterthwaite",
-                                        "yuan.bentler.mplus" = "Yuan-Bentler"),
+                                        "yuan.bentler.mplus" = "Yuan-Bentler",
+                                        "browne.residual.adf" = "Browne's Residual-Based ADF Theory",
+                                        "browne.residual.nt" = "Browne's Residual-Based Normal Theory"),
                                  # Standard errors
                                  switch(lavaan::lavTech(model.fit, what = "options")$se,
                                         "standard" = "Conventional",
                                         "robust.sem" = "Conventional Robust",
+                                        "robust.sem.nt" = "Conventional Robust",
                                         "robust.huber.white" = "Huber-White",
                                         "robust.cluster" = "Cluster-Robust H-W",
                                         "robust.cluster.sem" = "Cluster-Robust Conven",

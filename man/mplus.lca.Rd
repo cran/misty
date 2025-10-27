@@ -261,9 +261,9 @@ in hierarchical data. \emph{Journal of Work and Organizational Psychology, 32}(4
 489-505. https://doi.org/10.1080/1359432X.2023.2177537
 }
 \seealso{
-\code{\link{read.mplus}}, \code{\link{write.mplus}}, \code{\link{mplus}},
-\code{\link{mplus.update}}, \code{\link{mplus.print}}, \code{\link{mplus.plot}},
-\code{\link{mplus.bayes}}, \code{\link{mplus.run}}
+\code{\link{mplus.lca.summa}}, \code{\link{read.mplus}}, \code{\link{write.mplus}},
+\code{\link{mplus}}, \code{\link{mplus.update}}, \code{\link{mplus.print}},
+\code{\link{mplus.plot}}, \code{\link{mplus.bayes}}, \code{\link{mplus.run}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -58,7 +58,7 @@ Currently the function supports result objects from the following functions:
 \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
 \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}},
 \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-\code{\link{na.pattern}}, \code{\link{result.lca}},
+\code{\link{na.pattern}}, \code{\link{mplus.lca.summa}},
 \code{\link{summa}} and \code{\link{uniq}}
 }
 \examples{

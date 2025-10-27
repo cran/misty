@@ -6308,6 +6308,90 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
+# Internal functions for the indirect() function -------------------------------
+#
+# - .qprodnormalMeeker
+
+.qprodnormalMeeker <- function(p, a, b, se.a, se.b, lower.tail = TRUE) {
+
+  max.iter <- 10000L
+
+  mu.a <- a / se.a
+  mu.b <- b / se.b
+
+  se.ab <- sqrt(1L + mu.a^2L + mu.b^2L)
+
+  if (isTRUE(lower.tail == FALSE)) {
+
+    u0 <- mu.a*mu.b + 6L*se.ab
+    l0 <- mu.a*mu.b - 6L*se.ab
+    alpha <- 1L - p
+
+  } else {
+
+    l0 <- mu.a*mu.b - 6L*se.ab
+    u0 <- mu.a*mu.b + 6L*se.ab
+    alpha <- p
+
+  }
+
+  gx <- function(x, z) {
+
+    mu.a.on.b <- mu.a
+    integ <- pnorm(sign(x)*(z / x - mu.a.on.b))*dnorm(x - mu.b)
+
+    return(integ)
+
+  }
+
+  fx <- function(z) {
+
+    return(integrate(gx, lower = -Inf, upper = Inf, z = z)$value - alpha)
+
+  }
+
+  p.l <- fx(l0)
+  p.u <- fx(u0)
+  iter <- 0L
+
+  while (p.l > 0L) {
+
+    iter <- iter + 1L
+    l0 <- l0 - 0.5*se.ab
+    p.l <- fx(l0)
+
+    if (iter > max.iter) {
+
+      return(list(q = NA, error = NA))
+
+    }
+
+  }
+
+  iter <- 0L
+  while (p.u < 0L) {
+
+    iter <- iter + 1L
+    u0 <- u0 + 0.5*se.ab
+    p.u <- fx(u0)
+
+    if (iter > max.iter) {
+
+      return(list(q = NA,error = NA))
+
+    }
+
+  }
+
+  new <- uniroot(fx, c(l0, u0))$root*se.a*se.b |> (\(p) if (isTRUE(is.list(p))) { NA } else { p })()
+
+  return(new)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
 # Internal functions for the item.alpha() and item.omega() function ------------
 #
 # - .alpha.omega

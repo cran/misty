@@ -218,6 +218,7 @@ coeff.robust(mod.lm, write = "Robust_Coef.xlsx", output = FALSE)
 \references{
 Angrist, J. D., & Pischke, J.-S. (2008). \emph{Mostly harmless econometrics:
 An empiricist’s companion}. Princeton university press.
+
 Bell, R. M., & McCaffrey, D. F. (2002). Bias reduction in standard errors for
 linear regression with multi-stage samples. \emph{Survey Methodology, 28}(2),
 169-181

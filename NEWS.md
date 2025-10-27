@@ -1,4 +1,15 @@
-### misty 0.7.5 (2025-09-06)
+### misty 0.7.6 (2025-10-25)
+
+##### User-visible changes
+* Renamed the function `result.lca()` to `mplus.lca.summa()`.
+* Changed the default setting of the argument `print` in the function `indirect` to `mc`.
+* Removed the argument `between` in the function `multilevel.cor()`, i.e., the 
+function automatically identifies variables that are measured at the between level.
+
+##### Bug fix
+* Function `item.cfa()` and `multilevel.cfa()` adapted to the recent changes in the lavaan package (requested by Yves Rosseel).
+
+### misty 0.7.5 (2025-09-05)
 
 ##### New features
 * New function `robust.lmer()` to estimate a multilevel and linear mixed-effects 

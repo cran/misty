@@ -14,7 +14,7 @@
 #' \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
 #' \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}},
 #' \code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
-#' \code{\link{na.pattern}}, \code{\link{result.lca}}, \
+#' \code{\link{na.pattern}}, \code{\link{mplus.lca.summa}}, \
 #' \code{\link{summa}} and \code{\link{uniq}}
 #'
 #' @param x           misty object (\code{misty.object}) resulting from a misty
@@ -84,7 +84,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   if (isTRUE(!inherits(x, "misty.object"))) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is supported by the function
-  if (isTRUE(!x$type %in% c("blimp.bayes", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "coeff.robust", "coeff.std", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "result.lca", "robust.lmer", "summa", "uniq"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
+  if (isTRUE(!x$type %in% c("blimp.bayes", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "coeff.robust", "coeff.std", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "mplus.lca.summa", "robust.lmer", "summa", "uniq"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -1607,11 +1607,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     } else if (isTRUE(!is.null(x$data$split))) {
 
       # Round
-      for (i in names(write.object)) {
-
-        write.object[[i]][, write.round] <- sapply(write.round, function(y) ifelse(!is.na(write.object[[i]][, y]), round(write.object[[i]][, y], digits = digits), NA))
-
-      }
+      for (i in names(write.object)) { write.object[[i]][, write.round] <- sapply(write.round, function(y) ifelse(!is.na(write.object[[i]][, y]), round(write.object[[i]][, y], digits = digits), NA)) }
 
       #......
       # No grouping
@@ -1623,7 +1619,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
         print <- match(x$args$print, names(write.object[[1]]))
 
         # Variable names
-        write.object <- lapply(write.object, function(y) misty::df.rename(y, from = names(y), to = c("Variable", "n", "nNA", "%NA", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")))
+        write.object <- lapply(write.object, function(y) misty::df.rename(y, from = names(y), to = c("Variable", "n", "nNA", "%NA", "nUQ", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")))
 
         # One variable
         if (isTRUE(ncol(x$data$x) == 1L)) {
@@ -3452,8 +3448,8 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Result Table for LCA Estimated in Mplus, result.lca() ----------------------
-  }, result.lca = {
+  # Result Table for LCA Estimated in Mplus, mplus.lca.summa() -----------------
+  }, mplus.lca.summa = {
 
     #...................
     ### Result tables ####
