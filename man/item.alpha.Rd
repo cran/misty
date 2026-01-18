@@ -49,7 +49,7 @@ ordinal coefficient alpha.}
 
 \item{missing}{a character string indicating how to deal with missing data.
 (see 'Details' in the \code{\link{item.cfa}} function). By
-default, pairwise deletion (\code{missing = "pairwise"}) is
+default, listwise deletion (\code{missing = "listwise"}) is
 used for computing (hierarchical) coefficient alpha and
 ordinal coefficient alpha. Full information maximum
 likelihood method is available for estimating (hierarchical)
@@ -104,7 +104,7 @@ This function computes point estimate and confidence interval for the coefficien
 alpha (aka Cronbach's alpha), hierarchical alpha, and ordinal alpha (aka categorical
 alpha) along with standardized factor loadings and alpha if item deleted. By
 default, the function computes coefficient alpha based on unweighted least
-squares (ULS) parameter estimates using pairwise deletion in the presence of
+squares (ULS) parameter estimates using liswise deletion in the presence of
 missing data that provides equivalent results compared to the formula-based
 coefficient alpha computed by using e.g. the \code{alpha} function in the
 \pkg{psych} package by William Revelle (2025).
@@ -140,13 +140,10 @@ Computation of the hierarchical and ordinal alpha is based on the
 dat <- data.frame(item1 = c(3, NA, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 2, 2, 1, 3, 1),
                   item3 = c(4, 2, 4, 2, 1, 3, 4, 1), item4 = c(4, 1, 2, 2, 1, 3, 4, 3))
 
-# Example 1a: Coefficient alpha, pairwise deletion
+# Example 1a: Coefficient alpha, listwise deletion
 item.alpha(dat)
 
-# Example 1b: Coefficient alpha, listwise deletion
-item.alpha(dat, missing = "listwise")
-
-# Example 1c: Coefficient alpha, Full information maximum likelihood method
+# Example 1b: Coefficient alpha, Full information maximum likelihood method
 item.alpha(dat, estimator = "ML", missing = "fiml")
 
 # Example 2: Coefficient alpha and item statistics after excluding item3

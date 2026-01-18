@@ -195,11 +195,11 @@ descript <- function(data, ...,
     # Extract data and convert tibble into data frame or vector
     x <- data[, .var.names(data = data, ..., group = group, split = split), drop = FALSE] |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(p)) == 1L)) { unname(unlist(p)) } else { as.data.frame(p) } } else { p })()
 
-    # Grouping variable
-    if (isTRUE(!is.null(group))) { group <- data[, group] }
+    # Extract grouping variable and convert tibble into a vector
+    if (isTRUE(!is.null(group))) { group <- data[, group] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
-    # Splitting variable
-    if (isTRUE(!is.null(split))) { split <- data[, split] }
+    # Extract splitting variable and convert tibble into a vector
+    if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
@@ -225,10 +225,6 @@ descript <- function(data, ...,
 
   # Variables in 'x'
   if (isTRUE(ncol(as.data.frame(x)) == 0L)) { stop("No variable left for analysis after excluding the grouping and/or split variable.", call. = FALSE) }
-
-  # Convert 'group' and 'split' as tibble into a vector
-  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
-  if (!is.null(split) && isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { split <- unname(unlist(split)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Exclude Non-Numeric Variables ####

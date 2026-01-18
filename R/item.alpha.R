@@ -1,33 +1,13 @@
 #' Coefficient Alpha, Hierarchical Alpha, and Ordinal Alpha
 #'
-#' This function computes point estimate and confidence interval for the coefficient
-#' alpha (aka Cronbach's alpha), hierarchical alpha, and ordinal alpha (aka categorical
-#' alpha) along with standardized factor loadings and alpha if item deleted. By
-#' default, the function computes coefficient alpha based on unweighted least
-#' squares (ULS) parameter estimates using pairwise deletion in the presence of
-#' missing data that provides equivalent results compared to the formula-based
-#' coefficient alpha computed by using e.g. the \code{alpha} function in the
-#' \pkg{psych} package by William Revelle (2025).
-#'
-#' Coefficient alpha is computed by conducting a confirmatory factor analysis based
-#' on the essentially tau-equivalent measurement model (Graham, 2006) using the
-#' \code{cfa()} function in the \pkg{lavaan} package by Yves Rosseel (2019).
-#' Approximate confidence intervals are computed using the procedure by Feldt,
-#' Woodruff and Salih (1987). Note that there are at least 10 other procedures
-#' for computing the confidence interval (see Kelley and Pornprasertmanit, 2016),
-#' which are implemented in the \code{ci.reliability()} function in the
-#' \pkg{MBESSS} package by Ken Kelley (2019)
-#'
-#' Ordinal coefficient alpha was introduced by Zumbo, Gadermann and  Zeisser (2007).
-#' Note that Chalmers (2018) highlighted that the categorical coefficient alpha
-#' should be interpreted only as a hypothetical estimate of an alternative reliability,
-#' whereby a test's ordinal categorical response options have be modified to include
-#' an infinite number of ordinal response options and concludes that coefficient
-#' alpha should not be reported as a measure of a test's reliability. However, Zumbo
-#' and Kroc (2019) argued that Chalmers' critique of categorical coefficient alpha
-#' is unfounded and that categorical coefficient alpha may be the most appropriate
-#' quantifier of reliability when using Likert-type measurement to study a latent
-#' continuous random variable.
+#' This function computes point estimate and confidence interval for the
+#' coefficient alpha (aka Cronbach's alpha), hierarchical alpha, and ordinal
+#' alpha (aka categorical alpha) along with standardized factor loadings and
+#' alpha if item deleted. By default, the function computes coefficient alpha
+#' based on unweighted least squares (ULS) parameter estimates using listwise
+#' deletion in the presence of missing data that provides equivalent results
+#' compared to the formula-based coefficient alpha computed by using e.g. the
+#' \code{alpha} function in the \pkg{psych} package by William Revelle (2025).
 #'
 #' @param data       a data frame. Note that at least two items are needed for
 #'                   computing coefficient alpha
@@ -58,12 +38,12 @@
 #'                   ordinal coefficient alpha.
 #' @param missing    a character string indicating how to deal with missing data.
 #'                   (see 'Details' in the \code{\link{item.cfa}} function). By
-#'                   default, pairwise deletion (\code{missing = "pairwise"}) is
+#'                   default, listwise deletion (\code{missing = "lisetwise"}) is
 #'                   used for computing (hierarchical) coefficient alpha and
 #'                   ordinal coefficient alpha. Full information maximum
 #'                   likelihood method is available for estimating (hierarchical)
-#'                   coefficient alpha and is requested by specifying \code{missing = "fiml"}
-#'                   along with \code{estimator = "ML"}.
+#'                   coefficient alpha and is requested by specifying
+#'                   \code{missing = "fiml"} along with \code{estimator = "ML"}.
 #' @param print      a character vector indicating which results to show, i.e.
 #'                   \code{"all"} for all results \code{"alpha"} (default) for
 #'                   the coefficient alpha, and \code{"item"} for item statistics.
@@ -87,6 +67,27 @@
 #' @param check      logical: if \code{TRUE} (default), argument specification
 #'                   is checked.
 #' @param output     logical: if \code{TRUE} (default), output is shown.
+#'
+#' @details
+#' Coefficient alpha is computed by conducting a confirmatory factor analysis based
+#' on the essentially tau-equivalent measurement model (Graham, 2006) using the
+#' \code{cfa()} function in the \pkg{lavaan} package by Yves Rosseel (2019).
+#' Approximate confidence intervals are computed using the procedure by Feldt,
+#' Woodruff and Salih (1987). Note that there are at least 10 other procedures
+#' for computing the confidence interval (see Kelley and Pornprasertmanit, 2016),
+#' which are implemented in the \code{ci.reliability()} function in the
+#' \pkg{MBESSS} package by Ken Kelley (2019)
+#'
+#' Ordinal coefficient alpha was introduced by Zumbo, Gadermann and  Zeisser (2007).
+#' Note that Chalmers (2018) highlighted that the categorical coefficient alpha
+#' should be interpreted only as a hypothetical estimate of an alternative reliability,
+#' whereby a test's ordinal categorical response options have be modified to include
+#' an infinite number of ordinal response options and concludes that coefficient
+#' alpha should not be reported as a measure of a test's reliability. However, Zumbo
+#' and Kroc (2019) argued that Chalmers' critique of categorical coefficient alpha
+#' is unfounded and that categorical coefficient alpha may be the most appropriate
+#' quantifier of reliability when using Likert-type measurement to study a latent
+#' continuous random variable.
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -160,13 +161,10 @@
 #' dat <- data.frame(item1 = c(3, NA, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 2, 2, 1, 3, 1),
 #'                   item3 = c(4, 2, 4, 2, 1, 3, 4, 1), item4 = c(4, 1, 2, 2, 1, 3, 4, 3))
 #'
-#' # Example 1a: Coefficient alpha, pairwise deletion
+#' # Example 1a: Coefficient alpha, listwise deletion
 #' item.alpha(dat)
 #'
-#' # Example 1b: Coefficient alpha, listwise deletion
-#' item.alpha(dat, missing = "listwise")
-#'
-#' # Example 1c: Coefficient alpha, Full information maximum likelihood method
+#' # Example 1b: Coefficient alpha, Full information maximum likelihood method
 #' item.alpha(dat, estimator = "ML", missing = "fiml")
 #'
 #' # Example 2: Coefficient alpha and item statistics after excluding item3
@@ -229,24 +227,9 @@ item.alpha <- function(data, ..., rescov = NULL, type = c("alpha", "hierarch", "
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Numeric Variables ####
+  ## Non-Numeric Variables ####
 
-  # Non-numeric variables
-  x <- (!vapply(x, function(z) is.numeric(z) | is.ordered(z), FUN.VALUE = logical(1L))) |>
-    (\(y) if (isTRUE(any(y))) {
-
-      return(x[, -which(y), drop = FALSE])
-
-      warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(y)), collapse = ", ")), call. = FALSE)
-
-      # Variables left
-      if (isTRUE(all(y))) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
-
-    } else {
-
-      return(x)
-
-    })()
+  x <- .exclude.non.numeric(x, func = "alpha")
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Exclude Items ####
@@ -275,9 +258,6 @@ item.alpha <- function(data, ..., rescov = NULL, type = c("alpha", "hierarch", "
 
     ## Check input 'data' ##
 
-    # At least three items
-    if (isTRUE(ncol(x) < 2L)) { stop("Please specify at least two items to compute coefficient alpha.", call. = FALSE) }
-
     # Zero variance
     if (isTRUE(nrow(x) != ncol(x))) { vapply(as.data.frame(x), function(y) length(na.omit(unique(y))) == 1L, FUN.VALUE = logical(1L)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Following variables in the data frame specified in 'data' have zero variance: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })() }
 
@@ -301,6 +281,10 @@ item.alpha <- function(data, ..., rescov = NULL, type = c("alpha", "hierarch", "
 
     }
 
+    ## Check input 'estimator' and 'missing'
+    if (isTRUE(all(estimator == "ULS") && all(missing == "pairwise"))) { stop("Pairwise deletion is not available when estimator = \"ULS\".", call. = FALSE) }
+    if (isTRUE(all(estimator == "DWLS") && all(missing == "pairwise"))) { stop("Pairwise deletion is not available when estimator = \"DWLS\".", call. = FALSE) }
+
   }
 
   #_____________________________________________________________________________
@@ -315,16 +299,17 @@ item.alpha <- function(data, ..., rescov = NULL, type = c("alpha", "hierarch", "
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Estimator ####
 
+  #...................
+  ### Coefficient Alpha or Hierarchical Alpha ####
+
   # Coefficient alpha for continuous Items or hierarchical alpha
   if (isTRUE(type %in% c("alpha", "hierarch"))) {
 
-    if (isTRUE(all(c("ML", "GLS", "WLS", "DWLS", "ULS", "PML") %in% estimator))) {
+    if (isTRUE(all(c("ML", "GLS", "WLS", "DWLS", "ULS", "PML") %in% estimator))) { estimator <- "ULS" }
 
-      estimator <- "ULS"
+  #...................
+  ### Categorical Coefficient Alpha ####
 
-    }
-
-  # Categorical alpha
   } else {
 
     if (isTRUE(all(c("ML", "GLS", "WLS", "DWLS", "ULS", "PML") %in% estimator))) {
@@ -342,18 +327,16 @@ item.alpha <- function(data, ..., rescov = NULL, type = c("alpha", "hierarch", "
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Missing Data ####
 
-  ### Coefficient alpha for continuous Items or hierarchical alpha ###
+  #...................
+  ### Coefficient Alpha or Hierarchical Alpha ####
+
   if (isTRUE(type %in% c("alpha", "hierarch"))) {
 
     if (isTRUE(any(is.na(x)))) {
 
       if (isTRUE(all(c("listwise", "pairwise", "fiml") %in% missing))) {
 
-        missing <- "pairwise"
-
-      } else if (isTRUE(missing == "listwise")) {
-
-        if (any(is.na(x))) { assign("x", na.omit(x)) |> (\(y) warning(paste("Listwise deletion of incomplete data, number of cases removed from the analysis:", length(attributes(y)$na.action)), call. = FALSE))() }
+        missing <- "listwise"
 
       } else if (isTRUE(missing == "fiml" && estimator != "ML")) {
 
@@ -369,24 +352,22 @@ item.alpha <- function(data, ..., rescov = NULL, type = c("alpha", "hierarch", "
 
     }
 
-  ### Categorical alpha ###
+  #...................
+  ### Categorical Alpha ####
+
   } else {
 
     if (isTRUE(any(is.na(x)))) {
 
       if (isTRUE(all(c("listwise", "pairwise", "fiml") %in% missing))) {
 
-        missing <- "pairwise"
-
-      } else if (isTRUE(missing == "listwise")) {
-
-        if (any(is.na(x))) { assign("x", na.omit(x)) |> (\(y) warning(paste("Listwise deletion of incomplete data, number of cases removed from the analysis:", length(attributes(y)$na.action)), call. = FALSE))() }
+        missing <- "listwise"
 
       } else if (isTRUE(missing == "fiml")) {
 
-        missing <- "pairwise"
+        missing <- "listwise"
 
-        warning("FIML method is not available for estimator = \"ML\", argument 'missing' switched to \"pairwise\".", call. = FALSE)
+        warning("FIML method is not available for estimator = \"ML\", argument 'missing' switched to \"listwise\".", call. = FALSE)
 
       }
 
@@ -416,7 +397,7 @@ item.alpha <- function(data, ..., rescov = NULL, type = c("alpha", "hierarch", "
 
   alpha.mod <- suppressWarnings(.alpha.omega(y = x, alpha = TRUE, y.rescov = rescov, y.type = type, y.std = std, estimator = estimator, missing = missing, check = TRUE))
 
-  alpha.x <- data.frame(n = lavaan::lavInspect(alpha.mod$mod.fit, "nobs"), items = ncol(lavaan::lavInspect(alpha.mod$mod.fit, "data")), alpha = alpha.mod$coef.alpha.omega)
+  alpha.x <- data.frame(n = lavaan::lavInspect(alpha.mod$mod.fit, "nobs"), nNA = nrow(x) - lavaan::lavInspect(alpha.mod$mod.fit, "nobs"), items = ncol(lavaan::lavInspect(alpha.mod$mod.fit, "data")), alpha = alpha.mod$coef.alpha.omega)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Confidence Interval ####

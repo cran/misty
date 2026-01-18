@@ -11,18 +11,12 @@
 #' @param data         a data frame.
 #' @param ...          an expression indicating the variable names in \code{data},
 #'                     e.g., \code{multilevel.cor(dat, x1, x2, x3)}. Note that
-#'                     the operators \code{+}, \code{-}, \code{~},
-#'                     \code{:}, \code{::}, and \code{!} can also be used to
-#'                     select variables, see 'Details' in the \code{\link{df.subset}}
-#'                     function.
+#'                     the operators \code{+}, \code{-}, \code{~}, \code{:},
+#'                     \code{::}, and \code{!} can also be used to select variables,
+#'                     see 'Details' in the \code{\link{df.subset}} function.
 #' @param cluster      either a character string indicating the variable name of
 #'                     the cluster variable in \code{data} or a vector representing
 #'                     the nested grouping structure (i.e., group or cluster variable).
-#' @param within       a character vector representing variables that are measured
-#'                     at the within level and modeled only at the within level.
-#'                     Variables not mentioned in \code{within} are measured at
-#'                     the within level and will be modeled on both the within
-#'                     and between level.
 #' @param estimator    a character string indicating the estimator to be used, i.e.,
 #'                     \code{"ML"} for maximum likelihood with conventional
 #'                     standard errors and \code{"MLR"} for maximum likelihood with
@@ -30,6 +24,9 @@
 #'                     depends on the argument \code{sig}, i.e., \code{"ML"} is
 #'                     used when specifying \code{sig = FALSE} (default) and
 #'                     \code{"MLR"} is used when specifying \code{sig = TRUE}.
+#' @param constr.var   logical: if \code{TRUE}, inequality constraints are imposed
+#'                     for the variance parameters at the between level, i.e.,
+#'                     variances are constrained to be greater than 0.
 #' @param optim.method a character string indicating the optimizer, i.e.,
 #'                     \code{"nlminb"} (default) for the unconstrained and
 #'                     bounds-constrained quasi-Newton method optimizer and
@@ -101,17 +98,14 @@
 #'
 #' @details
 #' \describe{
-#' \item{\strong{Within-Group and Between-Group Variables}}{The specification of
-#' the within-group and between-group variables is in line with the syntax in Mplus.
-#' That is, the \code{within} argument is used to identify variables in the data
-#' frame specified in \code{data} that are measured at the individual level and
-#' modeled only at the within level. They are specified to have no variance in
-#' the between part of the model. Note that the function automatically identifies
-#' variables in the data frame  specified in \code{data} that are measured at the
-#' cluster level and modeled only at the between level, i.e., these variables do
-#' not have any variance within clusters. Variables not mentioned in the arguments
-#' \code{within} are measured at the individual level and will be modeled at both
-#' the within and between level.}
+#' \item{\strong{Within-Group and Between-Group Variables}}{The function automatically
+#' identifies (1) variables in the data frame specified in \code{data} that are
+#' measured at the individual level and modeled only at the within level and (2)
+#' variables in the data frame specified in \code{data} that are measured at the
+#' cluster level and modeled only at the between level. The former variables have
+#' no variance in the between part of the model (i.e., ICC(1) is 0 e.g. due to
+#' centering within clusters), while the latter variables do not have any variance
+#' within cluster.}
 #' \item{\strong{Estimation Method and Missing Data Handling}}{The default setting
 #' for the argument \code{estimator} is depending on the setting of the argument
 #' \code{sig}. If \code{sig = FALSE} (default), maximum likelihood estimation
@@ -231,13 +225,7 @@
 #' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster", order = TRUE)
 #'
 #' #----------------------------------------------------------------------------
-#' # Example 8: Variables "y1", "y2", and "y2" modeled only at the within level
-#' # Variables "w1" and "w2" modeled at the cluster level
-#' multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
-#'                within = c("y1", "y2", "y3"))
-#'
-#' #----------------------------------------------------------------------------
-#' # Example 9: lavaan model and summary of the multilevel model used to compute the
+#' # Example 8: lavaan model and summary of the multilevel model used to compute the
 #' # within-group and between-group correlation matrix
 #'
 #' mod <- multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", output = FALSE)
@@ -251,16 +239,16 @@
 #' #----------------------------------------------------------------------------
 #' # Write Results
 #'
-#' # Example 10a: Write Results into a text file
+#' # Example 9a: Write Results into a text file
 #' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
 #'                write = "Multilevel_Correlation.txt")
 #'
-#' # Example 10b: Write Results into a Excel file
+#' # Example 9b: Write Results into a Excel file
 #' multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
 #'                write = "Multilevel_Correlation.xlsx")
 #' }
-multilevel.cor <- function(data, ..., cluster, within = NULL,
-                           estimator = c("ML", "MLR"), optim.method = c("nlminb", "em"),
+multilevel.cor <- function(data, ..., cluster, estimator = c("ML", "MLR"),
+                           constr.var = FALSE, optim.method = c("nlminb", "em"),
                            optim.switch = TRUE, missing = c("listwise", "fiml"),
                            sig = FALSE, alpha = 0.05, print = c("all", "cor", "se", "stat", "p"),
                            split = FALSE, order = FALSE, tri = c("both", "lower", "upper"),
@@ -290,8 +278,8 @@ multilevel.cor <- function(data, ..., cluster, within = NULL,
     # Extract data
     x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
 
-    # Cluster variable
-    cluster <- data[, cluster]
+    # Extract cluster variable and convert tibble into data frame or vector
+    cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
@@ -311,9 +299,6 @@ multilevel.cor <- function(data, ..., cluster, within = NULL,
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
-
-  # Convert 'cluster' as tibble into a vector
-  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
@@ -342,6 +327,11 @@ multilevel.cor <- function(data, ..., cluster, within = NULL,
 
   between <- names(which(vapply(x, function(y) all(tapply(y, cluster, var, na.rm = TRUE) < .Machine$double.eps^0.5), FUN.VALUE = logical(1L)))) |> (\(p) if (isTRUE(length(p) == 0)) { NULL } else { p })()
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Within Variables ####
+
+  within <- names(which(suppressWarnings(misty::multilevel.icc(x[, setdiff(colnames(x), between)], cluster = unlist(cluster))) < .Machine$double.eps^0.5))
+
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
@@ -352,38 +342,6 @@ multilevel.cor <- function(data, ..., cluster, within = NULL,
                m.character = list(print = c("all", "cor", "se", "stat", "p")),
                args = c("alpha", "p.adj", "digits", "p.digits", "write2"),
                package = "lavaan", envir = environment(), input.check = check)
-
-  # Within- and Between-Group Variables Check
-  if (isTRUE(check)) {
-
-    # Variables in 'within' and 'between'
-    intersect(within, between) |> (\(y) if (isTRUE(length(y) > 0L)) { stop(paste0("Following ", ifelse(length(y) == 1L, "variable is ", "variables are "), "specified in both arguments 'within' and 'between': ", paste(y, collapse = ", ")), call. = FALSE) })()
-
-    #...................
-    ### Within-Group Variable ####
-
-    # Within variables in 'data'
-    (!within %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0(ifelse(length(which(y)) == 1L, "Variable ", "Variables "), "specified in the argument 'within' ", ifelse(length(which(y)) == 1L, "was ", "were "), "not found in 'data': ", paste(within[which(y)], collapse = ", ")), call. = FALSE) })()
-
-    # Variance within clusters
-    vapply(x[, within, drop = FALSE], function(y) all(tapply(y, cluster, var, na.rm = TRUE) < .Machine$double.eps^0.5), FUN.VALUE = logical(1L)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Following within-group ", ifelse(length(which(y)) == 1L, "variable has ", "variables have "), "no variance within clusters: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
-
-    #...................
-    ### Between-Group Variable ####
-
-    # Between variables in 'data'
-    (!between %in% colnames(x)) |> (\(y) if (isTRUE(any(y))) { stop(paste0(ifelse(length(which(y)) == 1L, "Variable ", "Variables "), "specified in the argument 'between' ", ifelse(length(which(y)) == 1L, "was ", "were "), "not found in 'data': ", paste(between[which(y)], collapse = ", ")), call. = FALSE) })()
-
-    # Variance within clusters
-    vapply(x[, between, drop = FALSE], function(y) any(tapply(y, cluster, var, na.rm = TRUE) != 0L), FUN.VALUE = logical(1L)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Following between-group ", ifelse(length(which(y)) == 1L, "variable has ", "variables have "), "variance within clusters: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
-
-    #...................
-    ### Within-/Between-Group Variable ####
-
-    # Variance between clusters
-    vapply(x[, setdiff(colnames(x), c(within, between)), drop = FALSE], function(y) misty::multilevel.icc(y, cluster = cluster) < .Machine$double.eps^0.5, FUN.VALUE = logical(1L)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Following ", ifelse(length(which(y)) == 1L, "variable has ", "variables have "), "no variance between clusters and should be specified in the 'within' argument: ", paste(names(which(y)), collapse = ", ")), call. = FALSE) })()
-
-  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Within-Group and Between Variables ####
@@ -505,32 +463,45 @@ multilevel.cor <- function(data, ..., cluster, within = NULL,
   # At least two within- and two between-group variables
   if (isTRUE(length(var.with) >= 2L && length(var.betw) >= 2L)) {
 
-    mod <- paste(" level: 1\n  ",
-                 # Within model
+    mod <- paste("  # Within model\n",
+                 " level: 1\n  ",
                  paste(apply(combn(length(var.with), 2L), 2L, function(y) paste(var.with[y[1L]], var.with[y[2L]], sep = " ~~ " )), collapse = "\n   "),
-                 "\n level: 2\n  ",
-                 # Between model
+                 "\n\n  # Between model\n",
+                 " level: 2\n  ",
                  paste(apply(combn(length(var.betw), 2L), 2L, function(y) paste(var.betw[y[1L]], var.betw[y[2L]], sep = " ~~ " )), collapse = "\n   "))
 
   # At least two within-group variable, but only one between-group variable
   } else if (isTRUE(length(var.with) >= 2L && length(var.betw) == 1L)){
 
-    mod <- paste(" level: 1\n  ",
-                 # Within model
+    mod <- paste("  # Within model\n",
+                 " level: 1\n  ",
                  paste(apply(combn(length(var.with), 2L), 2L, function(y) paste(var.with[y[1L]], var.with[y[2L]], sep = " ~~ " )), collapse = "\n   "),
-                 "\n level: 2\n  ",
-                 # Between model
+                 "\n\n  # Between model\n",
+                 " level: 2\n  ",
                  paste(var.betw, var.betw, sep = " ~~ "), collapse = "\n   ")
 
-  # At least two between-group variable, but only one within-group variable
-  } else if (isTRUE(length(var.with) == 1L && length(var.betw) >= 2L)){
+  # Only one within-group variable, but at least two between-group variables
+  } else if (isTRUE(length(var.with) == 1L && length(var.betw) >= 2L)) {
 
-    mod <- paste(" level: 1\n  ",
-                 # Within model
+    mod <- paste("  # Within model\n",
+                 " level: 1\n  ",
                  paste(var.with, var.with, sep = " ~~ " ), collapse = "\n   ",
-                 "\n level: 2\n  ",
+                 "\n\n  # Between model\n",
+                 " level: 2\n  ",
                  # Between model
                  paste(apply(combn(length(var.betw), 2L), 2L, function(y) paste(var.betw[y[1L]], var.betw[y[2L]], sep = " ~~ " )), collapse = "\n   "))
+
+  }
+
+  # Inequality constraints for the variances at Level 2
+  if (isTRUE(constr.var)) {
+
+    mod <- paste(mod, "\n  ",
+                 "\n   # Variances\n  ",
+                 paste(sapply(seq_along(var.betw), function(y) paste0(var.betw[y], " ~~ V", y, "*", var.betw[y])), collapse = "\n   "), "\n  ",
+                 "\n   # Inequality constraints\n  ",
+                 paste(sapply(seq_along(var.betw), function(y) paste0("V", y, " > 0")), collapse = "\n   "), collapse = "\n")
+
 
   }
 
@@ -629,14 +600,7 @@ multilevel.cor <- function(data, ..., cluster, within = NULL,
       #...................
       ### Variance-covariance matrix of the estimated parameters ####
 
-      eigvals <- eigen(lavaan::lavInspect(model.fit, what = "vcov"), symmetric = TRUE, only.values = TRUE)$values
-
-      # Model contains equality constraints
-      model.fit.par <- lavaan::parameterTable(model.fit)$op == "=="
-
-      if (isTRUE(any(model.fit.par))) { eigvals <- rev(eigvals)[-seq_len(sum(model.fit.par))] }
-
-      if (isTRUE(min(eigvals) < .Machine$double.eps^(3L/4L))) {
+      if (isTRUE(min(eigen(lavaan::lavInspect(model.fit, what = "vcov"), symmetric = TRUE, only.values = TRUE)$values) < .Machine$double.eps^(3L/4L))) {
 
         warning("The variance-covariance matrix of the estimated parameters is not positive definite. This may be a symptom that the model is not identified.", call. = FALSE)
 
@@ -652,13 +616,13 @@ multilevel.cor <- function(data, ..., cluster, within = NULL,
     #### Within Level
     if (isTRUE(any(diag(lavaan::lavInspect(model.fit, what = "theta")$within) < 0L))) {
 
-      warning("Some estimated variances of the observed variables at the Within level are negative.", call. = FALSE)
+      warning("Some estimated variances at the Within level are negative.", call. = FALSE)
 
       check.theta.w <- FALSE
 
     } else if (isTRUE(any(eigen(lavaan::lavTech(model.fit, what = "theta")$within, symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
 
-      warning("The model-implied variance-covariance matrix of the residuals of the observed variables is not positive definite indicating an absolute residual correlations greater one.", call. = FALSE)
+      warning("The model-implied variance-covariance matrix of the residuals is not positive definite indicating an absolute residual correlations greater one.", call. = FALSE)
 
       check.theta.w <- FALSE
 
@@ -667,66 +631,15 @@ multilevel.cor <- function(data, ..., cluster, within = NULL,
     #### Between Level
     if (isTRUE(any(diag(lavaan::lavInspect(model.fit, what = "theta")$.cluster) < 0L))) {
 
-      warning("Some estimated variances of the observed variables at the Between level are negative.", call. = FALSE)
+      warning("Some estimated variances at the Between level are negative, specifying contr.var = TRUE will solve the problem.", call. = FALSE)
 
       check.theta.b <- FALSE
 
     } else if (isTRUE(any(eigen(lavaan::lavTech(model.fit, what = "theta")$.cluster, symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
 
-      warning("The model-implied variance-covariance matrix of the residuals of the observed variables at the Between level is not positive definite indicating an absolute residual correlations greater one.", call. = FALSE)
+      warning("The model-implied variance-covariance matrix of the residuals at the Between level is not positive definite indicating an absolute residual correlations greater one.", call. = FALSE)
 
       check.theta.b <- FALSE
-
-    }
-
-    #...................
-    ### Negative variance of latent variables ####
-
-    #### Within Level
-    if (isTRUE(!is.null(lavaan::lavTech(model.fit, what = "cov.lv")$within))) {
-
-      if (isTRUE(any(diag(lavaan::lavTech(model.fit, what = "cov.lv")$within) < 0L))) {
-
-        warning("Some estimated variances of the latent variables at the Within level are negative.", call. = FALSE)
-
-        check.cov.lv.w <- FALSE
-
-      }
-
-    # Model-implied variance-covariance matrix of the latent variables
-    } else if (any(dim(lavaan::lavTech(model.fit, what = "cov.lv")$within) != 0L)) {
-
-      if (isTRUE(any(eigen(lavaan::lavTech(model.fit, what = "cov.lv")$within, symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
-
-        warning("The model-implied variance-covariance matrix of the latent variables at the Within level is not positive definite indicating an absolute correlation greater one.", call. = FALSE)
-
-        check.cov.lv.w <- FALSE
-
-      }
-
-    }
-
-    #### Between Level
-    if (isTRUE(!is.null(lavaan::lavTech(model.fit, what = "cov.lv")$cluster))) {
-
-      if (isTRUE(any(diag(lavaan::lavTech(model.fit, what = "cov.lv")$.cluster) < 0L))) {
-
-        warning("Some estimated variances of the latent variables at the Between level are negative.", call. = FALSE)
-
-        check.cov.lv.b <- FALSE
-
-      }
-
-    # Model-implied variance-covariance matrix of the latent variables
-    } else if (any(dim(lavaan::lavTech(model.fit, what = "cov.lv")$.cluster) != 0L)) {
-
-      if (isTRUE(any(eigen(lavaan::lavTech(model.fit, what = "cov.lv")$.cluster, symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {
-
-        warning("The model-implied variance-covariance matrix of the latent variables at the Between level is not positive definite indicating an absolute correlation greater one.", call. = FALSE)
-
-        check.cov.lv.b <- FALSE
-
-      }
 
     }
 
@@ -968,12 +881,11 @@ multilevel.cor <- function(data, ..., cluster, within = NULL,
   object <- list(call = match.call(),
                  type = "multilevel.cor",
                  data = x,
-                 args = list(within = within, between = between, estimator = estimator, optim.method = optim.method, se = se, optim.switch = optim.switch, missing = missing, sig = sig, alpha = alpha, print = print,
+                 args = list(within = within, between = between, estimator = estimator, constr.var = constr.var, optim.method = optim.method, se = se, optim.switch = optim.switch, missing = missing, sig = sig, alpha = alpha, print = print,
                              split = split, order = order, tri = tri, tri.lower = tri.lower, p.adj = p.adj, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
                  model = mod,
                  model.fit = model.fit,
-                 check = list(vcov = check.vcov, theta.w = check.theta.w, theta.b = check.theta.b,
-                              cov.lv.w = check.cov.lv.w, cov.lv.b = check.cov.lv.b),
+                 check = list(vcov = check.vcov, theta.w = check.theta.w, theta.b = check.theta.b),
                  result = list(summary = lavaan.summary,
                                wb.cor = wb.cor, wb.se = wb.se, wb.stat = wb.stat, wb.p = wb.p,
                                with.cor = with.cor, with.se = with.se, with.stat = with.stat, with.p = with.p,

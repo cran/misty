@@ -87,8 +87,8 @@
 #'                          for not conducting bootstrapping, \code{"norm"} for
 #'                          the bias-corrected normal approximation bootstrap CI,
 #'                          \code{"basic"} for the basic bootstrap CI, \code{"perc"},
-#'                          for the percentile bootstrap CI \code{"bc"} (default)
-#'                          for the bias-corrected (BC) percentile bootstrap CI
+#'                          for the percentile bootstrap CI \code{"bc"} for the
+#'                          bias-corrected (BC) percentile bootstrap CI
 #'                          (without acceleration), and \code{"bca"} for the
 #'                          bias-corrected and accelerated (BCa) bootstrap CI.
 #' @param R                 a numeric value indicating the number of bootstrap
@@ -828,11 +828,11 @@ ci.cor <- function(data, ...,
     # Extract data and convert tibble into data frame or vector
     x <- as.data.frame(data[, .var.names(data = data, ..., group = group, split = split)])
 
-    # Grouping variable
-    if (isTRUE(!is.null(group))) { group <- data[, group] }
+    # Extract grouping variable and convert tibble into a vector
+    if (isTRUE(!is.null(group))) { group <- data[, group] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
-    # Splitting variable
-    if (isTRUE(!is.null(split))) { split <- data[, split] }
+    # Extract splitting variable and convert tibble into a vector
+    if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
@@ -855,10 +855,6 @@ ci.cor <- function(data, ...,
     if (isTRUE(!is.null(var.group$split))) { split <- var.group$split }
 
   }
-
-  # Convert 'group' and 'split' as tibble into a vector
-  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
-  if (!is.null(split) && isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { split <- unname(unlist(split)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping and Split Variable ####

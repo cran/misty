@@ -255,7 +255,7 @@
 #' @export
 #'
 #' @examples
-#' # Example 1: Perform Little's MCAR test and Jamshidian and Jalalꞌs approach
+#' # Example 1: Perform Little's MCAR test
 #' na.test(airquality)
 #'
 #' # Example 2: Perform Jamshidian and Jalalꞌs approach

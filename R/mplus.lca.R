@@ -1,16 +1,15 @@
-#' Mplus Model Specification for Latent Class Analysis
+#' Mplus Model Specification and Estimation for Latent Class Analysis
 #'
 #' This function writes Mplus input files for conducting latent class analysis (LCA)
 #' for continuous, count, ordered categorical, and unordered categorical variables.
-#' LCA with continuous indicator variables are based on six different
-#' variance-covariance structures, while LCA for all other variable types assume
-#' local independence. By default, the function conducts LCA with continuous
-#' variables and creates folders in the current working directory for each of the
-#' six sets of analysis, writes Mplus input files for conducting LCA with
-#' \emph{k} = 1 to \emph{k} = 6 classes into these folders, and writes the matrix
-#' or data frame specified in \code{x} into a Mplus data file in the current working
-#' directory. Optionally, all models can be estimated by setting the argument
-#' \code{mplus.run} to \code{TRUE}.
+#' LCA with continuous indicator variables are based on six different variance-covariance
+#' structures, while LCA for all other variable types assume local independence.
+#' By default, the function conducts LCA with continuous variables and creates
+#' folders in the current working directory for each of the six sets of analysis,
+#' writes Mplus input files for conducting LCA with \emph{k} = 1 to \emph{k} = 6
+#' classes into these folders, and writes the matrix or data frame specified in
+#' \code{x} into a Mplus data file in the current working directory. Optionally,
+#' all models can be estimated by setting the argument \code{mplus.run} to \code{TRUE}.
 #'
 #' @param x               a matrix or data frame. Note that all variable names must
 #'                        be no longer than 8 character.
@@ -23,6 +22,10 @@
 #'                        variables, and \code{"nominal"} for unordered categorical
 #'                        variables. Note that it is not possible to mix different
 #'                        variable types in the analysis.
+#' @param classes         an integer value specifying the maximum number of classes
+#'                        for the latent class analysis. By default, LCA with
+#'                        a maximum of 6 classes is specified (i.e., \emph{k} = 1
+#'                        to \emph{k} = 6).
 #' @param cluster         a character string indicating the cluster variable in
 #'                        the matrix or data frame specified in \code{x} representing
 #'                        the nested grouping structure for computing cluster-robust
@@ -40,6 +43,11 @@
 #' @param file            a character string naming the Mplus data file with or
 #'                        without the file extension '.dat', e.g., \code{"Data_LCA.dat"}
 #'                        (default) or \code{"Data_LCA"}.
+#' @param missing         a numeric value or character string representing missing
+#'                        values (\code{NA}) in the Mplus data set. This values
+#'                        or character string will be specified in the Mplus input
+#'                        file as \code{MISSING IS ALL(missing)}. By default,
+#'                        \code{-99} is used to represent missing values.
 #' @param write           a character string or character vector indicating whether
 #'                        to create the six folders specified in the argument
 #'                        \code{folder} (\code{"folder"}), to write the matrix or
@@ -51,15 +59,6 @@
 #'                        input files into the folders.
 #' @param useobservations a character string indicating the conditional statement
 #'                        to select observations.
-#' @param missing         a numeric value or character string representing missing
-#'                        values (\code{NA}) in the Mplus data set. This values
-#'                        or character string will be specified in the Mplus input
-#'                        file as \code{MISSING IS ALL(missing)}. By default,
-#'                        \code{-99} is used to represent missing values.
-#' @param classes         an integer value specifying the maximum number of classes
-#'                        for the latent class analysis. By default, LCA with
-#'                        a maximum of 6 classes is specified (i.e., \emph{k} = 1
-#'                        to \emph{k} = 6).
 #' @param estimator       a character string for specifying the \code{ESTIMATOR}
 #'                        option in Mplus. By default, the estimator \code{"MLR"}
 #'                        is used.
@@ -74,6 +73,21 @@
 #'                        in Mplus. The numeric value represents the maximum number
 #'                        of iterations allowed in the initial stage. By default,
 #'                        50 iterations are requested.
+#' @param processors      a vector of one or two integer values for specifying the
+#'                        \code{PROCESSORS} option in Mplus. The values specifies
+#'                        the number of processors and threads to be used for
+#'                        parallel computing to increase computational speed. By
+#'                        default, 8 processors and threads are used for parallel
+#'                        computing.
+#' @param boot            a character string specifying the type of bootstrap
+#'                        confidence intervals (CI), i.e., \code{"none"} (default)
+#'                        for not conducting bootstrapping, \code{"perc"},
+#'                        for the percentile bootstrap CI (i.e., Mplus command
+#'                        \code{OUTPUT: CINTERVAL (BOOTSTRAP)}), and \code{"bc"}
+#'                        for the bias-corrected (BC) percentile bootstrap CI
+#'                        (i.e., Mplus command \code{OUTPUT: CINTERVAL (BCBOOTSTRAP)}).
+#' @param R               a numeric value indicating the number of bootstrap
+#'                        replicates (default is 1000).
 #' @param lrtbootstrap    an integer value for specifying the \code{LRTBOOTSTRAP}
 #'                        option in Mplus when requesting a parametric bootstrapped
 #'                        likelihood ratio test (i.e., \code{output = "TECH14"}).
@@ -94,12 +108,6 @@
 #'                        \code{k - 1} classes model and 100 random sets of starting
 #'                        values in the initial stage and 50 optimizations in the
 #'                        final stage are used for the \code{k} class model.
-#' @param processors      a vector of one or two integer values for specifying the
-#'                        \code{PROCESSORS} option in Mplus. The values specifies
-#'                        the number of processors and threads to be used for
-#'                        parallel computing to increase computational speed. By
-#'                        default, 8 processors and threads are used for parallel
-#'                        computing.
 #' @param output          a character string or character vector specifying the
 #'                        \code{TECH} options in the \code{OUTPUT} section in Mplus,
 #'                        i.e., \code{SVALUES} to request input statements that
@@ -111,9 +119,9 @@
 #'                        estimating the model, \code{TECH11} to request the
 #'                        Lo-Mendell-Rubin likelihood ratio test of model fit,
 #'                        and \code{TECH14} to request a parametric bootstrapped
-#'                        likelihood ratio test. By default, \code{SVALUES} and
-#'                        \code{TECH11} are requested. Note that \code{TECH11}
-#'                        is only available for the \code{MLR} estimator.
+#'                        likelihood ratio test. By default, \code{SVALUES},
+#'                        \code{CINTERVAL}, and \code{TECH11} are requested.
+#'                        Note that \code{TECH11} is only available for the \code{MLR} estimator.
 #' @param replace.inp     logical: if \code{TRUE}, all existing input files in the
 #'                        folder specified in the argument \code{folder} are replaced.
 #' @param mplus.run       logical: if \code{TRUE}, all models in the folders specified
@@ -228,17 +236,19 @@
 #' }
 mplus.lca <- function(x, ind = NULL,
                       type = c("continuous", "count", "categorical", "nominal"),
-                      cluster = NULL,
+                      classes = 6,  cluster = NULL,
                       folder = c("A_Invariant-Theta_Diagonal-Sigma",
                                  "B_Varying-Theta_Diagonal-Sigma",
                                  "C_Invariant-Theta_Invariant-Unrestrictred-Sigma",
                                  "D_Invariant-Theta_Varying-Unrestricted-Sigma",
                                  "E_Varying-Theta_Invariant-Unrestricted-Sigma",
                                  "F_Varying-Theta_Varying-Unrestricted-Sigma"),
-                      file = "Data_LCA.dat", write = c("all", "folder", "data", "input"),
-                      useobservations = NULL, missing = -99, classes = 6, estimator = "MLR",
-                      starts = c(100, 50), stiterations = 10, lrtbootstrap = 1000,
-                      lrtstarts = c(0, 0, 100, 50), processors = c(8, 8),
+                      file = "Data_LCA.dat", missing = -99,
+                      write = c("all", "folder", "data", "input"),
+                      useobservations = NULL, estimator = "MLR",
+                      starts = c(100, 50), stiterations = 10, processors = c(8, 8),
+                      boot = c("none", "perc", "bc"), R = 1000,
+                      lrtbootstrap = 1000, lrtstarts = c(0, 0, 100, 50),
                       output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14"),
                       replace.inp = FALSE, mplus.run = FALSE, Mplus = "Mplus",
                       replace.out = c("always", "never", "modified"), check = TRUE) {
@@ -258,8 +268,8 @@ mplus.lca <- function(x, ind = NULL,
   .check.input(logical = c("replace.inp", "mplus.run"),
                character = list(file = 1L, folder = 6L, estimator = 1L, Mplus = 1L),
                numeric = list(classes = 1L, starts = 2L, stiterations = 1L, lrtbootstrap = 1L, lrtstarts = 4L, processors = 2L),
-               s.character = list(type = c("continuous", "count", "categorical", "nominal"), replace.out = c("always", "never", "modified")),
-               m.character = list(write = c("all", "folder", "data", "input"), output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14")), envir = environment(), input.check = check)
+               s.character = list(type = c("continuous", "count", "categorical", "nominal"), boot = c("none", "perc", "bc"), replace.out = c("always", "never", "modified")),
+               m.character = list(write = c("all", "folder", "data", "input"), output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14")), args = "R", envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
@@ -286,53 +296,42 @@ mplus.lca <- function(x, ind = NULL,
   # Data and Arguments ---------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Type ####
+  ## 'type' ####
 
-  if (isTRUE(all(c("continuous", "count", "categorical", "nominal") %in% type))) {
-
-    type <- "continuous"
-
-  } else {
-
-    if (isTRUE(length(type) != 1L)) { stop("Please specify a character string for the argument 'type'", call. = FALSE) }
-
-  }
+  if (isTRUE(all(c("continuous", "count", "categorical", "nominal") %in% type))) { type <- "continuous" }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Folder ####
+  ## 'folder' ####
 
   if (isTRUE(type != "continuous")) { folder <- paste0("LCA_1-", classes, "_Classes") }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Write ####
+  ## 'write' ####
 
   if (isTRUE(all(c("all", "folder", "data", "input") %in% write))) { write <- c("folder", "data", "input") }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Output ####
+  ## 'boot' ####
 
-  if (isTRUE(all(c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14") %in% output))) { output <- c("SVALUES", "TECH11") }
+  if (isTRUE(all(c("none", "perc", "bc") %in% boot))) { boot <- "none" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## replace.out ####
-
-  if (isTRUE(all(c("always", "never", "modified") %in% replace.out))) {
-
-    replace.out <- "modified"
-
-  } else {
-
-    if (isTRUE(length(replace.out) != 1L)) { stop("Please specify a character string for the argument 'replace.out'", call. = FALSE) }
-
-  }
+  if (isTRUE(boot != "none")) { estimator <- "ML"}
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Variabla Names ####
+  ## 'output' ####
+
+  if (isTRUE(all(c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14") %in% output))) { output <- c("SVALUES", "CINTERVAL", "TECH11") }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## 'replace.out' ####
+
+  if (isTRUE(all(c("always", "never", "modified") %in% replace.out))) { replace.out <- "modified" }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Variable Names ####
 
   # Variable names with .
-  names. <- grep("\\.", names(x))
-
-  if (isTRUE(length(names.) > 0L)) {
+  if (isTRUE(length(grep("\\.", names(x))) > 0L)) {
 
     names(x) <- gsub("\\.", "_", names(x))
 
@@ -341,13 +340,7 @@ mplus.lca <- function(x, ind = NULL,
   }
 
   # Variable names with .
-  names. <- grep("\\.", ind)
-
-  if (isTRUE(length(names.) > 0L)) {
-
-    ind <- gsub("\\.", "_", ind)
-
-  }
+  if (isTRUE(length(grep("\\.", ind)) > 0L)) { ind <- gsub("\\.", "_", ind) }
 
   # Split variables names in chucks of 8
   var.x <- split(colnames(x), ceiling(seq_along(colnames(x)) / 8L))
@@ -356,15 +349,13 @@ mplus.lca <- function(x, ind = NULL,
   ## Indicator Names ####
 
   # Number of characters
-  ind.nchar <- nchar(paste(ind, collapse = " "))
-
-  if (ind.nchar <= 70L) { ind.x <- list(ind)} else { ind.x <- split(ind, ceiling(seq_along(ind) / 7L)) }
+  if (nchar(paste(ind, collapse = " ")) <= 70L) { ind.x <- list(ind)} else { ind.x <- split(ind, ceiling(seq_along(ind) / 7L)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Indicator Covariances ####
 
   # Up to 8 indicator variables
-  if (isTRUE(ind.nchar <= 70L)) {
+  if (isTRUE(nchar(paste(ind, collapse = " ")) <= 70L)) {
 
     ind.cov <- paste0("            ", paste0(c(ind, "WITH"), collapse = " "), "\n",
                       "            ", paste0(ind, collapse = " "), ";")
@@ -402,8 +393,10 @@ mplus.lca <- function(x, ind = NULL,
                     "            CLASSES ARE c(_classes_);\n\n",
                     if (isTRUE(!is.null(cluster))) { "ANALYSIS:   TYPE IS MIXTURE COMPLEX;\n" } else { "ANALYSIS:   TYPE IS MIXTURE;\n" },
                     "            ESTIMATOR IS ", estimator, ";\n",
+                    if (isTRUE(boot != "none")) { paste0("            BOOTSTRAP IS ", R, ";\n") },
                     "            STARTS ARE ", paste0(starts, collapse = " "), ";\n",
                     "            STITERATIONS ARE ", stiterations, ";\n",
+
                     if (isTRUE("TECH14" %in% output)) { paste0("            LRTBOOTSTRAP IS ", lrtbootstrap, ";\n",
                                                                "            LRTSTARTS ARE ", paste0(lrtstarts, collapse = " "), ";\n") },
                     "            PROCESSORS ARE ", paste(processors, collapse = " "), ";\n\n")
@@ -413,6 +406,53 @@ mplus.lca <- function(x, ind = NULL,
 
   # Output for k = 1 profile
   mod.out.1C <-  paste0(misty::chr.trim(strsplit(misty::chr.gsub(c("TECH11", "TECH14"), c("", ""), mod.out), ";")), ";")
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Bootstrapping ####
+
+  if (isTRUE(boot != "none")) {
+
+    #...................
+    ### CINTERVAL in OUTPUT ####
+
+    if (isTRUE(grepl("CINTERVAL", mod.out))) {
+
+      #  Percentile bootstrap CI
+      if (boot == "perc") {
+
+        mod.out <- sub("CINTERVAL", "CINTERVAL (BOOTSTRAP)", mod.out)
+        mod.out.1C <- sub("CINTERVAL", "CINTERVAL (BOOTSTRAP)", mod.out.1C)
+
+      # Bias-corrected (BC) percentile bootstrap CI
+      } else if (boot == "bc") {
+
+        mod.out <- sub("CINTERVAL", "CINTERVAL (BCBOOTSTRAP)", mod.out)
+        mod.out.1C <- sub("CINTERVAL", "CINTERVAL (BCBOOTSTRAP)", mod.out.1C)
+
+      }
+
+    #...................
+    ### CINTERVAL NOT in OUTPUT ####
+
+    } else {
+
+      #  Percentile bootstrap CI
+      if (boot == "perc") {
+
+        mod.out <- sub(";", " CINTERVAL (BOOTSTRAP);", mod.out)
+        mod.out.1C <- sub(";", " CINTERVAL (BOOTSTRAP);", mod.out.1C)
+
+      # Bias-corrected (BC) percentile bootstrap CI
+      } else if (boot == "bc") {
+
+        mod.out <- sub(";", " CINTERVAL (BCBOOTSTRAP);", mod.out)
+        mod.out.1C <- sub(";", " CINTERVAL (BCBOOTSTRAP);", mod.out.1C)
+
+      }
+
+    }
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Continuous Indicators ####
@@ -756,13 +796,9 @@ mplus.lca <- function(x, ind = NULL,
   object <- list(call = match.call(),
                  type = "mplus.lca",
                  x = x,
-                 args = list(ind = ind, type = type, cluster = cluster, folder = folder,
-                             file = file, write = write, useobservations = useobservations,
-                             missing = missing, classes = classes, estimator = estimator,
-                             starts = starts, stiterations = stiterations, lrtbootstra = lrtbootstrap,
-                             lrtstarts = lrtstarts, processors = processors, output = output,
-                             replace.inp = replace.inp, mplus.run = mplus.run, Mplus = Mplus,
-                             replace.out = replace.out, check = check),
+                 args = list(ind = ind, type = type, classes = classes, cluster = cluster, folder = folder, file = file, missing = missing, write = write, useobservations = useobservations,
+                             estimator = estimator, boot = boot, R = R, starts = starts, stiterations = stiterations, lrtbootstra = lrtbootstrap,
+                             lrtstarts = lrtstarts, processors = processors, output = output, replace.inp = replace.inp, mplus.run = mplus.run, Mplus = Mplus, replace.out = replace.out, check = check),
                  result = mod)
 
   class(object) <- "misty.object"

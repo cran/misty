@@ -192,9 +192,9 @@ of difference-adjusted CIs.
 # Example 1: Between-subject ANOVA
 aov.b(mpg ~ gear, data = mtcars)
 
-# Example 2: Between-subject ANOVA
+# Example 2: Between-subject ANOVA, print post hoc test and effect size measures
 # print effect size measures
-aov.b(mpg ~ gear, data = mtcars, effsize = TRUE)
+aov.b(mpg ~ gear, data = mtcars, posthoc = TRUE, effsize = TRUE)
 
 # Example 3: Between-subject ANOVA
 # do not print hypotheses and descriptive statistics,

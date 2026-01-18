@@ -360,6 +360,7 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   #...................
   ### One-sample design ####
+
   if (is.null(y)) {
 
     if (isTRUE(is.null(dim(x)))) {
@@ -374,12 +375,14 @@ cohens.d.default <- function(x, y = NULL, mu = 0, paired = FALSE, weighted = TRU
 
   #...................
   ### Two-sample design ####
+
   } else if (!isTRUE(paired)) {
 
     xy <- list(x = x, y = y)
 
   #...................
   ### Paired-sample design ####
+
   } else if (isTRUE(paired)) {
 
     xy <- data.frame(x = x, y = y)

@@ -4,7 +4,7 @@
 \alias{center}
 \title{Centering Predictor Variables in Single-Level and Multilevel Data}
 \usage{
-center(data, ..., cluster = NULL, type = c("CGM", "CWC"),
+center(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
        cwc.mean = c("L2", "L3"), value = NULL, append = TRUE, name = ".c",
        as.na = NULL, check = TRUE)
 }
@@ -20,30 +20,35 @@ operators \code{+}, \code{-}, \code{~}, \code{:},
 see 'Details' in the \code{\link{df.subset}} function.}
 
 \item{cluster}{a character string indicating the name of the cluster variable
-in \code{data} for a two-level model, a character vector
-indicating the names of the cluster variables in \code{data}
-for a three-level model, or a vector or data frame representing
+in \code{data} for a two-level model (e.g., \code{cluster = "level2"}),
+a character vector indicating the names of the cluster variables
+in \code{data} for a three-level model (e.g., \code{cluster = c("level3", "level2")}),
+or a vector (e.g., \code{data$level2}) or data frame
+(e.g., \code{data[, c("level3", "level2"]}) representing
 the nested grouping structure (i.e., group or cluster variables).
-Alternatively, a character string or character vector indicating
-the variable name(s) of the cluster variable(s) in \code{data}.
 Note that the cluster variable at Level 3 come first in a
 three-level model, i.e., \code{cluster = c("level3", "level2")}.}
 
 \item{type}{a character string indicating the type of centering, i.e.,
 \code{"CGM"} for centering at the grand mean (i.e., grand mean
-centering, default when \code{cluster = NULL}) or \code{"CWC"}
-for centering within cluster (i.e., group mean centering, default
-when specifying the argument \code{cluster}).}
+centering, default when \code{cluster = NULL}), \code{"CWC"}
+for centering within clusters (i.e., group mean centering, default
+when specifying the argument \code{cluster}, or \code{"latent"}
+for the two-step latent mean centering method (see 'Details').
+Note that two-step latent mean centering method can only be
+applied to one predictor variable at a time.}
 
-\item{cwc.mean}{a character string indicating the type of centering of a level-1
+\item{cwc.mean}{a character string indicating the type of centering of a Level-1
 predictor variable in a three-level model, i.e., \code{L2}
-(default) for centering the predictor variable at the level-2
+(default) for centering the predictor variable at the Level-2
 cluster means, and  \code{L3} for centering the predictor
-variable at the level-3 cluster means.}
+variable at the level-3 cluster means.  Note that this argument
+is only used when specifying two cluster variables for the
+argument \code{"cluster"}.}
 
 \item{value}{a numeric value for centering on a specific user-defined value.
-Note that this option is only available when specifying a
-single-level predictor variable, i.e., \code{cluster = NULL}.}
+Note that this option is only available when specifying predictor variables
+in single-level data i.e., \code{cluster = NULL}.}
 
 \item{append}{logical: if \code{TRUE} (default), centered variable(s) are
 appended to the data frame specified in the argument \code{data}.}
@@ -53,7 +58,17 @@ the centered predictor variables. By default, centered predictor
 variables are named with the ending \code{".c"} resulting in
 e.g. \code{"x1.c"} and \code{"x2.c"}. Variable names can also
 be specified by using a character vector matching the number
-of variables (e.g., \code{name = c("center.x1", "center.x2")}).}
+of variables (e.g., \code{name = c("center.x1", "center.x2")}).
+Note that when specifying \code{type = "latent"}, centered
+predictor variables in a two-level model are named with the
+endings \code{".l1"} and \code{".l2"} (e.g., \code{name = c("x.l1", "x.l2")}),
+while centered predictor variables in a three-level model are
+named with the endings \code{".l1"}, \code{".l2"}, and \code{".l3"}
+(e.g., \code{name = c("x.l1", "x.l2", "x.l3")}) by default.
+Alternatively, a character vector of length 2 for centered
+predictor variables in a two-level model or a character vector
+of length 3 centered predictor variables in a three-level model
+can be specified.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values, i.e.
 these values are converted to \code{NA} before conducting the
@@ -69,13 +84,12 @@ rows as \code{data} containing the centered variable(s).
 \description{
 This function centers predictor variables in single-level data, two-level
 data, and three-level data at the grand mean (CGM, i.e., grand mean centering)
-or within cluster (CWC, i.e., group mean centering).
+or within clusters (CWC, i.e., group mean centering).
 }
 \details{
-\describe{
-\item{\strong{Single-Level Data}}{\strong{Predictor variables in single-level
-data} can only be centered at the grand mean (CGM) by specifying
-\code{type = "CGM"}:
+\strong{Single-Level Data}
+
+Predictor variables are centered at the grand mean (CGM) by default:
 
 \deqn{x_{i} - \bar{x}_{.}}
 
@@ -87,91 +101,162 @@ e.g., a predictor variable centered at 5 by applying following formula:
 \deqn{x_{i} - \bar{x}_{.} + 5}
 
 resulting in a mean of the centered predictor variable of 5.
-}
-\item{\strong{Two-Level Data}}{\strong{Level-1 (L1) predictor variables} in
-two-level data can be centered at the grand mean (CGM) by specifying
-\code{type = "CGM"}:
 
-\deqn{x_{ij} - \bar{x}_{..}}
+\strong{Two-Level Data}
 
-where \eqn{x_{ij}} is the predictor value of observation \eqn{i} in L2 cluster
-\eqn{j} and \eqn{\bar{x}_{..}} is the average \eqn{x} score.
+In two-level data, there are predictor variables at Level-1 (L1) and Level-2 (L2)
+with L1 predictor variables centered within L2 clusters (CWC) and L2 predictors
+centered at the average L2 cluster scores (CGM) by default:
+  \itemize{
+    \item{\strong{Level-1 (L1) Predictor Variables}}:
 
-L1 predictor variables are centered at the group mean (CWC) by specifying
-\code{type = "CWC"} (Default):
+    L1 predictor variable can be centered within L2 clusters (CWC) or at the
+    grand-mean (CGM):
+      \itemize{
+        \item L1 predictor variables are centered within L2 clusters by specifying
+        \code{type = "CWC"} (Default):
 
-\deqn{x_{ij} - \bar{x}_{.j}}
+        \deqn{x_{ij} - \bar{x}_{.j}}
 
-where \eqn{\bar{x_{.j}}} is the average \eqn{x} score in cluster \eqn{j}.
+        where \eqn{\bar{x_{.j}}} is the average \eqn{x} score in cluster \eqn{j}.
 
-\strong{Level-2 (L1) predictor variables} in two-level data can only be
-centered at the grand mean:
+        \item L1 predictor variables are centered at the grand-mean by specifying
+        \code{type = "CGM"}:
 
-\deqn{x_{.j} - \bar{x}_{..}}
+        \deqn{x_{ij} - \bar{x}_{..}}
 
-where \eqn{x_{.j}} is the predictor value of Level 2 cluster \eqn{j} and
-\eqn{\bar{x}_{..}} is the average Level-2 cluster score. Note that the cluster
-membership variable needs to be specified when centering a L2 predictor variable
-in two-level data. Otherwise the average \eqn{x_{ij}} individual score instead
-of the average \eqn{x_{.j}} cluster score is used to center the predictor
-variable.
-}
-\item{\strong{Three-Level Data}}{\strong{Level-1 (L1) predictor variables} in
-three-level data can be centered at the grand mean (CGM) by specifying
-\code{type = "CGM"}:
+        where \eqn{x_{ij}} is the predictor value of observation \eqn{i} in L2 cluster
+        \eqn{j} and \eqn{\bar{x}_{..}} is the average \eqn{x} score.
+      }
 
-\deqn{x_{ijk} - \bar{x}_{...}}
+    \item{\strong{Level-2 (L2) Predictor Variables}}:
 
-where \eqn{x_{ijk}} is the predictor value of observation \eqn{i} in Level-2
-cluster \eqn{j} within Level-3 cluster \eqn{k} and \eqn{\bar{x}_{...}} is the average
- \eqn{x} score.
+    L2 predictor variables are centered at the average L2 cluster score:
 
-L1 predictor variables are centered within cluster (CWC) by specifying
-\code{type = "CWC"} (Default). However, L1 predictor variables can be either
-centered within Level-2 clusters (\code{cwc.mean = "L2"}, Default, see Brincks et
-al., 2017):
+    \deqn{x_{.j} - \bar{x}_{..}}
 
-\deqn{x_{ijk} - \bar{x}_{.jk}}
+    where \eqn{x_{.j}} is the predictor value of L2 cluster \eqn{j} and
+    \eqn{\bar{x}_{..}} is the average L2 cluster score. Note that the cluster
+    membership variable needs to be specified when centering a L2 predictor
+    variable in two-level data. Otherwise the average \eqn{x_{ij}} individual
+    score instead of the average \eqn{x_{.j}} cluster score is used to center
+    the predictor variable.
+  }
 
-or within Level-3 clusters (\code{cwc.mean = "L3"}, see Enders, 2013):
+\strong{Three-Level Data}
 
-\deqn{x_{ijk} - \bar{x}_{..k}}
+In three-level data, there are predictor variables at Level-1 (L1), Level-2 (L2),
+and Level-3 (L3) with L1 predictor variables centered within L2 clusters (CWC L2),
+L2 predictors centered within L3 clusters (CWC L3), and L3 predictors centered at
+the average L3 cluster scores (CGM) by default:
+  \itemize{
+    \item{\strong{Level-1 (L1) Predictor Variables}}:
 
-where \eqn{\bar{x}_{.jk}} is the average \eqn{x} score in Level-2 cluster
-\eqn{j} within Level-3 cluster \eqn{k} and \eqn{\bar{x}_{..k}} is the average
-\eqn{x} score in Level-3 cluster \eqn{k}.
+    L1 predictor variables can be centered within L2 clusters (CWC L2),  within L3
+    clusters (CWC L3) or at the grand-mean (CGM):
+      \itemize{
+        \item L1-predictor variables are centered within cluster (CWC) by specifying
+        \code{type = "CWC"} (Default). Note that L1 predictor variables can be either
+        centered within L2 clusters (\code{cwc.mean = "L2"}, Default, see
+        Brincks et al., 2017):
 
-\strong{Level-2 (L2) predictor variables} in three-level data can be centered
-at the grand mean (CGM) by specifying \code{type = "CGM"}:
+        \deqn{x_{ijk} - \bar{x}_{.jk}}
 
-\deqn{x_{.jk} - \bar{x}_{...}}
+        or within L3 clusters (\code{cwc.mean = "L3"}, see Enders, 2013):
 
-where \eqn{x_{.jk}} is the predictor value of Level-2 cluster \eqn{j} within
-Level-3 cluster \eqn{k} and \eqn{\bar{x}_{...}} is the average Level-2 cluster
-score.
+        \deqn{x_{ijk} - \bar{x}_{..k}}
 
-L2 predictor variables are centered within cluster (CWC) by specifying
-\code{type = "CWC"} (Default):
+        where \eqn{\bar{x}_{.jk}} is the average \eqn{x} score in L2 cluster
+        \eqn{j} within Level-3 cluster \eqn{k} and \eqn{\bar{x}_{..k}} is the
+        average \eqn{x} score in L3 cluster \eqn{k}.
 
-\deqn{x_{.jk} - \bar{x}_{..k}}
+        \item L1 predictor variables are centered at the grand mean (CGM) by specifying
+        \code{type = "CGM"}:
 
-where \eqn{\bar{x}_{..k}} is the average \eqn{x} score in Level-3 cluster
-\eqn{k}.
+        \deqn{x_{ijk} - \bar{x}_{...}}
 
-\strong{Level-3 (L3) predictor variables} in three-level data can only be
-centered at the grand mean:
+        where \eqn{x_{ijk}} is the predictor value of observation \eqn{i} in L2
+        cluster \eqn{j} within L3 cluster \eqn{k} and \eqn{\bar{x}_{...}} is
+        the average \eqn{x} score.
+      }
 
-\deqn{x_{..k} - \bar{x}_{...}}
+    \item{\strong{Level-2 (L2) Predictor Variables}}:
 
-where \eqn{x_{..k}} is the predictor value of Level-3 cluster \eqn{k} and
-\eqn{\bar{x}_{...}} is the average Level-3 cluster score. Note that the cluster
-membership variables at Level 2 and Level 3 need to be specified when centering
-a L3 predictor variable in three-level data.}
-}
+    L2 predictor variables can be centered within L3 clusters (CWC) or at the
+    L2 grand-mean (CGM):
+    \itemize{
+      \item L2 predictor variables are centered within cluster by specifying
+      \code{type = "CWC"} (Default):
+
+      \deqn{x_{.jk} - \bar{x}_{..k}}
+
+      where \eqn{\bar{x}_{..k}} is the average \eqn{x} score in L3 cluster
+      \eqn{k}.
+
+      \item L2 predictor variables are centered at the grand mean by specifying
+      \code{type = "CGM"}:
+
+      \deqn{x_{.jk} - \bar{x}_{...}}
+
+      where \eqn{x_{.jk}} is the predictor value of L2 cluster \eqn{j} within
+      L3 cluster \eqn{k} and \eqn{\bar{x}_{...}} is the average L2 cluster score.
+    }
+
+    \item{\strong{Level-3 (L3) Predictor Variables}}:
+
+    L3-predictor variables are centered at the L3 grand mean:
+
+    \deqn{x_{..k} - \bar{x}_{...}}
+
+    where \eqn{x_{..k}} is the predictor value of L3 cluster \eqn{k} and
+    \eqn{\bar{x}_{...}} is the average L3 cluster score.
+  }
+
+\strong{Two-Step Latent Mean Centering}
+
+The latent mean centering approach (Asparouhov & Muthén, 2019) in a two-level
+model decomposes the Level-1 predictor variable \eqn{x_{ij}} as within and
+between compoments as follows:
+
+\deqn{x_{ij} = x_{w,ij} + x_{b,.j}}
+
+where \eqn{x_{w,ij}} is the individual specific contribution and \eqn{x_{b,.j}} is the
+cluster specific contribution to the predictor variable \eqn{x_{ij}}. Here, \eqn{x_{b,.j}} can
+be interpreted as the intercepts and \eqn{x_{w,ij}} can be interpreted as the
+residuals in the random intercept model. Note that \eqn{x_{w,ij}} is equivalent to
+a L1 predictor centered within L2 clusters (CWC), while \eqn{x_{b,.j}} is equivalent
+to a L2 predictor centered at the average L2 cluster scores (CGM).
+Latent mean centering treats \eqn{x_{b,.j}} as unknown quantity that is estimated
+while taking into the sampling error in the mean estimate under the assumption
+of large cluster sizes in the population and less than 5\% of the cluster
+population sampled. As a result, this approach resolves problems that occur
+with the traditional observed centering methods, e.g., Lüdtke's bias (Lüdtke
+et al., 2008) in the estimation of contextual effects or Nickell's bias
+(Asparouhov et al., 2018) in the estimation of the autocorrelations in
+time-series models.
+
+The latent mean centering approach requires a latent variable modeling program,
+e.g., commercial software Mplus (Muthen & Muthen, 1998-2017) or the R package
+lavaan (Rosseel, 2012) and cannot be used in mixed-effects modeling programs
+like lme4 (Bates et al., 2015) or nlme (Pinheiro & Bates, 2000). In order to
+mimic the latent mean centering approach, a two-step approach is proposed in
+the \code{center()} function, where a random intercept model is fit to the
+L1 predictor variable to extract the intercepts representing \eqn{x_{b,.j}}
+and residuals representing \eqn{x_{w,ij}}. These two components can be used as
+L1 predictor centered within clusters and L2 predictor centered at the grand
+mean. Note that compared to the latent mean centering approach, this two-step
+approach will result in bias because \eqn{x_{w,ij}} and \eqn{x_{b,.j}} are
+treated as observed instead of latent variables. However, the magnitude of the
+bias is unclear without conducting a simulation study. Hence, the latent mean
+centering using a latent variable modeling program is recommended whenever
+possible, while the two-step latent mean centering approach implemented in the
+\code{center()} function is just an 'experimental' approach that cannot be
+recommend at this
+time.
 }
 \examples{
 #----------------------------------------------------------------------------
-# Predictor Variables in Single-Level Data
+# Single-Level Data
 
 # Example 1a: Center predictor 'disp' at the grand mean
 center(mtcars, disp, append = FALSE)
@@ -192,39 +277,154 @@ center(mtcars, disp, value = 3)
 center(mtcars, disp, hp, name = ".v")
 
 #----------------------------------------------------------------------------
-# Predictor Variables in Two-Level Data
+# Two-Level Data
 
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-# Example 2a: Center L1 predictor 'y1' within cluster
-center(Demo.twolevel, y1, cluster = "cluster")
+#.........................................
+# Level-1 (L1) Predictor
+
+# Example 2a: Center L1 predictor 'y1' within L2 clusters
+center(Demo.twolevel, y1, cluster = "cluster", append = FALSE)
 
 # Alternative specification without using the '...' argument
 center(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 
-# Example 2b: Center L2 predictor 'w2' at the grand mean
+# Example 2b: Center L1 predictor 'y1' at the grand-mean
+#             Note that cluster ID is ignored when type = "CGM"
+center(Demo.twolevel, y1, cluster = "cluster", type = "CGM")
+
+# Alternative specification
+center(Demo.twolevel, y1)
+
+#.........................................
+# Level-2 (L2) Predictor
+
+# Example 2c: Center L2 predictor 'w2' at the average L2 cluster scores
+#             Note that cluster ID is needed
 center(Demo.twolevel, w1, cluster = "cluster")
 
-# Example 2c: Center L1 predictor 'y1' within cluster and L2 predictor 'w1' at the grand mean
+#.........................................
+# L1 and L2 Predictors
+
+# Example 2d: Center L1 predictor 'y1' within L2 clusters
+#             and L2 predictor 'w1' at the average L2 cluster scores
 center(Demo.twolevel, y1, w1, cluster = "cluster")
 
+#.........................................
+# Two-Step Latent Mean Centering
+
+# Example 2e: Decompose L1 predictor 'y1' as within-between components
+center(Demo.twolevel, y1, cluster = "cluster", type = "latent")
+
+# Example 2d: Decompose L1 predictor 'y1' as within-between components
+#             label variables as 'l1.y1' and 'l2.y1'
+center(Demo.twolevel, y1, cluster = "cluster", type = "latent", name = c("l1.y1", "l2.y1"))
+
+\dontrun{
 #----------------------------------------------------------------------------
-# Predictor Variables in Three-Level Data
+# Three-Level Data
+
+# Load data set "Demo.twolevel" in the lavaan package
+data("Demo.twolevel", package = "lavaan")
 
 # Create arbitrary three-level data
 Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
                                              cluster3 = rep(1:10, each = 250))
 
-# Example 3a: Center L1 predictor 'y1' within L2 cluster
+# Compute L3 cluster scores for the L2 predictor 'w1'
+Demo.threelevel <- cluster.scores(Demo.threelevel, w1, cluster = "cluster3", name = "w1.l3")
+
+#.........................................
+# Level-1 (L1) Predictor
+
+# Example 3a: Center L1 predictor 'y1' within L2 clusters (CWC L2)
+#             Note that L3 cluster IDs are ignored when type = "CWC"
 center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"))
 
-# Example 3b: Center L1 predictor 'y1' within L3 cluster
+# Alternative specification when L2 cluster IDs are unique across L3 clusters
+center(Demo.threelevel, y1, cluster = "cluster2")
+
+# Example 3b: Center L1 predictor 'y1' within L3 clusters (CWC L3)
+#             Note that both L3 and L2 cluster IDs are needed
 center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), cwc.mean = "L3")
 
-# Example 3c: Center L1 predictor 'y1' within L2 cluster and L2 predictor 'w1' within L3 cluster
-center(Demo.threelevel, y1, w1, cluster = c("cluster3", "cluster2"))}
+# Example 3c: Center L1 predictor 'y1' at the grand-mean (CGM)
+#             Note that the cluster argument is ignored when type = "CGM",
+center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "CGM")
+
+# Alternative specification
+center(Demo.threelevel, y1)
+
+#.........................................
+# Level-2 (L2) Predictor
+
+# Example 3d: Center L2 predictor 'w1' within L3 cluster
+#             Note that both L3 and L2 cluster IDs are needed
+center(Demo.threelevel, w1, cluster = c("cluster3", "cluster2"))
+
+# Example 3e: Center L2 predictor 'w1' at the grand-mean (CGM)
+#             Note that both L3 and L2 cluster IDs are needed
+center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "CGM")
+
+#.........................................
+# Level-3 (L3) Predictor
+
+# Example 3f: Center L3 predictor 'w1.l3' at the average L3 cluster scores
+#             Note that L2 cluster ID is ignored
+center(Demo.threelevel, w1.l3, cluster = c("cluster3", "cluster2"))
+
+# Alternative specification
+center(Demo.threelevel, w1.l3, cluster = "cluster3")
+
+#.........................................
+# L1, L2, and L3 Predictors
+
+# Example 3g: Center L1 predictor 'y1' within L2 cluster, L2 predictor 'w1' within
+#            L3 clusters, and L3 predictor 'w1.l3' at the average L3 cluster scores
+center(Demo.threelevel, y1, w1, w1.l3, cluster = c("cluster3", "cluster2"))
+
+#.........................................
+# Two-Step Latent Mean Centering
+
+# Load data set "Demo.twolevel" in the lavaan package
+data("Demo.twolevel", package = "lavaan")
+
+# Create arbitrary three-level data
+Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
+                                             cluster3 = rep(1:10, each = 250))
+
+# Example 3h: Decompose L1 predictor 'y1' as within-between components
+center(Demo.threelevel, y1, cluster = "cluster2", type = "latent")
+
+# Example 3i: Decompose L1 predictor 'y1' as within-between components
+#             label variables as 'l1.y1' and 'l2.y1'
+center(Demo.threelevel, y1, cluster = "cluster2", type = "latent",
+       name = c("l1.y1", "l2.y2"))
+
+# Example 3j: Decompose L1 predictor 'y1' as within-between components
+center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "latent")
+
+# Example 3k: Decompose L1 predictor 'y1' as within-between components
+#             label variables as 'l1.y1', 'l2.y1', and 'l3.y1'
+center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "latent",
+       name = c("l1.y1", "l2.y1", "l3.y1"))
+}
+}
 \references{
+Asparouhov, T., Hamaker, E. L., & Muthén, B. (2017). Dynamic Structural Equation Models.
+\emph{Structural Equation Modeling: A Multidisciplinary Journal, 25}(3), 359-388.
+https://doi.org/10.1080/10705511.2017.1406803
+
+Asparouhov, T., & Muthén, B. (2019). Latent variable centering of predictors
+and mediators in multilevel and time-series models. \emph{Structural Equation Modeling, 26}(1),
+119-142. https://doi.org/10.1080/10705511.2018.1511375
+
+Bates, D., Mächler, M., Bolker, B., & Walker, S. (2015). Fitting linear mixed-effects
+models using lme4. \emph{Journal of Statistical Software, 67}(1), 1–48.
+https://doi.org/10.18637/jss.v067.i01
+
 Brincks, A. M., Enders, C. K., Llabre, M. M., Bulotsky-Shearer, R. J., Prado, G.,
 & Feaster, D. J. (2017). Centering predictor variables in three-level contextual
 models. \emph{Multivariate Behavioral Research, 52}(2), 149–163.
@@ -243,10 +443,24 @@ Enders, C. K., & Tofighi, D. (2007). Centering predictor variables in
 cross-sectional multilevel models: A new look at an old issue. \emph{Psychological
 Methods, 12}, 121-138. https://doi.org/10.1037/1082-989X.12.2.121
 
+Lüdtke, O., Marsh, H. W., Robitzsch, A., Trautwein, U., Asparouhov, T., & Muthén,
+B. (2008). The multilevel latent covariate model: A new, more reliable approach
+to group-level effects in contextual studies. \emph{Psychological Methods, 13}(3),
+203-229. https://doi.org/10.1037/a0012869
+
+Muthén, L. K., & Muthén, B. O. (1998-2017). \emph{Mplus User’s Guide} (8th ed).
+Muthén & Muthén.
+
+Pinheiro, J. C., & Bates, D. M. (2000). \emph{Mixed-Effects Models in S and S-PLUS}.
+Springer. https://doi.org/10.1007/b98882
+
 Rights, J. D., Preacher, K. J., & Cole, D. A. (2020). The danger of conflating
 level-specific effects of control variables when primary interest lies in
 level-2 effects. \emph{British Journal of Mathematical & Statistical Psychology,
 73}, 194-211. https://doi.org/10.1111/bmsp.12194
+
+Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.
+\emph{Journal of Statistical Software, 48}(2), 1-36. https://doi.org/10.18637/jss.v048.i02
 
 Yaremych, H. E., Preacher, K. J., & Hedeker, D. (2021). Centering categorical
 predictors in multilevel models: Best practices and interpretation.

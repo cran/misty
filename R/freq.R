@@ -288,16 +288,24 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
 
   }
 
-
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Round Numeric Variables ####
 
   # Numeric variable with more than 'round' digits
-  names(which(vapply(x[, vapply(x, function(y) is.numeric(y) & !is.integer(y), FUN.VALUE = logical(1L)), drop = FALSE], function(y) any(na.omit(nchar(gsub("(.*)(\\.)|([0]*$)","", y)) > round)), FUN.VALUE = logical(1L)))) |> (\(p) if (isTRUE(length(p) > 0L)) {
+  names(which(vapply(x[, vapply(x, function(y) is.numeric(y) & !is.integer(y), FUN.VALUE = logical(1L)), drop = FALSE], function(y) any(na.omit(nchar(gsub("(.*)(\\.)|([0]*$)","", y)) > round)), FUN.VALUE = logical(1L)))) |>
+    (\(p) if (isTRUE(length(p) > 0L)) {
 
       x[, p] <<- lapply(x[, p, drop = FALSE], base::round, digits = round)
 
-      warning(paste0("Numeric variables with more than ", round, " digits were rounded: ", paste(p, collapse = ", ")), call. = FALSE)
+      if (isTRUE(ncol(x) > 1L)) {
+
+        warning(paste0("Numeric variables with more than ", round, " digits were rounded: ", paste(p, collapse = ", ")), call. = FALSE)
+
+      } else {
+
+        warning(paste0("The numeric variable with more than ", round, " digits was rounded."), call. = FALSE)
+
+      }
 
     })()
 

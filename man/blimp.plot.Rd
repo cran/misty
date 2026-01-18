@@ -399,12 +399,12 @@ ggplot(data.post, aes(x = value)) +
   scale_color_manual(name = "Point Estimate", values = c(Median = "#D55E00")) +
   labs(caption = "95\% Equal-Tailed Interval") +
   theme_bw() +
-  theme(plot.margin = margin(c(4, 15, -8, 4)),
+  theme(plot.margin = margin(4, 15, -8, 4),
         plot.caption = element_text(hjust = 0.5, vjust = 7),
         legend.position = "bottom",
         legend.title = element_text(size = 10),
         legend.text = element_text(size = 10),
-        legend.box.margin = margin(c(-30, 6, 6, 6)),
+        legend.box.margin = margin(-30, 6, 6, 6),
         legend.background = element_rect(fill = "transparent"))
 }
 }

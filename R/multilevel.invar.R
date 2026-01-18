@@ -382,7 +382,7 @@ multilevel.invar <- function(data, ..., cluster, model = NULL, rescov = NULL,
     (!unique(fix.resid) %in% colnames(x)) |> (\(y) if (isTRUE(any(y) &&  all(fix.resid != "all"))) { stop(paste0("Variables specified in the argument 'fix.resid' were not found in 'data': ", paste(fix.resid[y], collapse = ", ")), call. = FALSE) })()
 
     # Check input 'mod.minval'
-    if (isTRUE(mod.minval <= 0L)) { stop("Please specify a value greater than 0 for the argument 'mod.minval'.", call. = FALSE) }
+    if (isTRUE(mod.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'mod.minval'.", call. = FALSE) }
 
     ## Check input 'resid.minval'
     if (isTRUE(resid.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'resid.minval'.", call. = FALSE) }

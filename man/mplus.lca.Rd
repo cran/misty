@@ -2,21 +2,24 @@
 % Please edit documentation in R/mplus.lca.R
 \name{mplus.lca}
 \alias{mplus.lca}
-\title{Mplus Model Specification for Latent Class Analysis}
+\title{Mplus Model Specification and Estimation for Latent Class Analysis}
 \usage{
 mplus.lca(x, ind = NULL,
-          type = c("continuous", "count", "categorical", "nominal"), cluster = NULL,
+          type = c("continuous", "count", "categorical", "nominal"),
+          classes = 6, cluster = NULL,
           folder = c("A_Invariant-Theta_Diagonal-Sigma",
                      "B_Varying-Theta_Diagonal-Sigma",
                      "C_Invariant-Theta_Invariant-Unrestrictred-Sigma",
                      "D_Invariant-Theta_Varying-Unrestricted-Sigma",
                      "E_Varying-Theta_Invariant-Unrestricted-Sigma",
                      "F_Varying-Theta_Varying-Unrestricted-Sigma"),
-          file = "Data_LCA.dat", write = c("all", "folder", "data", "input"),
-          useobservations = NULL, missing = -99, classes = 6, estimator = "MLR",
-          starts = c(100, 50), stiterations = 10, lrtbootstrap = 1000,
-          lrtstarts = c(0, 0, 100, 50), processors = c(8, 8),
-         output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14"),
+          file = "Data_LCA.dat", missing = -99,
+          write = c("all", "folder", "data", "input"),
+          useobservations = NULL, estimator = "MLR",
+          starts = c(100, 50), stiterations = 10, processors = c(8, 8),
+          boot = c("none", "perc", "bc"), R = 1000,
+          lrtbootstrap = 1000, lrtstarts = c(0, 0, 100, 50),
+          output = c("all", "SVALUES", "CINTERVAL", "TECH7", "TECH8", "TECH11", "TECH14"),
           replace.inp = FALSE, mplus.run = FALSE, Mplus = "Mplus",
           replace.out = c("always", "never", "modified"), check = TRUE)
 }
@@ -34,6 +37,11 @@ for continuous variables, \code{"count"} for count variables,
 variables, and \code{"nominal"} for unordered categorical
 variables. Note that it is not possible to mix different
 variable types in the analysis.}
+
+\item{classes}{an integer value specifying the maximum number of classes
+for the latent class analysis. By default, LCA with
+a maximum of 6 classes is specified (i.e., \emph{k} = 1
+to \emph{k} = 6).}
 
 \item{cluster}{a character string indicating the cluster variable in
 the matrix or data frame specified in \code{x} representing
@@ -55,6 +63,12 @@ specified in the argument \code{classes}.}
 without the file extension '.dat', e.g., \code{"Data_LCA.dat"}
 (default) or \code{"Data_LCA"}.}
 
+\item{missing}{a numeric value or character string representing missing
+values (\code{NA}) in the Mplus data set. This values
+or character string will be specified in the Mplus input
+file as \code{MISSING IS ALL(missing)}. By default,
+\code{-99} is used to represent missing values.}
+
 \item{write}{a character string or character vector indicating whether
 to create the six folders specified in the argument
 \code{folder} (\code{"folder"}), to write the matrix or
@@ -67,17 +81,6 @@ input files into the folders.}
 
 \item{useobservations}{a character string indicating the conditional statement
 to select observations.}
-
-\item{missing}{a numeric value or character string representing missing
-values (\code{NA}) in the Mplus data set. This values
-or character string will be specified in the Mplus input
-file as \code{MISSING IS ALL(missing)}. By default,
-\code{-99} is used to represent missing values.}
-
-\item{classes}{an integer value specifying the maximum number of classes
-for the latent class analysis. By default, LCA with
-a maximum of 6 classes is specified (i.e., \emph{k} = 1
-to \emph{k} = 6).}
 
 \item{estimator}{a character string for specifying the \code{ESTIMATOR}
 option in Mplus. By default, the estimator \code{"MLR"}
@@ -95,6 +98,24 @@ optimizations are carried out in the final stage.}
 in Mplus. The numeric value represents the maximum number
 of iterations allowed in the initial stage. By default,
 50 iterations are requested.}
+
+\item{processors}{a vector of one or two integer values for specifying the
+\code{PROCESSORS} option in Mplus. The values specifies
+the number of processors and threads to be used for
+parallel computing to increase computational speed. By
+default, 8 processors and threads are used for parallel
+computing.}
+
+\item{boot}{a character string specifying the type of bootstrap
+confidence intervals (CI), i.e., \code{"none"} (default)
+for not conducting bootstrapping, \code{"perc"},
+for the percentile bootstrap CI (i.e., Mplus command
+\code{OUTPUT: CINTERVAL (BOOTSTRAP)}), and \code{"bc"}
+for the bias-corrected (BC) percentile bootstrap CI
+(i.e., Mplus command \code{OUTPUT: CINTERVAL (BCBOOTSTRAP)}).}
+
+\item{R}{a numeric value indicating the number of bootstrap
+replicates (default is 1000).}
 
 \item{lrtbootstrap}{an integer value for specifying the \code{LRTBOOTSTRAP}
 option in Mplus when requesting a parametric bootstrapped
@@ -118,13 +139,6 @@ and 0 optimizations in the final stage are used for the
 values in the initial stage and 50 optimizations in the
 final stage are used for the \code{k} class model.}
 
-\item{processors}{a vector of one or two integer values for specifying the
-\code{PROCESSORS} option in Mplus. The values specifies
-the number of processors and threads to be used for
-parallel computing to increase computational speed. By
-default, 8 processors and threads are used for parallel
-computing.}
-
 \item{output}{a character string or character vector specifying the
 \code{TECH} options in the \code{OUTPUT} section in Mplus,
 i.e., \code{SVALUES} to request input statements that
@@ -136,8 +150,8 @@ by the estimated posterior probabilities for each class,
 estimating the model, \code{TECH11} to request the
 Lo-Mendell-Rubin likelihood ratio test of model fit,
 and \code{TECH14} to request a parametric bootstrapped
-likelihood ratio test. By default, \code{SVALUES} and
-\code{TECH11} are requested. Note that \code{TECH11}
+likelihood ratio test. By default, \code{SVALUES}, \code{CINTERVAL},
+and \code{TECH11} are requested. Note that \code{TECH11}
 is only available for the \code{MLR} estimator.}
 
 \item{replace.inp}{logical: if \code{TRUE}, all existing input files in the

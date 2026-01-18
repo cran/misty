@@ -8,16 +8,6 @@
 #' using full information maximum likelihood (FIML) method in the presence of
 #' missing data.
 #'
-#' Coefficient omega is computed by conducting a confirmatory factor analysis based
-#' on the congeneric measurement model (Graham, 2006) using the \code{cfa()} function in the
-#' \pkg{lavaan} package by Yves Rosseel (2019).
-#'
-#' Approximate confidence intervals are computed using the procedure by Feldt,
-#' Woodruff and Salih (1987). Note that there are at least 10 other procedures
-#' for computing the confidence interval (see Kelley and Pornprasertmanit, 2016),
-#' which are implemented in the \code{ci.reliability()} function in the
-#' \pkg{MBESSS} package by Ken Kelley (2019).
-#'
 #' @param data       a data frame. Note that at least three items are needed for
 #'                   computing coefficient omega
 #' @param ...        an expression indicating the variable names in \code{data}
@@ -74,6 +64,17 @@
 #' @param check      logical: if \code{TRUE} (default), argument specification
 #'                   is checked.
 #' @param output     logical: if \code{TRUE} (default), output is shown.
+#'
+#' @details
+#' Coefficient omega is computed by conducting a confirmatory factor analysis based
+#' on the congeneric measurement model (Graham, 2006) using the \code{cfa()} function
+#' in the \pkg{lavaan} package by Yves Rosseel (2019).
+#'
+#' Approximate confidence intervals are computed using the procedure by Feldt,
+#' Woodruff and Salih (1987). Note that there are at least 10 other procedures
+#' for computing the confidence interval (see Kelley and Pornprasertmanit, 2016),
+#' which are implemented in the \code{ci.reliability()} function in the
+#' \pkg{MBESSS} package by Ken Kelley (2019).
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -212,24 +213,9 @@ item.omega <- function(data, ..., rescov = NULL,
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Numeric Variables ####
+  ## Non-Numeric Variables ####
 
-  # Non-numeric variables
-  x <- (!vapply(x, function(z) is.numeric(z) | is.ordered(z), FUN.VALUE = logical(1L))) |>
-    (\(y) if (isTRUE(any(y))) {
-
-      return(x[, -which(y), drop = FALSE])
-
-      warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(y)), collapse = ", ")), call. = FALSE)
-
-      # Variables left
-      if (isTRUE(all(y))) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
-
-    } else {
-
-      return(x)
-
-    })()
+  x <- .exclude.non.numeric(x, func = "omega")
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Exclude Items ####
@@ -284,6 +270,10 @@ item.omega <- function(data, ..., rescov = NULL,
 
     }
 
+    ## Check input 'estimator' and 'missing'
+    if (isTRUE(all(estimator == "ULS") && all(missing == "pairwise"))) { stop("Pairwise deletion is not available when estimator = \"ULS\".", call. = FALSE) }
+    if (isTRUE(all(estimator == "DWLS") && all(missing == "pairwise"))) { stop("Pairwise deletion is not available when estimator = \"DWLS\".", call. = FALSE) }
+
   }
 
   #_____________________________________________________________________________
@@ -298,7 +288,9 @@ item.omega <- function(data, ..., rescov = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Estimator ####
 
-  # Coefficient omega for continuous Items or hierarchical omega
+  #...................
+  ### Coefficient Omega or Hierarchical Omega ####
+
   if (isTRUE(type %in% c("omega", "hierarch"))) {
 
     if (isTRUE(all(c("ML", "GLS", "WLS", "DWLS", "ULS", "PML") %in% estimator))) {
@@ -307,7 +299,9 @@ item.omega <- function(data, ..., rescov = NULL,
 
     }
 
-  # Categorical omega
+  #...................
+  ### Categorical Coefficient Omega ####
+
   } else {
 
     if (isTRUE(all(c("ML", "GLS", "WLS", "DWLS", "ULS", "PML") %in% estimator))) {
@@ -325,7 +319,9 @@ item.omega <- function(data, ..., rescov = NULL,
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Missing Data ####
 
-  ### Coefficient omega for continuous Items or hierarchical omega ###
+  #...................
+  ### Coefficient Omega or Hierarchical Omega ####
+
   if (isTRUE(type %in% c("omega", "hierarch"))) {
 
     if (isTRUE(any(is.na(x)))) {
@@ -333,10 +329,6 @@ item.omega <- function(data, ..., rescov = NULL,
       if (isTRUE(all(c("listwise", "pairwise", "fiml") %in% missing))) {
 
         missing <- "fiml"
-
-      } else if (isTRUE(missing == "listwise")) {
-
-        if (any(is.na(x))) { assign("x", na.omit(x)) |> (\(y) warning(paste("Listwise deletion of incomplete data, number of cases removed from the analysis:", length(attributes(y)$na.action)), call. = FALSE))() }
 
       }
 
@@ -346,7 +338,9 @@ item.omega <- function(data, ..., rescov = NULL,
 
     }
 
-  ### Categorical omega ###
+  #...................
+  ### Categorical Coefficient Omega ####
+
   } else {
 
     if (isTRUE(any(is.na(x)))) {
@@ -354,10 +348,6 @@ item.omega <- function(data, ..., rescov = NULL,
       if (isTRUE(all(c("listwise", "pairwise", "fiml") %in% missing))) {
 
         missing <- "pairwise"
-
-      } else if (isTRUE(missing == "listwise")) {
-
-        if (any(is.na(x))) { assign("x", na.omit(x)) |> (\(y) warning(paste("Listwise deletion of incomplete data, number of cases removed from the analysis:", length(attributes(y)$na.action)), call. = FALSE))() }
 
       } else if (isTRUE(missing == "fiml")) {
 
@@ -393,7 +383,7 @@ item.omega <- function(data, ..., rescov = NULL,
 
   omega.mod <- .alpha.omega(y = x, alpha = FALSE, y.rescov = rescov, y.type = type, y.std = std, estimator = estimator, missing = missing, check = TRUE)
 
-  omega.x <- data.frame(n = lavaan::lavInspect(omega.mod$mod.fit, "nobs"), items = ncol(lavaan::lavInspect(omega.mod$mod.fit, "data")), omega = omega.mod$coef.alpha.omega)
+  omega.x <- data.frame(n = lavaan::lavInspect(omega.mod$mod.fit, "nobs"), nNA = nrow(x) - lavaan::lavInspect(omega.mod$mod.fit, "nobs"), items = ncol(lavaan::lavInspect(omega.mod$mod.fit, "data")), omega = omega.mod$coef.alpha.omega)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Confidence Interval ####

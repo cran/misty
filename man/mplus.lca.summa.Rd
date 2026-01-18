@@ -2,49 +2,79 @@
 % Please edit documentation in R/mplus.lca.summa.R
 \name{mplus.lca.summa}
 \alias{mplus.lca.summa}
-\title{Summary Result Table and Grouped Bar Charts for Latent Class Analysis Estimated in Mplus}
+\title{Summary Result Tables and Grouped Bar Charts for Latent Class Analysis in Mplus}
 \usage{
-mplus.lca.summa(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p = TRUE,
-                plot = FALSE, group.ind = TRUE, ci = TRUE, conf.level = 0.95,
-                adjust = TRUE, axis.title = 7, axis.text = 7, levels = NULL,
-                labels = NULL, ylim = NULL, ylab = "Mean Value",
+mplus.lca.summa(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p = FALSE,
+                digits = 0, p.digits = 3, bf.trunc = TRUE, conf.level = 0.95,
+                plot = FALSE, group.ind = TRUE, ci = TRUE,
+                axis.title = 9, axis.text = 9, levels = NULL, labels = NULL,
+                ylim = NULL, ylab = c("Mean Value", "Item Response Probability"),
                 breaks = ggplot2::waiver(), errorbar.width = 0.1,
-                legend.title = 7, legend.text = 7, legend.key.size = 0.4,
+                legend.title = 9, legend.text = 9, legend.key.size = 0.5,
                 gray = FALSE, start = 0.15, end = 0.85, dpi = 600,
-                width = "n.ind", height = 4, digits = 1, p.digits = 3,
-                write = NULL, append = TRUE, check = TRUE, output = TRUE)
+                width.ind = NULL, width.nclass = NULL, height.categ = NULL,
+                height = NA, write = NULL, append = TRUE, check = TRUE,
+                output = TRUE)
 }
 \arguments{
-\item{folder}{a character vector indicating the name of the subfolders
-to be excluded from the summary result table.}
+\item{folder}{a character string indicating the path of the folder
+containing subfolders with the Mplus output files. By
+default Mplus outputs in the subfolders of the current
+working directory are read. Note that if there are no
+subfolders available, Mplus outputs from the folder
+specified in the argument \code{folder} are extracted.}
 
 \item{exclude}{a character vector indicating the name of the subfolders
 excluded from the result tables.}
 
 \item{sort.n}{logical: if \code{TRUE} (default), result table is sorted
-according to the number of classes within each folder.}
+according to the number of classes within each folder
+in increasing order.}
 
-\item{sort.p}{logical: if \code{TRUE} (default), class proportions are
-sorted decreasing.}
+\item{sort.p}{logical: if \code{TRUE}, model-estimated class counts,
+proportions, average posterior class probabilities,
+and odds of correct classification ratio in the
+classification diagnostics are sorted in increasing order.}
 
-\item{plot}{logical: if \code{TRUE}, bar charts with
-error bars for confidence intervals are saved
-in the  folder \code{_Plots} within subfolders. Note
-that plots are only available for LCA with continuous
-or count indicator variables.}
+\item{digits}{an integer value indicating the number of decimal places
+to be used for displaying LL, AIC, CAIC, BIC, SABIC,
+AWE, OCC, and approximate Bayes factors (aBF).}
 
-\item{group.ind}{logical: if \code{TRUE} (default), latent class indicators
-are represented by separate bars, if \code{FALSE} latent classes
-are represented by separate bars.}
+\item{p.digits}{an integer value indicating the number of decimal places
+to be used for displaying cmP, \emph{p}-values, relative entropy
+values, class proportions, and confidence intervals. Note that the scaling
+correction factor is displayed with \code{p.digits} minus 1 decimal places.}
 
-\item{ci}{logical: if \code{TRUE} (default), confidence intervals
-are added to the bar charts.}
+\item{bf.trunc}{logical: if \code{TRUE} (default), approximate Bayes
+factors (aBF) greater than 1000 are truncated.}
 
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence
-level of the interval.}
+level of the intervals in the result table with means
+and variances for each latent class separately. Note
+that only \code{0.9}, \code{0.95}, or \code{0.95} are
+allowed when extracting confidence intervals from Mplus
+outputs.}
 
-\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment
-for the confidence intervals is applied.}
+\item{plot}{logical: if \code{TRUE}, bar charts with error bars for
+confidence intervals for LCA with continuous, count
+variables are saved in the folder \code{_Plots} within
+subfolders.}
+
+\item{group.ind}{logical: if \code{TRUE} (default), latent class indicators
+are represented by separate bars when saving plots of
+an LCA based on continuous or count indicator variables,
+while latent class indicators are represented on the
+x-axis when saving plots of an LCA based on ordered or
+unordered categorical indicator, if \code{FALSE} latent
+classes are represented by separate bars when saving plots
+of an LCA based on continuous or count indicator variables,
+while latent classes are represented on the x-axis when
+saving plots of an LCA based on ordered or unordered
+categorical indicator.}
+
+\item{ci}{logical: if \code{TRUE} (default), confidence intervals
+are added to the bar charts for LCA with continuous or
+count indicator variables.}
 
 \item{axis.title}{a numeric value specifying the size of the axis title.}
 
@@ -86,21 +116,27 @@ at the high end of the palette.}
 \item{dpi}{a numeric value specifying the plot resolution when saving
 the bar chart.}
 
-\item{width}{a numeric value specifying the width of the plot when
-saving the bar chart. By default, the width is number of
-indicators plus number of classes divided by 2.}
+\item{width.ind}{a numeric value specifying the width of the plot as a
+factor depending on the number of indicator variables.
+By default, the factor is 1.5.}
+
+\item{width.nclass}{a numeric value specifying the width of the plot as a
+factor depending on the number of classes. By default, the factor is 0.5 when saving plots of an
+LCA based on continuous or count indicator variables,
+while the factor is 1.5 when saving plots of an LCA
+based on ordered or unordered categorical indicator
+variables.}
+
+\item{height.categ}{a numeric value specifying the height of the plot as a
+factor depending on the number of response categories.
+By default, the factor is 0.6. Note that this argument
+is used only when saving plots of an LCA based on ordered
+or unordered categorical indicator variables.}
 
 \item{height}{a numeric value specifying the height of the plot when
-saving the bar chart.}
-
-\item{digits}{an integer value indicating the number of decimal places
-to be used for displaying results. Note that the scaling
-correction factor is displayed  with \code{digits} plus 1
-decimal places.}
-
-\item{p.digits}{an integer value indicating the number of decimal places
-to be used for displaying \emph{p}-values, entropy value,
-and class proportions.}
+saving the bar chart. Note that this argument is used
+only when saving plots of an LCA based on continuous
+or count indicator variables.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
@@ -119,68 +155,178 @@ overwritten.}
 \item{output}{logical: if \code{TRUE} (default), output is shown.}
 }
 \value{
-Returns an object, which is a list with following entries:
+Returns an object of class \code{misty.object}, which is a list with following
+entries:
 
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
 \item{\code{output}}{list with all Mplus outputs}
 \item{\code{args}}{specification of function arguments}
 \item{\code{result}}{list with result tables, i.e., \code{summary} for the
-                     summary result table, \code{mean_var} for the result
-                     table with means and variances for each latent class
-                     separately, \code{mean} for the result table with means
-                     for each latent class separately, and \code{var} for the
-                     result table with variances for each latent class separately}
-}
+                     model summaries, \code{bf} for approximate Bayes factors,
+                     \code{classif} classification diagnostics,
+                     \code{mean_var} for class-specific means and variances
+                     of the indicator variables, \code{prob} for class-specific
+                     item response probabilities of the indicator variables
+                     and \code{d} for Cohen's d standardized mean difference
+                     between latent class \emph{j} and latent class \emph{k}}}
+
 \description{
 This function reads all Mplus output files from latent class analysis in
-subfolders to create a summary result table and bar charts for each latent
-class solution separately. By default, the function reads output files in all
-subfolders of the current working directory. Optionally, bar charts for each
-latent class solution can be requested by setting the argument \code{plot}
-to \code{TRUE}. Note that subfolders with only one Mplus output file are
-excluded.
+subfolders to create result tables with model summaries (e.g., AIC, CAIC, BIC,
+SABIC, AWE and cmP), approximate Bayes factors, classification diagnostics
+(e.g., relative Entropy, AvePP, and OCC), class-specific means and variances
+or class-specific item response probabilities of
+the indicator variables, and Cohen's \emph{d}s to quantify class separation
+between latent class \emph{j} and latent class \emph{k}. By default, the
+function reads output files in all subfolders of the current working directory
+or output files in the current working directory and prints a table with model
+summaries on the console. Bar charts including confidence intervals for each
+latent class solution can be requested by setting the argument \code{plot} to
+\code{TRUE}. Note that result tables with Bayes factors, classification diagnostics,
+class-specific means and variances, class-specific item response probabilities,
+and Cohen's \emph{d}s will not be printed on the console, but are only available
+in the exported Excel file when specifying the \code{write} argument (e.g.,
+\code{write = "Results_LCA.xlsx"}).
 }
 \details{
-The result summary table comprises following entries:
+The Excel file exported by the function for reading Mplus output files from
+latent class analysis with continuous or count indicator variables by
+specifying the \code{write} argument (e.g., \code{write = "Results_LCA.xlsx"})
+contains five sheets.
+
+\strong{(1) Summary: Model Summaries}
+
 \itemize{
    \item{\code{"Folder"}}: Subfolder from which the group of Mplus outputs files
-                           were summarized.
-   \item{\code{"#Class"}}: Number of classes (i.e., \code{CLASSES ARE c(#Class)}).
-   \item{\code{"Conv"}}: Model converged, \code{TRUE} or \code{FALSE} (i.e.,
-                         \code{THE MODEL ESTIMATION TERMINATED NORMALLY}.
-   \item{\code{"#Param"}}: Number of estimated parameters (i.e.,
-                           \code{Number of Free Parameters}).
-   \item{\code{"logLik"}}: Log-likelihood of the estimated model (i.e., \code{H0 Value}).
-   \item{\code{"Scale"}}: Scaling correction factor (i.e.,
-                          \code{H0 Scaling Correction Factor for}). Provided
-                          only when \code{ESTIMATOR IS MLR}.
-   \item{\code{"LL Rep"}}: Best log-likelihood replicated, \code{TRUE} or \code{FALSE}
-                           (i.e., \code{THE BEST LOGLIKELIHOOD VALUE HAS BEEN REPLICATED}).
-   \item{\code{"AIC"}}: Akaike information criterion (i.e., \code{Akaike (AIC)}).
+                           were summarized
+   \item{\code{"#Class"}}: Number of latent classes, i.e., \code{CLASSES ARE c(#Class)}
+   \item{\code{"Conv"}}: Model converged, \code{TRUE} or \code{FALSE}, i.e.,
+                         \code{THE MODEL ESTIMATION TERMINATED NORMALLY}
+   \item{\code{"#Param"}}: Number of estimated parameters, i.e., \code{Number of Free Parameters}
+   \item{\code{"logLik"}}: Log-likelihood of the estimated model, i.e., \code{H0 Value}
+   \item{\code{"Scale"}}: Scaling correction factor, i.e., \code{H0 Scaling Correction Factor for},
+                          available only when \code{ESTIMATOR IS MLR}
+   \item{\code{"LLRep"}}: Best log-likelihood replicated, \code{TRUE} or \code{FALSE},
+                          i.e., \code{THE BEST LOGLIKELIHOOD VALUE HAS BEEN REPLICATED}
+   \item{\code{"AIC"}}: Akaike information criterion, i.e., \code{Akaike (AIC)}
    \item{\code{"CAIC"}}: Consistent AIC, not reported in the Mplus output, but
-                         simply \code{BIC + #Param}.
-   \item{\code{"BIC"}}: Bayesian information criterion (i.e., \code{Bayesian (BIC)}).
-   \item{\code{"Chi-Pear"}}: Pearson chi-square test of model fit (i.e., \code{Pearson Chi-Square}),
-                             only available when indicators are count or ordered categorical.
-   \item{\code{"Chi-LRT"}}: Likelihood ratio chi-square test of model fit (i.e., \code{Likelihood Ratio Chi-Square}),
-                            only available when indicators are count or ordered categorical.
-   \item{\code{"SABIC"}}: Sample-size adjusted BIC (i.e., \code{Sample-Size Adjusted BIC}).
-   \item{\code{"LMR-LRT"}}: Significance value (\emph{p}-value) of the Vuong-Lo-Mendell-Rubin test
-                            (i.e., \code{VUONG-LO-MENDELL-RUBIN LIKELIHOOD RATIO TEST}).
-                            Provided only when \code{OUTPUT: TECH11}.
-   \item{\code{"A-LRT"}}: Significance value (\emph{p}-value) of the Adjusted Lo-Mendell-Rubin Test
-                          (i.e., \code{LO-MENDELL-RUBIN ADJUSTED LRT TEST}).
-                          Provided only when \code{OUTPUT: TECH11}.
+                         simply \code{BIC + #Param}
+   \item{\code{"BIC"}}: Bayesian information criterion, i.e., \code{Bayesian (BIC)}
+   \item{\code{"SABIC"}}: Sample-size adjusted BIC, i.e., \code{Sample-Size Adjusted BIC}
+   \item{\code{"AWE"}}: Approximate weight of evidence criterion (Banfield & Raftery, 1993)
+   \item{\code{"cmP"}}: Approximate correct model probability (Schwarz, 1978)
+                        across estimated models in all Mplus output files in
+                        the subfolders to create result tables
+   \item{\code{"Chi-Pear"}}: Pearson chi-square test of model fit, i.e., \code{Pearson Chi-Square},
+                             available only when indicators are count or ordered categorical
+   \item{\code{"Chi-LRT"}}: Likelihood ratio chi-square test of model fit, i.e., \code{Likelihood Ratio Chi-Square},
+                            available only when indicators are count or ordered categorical
+   \item{\code{"LMR-LRT"}}: Significance value (\emph{p}-value) of the Vuong-Lo-Mendell-Rubin test,
+                            i.e., \code{VUONG-LO-MENDELL-RUBIN LIKELIHOOD RATIO TEST},
+                            available only when \code{OUTPUT: TECH11}
+   \item{\code{"A-LRT"}}: Significance value (\emph{p}-value) of the Adjusted Lo-Mendell-Rubin Test,
+                          i.e., \code{LO-MENDELL-RUBIN ADJUSTED LRT TEST},
+                          available only when \code{OUTPUT: TECH11}
    \item{\code{"BLRT"}}: Significance value (\emph{p}-value) of the bootstrapped
-                         likelihood ratio test. Provided only when \code{OUTPUT: TECH14}.
+                         likelihood ratio test, available only when \code{OUTPUT: TECH14}
    \item{\code{"Entropy"}}: Summary of the class probabilities across classes
-                            and individuals in the sample (i.e., \code{Entropy}).
+                            and individuals in the sample, i.e., \code{Entropy}
+   \item{\code{"aPPMin"}}: Minimum average posterior class probability (AvePP)
+                           for the latent classes
+   \item{\code{"OCCMin"}}: Minimum odds of correct classification ratio (OCC)
+   \item{\code{"nMin"}}: Minimum class count for the latent classes based on
+                         the estimated model
+   \item{\code{"pMin"}}: Minimum class proportion for the latent classes based
+                         on the estimated model
+}
+
+\strong{(2) aBF: Approximate Bayes Factors}
+
+\itemize{
+   \item{\code{"A-Folder"}}: Subfolder from which the group of Mplus outputs files
+                             for Model A were summarized
+   \item{\code{"A-#Class"}}: Number of latent classes for Model A, i.e., \code{CLASSES ARE c(#Class)}
+   \item{\code{"A-BIC"}}: Bayesian information criterion for Model A, i.e., \code{Bayesian (BIC)}
+   \item{\code{"B-Folder"}}: Subfolder from which the group of Mplus outputs files
+                             for Model B were summarized
+   \item{\code{"B-#Class"}}: Number of latent classes for Model B, i.e., \code{CLASSES ARE c(#Class)}
+   \item{\code{"B-BIC"}}: Bayesian information criterion for Model B, i.e., \code{Bayesian (BIC)}
+   \item{\code{"aBF"}}: Approximate Bayes Factor for pairwise comparison of relative fit
+                        between Model A and Model B, i.e., ratio of the probability of
+                        Model A being correct model to Model B being the correct model
+}
+
+\strong{(3) Classif: Classification Diagnostics}
+
+\itemize{
+   \item{\code{"Folder"}}: Subfolder from which the group of Mplus outputs files
+                           were summarized
+   \item{\code{"#Class"}}: Number of latent classes, i.e., \code{CLASSES ARE c(#Class)}.
+   \item{\code{"Conv"}}: Model converged, \code{TRUE} or \code{FALSE}, i.e.,
+                         \code{THE MODEL ESTIMATION TERMINATED NORMALLY}.
+   \item{\code{"#Param"}}: Number of estimated parameters, i.e.,
+                           \code{Number of Free Parameters}
+   \item{\code{"LLRep"}}: Best log-likelihood replicated, \code{TRUE} or \code{FALSE},
+                          i.e., \code{THE BEST LOGLIKELIHOOD VALUE HAS BEEN REPLICATED}
+   \item{\code{"n1"}}: Class count for the first latent class based on the estimated model,
+                       i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}
+   \item{\code{"n2"}}: Class count for the second latent class based on the estimated model,
+                       i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}
    \item{\code{"p1"}}: Class proportion of the first class based on the estimated
-                       posterior probabilities (i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}).
+                       posterior probabilities, i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}
    \item{\code{"p2"}}: Class proportion of the second class based on the estimated
-                       posterior probabilities (i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}).
- }
+                       posterior probabilities, i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}
+   \item{\code{"Entropy"}}: Summary of the class probabilities across classes
+                            and individuals in the sample, i.e., \code{Entropy}
+   \item{\code{"aPP1"}}: Average posterior class probability (AvePP) of the
+                         first latent class for the latent classes
+   \item{\code{"aPP2"}}: Average posterior class probability (AvePP) of the
+                         second latent class for the latent classes
+   \item{\code{"OCC1"}}: Odds of correct classification ratio (OCC) of the
+                         first latent class
+   \item{\code{"OCC2"}}: Odds of correct classification ratio (OCC) of the
+                         second latent class
+}
+
+\strong{(4) Mean_Var: Means and Variances for each Latent Class Separately}
+
+\itemize{
+   \item{\code{"Folder"}}: Subfolder from which the group of Mplus outputs files
+                           were summarized
+   \item{\code{"#Class"}}: Number of latent classes, i.e., \code{CLASSES ARE c(#Class)}
+   \item{\code{"n"}}: Class counts based on the estimated model,
+                      i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}
+   \item{\code{"Param"}}: Parameter, i.e., mean or variance
+   \item{\code{"Ind"}}: Latent class indicator variable
+   \item{\code{"Est."}}: Parameter estimate.
+   \item{\code{"SE"}}: Standard error
+   \item{\code{"z"}}: Test statistic
+   \item{\code{"pval"}}: Significance value
+   \item{\code{"Low"}}: Lower bound of the confidence interval
+   \item{\code{"Upp"}}: Upper bound of the confidence interval
+}
+
+\strong{(5) d: Cohen's d}
+
+\itemize{
+   \item{\code{"Folder"}}: Subfolder from which the group of Mplus outputs files
+                           were summarized
+   \item{\code{"#Class"}}: Number of latent classes, i.e., \code{CLASSES ARE c(#Class)}
+   \item{\code{"Ind"}}: Latent class indicator variable
+   \item{\code{"Class.j"}}: Number of classes for model \emph{j}
+   \item{\code{"Class.k"}}: Number of classes for model \emph{k}
+   \item{\code{"n.j"}}: Latent classes \emph{j}
+   \item{\code{"M.j"}}: Class-specific mean of the indicator for the latent class \emph{j}
+   \item{\code{"SD.j"}}: Class-specific standard deviation of the indicator for the latent class \emph{j}
+   \item{\code{"n.k"}}: Latent classes \emph{k}
+   \item{\code{"M.k"}}: Class-specific mean of the indicator for the latent class \emph{k}
+   \item{\code{"SD.k"}}: Class-specific standard deviation of the indicator for the latent class \emph{k}
+   \item{\code{"d"}}: Cohen's d, Standardized mean difference
+}
+
+For more info on fit indices, classification diagnostics, and evaluating class
+separation see Masyn (2013) and Sorgente et al. (2025).
 }
 \examples{
 \dontrun{
@@ -193,10 +339,10 @@ mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
           mplus.run = TRUE)
 
 # Example 1a: Read Mplus output files, create result table, write table, and save plots
-mplus.lca.summa(write = "LCA.xlsx", plot = TRUE)
+mplus.lca.summa(write = "Results_LCA.xlsx", plot = TRUE)
 
 # Example 1b: Write results into a text file
-mplus.lca.summa(write = "LCA.txt")
+mplus.lca.summa(write = "Results_LCA.txt")
 
 #-------------------------------------------------------------------------------
 # Example 2: Draw bar chart manually
@@ -236,12 +382,23 @@ ggsave("LCA_4-Class.png", dpi = 600, width = 6, height = 4)
 }
 }
 \references{
+Banfield, J. D., & Raftery, A E. (1993). Model-based Gaussian and non-Gaussian
+clustering. \emph{Biometrics, 49}, 803-821.
+
 Masyn, K. E. (2013). Latent class analysis and finite mixture modeling. In T. D.
 Little (Ed.), \emph{The Oxford handbook of quantitative methods: Statistical analysis}
 (pp. 551–611). Oxford University Press.
 
 Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
 Muthen & Muthen.
+
+Schwartz, G. (1978). Estimating the dimension of a model. \emph{The Annals of Statistics, 6},
+461-464.
+
+Sorgente, A., Caliciuri, R., Robba, M., Lanz, M., & Zumbo, B. D. (2025) A systematic
+review of latent class analysis in psychology: Examining the gap between guidelines
+and research practice. \emph{Behavior Research Methods, 57}(11), 301.
+https://doi.org/10.3758/s13428-025-02812-1
 }
 \seealso{
 \code{\link{mplus.lca}}, \code{\link{mplus.run}}, \code{\link{read.mplus}},

@@ -164,7 +164,7 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
     # Cross-level constraints
     cl.const <- apply(mod.par[mod.par$op == "==", ], 1L, function(y) (y["lhs"] %in% l1.par && y["rhs"] %in% l2.par) | (y["lhs"] %in% l2.par && y["rhs"] %in% l1.par))
 
-    if (any(cl.const)) { stop("The model contains cross-level equality constraints, i.e., level-specific fit indices cannot be computed.", call. = FALSE) }
+    if (isTRUE(any(cl.const))) { stop("The model contains cross-level equality constraints, i.e., level-specific fit indices cannot be computed.", call. = FALSE) }
 
   # Cross-level inequality constraints
   } else if (isTRUE(any(mod.par$op %in% c(">", "<", ">=", "<=")))) {
@@ -175,7 +175,7 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
     cl.const <- apply(mod.par.con, 1L, function(y) (mod.par[mod.par$label == as.character(y["lhs"]), "plabel"] %in% l1.par && mod.par[mod.par$label == as.character(y["rhs"]), "plabel"] %in% l2.par) ||
                                                    (mod.par[mod.par$label == as.character(y["rhs"]), "plabel"] %in% l1.par && mod.par[mod.par$label == as.character(y["lhs"]), "plabel"] %in% l2.par))
 
-    if (any(cl.const)) { stop("The model contains cross-level inequality constraints, i.e., level-specific fit indices cannot be computed.", call. = FALSE) }
+    if (isTRUE(any(cl.const))) { stop("The model contains cross-level inequality constraints, i.e., level-specific fit indices cannot be computed.", call. = FALSE) }
 
   }
 
@@ -311,14 +311,14 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
   # With 'ustart'
   l2.mod.par.b2.ustart <- l2.mod.par.b2[!is.na(l2.mod.par.b2$ustart) & l2.mod.par.b2$label == "", ]
 
-  if (nrow(l2.mod.par.b2.ustart) > 0L) { l2.mod.par.b2.ustart$op <- paste(paste0("~", l2.mod.par.b2.ustart$ustart), "1", sep = "*") }
+  if (isTRUE(nrow(l2.mod.par.b2.ustart) > 0L)) { l2.mod.par.b2.ustart$op <- paste(paste0("~", l2.mod.par.b2.ustart$ustart), "1", sep = "*") }
 
   mod.l2.b2 <- rbind(mod.l2.b2, l2.mod.par.b2.ustart[, c("lhs", "op", "rhs")])
 
   # With 'label'
   l2.mod.par.b2.label <- l2.mod.par.b2[l2.mod.par.b2$label != "", ]
 
-  if (nrow(l2.mod.par.b2.label) > 0L) { l2.mod.par.b2.label$op <- paste(paste0("~", l2.mod.par.b2.label$label), "1", sep = "*") }
+  if (isTRUE(nrow(l2.mod.par.b2.label) > 0L)) { l2.mod.par.b2.label$op <- paste(paste0("~", l2.mod.par.b2.label$label), "1", sep = "*") }
 
   mod.l2.b2 <- rbind(mod.l2.b2, l2.mod.par.b2.label[, c("lhs", "op", "rhs")])
 
@@ -379,7 +379,7 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
 
   lav.options <- lavaan::lavInspect(model, what = "options")
 
-  model.call <- c(estimator = paste0("estimator = ", "\"", ifelse(lav.options$test == "yuan.bentler.mplus", "MLR", "ML"), "\""),
+  model.call <- c(estimator = paste0("estimator = ", "\"", ifelse(length(lav.options$test) == 1L, "ML", "MLR"), "\""),
                   optim.method = paste0("optim.method =", "\"", lav.options$optim.method, "\""),
                   missing = paste0("missing =", "\"", lav.options$missing, "\""),
                   std.lv = paste0("std.lv =", "\"", lav.options$std.lv, "\""),
@@ -640,7 +640,7 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
     l1.rmsea[c("rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")] <- NA
 
   # Scaled test statistic not available when estimator = "MLR"
-  } else if (isTRUE(lavaan::lavInspect(model, what = "options")$test != "standard" && is.na(l1.chisq["chisq.scaled"]))) {
+  } else if (isTRUE(all(lavaan::lavInspect(model, what = "options")$test != "standard") && is.na(l1.chisq["chisq.scaled"]))) {
 
     warning("(Scaled and robust) CFI, TLI, and RMSEA at the Within level are not available due to estimation problems.", call. = FALSE)
 
@@ -662,7 +662,7 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
     l2.rmsea[c("rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", "rmsea.pvalue.scaled", "rmsea.ci.lower.robust", "rmsea.ci.upper.robust", "rmsea.pvalue.robust")] <- NA
 
   # Scaled test statistic not available when estimator = "MLR"
-  } else if (isTRUE(is.na(lavaan::lavInspect(model, what = "options")$test != "standard" && l2.chisq["chisq.scaled"]))) {
+  } else if (isTRUE(is.na(all(lavaan::lavInspect(model, what = "options")$test != "standard") && l2.chisq["chisq.scaled"]))) {
 
     warning("(Scaled and robust) CFI, TLI, and RMSEA at the Between level are not available due to estimation problems.", call. = FALSE)
 
@@ -698,11 +698,11 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
                                # Second column
                                unlist(c("", "",
                                         # Estimator
-                                        ifelse(lavaan::lavInspect(model, what = "options")$test == "standard", "ML", "MLR"),
+                                        lavaan::lavTech(model, what = "options")$test |> (\(p) if (isTRUE(length(p) == 1L)) { "ML" } else { "MLR" })(),
                                         # Optimization method
                                         toupper(lavaan::lavTech(model, what = "options")$optim.method), "",
                                         # Test statistic
-                                        switch(lavaan::lavTech(model, what = "options")$test,
+                                        switch(lavaan::lavTech(model, what = "options")$test |> (\(p) if (isTRUE(length(p) != 1L)) { misty::chr.omit(p, omit = "standard") } else { p })(),
                                                "standard" = "Conventional",
                                                "satorra.bentler" = "Satorra-Bentler",
                                                "scaled.shifted" = "Scale-Shifted",
@@ -720,9 +720,9 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
                                         # Missing data
                                         ifelse(lavaan::lavInspect(model, what = "nobs") != lavaan::lavInspect(model, what = "norig"), "Listwise",
                                                ifelse(lavaan::lavInspect(model, what = "nobs") == lavaan::lavInspect(model, what = "norig") && any(is.na(lavaan::lavInspect(model, what = "data"))), "FIML", "None")), "",
-                                        # Numer of model parameters
+                                        # Number of model parameters
                                         npar, npar.l1, npar.l2,
-                                        # Numer of equality constraints
+                                        # Number of equality constraints
                                         npar.eq, "", "Used",
                                         # Number of observations
                                         lavaan::lavInspect(model, what = "nobs"),
@@ -826,7 +826,7 @@ multilevel.fit <- function(model, print = c("all", "summary", "fit"), digits = 3
                                               rep(NA, times = 3L)),
                                    fix.empty.names = FALSE)
 
-  if (isTRUE(lavaan::lavInspect(model, what = "options")$test == "standard")) {
+  if (isTRUE(all(lavaan::lavInspect(model, what = "options")$test == "standard"))) {
 
     model.fit.measures <- model.fit.measures[-c(3L, 5L, 22:24L), c(1L, 2L)]
 

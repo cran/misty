@@ -173,7 +173,7 @@
 #' multilevel.icc(Demo.twolevel, y1, cluster = "cluster", type = "2")
 #'
 #' # Example 4: ICC(1)
-#' # use lme() function in the lme4 package to estimate ICC
+#' # use lme() function in the nlme package to estimate ICC
 #' multilevel.icc(Demo.twolevel, y1, cluster = "cluster", method = "nlme")
 #'
 #' # Example 5: ICC(1) for 'y1', 'y2', and 'y3'
@@ -239,8 +239,8 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
     # Extract data and convert tibble into data frame or vector
     x <- data[,  .var.names(data = data, ..., cluster = cluster)] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-    # Cluster variable
-    cluster <- data[, cluster]
+    # Extract cluster variable and convert tibble into data frame or vector
+    cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
@@ -261,51 +261,26 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
 
   }
 
-  # Convert 'cluster' as tibble into data frame
-  if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unname(unlist(cluster)) } else { cluster <- as.data.frame(cluster) } }
-
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
 
-  x <- (!vapply(as.data.frame(x), is.numeric, FUN.VALUE = logical(1L))) |> (\(y) if (isTRUE(any(y))) {
-
-    warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(y)), collapse = ", ")), call. = FALSE)
-
-    return(as.data.frame(x)[, -which(y), drop = FALSE])
-
-  } else {
-
-    return(x)
-
-  })()
-
-  if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
+  x <- .exclude.non.numeric(x)
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Cluster variables ####
 
+  # One cluster variables
+  if (isTRUE(is.null(dim(cluster)))) {
+
+    no.clust <- "one"
+
   # Two cluster variables
-  if (isTRUE(ncol(as.data.frame(cluster)) == 2L)) {
+  } else {
 
     l3.cluster <- cluster[, 1L]
     l2.cluster <- cluster[, 2L]
 
     no.clust <- "two"
-
-    # One cluster variables
-  } else {
-
-    no.clust <- "one"
-
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Cluster variables ####
-
-  if (isTRUE(ncol(as.data.frame(cluster)) == 2L)) {
-
-    l3.cluster <- cluster[, 1L]
-    l2.cluster <- cluster[, 2L]
 
   }
 
@@ -321,6 +296,12 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
   # Check inputs
   .check.input(logical = "REML", s.character = list(type = c("1a", "1b", "2"), method = c("aov", "lme4", "nlme")), envir = environment(), input.check = check)
 
+  # Package lme4 installed?
+  if (isTRUE(method == "lme4")) { if (isTRUE(!nzchar(system.file(package = "lme4")))) { stop("Package \"lme4\" is needed for method = \"lme4\", please install the package or switch to a different method.", call. = FALSE) } }
+
+  # Package nlme installed?
+  if (isTRUE(method == "nlme")) { if (isTRUE(!nzchar(system.file(package = "nlme")))) { stop("Package \"nlme\" is needed for method = \"nlme\", please install the package or switch to a different method.", call. = FALSE) } }
+
   #_____________________________________________________________________________
   #
   # Arguments ------------------------------------------------------------------
@@ -335,18 +316,7 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
 
   if (isTRUE(all(c("aov", "lme4", "nlme") %in% method))) { method <- "lme4" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Check if packages are installed ####
-
-  # Package lme4 installed?
-  if (isTRUE(method == "lme4")) { if (isTRUE(!nzchar(system.file(package = "lme4")))) { stop("Package \"lme4\" is needed for method = \"lme4\", please install the package or switch to a different method.", call. = FALSE) } }
-
-  # Package nlme installed?
-  if (isTRUE(method == "nlme")) { if (isTRUE(!nzchar(system.file(package = "nlme")))) { stop("Package \"nlme\" is needed for method = \"nlme\", please install the package or switch to a different method.", call. = FALSE) } }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Two cluster variables ####
-
+  # Two cluster variables
   if (isTRUE(ncol(as.data.frame(cluster)) == 2L && method == "aov")) { stop("Please specify \"lme4\" or \"nlme\" for the argument 'method' when specifying two cluster variables.", call. = FALSE) }
 
   #_____________________________________________________________________________
@@ -354,20 +324,20 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
   # Main Function --------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## One dependent variable ####
+  ## One Dependent Variable ####
 
   if (isTRUE(is.null(dim(x)))) {
 
     #...................
-    ### Variable with non-zero variance ####
+    ### Variable with Non-Zero Variance ####
+
     if (isTRUE(var(x, na.rm = TRUE) != 0L)) {
 
-      #-----------------
-      ##### One cluster variable
+      #### Variance Components Given One Cluster Variable
       if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) {
 
-        ###### ICC using aov() function
-        if (isTRUE(method == "aov")) {
+        ##### aov() function
+        switch(method, "aov" = {
 
           # Estimate model
           mod <- aov(x ~ 1 + Error(as.factor(cluster)))
@@ -384,11 +354,11 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
           # Total variance
           var.total <- var.u + var.r
 
-        ###### Variance components lmer() function
-        } else if (isTRUE(method == "lme4")) {
+        ##### lmer() function
+        }, "lme4" = {
 
           # Estimate model
-          mod <- suppressMessages(lme4::lmer(x ~ 1 + (1|cluster), REML = REML, control = lme4::lmerControl(optimizer = "bobyqa")))
+          mod <- suppressWarnings(suppressMessages(lme4::lmer(x ~ 1 + (1|cluster), REML = REML, control = lme4::lmerControl(optimizer = "bobyqa"))))
 
           # Variance components
           vartab <- as.data.frame(suppressMessages(lme4::VarCorr(mod)))
@@ -402,14 +372,14 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
           # Total variance
           var.total <- var.u + var.r
 
-        ###### Variance components lme() function
-        } else if (isTRUE(method == "nlme")) {
+        ##### lme() function
+        }, "nlme" = {
 
           # REML or ML
           ifelse(isTRUE(REML), REML <- "REML", REML <- "ML")
 
           # Estimate model
-          mod <- suppressMessages(nlme::lme(x ~ 1, random = ~ 1 | cluster, na.action = na.omit, method = REML))
+          mod <- suppressWarnings(suppressMessages(nlme::lme(x ~ 1, random = ~ 1 | cluster, na.action = na.omit, method = REML)))
 
           # Variance components
           vartab <- nlme::VarCorr(mod)
@@ -423,21 +393,21 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
           # Total variance
           var.total <- var.u + var.r
 
-        }
+        })
 
-        ###### ICC
+        ##### ICC
         if (isTRUE(method %in% c("lme4", "nlme"))) {
 
           # ICC(1)
           if (isTRUE(type == "1a")) {
 
-            object <- var.u / var.total
+            object <- (var.u / var.total) |> (\(p) if (isTRUE(p < .Machine$double.eps^0.5)) { 0 } else { p })()
 
           # ICC(2)
           } else if (isTRUE(type == "2")) {
 
             # Intraclass correlation coefficient, ICC(2)
-            object <- var.u / (var.u + (var.r / mean(table(cluster))))
+            object <- (var.u / (var.u + (var.r / mean(table(cluster))))) |> (\(p) if (isTRUE(p < .Machine$double.eps^0.5)) { 0 } else { p })()
 
           }
 
@@ -446,14 +416,14 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
         }
 
       #-----------------
-      ##### Two cluster variables
+      #### Variance Components Given Two Cluster Variables
       } else if (isTRUE(ncol(as.data.frame(cluster)) == 2L)) {
 
-        ###### ICC using lmer() function
-        if (isTRUE(method == "lme4")) {
+        ##### lmer() function
+        switch(method, "lme4" =  {
 
           # Estimate model
-          mod <- suppressMessages(lme4::lmer(x ~ 1 + (1|l3.cluster/l2.cluster), REML = REML, control = lme4::lmerControl(optimizer = "bobyqa")))
+          mod <- suppressWarnings(suppressMessages(lme4::lmer(x ~ 1 + (1|l3.cluster/l2.cluster), REML = REML, control = lme4::lmerControl(optimizer = "bobyqa"))))
 
           # Variance components
           vartab <- as.data.frame(suppressMessages(lme4::VarCorr(mod)))
@@ -470,14 +440,14 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
           # Total variance
           var.total <- var.v + var.u + var.r
 
-        ###### ICC using lme() function
-        } else if (isTRUE(method == "nlme")) {
+        ##### lme() function
+        }, "nlme" = {
 
           # REML or ML
           ifelse(isTRUE(REML), REML <- "REML", REML <- "ML")
 
           # Estimate model
-          mod <- suppressMessages(nlme::lme(x ~ 1, random = ~1 | l3.cluster/l2.cluster, na.action = na.omit, method = REML))
+          mod <- suppressWarnings(suppressMessages(nlme::lme(x ~ 1, random = ~1 | l3.cluster/l2.cluster, na.action = na.omit, method = REML)))
 
           # Variance components
           vartab <- nlme::VarCorr(mod)
@@ -494,19 +464,19 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
           # Total variance
           var.total <- var.v + var.u + var.r
 
-        }
+        })
 
         # ICC(1), proportion of variance
         if (isTRUE(type == "1a")) {
 
-          icc.l3 <- var.v / var.total
-          icc.l2 <- var.u / var.total
+          icc.l3 <- (var.v / var.total) |> (\(p) if (isTRUE(p < .Machine$double.eps^0.5)) { 0 } else { p })()
+          icc.l2 <- (var.u / var.total) |> (\(p) if (isTRUE(p < .Machine$double.eps^0.5)) { 0 } else { p })()
 
         # ICC(1), estimate of the expected correlation
         } else if (isTRUE(type == "1b")) {
 
-          icc.l3 <- var.v / var.total
-          icc.l2 <- (var.v + var.u) / var.total
+          icc.l3 <- (var.v / var.total) |> (\(p) if (isTRUE(p < .Machine$double.eps^0.5)) { 0 } else { p })()
+          icc.l2 <- ((var.v + var.u) / var.total) |> (\(p) if (isTRUE(p < .Machine$double.eps^0.5)) { 0 } else { p })()
 
         # ICC(2)
         } else if (isTRUE(type == "2")) {
@@ -516,39 +486,39 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
           cluster.size.l3 <- mean(table(cluster[which(!duplicated(cluster[, 2L])), 1L]))
 
           # ICC(2) Level 2, Formula 10.27, Hox et al. (2018, p. 186)
-          icc.l2 <- var.u / (var.u + (var.r / cluster.size.l2))
+          icc.l2 <- (var.u / (var.u + (var.r / cluster.size.l2))) |> (\(p) if (isTRUE(p < .Machine$double.eps^0.5)) { 0 } else { p })()
 
           # ICC(2) Level 3, Formula 10.25, Hox et al. (2018, p. 185) and Formula 8.8, Raudenbush and Bryk (2002, p. 230)
-          icc.l3 <- var.v / (var.v + (var.u / cluster.size.l3) + (var.r / (cluster.size.l2 * cluster.size.l3)))
+          icc.l3 <- (var.v / (var.v + (var.u / cluster.size.l3) + (var.r / (cluster.size.l2 * cluster.size.l3)))) |> (\(p) if (isTRUE(p < .Machine$double.eps^0.5)) { 0 } else { p })()
 
         }
 
-        object <- c(L3 = icc.l3, L2 = icc.l2)
+        object <- setNames(c(icc.l3, icc.l2), nm = names(cluster))
 
       }
 
     #...................
-    ### Variable with non-zero variance ####
+    ### Variable with Zero Variance ####
+
     } else {
 
-      #-----------------
-      ##### One cluster variable
+      #### One Cluster Variable
       if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) {
 
         object <- NA
 
-      #-----------------
-      ##### Two cluster variables
+      #### Two Cluster Variables
       } else {
 
-        object <- c(L3 = NA, L2 = NA)
+        object <- setNames(c(NA, NA), nm = names(cluster))
 
       }
 
     }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## More than one dependent variable ####
+  ## More than one Dependent Variable ####
+
   } else {
 
     object <- sapply(x, function(y) misty::multilevel.icc(y, cluster = cluster, type = type, method = method, REML = REML, as.na = NULL, check = FALSE))

@@ -111,7 +111,7 @@ confidence intervals (CI), i.e., \code{"none"} (default)
 for not conducting bootstrapping, \code{"norm"} for
 the bias-corrected normal approximation bootstrap CI,
 \code{"basic"} for the basic bootstrap CI, \code{"perc"},
-for the percentile bootstrap CI \code{"bc"} (default)
+for the percentile bootstrap CI \code{"bc"}
 for the bias-corrected (BC) percentile bootstrap CI
 (without acceleration), and \code{"bca"} for the
 bias-corrected and accelerated (BCa) bootstrap CI.}

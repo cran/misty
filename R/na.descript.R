@@ -137,7 +137,7 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
     x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
 
     # Cluster variable
-    if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] }
+    if (isTRUE(!is.null(cluster))) { cluster <- data[, cluster] |>  (\(p) if (isTRUE(!is.null(dim(p)))) { setNames(p, nm = c("cluster3", "cluster2")) } else { return(p) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
@@ -158,9 +158,6 @@ na.descript <- function(data, ..., cluster = NULL, table = FALSE, digits = 2,
 
 
   }
-
-  # Convert 'cluster' as tibble into a vector
-  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####

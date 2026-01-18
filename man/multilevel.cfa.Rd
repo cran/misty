@@ -282,7 +282,7 @@ multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster",
 # i.e., strong factorial invariance across clusters
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", fix.resid = "all")
 
-# Example 4b: Fesidual variances of 'y1', 'y2', and 'y4' fixed at 0
+# Example 4b: Residual variances of 'y1', 'y2', and 'y4' fixed at 0
 # i.e., partial strong factorial invariance across clusters
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", fix.resid = c("y1", "y2", "y4"))
 

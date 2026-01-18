@@ -130,7 +130,13 @@
       if (isTRUE("mcse.digits" %in% args)) { eval(parse(text = "mcse.digits"), envir = envir) |> (\(y) if (isTRUE(!!is.null(y) && (is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'mcse.digits'.", call. = FALSE) })() }
 
       # Check input 'conf.level'
-      if (isTRUE("conf.level" %in% args)) { eval(parse(text = "conf.level"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'conf.level'.", call. = FALSE) })() }
+      if (isTRUE("conf.level" %in% args)) { eval(parse(text = "conf.level"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) })() }
+
+      # Check input 'start'
+      if (isTRUE("start" %in% args)) { eval(parse(text = "start"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'start '.", call. = FALSE) })() }
+
+      # Check input 'end'
+      if (isTRUE("end" %in% args)) { eval(parse(text = "end"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'end '.", call. = FALSE) })() }
 
       # Check input 'hist.alpha'
       if (isTRUE("hist.alpha" %in% args)) { eval(parse(text = "hist.alpha"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'hist.alpha '.", call. = FALSE) })() }
@@ -602,6 +608,12 @@
   if (isTRUE(!is.null(group))) {
 
     #...................
+    ### Tibble ####
+
+    # Convert 'group' as tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(cluster)) }
+
+    #...................
     ### Grouping Variable Specified with the Variable Name ####
 
     group.chr <- is.character(group)
@@ -648,6 +660,12 @@
   if (isTRUE(!is.null(split))) {
 
     #...................
+    ### Tibble ####
+
+    # Convert 'group' as tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { split <- unname(unlist(split)) }
+
+    #...................
     ### Split Variable Specified with the Variable Name ####
 
     split.chr <- is.character(split)
@@ -692,6 +710,12 @@
   ## Cluster Variable ####
 
   if (isTRUE(!is.null(cluster))) {
+
+    #...................
+    ### Tibble ####
+
+    # Convert 'cluster' as tibble into data frame
+    if (isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unname(unlist(cluster)) } else { cluster <- as.data.frame(cluster) } }
 
     #...................
     ### Cluster variable specified with the variable name ####
@@ -1023,16 +1047,55 @@
   # Grouping, split, or cluster variable specified with the variable name
   if (isTRUE(any(c(group.chr, split.chr, cluster.chr, id.chr, obs.chr, day.chr, time.chr)))) {
 
-    return(list(data = data, group = group, split = split, cluster = cluster,
-                id = id, obs = obs, day = day, time = time))
+    return(list(data = data, group = group, split = split, cluster = cluster, id = id, obs = obs, day = day, time = time))
 
   # Grouping, split, or cluster variable not specified with the variable name
   } else {
 
-    return(list(data = NULL, group = NULL, split = NULL, cluster = NULL,
-                id = NULL, obs = NULL, day = NULL, time = NULL))
+    return(list(data = NULL, group = NULL, split = NULL, cluster = NULL, id = NULL, obs = NULL, day = NULL, time = NULL))
 
   }
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Exclude Non-Numeric Variables ------------------------------------------------
+
+.exclude.non.numeric <- function(x, func = NULL) {
+
+  x <- (!vapply(x, function(z) is.numeric(z), FUN.VALUE = logical(1L))) |> (\(p) if (isTRUE(any(p))) {
+
+      if (isTRUE(sum(p) == 1L)) {
+
+        warning(paste0("Non-numeric variable was excluded from the analysis: ", paste(names(which(p)), collapse = ", ")), call. = FALSE)
+
+      } else {
+
+        warning(paste0("Non-numeric variables were excluded from the analysis: ", paste(names(which(p)), collapse = ", ")), call. = FALSE)
+
+      }
+
+      return(x[, -which(p), drop = FALSE])
+
+    } else {
+
+      return(x)
+
+    })()
+
+  # No variables left
+  if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
+
+  # At least two variables
+  if (isTRUE(func == "alpha" && ncol(x) == 1L)) { stop("At least two items after excluding non-numeric variables are needed to compute coefficient alpha.", call. = FALSE) }
+
+  # At least three variables
+  if (isTRUE(func == "omega" && ncol(x) == 2L)) { stop("At least three items after excluding non-numeric variables are needed to compute coefficient omega.", call. = FALSE) }
+
+  # Return object
+  return(x)
 
 }
 
@@ -1199,7 +1262,7 @@
       ## Labels ####
 
        labels <- read.table(paste0(folder, base, "/labels.dat"), header = TRUE) |>
-         setNames(object = _, nm = c("latent1", "latent2", "latent3", "param")) |>
+         setNames(object = _, nm = c("latent1", "latent2", "latent3", "param", "block")) |>
          (\(z) within(z, param <- paste0("p", param)))()
 
       #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3146,7 +3209,7 @@
 
         ci <- c(low = 0L, upp = df*x.var / crit.upp)
 
-        # One-sided CI: greater
+      # One-sided CI: greater
       }, greater = {
 
         crit.low <- qchisq((1L - conf.level), df = df, lower.tail = FALSE)
@@ -5991,7 +6054,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## .phi Function ####
 
-.phi <- function(x, adjust, p = NULL, conf.level, alternative) {
+.phi <- function(x, adjust, p = NULL, conf.level, alternative, fei = FALSE) {
 
   # Cross tabulation
   tab <- table(x)
@@ -6003,7 +6066,7 @@
   model <- tryCatch(suppressWarnings(chisq.test(tab, correct = FALSE, p = p)), error = function(y) { list(statistic = NA, parameter = NA) })
 
   # Table with at least two rows and two columns and chi-square statistic is not NA or NaN
-  if (isTRUE(ncol(tab) >= 2L && nrow(tab) >= 2L && !is.na(model$parameter) && !is.nan(model$statistic))) {
+  if (isTRUE(((ncol(tab) >= 2L && nrow(tab) >= 2L) || fei) && !is.na(model$parameter) && !is.nan(model$statistic))) {
 
     # Test statistic
     chisq <- model$statistic
@@ -6260,7 +6323,7 @@
   if (isTRUE(is.null(p))) { p <- rep(1L / length(tab), times = length(tab)) }
 
   # Fei
-  result <- .phi(x, adjust = FALSE, p = p, conf.level = conf.level, alternative = alternative)[, -1L]
+  result <- .phi(x, adjust = FALSE, fei = TRUE, p = p, conf.level = conf.level, alternative = alternative)[, -1L]
 
   # Phi is not NA
   if (isTRUE(!is.na(result$phi))) {
@@ -6736,6 +6799,324 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
+# Internal functions for the item.invar() function -----------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Convergence and Model Identification Checks ####
+
+.conv.ident <- function(model.fit, invar, long) {
+
+  check.vcov <- check.theta <- check.cov.lv <- TRUE
+
+  switch(invar, config = {
+
+    invar.upp <- "Configural"
+    invar.low <- "configural"
+
+  }, thres = {
+
+    invar.upp <- "Threshold"
+    invar.low <- "threshold"
+
+  }, metric = {
+
+    invar.upp <- "Metric"
+    invar.low <- "metric"
+
+  }, scalar =  {
+
+    invar.upp <- "Scalar"
+    invar.low <- "scalar"
+
+  }, strict = {
+
+    invar.upp <- "Strict"
+    invar.low <- "strict"
+
+  })
+
+  #...................
+  ### Model Convergence ####
+
+  #### Model not converged ####
+  if (isTRUE(!lavaan::lavInspect(model.fit, what = "converged"))) {
+
+    stop(paste0(invar.upp, " invariance model did not converge."), call. = FALSE)
+
+  #### Model converged ####
+  } else {
+
+    #...................
+    ### Degrees of Freedom ####
+
+    if (isTRUE(suppressWarnings(lavaan::lavInspect(model.fit, what = "fit")["df"] < 0L))) { stop(paste0(invar.upp, " invariance model has negative degrees of freedom, model is not identified."), call. = FALSE) }
+
+    #...................
+    ### Standard Error ####
+
+    if (isTRUE(any(is.na(unlist(lavaan::lavInspect(model.fit, what = "se")))))) { stop(paste0("Standard errors of the ", invar.low, " invariance model could not be computed."), call. = FALSE) }
+
+    #...................
+    ### Variance-Covariance Matrix of the Estimated Parameters ####
+
+    eigvals <- eigen(lavaan::lavInspect(model.fit, what = "vcov"), symmetric = TRUE, only.values = TRUE)$values
+
+    # Correct for equality constraints
+    if (isTRUE(any(lavaan::parTable(model.fit)$op == "=="))) { eigvals <- rev(eigvals)[-seq_len(sum(lavaan::parTable(model.fit)$op == "=="))] }
+
+    if (isTRUE(min(eigvals) < .Machine$double.eps^(3L/4L))) {
+
+      warning(paste0("The variance-covariance matrix of the estimated parameters in the ", invar.low, " invariance model is not positive definite."), call. = FALSE)
+
+      check.vcov <- FALSE
+
+    }
+
+    #...................
+    ### Negative Variance of Observed Variables ####
+
+    if (isTRUE(!long)) {
+
+      cond.theta1 <- any(sapply(lavaan::lavInspect(model.fit, what = "theta"), diag) < 0)
+      cond.theta2 <- any(sapply(lavaan::lavTech(model.fit, what = "theta"), function(y) eigen(y, symmetric = TRUE, only.values = TRUE)$values) < (-1L * .Machine$double.eps^(3L/4L)))
+
+    } else {
+
+      cond.theta1 <- any(diag(lavaan::lavInspect(model.fit, what = "theta")) < 0L)
+      cond.theta2 <- any(eigen(lavaan::lavTech(model.fit, what = "theta")[[1L]], symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3L/4L)))
+
+    }
+
+    if (isTRUE(cond.theta1)) {
+
+      warning(paste0("Some estimated variances of the observed variables in the ", invar.low, " invariance model are negative."), call. = FALSE)
+
+      check.theta <- FALSE
+
+    } else if (isTRUE(cond.theta2)) {
+
+      warning(paste0("The model-implied variance-covariance matrix of the residuals of the observed variables in the ", invar.low, " invariance model is not positive definite."), call. = FALSE)
+
+      check.theta <- FALSE
+
+    }
+
+    #...................
+    ### Negative Variance of Latent Variables ####
+
+    if (isTRUE(!long)) {
+
+      cond.theta1 <- any(sapply(lavaan::lavTech(model.fit, what = "cov.lv"), diag) < 0L)
+      cond.theta1 <- any(sapply(lavaan::lavTech(model.fit, what = "cov.lv"), function(y) eigen(y, symmetric = TRUE, only.values = TRUE)$values) < (-1L * .Machine$double.eps^(3L/4L)))
+
+    } else {
+
+      cond.theta1 <- any(diag(lavaan::lavTech(model.fit, what = "cov.lv")[[1L]]) < 0L)
+      cond.theta2 <- any(eigen(lavaan::lavTech(model.fit, what = "cov.lv")[[1L]], symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3L/4L)))
+
+    }
+
+    if (isTRUE(cond.theta1)) {
+
+      warning(paste0("Some estimated variances of the latent variables in the ", invar.low, " invariance model are negative."), call. = FALSE)
+
+      check.cov.lv <- FALSE
+
+    # Model-implied variance-covariance matrix of the latent variables
+    } else if (isTRUE(cond.theta2)) {
+
+      warning("The model-implied variance-covariance matrix of the latent variables in the ", invar.low, " invariance model is not positive definite.", call. = FALSE)
+
+      check.cov.lv <- FALSE
+
+    }
+
+  }
+
+  # Return object
+  return(c(check.vcov = check.vcov, check.theta = check.theta, check.cov.lv = check.cov.lv))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Parameter Estimates ####
+
+.model.fit.param <- function(model.param, long = long) {
+
+  group <- NULL
+
+  # Latent variables
+  print.latent <- model.param[which(model.param$op == "=~"), ]
+
+  # Latent variable covariances
+  print.lv.cov <- model.param[which(model.param$op == "~~" & (model.param$lhs != model.param$rhs) & (model.param$lhs %in% print.latent$lhs) & (model.param$rhs %in% print.latent$lhs)), ]
+
+  # Residual covariances
+  print.res.cov <- model.param[which(model.param$op == "~~" & (model.param$lhs != model.param$rhs) & (!model.param$lhs %in% print.latent$lhs) & (!model.param$rhs %in% print.latent$lhs)), ]
+
+  # Latent mean
+  print.mean <- model.param[which(model.param$op == "~1" & model.param$lhs %in% print.latent$lhs), ]
+
+  # Latent variance
+  print.var <- model.param[which(model.param$op == "~~" & (model.param$lhs %in% print.latent$lhs) & (model.param$lhs == model.param$rhs)), ]
+
+  # Intercepts
+  print.interc <- model.param[which(model.param$op == "~1" & !model.param$lhs %in% print.latent$lhs), ]
+
+  # Thresholds
+  print.thres <- model.param[which(model.param$op == "|"), ]
+
+  # Scales
+  print.scale <- model.param[which(model.param$op == "~*~"), ]
+
+  # Residual variance
+  print.resid <- model.param[which(model.param$op == "~~" & (model.param$lhs == model.param$rhs) & (!model.param$lhs %in% print.latent$lhs) & (!model.param$rhs %in% print.latent$lhs)), ]
+
+  # Model parameters
+  model.param <- rbind(data.frame(param = "latent variable", print.latent),
+                       if (nrow(print.lv.cov) > 0L) { data.frame(param = "latent variable covariance", print.lv.cov) } else { NULL },
+                       if (nrow(print.res.cov) > 0L) { data.frame(param = "residual covariance", print.res.cov) } else { NULL },
+                       if (nrow(print.mean) > 0L) { data.frame(param = "latent mean", print.mean) } else { NULL },
+                       if (nrow(print.var) > 0L) { data.frame(param = "latent variance", print.var) } else { NULL },
+                       if (nrow(print.interc) > 0L) { data.frame(param = "intercept", print.interc) } else { NULL },
+                       if (nrow(print.thres) > 0L) { data.frame(param = "threshold", print.thres) } else { NULL },
+                       if (nrow(print.scale) > 0L) { data.frame(param = "scale", print.scale) } else { NULL },
+                       if (nrow(print.resid) > 0L) { data.frame(param = "residual variance", print.resid) } else { NULL })
+
+  #...................
+  ### Add Labels ####
+
+  # Latent mean, intercept, and threshold
+  model.param[model.param$param %in% c("latent mean", "intercept"), "rhs"] <- model.param[model.param$param %in% c("latent mean", "intercept"), "lhs"]
+
+  if (isTRUE(any(model.param$param == "threshold"))) {
+
+    model.param[model.param$param == "threshold", "rhs"] <- apply(model.param[model.param$param == "threshold", c("lhs", "rhs")], 1L, paste, collapse = "|")
+
+  }
+
+  #### Latent variables
+
+  ##### Between-group measurement invariance
+  if (isTRUE(!long)) {
+
+    print.lv <- NULL
+    for (i in unique(model.param[which(model.param$param == "latent variable"), "lhs"])) {
+
+      # Loop across groups
+      for (j in unique(model.param$group)) {
+
+        print.lv <- rbind(print.lv,
+                          data.frame(param = "latent variable", group = j, lhs = i, op = "", rhs = paste(i, "=~"), label = "", est = NA, se = NA, z = NA, pvalue = NA, stdyx = NA),
+                          model.param[which(model.param$param == "latent variable" & model.param$lhs == i & model.param$group == j), ])
+
+      }
+
+    }
+
+  ##### Longitudinal measurement invariance
+  } else {
+
+    print.lv <- NULL
+    for (i in unique(model.param[which(model.param$param == "latent variable"), "lhs"])) {
+
+      print.lv <- rbind(print.lv,
+                        data.frame(param = "latent variable", lhs = i, op = "", rhs = paste(i, "=~"), label = "", est = NA, se = NA, z = NA, pvalue = NA, stdyx = NA),
+                        model.param[which(model.param$param == "latent variable" & model.param$lhs == i), ])
+
+    }
+
+  }
+
+  #### Latent variable covariances
+
+  ##### Between-group measurement invariance
+  if (isTRUE(!long)) {
+
+    print.lv.cov <- NULL
+    for (i in unique(model.param[which(model.param$param == "latent variable covariance"), "lhs"])) {
+
+      # Loop across groups
+      for (j in unique(model.param$group)) {
+
+        print.lv.cov <- rbind(print.lv.cov,
+                              data.frame(param = "latent variable covariance", group = j, lhs = i, op = "", rhs = paste(i, "~~"), label = "", est = NA, se = NA, z = NA, pvalue = NA, stdyx = NA),
+                              model.param[which(model.param$param == "latent variable covariance" & model.param$lhs == i & model.param$group == j), ])
+
+      }
+
+    }
+
+  ##### Longitudinal measurement invariance
+  } else {
+
+    print.lv.cov <- NULL
+    for (i in unique(model.param[which(model.param$param == "latent variable covariance"), "lhs"])) {
+
+      print.lv.cov <- rbind(print.lv.cov,
+                            data.frame(param = "latent variable covariance", lhs = i, op = "", rhs = paste(i, "~~"), label = "", est = NA, se = NA, z = NA, pvalue = NA, stdyx = NA),
+                            model.param[which(model.param$param == "latent variable covariance" & model.param$lhs == i), ])
+
+    }
+
+  }
+
+  #### Residual covariances
+
+  ##### Between-group measurement invariance
+  if (isTRUE(!long)) {
+
+    print.res.cov <- NULL
+    for (i in unique(model.param[which(model.param$param == "residual covariance"), "lhs"])) {
+
+      # Loop across groups
+      for (j in unique(model.param$group)) {
+
+        print.res.cov <- rbind(print.res.cov,
+                               data.frame(param = "residual covariance", group = j, lhs = i, op = "", rhs = paste(i, "~~"), label = "", est = NA, se = NA, z = NA, pvalue = NA, stdyx = NA),
+                               model.param[which(model.param$param == "residual covariance" & model.param$lhs == i & model.param$group == j), ])
+      }
+
+    }
+
+  ##### Longitudinal measurement invariance
+  } else {
+
+    print.res.cov <- NULL
+    for (i in unique(model.param[which(model.param$param == "residual covariance"), "lhs"])) {
+
+      print.res.cov <- rbind(print.res.cov,
+                             data.frame(param = "residual covariance", lhs = i, op = "", rhs = paste(i, "~~"), label = "", est = NA, se = NA, z = NA, pvalue = NA, stdyx = NA),
+                             model.param[which(model.param$param == "residual covariance" & model.param$lhs == i), ])
+
+    }
+
+  }
+
+  #...................
+  ### Merge Parameter Tables ####
+
+  model.param <- data.frame(rbind(print.lv, print.lv.cov, print.res.cov,
+                                  model.param[which(!model.param$param %in% c("latent variable", "latent variable covariance", "residual covariance")), ]), row.names = NULL)
+
+  # Sort by group
+  if (isTRUE(!long)) { model.param <- data.frame(misty::df.sort(model.param, group), row.names = NULL) }
+
+  #...................
+  ### Labels in Parentheses ####
+
+  model.param$label <- sapply(model.param$label, function(y) ifelse(y != "", paste0("(", y, ")"), y))
+
+  #...................
+  ### Return Object ####
+
+  return(model.param)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
 # Internal functions for the mplus.print() function ----------------------------
 #
 # - .section.ind.from.to
@@ -6759,6 +7140,272 @@
   }
 
   return(eval(parse.text) - 1L)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the mplus.lca.summa() function ------------------------
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Functions for Extracting Results ####
+
+.extract.lca.result <- function(lca.out.extract, max.class,  conf.level, return) {
+
+  # Return objects
+  model.summary <- model.class <- model.descript <- nclass <- NA
+
+  #### Model converged ####
+  conv <- any(grep("THE MODEL ESTIMATION TERMINATED NORMALLY", lca.out.extract, useBytes = TRUE))
+
+  #### Number of classes ####
+  if (isTRUE(any(grepl("CLASSES ", lca.out.extract, ignore.case = TRUE, useBytes = TRUE)))) { nclass <- unlist(strsplit(grep("CLASSES ", lca.out.extract, value = TRUE, ignore.case = TRUE, useBytes = TRUE), "")) |> (\(p) as.numeric(misty::chr.trim(paste(p[(grep("\\(", p, useBytes = TRUE) + 1L):(grep("\\)", p, useBytes = TRUE) - 1L)], collapse = ""))))() }
+
+  #### Model converged ####
+  if (isTRUE(conv)) {
+
+    if (isTRUE(return == "model.summary")) {
+
+      ##### Model summary ####
+      model.summary <- data.frame(# Number of classes
+        nclass = nclass,
+        # Model converged
+        conv = conv,
+        # Number of parameters
+        nparam = as.numeric(misty::chr.trim(sub("Number of Free Parameters", "", grep("Number of Free Parameters", lca.out.extract, value = TRUE, useBytes = TRUE)))),
+        # Loglikelihood
+        LL = as.numeric(misty::chr.trim(sub("H0 Value", "", grep("H0 Value  ", lca.out.extract, value = TRUE, useBytes = TRUE)))),
+        # Loglikelihood Scaling correction factor
+        LL.scale = ifelse(any(grepl("H0 Scaling Correction Factor", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("H0 Scaling Correction Factor", "", grep("H0 Scaling Correction Factor", lca.out.extract, value = TRUE, useBytes = TRUE)))), NA),
+        # Loglikelihood replicated
+        LL.rep = ifelse(any(grepl("THE BEST LOGLIKELIHOOD VALUE WAS NOT REPLICATED", lca.out.extract, useBytes = TRUE)), FALSE, TRUE),
+        # AIC, CAIC, BIC, SABIC
+        aic = as.numeric(misty::chr.trim(sub("Akaike \\(AIC\\)", "", grep("Akaike \\(AIC\\)", lca.out.extract, value = TRUE, useBytes = TRUE)))),
+        caic = as.numeric(misty::chr.trim(sub("Bayesian \\(BIC\\)", "", grep("Bayesian \\(BIC\\)", lca.out.extract, value = TRUE, useBytes = TRUE)))) + as.numeric(misty::chr.trim(sub("Number of Free Parameters", "", grep("Number of Free Parameters", lca.out.extract, value = TRUE, useBytes = TRUE)))),
+        bic = as.numeric(misty::chr.trim(sub("Bayesian \\(BIC\\)", "", grep("Bayesian \\(BIC\\)", lca.out.extract, value = TRUE, useBytes = TRUE)))),
+        sabic = as.numeric(misty::chr.trim(sub("Sample-Size Adjusted BIC", "", grep("Sample-Size Adjusted BIC", lca.out.extract, value = TRUE, useBytes = TRUE)))),
+        # Approximate weight of evidence criterion (AWE)
+        awe = -2*as.numeric(misty::chr.trim(sub("H0 Value", "", grep("H0 Value  ", lca.out.extract, value = TRUE, useBytes = TRUE)))) + 2 * as.numeric(misty::chr.trim(sub("Number of Free Parameters", "", grep("Number of Free Parameters", lca.out.extract, value = TRUE, useBytes = TRUE))))*(log(as.numeric(misty::chr.trim(sub("Number of observations", "", grep("Number of observations  ", lca.out.extract, value = TRUE, useBytes = TRUE))))) + 1.5),
+        # Pearson Chi-Square
+        chi.pear = ifelse(any(grepl("Chi-Square Test of Model Fit", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("P-Value", "", lca.out.extract[grep("Pearson Chi-Square", lca.out.extract, useBytes = TRUE)[1L] + 4L]))), NA),
+        # Likelihood Ratio Chi-Square
+        chi.lrt = ifelse(any(grepl("Chi-Square Test of Model Fit", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("P-Value", "", lca.out.extract[grep("Likelihood Ratio Chi-Square", lca.out.extract, useBytes = TRUE)[1L] + 4L]))), NA),
+        # LMR-LRT
+        lmr.lrt = ifelse(any(grepl("VUONG-LO-MENDELL-RUBIN LIKELIHOOD RATIO TEST", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("P-Value", "", lca.out.extract[grep("Standard Deviation", lca.out.extract, useBytes = TRUE) + 1L]))), NA),
+        # Adjusted LMR-LRT
+        almr.lrt = ifelse(any(grepl("LO-MENDELL-RUBIN ADJUSTED", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("P-Value", "", lca.out.extract[grep("LO-MENDELL-RUBIN ADJUSTED", lca.out.extract, useBytes = TRUE) + 3L]))), NA),
+        # Bootstrap LRT
+        blrt = ifelse(any(grepl("PARAMETRIC BOOTSTRAPPED LIKELIHOOD", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("Approximate P-Value", "", lca.out.extract[grep("Approximate P-Value", lca.out.extract, useBytes = TRUE)]))), NA),
+        # Entropy
+        entropy = ifelse(any(grepl("Entropy", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("Entropy", "", grep("Entropy", lca.out.extract, value = TRUE, useBytes = TRUE)))), NA),
+        # Minimum average posterior class probability (AvePP)
+        avemin = min(as.numeric(diag(matrix(sapply(5L:(5L + nclass - 1L), function(z) {
+
+          misty::chr.omit(unlist(strsplit(misty::chr.trim(lca.out.extract[grep("Average Latent Class Probabilities", lca.out.extract, useBytes = TRUE) + z]), " "))[-1L])
+
+        }), ncol = nclass))), na.rm = TRUE),
+        # Minimum class size of most likely latent class membership
+        nmin = min(as.numeric(sapply(5L:(5L + nclass - 1L), function(z) {
+
+          misty::chr.omit(unlist(strsplit(lca.out.extract[grep("BASED ON THE ESTIMATED MODEL", lca.out.extract, useBytes = TRUE) + z], " ")))[[2L]]
+
+        })), na.rm = TRUE),
+        # Minimum average posterior class probability (AvePP)
+        pmin = min(as.numeric(sapply(5L:(5L + nclass - 1L), function(z) {
+
+          misty::chr.omit(unlist(strsplit(misty::chr.trim(lca.out.extract[grep("BASED ON THE ESTIMATED MODEL", lca.out.extract, useBytes = TRUE) + z]), " "))) |> (\(p) p[which(grepl("\\.", p, useBytes = TRUE))])()
+
+        })), na.rm = TRUE))
+
+    }
+
+    ##### Classification Diagnostics ####
+
+    if (isTRUE(return == "model.class")) {
+
+      model.class <- data.frame(# Number of classes
+        nclass = nclass,
+        # Model converged
+        conv = conv,
+        # Number of parameters
+        nparam = as.numeric(misty::chr.trim(sub("Number of Free Parameters", "", grep("Number of Free Parameters", lca.out.extract, value = TRUE, useBytes = TRUE)))),
+        # Loglikelihood replicated
+        LL.rep = ifelse(any(grepl("THE BEST LOGLIKELIHOOD VALUE WAS NOT REPLICATED", lca.out.extract, useBytes = TRUE)), FALSE, TRUE),
+        # Model-estimated class counts
+        as.data.frame(matrix(as.numeric(sapply(5L:(5L + nclass - 1L), function(z) {
+
+          misty::chr.omit(unlist(strsplit(lca.out.extract[grep("BASED ON THE ESTIMATED MODEL", lca.out.extract, useBytes = TRUE) + z], " ")))[[2L]]
+
+        })) |> (\(q) if (isTRUE(length(q) != max.class)) { c(q, rep(NA, times = max.class - length(q))) } else { return(q) })(), ncol = max.class, dimnames = list(NULL, paste0("n", seq_len(max.class))))),
+        # Model-estimated proportion (pi)
+        as.data.frame(matrix(as.numeric(sapply(5L:(5L + nclass - 1L), function(z) {
+
+          unlist(strsplit(lca.out.extract[grep("BASED ON THE ESTIMATED MODEL", lca.out.extract, useBytes = TRUE) + z], " ")) |> (\(p) p[which(grepl("\\.", p, useBytes = TRUE))][2L])()
+
+        })) |> (\(q) if (isTRUE(length(q) != max.class)) { c(q, rep(NA, times = max.class - length(q))) } else { return(q) })(), ncol = max.class, dimnames = list(NULL, paste0("p", seq_len(max.class))))),
+        # Entropy
+        entropy = ifelse(any(grepl("Entropy", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("Entropy", "", grep("Entropy", lca.out.extract, value = TRUE, useBytes = TRUE)))), NA),
+        # Average posterior class probability (AvePP)
+        as.data.frame(matrix(diag(sapply(5L:(5L + nclass - 1), function(z) {
+
+          as.numeric(misty::chr.omit(unlist(strsplit(misty::chr.trim(lca.out.extract[grep("Average Latent Class Probabilities", lca.out.extract, useBytes = TRUE) + z]), " "))[-1L]))
+
+        })) |> (\(p) if (isTRUE(length(p) != max.class)) { c(p, rep(NA, times = max.class - length(p))) } else { return(p) })(), ncol = max.class, dimnames = list(NULL, paste0("ave.pp", seq_len(max.class)))))) |>
+        # Odds of correct classification ratio (OCC)
+        (\(p) data.frame(p, matrix(((misty::chr.omit(p[, grep("ave.pp", names(p))], na.omit = TRUE, check = FALSE) / (1 - misty::chr.omit(p[, grep("ave.pp", names(p))], na.omit = TRUE, check = FALSE))) / (misty::chr.omit(p[, substr(names(p), 1, 1) == "p"], na.omit = TRUE, check = FALSE) / (1 - misty::chr.omit(p[, substr(names(p), 1, 1) == "p"], na.omit = TRUE, check = FALSE)))) |> (\(q) ifelse(is.nan(q), NA, q))() |>
+                                     (\(r) if (isTRUE(length(r) != max.class)) { c(r, rep(NA, times = max.class - length(r))) } else { return(r) })(),
+                                   ncol = max.class, dimnames = list(NULL, paste0("occ", seq_len(max.class))))))()
+
+    }
+
+    ##### Means and Variances ####
+
+    if (isTRUE(return == "model.descript")) {
+
+      # Number of indicators
+      n.ind <- as.numeric(misty::chr.trim(sub("Number of dependent variables", "", grep("Number of dependent variables", lca.out.extract, value = TRUE, useBytes = TRUE))))
+
+      #-------------------------------------------------------------------------
+      # Continuous Indicators
+
+      if (isTRUE(all(lca.out.extract != "  Binary and ordered categorical (ordinal)") && all(lca.out.extract != "  Unordered categorical (nominal)"))) {
+
+        # Split CONFIDEN INTERVALS section
+        lca.out.extract.ci <- NULL
+        if (any(grep("CONFIDENCE INTERVALS OF MODEL RESULTS", lca.out.extract))) {
+
+          # Output CONFIDENCE INTERVALS OF MODEL RESULTS
+          lca.out.extract.ci <- lca.out.extract[c(grep("CONFIDENCE INTERVALS OF MODEL RESULTS", lca.out.extract):length(lca.out.extract))]
+
+          # Output without CONFIDENCE INTERVALS OF MODEL RESULTS
+          lca.out.extract <- lca.out.extract[-c(grep("CONFIDENCE INTERVALS OF MODEL RESULTS", lca.out.extract):length(lca.out.extract))]
+
+        }
+
+        # Extract means
+        out.means <- lapply(data.frame(sapply(if (isTRUE(nclass == 1L)) { grep("Means", lca.out.extract) } else { head(grep("Means", lca.out.extract), n = -1L) }, function(y) misty::chr.trim(misty::chr.omit(strsplit(lca.out.extract[(y + 1L):(y + n.ind)], "  "), omit = "")))),
+                            function(z) data.frame(param = "Mean", matrix(z, ncol = 5L, byrow = TRUE, dimnames = list(NULL, c("ind", "est", "se", "z", "pval"))))) |>
+          (\(p) do.call(rbind, lapply(seq_along(p), function(y) data.frame(class = y, p[y][[1L]]))))()
+
+        # Extract variances
+        out.var <- lapply(data.frame(sapply(grep("Variances", lca.out.extract), function(y) misty::chr.trim(misty::chr.omit(strsplit(lca.out.extract[(y + 1L):(y + n.ind)], "  "), omit = "")))),
+                          function(z) data.frame(param = "Variance", matrix(z, ncol = 5L, byrow = TRUE, dimnames = list(NULL, c("ind", "est", "se", "z", "pval"))))) |>
+          (\(p) do.call(rbind, lapply(seq_along(p), function(y) data.frame(class = y, p[y][[1L]]))))()
+
+        # Class count based on the estimated model
+        class.count <- matrix(as.numeric(misty::chr.omit(strsplit(lca.out.extract[(grep("BASED ON THE ESTIMATED MODEL", lca.out.extract) + 5L):(grep("BASED ON ESTIMATED POSTERIOR PROBABILITIES", lca.out.extract) - 2L)], " "), "")), ncol = 3, byrow = TRUE)
+
+        # Merge means and variances
+        model.descript <- data.frame(nclass = nclass, n = class.count[match(out.means[, "class"], class.count[, 1L]), 2L], rbind(out.means, out.var))
+
+        # Numeric
+        model.descript[, c("class", "est", "se", "z", "pval")] <- sapply(model.descript[, c("class", "est", "se", "z", "pval")], function(y) as.numeric(gsub("*********", NA, y, fixed = TRUE)))
+
+        # Mplus CONFIDENCE INTERVALS section
+        if (isTRUE(!is.null(lca.out.extract.ci))) {
+
+          if (isTRUE(!conf.level %in% c(0.9, 0.95, 0.99))) { stop("Please specifiy 0.9, 0.95, or 0.99 for the argument 'conf.level' when extracting confidence intervals from Mplus outputs.", call. = FALSE) }
+
+          lapply(data.frame(sapply(if (isTRUE(nclass == 1L)) { grep("Means", lca.out.extract.ci) } else { head(grep("Means", lca.out.extract.ci), n = -1L) }, function(y) misty::chr.trim(misty::chr.omit(strsplit(lca.out.extract.ci[(y + 1L):(y + n.ind)], "  "), omit = "")))),
+                 function(z) data.frame(param = "Mean", matrix(z, ncol = 8L, byrow = TRUE, dimnames = list(NULL, c("ind", "low05", "low25", "low50", "est", "upp50", "upp25", "upp05"))))) |>
+            (\(p) do.call(rbind, lapply(seq_along(p), function(y) data.frame(class = y, p[y][[1L]]))))() |>
+            (\(q) switch(as.character(conf.level), "0.99" = {
+
+              model.descript[model.descript$param == "Mean", "low"] <<- as.numeric(q[, "low05"])
+              model.descript[model.descript$param == "Mean", "upp"] <<- as.numeric(q[, "upp05"])
+
+
+            }, "0.95" = {
+
+              model.descript[model.descript$param == "Mean", "low"] <<- as.numeric(q[, "low25"])
+              model.descript[model.descript$param == "Mean", "upp"] <<- as.numeric(q[, "upp25"])
+
+
+            }, "0.9" = {
+
+              model.descript[model.descript$param == "Mean", "low"] <<- as.numeric(q[, "low50"])
+              model.descript[model.descript$param == "Mean", "upp"] <<- as.numeric(q[, "upp50"])
+
+            }))()
+
+        # No Mplus CONFIDENCE INTERVALS section
+        } else {
+
+          (model.descript$se * qnorm((1 - conf.level) / 2L, lower.tail = FALSE)) |>
+            (\(p) {
+
+              model.descript[model.descript$param == "Mean", "low"] <<- model.descript[model.descript$param == "Mean", "est"] - p[model.descript$param == "Mean"]
+              model.descript[model.descript$param == "Mean", "upp"] <<- model.descript[model.descript$param == "Mean", "est"] + p[model.descript$param == "Mean"]
+
+            })()
+
+        }
+
+        # Factor
+        model.descript$class <- factor(model.descript$class)
+
+        # Indicator names
+        model.descript$ind <- sapply(model.descript$ind, function(y) grep(y, unique(misty::chr.trim(gsub(";", "", misty::chr.omit(unlist(strsplit(lca.out.extract[grep("USEVARIABLES", lca.out.extract, ignore.case = TRUE):grep("CLASSES", lca.out.extract, ignore.case = TRUE)[1L]], " ")))))), ignore.case = TRUE, value = TRUE))
+
+        # Sort variables
+        model.descript <- model.descript[, c("nclass", "class", "n", "param", "ind", "est", "se", "z", "pval", "low", "upp")]
+
+      #-------------------------------------------------------------------------
+      # Ordered-Categorical or Nominal Indicators
+
+      } else if (isTRUE(any(lca.out.extract == "  Binary and ordered categorical (ordinal)") || any(lca.out.extract == "  Unordered categorical (nominal)"))) {
+
+        # Indicator names
+        ind.name <- misty::chr.omit(unlist(strsplit(lca.out.extract[which(lca.out.extract %in% c("  Binary and ordered categorical (ordinal)", "  Unordered categorical (nominal)"))[1L] + 1L], " ")))
+
+        # Extract PROBABILITY SCALE section
+        lca.out.extract.prob <- lca.out.extract[(grep("RESULTS IN PROBABILITY SCALE", lca.out.extract) + 5L) |> (\(p) p:(which(diff(ifelse(lca.out.extract == "", 1, NA)) == 0L) |> (\(q) q[q > p][1L] )()))()]
+
+        # Extract probabilities
+        out.prob <- lapply(sapply(apply(matrix(which(lca.out.extract.prob == ""), ncol = 2L, byrow = TRUE), 1L, paste, collapse = ":"), function(y) list(lca.out.extract.prob[eval(parse(text = y))])) |>
+                             (\(p) lapply(p, function(z) misty::chr.trim(misty::chr.omit(z))))(), function(w) {
+
+                               matrix(t(sapply(misty::chr.omit(w, omit = ind.name), function(x) { as.numeric(misty::chr.trim(sub("Category", "", misty::chr.omit(strsplit(x, "   "))))) })), ncol = 5L, dimnames = list(NULL, c("categ", "est", "se", "z", "pval"))) |>
+                                 (\(r) data.frame(ind = unlist(r[c(which(r[, "categ"] == 1L)[-1] - 1L, nrow(r)), "categ"] |> (\(s) sapply(seq_along(s), function(q) rep(ind.name[q], times = s[q])))()), r))()
+
+                             }) |> (\(t) do.call(rbind, lapply(seq_along(t), function(y) data.frame(class = y, t[y][[1L]]))))()
+
+        # Class count based on the estimated model
+        class.count <- matrix(as.numeric(misty::chr.omit(strsplit(lca.out.extract[(grep("BASED ON THE ESTIMATED MODEL", lca.out.extract) + 5L):(grep("BASED ON ESTIMATED POSTERIOR PROBABILITIES", lca.out.extract) - 2L)], " "), "")), ncol = 3, byrow = TRUE)
+
+        # Merge class counts
+        model.descript <- data.frame(nclass = nclass, n = class.count[match(out.prob[, "class"], class.count[, 1L]), 2L], out.prob, row.names = NULL)
+
+        # Numeric
+        model.descript[, c("class", "est", "se", "z", "pval")] <- sapply(model.descript[, c("class", "est", "se", "z", "pval")], function(y) as.numeric(gsub("*********", NA, y, fixed = TRUE)))
+
+        # Factor
+        model.descript$class <- factor(model.descript$class)
+
+        # Indicator names
+        model.descript$ind <- sapply(model.descript$ind, function(y) grep(y, unique(misty::chr.trim(gsub(";", "", misty::chr.omit(unlist(strsplit(lca.out.extract[grep("USEVARIABLES", lca.out.extract, ignore.case = TRUE):grep("CLASSES", lca.out.extract, ignore.case = TRUE)[1L]], " ")))))), ignore.case = TRUE, value = TRUE))
+
+        # Sort variables
+        model.descript <- model.descript[, c("nclass", "class", "n", "ind", "categ", "est", "se", "z", "pval")]
+
+      }
+
+    }
+
+  #### Model not converged ####
+  } else {
+
+    model.summary <- data.frame(nclass = nclass, conv = conv, nparam = NA, LL = NA, LL.scale = NA, LL.rep = NA,
+                                aic = NA, caic = NA, bic = NA, sabic = NA, awe = NA, chi.pear = NA, chi.lrt = NA, lmr.lrt = NA, almr.lrt = NA, blrt = NA, entropy = NA)
+
+    model.class <- data.frame(nclass = nclass, conv = conv, nparam = NA, entropy = NA)
+
+    model.descript <- data.frame(matrix(nrow = 0L, ncol = 9L, dimnames = list(NULL, c("nclass", "n", "class", "param", "ind", "est", "se", "z", "pval"))))
+
+  }
+
+  return(list(model.summary = model.summary, model.class = model.class, model.descript = model.descript))
 
 }
 
@@ -7203,11 +7850,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 
   for (bool in grepl_array) {
 
-    if (isTRUE(bool)) {
-
-      stop("Error: r2mlm does not allow for models fit using the I() function; user must thus manually include any desired transformed predictor variables such as x^2 or x^3 as separate columns in dataset.")
-
-    }
+    if (isTRUE(bool)) { stop("Error: r2mlm does not allow for models fit using the I() function; user must thus manually include any desired transformed predictor variables such as x^2 or x^3 as separate columns in dataset.") }
 
   }
 
@@ -7230,6 +7873,9 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 
 ### .r2mlm_lmer() Function ####
 .r2mlm_lmer <- function(model) {
+
+  # R-Squared for more than one cluster variable only available for "NS" using lme4
+  if (isTRUE(length(names(lme4::getME(model, "flist"))) > 1L)) { stop("This function can only deal with models with a single cluster variable.", call. = FALSE) }
 
   # Visible global function definition
   is <- fixef <- getME <- NULL
@@ -7353,6 +7999,9 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 
 ### .r2mlm_nlme() Function ####
 .r2mlm_nlme <- function(model) {
+
+  # R-Squared for more than one cluster variable only available for "NS" using lme4
+  if (isTRUE(length(nlme::getGroupsFormula(model, asList = TRUE)) > 1L)) { stop("This function can only deal with models with a single cluster variable.", call. = FALSE) }
 
   # Visible global function definition
   is <- getME <- NULL
@@ -8000,37 +8649,28 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #
 # Internal functions for the multilevel.r2() function --------------------------
-#
 # - .var.random
 
-# Variance of random effects
+### Modified Function from the MuMIn Package ####
 .var.random <- function(model) {
 
-  .sigma_sum <- function(Sigma) {
+  matmultdiag <- function(x, y, ty = t(y)) { return(rowSums(x * ty)) }
 
-    X <- lme4::getME(model, "X")
-    rn <- rownames(Sigma)
+  mmRE <- do.call("cbind", suppressWarnings(model.matrix(model, type = "randomListRaw"))) |> (\(p) p[, !duplicated(colnames(p)), drop = FALSE] )()
 
-    if (isTRUE(!any(colnames(X) == "(Intercept)"))) { X <- cbind("(Intercept)" = 1L, X) }
+  vc <- unclass(lme4::VarCorr(model))
 
-    if (isTRUE(!is.null(rn))) {
+  if(isTRUE(!is.null(vc))) {
 
-      valid <- rownames(Sigma) %in% colnames(X)
+    varRE <- sum(sapply(vc, function(y) {
+      mmRE[, rownames(y), drop = FALSE] |> (\(p) sum(matmultdiag(p %*% y, ty = p)) / nrow(mmRE))()
+    }))
 
-      if (isTRUE(!all(valid))) {
+  } else {
 
-        rn <- rn[valid]
-        Sigma <- Sigma[valid, valid, drop = FALSE]
-
-      }
-
-    }
-
-    X[, rn, drop = FALSE] |> (\(y) sum(diag(crossprod(y %*% Sigma, y))) / nobs(model))()
+    varRE <- 0L
 
   }
-
-  sum(sapply(lme4::VarCorr(model)[vapply(lme4::ranef(model), nrow, numeric(1L)) |> (\(y) names(y[y != nobs(model)]))()], .sigma_sum))
 
 }
 
@@ -9167,6 +9807,83 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
+# Internal functions for the print.misty.object() function ---------------------
+#
+# - .write.table
+
+.write.table <- function(print.object, left = 1L, right = 3L, line = 1L, group = FALSE, result = NULL) {
+
+  # Data frame
+  print.object <- as.data.frame(print.object)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Markdown knitr Engine Not in Progress ####
+
+  if (isTRUE(is.null(getOption("knitr.in.progress")))) {
+
+    # Header
+    write.table(print.object[seq_len(line), , drop = FALSE], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+    #...................
+    ### Grouping Variable ####
+
+    if (isTRUE(group)) {
+
+      split(print.object[-1L, ], f = result$group) |>
+        (\(p) for (i in seq_along(p)) {
+
+          # Horizontal line
+          cat(paste(rep(" ", times = left), collapse = ""), paste(rep("\u2500", times = sum(nchar(print.object[1L, ])) + length(print.object[1L, ]) - right), collapse = ""), "\n")
+
+          write.table(p[[i]], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+        })()
+
+    #...................
+    ### No Grouping Variable ####
+    } else {
+
+      # Horizontal line
+      cat(paste(rep(" ", times = left), collapse = ""), paste(rep("\u2500", times = sum(nchar(print.object[max(seq_len(line)), ])) + length(print.object[max(seq_len(line)), ]) - right), collapse = ""), "\n")
+
+      # Output not including 'Total'
+      if (isTRUE(all(misty::chr.trim(print.object[, 1]) != "Total"))) {
+
+        write.table(print.object[-seq_len(line), ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+      # Output including 'Total', i.e., crosstab(), dominance.manual(), and dominance() functions
+      } else {
+
+        (which(misty::chr.trim(print.object[, 1]) == "Total") - 1L) |>
+          (\(p) {
+
+            write.table(print.object[(max(seq_len(line)) + 1L):p, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+            # Horizontal line
+            cat(paste(rep(" ", times = left), collapse = ""), paste(rep("\u2500", times = sum(nchar(print.object[max(seq_len(line)), ])) + length(print.object[max(seq_len(line)), ]) - right), collapse = ""), "\n")
+
+            write.table(print.object[-seq_len(p), ], quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+          })()
+
+      }
+
+    }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Markdown knitr Engine in Progress ####
+
+  } else {
+
+    write.table(print.object, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+  }
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
 # Internal functions for the robust.coef() function ----------------------------
 #
 # - .sandw
@@ -9561,8 +10278,8 @@ splitFilePath <- function(filepath, normalize = FALSE) {
     # Close file connection
     sink()
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Excel file ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Excel file ####
 
   } else {
 

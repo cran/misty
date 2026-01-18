@@ -114,9 +114,9 @@ ordered = TRUE).}
 data, i.e., \code{"listwise"} for listwise deletion,
 \code{"pairwise"} for pairwise deletion, \code{"fiml"}
 for full information maximum likelihood method,
-\code{two.stage} for two-stage maximum likelihood
-method, \code{robust.two.stage} for robust two-stage
-maximum likelihood method, and \code{doubly-robust}
+\code{"two.stage"} for two-stage maximum likelihood
+method, \code{"robust.two.stage"} for robust two-stage
+maximum likelihood method, and \code{"doubly-robust"}
 for doubly-robust method (see 'Details'). By default,
 \code{"fiml"} is used for CFA models with continuous
 indicators which are estimated by using

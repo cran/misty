@@ -4,20 +4,21 @@
 \alias{item.invar}
 \title{Between-Group and Longitudinal Measurement Invariance Evaluation}
 \usage{
-item.invar(data, ..., model = NULL, rescov = NULL, rescov.long = TRUE,
-           group = NULL, long = FALSE, cluster = NULL,
-           invar = c("config", "metric", "scalar", "strict"),
+item.invar(data, ..., model = NULL, group = NULL, long = FALSE, ordered = FALSE,
+           parameterization = c("delta", "theta"), rescov = NULL, rescov.long = TRUE,
+           cluster = NULL, invar = c("config", "thres", "metric", "scalar", "strict"),
            partial = NULL, ident = c("marker", "var", "effect"),
            estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
                          "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
                          "ULS", "ULSM", "ULSMV", "DLS", "PML"),
            missing = c("listwise", "pairwise", "fiml", "two.stage",
                        "robust.two.stage", "doubly.robust"), null.model = TRUE,
-           print = c("all", "summary", "coverage", "descript", "fit", "est",
-                     "modind", "resid"),
+           print = c("all", "summary", "partial", "coverage", "descript", "fit",
+                     "est", "modind", "resid"),
            print.fit = c("all", "standard", "scaled", "robust"),
-           mod.minval = 6.63, resid.minval = 0.1, digits = 3, p.digits = 3,
-           as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
+           mod.minval = 6.63, resid.minval = 0.1, lavaan.run = TRUE,
+           digits = 3, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
+           check = TRUE, output = TRUE)
 }
 \arguments{
 \item{data}{a data frame. If \code{model = NULL}, confirmatory
@@ -69,6 +70,43 @@ need to be named, otherwise factors are labeled with \code{"f1", "f2", "f3"}
 when \code{long = FALSE} and with \code{"t1", "t2", "t3"}
 when \code{long = TRUE} and so on.}
 
+\item{group}{either a character string indicating the variable name of
+the grouping variable in the data frame specified
+in \code{x} or a vector representing the groups
+for conducting multiple-group analysis to evaluate between-group
+measurement invariance.}
+
+\item{long}{logical: if \code{TRUE}, longitudinal measurement invariance
+evaluation is conducted. The longitudinal measurement model
+is specified by using the argument \code{model}. Note
+that this function can only deal with a measurement model
+with one factor at each time point when investigating
+longitudinal measurement invariance. Moreover, this
+function can only evaluate either between-group
+or longitudinal measurement invariance, but not both
+at the same time.}
+
+\item{ordered}{logical: if \code{TRUE}, all indicator variables of the
+measurement model are treated as ordered categorical
+variables, i.e., measurement invariance evaluation
+utilizes the Wu and Estabrook (2016) approach to model
+identification and constraints for investigating measurement
+invariance. Note that all indicators variables
+need to have the same number of response categories,
+either two (binary), three (ternary), or more than
+three response categories. Accordingly, zero cell
+counts are not allowed, e.g., zero observations for
+a response category of an indicator within a group when
+investigating between-group measurement invariance or
+zero observations for a response category of an indicator
+at a time point when investigating longitudinal measurement
+invariance.}
+
+\item{parameterization}{a character string only used when treating indicators
+of the measurement model as ordered categorical (\code{ordinal = TRUE}), i.e., \code{"delta"} (default)
+for delta parameterization or \code{"theta"} for theta
+parameterization.}
+
 \item{rescov}{a character vector or a list of character vectors for specifying
 residual covariances, e.g., \code{rescov = c("x1", "x2")}
 for specifying a residual covariance between items \code{x1}
@@ -87,110 +125,127 @@ not significant since indicator-specific systematic variance
 is likely to correlate with itself over time (Little, 2013,
 p. 164).}
 
-\item{group}{either a character string indicating the variable name of
-the grouping variable in the data frame specified
-in \code{x} or a vector representing the groups
-for conducting multiple-group analysis to evaluate between-group
-measurement invariance.}
-
-\item{long}{logical: if \code{TRUE}, longitudinal measurement invariance
-evaluation is conducted. The longitudinal measurement model
-is specified by using the argument \code{model}. Note that
-this function can only evaluate either between-group or
-longitudinal measurement invariance, but not both at the
-same time.}
-
 \item{cluster}{either a character string indicating the variable name
-of the cluster variable in \code{data},
-or a vector representing the nested grouping structure
-(i.e., group or cluster variable) for computing
-cluster-robust standard errors. Note that cluster-robust
-standard errors are not available when treating indicators
-of the measurement model as ordered (ordinal).}
+of the cluster variable in \code{data}, or a vector
+representing the nested grouping structure (i.e., group
+or cluster variable) for computing scaled chi-square
+test statistic that takes into account non-independence
+of observations. Note that this option is not available
+when evaluating measurement invariance for ordered categorical
+indicators by specifying \code{ordered = TRUE).}}
 
 \item{invar}{a character string indicating the level of measurement
 invariance to be evaluated, i.e., \code{config} to evaluate
 configural measurement invariance (i.e., same factor structure
-across groups or time), \code{metric} to evaluate configural
-and metric measurement invariance (i.e., equal factor loadings
-across groups or time), \code{scalar} (default) to evaluate
-configural, metric and scalar measurement invariance (i.e.,
-equal intercepts or thresholds across groups or time), and
-\code{strict} to evaluate configural, metric, scalar, and
-strict measurement invariance (i.e., equal residual variances
-across groups or time).}
+across groups or time), \code{thres} to evaluate configural,
+and threshold measurement invariance (i.e., equal
+item-specific threshold parameters across group or time),
+\code{metric} to evaluate configural, threshold and
+metric measurement invariance (i.e., equal factor loadings
+across groups or time), \code{scalar} (default when
+\code{ordered = FALSE}) to evaluate configural, threshold,
+metric and scalar measurement invariance (i.e., equal
+intercepts across groups or time), and \code{strict}
+(default when \code{ordered = TRUE}) to evaluate configural,
+threshold, metric, scalar, and strict measurement invariance
+(i.e., equal residual variances or scaling factors across
+groups or time). Note that threshold measurement invariance
+is only available when evaluating measurement invariance
+for ordered categorical indicators. In this case, threshold
+measurement invariance can only be investigated when all
+indicators have at least four response categories. In
+addition, metric measurement invariance cannot be
+investigated when all indicators have only two response
+categories, i.e., binary indicators.}
 
-\item{partial}{a character string or character vector containing the labels
-of the parameters which should be free in all groups or across
-time to specify a partial measurement invariance model. Note
-that the labels of the parameters need to match the labels
-shown in the output, i.e., \code{"L"} with a number for factor
-loadings, \code{"T"} with a number for intercepts, and
-\code{"E"} with a number for factor residual variances. The
-number attached to the \code{"L"}, \code{"T"}, or \code{"E"}
-label corresponds to the number of the indicator in the
-measurement model (e.g., \code{"T3"} for the intercept of
-the third indicator). When specifying the model using the
-argument \code{model}, however, the number for the factor
-loading is a combination of the number of the factor and
-the number of the indicator (e.g., \code{"L23"} is the third
-indicator of the second factor). Note that at least two
-invariant indicators are needed for a partial measurement
-invariance model. Otherwise there might be issues with model
-non-identification.}
+\item{partial}{a list of character vectors named \code{load} for freeing
+factor loadings, \code{inter} for freeing intercepts, and/or
+\code{resid} for freeing residual variances when evaluating
+between-group measurement invariance based on two groups
+(see Example 4a) or longitudinal measurement invariance
+(see Example 11a and 11b). When evaluating between-group
+measurement invariance based on more than two groups, a
+list with lists named with e.g., in case of three groups
+\code{g1} for group 1, \code{g2} for group 2, and/or \code{g3}
+for group 3 with these lists containing character vectors
+named \code{load} for freeing factor loadings, \code{inter}
+for freeing intercepts, and/or \code{resid} for freeing
+residual variances in specific groups. Note that at least two
+invariant indicators per latent variable are needed for a
+partial measurement invariance model. Otherwise there might
+be issues with model non-identification.}
 
 \item{ident}{a character string indicating the method used for identifying
 and scaling latent variables, i.e., \code{"marker"} for the
 marker variable method fixing the first factor loading of
-each latent variable to 1, \code{"var"} (default) for the
-fixed variance method fixing the variance of each latent
-variable to 1, or \code{"effect"} for the effects-coding
+the latent variable to 1 and fixing the first intercept
+to 0, \code{"var"} (default) for the fixed variance method
+fixing the variance of the latent variable to 1 and the
+latent mean to 0, or \code{"effect"} for the effects-coding
 method using equality constraints so that the average of
-the factor loading for each latent variable equals 1.}
+the factor loading of the latent variable equals 1 and the
+sum of intercepts equals 0. Note that measurement invariance
+evaluation for ordered categorical indicators can only
+be conducted based on the fixed variance method (\code{"var"}).}
 
 \item{estimator}{a character string indicating the estimator to be used
 (see 'Details' in the help page of the \code{item.cfa()}
 function). By default, \code{"MLR"} is used for CFA models
-with continuous indicators.}
+with continuous indicators and \code{"WLSMV"} is used
+for CFA models with ordered categorical indicators.
+Note that the estimators \code{"ML", "MLM", "MLMV", "MLMVS", "MLF"}
+and \code{"MLR"} are not available when \code{ordered = TRUE}.}
 
 \item{missing}{a character string indicating how to deal with missing data,
 i.e., \code{"listwise"} for listwise deletion, \code{"pairwise"}
 for pairwise deletion, \code{"fiml"} for full information
-maximum likelihood method, \code{two.stage} for two-stage
-maximum likelihood method, \code{robust.two.stage} for robust
-two-stage maximum likelihood method, and \code{doubly-robust}
+maximum likelihood method, \code{"two.stage"} for two-stage
+maximum likelihood method, \code{"robust.two.stage"} for robust
+two-stage maximum likelihood method, and \code{"doubly-robust"}
 for doubly-robust method (see 'Details' in the help page
 of the\code{item.cfa()} function). By default, \code{"fiml"}
-is used for CFA models with continuous indicators which are
-estimated by using \code{estimator = "MLR"}. However, argument
-\code{missing} switches to \code{listwise} when the data
-set is complete, i.e., it is not possible to use FIML in
-complete data. Note that the robust CFI, TLI, and RMSEA
-are different in complete data depending on whether FIML or
-listwise deletion was specified when estimating the model
-in lavaan.}
+is used for CFA models with continuous indicators and
+\code{"listwise"} is used for CFA models with ordered
+categorical indicators given that \code{"fiml"} is not
+available for a limited-information estimator used
+to estimate the CFA model with ordered categorical
+indicators. Note that the argument \code{missing} switches
+to \code{listwise} when the data set is complete. Also
+note that the robust CFI, TLI, and RMSEA are different
+in complete data depending on whether FIML or listwise
+deletion was specified when estimating the model in lavaan.}
 
 \item{null.model}{logical: if \code{TRUE} (default), the proper null model
 for computing incremental fit indices (i.e., CFI and TLI)
 is used, i.e., means and variances of the indicators are
 constrained to be equal across group or time in the null
-model (Little, 2013, p. 112).}
+model (Little, 2013, p. 112). Note that the function does
+not provide the proper null model specification when
+evaluating measurement invariance for ordered categorical
+indicators i.e., the argument will switch to \code{FALSE}
+when specifying \code{ordered = TRUE).}}
 
 \item{print}{a character string or character vector indicating which results
 to show on the console, i.e. \code{"all"} for all results,
-\code{"summary"} for a summary of the specification of the
-estimation method and missing data handling in lavaan,
+\code{"summary"} for a summary of the specification (e.g., estimation and
+optimization method, test statistic, missing data handling, and identification
+method), \code{"partial"} for a summary of the partial measurement
+invariance specification listing parameters that are
+freely estimated when \code{partial} is not \code{NULL},
 \code{"coverage"} for the variance-covariance coverage of
-the data, \code{"descript"} for descriptive statistics,
-\code{"fit"} for model fit and model comparison, \code{"est"}
-for parameter estimates, \code{"modind"} for modification
-indices, and \code{"resid"} for the residual correlation
-matrix and standardized residual means. By default, a summary
-of the specification, model fit, and parameter estimates
-are printed. Note that parameter estimates, modification
-indices, and residual correlation matrix is only provided
-for the model investigating the level of measurement
-invariance specified in the argument \code{"invar"}.}
+the data, \code{"descript"} for descriptive statistics
+for continuous variables (\code{ordered = FALSE}) and
+item frequencies for ordered categorical variable
+(\code{ordered = TRUE}), \code{"fit"} for model fit and
+model comparison, \code{"est"} for parameter estimates,
+\code{"modind"} for modification indices, and \code{"resid"}
+for the residual correlation matrix and standardized residual
+means. By default, a summary of the specification, model
+fit, and parameter estimates are printed. Note that parameter
+estimates, modification indices, and residual correlation
+matrix is only provided for the model investigating the
+level of measurement invariance specified in the argument
+\code{"invar"}.}
 
 \item{print.fit}{a character string or character vector indicating which
 version of the CFI, TLI, and RMSEA to show on the console
@@ -199,7 +254,7 @@ correction factor, i.e., \code{"all"} for all versions of
 the CFI, TLI, and RMSEA, \code{"standard"} (default when
 \code{estimator} is one of \code{"ML", "MLF", "GLS", "WLS", "DWLS", "ULS", "PML"})
 for fit indices without any non-normality correction,
-\code{"scaled"} for population-corrected robust fit indices
+\code{"scaled"} (default when \code{ordered = TRUE}) for population-corrected robust fit indices
 with ad hoc non-normality correction, and \code{robust}
 (default when \code{estimator} is one of \code{"MLM", "MLMV", "MLMVS", "MLR", "WLSM", "WLSMV", "ULSM", "ULSMV", "DLS"})
 for sample-corrected robust fit indices based on formula
@@ -219,6 +274,11 @@ in boldface. By default, absolute residual correlation
 coefficients and standardized means equal or higher 0.1
 are highlighted. Note that highlighting can be disabled by
 setting the minimum value to 1.}
+
+\item{lavaan.run}{logical: if \code{TRUE} (default), all models for
+evaluating measurement invariance will be estimated by
+using the \code{cfa()} function from the R package
+lavaan.}
 
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying results. Note that information
@@ -260,42 +320,54 @@ entries:
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
 \item{\code{data}}{data frame including all variables used in the analysis, i.e.,
-                   indicators for the factor, grouping variable and cluster variable}
+                   indicators for the factor, grouping variable and cluster
+                   variable}
 \item{\code{args}}{specification of function arguments}
-\item{\code{model}}{list with specified model for the configural, metric, scalar,
-                    and strict invariance model}
+\item{\code{model}}{list with specified model for the for the configural
+                    (\code{config}), threshold (\code{thresh}), metric (\code{metric}),
+                    scalar (\code{scalar}), and strict invariance model (\code{strict})}
 \item{\code{model.fit}}{list with fitted lavaan object of the configural, metric,
                         scalar, and strict invariance model}
 \item{\code{check}}{list with the results of the convergence and model identification
-                    check for the configural, metric, scalar, and strict invariance
-                    model}
+                    check for the configural (\code{config}), threshold (\code{thresh}),
+                    metric (\code{metric}), scalar (\code{scalar}), and
+                    strict invariance model (\code{strict})}
 \item{\code{result}}{list with result tables, i.e., \code{summary} for the
-                     summary of the specification of the estimation method and
-                     missing data handling in lavaan, \code{coverage} for the
-                     variance-covariance coverage of the data, \code{descript}
-                     for descriptive statistics, \code{fit} for a list with
+                     summary of the specification, e.g., estimation method or
+                     missing data handling in lavaan, \code{partial} for the
+                     summary of the partial invariance specification,\code{coverage}
+                     for the variance-covariance coverage of the data, \code{descript}
+                     list with descriptive statistics (\code{stat}) and
+                     frequencies (\code{freq}), \code{fit} for a list with
                      model fit based on standard, scaled, and robust fit indices,
-                     \code{est} for a list with parameter estimates for the
+                     \code{param} for a list with parameter estimates for the
                      configural, metric, scalar, and strict invariance model,
                      \code{modind} for the list with modification indices for
                      the configural, metric, scalar, and strict invariance model,
                      \code{score} for the list with result of the score tests
-                     for constrained parameters for the configural, metric,
+                     for constrained parameters for the threshold, metric,
                      scalar, and strict invariance model, and \code{resid} for
                      the list with residual correlation matrices and standardized
-                     residual means for the configural, metric, scalar, and
-                     strict invariance model}
+                     residual means for the configural, threshold, metric, scalar,
+                     and strict invariance model}
 }
 \description{
-This function evaluates configural, metric, scalar, and strict between-group or
-longitudinal (partial) measurement invariance using confirmatory  factor analysis
-with continuous indicators by calling the \code{cfa} function in the R package
-\pkg{lavaan}. By default, the function evaluates configural, metric, and scalar
-measurement invariance by providing a table with model fit information (i.e.,
-chi-square test, fit indices based on a proper null model, and information criteria)
-and model comparison (i.e., chi-square difference test, change in fit indices,
-and change in information criteria). Additionally, variance-covariance coverage
-of the data, descriptive statistics, parameter estimates, modification indices,
+This function evaluates configural, (threshold), metric, scalar, and strict
+between-group or longitudinal (partial) measurement invariance using confirmatory
+factor analysis with continuous or ordered categorical indicators by calling
+the \code{cfa} function in the R package \pkg{lavaan}. Measurement invariance
+evaluation for measurement models with ordered categorical indicators utilizes
+the Wu and Estabrook (2016) approach to model identification and constraints
+to investigate measurement invariance. By default, the function evaluates
+configural, metric, and scalar measurement invariance for measurement models
+with continuous indicators, while the function evaluates configural, threshold,
+metric, scalar, and strict measurement invariance for measurement models with
+ordered categorical indicators given at least four response categories for each
+indicator by providing a table with model fit information (i.e., chi-square
+test, fit indices based on a proper null model, and information criteria) and
+model comparison (i.e., chi-square difference test, change in fit indices, and
+change in information criteria). Additionally, variance-covariance coverage of
+the data, descriptive statistics, parameter estimates, modification indices,
 and residual correlation matrix can be requested by specifying the argument
 \code{print}.
 }
@@ -307,32 +379,32 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 }
 \examples{
 \dontrun{
-
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
 #----------------------------------------------------------------------------
-# Between-Group Measurement Invariance Evaluation
+# Between-Group Measurement Invariance: Continuous Indicators
 
 #..................
 # Measurement model with one factor
 
-# Example 1a: Specification using the argument '...'
-item.invar(HolzingerSwineford1939, x1:x4, group = "sex")
+# Example 1a: Model specification using the argument '...'
+item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "sex")
 
-# Example 1b: Alternative specification without using the argument '...'
+# Example 1b: Alternative model specification without using the argument '...'
 item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
            group = HolzingerSwineford1939$sex)
 
-# Example 1c: Alternative specification without using the argument '...'
+# Example 1c: Alternative model specification without using the argument '...'
 item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "sex")], group = "sex")
 
-# Example 1d: Alternative specification using the argument 'model'
+# Example 1d: Alternative model specification using the argument 'model'
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "sex")
 
 #..................
 # Measurement model with two factors
 
+# Example 2: Model specification using the argument 'model'
 item.invar(HolzingerSwineford1939,
            model = list(c("x1", "x2", "x3", "x4"), c("x5", "x6", "x7", "x8")),
            group = "sex")
@@ -340,98 +412,196 @@ item.invar(HolzingerSwineford1939,
 #..................
 # Configural, metric, scalar, and strict measurement invariance
 
-# Example 2: Evaluate configural, metric, scalar, and strict measurement invariance
+# Example 3: Evaluate configural, metric, scalar, and strict measurement invariance
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", invar = "strict")
 
 #..................
-# Partial measurement invariance
+# Between-group partial measurement invariance
 
-# Example 3: Free second factor loading (L2) and third intercept (T3)
+# Example 4a: Two Groups
+#             Free factor loadings for 'x2' and 'x3'
+#             Free intercept for 'x1'
+#             Free residual variance for 'x4'
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "sex", partial = c("L2", "T3"), print = c("fit", "est"))
+           group = "sex", invar = "strict",
+           partial = list(load = c("x2", "x3"),
+                          inter = "x1",
+                          resid = "x4"))
+
+# Example 4b: More than Two Groups
+#             Free factor loading for 'x2' in group 2
+#             Free factor loading for 'x4' in group 1 and 4
+#             Free intercept for 'x1' in group 3
+#             Free residual variance for 'x3' in group 1 and 3
+item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
+           group = "ageyr", invar = "strict",
+           partial = list(load = list(x2 = "g2", x4 = c("g1", "g4")),
+                          inter = list(x1 = "g3"),
+                          resid = list(x3 = c("g1", "g3"))))
 
 #..................
 # Residual covariances
 
-# Example 4a: One residual covariance
+# Example 5a: One residual covariance
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            rescov = c("x3", "x4"), group = "sex")
 
-# Example 4b: Two residual covariances
+# Example 5b: Two residual covariances
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            rescov = list(c("x1", "x4"), c("x3", "x4")), group = "sex")
 
 #..................
-# Scaled test statistic and cluster-robust standard errors
+# Scaled test statistic
 
-# Example 5a: Specify cluster variable using a variable name in 'data'
+# Example 6a: Specify cluster variable using a variable name in 'data'
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", cluster = "agemo")
 
-# Example 5b: Specify vector of the cluster variable in the argument 'cluster'
+# Example 6b: Specify cluster variable as vector
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", cluster = HolzingerSwineford1939$agemo)
 
 #..................
 # Default Null model
 
-# Example 6: Specify default null model for computing incremental fit indices
+# Example 7: Specify default null model for computing incremental fit indices
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", null.model = FALSE)
 
 #..................
 # Print argument
 
-# Example 7a: Request all results
+# Example 8a: Request all results
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", print = "all")
 
-# Example 7b: Request fit indices with ad hoc non-normality correction
+# Example 8b: Request fit indices with ad hoc non-normality correction
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", print.fit = "scaled")
 
-# Example 7c: Request modification indices with value equal or higher than 10
+# Example 8c: Request modification indices with value equal or higher than 2
 # and highlight residual correlations equal or higher than 0.3
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", print = c("modind", "resid"),
-           mod.minval = 10, resid.minval = 0.3)
+           mod.minval = 2, resid.minval = 0.3)
 
 #..................
 # Model syntax and lavaan summary of the estimated model
 
-# Example 8
-mod <- item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-                  group = "sex", output = FALSE)
-
-# lavaan model syntax scalar invariance model
-cat(mod$model$scalar)
+# Example 9a: Model specification using the argument '...'
+mod1 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "sex",
+                   output = FALSE)
 
 # lavaan summary of the scalar invariance model
-lavaan::summary(mod$model.fit$scalar, standardized = TRUE, fit.measures = TRUE)
+lavaan::summary(mod1$model.fit$scalar, standardized = TRUE, fit.measures = TRUE)
+
+# Example 9b: Do not estimate any models
+mod2 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "sex",
+                   lavaan.run = FALSE)
+
+# lavaan model syntax metric invariance model
+cat(mod2$model$metric)
+
+# lavaan model syntax scalar invariance model
+cat(mod2$model$scalar)
 
 #----------------------------------------------------------------------------
-# Longitudinal Measurement Invariance Evaluation
+# Longitudinal Measurement Invariance: Continuous Indicators
 
-# Example 9: Two time points with three indicators at each time point
+# Example 10: Two time points with three indicators at each time point
 item.invar(HolzingerSwineford1939,
-           model = list(c("x1", "x2", "x3"),
-                        c("x5", "x6", "x7")), long = TRUE)
+           model = list(c("x1", "x2", "x3"), c("x5", "x6", "x7")), long = TRUE)
+
+#..................
+# Longitudinal partial measurement invariance
+
+# Example 11: Two Time Points with three indicators at each time point
+#             Free factor loading for 'x2'
+#             Free intercepts for 'x1' and x2
+item.invar(HolzingerSwineford1939,
+           model = list(c("x1", "x2", "x3"), c("x5", "x6", "x7")), long = TRUE,
+           partial = list(load = "x2",
+                          inter = c("x1", "x2")))
+
+#----------------------------------------------------------------------------
+# Between-Group Measurement Invariance: Ordered Categorical Indicators
+#
+# Note that the example analysis for ordered categorical indicators cannot be
+# conduct since the data set 'data' is not available.
+
+# Example 12a: Delta parameterization (default)
+item.invar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE)
+
+# Example 12a: Theta parameterization
+item.invar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE,
+           parameterization = "theta")
+
+#----------------------------------------------------------------------------
+# Between-Group Partial Measurement Invariance: Ordered Categorical Indicators
+
+# Example 13a: Two Groups
+#              Free 2nd and 4th threshold of 'item1'
+#              Free 1st threshold of 'item3'
+#              Free factor loadings for 'item2' and 'item4'
+#              Free intercept for 'item1'
+#              Free residual variance for 'item3'
+item.invar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE,
+           partial = list(thres = list(item1 = c("t2", "t4"),
+                                       item3 = "t1"),
+                          load = c("item2", "item4"),
+                          inter = "item1",
+                          resid = "item3"))
+
+# Example 13b: More than Two Groups
+#              Free 1st threshold of 'item1' in group 1 and 2
+#              Free 3rd threshold of 'item3' in group 3
+#              Free factor loadings for 'item2' in group 1
+#              Free intercept for 'item2' in group 1
+#              Free intercept for 'item3' in group 2 and 4
+#              Free residual variance for 'item1' in group 1 and 3
+item.invar(data, item1, item2, item3, item4, group = "four.group", ordered = TRUE,
+           partial = list(thres = list(item1 = list(t1 = c("g1", "g2")),
+                                       item3 = list(t3 = "g3")),
+                          load  = list(item2 = "g1"),
+                          inter = list(item2 = "g1", item3 = c("g2", "g4")),
+                          resid = list(item1 = c("g1", "g3"))))
+
+#----------------------------------------------------------------------------
+# Longitudinal Measurement Invariance: Ordered Categorical Indicators
+
+# Example 14: Two Time Points
+item.invar(data, model = list(c("aitem1", "aitem2", "aitem3"),
+                              c("bitem1", "bitem2", "bitem3")),
+           long = TRUE, ordered = TRUE)
+
+#..................
+# Longitudinal partial measurement invariance: Ordered Categorical Indicators
+
+# Example 15: Two Time Points
+#             Free 2nd and 4th threshold of 'aitem1'
+#             Free 1st threshold of 'aitem4'
+#             Free factor loading for 'aitem2
+#             Free intercepts for 'aitem1' and 'bitem2'
+#             Free residual variance for 'aitem3'
+item.invar(data, model = list(c("aitem1", "aitem2", "aitem3"),
+                              c("bitem1", "bitem2", "bitem3")),
+           long = TRUE, ordered = TRUE, invar = "strict",
+           partial = list(thres = list(aitem1 = c("t2", "t4"), aitem3 = "t1"),
+                          load = "aitem2",
+                          inter = c("aitem1", "bitem2"),
+                          resid = "aitem3"))
 
 #------------------------------------------------
 # Write Results
 
-# Example 10a: Write Results into a text file
+# Example 16a: Write Results into a text file
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", print = "all", write = "Invariance.txt", output = FALSE)
 
-# Example 10b: Write Results into a Excel file
+# Example 16b: Write Results into a Excel file
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "sex", print = "all", write = "Invariance.xlsx", output = FALSE)
-
-result <- item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-                     group = "sex", print = "all", output = FALSE)
-write.result(result, "Invariance.xlsx")
 }
 }
 \references{
@@ -448,6 +618,10 @@ Press.
 
 Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling.
 \emph{Journal of Statistical Software, 48}, 1-36. https://doi.org/10.18637/jss.v048.i02
+
+Wu, H., & Estabrook, R. (2016). Identification of confirmatory factor analysis
+models of different levels of invariance for ordered categorical outcomes.
+\emph{Psychometrika, 81}(4), 1014–1045. doi:10.1007/s11336-016-9506-0
 }
 \seealso{
 \code{\link{item.cfa}}, \code{\link{multilevel.invar}}, \code{\link{write.result}}

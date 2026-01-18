@@ -4,7 +4,7 @@
 \alias{multilevel.cor}
 \title{Within-Group and Between-Group Correlation Matrix}
 \usage{
-multilevel.cor(data, ..., cluster, within = NULL, estimator = c("ML", "MLR"),
+multilevel.cor(data, ..., cluster, estimator = c("ML", "MLR"), constr.var = FALSE,
                optim.method = c("nlminb", "em"), optim.switch = TRUE,
                missing = c("listwise", "fiml"), sig = FALSE, alpha = 0.05,
                print = c("all", "cor", "se", "stat", "p"), split = FALSE,
@@ -29,11 +29,6 @@ the cluster variable in \code{data}, or a
 vector representing the nested grouping structure (i.e.,
 group or cluster variable).}
 
-\item{within}{a character vector representing variables that are measured
-on the within level and modeled only on the within level.
-Variables not mentioned in \code{within} are measured on the within level
-and will be modeled on both the within and between level.}
-
 \item{estimator}{a character string indicating the estimator to be used, i.e.,
 \code{"ML"} for maximum likelihood with conventional
 standard errors and \code{"MLR"} for maximum likelihood with
@@ -41,6 +36,10 @@ Huber-White robust standard errors. The default setting
 depends on the argument \code{sig}, i.e., \code{"ML"} is
 used when specifying \code{sig = FALSE} (default) and
 \code{"MLR"} is used when specifying \code{sig = TRUE}.}
+
+\item{constr.var}{logical: if \code{TRUE}, inequality constraints are imposed
+for the variance parameters at the between level, i.e., variances are constrained
+to be greater than 0.}
 
 \item{optim.method}{a character string indicating the optimizer, i.e., \code{"nlminb"}
 (default) for the unconstrained and bounds-constrained
@@ -164,17 +163,13 @@ value.
 }
 \details{
 \describe{
-\item{\strong{Within-Group and Between-Group Variables}}{The specification of
-the within-group and between-group variables is in line with the syntax in Mplus.
-That is, the \code{within} argument is used to identify variables in the data
-frame specified in \code{data} that are measured at the individual level and
-modeled only at the within level. They are specified to have no variance in
-the between part of the model. Note that the function automatically detects
-variables in the data frame  specified in \code{data} that are measured at the
-cluster level and modeled only at the between level, i.e., these variables do
-not have any variance within clusters. Variables not mentioned in the arguments
-\code{within} are measured at the individual level and will be modeled at both
-the within and between level.}
+\item{\strong{Within-Group and Between-Group Variables}}{The function automatically
+identifies (1) variables in the data frame specified in \code{data} that are
+measured at the individual level and modeled only at the within level and (2)
+variables in the data frame specified in \code{data} that are measured at the
+cluster level and modeled only at the between level. The former variables have
+no variance in the between part of the model (i.e., ICC(1) is 0 e.g. due to centering
+within clusters), while the latter variables do not have any variance within cluster.}
 \item{\strong{Estimation Method and Missing Data Handling}}{The default setting
 for the argument \code{estimator} is depending on the setting of the argument
 \code{sig}. If \code{sig = FALSE} (default), maximum likelihood estimation
@@ -252,13 +247,7 @@ multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
                between = c("w1", "w2"), order = TRUE)
 
 #----------------------------------------------------------------------------
-# Example 8: Variables "y1", "y2", and "y2" modeled only at the within level
-# Variables "w1" and "w2" modeled at the cluster level
-multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
-               within = c("y1", "y2", "y3"), between = c("w1", "w2"))
-
-#----------------------------------------------------------------------------
-# Example 9: lavaan model and summary of the multilevel model used to compute the
+# Example 8: lavaan model and summary of the multilevel model used to compute the
 # within-group and between-group correlation matrix
 
 mod <- multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", output = FALSE)
@@ -272,11 +261,11 @@ lavaan::summary(mod$model.fit, standardized = TRUE)
 #----------------------------------------------------------------------------
 # Write Results
 
-# Example 10a: Write Results into a text file
+# Example 9a: Write Results into a text file
 multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
                write = "Multilevel_Correlation.txt")
 
-# Example 10b: Write Results into a Excel file
+# Example 9b: Write Results into a Excel file
 multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster",
                write = "Multilevel_Correlation.xlsx")
 }

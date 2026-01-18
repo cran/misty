@@ -130,8 +130,8 @@ cluster.rwg <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
     # Extract data
     x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
 
-    # Cluster variable
-    cluster <- data[, cluster]
+    # Extract cluster variable and convert tibble into data frame or vector
+    cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
@@ -139,8 +139,7 @@ cluster.rwg <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
   } else {
 
     # Data frame
-    x <- as.data.frame(data) |> (\(y) if (isTRUE(ncol(y) == 1L)) { unname(y) } else { y })()
-
+    x <- as.data.frame(data) |> (\(y) if (isTRUE(ncol(y) == 1L)) { unname(y) } else { return(y) })()
 
     # Data and cluster
     var.group <- .var.group(data = x, cluster = cluster, drop = FALSE)
@@ -152,9 +151,6 @@ cluster.rwg <- function(data, ..., cluster, A = NULL, ranvar = NULL, z = TRUE,
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
-
-  # Convert 'cluster' as tibble into a vector
-  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####

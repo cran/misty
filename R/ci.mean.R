@@ -512,11 +512,11 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
     # Extract data and convert tibble into data frame or vector
     x <- data[, .var.names(data = data, ..., group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-    # Grouping variable
-    if (isTRUE(!is.null(group))) { group <- data[, group] }
+    # Extract grouping variable and convert tibble into a vector
+    if (isTRUE(!is.null(group))) { group <- data[, group] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
-    # Splitting variable
-    if (isTRUE(!is.null(split))) { split <- data[, split] }
+    # Extract splitting variable and convert tibble into a vector
+    if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
@@ -539,10 +539,6 @@ ci.mean <- function(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
     if (isTRUE(!is.null(var.group$split))) { split <- var.group$split }
 
   }
-
-  # Convert 'group' and 'split' as tibble into a vector
-  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
-  if (!is.null(split) && isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { split <- unname(unlist(split)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
@@ -948,11 +944,11 @@ ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc
     # Extract data and convert tibble into data frame or vector
     x <- data[, .var.names(..., data = data, group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-    # Grouping variable
-    if (isTRUE(!is.null(group))) { group <- data[, group] }
+    # Extract grouping variable and convert tibble into a vector
+    if (isTRUE(!is.null(group))) { group <- data[, group] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
-    # Splitting variable
-    if (isTRUE(!is.null(split))) { split <- data[, split] }
+    # Extract splitting variable and convert tibble into a vector
+    if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
@@ -975,10 +971,6 @@ ci.median <- function(data, ..., boot = c("none", "norm", "basic", "stud", "perc
     if (isTRUE(!is.null(var.group$split))) { split <- var.group$split }
 
   }
-
-  # Convert 'group' and 'split' as tibble into a vector
-  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
-  if (!is.null(split) && isTRUE("tbl" %in% substr(class(split), 1L, 3L))) { splits <- unname(unlist(split)) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####

@@ -103,10 +103,10 @@ cluster.scores <- function(data, ..., cluster,
     var.names <- .var.names(data = data, ..., cluster = cluster)
 
     # Extract data and convert tibble into data frame or vector
-    x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
+    x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { return(y) })()
 
-    # Cluster variable
-    cluster <- data[, cluster]
+    # Extract cluster variable and convert tibble into data frame or vector
+    cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
@@ -126,9 +126,6 @@ cluster.scores <- function(data, ..., cluster,
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
-
-  # Convert 'cluster' as tibble into data frame
-  if (isTRUE(!is.null(cluster) && "tbl" %in% substr(class(cluster), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) { cluster <- unname(unlist(cluster)) } else { cluster <- as.data.frame(cluster) } }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####

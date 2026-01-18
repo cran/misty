@@ -344,7 +344,8 @@ of interest (Hoffman & Walters, 2022).
 }
 \note{
 This function is based on the \code{multilevelR2()} function from the \pkg{mitml}
-package by Simon Grund, Alexander Robitzsch and Oliver Luedtke (2021), and a
+package by Simon Grund, Alexander Robitzsch and Oliver Luedtke (2021), fhe
+\code{r.squaredGLMM()} function from the \pkg{MuMIn} by Kamil Bartoń,  and a
 copy of the function \code{r2mlm} in the \pkg{r2mlm} package by Mairead Shaw,
 Jason Rights, Sonya Sterba, and Jessica Flake.
 }
@@ -435,6 +436,9 @@ ggplot(df, aes(x = var, y = y, fill = part)) +
 }
 }
 \references{
+Bartoń K (2025). \emph{MuMIn: Multi-Model Inference}. R package version 1.48.1.
+https://CRAN.R-project.org/package=MuMIn.
+
 Enders, C. K., & Tofighi, D. (2007). Centering predictor variables in
 cross-sectional multilevel models: A new look at an old issue.
 \emph{Psychological Methods, 12}, 121-138. https://doi.org/10.1037/1082-989X.12.2.121
@@ -488,6 +492,5 @@ Methods}. Advance online publication. https://doi.org/10.1037/met0000434
 \code{\link{multilevel.icc}}, \code{\link{multilevel.indirect}}
 }
 \author{
-Simon Grund, Alexander Robitzsch, Oliver Luedtk, Mairead Shaw, Jason D. Rights,
-Sonya K. Sterba, Jessica K. Flake, and Takuya Yanagida
+Takuya Yanagida
 }

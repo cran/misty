@@ -172,7 +172,7 @@ multilevel.icc(Demo.twolevel, y1, cluster = "cluster")
 multilevel.icc(Demo.twolevel, y1, cluster = "cluster", type = "2")
 
 # Example 4: ICC(1)
-# use lme() function in the lme4 package to estimate ICC
+# use lme() function in the nlme package to estimate ICC
 multilevel.icc(Demo.twolevel, y1, cluster = "cluster", method = "nlme")
 
 # Example 5: ICC(1) for 'y1', 'y2', and 'y3'

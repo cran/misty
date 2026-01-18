@@ -488,11 +488,11 @@ ci.prop <- function(data, ..., method = c("wald", "wilson"),
     # Extract data and convert tibble into data frame or vector
     x <- data[, .var.names(data = data, ..., group = group, split = split), drop = FALSE] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-    # Grouping variable
-    if (isTRUE(!is.null(group))) { group <- data[, group] }
+    # Extract grouping variable and convert tibble into a vector
+    if (isTRUE(!is.null(group))) { group <- data[, group] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
-    # Splitting variable
-    if (isTRUE(!is.null(split))) { split <- data[, split] }
+    # Extract splitting variable and convert tibble into a vector
+    if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####

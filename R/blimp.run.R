@@ -95,8 +95,7 @@ blimp.run <- function(target = getwd(), recursive = FALSE,
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical = c("recursive", "posterior", "clear"),
-               character = list(folder = 1L, Blimp = 1L),
+  .check.input(logical = c("recursive", "posterior", "clear"), character = list(folder = 1L, Blimp = 1L),
                s.character = list(replace.out = c("always", "never", "modified"), format = c("csv", "csv2", "xlsx", "rds", "RData")), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________

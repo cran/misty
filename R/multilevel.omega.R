@@ -203,8 +203,8 @@ multilevel.omega <- function(data, ..., cluster, rescov = NULL,
     # Extract data
     x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
 
-    # Cluster variable
-    cluster <- data[, cluster]
+    # Extract cluster variable and convert tibble into data frame or vector
+    cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
@@ -224,9 +224,6 @@ multilevel.omega <- function(data, ..., cluster, rescov = NULL,
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
-
-  # Convert 'cluster' as tibble into a vector
-  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
 
   #_____________________________________________________________________________
   #
@@ -477,7 +474,7 @@ multilevel.omega <- function(data, ..., cluster, rescov = NULL,
 
       }
 
-      # Model-implied variance-covariance matrix of the latent variables
+    # Model-implied variance-covariance matrix of the latent variables
     } else if (any(dim(lavaan::lavTech(model.fit$model.fit, what = "cov.lv")$.cluster) != 0L)) {
 
       if (isTRUE(any(eigen(lavaan::lavTech(model.fit$model.fit, what = "cov.lv")$.cluster, symmetric = TRUE, only.values = TRUE)$values < (-1L * .Machine$double.eps^(3/4))))) {

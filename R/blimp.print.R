@@ -579,7 +579,7 @@ blimp.print <- function(x,
     n <- sum(unlist(strsplit(unique(print.object[grep("N_Eff", print.object) + 1L]), "")) == "-")
 
     print.object <- gsub(paste0("                                ", paste(rep("-", times = n), collapse = "")),
-                         paste0("                                   ", paste(rep("\u23AF", times = n + 10L), collapse = "")), print.object)
+                         paste0("                                   ", paste(rep("\u2500", times = n - 4L), collapse = "")), print.object)
 
   }
 

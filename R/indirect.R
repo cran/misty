@@ -17,9 +17,10 @@
 #' @param print       a character string or character vector indicating which
 #'                    confidence intervals (CI) to show on the console, i.e.
 #'                    \code{"all"} for all CIs, \code{"asymp"} for the CI based
-#'                    on the asymptotic normal method, \code{"dop"} (default) for
+#'                    on the asymptotic normal method, \code{"dop"} for
 #'                    the CI based on the distribution of the product method, and
-#'                    \code{"mc"} for the CI based on the Monte Carlo method.
+#'                    \code{"mc"} (default) for the CI based on the Monte Carlo
+#'                    method.
 #' @param se          a character string indicating which standard error (SE) to
 #'                    compute for the asymptotic normal method, i.e., \code{"sobel"}
 #'                    for the approximate standard error by Sobel (1982) using the
@@ -69,16 +70,16 @@
 #' indirect effect is normally distributed. Note that the function provides three
 #' formulas for computing the standard error by specifying the argument \code{se}:
 #'
-#' \describe{
-#'   \item{\code{"sobel"}}{Approximate standard error by Sobel (1982) using the
+#' \itemize{
+#'   \item{\code{"sobel": }}{Approximate standard error by Sobel (1982) using the
 #'   multivariate delta method based on a first order Taylor series approximation:
 #'   \deqn{\sqrt(a^2 \sigma^2_a + b^2 \sigma^2_b)}}
 #'
-#'   \item{\code{"aroian"}}{Exact standard error by Aroian (1947) based on a first
+#'   \item{\code{"aroian": }}{Exact standard error by Aroian (1947) based on a first
 #'   and second order Taylor series approximation:
 #'   \deqn{\sqrt(a^2 \sigma^2_a + b^2 \sigma^2_b + \sigma^2_a \sigma^2_b)}}
 #'
-#'   \item{\code{"goodman"}}{Unbiased standard error by Goodman (1960):
+#'   \item{\code{"goodman": }}{Unbiased standard error by Goodman (1960):
 #'   \deqn{\sqrt(a^2 \sigma^2_a + b^2 \sigma^2_b - \sigma^2_a \sigma^2_b)}
 #'   Note that the unbiased standard error is often negative and is hence
 #'   undefined for zero or small effects or small sample sizes.}
@@ -107,7 +108,7 @@
 #' proportional to the Bessel function of the second kind with a purely imaginary
 #' argument (Craig, 1936).}
 #'
-#' \item{\strong{ Monte Carlo Method}}{The Monte Carlo (MC) method (MacKinnon et
+#' \item{\strong{Monte Carlo Method}}{The Monte Carlo (MC) method (MacKinnon et
 #' al., 2004) relies on the assumption that the parameters \eqn{a} and \eqn{b}
 #' have a joint normal sampling distribution. Based on the parametric assumption,
 #' a sampling distribution of the product \eqn{a}\eqn{b} using random samples

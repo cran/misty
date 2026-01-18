@@ -207,7 +207,7 @@
 #' ## Robust Estimation using the R package robustlmm
 #'
 #' # Estimate two-level mixed-effects model
-#' mod.lmer2r <- robustlmm::rlmer(y1 ~ x2.c + w1.c + x2.c:w1.c + (1 + x2.c | cluster), data = Demo.twolevel)
+#' mod.lmer2r <- robustlmm::rlmer(y1 ~ x2.c + w1.c + (1 | cluster), data = Demo.twolevel)
 #'
 #' # Example 2f: Default setting
 #' summa(mod.lmer2r)
@@ -517,7 +517,7 @@ summa <- function(model,
            model.twolevel <- ifelse(lme4::getME(model, name = "n_rtrms") == 1L, TRUE, FALSE)
 
            # Cluster name
-           model.cluster <- names(lme4::getME(model, name = "cnms"))
+           model.cluster <- unique(names(lme4::getME(model, name = "cnms"))) |> (\(p) p[order(nchar(p), decreasing = TRUE)])()
 
            # Name of the data
            model.data.name <- as.character(stats::getCall(model))[3L]
@@ -526,7 +526,7 @@ summa <- function(model,
            model.data <- model.frame(model)
 
            # Modify cluster names
-           if (isTRUE(!model.twolevel)) { model.data <- misty::df.rename(model.data, from = unlist(lapply(strsplit(model.cluster, ":"), function(y) y[[1L]])), to = model.cluster) }
+           if (isTRUE(!model.twolevel)) { model.data <- misty::df.rename(model.data, from = names(table(unlist(strsplit(model.cluster, ":")))), to = model.cluster) }
 
            # Data in Workspace
            model.data.ws <- tryCatch(if (isTRUE(exists(model.data.name))) {
@@ -553,7 +553,7 @@ summa <- function(model,
            if (isTRUE(model.twolevel)) {
 
              # Level of Variables, 1 = Level-1 and 2 = Level-2 variable
-             var.level <- sapply(colnames(model.data.yx), function(y) { if (all(round(tapply(as.numeric(model.data[, y]), model.data[, model.cluster], var, na.rm = TRUE), digits = 7L) == 0L)) { 2L } else { 1L } })
+             var.level <- sapply(colnames(model.data.yx), function(y) { if (all(tapply(as.numeric(model.data[, y]), model.data[, model.cluster], var, na.rm = TRUE) < .Machine$double.eps^0.5, na.rm = TRUE)) { 2L } else { 1L } })
 
            #### Three-Level Model
            } else {
@@ -630,7 +630,7 @@ summa <- function(model,
              } else {
 
                # Level-1 variables
-               descript.l1 <- data.frame(suppressWarnings(misty::descript(model.data[, setdiff(var.level1, var.factor), drop = FALSE], check = FALSE, output = FALSE))$result[, c("variable", "n", "nUQ", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")], setNames(as.data.frame(t(misty::multilevel.icc(model.data[, setdiff(var.level1, var.factor)], cluster = model.data[, rev(model.cluster)]))[, c("L2", "L3")]), nm = c("icc.l2", "icc.l3")), row.names = setdiff(var.level1, var.factor))
+               descript.l1 <- data.frame(suppressWarnings(misty::descript(model.data[, setdiff(var.level1, var.factor), drop = FALSE], check = FALSE, output = FALSE))$result[, c("variable", "n", "nUQ", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")], setNames(as.data.frame(t(misty::multilevel.icc(model.data[, setdiff(var.level1, var.factor)], cluster = model.data[, rev(model.cluster)]))[, model.cluster]), nm = c("icc.l2", "icc.l3")), row.names = setdiff(var.level1, var.factor))
 
                # Level-2 variables
                if (isTRUE(length(var.level2) != 0L)) { descript.l2 <- data.frame(suppressWarnings(misty::descript(model.data[!duplicated(model.data[, model.cluster[1L]]), var.level2, drop = FALSE], check = FALSE, output = FALSE))$result[, c("variable", "n", "nUQ", "m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")], icc.l2 = NA, icc.l3 = misty::multilevel.icc(model.data[, setdiff(var.level2, var.factor)], cluster = model.data[, model.cluster[2L]]), row.names = var.level2) } else { descript.l2 <- NULL }
@@ -653,9 +653,7 @@ summa <- function(model,
              # Two-Level Model and Variables after excluding factors
              if (isTRUE(model.twolevel && length(setdiff(union(var.level1, var.level2), var.factor)) >= 2L)) {
 
-               tryCatch(cormat <- suppressWarnings(misty::multilevel.cor(model.data, cluster = model.cluster,
-                                                                         within = names(which(misty::multilevel.icc(model.data[, c(setdiff(var.level1, var.factor), model.cluster)], cluster = model.cluster) < .Machine$double.eps^0.5)) |> (\(y) if (isTRUE(length(y) != 0L)) { y } else { NULL })(),
-                                                                         between = if (isTRUE(length(var.level2) == 0L)) { NULL } else { var.level2 }, optim.switch = FALSE, check = FALSE, output = FALSE))$result$wb.cor,
+               tryCatch(cormat <- suppressWarnings(misty::multilevel.cor(model.data, cluster = model.cluster, optim.switch = FALSE, check = FALSE, output = FALSE))$result$wb.cor,
 
                         error = function(y) {
 

@@ -300,8 +300,7 @@
 #' of interest (Hoffman & Walters, 2022).
 #'
 #' @author
-#' Simon Grund, Alexander Robitzsch, Oliver Luedtk, Mairead Shaw, Jason D. Rights,
-#' Sonya K. Sterba, Jessica K. Flake, and Takuya Yanagida
+#' Takuya Yanagida
 #'
 #' @seealso
 #' \code{\link{multilevel.r2.manual}}, \code{\link{multilevel.cor}},
@@ -309,6 +308,9 @@
 #' \code{\link{multilevel.indirect}}
 #'
 #' @references
+#' Bartoń K (2025). \emph{MuMIn: Multi-Model Inference}. R package version 1.48.1.
+#' https://CRAN.R-project.org/package=MuMIn.
+#'
 #' Enders, C. K., & Tofighi, D. (2007). Centering predictor variables in
 #' cross-sectional multilevel models: A new look at an old issue.
 #' \emph{Psychological Methods, 12}, 121-138. https://doi.org/10.1037/1082-989X.12.2.121
@@ -376,7 +378,8 @@
 #'
 #' @note
 #' This function is based on the \code{multilevelR2()} function from the \pkg{mitml}
-#' package by Simon Grund, Alexander Robitzsch and Oliver Luedtke (2021), and a
+#' package by Simon Grund, Alexander Robitzsch and Oliver Luedtke (2021), fhe
+#' \code{r.squaredGLMM()} function from the \pkg{MuMIn} by Kamil Bartoń,  and a
 #' copy of the function \code{r2mlm} in the \pkg{r2mlm} package by Mairead Shaw,
 #' Jason Rights, Sonya Sterba, and Jessica Flake.
 #'
@@ -501,21 +504,10 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   # Check inputs
   .check.input(logical = c("plot", "gray", "append", "output"), numeric = list(start = 1L, end = 1L),
-               s.character = list(print = c("all", "RB", "SB", "NS", "RS")), args = "write1", envir = environment(), input.check = check)
+               s.character = list(print = c("all", "RB", "SB", "NS", "RS")), args = c("write1", "start", "end"), envir = environment(), input.check = check)
 
-  # Additional checks
-  if (isTRUE(check)) {
-
-    # Package ggplot2
-    if (isTRUE(plot)) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
-
-    # Check input 'start'
-    if (isTRUE(start < 0L || start > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) }
-
-    # Check input 'end'
-    if (isTRUE(end < 0L || end > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'end'", call. = FALSE) }
-
-  }
+  # Package ggplot2
+  if (isTRUE(check)) { if (isTRUE(plot)) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } } }
 
   #_____________________________________________________________________________
   #
@@ -528,7 +520,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   if (isTRUE(length(print) == 1L && print == "all")) { print <- c("RB", "SB", "NS", "RS") }
 
-  if (isTRUE(plot) & isTRUE(!"RS" %in% print)) { warning("Bar char is only available when \"RS\" is specified in the argument 'print'.", call. = FALSE) }
+  if (isTRUE(plot) & isTRUE(!"RS" %in% print)) { warning("Bar char is only available when \"RS\" is specified for the argument 'print'.", call. = FALSE) }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## 'units' Argument ####
@@ -565,7 +557,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
       cvr <- names(flist)
 
       # R-Squared for more than one cluster variable only available for "NS" using lme4
-      if (isTRUE(length(cvr) > 1L && any(c("RB", "SB", "RS") %in% print))) { stop("This function can only deal with models with a single cluster variable.", call. = FALSE) }
+      if (isTRUE(length(cvr) > 1L && any(c("RB", "SB") %in% print))) { stop("This function can only deal with models with a single cluster variable.", call. = FALSE) }
 
       # Check for random slopes
       random <- length(lme4::getME(model, "theta")) > 1L
@@ -619,7 +611,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
       cvr <- attr(nlme::getGroups(model), "label")
 
       # R-Squared for more than one cluster variable only available for "NS" using lme4
-      if(isTRUE(length(nlme::getGroupsFormula(model, asList = TRUE)) > 1L)) stop("Calculation of R-squared only support for models with a single cluster variable.", call. = FALSE)
+      if (isTRUE(length(nlme::getGroupsFormula(model, asList = TRUE)) > 1L)) { stop("This function can only deal with models with a single cluster variable.", call. = FALSE) }
 
       # Cluster size harmonic mean
       n.j <- 1L / mean(1L / table(nlme::getGroups(model)))
@@ -632,7 +624,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
         # Fit Null model
         ffml0 <- formula(paste0(yvr, "~ 1"))
         rfml0 <- formula(paste0("~ 1 |", cvr, ""))
-        if (is.null(nlme::getData(model))) stop("No data sets found in 'lme' fit. See '?testModels' for an example.", call. = FALSE)
+        if (is.null(nlme::getData(model))) { stop("No data sets found in 'lme' fit. See '?testModels' for an example.", call. = FALSE) }
 
         model0 <- update(model, fixed = ffml0, random = rfml0, data = model$data)
 

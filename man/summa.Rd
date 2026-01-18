@@ -217,8 +217,7 @@ summa(mod.lmer2, robust = TRUE)
 ## Robust Estimation using the R package robustlmm
 
 # Estimate two-level mixed-effects model
-mod.lmer2r <- robustlmm::rlmer(y1 ~ x2.c + w1.c + x2.c:w1.c + (1 + x2.c | cluster),
-                               data = Demo.twolevel)
+mod.lmer2r <- robustlmm::rlmer(y1 ~ x2.c + w1.c + (1| cluster), data = Demo.twolevel)
 
 # Example 2f: Default setting
 summa(mod.lmer2r)

@@ -599,7 +599,7 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
                          } else {
 
                            # No Level-2 variance
-                           if (isTRUE(all(round(misty::cluster.scores(model.data[, w], cluster = model.data[, group.var], expand = FALSE), digits = 7) == 0L))) {
+                           if (isTRUE(all(round(misty::cluster.scores(model.data[, w], cluster = model.data[, group.var], expand = FALSE), digits = 7L) == 0L))) {
 
                              return(summary(lm(model.data[, w] ~ 1))$sigma)
 

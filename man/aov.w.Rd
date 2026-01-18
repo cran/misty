@@ -269,9 +269,8 @@ aov.w(cbind(time1, time2, time3) ~ 1, data = dat)
 # Example 2: Repeated measures ANOVA, print results of all sphericity corrections
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat, print = "all")
 
-# Example 3: Repeated measures ANOVA
-# print effect size measures
-aov.w(cbind(time1, time2, time3) ~ 1, data = dat, effsize = TRUE)
+# Example 3: Repeated measures ANOVA, print post hoc test and effect size measures
+aov.w(cbind(time1, time2, time3) ~ 1, data = dat, posthoc = TRUE, effsize = TRUE)
 
 # Example 4: Repeated measures ANOVA, do not print hypotheses and descriptive statistics,
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat, descript = FALSE, hypo = FALSE)

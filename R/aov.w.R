@@ -258,8 +258,8 @@
 #' # Example 2: Repeated measures ANOVA, print results of all sphericity corrections
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, print = "all")
 #'
-#' # Example 3: Repeated measures ANOVA, print effect size measures
-#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, effsize = TRUE)
+#' # Example 3: Repeated measures ANOVA, print post hoc test and effect size measures
+#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, posthoc = TRUE, effsize = TRUE)
 #'
 #' # Example 4: Repeated measures ANOVA, do not print hypotheses and descriptive statistics,
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, descript = FALSE, hypo = FALSE)
@@ -267,12 +267,14 @@
 #' # Example 5: Repeated measures ANOVA, plot results
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE)
 #'
+#' \dontrun{
 #' # Example 6: Write Results into a text file
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.txt")
 #'
 #' # Example 7: Save plot
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE,
 #'       filename = "Repeated_measures_ANOVA.png", width = 7, height = 6)
+#' }
 aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
                   posthoc = FALSE, conf.level = 0.95,
                   p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),

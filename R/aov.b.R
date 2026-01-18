@@ -160,8 +160,8 @@
 #' # Example 1: Between-subject ANOVA
 #' aov.b(mpg ~ gear, data = mtcars)
 #'
-#' # Example 2: Between-subject ANOVA, print effect size measures
-#' aov.b(mpg ~ gear, data = mtcars, effsize = TRUE)
+#' # Example 2: Between-subject ANOVA, print post hoc test and effect size measures
+#' aov.b(mpg ~ gear, data = mtcars, posthoc = TRUE, effsize = TRUE)
 #'
 #' # Example 3: Between-subject ANOVA, do not print hypotheses and descriptive statistics,
 #' aov.b(mpg ~ gear, data = mtcars, descript = FALSE, hypo = FALSE)
@@ -169,6 +169,7 @@
 #' # Example 4: Between-subject ANOVA, plot results
 #' aov.b(mpg ~ gear, data = mtcars, plot = TRUE)
 #'
+#' \dontrun{
 #' # Example 5: Write Results into a text file
 #' aov.b(mpg ~ gear, data = mtcars, write = "ANOVA.txt")
 #'
@@ -189,6 +190,7 @@
 #'       scale_x_discrete(name = NULL) +
 #'       labs(subtitle = "Two-Sided Difference-Adjusted Confidence Interval") +
 #'       theme_bw() + theme(plot.subtitle = element_text(hjust = 0.5))
+#' }
 aov.b <- function(formula, data, posthoc = FALSE, conf.level = 0.95, hypo = TRUE,
                   descript = TRUE, effsize = FALSE, weighted = FALSE, correct = FALSE,
                   digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE,

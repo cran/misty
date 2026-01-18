@@ -1,39 +1,72 @@
-#' Summary Result Table and Grouped Bar Charts for Latent Class Analysis Estimated in Mplus
+#' Summary Result Tables and Grouped Bar Charts for Latent Class Analysis in Mplus
 #'
 #' This function reads all Mplus output files from latent class analysis in
-#' subfolders to create a summary result table and bar charts for each latent
-#' class solution separately. By default, the function reads output files in all
-#' subfolders of the current working directory. Optionally, bar charts for each
-#' latent class solution can be requested by setting the argument \code{plot}
-#' to \code{TRUE}. Note that subfolders with only one Mplus output file are
-#' excluded.
+#' subfolders to create result tables with model summaries (e.g., AIC, CAIC, BIC,
+#' SABIC, AWE and cmP), approximate Bayes factors, classification diagnostics
+#' (e.g., relative Entropy, AvePP, and OCC), class-specific means and variances
+#' or class-specific item response probabilities of the indicator variables, and
+#' Cohen's \emph{d}s to quantify class separation between latent class \emph{j}
+#' and latent class \emph{k}. By default, the function reads output files in all
+#' subfolders of the current working directory or output files in the current
+#' working directory and prints a table with model summaries on the console.
+#' Bar charts including confidence intervals for each latent class solution can
+#' be requested by setting the argument \code{plot} to \code{TRUE}. Note that
+#' result tables with Bayes factors, classification diagnostics, class-specific
+#' means and variances, class-specific item response probabilities, and Cohen's
+#' \emph{d}s will not be printed on the console, but are only available in the
+#' exported Excel file when specifying the \code{write} argument (e.g.,
+#' \code{write = "Results_LCA.xlsx"}).
 #'
 #' @param folder          a character string indicating the path of the folder
 #'                        containing subfolders with the Mplus output files. By
 #'                        default Mplus outputs in the subfolders of the current
-#'                        working directory are read.
-#' @param folder          a character vector indicating the name of the subfolders
-#'                        to be excluded from the summary result table.
-#' @param exclude         a character vector indicating the name of the subfolders
+#'                        working directory are read. Note that if there are no
+#'                        subfolders available, Mplus outputs from the folder
+#'                        specified in the argument \code{folder} are extracted.
+#' @param exclude         a character vector indicating the name of the subfolder(s)
 #'                        excluded from the result tables.
-#' @param sort.n          logical: if \code{TRUE} (default), result table is sorted
-#'                        according to the number of classes within each folder.
-#' @param sort.p          logical: if \code{TRUE} (default), class proportions are
-#'                        sorted decreasing.
-#' @param plot            logical: if \code{TRUE}, bar charts with error bars for
-#'                        confidence intervals are saved in the folder
-#'                        \code{_Plots} within subfolders. Note that plots are only
-#'                        available for LCA with continuous
-#'                        or count indicator variables.
-#' @param group.ind       logical: if \code{TRUE} (default), latent class indicators
-#'                        are represented by separate bars, if \code{FALSE} latent
-#'                        classes are represented by separate bars.
-#' @param ci              logical: if \code{TRUE} (default), confidence intervals
-#'                        are added to the bar charts.
+#' @param sort.n          logical: if \code{TRUE} (default), tables with model
+#'                        summaries and classification diagnostics are sorted
+#'                        according to the number of classes within each folder
+#'                        in increasing order.
+#' @param sort.p          logical: if \code{TRUE}, model-estimated class counts,
+#'                        proportions, average posterior class probabilities,
+#'                        and odds of correct classification ratio in the
+#'                        classification diagnostics are sorted in increasing order.
+#' @param digits          an integer value indicating the number of decimal places
+#'                        to be used for displaying LL, AIC, CAIC, BIC, SABIC,
+#'                        AWE, OCC, and approximate Bayes factors (aBF).
+#' @param p.digits        an integer value indicating the number of decimal places
+#'                        to be used for displaying cmP, \emph{p}-values, relative
+#'                        entropy values, class proportions, and confidence intervals.
+#'                        Note that the scaling correction factor is displayed
+#'                        with \code{p.digits} minus 1 decimal places.
+#' @param bf.trunc        logical: if \code{TRUE} (default), approximate Bayes
+#'                        factors (aBF) greater than 1000 are truncated.
 #' @param conf.level      a numeric value between 0 and 1 indicating the confidence
-#'                        level of the interval.
-#' @param adjust          logical: if \code{TRUE} (default), difference-adjustment
-#'                        for the confidence intervals is applied.
+#'                        level of the intervals in the result table with means
+#'                        and variances for each latent class separately. Note
+#'                        that only \code{0.9}, \code{0.95}, or \code{0.95} are
+#'                        allowed when extracting confidence intervals from Mplus
+#'                        outputs.
+#' @param plot            logical: if \code{TRUE}, bar charts with error bars for
+#'                        confidence intervals for LCA with continuous or count
+#'                        indicator variables are saved in the folder \code{_Plots}
+#'                        within subfolders.
+#' @param group.ind       logical: if \code{TRUE} (default), latent class indicators
+#'                        are represented by separate bars when saving plots of
+#'                        an LCA based on continuous or count indicator variables,
+#'                        while latent class indicators are represented on the
+#'                        x-axis when saving plots of an LCA based on ordered or
+#'                        unordered categorical indicator, if \code{FALSE} latent
+#'                        classes are represented by separate bars when saving plots
+#'                        of an LCA based on continuous or count indicator variables,
+#'                        while latent classes are represented on the x-axis when
+#'                        saving plots of an LCA based on ordered or unordered
+#'                        categorical indicator.
+#' @param ci              logical: if \code{TRUE} (default), confidence intervals
+#'                        are added to the bar charts for LCA with continuous or
+#'                        count indicator variables.
 #' @param axis.title      a numeric value specifying the size of the axis title.
 #' @param axis.text       a numeric value specifying the size of the axis text
 #' @param levels          a character string specifying the order of the indicator
@@ -59,18 +92,25 @@
 #'                        at the high end of the palette.
 #' @param dpi             a numeric value specifying the plot resolution when saving
 #'                        the bar chart.
-#' @param width           a numeric value specifying the width of the plot when
-#'                        saving the bar chart. By default, the width is number of
-#'                        indicators plus number of classes divided by 2.
+#' @param width.ind       a numeric value specifying the width of the plot as a
+#'                        factor depending on the number of indicator variables.
+#'                        By default, the factor is 1.5.
+#' @param width.nclass    a numeric value specifying the width of the plot as a
+#'                        factor depending on the number of classes.
+#'                        By default, the factor is 0.5 when saving plots of an
+#'                        LCA based on continuous or count indicator variables,
+#'                        while the factor is 1.5 when saving plots of an LCA
+#'                        based on ordered or unordered categorical indicator
+#'                        variables.
+#' @param height.categ    a numeric value specifying the height of the plot as a
+#'                        factor depending on the number of response categories.
+#'                        By default, the factor is 0.6. Note that this argument
+#'                        is used only when saving plots of an LCA based on ordered
+#'                        or unordered categorical indicator variables.
 #' @param height          a numeric value specifying the height of the plot when
-#'                        saving the bar chart.
-#' @param digits          an integer value indicating the number of decimal places
-#'                        to be used for displaying results. Note that the scaling
-#'                        correction factor is displayed  with \code{digits} plus 1
-#'                        decimal places.
-#' @param p.digits        an integer value indicating the number of decimal places
-#'                        to be used for displaying \emph{p}-values, entropy value,
-#'                        and class proportions.
+#'                        saving the bar chart. Note that this argument is used
+#'                        only when saving plots of an LCA based on continuous
+#'                        or count indicator variables.
 #' @param write           a character string naming a file for writing the output into
 #'                        either a text file with file extension \code{".txt"} (e.g.,
 #'                        \code{"Output.txt"}) or Excel file with file extension
@@ -86,45 +126,142 @@
 #' @param output          logical: if \code{TRUE} (default), output is shown.
 #'
 #' @details
-#' The result summary table comprises following entries:
+#' The Excel file exported by the function for reading Mplus output files from
+#' latent class analysis with continuous or count indicator variables by
+#' specifying the \code{write} argument (e.g., \code{write = "Results_LCA.xlsx"})
+#' contains five sheets.
+#'
+#' \strong{(1) Summary: Model Summaries}
+#'
 #' \itemize{
 #'    \item{\code{"Folder"}}: Subfolder from which the group of Mplus outputs files
-#'                            were summarized.
-#'    \item{\code{"#Class"}}: Number of classes (i.e., \code{CLASSES ARE c(#Class)}).
-#'    \item{\code{"Conv"}}: Model converged, \code{TRUE} or \code{FALSE} (i.e.,
-#'                          \code{THE MODEL ESTIMATION TERMINATED NORMALLY}.
-#'    \item{\code{"#Param"}}: Number of estimated parameters (i.e.,
-#'                            \code{Number of Free Parameters}).
-#'    \item{\code{"logLik"}}: Log-likelihood of the estimated model (i.e., \code{H0 Value}).
-#'    \item{\code{"Scale"}}: Scaling correction factor (i.e.,
-#'                           \code{H0 Scaling Correction Factor for}). Provided
-#'                           only when \code{ESTIMATOR IS MLR}.
-#'    \item{\code{"LL Rep"}}: Best log-likelihood replicated, \code{TRUE} or \code{FALSE}
-#'                            (i.e., \code{THE BEST LOGLIKELIHOOD VALUE HAS BEEN REPLICATED}).
-#'    \item{\code{"AIC"}}: Akaike information criterion (i.e., \code{Akaike (AIC)}).
+#'                            were summarized
+#'    \item{\code{"#Class"}}: Number of latent classes, i.e., \code{CLASSES ARE c(#Class)}
+#'    \item{\code{"Conv"}}: Model converged, \code{TRUE} or \code{FALSE}, i.e.,
+#'                          \code{THE MODEL ESTIMATION TERMINATED NORMALLY}
+#'    \item{\code{"#Param"}}: Number of estimated parameters, i.e., \code{Number of Free Parameters}
+#'    \item{\code{"logLik"}}: Log-likelihood of the estimated model, i.e., \code{H0 Value}
+#'    \item{\code{"Scale"}}: Scaling correction factor, i.e., \code{H0 Scaling Correction Factor for},
+#'                           available only when \code{ESTIMATOR IS MLR}
+#'    \item{\code{"LLRep"}}: Best log-likelihood replicated, \code{TRUE} or \code{FALSE},
+#'                           i.e., \code{THE BEST LOGLIKELIHOOD VALUE HAS BEEN REPLICATED}
+#'    \item{\code{"AIC"}}: Akaike information criterion, i.e., \code{Akaike (AIC)}
 #'    \item{\code{"CAIC"}}: Consistent AIC, not reported in the Mplus output, but
-#'                          simply \code{BIC + #Param}.
-#'    \item{\code{"BIC"}}: Bayesian information criterion (i.e., \code{Bayesian (BIC)}).
-#'    \item{\code{"Chi-Pear"}}: Pearson chi-square test of model fit (i.e., \code{Pearson Chi-Square}),
-#'                              only available when indicators are count or ordered categorical
-#'    \item{\code{"Chi-LRT"}}: Likelihood ratio chi-square test of model fit (i.e., \code{Likelihood Ratio Chi-Square}),
-#'                             only available when indicators are count or ordered categorical.
-#'    \item{\code{"SABIC"}}: Sample-size adjusted BIC (i.e., \code{Sample-Size Adjusted BIC}).
-#'    \item{\code{"LMR-LRT"}}: Significance value (\emph{p}-value) of the Vuong-Lo-Mendell-Rubin test
-#'                             (i.e., \code{VUONG-LO-MENDELL-RUBIN LIKELIHOOD RATIO TEST}).
-#'                             Provided only when \code{OUTPUT: TECH11}.
-#'    \item{\code{"A-LRT"}}: Significance value (\emph{p}-value) of the Adjusted Lo-Mendell-Rubin Test
-#'                           (i.e., \code{LO-MENDELL-RUBIN ADJUSTED LRT TEST}).
-#'                           Provided only when \code{OUTPUT: TECH11}.
+#'                          simply \code{BIC + #Param}
+#'    \item{\code{"BIC"}}: Bayesian information criterion, i.e., \code{Bayesian (BIC)}
+#'    \item{\code{"SABIC"}}: Sample-size adjusted BIC, i.e., \code{Sample-Size Adjusted BIC}
+#'    \item{\code{"AWE"}}: Approximate weight of evidence criterion (Banfield & Raftery, 1993)
+#'    \item{\code{"cmP"}}: Approximate correct model probability (Schwarz, 1978)
+#'                         across estimated models in all Mplus output files in
+#'                         the subfolders to create result tables
+#'    \item{\code{"Chi-Pear"}}: Pearson chi-square test of model fit, i.e., \code{Pearson Chi-Square},
+#'                              available only when indicators are count or ordered categorical
+#'    \item{\code{"Chi-LRT"}}: Likelihood ratio chi-square test of model fit, i.e., \code{Likelihood Ratio Chi-Square},
+#'                             available only when indicators are count or ordered categorical
+#'    \item{\code{"LMR-LRT"}}: Significance value (\emph{p}-value) of the Vuong-Lo-Mendell-Rubin test,
+#'                             i.e., \code{VUONG-LO-MENDELL-RUBIN LIKELIHOOD RATIO TEST},
+#'                             available only when \code{OUTPUT: TECH11}
+#'    \item{\code{"A-LRT"}}: Significance value (\emph{p}-value) of the Adjusted Lo-Mendell-Rubin Test,
+#'                           i.e., \code{LO-MENDELL-RUBIN ADJUSTED LRT TEST},
+#'                           available only when \code{OUTPUT: TECH11}
 #'    \item{\code{"BLRT"}}: Significance value (\emph{p}-value) of the bootstrapped
-#'                          likelihood ratio test. Provided only when \code{OUTPUT: TECH14}.
+#'                          likelihood ratio test, available only when \code{OUTPUT: TECH14}
 #'    \item{\code{"Entropy"}}: Summary of the class probabilities across classes
-#'                             and individuals in the sample (i.e., \code{Entropy}).
+#'                             and individuals in the sample, i.e., \code{Entropy}
+#'    \item{\code{"aPPMin"}}: Minimum average posterior class probability (AvePP)
+#'                            for the latent classes
+#'    \item{\code{"OCCMin"}}: Minimum odds of correct classification ratio (OCC)
+#'    \item{\code{"nMin"}}: Minimum class count for the latent classes based on
+#'                          the estimated model
+#'    \item{\code{"pMin"}}: Minimum class proportion for the latent classes based
+#'                          on the estimated model
+#' }
+#'
+#' \strong{(2) aBF: Approximate Bayes Factors}
+#'
+#' \itemize{
+#'    \item{\code{"A-Folder"}}: Subfolder from which the group of Mplus outputs files
+#'                              for Model A were summarized
+#'    \item{\code{"A-#Class"}}: Number of latent classes for Model A, i.e., \code{CLASSES ARE c(#Class)}
+#'    \item{\code{"A-BIC"}}: Bayesian information criterion for Model A, i.e., \code{Bayesian (BIC)}
+#'    \item{\code{"B-Folder"}}: Subfolder from which the group of Mplus outputs files
+#'                              for Model B were summarized
+#'    \item{\code{"B-#Class"}}: Number of latent classes for Model B, i.e., \code{CLASSES ARE c(#Class)}
+#'    \item{\code{"B-BIC"}}: Bayesian information criterion for Model B, i.e., \code{Bayesian (BIC)}
+#'    \item{\code{"aBF"}}: Approximate Bayes Factor for pairwise comparison of relative fit
+#'                         between Model A and Model B, i.e., ratio of the probability of
+#'                         Model A being correct model to Model B being the correct model
+#' }
+#'
+#' \strong{(3) Classif: Classification Diagnostics}
+#'
+#' \itemize{
+#'    \item{\code{"Folder"}}: Subfolder from which the group of Mplus outputs files
+#'                            were summarized
+#'    \item{\code{"#Class"}}: Number of latent classes, i.e., \code{CLASSES ARE c(#Class)}.
+#'    \item{\code{"Conv"}}: Model converged, \code{TRUE} or \code{FALSE}, i.e.,
+#'                          \code{THE MODEL ESTIMATION TERMINATED NORMALLY}.
+#'    \item{\code{"#Param"}}: Number of estimated parameters, i.e.,
+#'                            \code{Number of Free Parameters}
+#'    \item{\code{"LLRep"}}: Best log-likelihood replicated, \code{TRUE} or \code{FALSE},
+#'                           i.e., \code{THE BEST LOGLIKELIHOOD VALUE HAS BEEN REPLICATED}
+#'    \item{\code{"n1"}}: Class count for the first latent class based on the estimated model,
+#'                        i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}
+#'    \item{\code{"n2"}}: Class count for the second latent class based on the estimated model,
+#'                        i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}
 #'    \item{\code{"p1"}}: Class proportion of the first class based on the estimated
-#'                        posterior probabilities (i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}).
+#'                        posterior probabilities, i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}
 #'    \item{\code{"p2"}}: Class proportion of the second class based on the estimated
-#'                        posterior probabilities (i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}).
-#'  }
+#'                        posterior probabilities, i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}
+#'    \item{\code{"Entropy"}}: Summary of the class probabilities across classes
+#'                             and individuals in the sample, i.e., \code{Entropy}
+#'    \item{\code{"aPP1"}}: Average posterior class probability (AvePP) of the
+#'                          first latent class for the latent classes
+#'    \item{\code{"aPP2"}}: Average posterior class probability (AvePP) of the
+#'                          second latent class for the latent classes
+#'    \item{\code{"OCC1"}}: Odds of correct classification ratio (OCC) of the
+#'                          first latent class
+#'    \item{\code{"OCC2"}}: Odds of correct classification ratio (OCC) of the
+#'                          second latent class
+#' }
+#'
+#' \strong{(4) Mean_Var: Means and Variances for each Latent Class Separately}
+#'
+#' \itemize{
+#'    \item{\code{"Folder"}}: Subfolder from which the group of Mplus outputs files
+#'                            were summarized
+#'    \item{\code{"#Class"}}: Number of latent classes, i.e., \code{CLASSES ARE c(#Class)}
+#'    \item{\code{"n"}}: Class counts based on the estimated model,
+#'                       i.e., \code{FINAL CLASS COUNTS AND PROPORTIONS}
+#'    \item{\code{"Param"}}: Parameter, i.e., mean or variance
+#'    \item{\code{"Ind"}}: Latent class indicator variable
+#'    \item{\code{"Est."}}: Parameter estimate.
+#'    \item{\code{"SE"}}: Standard error
+#'    \item{\code{"z"}}: Test statistic
+#'    \item{\code{"pval"}}: Significance value
+#'    \item{\code{"Low"}}: Lower bound of the confidence interval
+#'    \item{\code{"Upp"}}: Upper bound of the confidence interval
+#' }
+#'
+#' \strong{(5) d: Cohen's d}
+#'
+#' \itemize{
+#'    \item{\code{"Folder"}}: Subfolder from which the group of Mplus outputs files were summarized
+#'    \item{\code{"#Class"}}: Number of latent classes, i.e., \code{CLASSES ARE c(#Class)}
+#'    \item{\code{"Ind"}}: Latent class indicator variable
+#'    \item{\code{"Class.j"}}: Number of classes for model \emph{j}
+#'    \item{\code{"Class.k"}}: Number of classes for model \emph{k}
+#'    \item{\code{"n.j"}}: Latent classes \emph{j}
+#'    \item{\code{"M.j"}}: Class-specific mean of the indicator for the latent class \emph{j}
+#'    \item{\code{"SD.j"}}: Class-specific standard deviation of the indicator for the latent class \emph{j}
+#'    \item{\code{"n.k"}}: Latent classes \emph{k}
+#'    \item{\code{"M.k"}}: Class-specific mean of the indicator for the latent class \emph{k}
+#'    \item{\code{"SD.k"}}: Class-specific standard deviation of the indicator for the latent class \emph{k}
+#'    \item{\code{"d"}}: Cohen's d, Standardized mean difference
+#' }
+#'
+#' For more info on fit indices, classification diagnostics, and evaluating class
+#' separation see Masyn (2013) and Sorgente et al. (2025).
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -134,6 +271,9 @@
 #' \code{\link{write.mplus}}
 #'
 #' @references
+#' Banfield, J. D., & Raftery, A E. (1993). Model-based Gaussian and non-Gaussian
+#' clustering. \emph{Biometrics, 49}, 803-821.
+#'
 #' Masyn, K. E. (2013). Latent class analysis and finite mixture modeling. In T. D.
 #' Little (Ed.), \emph{The Oxford handbook of quantitative methods: Statistical analysis}
 #' (pp. 551–611). Oxford University Press.
@@ -141,19 +281,30 @@
 #' Muthen, L. K., & Muthen, B. O. (1998-2017). \emph{Mplus User's Guide} (8th ed.).
 #' Muthen & Muthen.
 #'
+#' Schwartz, G. (1978). Estimating the dimension of a model. \emph{The Annals of Statistics, 6},
+#' 461-464.
+#'
+#' Sorgente, A., Caliciuri, R., Robba, M., Lanz, M., & Zumbo, B. D. (2025) A systematic
+#' review of latent class analysis in psychology: Examining the gap between guidelines
+#' and research practice. \emph{Behavior Research Methods, 57}(11), 301.
+#' https://doi.org/10.3758/s13428-025-02812-1
+#'
 #' @return
-#' Returns an object, which is a list with following entries:
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries:
 #'
 #' \item{\code{call}}{function call}
 #' \item{\code{type}}{type of analysis}
 #' \item{\code{output}}{list with all Mplus outputs}
 #' \item{\code{args}}{specification of function arguments}
 #' \item{\code{result}}{list with result tables, i.e., \code{summary} for the
-#'                      summary result table, \code{mean_var} for the result
-#'                      table with means and variances for each latent class
-#'                      separately, \code{mean} for the result table with means
-#'                      for each latent class separately, and \code{var} for the
-#'                      result table with variances for each latent class separately}
+#'                      model summaries, \code{bf} for approximate Bayes factors,
+#'                      \code{classif} classification diagnostics,
+#'                      \code{mean_var} for class-specific means and variances
+#'                      of the indicator variables, \code{prob} for class-specific
+#'                      item response probabilities of the indicator variables
+#'                      and \code{d} for Cohen's d standardized mean difference
+#'                      between latent class \emph{j} and latent class \emph{k}}}
 #'
 #' @export
 #'
@@ -167,10 +318,10 @@
 #'           mplus.run = TRUE)
 #'
 #' # Example 1a: Read Mplus output files, create result table, write table, and save plots
-#' mplus.lca.summa(write = "LCA.xlsx", plot = TRUE)
+#' mplus.lca.summa(write = "Results_LCA.xlsx", plot = TRUE)
 #'
 #' # Example 1b: Write results into a text file
-#' mplus.lca.summa(write = "LCA.txt")
+#' mplus.lca.summa(write = "Results_LCA.txt")
 #'
 #' #----------------------------------------------------------------------------
 #' # Example 2: Draw bar chart manually
@@ -208,237 +359,112 @@
 #' # Save bar chart
 #' ggsave("LCA_4-Class.png", dpi = 600, width = 6, height = 4)
 #' }
-mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p = TRUE,
-                            plot = FALSE, group.ind = TRUE, ci = TRUE, conf.level = 0.95, adjust = TRUE,
-                            axis.title = 7, axis.text = 7, levels = NULL, labels = NULL,
-                            ylim = NULL, ylab = "Mean Value", breaks = ggplot2::waiver(),
-                            errorbar.width = 0.1, legend.title = 7, legend.text = 7,
-                            legend.key.size = 0.4, gray = FALSE, start = 0.15, end = 0.85,
-                            dpi = 600, width = "n.ind", height = 4, digits = 1, p.digits = 3,
-                            write = NULL, append = TRUE, check = TRUE, output = TRUE) {
+mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sort.p = FALSE,
+                            digits = 0, p.digits = 3, bf.trunc = TRUE, conf.level = 0.95,
+                            plot = FALSE, group.ind = TRUE, ci = TRUE,
+                            axis.title = 9, axis.text = 9, levels = NULL, labels = NULL,
+                            ylim = NULL, ylab = c("Mean Value", "Item Response Probability"),
+                            breaks = ggplot2::waiver(), errorbar.width = 0.1,
+                            legend.title = 9, legend.text = 9, legend.key.size = 0.5,
+                            gray = FALSE, start = 0.15, end = 0.85, dpi = 600,
+                            width.ind = NULL, width.nclass = NULL, height.categ = NULL,
+                            height = NA, write = NULL, append = TRUE, check = TRUE,
+                            output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical = c("sort.p", "plot", "group.ind", "ci", "gray", "append", "output"),
-               numeric = list(axis.title = 1L, axis.text = 1L, errorbar.width = 1L, legend.title= 1L, legend.text = 1L, legend.key.size = 1L, start = 1L, end = 1L, dpi = 1L, height= 1L, ylim = 2L),
-               character = list(ylab = 1L), args = c("conf.level", "write2"), envir = environment(), input.check = check)
-
-  # Additional checks
-  if (isTRUE(check)) {
-
-    # Check input 'start'
-    if (isTRUE(start < 0L || start > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) }
-
-    # Check input 'end'
-    if (isTRUE(end < 0L || end > 1L)) { stop("Please specify a numeric value between 0 and 1 for the argument 'end'", call. = FALSE) }
-
-  }
+  .check.input(logical = c("sort.p", "bf.trunc", "plot", "group.ind", "ci", "gray", "append", "output"),
+               numeric = list(axis.title = 1L, axis.text = 1L, errorbar.width = 1L, legend.title = 1L, legend.text = 1L, legend.key.size = 1L, dpi = 1L, width.ind = 1L, width.nclass = 1L,height.categ = 1L, ylim = 2L),
+               character = c("conf.level", "write2"), args = c("start", "end"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
   # Main Function --------------------------------------------------------------
 
-  ind <- est <- low <- upp <- NULL
+  occmin <- ind <- est <- low <- upp <- categ <- NULL
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Read Mplus Output Files ####
 
-  #...................
+  #--------------------------------------
   ### Subfolders ####
 
-  # Subfolders
-  subfolder <- list.dirs(folder, full.names = TRUE, recursive = FALSE)
+  # Exclude subfolders
 
-  # Exclude subfolder
-  if (isTRUE(!is.null(exclude))) { subfolder <- subfolder[-sapply(exclude, function(y) grep(y, subfolder))] }
+  subfolder <- misty::chr.omit(list.dirs(folder, full.names = TRUE, recursive = FALSE), omit = file.path(folder, "_Plots"), check = FALSE)|>
+                 (\(p) if (isTRUE(!is.null(exclude))) { p[-sapply(exclude, function(y) grep(y, p))] } else { return(p) })() |>
+                 (\(q) if (length(q) == 0L) { return(folder)} else { return(q) })()
 
   # Mplus output files in the subfolders
-  subfolder.out <- lapply(sapply(subfolder, list), list.files, pattern = ".out")
+  subfolder.out <- lapply(sapply(subfolder, list), list.files, pattern = ".out") |> (\(p) if (isTRUE(length(unlist(p)) == 0L)) { stop("No Mplus output files found in the subfolders specified in the argument 'folder'.", call. = FALSE) } else { return(p) })()
 
-  if (isTRUE(length(unlist(subfolder.out)) == 0L)) { stop("No Mplus output files found in the subfolders specified in the argument 'folder'.", call. = FALSE) }
-
-  #...................
-  ### Subfolders with Mplus outputs ####
+  #--------------------------------------
+  ### Subfolders with Mplus Outputs ####
 
   # Exclude folders without any Mplus outputs
   lca.folder <- subfolder[which(sapply(subfolder.out, length) > 0L)]
 
-  #...................
-  ### Read Mplus outputs ####
+  #--------------------------------------
+  ### Read Mplus Outputs ####
 
   # Read outputs, iconv() removes Non-ASCII characters
   lca.out <- suppressWarnings(lapply(lca.folder, function(y) sapply(file.path(y, grep(".out", list.files(y), value = TRUE, useBytes = TRUE)), function(z) list(iconv(readLines(z),  sub = "")))))
 
-  # Check if all outputs are MIXTURE
-  lca.out.mix <- suppressWarnings(names(which(unlist(lapply(lca.out, function(y) lapply(y, function(z) !any(grepl("MIXTURE", z, ignore.case = TRUE, useBytes = TRUE))))))))
+  # Check if all outputs are MIXTURE and exclude outputs
+  suppressWarnings(names(which(unlist(lapply(lca.out, function(y) lapply(y, function(z) !any(grepl("MIXTURE", z, ignore.case = TRUE, useBytes = TRUE)))))))) |>
+    (\(p) if (isTRUE(length(p) != 0L)) {
 
-  # Exclude outputs
-  if (isTRUE(length(lca.out.mix) != 0L)) {
+      lca.out <<- suppressWarnings(lapply(lca.folder, function(y) sapply(misty::chr.omit(file.path(y, grep(".out", list.files(y), value = TRUE, useBytes = TRUE)), omit = p, check = FALSE), function(z) list(iconv(readLines(z), sub = ""))))) |>
+        (\(q) if (is.null(unlist(q))) { stop("There are no Mplus MIXTURE outputs left after excluding outputs with error messages.", call. = FALSE) } else { return(q) })()
 
-    lca.out <- suppressWarnings(lapply(lca.folder, function(y) sapply(misty::chr.omit(file.path(y, grep(".out", list.files(y), value = TRUE, useBytes = TRUE)), omit = lca.out.mix, check = FALSE), function(z) list(iconv(readLines(z), sub = "")))))
+    })()
 
-    if (is.null(unlist(lca.out))) { stop("There are no Mplus MIXTURE outputs left after excluding outputs with error messages.", call. = FALSE) }
+  #--------------------------------------
+  ### Output Checks ####
 
-  }
+  # Models with more than one latent class
+  if (isTRUE(any(unlist(lapply(lca.out, function(y) sapply(y, function(y) as.numeric(misty::chr.trim(sub("Number of categorical latent variables", "", grep("Number of categorical latent variables", y, value = TRUE))))))) != 1L))) { stop("This function does not support mixture models with more than one latent class.", call. = FALSE) }
 
-  ##### Check if any outputs are based on multiple imputation
-  lca.out.imp <- suppressWarnings(names(which(unlist(lapply(lca.out, function(y) lapply(y, function(z) any(grepl("IMPUTATION", z, ignore.case = TRUE, useBytes = TRUE))))))))
+  # Outputs are based on multiple imputation
+  suppressWarnings(names(which(unlist(lapply(lca.out, function(y) lapply(y, function(z) any(grepl("IMPUTATION", z, ignore.case = TRUE, useBytes = TRUE)))))))) |>
+    (\(p) if (isTRUE(length(p) != 0L)) { stop("This function does not support Mplus outputs for analysis based on multiply imputed data sets.", call. = FALSE) } )()
 
-  if (isTRUE(length(lca.out.imp) != 0L)) { stop("This function does not support Mplus outputs for analysis based on multiply imputed data sets.", call. = FALSE) }
+  # Outputs are based on Bayesian estimation
+  suppressWarnings(names(which(unlist(lapply(lca.out, function(y) lapply(y, function(z) any(grepl("Estimator                                                    BAYES", z, ignore.case = TRUE, useBytes = TRUE)))))))) |>
+    (\(p) if (isTRUE(length(p) != 0L)) { stop("This function does not support Mplus outputs for analysis based on Bayesian estimation.", call. = FALSE) } )()
 
-  #...................
-  ### Check if models with more than one latent class ####
-
-  if (isTRUE(any(unlist(lapply(lca.out, function(y) sapply(y, function(y) as.numeric(misty::chr.trim(sub("Number of categorical latent variables", "", grep("Number of categorical latent variables", y, value = TRUE))))))) != 1L))) {
-
-    stop("This function does not support mixture models with more than one latent class.", call. = FALSE)
-
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Extract Results ####
 
-  #...................
-  ### Maximum number of classes ####
+  #--------------------------------------
+  ### Maximum Number of Classes ####
 
-  max.class <- max(unlist(lapply(lca.out, function(y) sapply(y, function(y) { classes <- unlist(strsplit(grep("CLASSES ", y, value = TRUE, ignore.case = TRUE, useBytes = TRUE), ""))
-                                                                              as.numeric(misty::chr.trim(paste(classes[(grep("\\(", classes, useBytes = TRUE) + 1L):(grep("\\)", classes, useBytes = TRUE) - 1L)], collapse = ""))) }))))
-  #...................
-  ### Function for extracting results ####
+  max.class <- max(unlist(lapply(lca.out, function(y) sapply(y, function(y) {
 
-  extract.result <- function(lca.out.extract) {
+    classes <- unlist(strsplit(grep("CLASSES ", y, value = TRUE, ignore.case = TRUE, useBytes = TRUE), ""))
 
-    #### Model converged ####
-    conv <- any(grep("THE MODEL ESTIMATION TERMINATED NORMALLY", lca.out.extract, useBytes = TRUE))
+    as.numeric(misty::chr.trim(paste(classes[(grep("\\(", classes, useBytes = TRUE) + 1L):(grep("\\)", classes, useBytes = TRUE) - 1L)], collapse = "")))
 
-    #### Number of classes ####
-    if (isTRUE(any(grepl("CLASSES ", lca.out.extract, ignore.case = TRUE, useBytes = TRUE)))) {
+  }))))
 
-      classes <- unlist(strsplit(grep("CLASSES ", lca.out.extract, value = TRUE, ignore.case = TRUE, useBytes = TRUE), ""))
-      nclass <- as.numeric(misty::chr.trim(paste(classes[(grep("\\(", classes, useBytes = TRUE) + 1L):(grep("\\)", classes, useBytes = TRUE) - 1L)], collapse = "")))
+  #--------------------------------------
+  ### Apply .extract.lca.result() Function ####
 
-    } else {
-
-      nclass <- NA
-
-    }
-
-    #### Model converged ####
-    if (isTRUE(conv)) {
-
-      ##### Model summary ####
-      model.summary <- data.frame(# Number of classes
-                                  nclass = nclass,
-                                  # Model converged
-                                  conv = conv,
-                                  # Number of parameters
-                                  nparam = as.numeric(misty::chr.trim(sub("Number of Free Parameters", "", grep("Number of Free Parameters", lca.out.extract, value = TRUE, useBytes = TRUE)))),
-                                  # Loglikelihood
-                                  LL = as.numeric(misty::chr.trim(sub("H0 Value", "", grep("H0 Value  ", lca.out.extract, value = TRUE, useBytes = TRUE)))),
-                                  # Loglikelihood Scaling correction factor
-                                  LL.scale = ifelse(any(grepl("H0 Scaling Correction Factor", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("H0 Scaling Correction Factor", "", grep("H0 Scaling Correction Factor", lca.out.extract, value = TRUE, useBytes = TRUE)))), NA),
-                                  # Loglikelihood replicated
-                                  LL.rep = ifelse(any(grepl("THE BEST LOGLIKELIHOOD VALUE WAS NOT REPLICATED", lca.out.extract, useBytes = TRUE)), FALSE, TRUE),
-                                  # AIC, CAIC, BIC, SABIC
-                                  aic = as.numeric(misty::chr.trim(sub("Akaike \\(AIC\\)", "", grep("Akaike \\(AIC\\)", lca.out.extract, value = TRUE, useBytes = TRUE)))),
-                                  caic = as.numeric(misty::chr.trim(sub("Bayesian \\(BIC\\)", "", grep("Bayesian \\(BIC\\)", lca.out.extract, value = TRUE, useBytes = TRUE)))) + as.numeric(misty::chr.trim(sub("Number of Free Parameters", "", grep("Number of Free Parameters", lca.out.extract, value = TRUE, useBytes = TRUE)))),
-                                  bic = as.numeric(misty::chr.trim(sub("Bayesian \\(BIC\\)", "", grep("Bayesian \\(BIC\\)", lca.out.extract, value = TRUE, useBytes = TRUE)))),
-                                  sabic = as.numeric(misty::chr.trim(sub("Sample-Size Adjusted BIC", "", grep("Sample-Size Adjusted BIC", lca.out.extract, value = TRUE, useBytes = TRUE)))),
-                                  # Pearson Chi-Square
-                                  chi.pear = ifelse(any(grepl("Chi-Square Test of Model Fit", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("P-Value", "", lca.out.extract[grep("Pearson Chi-Square", lca.out.extract, useBytes = TRUE)[1L] + 4L]))), NA),
-                                  # Likelihood Ratio Chi-Square
-                                  chi.lrt = ifelse(any(grepl("Chi-Square Test of Model Fit", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("P-Value", "", lca.out.extract[grep("Likelihood Ratio Chi-Square", lca.out.extract, useBytes = TRUE)[1L] + 4L]))), NA),
-                                  # LMR-LRT
-                                  lmr.lrt = ifelse(any(grepl("VUONG-LO-MENDELL-RUBIN LIKELIHOOD RATIO TEST", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("P-Value", "", lca.out.extract[grep("Standard Deviation", lca.out.extract, useBytes = TRUE) + 1L]))), NA),
-                                  # Adjusted LMR-LRT
-                                  almr.lrt = ifelse(any(grepl("LO-MENDELL-RUBIN ADJUSTED", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("P-Value", "", lca.out.extract[grep("LO-MENDELL-RUBIN ADJUSTED", lca.out.extract, useBytes = TRUE) + 3L]))), NA),
-                                  # Bootstrap LRT
-                                  blrt = ifelse(any(grepl("PARAMETRIC BOOTSTRAPPED LIKELIHOOD", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("Approximate P-Value", "", lca.out.extract[grep("Approximate P-Value", lca.out.extract, useBytes = TRUE)]))), NA),
-                                  # Entropy
-                                  entropy = ifelse(any(grepl("Entropy", lca.out.extract, useBytes = TRUE)), as.numeric(misty::chr.trim(sub("Entropy", "", grep("Entropy", lca.out.extract, value = TRUE, useBytes = TRUE)))), NA),
-                                  # Class proportions
-                                  misty::df.rbind(data.frame(matrix(as.numeric(sapply(5L:(5L + nclass - 1L), function(z) {
-
-                                                    temp <- unlist(strsplit(lca.out.extract[grep("BASED ON THE ESTIMATED MODEL", lca.out.extract, useBytes = TRUE) + z], " "))
-
-                                                    temp[which(grepl("\\.", temp, useBytes = TRUE))][2L]
-
-                                                  })), ncol = nclass, dimnames = list(NULL, paste0("p", 1L:nclass))))))
-
-      ##### Means and variances ####
-
-      if (isTRUE(length(grep("Binary and ordered categorical", lca.out.extract)) == 0L && length(grep("Unordered categorical", lca.out.extract, ignore.case = TRUE)) == 0L)) {
-
-        # Number of indicators
-        n.ind <- as.numeric(misty::chr.trim(sub("Number of dependent variables", "", grep("Number of dependent variables", lca.out.extract, value = TRUE, useBytes = TRUE))))
-
-        # Extract means
-        out.means <- lapply(data.frame(sapply(if (isTRUE(nclass == 1L)) { grep("Means", lca.out.extract) } else { head(grep("Means", lca.out.extract), n = -1L) }, function(y) misty::chr.trim(misty::chr.omit(strsplit(lca.out.extract[(y + 1L):(y + n.ind)], "  "), omit = "")))),
-                            function(z) data.frame(param = "Mean", matrix(z, ncol = 5L, byrow = TRUE, dimnames = list(NULL, c("ind", "est", "se", "z", "pval")))))
-
-        out.means <- do.call(rbind, lapply(seq_along(out.means), function(y) data.frame(class = y, out.means[y][[1L]])))
-
-        # Extract variances
-        out.var <- lapply(data.frame(sapply(grep("Variances", lca.out.extract), function(y) misty::chr.trim(misty::chr.omit(strsplit(lca.out.extract[(y + 1L):(y + n.ind)], "  "), omit = "")))),
-                          function(z) data.frame(param = "Variance", matrix(z, ncol = 5L, byrow = TRUE, dimnames = list(NULL, c("ind", "est", "se", "z", "pval")))))
-
-        out.var <- do.call(rbind, lapply(seq_along(out.var), function(y) data.frame(class = y, out.var[y][[1L]])))
-
-        # Class count based on the estimated model
-        class.count <- matrix(as.numeric(misty::chr.omit(strsplit(lca.out.extract[(grep("BASED ON THE ESTIMATED MODEL", lca.out.extract) + 5L):(grep("BASED ON ESTIMATED POSTERIOR PROBABILITIES", lca.out.extract) - 2L)], " "), "")), ncol = 3, byrow = TRUE)
-
-        # Merge means and variances
-        model.descript <- data.frame(nclass = nclass, n = class.count[match(out.means[, "class"], class.count[, 1L]), 2L], rbind(out.means, out.var))
-
-        # Numeric
-        model.descript[, c("class", "est", "se", "z", "pval")] <- sapply(model.descript[, c("class", "est", "se", "z", "pval")], function(y) as.numeric(gsub("*********", NA, y, fixed = TRUE)))
-
-        # Factor
-        model.descript$class <- factor(model.descript$class)
-
-        # Indicator names
-        model.descript$ind <- sapply(model.descript$ind, function(y) grep(y, unique(misty::chr.trim(gsub(";", "", misty::chr.omit(unlist(strsplit(lca.out.extract[grep("USEVARIABLES", lca.out.extract, ignore.case = TRUE):grep("CLASSES", lca.out.extract, ignore.case = TRUE)[1L]], " ")))))), ignore.case = TRUE, value = TRUE))
-
-        # Sort variables
-        model.descript <- model.descript[, c("nclass", "class", "n", "param", "ind", "est", "se", "z", "pval")]
-
-      } else {
-
-        model.descript <- NA
-
-      }
-
-    #### Model not converged ####
-    } else {
-
-      model.summary <- data.frame(nclass = nclass, conv = conv, nparam = NA, LL = NA, LL.scale = NA, LL.rep = NA,
-                                  aic = NA, caic = NA, bic = NA, sabic = NA, chi.pear = NA, chi.lrt = NA, lmr.lrt = NA, almr.lrt = NA, blrt = NA,
-                                  entropy = NA)
-
-      model.descript <- data.frame(matrix(nrow = 0L, ncol = 9L, dimnames = list(NULL, c("nclass", "n", "class", "param", "ind", "est", "se", "z", "pval"))))
-
-    }
-
-    return(list(model.summary = model.summary, model.descript = model.descript))
-
-  }
+  lca.summary <- lca.bf <- lca.class <- lca.mean.var <- lca.prob <- lca.d <- NULL
 
   #...................
-  ### Extract results ####
+  #### Model Summary ####
 
-  #### Model summary ####
-  lca.summary <- NULL
-  for (i in seq_along(lca.out)) {
+  for (i in seq_along(lca.out)) { lca.summary <- misty::df.rbind(lca.summary, data.frame(folder = sapply(strsplit(lca.folder, "/"), function(y) rev(y)[1L])[i], do.call(misty::df.rbind, lapply(lca.out[[i]], function(z) .extract.lca.result(z, max.class = max.class, conf.level = conf.level, return = "model.summary")$model.summary)))) }
 
-    lca.summary <- misty::df.rbind(lca.summary,
-                                   data.frame(folder = sapply(strsplit(lca.folder, "/"), function(y) rev(y)[1L])[i], do.call(misty::df.rbind, lapply(lca.out[[i]], function(z) extract.result(z)$model.summary))))
+  ##### Approximate correct model probability (cmP) ####
 
-  }
+  lca.summary <- misty::df.move(data.frame(lca.summary, cmp = (-0.5*lca.summary$bic) |> (\(p) exp(p - max(p, na.rm =TRUE)) / sum(exp(na.omit(p) - max(p, na.rm =TRUE))))()), "cmp", after = "awe")
 
-  ##### Sort table ####
+  ##### Sort table according to the number of classes ####
 
   if (isTRUE(sort.n)) { lca.summary <- lca.summary[order(lca.summary$folder, lca.summary$nclass), ] }
 
@@ -446,110 +472,217 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
   lca.summary <- lca.summary[, sapply(lca.summary, function(y) any(!is.na(y)))]
 
-  ##### Sort class proportions ####
+  #...................
+  #### Approximate Bayes Factor ####
+
+  lca.bf <- lca.summary |> (\(p) p[!is.na(p[, "bic"]), ])() |> (\(q) do.call("rbind", apply(combn(nrow(q), 2L), 2L, function(y) q[y, ] |> (\(r) data.frame(A.folder = r[1L, "folder"], A.nclass = r[1L, "nclass"], A.bic = r[1L, "bic"], B.folder = r[2L, "folder"], B.nclass = r[2L, "nclass"], B.bic = r[2L, "bic"], bf = exp(-0.5*r[1L, "bic"] - -0.5*r[2L, "bic"])))())))()
+
+  #...................
+  #### Classification Diagnostics ####
+
+  for (i in seq_along(lca.out)) { lca.class <- misty::df.rbind(lca.class, data.frame(folder = sapply(strsplit(lca.folder, "/"), function(y) rev(y)[1L])[i], do.call(misty::df.rbind, lapply(lca.out[[i]], function(z) .extract.lca.result(z, max.class = max.class, conf.level = conf.level, return = "model.class")$model.class)))) }
+
+  ##### Sort table according to the number of classes ####
+
+  if (isTRUE(sort.n)) { lca.class <- lca.class[order(lca.class$folder, lca.class$nclass), ] }
+
+  ##### Sort class sizes, proportions, AVEs, and OCCs ####
 
   if (isTRUE(sort.p)) {
 
-    if (isTRUE(sum(substr(colnames(lca.summary), 1L, 1L) == "p") > 1L)) {
+    if (isTRUE(sum(substr(colnames(lca.class), 1L, 1L) == "p") > 1L)) {
 
-      lca.summary[, colnames(lca.summary)[substr(colnames(lca.summary), 1L, 1L) == "p"]] <- t(apply(lca.summary[, colnames(lca.summary)[substr(colnames(lca.summary), 1L, 1L) == "p"]], 1L, sort, decreasing = TRUE, na.last = TRUE))
+      n  <- which(substr(colnames(lca.class), 1L, 1L) == "n" & !colnames(lca.class) %in% c("nclass", "nparam"))
+      pi <- which(substr(colnames(lca.class), 1L, 1L) == "p")
+      a  <- which(substr(colnames(lca.class), 1L, 3L) == "ave")
+      o  <- which(substr(colnames(lca.class), 1L, 3L) == "occ")
+      for (i in seq_len(nrow(lca.class))) {
+
+        order(unlist(lca.class[i, n]), decreasing = TRUE, na.last = TRUE) |>
+          (\(p) {
+
+            lca.class[i, n]  <<- lca.class[i, n][p]
+            lca.class[i, pi] <<- lca.class[i, pi][p]
+            lca.class[i, a]  <<- lca.class[i, a][p]
+            lca.class[i, o]  <<- lca.class[i, o][p]
+
+          })()
+
+      }
 
     }
 
   }
 
+  ##### Add OCC to Model summary ####
+
+  lca.summary <- misty::df.move(data.frame(lca.summary, occmin = apply(lca.class[, grep("occ", colnames(lca.class))], 1L, function(y) if (isTRUE(!all(is.na(y)))) { min(y, na.rm = TRUE) } else { NA })), occmin, after = "avemin")
+
+  ##### Remove One-Class Solutions ####
+
+  if (isTRUE(any(lca.class$nclass == 1L))) { lca.class <- lca.class[which(lca.class$nclass != 1L), ] }
+
+  #...................
   #### Means and Variances ####
 
-  lca.mean.var <- NULL
-  for (i in seq_along(lca.out)) {
+  misty::chr.trim(unlist(lca.out)) |>
+    (\(p) if (isTRUE(!"Binary and ordered categorical (ordinal)" %in% p && !"Unordered categorical (nominal)" %in% p)) {
 
-    model.descript <- lapply(lca.out[[i]], function(z) extract.result(z)$model.descript)
+      for (i in seq_along(lca.out)) {
 
-    if (any(!is.na(unlist(model.descript)))) {
+        lca.mean.var <<- lapply(lca.out[[i]], function(z) .extract.lca.result(z, max.class = max.class, conf.level = conf.level, return = "model.descript")$model.descript) |> (\(q) if (isTRUE(any(!is.na(q)))) { misty::df.rbind(lca.mean.var, data.frame(folder = sapply(strsplit(lca.folder, "/"), function(y) rev(y)[1L])[i], do.call(misty::df.rbind, q))) } else { return(NULL) })()
 
-    lca.mean.var <- misty::df.rbind(lca.mean.var,
-                                    data.frame(folder = sapply(strsplit(lca.folder, "/"), function(y) rev(y)[1L])[i], do.call(misty::df.rbind, model.descript)))
+      } |> (\(r) if (isTRUE(any(!is.na(r)))) { data.frame(r[order(r$folder, r$nclass, r$class), ], row.names = NULL) })()
 
-    } else {
+    })()
 
-      lca.mean.var <- NA
+  #...................
+  #### Probabilities ####
+
+  misty::chr.trim(unlist(lca.out)) |>
+    (\(p) if (isTRUE("Binary and ordered categorical (ordinal)" %in% p || "Unordered categorical (nominal)" %in% p)) {
+
+      for (i in seq_along(lca.out)) {
+
+        lca.prob <<- lapply(lca.out[[i]], function(z) .extract.lca.result(z, max.class = max.class, conf.level = conf.level, return = "model.descript")$model.descript) |>
+          (\(q) if (isTRUE(any(!is.na(q)))) { data.frame(folder = sapply(strsplit(lca.folder, "/"), function(y) rev(y)[1L])[i], do.call(misty::df.rbind, q)) } else { return(NULL) })()
+
+      } |> (\(r) if (isTRUE(any(!is.na(r)))) { data.frame(r[order(r$folder, r$nclass, r$class), ], row.names = NULL) })()
+
+    })()
+
+  #...................
+  #### Cohen's d ####
+
+  if (isTRUE(!is.null(lca.mean.var) && any(lca.mean.var$param == "Variance"))) {
+
+    # Means and variances
+    lca.mean <- lca.mean.var[which(lca.mean.var$param == "Mean"), ]
+    lca.var <- lca.mean.var[which(lca.mean.var$param == "Variance"), ]
+
+    # Remove one-class solutions
+    lca.mean.sepa <- lca.mean[which(lca.mean$nclass != 1L), ] |> (\(p) data.frame(folder_nclass_ind = apply(p[, c("folder", "nclass", "ind")], 1L, paste, collapse = "_"), p))()
+    lca.var.sepa  <- lca.var[which(lca.var$nclass != 1L), ] |> (\(p) data.frame(folder_nclass_ind = apply(p[, c("folder", "nclass", "ind")], 1L, paste, collapse = "_"), p))()
+
+    for (i in unique(lca.mean.sepa$folder_nclass_ind)) {
+
+      list(m = lca.mean.sepa[lca.mean.sepa$folder_nclass_ind == i, ], v = lca.var.sepa[lca.var.sepa$folder_nclass_ind == i, ]) |>
+        (\(p) {
+
+          lca.d <<- rbind(lca.d, do.call("rbind", apply(combn(unique(p$m$nclass), m = 2L), 2L, function(y) {
+
+            # Cohen's d
+            data.frame(folder = unique(p$m$folder), nclass = p$m[y[1L], "nclass"], ind = p$m[y[1L], "ind"], class.j = as.numeric(p$m[y[1L], "class"]), class.k = as.numeric(p$m[y[2L], "class"]),
+                       n.j = p$m[y[1L], "n"], m.j = p$m[y[1L], "est"], sd.j = sqrt(p$v[y[1L], "est"]), n.k = p$m[y[2L], "n"], m.k = p$m[y[2L], "est"], sd.k = sqrt(p$v[y[2L], "est"]),
+                       d = if (isTRUE(p$m[y[1L], "n"] >= 1L && p$m[y[2L], "n"] >= 1)) { (p$m[p$m$class == y[1L], "est"] - p$m[p$m$class == y[2L], "est"]) / sqrt(((p$m[p$m$class == y[1L], "n"] - 1L)*p$v[p$v$class == y[1L], "est"] + (p$m[p$m$class == y[2L], "n"] - 1L)*p$v[p$v$class == y[2L], "est"]) / (p$m[p$m$class == y[1L], "n"] + p$m[p$m$class == y[2L], "n"] - 2L)) } else { NA })
+
+          })))
+
+        })()
 
     }
 
   }
 
-  ##### Order results ####
-  if (isTRUE(any(!is.na(lca.mean.var)))) {
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
 
-    lca.mean.var <- data.frame(lca.mean.var[order(lca.mean.var$folder, lca.mean.var$nclass, lca.mean.var$class), ], row.names = NULL)
+  object <- list(call = match.call(),
+                 type = "mplus.lca.summa",
+                 output = lca.out,
+                 args = list(folder = folder, exclude = exclude, sort.n = sort.n, sort.p = sort.p, digits = digits, p.digits = p.digits, bf.trunc = bf.trunc, conf.level = conf.level,
+                             plot = plot, ci = ci, axis.title = axis.title, axis.text = axis.text, levels = levels, labels = labels, ylim = ylim, ylab = ylab, breaks = breaks, errorbar.width = errorbar.width, legend.title = legend.title, legend.text = legend.text, legend.key.size = legend.key.size, gray = gray, start = start, end = end, dpi = dpi, width.ind = width.ind, width.nclass = width.nclass, height.categ = height.categ, height = height,
+                             write = write, append = append, check = check),
+                 result = list(summary = lca.summary, bf = lca.bf, classif = lca.class, mean_var = lca.mean.var, prob = lca.prob, d = lca.d))
 
-    ##### Split table ####
+  class(object) <- "misty.object"
 
-    lca.mean <- data.frame(lca.mean.var[which(lca.mean.var$param == "Mean"), ], row.names = NULL)
-    lca.var <- data.frame(lca.mean.var[which(lca.mean.var$param == "Variance"), ], row.names = NULL)
+  #_____________________________________________________________________________
+  #
+  # Plot Object ----------------------------------------------------------------
 
-    ##### Confidence intervals for means ####
+  if (isTRUE(plot && (!is.null(lca.mean.var) || !is.null(lca.prob)))) {
 
-    # Difference-adjustment
-    se_z <- if (isTRUE(adjust)) { lca.mean$se * qnorm((1 - conf.level) / 2L, lower.tail = FALSE) } else { lca.mean$se * qnorm((1 - conf.level) / 2L, lower.tail = FALSE) * sqrt(2L) / 2L }
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Continuous or Count Indicators ####
 
-    # Lower and uppt limit
-    lca.mean$low <- lca.mean$est - se_z
-    lca.mean$upp <- lca.mean$est + se_z
+    if (isTRUE(!is.null(lca.mean.var))) {
 
-    #...................
-    ##### Plots ####
+      #--------------------------------------
+      ### Extract Mean ####
 
-    if (isTRUE(plot)) {
+      lca.mean <- lca.mean.var[which(lca.mean.var$param == "Mean"), ]
 
-      #...................
-      ### Message ####
+      #--------------------------------------
+      ### Arguments ####
 
-      if (isTRUE(length(unique(paste0(lca.mean$folder, lca.mean$nclass))) > 10L)) { message(paste0("R is making ", length(unique(paste0(lca.mean$folder, lca.mean$nclass))), " plots, this may take a while.")) }
+      # y Label
+      if (isTRUE(all(c("Mean Value", "Item Response Probability") %in% ylab))) { ylab <- "Mean Value" }
 
-      #...................
+      # width
+      if (isTRUE(is.null(width.nclass))) { width.ind <- 1.5 }
+      if (isTRUE(is.null(width.nclass))) { width.nclass <- 0.5 }
+
+      # Add label 'Class'
+      if (isTRUE(group.ind)) { lca.mean$class <- paste0("Class ", lca.mean$class)  }
+
+      # Levels and Labels
+      lca.mean$ind <- factor(lca.mean$ind,
+                             levels = if (isTRUE(is.null(levels))) { unique(lca.mean$ind) } else { levels },
+                             labels = if (isTRUE(is.null(levels) && is.null(labels))) {
+
+                               unique(lca.mean$ind)
+
+                             } else if (isTRUE(is.null(levels) && !is.null(labels))) {
+
+                               labels
+
+                             } else if (isTRUE(!is.null(levels) && is.null(labels))) {
+
+                               levels
+
+                             })
+
+      #--------------------------------------
+      ### Messages ####
+
+      if (isTRUE(length(unique(paste0(lca.mean$folder, lca.mean$nclass))) > 10L)) { message(paste0("R is making ", length(unique(paste0(lca.mean$folder, lca.mean$nclass))), " plots in ", length(unique(lca.mean$folder)), ifelse(length(unique(lca.mean$folder)) == 1L, " folder", " folders" ), ", this may take a while.")) }
+
+      #--------------------------------------
       ### Create Folder ####
 
-      sapply(unique(lca.mean$folder), function(y) suppressWarnings(invisible(dir.create(file.path(y, "_Plots")))))
+      if (isTRUE(length(unique(lca.mean$folder)) == 1L)) {
 
-      #...................
-      ### ggplot ####
+        suppressWarnings(invisible(dir.create(file.path(folder, "_Plots"))))
+
+      } else {
+
+        sapply(unique(lca.mean$folder), function(y) suppressWarnings(invisible(dir.create(file.path(folder, y, "_Plots")))))
+
+      }
+
+      #--------------------------------------
+      ### ggplot Theme ####
 
       ggplot2::theme_set(ggplot2::theme_bw())
 
-      #### Loop across number of latent class solution
+      #--------------------------------------
+      ### Loop across Folders ####
+
       for (i in unique(lca.mean$folder)) {
 
         # Select data
         temp1 <- lca.mean[lca.mean$folder == i, ]
 
-        # Add label 'Class'
-        if (isTRUE(group.ind)) { temp1$class <- paste0("Class ", temp1$class)  }
+        #### Loop across number of latent classes ####
 
-        #### Loop across number of latent classes
         for (j in unique(temp1$nclass)) {
 
-          # Select data
+          ##### Select data
           temp2 <- temp1[temp1$nclass == j, ]
 
-          # Levels and Labels
-          temp2$ind <- factor(temp2$ind,
-                              levels = if (isTRUE(is.null(levels))) { unique(temp2$ind) } else { levels },
-                              labels = if (isTRUE(is.null(levels) && is.null(labels))) {
-
-                                unique(temp2$ind)
-
-                              } else if (isTRUE(is.null(levels) && !is.null(labels))) {
-
-                                labels
-
-                              } else if (isTRUE(!is.null(levels) && is.null(labels))) {
-
-                                levels
-
-                              })
-
-          # Limits
+          ##### Limits
           if (isTRUE(is.null(ylim))) {
 
             if (isTRUE(ci)) {
@@ -571,7 +704,7 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
           }
 
-          # Breaks
+          ##### Breaks
           if (isTRUE(inherits(breaks, "waiver"))) {
 
             if (isTRUE(abs(limits.upp - limits.low) > 5L)) {
@@ -594,9 +727,7 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
           p <- ggplot2::ggplot(temp2, if (isTRUE(group.ind)) { ggplot2::aes(class, est, group = ind, fill = ind) } else { ggplot2::aes(ind, est, group = class, fill = class) }) +
                 ggplot2::geom_bar(stat = "identity", position = "dodge", color = "black", linewidth = 0.1) +
                 ggplot2::scale_x_discrete("") +
-                ggplot2::scale_y_continuous(ylab,
-                                            limits = c(limits.low, limits.upp),
-                                            breaks = breaks.j) +
+                ggplot2::scale_y_continuous(ylab, limits = c(limits.low, limits.upp), breaks = breaks.j) +
                 ggplot2::labs(fill = if (isTRUE(!group.ind)) { "Latent Class" } else { "" }) +
                 ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1L)) +
                 ggplot2::theme(axis.title = ggplot2::element_text(size = axis.title),
@@ -613,12 +744,161 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
           ##### Gray color scales
           if (isTRUE(gray)) { p <- p + ggplot2::scale_fill_grey(start = end, end = start) }
 
-          ##### Save plot
+          ##### Argument 'width'
+          width.ij <- (length(unique(temp2$ind)) * width.ind) + (unique(temp2$nclass) * width.nclass)
 
-          # width argument
-          if (isTRUE(width == "n.ind")) { n.ind <- length(unique(temp2$ind)) }
+          ##### Save plots in one folder
+          if (isTRUE(length(unique(lca.mean$folder)) == 1L)) {
 
-          ggplot2::ggsave(file.path(i, "_Plots", paste0("Bar_Chart_", j, "-Class.png")), dpi = dpi, width = n.ind + j / 2L, height = height)
+            suppressMessages(ggplot2::ggsave(file.path(folder, "_Plots", paste0("Bar_Chart_", j, "-Class.png")), dpi = dpi, width = width.ij, height = height))
+
+          ##### Save plots in multiple folder
+          } else {
+
+            suppressMessages(ggplot2::ggsave(file.path(folder, i, "_Plots", paste0("Bar_Chart_", j, "-Class.png")), dpi = dpi, width = width.ij, height = height))
+
+          }
+
+        }
+
+      }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Ordered or Unordered Categorical Indicators ####
+
+    } else if (isTRUE(!is.null(lca.prob))) {
+
+      #--------------------------------------
+      ### Arguments ####
+
+      # y Label
+      if (isTRUE(all(c("Mean Value", "Item Response Probability") %in% ylab))) { ylab <- "Item Response Probability" }
+
+      # width and height
+      if (isTRUE(is.null(width.nclass))) { width.ind <- 1.5 }
+      if (isTRUE(is.null(width.nclass))) { width.nclass <- 1.5 }
+      if (isTRUE(is.null(height.categ))) { height.categ <- 0.6 }
+
+      # Category
+      lca.prob$categ <- factor(lca.prob$categ, ordered = TRUE, levels = rev(unique(lca.prob$categ)))
+
+      # Add label 'Class'
+      lca.prob$class <- paste0("Class ", lca.prob$class)
+
+      # Limits
+      if (isTRUE(is.null(ylim))) {
+
+        limits.low <- 0L
+        limits.upp <- 1L
+
+      } else {
+
+        limits.low <- ylim[1L]
+        limits.upp <- ylim[2L]
+
+      }
+
+      # Breaks
+      if (isTRUE(inherits(breaks, "waiver"))) { breaks.j <- seq(0L, 1L, by = 0.20) } else { breaks.j <- breaks }
+
+      # Levels and Labels
+      lca.prob$ind <- factor(lca.prob$ind,
+                             levels = if (isTRUE(is.null(levels))) { unique(lca.prob$ind) } else { levels },
+                             labels = if (isTRUE(is.null(levels) && is.null(labels))) {
+
+                               unique(lca.prob$ind)
+
+                             } else if (isTRUE(is.null(levels) && !is.null(labels))) {
+
+                               labels
+
+                             } else if (isTRUE(!is.null(levels) && is.null(labels))) {
+
+                               levels
+
+                             })
+
+      #--------------------------------------
+      ### Messages ####
+
+      if (isTRUE(length(unique(paste0(lca.prob$folder, lca.prob$nclass))) > 10L)) {       message(paste0("R is making ", length(unique(paste0(lca.prob$folder, lca.prob$nclass))), " plots in ", length(unique(lca.prob$folder)), ifelse(length(unique(lca.prob$folder)) == 1L, " folder", " folders" ), ", this may take a while.")) }
+
+      #--------------------------------------
+      ### Create Folder ####
+
+      if (isTRUE(length(unique(lca.prob$folder)) == 1L)) {
+
+        suppressWarnings(invisible(dir.create(file.path(folder, "_Plots"))))
+
+      } else {
+
+        sapply(unique(lca.prob$folder), function(y) suppressWarnings(invisible(dir.create(file.path(folder, y, "_Plots")))))
+
+      }
+
+      #--------------------------------------
+      ### ggplot Theme ####
+
+      ggplot2::theme_set(ggplot2::theme_bw())
+
+      #--------------------------------------
+      ### Loop across Folders ####
+
+      for (i in unique(lca.prob$folder)) {
+
+        # Select data
+        temp1 <- lca.prob[lca.prob$folder == i, ]
+
+        #### Loop across number of latent classes ####
+
+        for (j in unique(temp1$nclass)) {
+
+          ##### Select data
+          temp2 <- temp1[temp1$nclass == j, ]
+
+          ##### Plot
+          p <- ggplot2::ggplot(temp2, if (isTRUE(group.ind)) { ggplot2::aes(ind, est, group = categ, fill = categ) } else { ggplot2::aes(class, est, group = categ, fill = categ) }) +
+            ggplot2::geom_bar(stat = "identity", position = "fill", color = "black", linewidth = 0.1) +
+            ggplot2::facet_wrap(if (isTRUE(group.ind)) { ~ class } else { ~ ind }) +
+            ggplot2::scale_x_discrete("") +
+            ggplot2::scale_y_continuous(ylab, limits = c(limits.low, limits.upp), breaks = breaks.j) +
+            ggplot2::labs(fill = "Category") +
+            ggplot2::guides(fill = ggplot2::guide_legend(nrow = 1L)) +
+            ggplot2::theme(axis.title = ggplot2::element_text(size = axis.title),
+                           axis.text = ggplot2::element_text(size = axis.text),
+                           legend.position = "bottom",
+                           legend.key.size = ggplot2::unit(legend.key.size , 'cm'),
+                           legend.title = ggplot2::element_text(size = legend.title),
+                           legend.text = ggplot2::element_text(size = legend.text),
+                           legend.box.spacing = ggplot2::unit(-9L, "pt"))
+
+          ##### Gray color scales
+          if (isTRUE(gray)) { p <- p + ggplot2::scale_fill_grey(start = end, end = start) }
+
+          ##### Argument 'width' and 'height'
+          if (isTRUE(group.ind)) {
+
+            width.ij <- (length(unique(temp2$ind)) * width.ind) * ggplot2::wrap_dims(unique(temp2$nclass))[2L]
+            height.ij <- (max(as.numeric(unique(temp2$categ))) * height.categ ) * ggplot2::wrap_dims((length(unique(temp2$ind))))[1L]
+
+          } else {
+
+            width.ij <- (unique(temp2$nclass) * width.nclass) * ggplot2::wrap_dims((length(unique(temp2$ind))))[2L]
+            height.ij <- (max(as.numeric(unique(temp2$categ))) * height.categ ) * ggplot2::wrap_dims((length(unique(temp2$ind))))[1L]
+
+          }
+
+          ##### Save plots in one folder
+          if (isTRUE(length(unique(lca.prob$folder)) == 1L)) {
+
+            suppressMessages(ggplot2::ggsave(file.path(folder, "_Plots", paste0("Bar_Chart_", j, "-Class.png")), dpi = dpi, width = width.ij, height = height.ij))
+
+          ##### Save plots in multiple folder
+          } else {
+
+            suppressMessages(ggplot2::ggsave(file.path(folder, i, "_Plots", paste0("Bar_Chart_", j, "-Class.png")), dpi = dpi, width = width.ij, height = height.ij))
+
+          }
 
         }
 
@@ -626,30 +906,7 @@ mplus.lca.summa <- function(folder = getwd(), exclude = NULL, sort.n = TRUE, sor
 
     }
 
-  } else {
-
-    lca.mean <- lca.var <- NA
-
   }
-
-  #_____________________________________________________________________________
-  #
-  # Return object --------------------------------------------------------------
-
-  object <- list(call = match.call(),
-                 type = "mplus.lca.summa",
-                 output = lca.out,
-                 args = list(folder = folder, exclude = exclude, sort.n = sort.n, sort.p = sort.p,
-                             plot = plot, ci = ci, conf.level = conf.level, adjust = adjust,
-                             axis.title = axis.title, axis.text = axis.text, levels = levels, labels = labels,
-                             ylim = ylim, ylab = ylab, breaks = breaks, errorbar.width = errorbar.width,
-                             legend.title = legend.title, legend.text = legend.text, legend.key.size = legend.key.size,
-                             gray = gray, start = start, end = end, dpi = dpi,
-                             width = width, height = height, digits = digits, p.digits = p.digits,
-                             write = write, append = append, check = check),
-                 result = list(summary = lca.summary, mean_var = lca.mean.var, mean = lca.mean, var = lca.var))
-
-  class(object) <- "misty.object"
 
   #_____________________________________________________________________________
   #

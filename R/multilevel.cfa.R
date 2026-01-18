@@ -267,7 +267,7 @@
 #' # i.e., strong factorial invariance across clusters
 #' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", fix.resid = "all")
 #'
-#' # Example 4b: Fesidual variances of 'y1', 'y2', and 'y4' fixed at 0
+#' # Example 4b: Residual variances of 'y1', 'y2', and 'y4' fixed at 0
 #' # i.e., partial strong factorial invariance across clusters
 #' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", fix.resid = c("y1", "y2", "y4"))
 #'
@@ -403,8 +403,8 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
     # Extract data
     x <- as.data.frame(data[, .var.names(data = data, ..., cluster = cluster), drop = FALSE])
 
-    # Cluster variable
-    cluster <- data[, cluster]
+    # Extract cluster variable and convert tibble into data frame or vector
+    cluster <- data[, cluster] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })()
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
@@ -424,9 +424,6 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
-
-  # Convert 'cluster' as tibble into a vector
-  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
 
   #_____________________________________________________________________________
   #
@@ -519,7 +516,7 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
     (!unique(fix.resid) %in% colnames(x)) |> (\(y) if (isTRUE(any(y) &&  all(fix.resid != "all"))) { stop(paste0("Variables specified in the argument 'fix.resid' were not found in 'data': ", paste(fix.resid[y], collapse = ", ")), call. = FALSE) })()
 
     # Check input 'mod.minval'
-    if (isTRUE(mod.minval <= 0L)) { stop("Please specify a value greater than 0 for the argument 'mod.minval'.", call. = FALSE) }
+    if (isTRUE(mod.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'mod.minval'.", call. = FALSE) }
 
     ## Check input 'resid.minval' ##
     if (isTRUE(resid.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'resid.minval'.", call. = FALSE) }
@@ -1481,7 +1478,7 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
                                # Second column
                                unlist(c("", "",
                                         # Estimator
-                                        lavaan::lavTech(model.fit, what = "options")$test |> (\(p) if (isTRUE(length(p) != 1L)) { "standard" } else { "MLR" })(),
+                                        lavaan::lavTech(model.fit, what = "options")$test |> (\(p) if (isTRUE(length(p) == 1L)) { "ML" } else { "MLR" })(),
                                         # Optimization method
                                         toupper(lavaan::lavTech(model.fit, what = "options")$optim.method), "",
                                         # Test statistic

@@ -63,8 +63,7 @@ copied the function \code{combinations()} from the \code{gtools} package
 dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]))
 
 # Example 1b: Equivalent results using the dominance() function
-mod <- lm(mpg ~ cyl + disp + hp, data = mtcars)
-dominance(mod)
+dominance(lm(mpg ~ cyl + disp + hp, data = mtcars))
 
 # Example 1c: Dominance analysis, 'hp' predicted by 'mpg', 'cyl', and 'disp'
 dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]), out = "hp")

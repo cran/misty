@@ -2083,7 +2083,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     names(write.object) <- c("Alpha", "Itemstat")
 
-    names(write.object$Alpha) <- c("n", "Items", "Alpha", "Low", "Upp")
+    names(write.object$Alpha) <- c("n", "nNA", "Items", "Alpha", "Low", "Upp")
     names(write.object$Itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Std.Ld", "Alpha")
 
     write.object$Alpha <- round(write.object$Alpha, digits = digits)
@@ -2207,7 +2207,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   # Measurement Invariance Evaluation, item.invar() ----------------------------
   }, item.invar = {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## lavaan summary ####
 
     # Extract result table
@@ -2219,7 +2219,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     # Remove first row
     summary <- summary[-1, ]
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Covariance coverage ####
 
     coverage <- NULL
@@ -2249,35 +2249,57 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Univariate Sample Statistics ####
 
     itemstat <- NULL
 
     if (isTRUE("descript" %in% x$args$print)) {
 
-      # Extract result table
-      itemstat <- write.object$descript
+      #...................
+      ### Continuous Indicators ####
 
-      # Round
-      itemstat[, c("m", "sd", "min", "max", "skew", "kurt")] <- sapply(itemstat[, c("m", "sd", "min", "max", "skew", "kurt")], round, digits = digits)
-      itemstat[, "pNA"] <- round(itemstat[, "pNA"], digits = digits - 1L)
+      if (isTRUE(!x$args$ordered)) {
 
-      # Column names
-      colnames(itemstat) <- c(if (isTRUE(!x$args$long)) { "Group" }, "Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt")
+        # Extract result table
+        itemstat <- write.object$descript$stat
+
+        # Round
+        itemstat[, c("m", "sd", "min", "max", "skew", "kurt")] <- sapply(itemstat[, c("m", "sd", "min", "max", "skew", "kurt")], round, digits = digits)
+        itemstat[, "pNA"] <- round(itemstat[, "pNA"], digits = digits - 1L)
+
+        # Column names
+        colnames(itemstat) <- c(if (isTRUE(!x$args$long)) { "Group" }, "Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt")
+
+      #...................
+      ### Ordered Categorical Indicators ####
+
+      } else {
+
+        #### Between-Group Measurement Invariance ####
+        if (isTRUE(!x$args$long)) {
+
+          # Extract result table
+          itemstat <- write.object$descript$freq |> (\(p) data.frame(Group = rep(names(p), each = unique(sapply(p, nrow))), do.call("rbind", p), row.names = NULL, check.names = FALSE))() |> (\(q) misty::df.rename(q, from = "Var", to = "Variable"))()
+
+        #### Longitudinal Measurement Invariance ####
+        } else {
+
+          itemstat <- misty::df.rename(write.object$descript$freq, from = "Var", to = "Variable")
+
+        }
+
+      }
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Model fit ####
 
-    # Extract result table
-    fit <- write.object$fit
+    # Extract result table and remove NULL entries
+    fit <- write.object$fit |> (\(p) p[!sapply(p, is.null)])()
 
-    # Remove NULL entries
-    fit <- fit[!sapply(fit, is.null)]
-
-    #### Standard fit indices
+    # Standard fit indices
     if (isTRUE(x$args$estimator %in% c("ML", "MLF", "GLS", "WLS", "DWLS", "ULS", "PML"))) {
 
       # Combine data frames
@@ -2285,7 +2307,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
                         do.call("rbind", lapply(fit, function(y) rbind(NA, y))),
                         row.names = NULL, fix.empty.names = FALSE)
 
-    #### Standard, scaled, and robust fit indices
+    # Standard, scaled, and robust fit indices
     } else {
 
       # Combine data frames
@@ -2299,30 +2321,69 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     fit[which(!fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))] <- sapply(fit[which(!fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))], round, digits = digits)
     fit[which(fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))] <- sapply(fit[which(fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))], round, digits = p.digits)
 
-    # Column names
-    switch(x$args$invar,
-           config = { colnames(fit) <- c("", "", "Config") },
-           metric = { colnames(fit) <- c("", "", "Config", "Metric", "dMetric") },
-           scalar = { colnames(fit) <- c("", "", "Config", "Metric", "Scalar", "dMetric", "dScalar") },
-           strict = { colnames(fit) <- c("", "", "Config", "Metric", "Scalar", "Stict", "dMetric", "dScalar", "dStrict") })
+    #...................
+    ### Continuous Indicators ####
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    if (isTRUE(!x$args$ordered)) {
+
+      # Column names
+      switch(x$args$invar,
+             config = { colnames(fit) <- c("", "", "Config") },
+             metric = { colnames(fit) <- c("", "", "Config", "Metric", "dMetric") },
+             scalar = { colnames(fit) <- c("", "", "Config", "Metric", "Scalar", "dMetric", "dScalar") },
+             strict = { colnames(fit) <- c("", "", "Config", "Metric", "Scalar", "Stict", "dMetric", "dScalar", "dStrict") })
+
+    #...................
+    ### Ordered Categorical Indicators ####
+
+    } else {
+
+      # Column names
+      switch(x$args$invar,
+             config = { colnames(fit) <- c("", "", "Config") },
+             thres  = { colnames(fit) <- c("", "", "Config", "Thres", "dThres") },
+             metric = { colnames(fit) <- c("", "", "Config", "Thres", "Metric", "dMetric") },
+             scalar = { colnames(fit) <- c("", "", "Config", "Thres", "Metric", "Scalar", "dThres", "dMetric", "dScalar") },
+             strict = { colnames(fit) <- c("", "", "Config", "Thres", "Metric", "Scalar", "Stict", "dThres", "dMetric", "dScalar", "dStrict") })
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Parameter estimates ####
 
-    # Extract result table
-    param <- write.object$param
+    # Extract result table and remove NULL entries
+    param <- write.object$param |> (\(p) p[!sapply(p, is.null)])()
 
-    # Remove NULL entries
-    param <- param[!sapply(param, is.null)]
+    #...................
+    ### Continuous Indicators ####
 
-    # Combine data frames
-    param <- data.frame(switch(x$args$invar,
-                               config = { c("Config", rep(NA, times = nrow(param$config))) },
-                               metric = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric))) },
-                               scalar = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar))) },
-                               strict = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar)), "Stict", rep(NA, times = nrow(param$strict))) }),
-                        do.call("rbind", lapply(param, function(y) rbind(NA, y))),
-                        row.names = NULL, fix.empty.names = FALSE)
+    if (isTRUE(!x$args$ordered)) {
+
+      # Combine data frames
+      param <- data.frame(switch(x$args$invar,
+                                 config = { c("Config", rep(NA, times = nrow(param$config))) },
+                                 metric = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric))) },
+                                 scalar = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar))) },
+                                 strict = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar)), "Stict", rep(NA, times = nrow(param$strict))) }),
+                          do.call("rbind", lapply(param, function(y) rbind(NA, y))),
+                          row.names = NULL, fix.empty.names = FALSE)
+
+    #...................
+    ### Ordered Categorical Indicators ####
+
+    } else {
+
+      # Combine data frames
+      param <- data.frame(switch(x$args$invar,
+                                 config = { c("Config", rep(NA, times = nrow(param$config))) },
+                                 thres  = { c("Config", rep(NA, times = nrow(param$config)), "Thres", rep(NA, times = nrow(param$thres))) },
+                                 metric = { c("Config", rep(NA, times = nrow(param$config)), "Thres", rep(NA, times = nrow(param$thres)), "Metric", rep(NA, times = nrow(param$metric))) },
+                                 scalar = { c("Config", rep(NA, times = nrow(param$config)), "Thres", rep(NA, times = nrow(param$thres)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar))) },
+                                 strict = { c("Config", rep(NA, times = nrow(param$config)), "Thres", rep(NA, times = nrow(param$thres)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar)), "Stict", rep(NA, times = nrow(param$strict))) }),
+                          do.call("rbind", lapply(param, function(y) rbind(NA, y))),
+                          row.names = NULL, fix.empty.names = FALSE)
+
+    }
 
     # Round
     param[, c("est", "se", "z", "stdyx")] <- sapply(param[, c("est", "se", "z", "stdyx")], round, digits = digits)
@@ -2331,33 +2392,62 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     # Column names
     colnames(param) <- c("", "Parameter", if (isTRUE(!x$args$long)) { "Group" }, "lhs", "op", "rhs", "label", "Estimate", "SE", "z", "pvalue", "StdYX")
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Modification indices ####
 
     modind <- NULL
 
     if (isTRUE("modind" %in% x$args$print && any(!sapply(write.object$modind, is.null)))) {
 
-      # Extract result table
-      modind <- write.object$modind
+      # Extract result table and remove NULL entries
+      modind <- write.object$modind |> (\(p) p[!sapply(p, is.null)])()
 
-      # Remove NULL entries
-      modind <- modind[!sapply(modind, is.null)]
+      #...................
+      ### Continuous Indicators ####
 
-      # Combine data frames
-      modind <- data.frame(switch(x$args$invar,
-                                  config = {   if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) } },
-                                  metric = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
-                                               if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) }) },
-                                  scalar = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
-                                               if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) },
-                                               if (is.null(modind$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(modind$scalar))) }) },
-                                  strict = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
-                                               if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) },
-                                               if (is.null(modind$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(modind$scalar))) },
-                                               if (is.null(modind$strict)) { NULL } else { c("strict", rep(NA, times = nrow(modind$strict))) }) }),
-                           do.call("rbind", lapply(modind, function(y) rbind(NA, y))),
-                           row.names = NULL, fix.empty.names = FALSE)
+      if (isTRUE(!x$args$ordered)) {
+
+        # Combine data frames
+        modind <- data.frame(switch(x$args$invar,
+                                    config = {   if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) } },
+                                    metric = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
+                                                 if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) }) },
+                                    scalar = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
+                                                 if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) },
+                                                 if (is.null(modind$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(modind$scalar))) }) },
+                                    strict = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
+                                                 if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) },
+                                                 if (is.null(modind$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(modind$scalar))) },
+                                                 if (is.null(modind$strict)) { NULL } else { c("strict", rep(NA, times = nrow(modind$strict))) }) }),
+                             do.call("rbind", lapply(modind, function(y) rbind(NA, y))),
+                             row.names = NULL, fix.empty.names = FALSE)
+
+      #...................
+      ### Ordered Categorical Indicators ####
+
+      } else {
+
+        # Combine data frames
+        modind <- data.frame(switch(x$args$invar,
+                                    config = {   if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) } },
+                                    thres = {  c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
+                                                 if (is.null(modind$thres))  { NULL } else { c("Thres",  rep(NA, times = nrow(modind$thres))) }) },
+                                    metric = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
+                                                 if (is.null(modind$thres))  { NULL } else { c("Thres",  rep(NA, times = nrow(modind$thres))) },
+                                                 if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) }) },
+                                    scalar = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
+                                                 if (is.null(modind$thres))  { NULL } else { c("Thres",  rep(NA, times = nrow(modind$thres))) },
+                                                 if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) },
+                                                 if (is.null(modind$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(modind$scalar))) }) },
+                                    strict = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
+                                                 if (is.null(modind$thres))  { NULL } else { c("Thres",  rep(NA, times = nrow(modind$thres))) },
+                                                 if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) },
+                                                 if (is.null(modind$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(modind$scalar))) },
+                                                 if (is.null(modind$strict)) { NULL } else { c("strict", rep(NA, times = nrow(modind$strict))) }) }),
+                             do.call("rbind", lapply(modind, function(y) rbind(NA, y))),
+                             row.names = NULL, fix.empty.names = FALSE)
+
+      }
 
       # Round
       modind[, c("mi", "epc", "stdyx")] <- sapply(modind[, c("mi", "epc", "stdyx")], round, digits = digits)
@@ -2367,33 +2457,62 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Modification Indices for Parameter Constaints ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Modification Indices for Parameter Constraints ####
 
     score <- NULL
 
     if (isTRUE("modind" %in% x$args$print && any(!sapply(write.object$score, is.null)))) {
 
-      # Extract result table
-      score <- write.object$score
+      # Extract result table and remove NULL entries
+      score <- write.object$score |> (\(p) p[!sapply(p, is.null)])()
 
-      # Remove NULL entries
-      score <- score[!sapply(score, is.null)]
+      #...................
+      ### Continuous Indicators ####
 
-      # Combine data frames
-      score <- data.frame(switch(x$args$invar,
-                                  config = {   if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) } },
-                                  metric = { c(if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) },
-                                               if (is.null(score$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(score$metric))) }) },
-                                  scalar = { c(if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) },
-                                               if (is.null(score$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(score$metric))) },
-                                               if (is.null(score$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(score$scalar))) }) },
-                                  strict = { c(if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) },
-                                               if (is.null(score$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(score$metric))) },
-                                               if (is.null(score$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(score$scalar))) },
-                                               if (is.null(score$strict)) { NULL } else { c("strict", rep(NA, times = nrow(score$strict))) }) }),
-                           do.call("rbind", lapply(score, function(y) rbind(NA, y))),
-                           row.names = NULL, fix.empty.names = FALSE)
+      if (isTRUE(!x$args$ordered)) {
+
+        # Combine data frames
+        score <- data.frame(switch(x$args$invar,
+                                   config = {   if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) } },
+                                   metric = { c(if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) },
+                                                if (is.null(score$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(score$metric))) }) },
+                                   scalar = { c(if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) },
+                                                if (is.null(score$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(score$metric))) },
+                                                if (is.null(score$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(score$scalar))) }) },
+                                   strict = { c(if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) },
+                                                if (is.null(score$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(score$metric))) },
+                                                if (is.null(score$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(score$scalar))) },
+                                                if (is.null(score$strict)) { NULL } else { c("strict", rep(NA, times = nrow(score$strict))) }) }),
+                            do.call("rbind", lapply(score, function(y) rbind(NA, y))),
+                            row.names = NULL, fix.empty.names = FALSE)
+
+      #...................
+      ### Ordered Categorical Indicators ####
+
+      } else {
+
+        # Combine data frames
+        score <- data.frame(switch(x$args$invar,
+                                   config = {   if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) } },
+                                   thres =  { c(if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) },
+                                                if (is.null(score$thres))  { NULL } else { c("Thres",  rep(NA, times = nrow(score$thres))) }) },
+                                   metric = { c(if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) },
+                                                if (is.null(score$thres))  { NULL } else { c("Thres",  rep(NA, times = nrow(score$thres))) },
+                                                if (is.null(score$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(score$metric))) }) },
+                                   scalar = { c(if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) },
+                                                if (is.null(score$thres))  { NULL } else { c("Thres",  rep(NA, times = nrow(score$thres))) },
+                                                if (is.null(score$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(score$metric))) },
+                                                if (is.null(score$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(score$scalar))) }) },
+                                   strict = { c(if (is.null(score$config)) { NULL } else { c("Config", rep(NA, times = nrow(score$config))) },
+                                                if (is.null(score$thres))  { NULL } else { c("Thres",  rep(NA, times = nrow(score$thres))) },
+                                                if (is.null(score$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(score$metric))) },
+                                                if (is.null(score$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(score$scalar))) },
+                                                if (is.null(score$strict)) { NULL } else { c("strict", rep(NA, times = nrow(score$strict))) }) }),
+                            do.call("rbind", lapply(score, function(y) rbind(NA, y))),
+                            row.names = NULL, fix.empty.names = FALSE)
+
+      }
 
       # Round
       score[, c("mi", "lhs.epc", "rhs.epc", "lhs.stdyx", "rhs.stdyx")] <- sapply(score[, c("mi", "lhs.epc", "rhs.epc", "lhs.stdyx", "rhs.stdyx")], round, digits = digits)
@@ -2404,35 +2523,63 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Residual Correlation Matrix ####
 
     resid <- NULL
 
     if (isTRUE("resid" %in% x$args$print && any(!sapply(write.object$resid, is.null)))) {
 
-      # Extract result table
-      resid <- write.object$resid
+      # Extract result table and remove NULL entries
+      resid <- write.object$resid |> (\(p) p[!sapply(p, is.null)])()
 
-      # Remove NULL entries
-      resid <- resid[!sapply(resid, is.null)]
+      #...................
+      ### Between-Group Measurement Invariance ####
 
-      ### Between-group measurement invariance
       if (isTRUE(!x$args$long)) {
 
-        resid <- data.frame(switch(x$args$invar,
-                                   config = {   if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) } },
-                                   metric = { c(if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) },
-                                                if (is.null(resid$metric)) { NULL } else { rep(c("Metric", rep(NA, times = nrow(resid$metric[[1L]]))), times = length(resid$metric)) }) },
-                                   scalar = { c(if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) },
-                                                if (is.null(resid$metric)) { NULL } else { rep(c("Metric", rep(NA, times = nrow(resid$metric[[1L]]))), times = length(resid$metric)) },
-                                                if (is.null(resid$scalar)) { NULL } else { rep(c("Scalar", rep(NA, times = nrow(resid$scalar[[1L]]))), times = length(resid$scalar)) }) },
-                                   strict = { c(if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) },
-                                                if (is.null(resid$metric)) { NULL } else { rep(c("Metric", rep(NA, times = nrow(resid$metric[[1L]]))), times = length(resid$metric)) },
-                                                if (is.null(resid$scalar)) { NULL } else { rep(c("Scalar", rep(NA, times = nrow(resid$scalar[[1L]]))), times = length(resid$scalar)) },
-                                                if (is.null(resid$strict)) { NULL } else { rep(c("strict", rep(NA, times = nrow(resid$strict[[1L]]))), times = length(resid$strict)) }) }),
-                            do.call("rbind", lapply(lapply(resid, function(y) do.call("rbind", lapply(y, function(z) rbind(NA, z)))), function(q) data.frame(rep(names(resid[[1L]]), each = nrow(resid[[1L]][[1L]]) + 1L), c("", row.names(resid[[1L]][[1L]])), q, fix.empty.names = FALSE))),
-                            row.names = NULL, fix.empty.names = FALSE)
+        #### Continuous Indicators ####
+
+        if (isTRUE(!x$args$ordered)) {
+
+          resid <- data.frame(switch(x$args$invar,
+                                     config = {   if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) } },
+                                     metric = { c(if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) },
+                                                  if (is.null(resid$metric)) { NULL } else { rep(c("Metric", rep(NA, times = nrow(resid$metric[[1L]]))), times = length(resid$metric)) }) },
+                                     scalar = { c(if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) },
+                                                  if (is.null(resid$metric)) { NULL } else { rep(c("Metric", rep(NA, times = nrow(resid$metric[[1L]]))), times = length(resid$metric)) },
+                                                  if (is.null(resid$scalar)) { NULL } else { rep(c("Scalar", rep(NA, times = nrow(resid$scalar[[1L]]))), times = length(resid$scalar)) }) },
+                                     strict = { c(if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) },
+                                                  if (is.null(resid$metric)) { NULL } else { rep(c("Metric", rep(NA, times = nrow(resid$metric[[1L]]))), times = length(resid$metric)) },
+                                                  if (is.null(resid$scalar)) { NULL } else { rep(c("Scalar", rep(NA, times = nrow(resid$scalar[[1L]]))), times = length(resid$scalar)) },
+                                                  if (is.null(resid$strict)) { NULL } else { rep(c("strict", rep(NA, times = nrow(resid$strict[[1L]]))), times = length(resid$strict)) }) }),
+                              do.call("rbind", lapply(lapply(resid, function(y) do.call("rbind", lapply(y, function(z) rbind(NA, z)))), function(q) data.frame(rep(names(resid[[1L]]), each = nrow(resid[[1L]][[1L]]) + 1L), c("", row.names(resid[[1L]][[1L]])), q, fix.empty.names = FALSE))),
+                              row.names = NULL, fix.empty.names = FALSE)
+
+        #### Ordered Categorical Indicators ####
+
+        } else {
+
+          resid <- data.frame(switch(x$args$invar,
+                                     config = {   if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) } },
+                                     thres  = { c(if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) },
+                                                  if (is.null(resid$thres))  { NULL } else { rep(c("Thres", rep(NA, times = nrow(resid$thres[[1L]]))), times = length(resid$thres)) }) },
+                                     metric = { c(if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) },
+                                                  if (is.null(resid$thres))  { NULL } else { rep(c("Thres", rep(NA, times = nrow(resid$thres[[1L]]))), times = length(resid$thres)) },
+                                                  if (is.null(resid$metric)) { NULL } else { rep(c("Metric", rep(NA, times = nrow(resid$metric[[1L]]))), times = length(resid$metric)) }) },
+                                     scalar = { c(if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) },
+                                                  if (is.null(resid$thres))  { NULL } else { rep(c("Thres", rep(NA, times = nrow(resid$thres[[1L]]))), times = length(resid$thres)) },
+                                                  if (is.null(resid$metric)) { NULL } else { rep(c("Metric", rep(NA, times = nrow(resid$metric[[1L]]))), times = length(resid$metric)) },
+                                                  if (is.null(resid$scalar)) { NULL } else { rep(c("Scalar", rep(NA, times = nrow(resid$scalar[[1L]]))), times = length(resid$scalar)) }) },
+                                     strict = { c(if (is.null(resid$config)) { NULL } else { rep(c("Config", rep(NA, times = nrow(resid$config[[1L]]))), times = length(resid$config)) },
+                                                  if (is.null(resid$thres))  { NULL } else { rep(c("Thres", rep(NA, times = nrow(resid$thres[[1L]]))), times = length(resid$thres)) },
+                                                  if (is.null(resid$metric)) { NULL } else { rep(c("Metric", rep(NA, times = nrow(resid$metric[[1L]]))), times = length(resid$metric)) },
+                                                  if (is.null(resid$scalar)) { NULL } else { rep(c("Scalar", rep(NA, times = nrow(resid$scalar[[1L]]))), times = length(resid$scalar)) },
+                                                  if (is.null(resid$strict)) { NULL } else { rep(c("strict", rep(NA, times = nrow(resid$strict[[1L]]))), times = length(resid$strict)) }) }),
+                              do.call("rbind", lapply(lapply(resid, function(y) do.call("rbind", lapply(y, function(z) rbind(NA, z)))), function(q) data.frame(rep(names(resid[[1L]]), each = nrow(resid[[1L]][[1L]]) + 1L), c("", row.names(resid[[1L]][[1L]])), q, fix.empty.names = FALSE))),
+                              row.names = NULL, fix.empty.names = FALSE)
+
+          }
 
         # Round
         resid[, -c(1L:3L)] <- sapply(resid[, -c(1L:3L)], round, digits = p.digits)
@@ -2440,22 +2587,53 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
         # Column names
         colnames(resid) <- c("", if (isTRUE(!x$args$long)) { "Group" }, colnames(resid)[-c(1L:2L)])
 
-      ### Longitudinal measurement invariance
+      #...................
+      ### Longitudinal Measurement Invariance ####
+
       } else {
 
-        resid <- data.frame(switch(x$args$invar,
-                                   config = {   if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) } },
-                                   metric = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
-                                                if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) }) },
-                                   scalar = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
-                                                if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) },
-                                                if (is.null(resid$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(resid$scalar))) }) },
-                                   strict = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
-                                                if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) },
-                                                if (is.null(resid$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(resid$scalar))) },
-                                                if (is.null(resid$strict)) { NULL } else { c("strict", rep(NA, times = nrow(resid$strict))) }) }),
-                            data.frame(c(NA, rownames(resid$config)), do.call("rbind", lapply(resid, function(y) rbind(NA, y))),
-                                       row.names = NULL, fix.empty.names = FALSE), row.names = NULL, fix.empty.names = FALSE)
+        #### Continuous Indicators ####
+
+        if (isTRUE(!x$args$ordered)) {
+
+          resid <- data.frame(switch(x$args$invar,
+                                     config = {   if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) } },
+                                     metric = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
+                                                  if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) }) },
+                                     scalar = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
+                                                  if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) },
+                                                  if (is.null(resid$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(resid$scalar))) }) },
+                                     strict = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
+                                                  if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) },
+                                                  if (is.null(resid$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(resid$scalar))) },
+                                                  if (is.null(resid$strict)) { NULL } else { c("strict", rep(NA, times = nrow(resid$strict))) }) }),
+                              data.frame(c(NA, rownames(resid$config)), do.call("rbind", lapply(resid, function(y) rbind(NA, y))),
+                                         row.names = NULL, fix.empty.names = FALSE), row.names = NULL, fix.empty.names = FALSE)
+
+        #### Ordered Categorical Indicators ####
+
+        } else {
+
+          resid <- data.frame(switch(x$args$invar,
+                                     config = {   if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) } },
+                                     thres =  { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
+                                                  if (is.null(resid$thres))  { NULL } else { c("Thres", rep(NA, times = nrow(resid$thres))) }) },
+                                     metric = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
+                                                  if (is.null(resid$thres))  { NULL } else { c("Thres", rep(NA, times = nrow(resid$thres))) },
+                                                  if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) }) },
+                                     scalar = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
+                                                  if (is.null(resid$thres))  { NULL } else { c("Thres", rep(NA, times = nrow(resid$thres))) },
+                                                  if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) },
+                                                  if (is.null(resid$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(resid$scalar))) }) },
+                                     strict = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
+                                                  if (is.null(resid$thres))  { NULL } else { c("Thres", rep(NA, times = nrow(resid$thres))) },
+                                                  if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) },
+                                                  if (is.null(resid$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(resid$scalar))) },
+                                                  if (is.null(resid$strict)) { NULL } else { c("strict", rep(NA, times = nrow(resid$strict))) }) }),
+                              data.frame(c(NA, rownames(resid$config)), do.call("rbind", lapply(resid, function(y) rbind(NA, y))),
+                                         row.names = NULL, fix.empty.names = FALSE), row.names = NULL, fix.empty.names = FALSE)
+
+        }
 
         # Round
         resid[, -c(1L:2L)] <- sapply(resid[, -c(1L:2L)], round, digits = p.digits)
@@ -2464,12 +2642,10 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     }
 
-    #...................
-    ### Write object ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
 
-    write.object <- list(summary = summary, coverage = coverage, itemstat = itemstat,
-                         fit = fit, param = param, modind = modind,
-                         score = score, resid = resid)
+    write.object <- list(summary = summary, coverage = coverage, itemstat = itemstat, fit = fit, param = param, modind = modind, score = score, resid = resid)
 
     # Print
     if (isTRUE(!"summary" %in% x$args$print)) { write.object$summary <- NULL }
@@ -2497,7 +2673,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
       names(write.object)  <- c("Omega", "Itemstat")
 
-      names(write.object$Omega) <- c("n", "Items", "Omega", "Low", "Upp")
+      names(write.object$Omega) <- c("n", "nNA", "Items", "Omega", "Low", "Upp")
       names(write.object$Itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Std.Ld", "Omega")
 
       write.object$Omega <- round(write.object$Omega, digits = digits)
@@ -3451,40 +3627,40 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   # Result Table for LCA Estimated in Mplus, mplus.lca.summa() -----------------
   }, mplus.lca.summa = {
 
-    #...................
-    ### Result tables ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Extract Result Tables ####
 
     write.object.summary <- write.object$summary
+    write.object.bf <- write.object$bf
+    write.object.classif <- write.object$classif
     write.object.mean.var <- write.object$mean_var
-    write.object.mean <- write.object$mean
-    write.object.var <- write.object$var
+    write.object.prob <- write.object$prob
+    write.object.d <- write.object$d
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Summary Results ####
 
     #...................
     ### Round ####
 
-    tests <- intersect(c("chi.pear", "chi.lrt", "lmr.lrt", "almr.lrt", "blrt", "entropy"), colnames(write.object.summary))
+    write.object.summary[, c("LL", "aic", "caic", "bic", "sabic", "awe", "occmin")] <- round(write.object.summary[, c("LL", "aic", "caic", "bic", "sabic", "awe", "occmin")], digits = digits)
+    write.object.summary[, "LL.scale"] <- round(write.object.summary[, "LL.scale"], digits = digits + 2L)
 
-    write.object.summary[, c("LL", "aic", "caic", "bic", "sabic")] <- round(write.object.summary[, c("LL", "aic", "caic", "bic", "sabic")], digits = digits)
-    write.object.summary[, "LL.scale"] <- round(write.object.summary[, "LL.scale"], digits = digits + 1L)
-    write.object.summary[, c(tests, colnames(write.object.summary)[substr(colnames(write.object.summary), 1L, 1L) == "p"])] <- round(write.object.summary[, c(tests, colnames(write.object.summary)[substr(colnames(write.object.summary), 1L, 1L) == "p"])], digits = p.digits)
+    intersect(c("cmp", "chi.pear", "chi.lrt", "lmr.lrt", "almr.lrt", "blrt", "entropy", "avemin", "pmin"), colnames(write.object.summary)) |>
+      (\(p) write.object.summary[, p] <<- apply(write.object.summary[, p, drop = FALSE], 2L, function(y) round(y, digits = p.digits)))()
+
+    write.object.summary[, "nmin"] <- round(write.object.summary[, "nmin"], digits = 0L)
 
     #...................
     ### Column names ####
 
-    colnames(write.object.summary) <- c("Folder", "#Class", "Conv", "#Param", "logLik", "Scale", "LL Rep", "AIC", "CAIC", "BIC", "SABIC",
-                                        misty::rec(tests, spec = "'lmr.lrt' = 'LMR-LRT'; 'almr.lrt' = 'A-LRT'; 'blrt' = 'BLRT'; 'chi.pear' = 'Chi-Pear'; 'chi.lrt' = 'Chi-LRT'; 'entropy' = 'Entropy'"),
-                                        colnames(write.object.summary)[substr(colnames(write.object.summary), 1L, 1L) == "p"])
+    colnames(write.object.summary) <- misty::rec(colnames(write.object.summary), spec = "'folder' = 'Folder'; 'nclass' = '#Class'; 'conv' = 'Conv'; 'nparam' = '#Param'; 'LL' = 'logLik'; 'LL.scale' = 'Scale'; 'LL.rep' = 'LLRep'; 'aic' = 'AIC'; 'caic' = 'CAIC'; 'bic' = 'BIC'; 'sabic' = 'SABIC'; 'awe' = 'AWE'; 'cmp' = 'cmP'; 'lmr.lrt' = 'LMR-LRT'; 'almr.lrt' = 'A-LRT'; 'blrt' = 'BLRT'; 'chi.pear' = 'Chi-Pear'; 'chi.lrt' = 'Chi-LRT'; 'entropy' = 'Entropy'; 'avemin' = 'aPPMin'; 'occmin' = 'OCCMin'; 'nmin' = 'nMin'; 'pmin' = 'pMin'")
 
     #...................
-    ### TRUE/FALSE into Yes/NO ####
+    ### TRUE/FALSE into Yes/No ####
 
     write.object.summary$Conv <- sapply(write.object.summary$Conv, function(y) ifelse(isTRUE(y), "Yes", "No"))
-    write.object.summary$`LL Rep` <- sapply(write.object.summary$`LL Rep`, function(y) ifelse(isTRUE(y), "Yes", "No"))
-
-    #...................
-    ### Split results ####
-
-    write.object.summary.split <- split(write.object.summary, f = write.object.summary$Folder)
+    write.object.summary$LLRep <- sapply(write.object.summary$LLRep, function(y) ifelse(isTRUE(y), "Yes", "No"))
 
     #...................
     ### Additional folder row ####
@@ -3492,9 +3668,8 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     write.temp <- NULL
     for (i in unique(write.object.summary$Folder)) {
 
-      write.temp <- rbind(write.temp,
-                          setNames(do.call(data.frame, list(i, rep(list(NA), times = ncol(write.object.summary) - 1L))), nm = colnames(write.object.summary)),
-                          write.object.summary[write.object.summary$Folder == i, ])
+      write.temp <- rbind(write.temp, setNames(do.call(data.frame, list(i, rep(list(NA), times = ncol(write.object.summary) - 1L))), nm = colnames(write.object.summary)),
+                                               write.object.summary[write.object.summary$Folder == i, ])
 
     }
 
@@ -3503,65 +3678,142 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     # Duplicated folder entries
     write.object.summary[duplicated(write.object.summary$Folder), "Folder"] <- NA
 
-    #...................
-    ### Remove empty columns ####
-
-    # write.object.summary <- write.object.summary[, which(apply(write.object.summary[-1L, ], 2L, function(y) !all(is.na(y))))]
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Approximate Bayes Factor ####
 
     #...................
-    ### List element names ####
+    ### Round ####
 
-    names(write.object.summary.split) <- abbreviate(names(write.object.summary.split), minlength = 1L)
+    write.object.bf[, c("A.bic", "B.bic", "bf")] <- round(write.object.bf[, c("A.bic", "B.bic", "bf")], digits = digits)
 
     #...................
-    ### Mean/Variance tables ####
+    ### Truncate ####
 
-    if (any(!is.na(write.object.mean.var))) {
+    if (isTRUE(x$args$bf.trunc)) { write.object.bf$bf <- ifelse(write.object.bf$bf > 1000L, 1000L, write.object.bf$bf) }
 
-      #### Round
-      write.object.mean.var$n <- round(write.object.mean.var$n)
-      write.object.mean$n <- round(write.object.mean$n)
+    #...................
+    ### Column names ####
 
-      write.object.mean$low <- round(write.object.mean$low, digits = 3L)
-      write.object.mean$upp <- round(write.object.mean$upp, digits = 3L)
+    colnames(write.object.bf) <- c("A-Folder", "A-#Class", "A-BIC", "B-Folder", "B-#Class", "B-BIC", "aBF")
 
-      #### Numeric
-      write.object.mean.var$class <- as.numeric(write.object.mean.var$class)
-      write.object.mean$class <- as.numeric(write.object.mean$class)
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Classification Diagnostics ####
 
-      #### Column names
-      colnames(write.object.mean.var) <- c("Folder", "#Class", "Class", "n", "Param", "Ind", "Est.", "SE", "z", "pval")
-      colnames(write.object.mean) <- c("Folder", "#Class", "Class", "n", "Param", "Ind", "Est.", "SE", "z", "pval", "Low", "Upp")
+    #...................
+    ### Round ####
 
-      #### Variance table
-      if (any(!is.na(write.object.var))) {
+    intersect(c(colnames(write.object.classif)[substr(colnames(write.object.classif), 1L, 1L) == "p"], colnames(write.object.classif)[substr(colnames(write.object.classif), 1L, 3L) == "ave"]), colnames(write.object.classif)) |>
+      (\(p) write.object.classif[, p] <<- round(write.object.classif[, p, drop = FALSE], digits = p.digits))()
 
-        # Round
-        write.object.var$n <- round(write.object.var$n)
-        # Numeric
-        write.object.var$class <- as.numeric(write.object.var$class)
-        # Column names
-        colnames(write.object.var) <- c("Folder", "#Class", "Class", "n", "Param", "Ind", "Est.", "SE", "z", "pval")
+    write.object.classif[, colnames(write.object.classif)[substr(colnames(write.object.classif), 1L, 3L) == "occ"]] <- round(write.object.classif[, colnames(write.object.classif)[substr(colnames(write.object.classif), 1L, 3L) == "occ"]], digits = digits)
 
-      }
+    write.object.classif[substr(colnames(write.object.classif), 1L, 1L) == "n"] <- round(write.object.classif[substr(colnames(write.object.classif), 1L, 1L) == "n"], digits = 0L)
+
+    #...................
+    ### Column names ####
+
+    colnames(write.object.classif) <- misty::rec(colnames(write.object.classif), spec = "'folder' = 'Folder'; 'nclass' = '#Class'; 'conv' = 'Conv'; 'nparam' = '#Param'; 'LL.rep' = 'LLRep'; 'entropy' = 'Entropy'")
+
+    colnames(write.object.classif) <- gsub("ave.pp", "aPP", colnames(write.object.classif))
+    colnames(write.object.classif) <- gsub("occ", "OCC", colnames(write.object.classif))
+
+    #...................
+    ### TRUE/FALSE into Yes/No ####
+
+    write.object.classif$Conv <- sapply(write.object.classif$Conv, function(y) ifelse(isTRUE(y), "Yes", "No"))
+    write.object.classif$LLRep <- sapply(write.object.classif$LLRep, function(y) ifelse(isTRUE(y), "Yes", "No"))
+
+    #...................
+    ### Additional folder row ####
+
+    write.temp <- NULL
+    for (i in unique(write.object.classif$Folder)) {
+
+      write.temp <- rbind(write.temp, setNames(do.call(data.frame, list(i, rep(list(NA), times = ncol(write.object.classif) - 1L))), nm = colnames(write.object.classif)),
+                                               write.object.classif[write.object.classif$Folder == i, ])
 
     }
 
-    #...................
-    ### Remove result tables ####
+    write.object.classif <- write.temp
 
-    # One subfolder
-    if (isTRUE(length(write.object.summary.split) == 1L)) { write.object.summary.split <- NA }
+    # Duplicated folder entries
+    write.object.classif[duplicated(write.object.classif$Folder), "Folder"] <- NA
 
-    # Count variables
-    if (isTRUE(all(is.na(write.object.var)) & any(!is.na(write.object.mean)))) { write.object.mean.var <- NA }
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Means and Variances ####
 
-    #...................
-    ### Return object ####
+    if (isTRUE(!is.null(write.object.mean.var))) {
+
+      #### Round
+      write.object.mean.var$n <- round(write.object.mean.var$n)
+
+      write.object.mean.var$low <- round(write.object.mean.var$low, digits = p.digits)
+      write.object.mean.var$upp <- round(write.object.mean.var$upp, digits = p.digits)
+
+      #### Numeric
+      write.object.mean.var$class <- as.numeric(write.object.mean.var$class)
+
+      #### Column names
+      colnames(write.object.mean.var) <- c("Folder", "#Class", "Class", "n", "Param", "Ind", "Est.", "SE", "z", "pval", "Low", "Upp")
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Probabilities ####
+
+    if (isTRUE(!is.null(write.object.prob))) {
+
+      #### Round
+      write.object.prob$n <- round(write.object.prob$n)
+
+      #### Numeric
+      write.object.prob$class <- as.numeric(write.object.prob$class)
+      write.object.prob$categ <- as.numeric(write.object.prob$categ)
+
+      #### Column names
+      colnames(write.object.prob) <- c("Folder", "#Class", "Class", "n", "Ind", "Categ", "Est.", "SE", "z", "pval")
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Cohen's d ####
+
+    if (isTRUE(!is.null(write.object.d))) {
+
+      #### Round
+      write.object.d[, c("sd.j", "sd.k")] <- round(write.object.d[, c("sd.j", "sd.k")], digits = 3L)
+      write.object.d[, "d"] <- round(write.object.d[, "d"], digits = p.digits)
+      write.object.d[, c("n.j", "n.k")] <- round(write.object.d[, c("n.j", "n.k")], digits = 0L)
+
+      #### Column names
+      colnames(write.object.d) <- c("Folder", "#Class", "Ind", "Class.j", "Class.k", "n.j", "M.j", "SD.j", "n.k", "M.k", "SD.k", "d")
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Return object ####
 
     # Combine result tables
-    write.object <- Reduce(append, list(list(Summary = write.object.summary), write.object.summary.split,
-                           list(Mean_Var = write.object.mean.var), list(Mean = write.object.mean), list(Var = write.object.var)))
+    if (isTRUE(!is.null(write.object.mean.var))) {
+
+      # Continuous indicators
+      if (isTRUE(any(!x$result$mean_var$param == "Mean"))) {
+
+        write.object <- Reduce(append, list(list(Summary = write.object.summary), list(aBF = write.object.bf), list(Classif = write.object.classif), list(Mean_Var = write.object.mean.var), list(d = write.object.d)))
+
+      # Count indicators
+      } else {
+
+        write.object <- Reduce(append, list(list(Summary = write.object.summary), list(aBF = write.object.bf), list(Classif = write.object.classif), list(Mean = write.object.mean.var), list(d = write.object.d)))
+
+      }
+
+    # Categorical or Nominal indicators
+    } else {
+
+      write.object <- Reduce(append, list(list(Summary = write.object.summary), list(aBF = write.object.bf), list(Classif = write.object.classif), list(Prob = write.object.prob)))
+
+    }
 
     # Remove NA list elements
     write.object <- write.object[sapply(write.object, function(y) any(!is.na(y)))]

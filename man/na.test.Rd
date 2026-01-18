@@ -243,7 +243,7 @@ function in the \pkg{MissMech} package by Mortaza Jamshidian, Siavash Jalal,
 Camden Jansen, and Mao Kobayashi (2024).
 }
 \examples{
-# Example 1: Perform Little's MCAR test and Jamshidian and Jalal's approach
+# Example 1: Perform Little's MCAR test
 na.test(airquality)
 
 # Example 2: Perform Jamshidian and Jalal's approach

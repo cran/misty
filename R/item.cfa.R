@@ -93,9 +93,9 @@
 #'                         data, i.e., \code{"listwise"} for listwise deletion,
 #'                         \code{"pairwise"} for pairwise deletion, \code{"fiml"}
 #'                         for full information maximum likelihood method,
-#'                         \code{two.stage} for two-stage maximum likelihood
-#'                         method, \code{robust.two.stage} for robust two-stage
-#'                         maximum likelihood method, and \code{doubly-robust}
+#'                         \code{"two.stage"} for two-stage maximum likelihood
+#'                         method, \code{"robust.two.stage"} for robust two-stage
+#'                         maximum likelihood method, and \code{"doubly-robust"}
 #'                         for doubly-robust method (see 'Details'). By default,
 #'                         \code{"fiml"} is used for CFA models with continuous
 #'                         indicators which are estimated by using
@@ -667,7 +667,7 @@ item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
     }
 
     # Check input 'mod.minval'
-    if (isTRUE(mod.minval <= 0L)) { stop("Please specify a value greater than 0 for the argument 'mod.minval'.", call. = FALSE) }
+    if (isTRUE(mod.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'mod.minval'.", call. = FALSE) }
 
     ## Check input 'resid.minval'
     if (isTRUE(resid.minval < 0L)) { stop("Please specify a value greater than or equal 0 for the argument 'resid.minval'.", call. = FALSE) }

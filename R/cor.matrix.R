@@ -504,18 +504,14 @@ cor.matrix <- function(data, ..., method = c("pearson", "spearman", "kendall-b",
   } else {
 
     # At least 3 observations
-    if (isTRUE(any(table(group) < 3L))) { stop("There are not enough observations for each group specified in 'group' to compute the correlation matrix separately.", call. = FALSE) }
+    if (isTRUE(any(table(group) < 3L))) { stop("Not enough observations for each group specified in 'group' to compute the correlation matrix separately.", call. = FALSE) }
 
     # Grouping
     x.group <- split(x, f = group)
 
-    object.g1 <- misty::cor.matrix(x.group[[1L]], method = method, na.omit = FALSE, group = NULL,
-                                   digits = digits, continuity = continuity, print = print, tri = tri,
-                                   p.adj = p.adj, p.digits = p.digits, check = FALSE, output = FALSE)
+    object.g1 <- misty::cor.matrix(x.group[[1L]], method = method, na.omit = FALSE, group = NULL, continuity = continuity, p.adj = p.adj, check = FALSE, output = FALSE)
 
-    object.g2 <- misty::cor.matrix(x.group[[2L]], method = method, na.omit = FALSE, group = NULL,
-                                   digits = digits, continuity = continuity, print = print, tri = tri,
-                                   p.adj = p.adj, p.digits = p.digits, check = FALSE, output = FALSE)
+    object.g2 <- misty::cor.matrix(x.group[[2L]], method = method, na.omit = FALSE, group = NULL, continuity = continuity, p.adj = p.adj, check = FALSE, output = FALSE)
 
     #...................
     ### Data frame, correlation matrix, sample size, and p-values ####

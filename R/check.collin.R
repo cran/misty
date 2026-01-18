@@ -296,22 +296,22 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
   det.R <- det(R)
 
   # Result object
-  vif <- data.frame(matrix(0, nrow = length(terms), ncol = 5L, dimnames = list(terms,  c("Tol", "df", "GVIF", "aGSIF", "aGVIF"))))
+  vif <- data.frame(matrix(0, nrow = length(terms), ncol = 5L, dimnames = list(terms,  c("Tol", "dfVIF", "GVIF", "aGSIF", "aGVIF"))))
 
   for (i in seq_along(terms)) {
 
     subs <- which(assign == i)
 
     # Degrees of freedom
-    vif[i, "df"] <- length(subs)
+    vif[i, "dfVIF"] <- length(subs)
 
-    # Generalized standard error inflation factor
+    # Generalized variance inflation factor
     vif[i, "GVIF"] <- det(as.matrix(R[subs, subs])) * det(as.matrix(R[-subs, -subs])) / det.R
 
-    # Generalized standard error inflation factor made compareable
-    vif[i, "aGSIF"] <- vif[i, "GVIF"]^(1L / (2L * length(subs)))
+    # Generalized standard error inflation factor made comparable
+    vif[i, "aGSIF"] <- vif[i, "GVIF"]^(1L / (2L * vif[i, "dfVIF"]))
 
-    # Generalized variance inflation factor made compareable
+    # Generalized variance inflation factor made comparable
     vif[i, "aGVIF"] <- vif[i, "aGSIF"]^2L
 
     # Tolerance statistic
@@ -346,7 +346,7 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
   # Regression coefficient variance-decomposition matrix
   vd <- prop.table(ph %*% diag(rowSums(ph, dims = 1L)), margin = 2L)
 
-  eigenvalue <- data.frame(1:length(e), e, ci, vd, stringsAsFactors = FALSE)
+  eigenvalue <- data.frame(seq_along(e), e, ci, vd, stringsAsFactors = FALSE)
   colnames(eigenvalue) <- c("dim", "eigen", "ci", attributes(z)$dimnames[[2L]])
 
   #_____________________________________________________________________________
@@ -357,17 +357,33 @@ check.collin  <- function(model, print = c("all", "vif", "eigen"),
   ## Regression coefficients with VIF ####
 
   # Regression coefficients
-  if (isTRUE(all(class(model) %in% c("lm", "glm", "lmerMod", "lmerModLmerTest", "glmerMod")))) {
+  if (isTRUE(all(class(model) %in% "lm"))) {
 
-    coeff <- summary(model)$coefficients
+    coeff <- misty::df.move(cbind(setNames(data.frame(summary(model)$coefficients), nm = c("Estimate", "SE", "t", "p")), df = model$df.residual), df, after = "SE")
+
+  } else if (isTRUE(all(class(model) %in% c("lm", "glm")))) {
+
+    coeff <- setNames(data.frame(summary(model)$coefficients), nm = c("Estimate", "SE","z", "p"))
+
+  } else if (isTRUE(any(class(model) == "lmerModLmerTest"))) {
+
+    coeff <- setNames(data.frame(summary(model)$coefficients), nm = c("Estimate", "SE", "df", "t", "p"))
+
+  } else if (isTRUE(any(class(model) == "lmerMod"))) {
+
+    coeff <- setNames(data.frame(summary(model)$coefficients), nm = c("Estimate", "SE", "t"))
+
+  } else if (isTRUE(any(class(model) %in% "glmerMod"))) {
+
+    coeff <- setNames(data.frame(summary(model)$coefficients), nm = c("Estimate", "SE","z", "p"))
 
   } else if (isTRUE(any(class(model) == "lme"))) {
 
-    coeff <- summary(model)$tTable
+    coeff <- setNames(data.frame(summary(model)$tTable), nm = c("Estimate", "SE", "df", "t", "p"))
 
   } else if (isTRUE(any(class(model) == "glmmTMB"))) {
 
-    coeff <- summary(model)$coefficients$cond
+    coeff <- setNames(data.frame(summary(model)$coefficients$cond), nm = c("Estimate", "SE","z", "p"))
 
   }
 

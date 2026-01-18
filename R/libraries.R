@@ -108,8 +108,8 @@ libraries <- function(..., install = FALSE, quiet = TRUE, check = TRUE,
     if (isTRUE(installed[i])) {
 
       depends[[names(installed[i])]] <- unlist(lapply(lapply(strsplit(gsub("\n", "", pkg.installed[which(row.names(pkg.installed) %in% names(installed[i])), "Depends"]), ","),
-                                                              function(y) misty::chr.omit(misty::chr.omit(misty::chr.trim(ifelse(grepl("\\(", y), yes = substr(y, 1L, unlist(gregexpr('\\(', y)) - 1L), y), check = FALSE), "R", check = FALSE), na.omit = TRUE, check = FALSE)),
-                                                       function(y) setNames(y %in% row.names(pkg.installed), y)))
+                                                             function(y) misty::chr.omit(misty::chr.omit(misty::chr.trim(ifelse(grepl("\\(", y), yes = substr(y, 1L, unlist(gregexpr('\\(', y)) - 1L), y), check = FALSE), "R", check = FALSE), na.omit = TRUE, check = FALSE)),
+                                                      function(y) setNames(y %in% row.names(pkg.installed), y)))
 
      }
 

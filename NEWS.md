@@ -1,3 +1,50 @@
+### misty 0.8.0 (2026-01-18)
+
+##### New features
+* The function `item.invar()` evaluates between-group and longitudinal measurement 
+invariance for measurement models with ordered categorical indicators utilizing
+the Wu and Estabrook (2016) approach to model identification. 
+
+##### Minor features and improvements
+* The function `center` provides a two-step latent mean centering approach.
+* The summary result tables created by the function `mplus.lca.summa` also provides
+the approximate weight of evidence criterion (AWE), approximate correct model 
+probability (cmP), approximate Bayes factors (aBF), average posterior class probability (AvePP),
+odds of correct classification ratio (OCC), and Cohen's d to quantify class separation.
+* The function `mplus.lca.summa` also provides class-specific item response 
+probabilities of the indicator variables and plots for LCA 
+with ordered or unordered categorical indicator variables.
+* The argument `partial` in the function `item.invar` was modified to enable
+freeing parameters in specific groups when evaluating between-group measurement 
+invariance based on more than two groups.
+* Added the arguments `boot` and `R` for requesting (bias-corrected) bootstrap
+confidence intervals to the function `mplus.lca`.
+* Added the argument `constr.var` to impose inequality constraints for the
+variance parameters at the between level to the function `multilevel.cor`.
+* Added the argument `lavaan.run` to the function `item.invar`. 
+
+##### Bug fix
+* Fixed a bug in the function `center()`, which caused an error message when 
+centering a L2 predictor in three-level data within L3 clusters.
+
+##### User-visible changes
+* Added a horizontal line under the table header of output providing tables.
+* Revised the help page of the `center()` function.
+* The function `multilevel.icc()` rounds ICCs smaller than `.Machine$double.eps^0.5`
+to 0.
+* Changed the default setting of the argument `digits` in the function `mplus.lca.summa`
+to `0`.
+* Changed the default setting of the argument `missing` in the function `item.alpha`
+to `listwise`.
+* Rearranged the order of the arguments for the function `mplus.lca`,  changed
+the default setting of the argument `sort.p` to `FALSE`, and the default setting 
+of the argument `output` to `c("SVALUES", "CINTERVAL", "TECH11")`.
+* Removed the argument `width` in the function `mplus.lca.summa()`and added the
+arguments `width.ind`, `width.nclass`, and `height.categ`.
+* Removed the argument `within` in the function `multilevel.cor()`, i.e., the 
+function automatically identifies variables that are measured at the within level
+and modeled only at the within level.
+
 ### misty 0.7.6 (2025-10-25)
 
 ##### User-visible changes
@@ -36,6 +83,7 @@ and `coeff.robust` from `Std. Error`, `z value`, `t value` , `Pr(>|z|)`, and
 `Pr(>|t|)` to `Std. Error`, `z`, `t` , `p`, and `p`.
 * Changed the default setting of the argument `digits` in the function `coeff.robust` 
 to `2`.
+* Removed the argument `adjust` from the function `mplus.lca.summa`.
 
 ### misty 0.7.4 (2025-08-18)
 
@@ -204,7 +252,7 @@ also compute and plot bootstrap confidence intervals.
 function `chr.color`.
 
 ##### Bug fix
-* Fixed a bug in the function `blimp.print()`, function did print error messages.
+* Fixed a bug in the function `blimp.print()`, function printed error messages.
 * Fixed bugs in functions that could not handle a tibble as input (thanks to David S. DeGarmo). 
 
 ##### User-visible changes

@@ -109,7 +109,7 @@
 #' Demo.twolevel <- center(Demo.twolevel, w1, type = "CGM", cluster = "cluster")
 #'
 #' # Estimate two-level mixed-effects model
-#' mod.lmer2 <- lmer(y1 ~ x2.c + w1.c + x2.c:w1.c + (1 + x2.c | cluster), data = Demo.twolevel)
+#' mod.lmer2 <- lmer(y1 ~ x2.c + w1.c + (1 | cluster), data = Demo.twolevel)
 #'
 #' # Example 1a: Default setting
 #' mod.lmer2r <- robust.lmer(mod.lmer2)
