@@ -53,6 +53,8 @@
 #' @param order       logical: if \code{TRUE}, variables are ordered from left to
 #'                    right in increasing order
 #'                    of missing values (\code{na.descript()} function).
+#' @param horiz       logical: if \code{TRUE}, a horizontal line under the table
+#'                    header is drawn.
 #' @param check       logical: if \code{TRUE}, argument specification is checked.
 #' @param ...         further arguments passed to or from other methods.
 #'
@@ -70,13 +72,14 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                                digits = x$args$digits, p.digits = x$args$p.digits,
                                icc.digits = x$args$icc.digits, r.digits = x$args$r.digits,
                                ess.digits = x$args$ess.digits, mcse.digits = x$args$mcse.digits,
-                               sort.var = x$args$sort.var, order = x$args$order, check = TRUE, ...) {
+                               sort.var = x$args$sort.var, order = x$args$order,
+                               horiz = TRUE, check = TRUE, ...) {
 
   #_____________________________________________________________________________
   #
   # Global binding -------------------------------------------------------------
 
-  group <- NULL
+  group <- model <- NULL
 
   #_____________________________________________________________________________
   #
@@ -116,7 +119,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Print Object ---------------------------------------------------------------
+  # Print Object -------------item.nonequi--------------------------------------------------
 
   print.object <- x$result
 
@@ -196,7 +199,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     if (isTRUE(descript)) {
 
-      .write.table(print.object[["descript"]], right = 3L)
+      .write.table(print.object[["descript"]], right = 3L, horiz = horiz)
 
       cat("\n")
 
@@ -213,7 +216,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     }
 
-    .write.table(print.object[["test"]], right = 3L)
+    .write.table(print.object[["test"]], right = 3L, horiz = horiz)
 
     #...................
     ### Post-Hoc Tests ####
@@ -222,7 +225,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       cat(paste0("\n  Tukey HSD Post Hoc Test for Multiple Comparison\n\n"))
 
-      .write.table(print.object[["posthoc"]], left = 2L, right = 4L)
+      .write.table(print.object[["posthoc"]], left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -405,7 +408,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     if (isTRUE(descript)) {
 
-      .write.table(print.object[["descript"]], left = 1L, right = 3L)
+      .write.table(print.object[["descript"]], left = 1L, right = 3L, horiz = horiz)
 
       cat("\n")
 
@@ -416,7 +419,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     if (isTRUE(epsilon)) {
 
-      .write.table(print.object[["epsilon"]], left = 1L, right = 3L)
+      .write.table(print.object[["epsilon"]], left = 1L, right = 3L, horiz = horiz)
 
       cat("\n")
 
@@ -430,7 +433,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       cat(paste0("  Sphericity Correction: None\n"))
 
-      .write.table(print.object[["test"]][["none"]], left = 2L, right = 4L)
+      .write.table(print.object[["test"]][["none"]], left = 2L, right = 4L, horiz = horiz)
 
       if (isTRUE(any(x$args$print %in% c("LB", "GG", "HF")) ||  posthoc)) { cat("\n") }
 
@@ -441,7 +444,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       cat(paste0("  Sphericity Correction: Lower Bound\n"))
 
-      .write.table(print.object[["test"]][["lb"]], left = 2L, right = 4L)
+      .write.table(print.object[["test"]][["lb"]], left = 2L, right = 4L, horiz = horiz)
 
       if (isTRUE(any(x$args$print %in% c("GG", "HF")) ||  posthoc)) { cat("\n") }
 
@@ -452,7 +455,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       cat(paste0("  Sphericity Correction: Greenhouse-Geisser \n"))
 
-      .write.table(print.object[["test"]][["gg"]], left = 2L, right = 4L)
+      .write.table(print.object[["test"]][["gg"]], left = 2L, right = 4L, horiz = horiz)
 
       if (isTRUE(any(x$args$print %in% c("HF")) ||  posthoc)) { cat("\n") }
 
@@ -463,7 +466,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       cat(paste0("  Sphericity Correction: Huynh-Feldt \n"))
 
-      .write.table(print.object[["test"]][["hf"]], left = 2L, right = 4L)
+      .write.table(print.object[["test"]][["hf"]], left = 2L, right = 4L, horiz = horiz)
 
       if (isTRUE(posthoc)) { cat("\n") }
 
@@ -476,7 +479,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       cat(paste0("  Paired-Samples t-Tests for Multiple Comparison\n\n"))
 
-      .write.table(print.object[["posthoc"]], left = 2L, right = 4L)
+      .write.table(print.object[["posthoc"]], left = 2L, right = 4L, horiz = horiz)
 
       cat(paste0("\n   Adjustment for multiple testing: ", x$args$p.adj))
 
@@ -681,7 +684,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       # Print object
       cat("\n  Tolerance (Tol), Std. Error Inflation Factor (SIF), and Variance Inflation Factor (VIF)\n\n")
 
-      .write.table(print.object$coef, left = 2L, right = 4L)
+      .write.table(print.object$coef, left = 2L, right = 4L, horiz = horiz)
 
       # Note for model involving categorical predictors
       if (isTRUE(any(x$result$vif$dfVIF > 1L))) { cat("\n   Note. Generalized SIF/VIF are computed for terms with more than 1 dfVIF\n") }
@@ -710,7 +713,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       # Print object
       cat("\n  Eigenvalue (Eigen), Condition Index (CI), and Variance Proportions\n\n")
 
-      .write.table(print.object$eigen, left = 3L, right = 5L)
+      .write.table(print.object$eigen, left = 3L, right = 5L, horiz = horiz)
 
     }
 
@@ -794,7 +797,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                         "kendall-b" = "Kendall's Tau-b\n\n",
                         "kendall-c" = "Kendall-Stuart's Tau-c\n\n")))
 
-      .write.table(print.object, left = 1L, right = 3L)
+      .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Grouping ####
@@ -874,7 +877,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                         "kendall-b" = "Kendall's Tau-b\n\n",
                         "kendall-c" = "Kendall-Stuart's Tau-c\n\n")))
 
-      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result)
+      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Split ####
@@ -1033,7 +1036,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("  Split Group:", i, "\n")
 
-        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]])
+        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]], horiz = horiz)
 
         if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
 
@@ -1157,7 +1160,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                  round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
                  "Arithmetic Mean\n\n"))
 
-      .write.table(print.object, left = 1L, right = 3L, group = FALSE)
+      .write.table(print.object, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Grouping ####
@@ -1216,7 +1219,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                  round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
                  "Arithmetic Mean\n\n"))
 
-      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result)
+      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Split ####
@@ -1348,7 +1351,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("  Split Group:", i, "\n")
 
-        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]])
+        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]], horiz = horiz)
 
         if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
 
@@ -1443,7 +1446,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                  round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
                  "Median\n\n"))
 
-      .write.table(print.object, left = 1L, right = 3L, group = FALSE)
+      .write.table(print.object, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Grouping ####
@@ -1502,7 +1505,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                  round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
                  "Median\n\n"))
 
-      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result)
+      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Split ####
@@ -1634,7 +1637,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("  Split Group:", i, "\n")
 
-        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]])
+        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]], horiz = horiz)
 
         if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
 
@@ -1730,7 +1733,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                  round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
                  "Proportion\n\n"))
 
-      .write.table(print.object, left = 1L, right = 3L, group = FALSE)
+      .write.table(print.object, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Grouping ####
@@ -1790,7 +1793,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                  round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
                  "Proportion\n\n"))
 
-      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result)
+      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Split ####
@@ -1924,7 +1927,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("  Split Group:", i, "\n")
 
-        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]])
+        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]], horiz = horiz)
 
         if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
 
@@ -2016,7 +2019,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                  round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
                  "Variance\n\n"))
 
-      .write.table(print.object, left = 1L, right = 3L, group = FALSE)
+      .write.table(print.object, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Grouping ####
@@ -2075,7 +2078,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                  round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
                  "Variance\n\n"))
 
-      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result)
+      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Split ####
@@ -2207,7 +2210,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("  Split Group:", i, "\n")
 
-        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]])
+        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]], horiz = horiz)
 
         if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
 
@@ -2299,7 +2302,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                  round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
                  "Standard Deviation\n\n"))
 
-      .write.table(print.object, left = 1L, right = 3L, group = FALSE)
+      .write.table(print.object, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Grouping ####
@@ -2358,7 +2361,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                  round(x$args$conf.level * 100L, digits = 2L), ifelse(isTRUE(x$args$boot == "none"), "% Confidence Interval: ", "% Bootstrap Confidence Interval: "),
                  "Standard Deviation\n\n"))
 
-      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result)
+      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Split ####
@@ -2490,7 +2493,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("  Split Group:", i, "\n")
 
-        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]])
+        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]], horiz = horiz)
 
         if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
 
@@ -2626,7 +2629,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                        prop.diff.i = "Difference in Proportions from Independent Samples\n\n",
                        prop.diff.p = "Difference in Proportions from Paired Samples\n\n")))
 
-      .write.table(print.object, left = 1L, right = 3L, group = FALSE)
+      .write.table(print.object, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
       #......
       # Notes
@@ -2779,7 +2782,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                        prop.diff.i = "Difference in Proportions from Independent Samples\n\n",
                        prop.diff.p = "Difference in Proportions from Paired Samples\n\n")))
 
-      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result)
+      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result, horiz = horiz)
 
       #......
       # Note
@@ -2977,7 +2980,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("  Split Group:", i, "\n")
 
-        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]])
+        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]], horiz = horiz)
 
         if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
 
@@ -3016,6 +3019,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       model.class <- "lmer"
 
+    } else if (all(class(model) %in% "lme")) {
+
+        model.class <- "lme"
+
     }
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3048,7 +3055,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                 #...................
                 ### Column Names ####
 
-                print.coef <- rbind(c("", colnames(print.coef)), data.frame(row.names(print.coef), print.coef))
+                print.coef <- rbind(c("", colnames(print.coef)), data.frame(row.names(print.coef), Estimate = print.coef[, 1L], do.call("cbind", lapply(print.coef[, -1L], function(y) paste0(" ", y)))))
 
                 #...................
                 ### Format ####
@@ -3066,7 +3073,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                 cat(paste0("  Heteroscedasticity-Consistent Standard Errors (", x$args$type, ")\n\n"))
 
                 # Print coefficients
-                .write.table(print.coef, left = 2L, right = 4L, group = FALSE)
+                .write.table(print.coef, left = 2L, right = 4L, group = FALSE, horiz = horiz)
 
                 #...................
                 ### F-test ####
@@ -3117,7 +3124,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                #...................
                ### Column Names ####
 
-               print.coef <- rbind(c("", colnames(print.coef)), data.frame(row.names(print.coef), print.coef))
+               print.coef <- rbind(c("", colnames(print.coef)), data.frame(row.names(print.coef), Estimate = print.coef[, 1L], do.call("cbind", lapply(print.coef[, -1L], function(y) paste0(" ", y)))))
 
                #...................
                ### Format ####
@@ -3135,7 +3142,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                cat(paste0("  Clust-Robust Standard Errors (", x$args$type, ")\n\n"))
 
                # Print coefficients
-               .write.table(print.coef, left = 2L, right = 4L, group = FALSE)
+               .write.table(print.coef, left = 2L, right = 4L, group = FALSE, horiz = horiz)
 
              }
 
@@ -3159,7 +3166,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
             #...................
             ### Column Names ####
 
-            print.coef <- rbind(c("", colnames(print.coef)), data.frame(row.names(print.coef), print.coef))
+            print.coef <- rbind(c("", colnames(print.coef)), data.frame(row.names(print.coef), Estimate = print.coef[, 1L], do.call("cbind", lapply(print.coef[, -1L], function(y) paste0(" ", y)))))
 
             #...................
             ### Format ####
@@ -3177,7 +3184,44 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
             cat(paste0("  Cluster-Robust Standard Error (", x$args$type, ")\n\n"))
 
             # Print coefficients
-            .write.table(print.coef, left = 2L, right = 4L, group = FALSE)
+            .write.table(print.coef, left = 2L, right = 4L, group = FALSE, horiz = horiz)
+
+          }, lme ={
+
+            #...................
+            ### Extract coefficients ####
+
+            print.coef <- print.object$coef
+
+            #...................
+            ### Round ####
+
+            print.coef[, setdiff(colnames(print.coef), "p")] <- apply(print.coef[, setdiff(colnames(print.coef), "p")], 2L, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+
+            print.coef[, "p"] <- formatC(as.numeric(print.coef[, "p"]), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+            #...................
+            ### Column Names ####
+
+            print.coef <- rbind(c("", colnames(print.coef)), data.frame(row.names(print.coef), Estimate = print.coef[, 1L], do.call("cbind", lapply(print.coef[, -1L], function(y) paste0(" ", y)))))
+
+            #...................
+            ### Format ####
+
+            # Justify left and right
+            print.coef[, 1L] <- format(print.coef[, 1L, drop = FALSE], justify = "left")
+            print.coef[, -1L] <- apply(print.coef[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+            # Add blank space
+            print.coef[, 1L] <-  paste0("   ", print.coef[, 1L])
+
+            #...................
+            ### Print ####
+
+            cat(paste0("  Cluster-Robust Standard Error (", x$args$type, ")\n\n"))
+
+            # Print coefficients
+            .write.table(print.coef, left = 2L, right = 4L, group = FALSE, horiz = horiz)
 
           })
 
@@ -3261,12 +3305,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     #...................
     ### Replace NA with "" ####
 
-    print.object <- apply(print.object, 2L, function(y) gsub("NA", "", y))
+    print.object <- as.data.frame(apply(print.object, 2L, function(y) gsub("NA", "", y)))
 
     #...................
     ### Column Names ####
 
-    print.object <- rbind(c("", colnames(print.object)), data.frame(row.names(print.object), print.object))
+    print.object <- rbind(c("", colnames(print.object)), data.frame(row.names(print.object), Estimate = print.object[, 1L], do.call("cbind", lapply(print.object[, -1L], function(y) paste0(" ", y)))))
 
     #...................
     ### Justify Left and Right ####
@@ -3285,7 +3329,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     cat(" Unstandardized and Standardized Coefficients\n\n")
 
     # Print object
-    .write.table(print.object, left = 1L, right = 3L, group = FALSE)
+    .write.table(print.object, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
   #_____________________________________________________________________________
   #
@@ -3376,7 +3420,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                        greater = "One-Sided"),
                 paste0(round(x$args$conf.level * 100L, digits = 2L), "%"), "CI\n\n"))
 
-      .write.table(print.object, left = 1L, right = 3L, group = FALSE)
+      .write.table(print.object, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Grouping ####
@@ -3452,7 +3496,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                        greater = "One-Sided"),
                 paste0(round(x$args$conf.level * 100L, digits = 2L), "%"), "CI\n\n"))
 
-      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result)
+      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Split ####
@@ -3604,7 +3648,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("  Split Group:", i, "\n")
 
-        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]])
+        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]], horiz = horiz)
 
         if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
 
@@ -3913,7 +3957,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       })
 
       # Print object
-      .write.table(print.object, left = 1L, right = 3L, group = FALSE)
+      .write.table(print.object, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## More than two variables ####
@@ -4004,7 +4048,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         })
 
-        .write.table(print.object$cor, left = 1L, right = 3L, group = FALSE)
+        .write.table(print.object$cor, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
       }
 
@@ -4051,7 +4095,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat(" Sample Size\n\n")
 
-        .write.table(print.object$n, left = 1L, right = 3L, group = FALSE)
+        .write.table(print.object$n, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
       }
 
@@ -4109,7 +4153,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         }
 
-        .write.table(print.object$stat, left = 1L, right = 3L, group = FALSE)
+        .write.table(print.object$stat, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
       }
 
@@ -4155,7 +4199,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat(" Degrees of Freedom (df) \n\n")
 
-        .write.table(print.object$df, left = 1L, right = 3L, group = FALSE)
+        .write.table(print.object$df, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
       }
 
@@ -4209,7 +4253,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat(" Significance Value (p-value)\n\n")
 
-        .write.table(print.object$p, left = 1L, right = 3L, group = FALSE)
+        .write.table(print.object$p, left = 1L, right = 3L, group = FALSE, horiz = horiz)
 
         cat(paste0("\n  Adjustment for multiple testing: ", x$args$p.adj, "\n"))
 
@@ -4335,7 +4379,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat(" Cross Tabulation\n\n")
 
-        .write.table(restab, left = 1L, right = 3L, line = 2L)
+        .write.table(restab, left = 1L, right = 3L, line = 2L, horiz = horiz)
 
       #...................
       ### Output table split ####
@@ -4357,7 +4401,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat("  Frequencies\n")
 
-          .write.table(restab.abs, left = 1L, right = 3L, line = 2L)
+          .write.table(restab.abs, left = 1L, right = 3L, line = 2L, horiz = horiz)
 
         }
 
@@ -4386,7 +4430,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat("  Row-Wise Percentages\n")
 
-          .write.table(restab.row, left = 1L, right = 3L, line = 2L)
+          .write.table(restab.row, left = 1L, right = 3L, line = 2L, horiz = horiz)
 
         }
 
@@ -4417,7 +4461,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat("  Column-Wise Percentages\n")
 
-          .write.table(restab.col, left = 1L, right = 3L, line = 2L)
+          .write.table(restab.col, left = 1L, right = 3L, line = 2L, horiz = horiz)
 
         }
 
@@ -4442,7 +4486,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat("  Total Percentages\n")
 
-          .write.table(restab.total, left = 1L, right = 3L, line = 2L)
+          .write.table(restab.total, left = 1L, right = 3L, line = 2L, horiz = horiz)
 
         }
 
@@ -4582,7 +4626,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         restab[, 1L] <- ifelse(duplicated(restab[, 1L]), paste(rep(" ", times = unique(nchar(restab[, 1L]))), collapse = ""), restab[, 1L])
 
         # Print results
-        .write.table(restab, left = 1L, right = 3L, line = 2L)
+        .write.table(restab, left = 1L, right = 3L, line = 2L, horiz = horiz)
 
       #...................
       ### Output table split ####
@@ -4611,7 +4655,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           # Output
           cat("  Frequencies\n")
 
-          .write.table(restab.abs, left = 1L, right = 3L, line = 2L)
+          .write.table(restab.abs, left = 1L, right = 3L, line = 2L, horiz = horiz)
 
         }
 
@@ -4649,7 +4693,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           # Output
           cat("  Row-Wise Percentages\n")
 
-          .write.table(restab.row, left = 1L, right = 3L, line = 2L)
+          .write.table(restab.row, left = 1L, right = 3L, line = 2L, horiz = horiz)
 
         }
 
@@ -4677,7 +4721,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           # Output
           cat("  Column-Wise Percentages\n")
 
-          .write.table(restab.col, left = 1L, right = 3L, line = 2L)
+          .write.table(restab.col, left = 1L, right = 3L, line = 2L, horiz = horiz)
 
         }
 
@@ -4708,7 +4752,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           # Output
           cat("  Total Percentages\n")
 
-          .write.table(restab.total, left = 1L, right = 3L, line = 2L)
+          .write.table(restab.total, left = 1L, right = 3L, line = 2L, horiz = horiz)
 
         }
 
@@ -4798,7 +4842,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       cat(" Descriptive Statistics\n\n")
 
-      .write.table(print.object, left = 1L, right = 3L)
+      .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Grouping, No Split ####
@@ -4851,7 +4895,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       cat(" Descriptive Statistics\n\n")
 
       # Print Output
-      .write.table(print.object, left = 1L, right = 3L, group = TRUE, result = x$result)
+      .write.table(print.object, left = 1L, right = 3L, group = ifelse(isTRUE(ncol(x$data$x) == 1L), FALSE, TRUE), result = x$result, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Split, without or with Grouping ####
@@ -4887,11 +4931,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           print.object[[i]][, "variable"] <- c(paste0("   ", print.object[[i]][1L, "variable"], collapse = ""), paste0("    ", print.object[[i]][-1L, "variable"]))
           print.object[[i]][, "variable"] <- format(c(print.object[[i]][1L, "variable"], misty::chr.trim(print.object[[i]][-1L, "variable"], side = "right")), justify = "left")
 
-          if (isTRUE(ncol(x$data$x) == 1L)) {
-
-            print.object[[i]][, "n"] <- paste("", print.object[[i]][, "n"])
-
-          }
+          if (isTRUE(ncol(x$data$x) == 1L)) { print.object[[i]][, "n"] <- paste("", print.object[[i]][, "n"]) }
 
         #...................
         ### Grouping ####
@@ -4952,7 +4992,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("  Split Group:", i, "\n")
 
-        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]])), TRUE, FALSE), result = x$result[[i]])
+        .write.table(print.object[[i]], left = 2L, right = 4L, group = ifelse(isTRUE("group" %in% colnames(print.object[[i]]) && ncol(x$data$x) > 1L), TRUE, FALSE), result = x$result[[i]], horiz = horiz)
 
         if (isTRUE(i != names(print.object)[length(print.object)])) { cat("\n") }
 
@@ -5027,9 +5067,51 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     #...................
     ### Print ####
 
-    .write.table(print.gen, left = 2L, right = 4L)
+    .write.table(print.gen, left = 2L, right = 4L, horiz = horiz)
 
     cat(paste0("\n  Note. Outcome variable: ", x$args$out, "\n"))
+
+  #_____________________________________________________________________________
+  #
+  # Chi-Bar-Square Difference Test, difftest.chibarsq() ------------------------
+  }, difftest.chibarsq = {
+
+    # Print object
+    print.object <- print.object$difftest
+
+    # Remove chisq.crit column
+    print.object <- print.object[, setdiff(colnames(print.object), "chisq.crit")]
+
+    # Header
+    cat(" Chi-Bar-Square Difference Test\n\n")
+
+    # Round
+    print.object[, setdiff(colnames(print.object), c("df", "df.diff", "p"))] <- lapply(print.object[, setdiff(colnames(print.object), c("df", "df.diff", "p"))], function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+    print.object[, "p"] <- formatC(print.object[, "p"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+    # Column and row names
+    print.object <- data.frame(c("", row.names(print.object)), rbind(c("df", "AIC", "BIC", "SABIC", "Chisq", "dChisq", "ddf", "p"), print.object), fix.empty.names = FALSE)
+
+    # Greek letter Delta
+    if (is.null(getOption("knitr.in.progress"))) { print.object[1L, ] <- c("", "df", "AIC", "BIC", "SABIC", "Chisq", paste0("\U2206", "Chisq"), paste0("\U2206", "df"),"p") }
+
+    # Justify right
+    print.object[, -1L] <- lapply(print.object[, -1L], function(y) format(y, justify = "right"))
+    print.object[, 1L] <- format(print.object[, 1L], justify = "left")
+
+    # Add blank space
+    print.object[, 1L] <- paste0("  ", print.object[, 1L])
+
+    # Replace NA
+    print.object[, -1L] <- apply(print.object[, -1L], 2L, function(y) gsub("NA", "  ", y))
+
+    # Print
+    .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
+
+    # Note
+    weights <- formatC(x$result$weights, digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")) |> (\(p) paste0(paste(p[-length(p)], collapse = ", "), " and ", p[length(p)]))()
+
+    cat("\n  Note. Weights used in the test are", weights)
 
   #_____________________________________________________________________________
   #
@@ -5080,7 +5162,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #...................
       ### Print ####
 
-      .write.table(print.gen, left = 2L, right = 4L)
+      .write.table(print.gen, left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -5117,7 +5199,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       ### Print ####
 
       write.table(data.frame(label = c("          Dominated")), quote = FALSE, row.names = FALSE, col.names = FALSE)
-      .write.table(print.cond, left = 2L, right = 4L)
+      .write.table(print.cond, left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -5154,7 +5236,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       ### Print ####
 
       write.table(data.frame(label = c("          Dominated")), quote = FALSE, row.names = FALSE, col.names = FALSE)
-      .write.table(print.comp, left = 2L, right = 4L)
+      .write.table(print.comp, left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -5214,7 +5296,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
                      greater = "One-Sided "),
               paste0(round(x$args$conf.level * 100L, digits = 2L), "% "), "Confidence Interval\n\n"))
 
-    .write.table(print.object, left = 1L, right = 3L)
+    .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
     # Note
     if (isTRUE(x$args$indep && ncol(x$data) > 2L)) { cat(paste0("\n Note. The focal variable is ", colnames(x$data)[1L])) }
@@ -5420,7 +5502,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      .write.table(print.object, left = 1L, right = 3L)
+      .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## More than One Variable ####
@@ -5633,7 +5715,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           if (isTRUE(x$args$val.col)) { cat("\n") }
 
-          .write.table(print.object$freq, left = 1L, right = 3L)
+          .write.table(print.object$freq, left = 1L, right = 3L, horiz = horiz)
 
         }
 
@@ -5659,7 +5741,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
             if (isTRUE(x$args$val.col)) { cat("\n") }
 
-            .write.table(print.object$perc, left = 1L, right = 3L)
+            .write.table(print.object$perc, left = 1L, right = 3L, horiz = horiz)
 
           }
 
@@ -5684,7 +5766,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
               if (isTRUE(x$args$val.col)) { cat("\n") }
 
-              .write.table(print.object$v.perc, left = 1L, right = 3L)
+              .write.table(print.object$v.perc, left = 1L, right = 3L, horiz = horiz)
 
             }
 
@@ -5754,7 +5836,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       cat("  Asymptotic Normal Method\n")
 
-      .write.table(print.object$asymp, left = 2L, right = 4L)
+      .write.table(print.object$asymp, left = 2L, right = 4L, horiz = horiz)
 
       cat("\n   Note.", switch(x$args$se, "sobel" = "Approximate standard error by Sobel (1982)\n",
                                "aroian" = "Exact standard error by Aroian (1947).\n",
@@ -5786,7 +5868,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       cat("  Distribution of the Product Method\n")
 
-      .write.table(print.object$dop, left = 2L, right = 4L)
+      .write.table(print.object$dop, left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -5815,7 +5897,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       # Monte Carlo Method
       cat("  Monte Carlo Method with",  format(x$args$nrep, scientific = FALSE), "repetitions\n")
 
-      .write.table(print.object$mc, left = 2L, right = 4L)
+      .write.table(print.object$mc, left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -5862,7 +5944,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      .write.table(print.object$alpha, left = 1L, right = 3L)
+      .write.table(print.object$alpha, left = 1L, right = 3L, horiz = horiz)
 
     }
 
@@ -5896,7 +5978,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       if (any(!is.na(x$result$itemstat$alpha))) { cat(paste0(" Standardized Factor Loadings and ", ifelse(x$args$type != "categ", "Coefficient Alpha ", "Ordinal Coefficient Alpha "), "if Item Deleted\n\n")) } else { cat(" Standardized Factor Loadings\n\n") }
 
-      if (any(!is.na(x$result$itemstat$alpha))) { .write.table(print.object$itemstat, left = 1L, right = 3L) } else { .write.table(print.object$itemstat[, colnames(print.object$itemstat) != "alpha"], left = 1L, right = 3L) }
+      if (any(!is.na(x$result$itemstat$alpha))) { .write.table(print.object$itemstat, left = 1L, right = 3L) } else { .write.table(print.object$itemstat[, colnames(print.object$itemstat) != "alpha"], left = 1L, right = 3L, horiz = horiz) }
 
     }
 
@@ -5982,7 +6064,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #...................
       ### Print ####
 
-      .write.table(print.coverage, left = 2L, right = 4L)
+      .write.table(print.coverage, left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -6024,7 +6106,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         #...................
         ### Print ####
 
-        .write.table(print.itemstat, left = 2L, right = 4L)
+        .write.table(print.itemstat, left = 2L, right = 4L, horiz = horiz)
 
       ### Ordered indicators ####
       } else if (isTRUE(x$args$ordered)) {
@@ -6047,7 +6129,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         #...................
         ### Print ####
 
-        .write.table(print.itemfreq, left = 1L, right = 3L)
+        .write.table(print.itemfreq, left = 1L, right = 3L, horiz = horiz)
 
       ### Continuous and ordered indicators ####
       } else {
@@ -6087,7 +6169,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         #...................
         ### Print ####
 
-        .write.table(print.itemstat, left = 2L, right = 4L)
+        .write.table(print.itemstat, left = 2L, right = 4L, horiz = horiz)
 
         #...................
         ### Counts for ordered variables ####
@@ -6112,7 +6194,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         #...................
         ### Print ####
 
-        .write.table(print.itemfreq, left = 1L, right = 3L)
+        .write.table(print.itemfreq, left = 1L, right = 3L, horiz = horiz)
 
       }
 
@@ -6528,7 +6610,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         #...................
         ### Print ####
 
-        .write.table(print.resid, left = 2L, right = 4L)
+        .write.table(print.resid, left = 2L, right = 4L, horiz = horiz)
 
         # Note
         if (isTRUE(x$args$resid.minval < 1L)) { cat(paste0("\n  Note. Minimum absolute value for highlighting correlation coefficients is ", round(x$args$resid.minval, digits = 2L), "\n")) }
@@ -6855,7 +6937,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat("   Group:", names(print.coverage)[i], "\n")
 
-          .write.table(print.coverage[[i]], left = 3L, right = 5L)
+          .write.table(print.coverage[[i]], left = 3L, right = 5L, horiz = horiz)
 
           if (isTRUE(i != rev(seq_along(print.coverage))[1L])) { cat("\n") }
 
@@ -6888,7 +6970,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         #### Print ###
 
-        .write.table(print.coverage, left = 3L, right = 5L)
+        .write.table(print.coverage, left = 3L, right = 5L, horiz = horiz)
 
       }
 
@@ -6967,7 +7049,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         #### Print ####
 
-        .write.table(print.itemstat, left = 2L, right = 4L)
+        .write.table(print.itemstat, left = 2L, right = 4L, horiz = horiz)
 
 
       #...................
@@ -6999,7 +7081,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
             # Print
             cat("   Group:", names(print.itemstat)[i], "\n")
 
-            .write.table(print.itemstat[[i]], left = 3L, right = 5L)
+            .write.table(print.itemstat[[i]], left = 3L, right = 5L, horiz = horiz)
 
             if (isTRUE(i != rev(seq_along(print.itemstat))[1L])) { cat("\n") }
 
@@ -7021,7 +7103,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           print.itemstat[, -1L] <- apply(print.itemstat[, -1L], 2L, format, justify = "right")
 
           # Print
-          .write.table(print.itemstat, left = 3L, right = 5L)
+          .write.table(print.itemstat, left = 3L, right = 5L, horiz = horiz)
 
         }
 
@@ -7142,7 +7224,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         # R Markdown not in progress
         if (is.null(getOption("knitr.in.progress"))) { print.fit.stand[1L, ] <- sub("D", "\u0394", print.fit.stand[1L, ]) }
 
-        .write.table(print.fit.stand, left = 3L, right = 5L)
+        .write.table(print.fit.stand, left = 3L, right = 5L, horiz = horiz)
 
       }
 
@@ -7153,7 +7235,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         # R Markdown not in progress
         if (is.null(getOption("knitr.in.progress"))) { print.fit.scaled[1L, ] <- sub("D", "\u0394", print.fit.scaled[1L, ]) }
 
-        .write.table(print.fit.scaled, left = 3L, right = 5L)
+        .write.table(print.fit.scaled, left = 3L, right = 5L, horiz = horiz)
 
       }
 
@@ -7164,7 +7246,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         # R Markdown not in progress
         if (is.null(getOption("knitr.in.progress"))) { print.fit.robust[1L, ] <- sub("D", "\u0394", print.fit.robust[1L, ]) }
 
-        .write.table(print.fit.robust, left = 3L, right = 5L)
+        .write.table(print.fit.robust, left = 3L, right = 5L, horiz = horiz)
 
       }
 
@@ -7691,7 +7773,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           if (isTRUE(!x$args$long)) {
 
-            print.score[-1L, c(1L:2L)] <- apply(print.score[-1L, c(1L:2L)], 2L, function(y) paste0(" ", y))
+            print.score[-1L, c(1L:2L)] <- do.call("cbind", lapply(print.score[-1L, c(1L:2L)], function(y) paste0(" ", y)))
 
           } else {
 
@@ -7717,7 +7799,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           #...................
           ### Print ####
 
-          .write.table(print.score, left = 2L, right = 4L)
+          .write.table(print.score, left = 2L, right = 4L, horiz = horiz)
 
           # Note
           cat(paste0("\n   Note. Minimum value for printing modification indices is ", round(x$args$mod.minval, digits = 2L), "\n"))
@@ -7848,7 +7930,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
             if (isTRUE(!x$args$long)) { cat("   Group:", names(print.resid)[i], "\n") }
 
-            .write.table(print.resid[[i]], left = 3L, right = 5L)
+            .write.table(print.resid[[i]], left = 3L, right = 5L, horiz = horiz)
 
             if (isTRUE(i != length(print.resid))) { cat("\n") }
 
@@ -7901,7 +7983,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           print.resid[, -1L] <- format(print.resid[, -1L], justify = "right")
 
           # Print
-          .write.table(print.resid, left = 2L, right = 4L)
+          .write.table(print.resid, left = 2L, right = 4L, horiz = horiz)
 
         }
 
@@ -7914,7 +7996,454 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
-  # Coefficient Omega, item.omega() -------------------------------------------
+  # Effect Size Measure of Measurement Non-Invariance, item.nonequi() ---------
+  }, item.noninvar = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Header ####
+
+    if (isTRUE(!x$args$long)) { cat(" Effect Size Measure for Between-Group Measurement Non-Invariance\n") } else { cat(" Effect Size Measure for Longitudinal Measurement Non-Invariance\n") }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## lavaan summary ####
+
+    if (isTRUE("summary" %in% print)) {
+
+      #--------------------------------------
+      ### Remove Column Names ####
+
+      colnames(print.object$summary) <- NULL
+
+      #--------------------------------------
+      ### Extract Output ####
+
+      print.summary <- print.object$summary
+
+      #--------------------------------------
+      ### Remove Lines ####
+
+      print.summary <- print.summary[!is.na(print.summary[, 2]), ]
+
+      if (isTRUE(all(c("dmacs", "m.diff", "var.diff") %in% names(print.object$noninvar)) && x$args$pooled)) { print.summary <- print.summary[!print.summary[, 1L] %in% c("Reference Group", "Reference Time Point"), ] }
+
+      #--------------------------------------
+      ### Format ####
+
+      print.summary[1L, 1L] <- paste0(" ", print.summary[1L, 1L])
+      print.summary[-1L, 1L] <- paste0("  ", unlist(print.summary[-1L, 1L]))
+
+      # Justify left
+      print.summary[, 1L] <- format(print.summary[, 1L], justify = "left")
+
+      #--------------------------------------
+      ### Print ####
+
+      print(print.summary, col.names = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## dMACS ####
+
+    if (isTRUE("dmacs" %in% print)) {
+
+      #--------------------------------------
+      ### Extract Output ####
+
+      print.dmacs <- print.object$noninvar$dmacs
+
+      #--------------------------------------
+      ### Two Groups or Time Points ####
+
+      if (isTRUE((is.null(dim(print.dmacs)) || is.data.frame(print.dmacs)) && class(print.dmacs) != "list")) {
+
+        #...................
+        #### One Factor ####
+
+        if (isTRUE(!is.data.frame(print.dmacs))) {
+
+          # Round
+          print.dmacs <- formatC(print.dmacs, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+
+          # Format
+          print.dmacs <- rbind(names(print.dmacs), print.dmacs)
+
+          # Justify right
+          print.dmacs <- format(print.dmacs, justify = "right")
+
+          # Add blank space
+          print.dmacs[, 1L] <- paste0("   ", print.dmacs[, 1L])
+
+          ##### Print ####
+
+          ###### Width of the Console sufficient
+          if (isTRUE(max(apply(print.dmacs, 1L, function(y) nchar(paste(y, collapse = " ")))) < getOption("width"))) {
+
+            if (isTRUE(!x$args$signed)) { cat("\n  dMACS\n\n") } else { cat("\n  Signed dMACS\n\n") }
+
+            .write.table(print.dmacs, left = 2L, right = 4L, horiz = horiz)
+
+          ###### Width of the Console insufficient
+          } else {
+
+            # Extract output
+            print.dmacs <- data.frame(names(print.object$noninvar$dmacs), print.object$noninvar$dmacs, fix.empty.names = FALSE)
+
+            # Round
+            print.dmacs[, 2L] <- formatC(print.dmacs[, 2L], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+
+            # Justify right and left
+            print.dmacs[, 1L] <- format(print.dmacs[, 1L], justify = "left")
+            print.dmacs[, 2L] <- format(print.dmacs[, 2L], justify = "right")
+
+            # Add blank space
+            print.dmacs[, 1L] <- paste0("   ", print.dmacs[, 1L])
+
+            # Print
+            if (isTRUE(!x$args$signed)) { cat("\n  dMACS\n") } else { cat("\n  Signed dMACS\n") }
+
+            write.table(print.dmacs, quote = FALSE, row.names = FALSE)
+
+          }
+
+        #...................
+        #### More than One Factor ####
+
+        } else {
+
+          # Round
+          print.dmacs <- sapply(print.dmacs, function(y) sapply(y, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))))
+
+          # Format
+          print.dmacs <- cbind(c("", row.names(print.object$noninvar$dmacs)), rbind(colnames(print.dmacs), print.dmacs))
+
+          # Justify right and left
+          print.dmacs[, -1L] <- apply(print.dmacs[, -1L], 2L, format, justify = "right")
+          print.dmacs[, 1L] <- format(print.dmacs[, 1L], justify = "left")
+
+          # Add blank space
+          print.dmacs[, 1L] <- paste0("   ", print.dmacs[, 1L])
+
+          # Replace NA
+          print.dmacs[, -1L] <- apply(print.dmacs[, -1L], 2L, function(y) gsub("NA", "  ", y))
+
+          ##### Print ####
+
+          if (isTRUE(!x$args$signed)) { cat("\n  dMACS\n\n") } else { cat("\n  Signed dMACS\n\n") }
+
+          .write.table(print.dmacs, left = 2L, right = 4L, horiz = horiz)
+
+        }
+
+      #--------------------------------------
+      ### More than Two Groups or Time Points ####
+
+      } else {
+
+        #...................
+        #### One Factor ####
+
+        if (isTRUE(all(sapply(print.dmacs, function(y) is.null(dim(y)))))) {
+
+          # Round
+          print.dmacs <- lapply(print.dmacs, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+
+          # Format
+          print.dmacs <- lapply(print.dmacs, function(y) rbind(names(y), y))
+
+          # Justify right
+          print.dmacs <- lapply(print.dmacs, function(y) format(y, justify = "right"))
+
+          # Add blank space
+          for (i in seq_along(print.dmacs)) { print.dmacs[[i]][, 1L] <- paste0("    ", print.dmacs[[i]][, 1L]) }
+
+          ##### Print ####
+
+          if (isTRUE(!x$args$signed)) { cat("\n  dMACS\n") } else { cat("\n  Signed dMACS\n") }
+
+          ###### Width of the Console sufficient
+          if (isTRUE(max(apply(do.call("rbind", print.dmacs), 1L, function(y) nchar(paste(y, collapse = " ")))) < getOption("width"))) {
+
+            for (i in seq_along(print.dmacs)) {
+
+              if (isTRUE(!x$args$long)) { cat(paste0("\n   Reference Group ", x$args$ref, " vs. ", "Focal Group ", names(print.dmacs)[[i]], "\n\n")) } else { cat(paste0("\n   Reference Time Point ", x$args$ref, " vs. ", "Focal Time Point ", names(print.dmacs)[[i]], "\n\n")) }
+
+              .write.table(print.dmacs[[i]], left = 3L, right = 5L, horiz = horiz)
+
+            }
+
+          ###### Width of the Console insufficient
+          } else {
+
+            # Extract output
+            print.dmacs <- lapply(print.object$noninvar$dmacs, function(y) data.frame(names(y), y, fix.empty.names = FALSE))
+
+            for (i in seq_along(print.dmacs)) {
+
+              # Round
+              print.dmacs[[i]][, 2L] <- formatC(print.dmacs[[i]][, 2L], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+
+              # Justify right and left
+              print.dmacs[[i]][, 1L] <- format(print.dmacs[[i]][, 1L], justify = "left")
+              print.dmacs[[i]][, 2L] <- format(print.dmacs[[i]][, 2L], justify = "right")
+
+              # Add blank space
+              print.dmacs[[i]][, 1L] <- paste0("    ", print.dmacs[[i]][, 1L])
+
+              # Print
+              if (isTRUE(!x$args$long)) { cat(paste0("\n   Reference Group ", x$args$ref, " vs. ", "Focal Group ", names(print.dmacs)[[i]], "\n")) } else { cat(paste0("\n   Reference Time Point ", x$args$ref, " vs. ", "Focal Time Point ", names(print.dmacs)[[i]], "\n")) }
+
+              write.table(print.dmacs[[i]], quote = FALSE, row.names = FALSE)
+
+            }
+
+          }
+
+        #...................
+        #### More than One Factor ####
+
+        } else {
+
+          # Round
+          print.dmacs <- lapply(print.dmacs, function(y) sapply(y, function(z) formatC(z, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))))
+
+          # Format
+          print.dmacs <- lapply(print.dmacs, function(y) cbind(c("", row.names(print.object$noninvar$dmacs[[1L]])), rbind(colnames(y), y)))
+
+          # Justify right and left
+          for (i in seq_along(print.dmacs)) {
+
+            print.dmacs[[i]][, -1L] <- apply(print.dmacs[[i]][, -1L], 2L, format, justify = "right")
+            print.dmacs[[i]][, 1L] <- format(print.dmacs[[i]][, 1L], justify = "left")
+
+            # Add blank space
+            print.dmacs[[i]][, 1L] <- paste0("    ", print.dmacs[[i]][, 1L])
+
+            # Replace NA
+            print.dmacs[[i]][, -1L] <- apply(print.dmacs[[i]][, -1L], 2L, function(y) gsub("NA", "  ", y))
+
+          }
+
+          ##### Print ####
+
+          if (isTRUE(!x$args$signed)) { cat("\n  dMACS\n") } else { cat("\n  Signed dMACS\n") }
+
+          for (i in seq_along(print.dmacs)) {
+
+            if (isTRUE(!x$args$long)) { cat(paste0("\n   Reference Group ", x$args$ref, " vs. ", "Focal Group ", names(print.dmacs)[i], "\n\n")) } else { cat(paste0("   Reference Time Point ", x$args$ref, " vs. ", "Focal Time Point ", names(print.dmacs)[i], "\n\n")) }
+
+            .write.table(print.dmacs[[i]], left = 3L, right = 5L, horiz = horiz)
+
+          }
+
+        }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Expected Bias in the Mean and Variance of the Total Score ####
+
+    if (isTRUE("bias" %in% print)) {
+
+      #--------------------------------------
+      ### Extract Output ####
+
+      print.bias <- print.object$noninvar[-1L]
+
+      #--------------------------------------
+      ### Two Groups or Time Points ####
+
+      if (isTRUE(class(print.bias[[1L]]) != "list")) {
+
+        #...................
+        #### One Factor ####
+
+        if (isTRUE(all(sapply(print.bias, length) <= 1L))) {
+
+          # Round
+          print.bias <- lapply(print.bias, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))
+
+          # Format
+          if (!isTRUE(x$args$ordered)) {
+
+            print.bias <- as.data.frame(rbind(c("DMean", print.bias$m.diff), c("DVar", print.bias$v.diff)))
+
+          } else {
+
+            print.bias <- as.data.frame(cbind("DMean", print.bias$m.diff))
+
+          }
+
+          # Greek letter Delta
+          if (is.null(getOption("knitr.in.progress"))) { print.bias[, 1L] <- gsub("D", "\U2206", print.bias[, 1L]) }
+
+          # Justify right and left
+          print.bias[, 1L] <- format(print.bias[, 1L], justify = "left")
+          print.bias[, 2L] <- format(print.bias[, 2L], justify = "right")
+
+          # Add blank space
+          print.bias[, 1L] <- paste0("  ", print.bias[, 1L])
+
+          # Column names
+          colnames(print.bias) <- c("", "")
+
+          ##### Print ####
+
+          if (!isTRUE(x$args$ordered)) { cat("\n  Expected Bias in the Mean and Variance of the Total Score\n") } else { cat("\n  Expected Bias in the Mean of the Total Score\n") }
+
+          print(print.bias, colnames = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+        #...................
+        #### More than One Factor ####
+
+        } else {
+
+          # Round
+          print.bias <- lapply(print.bias, function(y) sapply(y, function(z) formatC(z, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))))
+
+          # Format
+          if (!isTRUE(x$args$ordered)) {
+
+            print.bias <- as.data.frame(rbind(c("", names(print.bias$m.diff)), c("DMean", print.bias$m.diff), c("DVar", print.bias$v.diff)))
+
+          } else {
+
+            print.bias <- as.data.frame(rbind(c("", names(print.bias$m.diff)), c("DMean", print.bias$m.diff)))
+
+          }
+
+          # Greek letter Delta
+          if (is.null(getOption("knitr.in.progress"))) { print.bias[, 1L] <- gsub("D", "\U2206", print.bias[, 1L]) }
+
+          # Justify right and left
+          print.bias[, -1L] <- apply(print.bias[, -1L], 2L, format, justify = "right")
+          print.bias[, 1L] <- format(print.bias[, 1L], justify = "left")
+
+          # Add blank space
+          print.bias[, 1L] <- paste0("   ", print.bias[, 1L])
+
+          ##### Print ####
+
+          if (!isTRUE(x$args$ordered)) { cat("\n  Expected Bias in the Mean and Variance of the Total Score\n\n") } else { cat("\n  Expected Bias in the Mean of the Total Score\n\n") }
+
+          .write.table(print.bias, left = 2L, right = 4L, horiz = horiz)
+
+        }
+
+      #--------------------------------------
+      ### More than Two Groups or Time Points ####
+
+      } else {
+
+        #...................
+        #### One Factor ####
+
+        if (isTRUE(all(sapply(print.bias, function(y) sapply(y, function(z) length(z))) <= 1L))) {
+
+          # Round
+          print.bias.temp <- lapply(print.bias, function(y) lapply(y, function(z) formatC(z, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))))
+
+          # Format
+          print.bias <- list()
+          if (!isTRUE(x$args$ordered)) {
+
+            for(i in names(print.bias.temp[[1L]])) { print.bias[[i]] <- data.frame(c("DMean", "DVar"), do.call("rbind", lapply(print.bias.temp, function(y) y[i]))) }
+
+          } else {
+
+            for(i in names(print.bias.temp[[1L]])) { print.bias[[i]] <- data.frame("DMean", print.bias.temp$m.diff[i]) }
+
+          }
+
+          # Greek letter Delta
+          if (is.null(getOption("knitr.in.progress"))) { for (i in seq_along(print.bias)) { print.bias[[i]][, 1L] <- gsub("D", "\U2206", print.bias[[i]][, 1L]) } }
+
+          for (i in seq_along(print.bias)) {
+
+            # Justify right and left
+            print.bias[[i]][, 1L] <- format(print.bias[[i]][, 1L], justify = "left")
+            print.bias[[i]][, 2L] <- format(print.bias[[i]][, 2L], justify = "right")
+
+            # Add blank space
+            print.bias[[i]][, 1L] <- paste0("   ", print.bias[[i]][, 1L])
+
+            # Column names
+            colnames(print.bias[[i]]) <- c("", "")
+
+          }
+
+          ##### Print ####
+
+          if (!isTRUE(x$args$ordered)) { cat("\n  Expected Bias in the Mean and Variance of the Total Score\n") } else { cat("\n  Expected Bias in the Mean of the Total Score\n") }
+
+          for (i in seq_along(print.bias)) {
+
+            if (isTRUE(!x$args$long)) { cat(paste0("\n   Reference Group ", x$args$ref, " vs. ", "Focal Group ", names(print.object$noninvar[[2L]])[[i]], "\n")) } else { cat(paste0("\n   Reference Time Point ", x$args$ref, " vs. ", "Focal Time Point ", names(print.object$noninvar[[2L]])[[i]], "\n")) }
+
+            print(print.bias[[i]], colnames = FALSE, row.names = FALSE, quote = FALSE, right = TRUE, max = 99999L)
+
+          }
+
+        #...................
+        #### More than One Factor ####
+
+        } else {
+
+          # Round
+          print.bias.temp <- lapply(print.bias, function(y) lapply(y, function(z) sapply(z, function(y) formatC(y, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")))))
+
+          # Format
+          print.bias <- list()
+          if (!isTRUE(x$args$ordered)) {
+
+            for (i in names(print.bias.temp[[1L]])) { print.bias[[i]] <- as.data.frame(rbind(c("", names(print.bias.temp[[1L]][[1L]])), cbind(c("DMean", "DVar"), do.call("rbind", lapply(print.bias.temp, function(y) y[[i]]))))) }
+
+          } else {
+
+            for (i in names(print.bias.temp[[1L]])) { print.bias[[i]] <- as.data.frame(rbind(c("", names(print.bias.temp[[1L]][[1L]])), c("DMean", print.bias.temp$m.diff[[i]]))) }
+
+          }
+
+          # Greek letter Delta
+          if (is.null(getOption("knitr.in.progress"))) { for (i in seq_along(print.bias)) { print.bias[[i]][, 1L] <- gsub("D", "\U2206", print.bias[[i]][, 1L]) } }
+
+          for (i in seq_along(print.bias)) {
+
+            # Justify right and left
+            print.bias[[i]][, 1L] <- format(print.bias[[i]][, 1L], justify = "left")
+            print.bias[[i]][, -1L] <- format(print.bias[[i]][, -1L], justify = "right")
+
+            # Add blank space
+            print.bias[[i]][, 1L] <- paste0("   ", print.bias[[i]][, 1L])
+
+            # Column names
+            colnames(print.bias[[i]]) <- rep("", times = ncol(print.bias[[i]]))
+
+          }
+
+          ##### Print ####
+
+          if (!isTRUE(x$args$ordered)) { cat("\n  Expected Bias in the Mean and Variance of the Total Score\n") } else { cat("\n  Expected Bias in the Mean of the Total Score\n") }
+
+          for (i in seq_along(print.bias)) {
+
+            if (isTRUE(!x$args$long)) { cat(paste0("\n   Reference Group ", x$args$ref, " vs. ", "Focal Group ", names(print.bias)[i], "\n\n")) } else { cat(paste0("\n   Reference Time Point ", x$args$ref, " vs. ", "Focal Time Point ", names(print.bias)[i], "\n\n")) }
+
+            .write.table(print.bias[[i]], left = 2L, right = 4L, horiz = horiz)
+
+          }
+
+        }
+
+      }
+
+    }
+
+  #_____________________________________________________________________________
+  #
+  # Coefficient Omega, item.omega() --------------------------------------------
   }, item.omega = {
 
     # Check input 'print'
@@ -7969,7 +8498,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       })
 
       # Print output
-      .write.table(print.object$omega, left = 1L, right = 3L)
+      .write.table(print.object$omega, left = 1L, right = 3L, horiz = horiz)
 
     }
 
@@ -8017,7 +8546,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       })
 
       # Print output
-      if (any(!is.na(x$result$itemstat$omega))) { .write.table(print.object$itemstat, left = 1L, right = 3L) } else { .write.table(print.object$itemstat[, colnames(print.object$itemstat) != "omega"], left = 1L, right = 3L) }
+      if (any(!is.na(x$result$itemstat$omega))) { .write.table(print.object$itemstat, left = 1L, right = 3L, horiz = horiz) } else { .write.table(print.object$itemstat[, colnames(print.object$itemstat) != "omega"], left = 1L, right = 3L, horiz = horiz) }
 
     }
 
@@ -8052,7 +8581,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     if (isTRUE(x$args$center)) { cat(" Multivariate Excess Kurtosis\n\n") } else { cat(" Multivariate Kurtosis\n\n") }
 
-    .write.table(print.object, left = 1L, right = 3L)
+    .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
   #_____________________________________________________________________________
   #
@@ -8132,7 +8661,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     cat(" Summary Measures, Convergence and Efficiency Diagnostics\n\n")
 
     # Print table
-    .write.table(print.object, left = 1L, right = 3L)
+    .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
     # R-hat
     if (isTRUE("rhat" %in% print)) {
@@ -8270,7 +8799,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     #...................
     ### Print ####
 
-    .write.table(print.object, left = 1L, right = 3L)
+    .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
   #_____________________________________________________________________________
   #
@@ -8353,7 +8882,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #...................
       ### Print ####
 
-      .write.table(print.coverage, left = 2L, right = 4L)
+      .write.table(print.coverage, left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -8399,7 +8928,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #...................
       ### Print ####
 
-      .write.table(print.itemstat, left = 2L, right = 4L)
+      .write.table(print.itemstat, left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -9154,7 +9683,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           #...................
           ### Print ####
 
-          .write.table(print.score, left = 2L, right = 4L)
+          .write.table(print.score, left = 2L, right = 4L, horiz = horiz)
 
           # Note
           cat(paste0("\n   Note. Minimum value for printing modification indices is ", round(x$args$mod.minval, digits = 2L), "\n"))
@@ -9219,11 +9748,11 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("\n   Within Level\n")
 
-        .write.table(print.resid$within, left = 2L, right = 4L)
+        .write.table(print.resid$within, left = 2L, right = 4L, horiz = horiz)
 
         cat("\n   Between Level\n")
 
-        .write.table(print.resid$between, left = 2L, right = 4L)
+        .write.table(print.resid$between, left = 2L, right = 4L, horiz = horiz)
 
       }
 
@@ -9574,12 +10103,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         # Within
         cat("  Within-Group\n")
 
-        .write.table(print.object$with.cor, left = 2L, right = 4L)
+        .write.table(print.object$with.cor, left = 2L, right = 4L, horiz = horiz)
 
         # Between
         cat("\n  Between-Group\n")
 
-        .write.table(print.object$betw.cor, left = 2L, right = 4L)
+        .write.table(print.object$betw.cor, left = 2L, right = 4L, horiz = horiz)
 
       }
 
@@ -9597,12 +10126,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           # Within
           cat("  Within-Group\n")
 
-          .write.table(print.object$with.se, left = 2L, right = 4L)
+          .write.table(print.object$with.se, left = 2L, right = 4L, horiz = horiz)
 
           # Between
           cat("\n  Between-Group\n")
 
-          .write.table(print.object$betw.se, left = 2L, right = 4L)
+          .write.table(print.object$betw.se, left = 2L, right = 4L, horiz = horiz)
 
         }
 
@@ -9616,12 +10145,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           # Within
           cat("  Within-Group\n")
 
-          .write.table(print.object$with.stat, left = 2L, right = 4L)
+          .write.table(print.object$with.stat, left = 2L, right = 4L, horiz = horiz)
 
           # Between
           cat("\n  Between-Group\n")
 
-          .write.table(print.object$betw.stat, left = 2L, right = 4L)
+          .write.table(print.object$betw.stat, left = 2L, right = 4L, horiz = horiz)
 
         }
 
@@ -9635,12 +10164,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           # Within
           cat("  Within-Group\n")
 
-          .write.table(print.object$with.p, left = 2L, right = 4L)
+          .write.table(print.object$with.p, left = 2L, right = 4L, horiz = horiz)
 
           # Between
           cat("\n  Between-Group\n")
 
-          .write.table(print.object$betw.p, left = 2L, right = 4L)
+          .write.table(print.object$betw.p, left = 2L, right = 4L, horiz = horiz)
 
           cat(paste0("\n  Adjustment for multiple testing: ", x$args$p.adj, "\n"))
 
@@ -9664,7 +10193,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     } else {
 
       #### Correlation coefficient
-      if (isTRUE("cor" %in% print)) { .write.table(print.object$wb.cor, left = 2L, right = 4L) }
+      if (isTRUE("cor" %in% print)) { .write.table(print.object$wb.cor, left = 2L, right = 4L, horiz = horiz) }
 
       #### Model estimation with SE ####
       if (isTRUE(x$args$se != "none")) {
@@ -9676,7 +10205,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat("  Standard Error\n\n")
 
-          .write.table(print.object$wb.se, left = 2L, right = 4L)
+          .write.table(print.object$wb.se, left = 2L, right = 4L, horiz = horiz)
 
         }
 
@@ -9687,7 +10216,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat("  Test Statistic (z value) \n\n")
 
-          .write.table(print.object$wb.stat, left = 2L, right = 4L)
+          .write.table(print.object$wb.stat, left = 2L, right = 4L, horiz = horiz)
 
         }
 
@@ -9698,7 +10227,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat("  Significance Value (p-value)\n\n")
 
-          .write.table(print.object$wb.p, left = 2L, right = 4L)
+          .write.table(print.object$wb.p, left = 2L, right = 4L, horiz = horiz)
 
           cat(paste0("\n  Adjustment for multiple testing: ", x$args$p.adj, "\n"))
 
@@ -9832,7 +10361,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     if (isTRUE(ncol(print.object) > 2L)) {
 
-      .write.table(print.object, left = 1L, right = 3L)
+      .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
     } else {
 
@@ -10011,7 +10540,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     cat("  Monte Carlo Method with",  format(x$args$nrep, scientific = FALSE), "repetitions\n")
 
-    .write.table(print.object$mc, left = 1L, right = 3L)
+    .write.table(print.object$mc, left = 1L, right = 3L, horiz = horiz)
 
   #_____________________________________________________________________________
   #
@@ -10067,18 +10596,18 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     cat(ifelse(isTRUE(getOption("knitr.in.progress")), "   Total R2\n", "   Total R\u00B2\n"))
 
-    .write.table(print.object$total, left = 3L, right = 5L)
+    .write.table(print.object$total, left = 3L, right = 5L, horiz = horiz)
 
     # Predictors are cluster-mean-centered
     if (isTRUE(ncol(print.object$decomp) != 1L)) {
 
       cat(ifelse(isTRUE(getOption("knitr.in.progress")), "\n   Within-Cluster R2\n", "\n   Within-Cluster R\u00B2\n"))
 
-      .write.table(print.object$within, left = 3L, right = 5L)
+      .write.table(print.object$within, left = 3L, right = 5L, horiz = horiz)
 
       cat(ifelse(isTRUE(getOption("knitr.in.progress")), "\n   Between-Cluster R2\n", "\n   Between-Cluster R\u00B2\n"))
 
-      .write.table(print.object$between, left = 3L, right = 5L)
+      .write.table(print.object$between, left = 3L, right = 5L, horiz = horiz)
 
     }
 
@@ -10175,18 +10704,18 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       cat(ifelse(isTRUE(getOption("knitr.in.progress")), "   Total R2\n", "   Total R\u00B2\n"))
 
-      .write.table(print.object$rs$total, left = 3L, right = 5L)
+      .write.table(print.object$rs$total, left = 3L, right = 5L, horiz = horiz)
 
       # Predictors are cluster-mean-centered
       if (isTRUE(ncol(print.object$rs$decomp) != 1L)) {
 
         cat(ifelse(isTRUE(getOption("knitr.in.progress")), "\n   Within-Cluster R2\n", "\n   Within-Cluster R\u00B2\n"))
 
-        .write.table(print.object$rs$within, left = 3L, right = 5L)
+        .write.table(print.object$rs$within, left = 3L, right = 5L, horiz = horiz)
 
         cat(ifelse(isTRUE(getOption("knitr.in.progress")), "\n   Between-Cluster R2\n", "\n   Between-Cluster R\u00B2\n"))
 
-        .write.table(print.object$rs$between, left = 3L, right = 5L)
+        .write.table(print.object$rs$between, left = 3L, right = 5L, horiz = horiz)
 
       }
 
@@ -10257,7 +10786,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #...................
       ### Print ####
 
-      .write.table(print.coverage, left = 2L, right = 4L)
+      .write.table(print.coverage, left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -10296,7 +10825,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       #...................
       ### Print ####
 
-      .write.table(print.itemstat, left = 2L, right = 4L)
+      .write.table(print.itemstat, left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -10386,7 +10915,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         # R Markdown not in progress
         if (is.null(getOption("knitr.in.progress"))) { print.fit.stand[1L, ] <- sub("D", "\u0394", print.fit.stand[1L, ]) }
 
-        .write.table(print.fit.stand, left = 3L, right = 5L)
+        .write.table(print.fit.stand, left = 3L, right = 5L, horiz = horiz)
 
       }
 
@@ -10397,7 +10926,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         # R Markdown not in progress
         if (is.null(getOption("knitr.in.progress"))) { print.fit.scaled[1L, ] <- sub("D", "\u0394", print.fit.scaled[1L, ]) }
 
-        .write.table(print.fit.scaled, left = 3L, right = 5L)
+        .write.table(print.fit.scaled, left = 3L, right = 5L, horiz = horiz)
 
       }
 
@@ -10408,7 +10937,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         # R Markdown not in progress
         if (is.null(getOption("knitr.in.progress"))) { print.fit.robust[1L, ] <- sub("D", "\u0394", print.fit.robust[1L, ]) }
 
-        .write.table(print.fit.robust, left = 3L, right = 5L)
+        .write.table(print.fit.robust, left = 3L, right = 5L, horiz = horiz)
 
       }
 
@@ -10991,7 +11520,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           #...................
           ### Print ####
 
-          .write.table(print.score, left = 2L, right = 4L)
+          .write.table(print.score, left = 2L, right = 4L, horiz = horiz)
 
           # Note
           cat(paste0("\n   Note. Minimum value for printing modification indices is ", round(x$args$mod.minval, digits = 2L), "\n"))
@@ -11079,10 +11608,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         ### Print ####
 
         cat("\n   Within Level\n")
-        .write.table(print.resid$within, left = 3L, right = 5L)
+        .write.table(print.resid$within, left = 3L, right = 5L, horiz = horiz)
 
         cat("\n   Between Level\n")
-        .write.table(print.resid$between, left = 3L, right = 5L)
+        .write.table(print.resid$between, left = 3L, right = 5L, horiz = horiz)
 
       }
 
@@ -11137,7 +11666,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       cat(paste0("\n  Coefficient Omega with ", x$args$conf.level*100L, "% Confidence Interval\n\n"))
 
-      .write.table(print.omega, left = 2L, right = 4L)
+      .write.table(print.omega, left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -11197,7 +11726,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
              shared = cat("\n  Standardized Factor Loadings at the Between Level\n\n"),
              config = cat("\n  Standardized Factor Loadings at the Within and Between Level\n\n"))
 
-      .write.table(print.item, left = 2L, right = 4L)
+      .write.table(print.item, left = 2L, right = 4L, horiz = horiz)
 
     }
 
@@ -11291,7 +11820,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
                  }))
 
-      .write.table(print.object[1L:(nrow(x$result$cor) + 1L), ], left = 3L, right = 5L)
+      .write.table(print.object[1L:(nrow(x$result$cor) + 1L), ], left = 3L, right = 5L, horiz = horiz)
 
       # Variables Related to the Probability of Missingness
       cat("\n  Variables Related to the Probability of Missigness\n\n",
@@ -11329,7 +11858,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
                  }))
 
-      .write.table(print.object[(nrow(x$result$cor) + 2L):nrow(print.object), ], left = 3L, right = 5L)
+      .write.table(print.object[(nrow(x$result$cor) + 2L):nrow(print.object), ], left = 3L, right = 5L, horiz = horiz)
 
       cat("\n", "  Note. Indicator variables are in the rows (0 = obs, 1 = miss)\n")
 
@@ -11380,11 +11909,11 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           " Variables Related to the Incomplete Variable\n\n",
           "  Substantive model: Standardized slope\n")
 
-      .write.table(print.object[c(1L, model.sub + 1L), ], left = 3L, right = 5L)
+      .write.table(print.object[c(1L, model.sub + 1L), ], left = 3L, right = 5L, horiz = horiz)
 
       cat("\n   Auxiliary model: Semi-partial correlation coefficient\n")
 
-      .write.table(print.object[c(1L, model.aux + 1L), ], left = 3L, right = 5L)
+      .write.table(print.object[c(1L, model.aux + 1L), ], left = 3L, right = 5L, horiz = horiz)
 
     }
 
@@ -11425,7 +11954,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     cat(" Variance-Covariance Coverage\n\n")
 
-    .write.table(print.object, left = 1L, right = 3L)
+    .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
   #_____________________________________________________________________________
   #
@@ -11600,7 +12129,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat("\n")
 
-        .write.table(freqtab, left = 3L, right = 5L)
+        .write.table(freqtab, left = 3L, right = 5L, horiz = horiz)
 
       }
 
@@ -11652,7 +12181,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat("\n")
 
-          .write.table(freqtab, left = 3L, right = 5L)
+          .write.table(freqtab, left = 3L, right = 5L, horiz = horiz)
 
         }
 
@@ -11706,7 +12235,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           cat("\n")
 
-          .write.table(freqtab, left = 3L, right = 5L)
+          .write.table(freqtab, left = 3L, right = 5L, horiz = horiz)
 
         }
 
@@ -11756,7 +12285,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     (which(misty::chr.trim(as.data.frame(print.object)[, 1L]) == "") - 1L) |>
       (\(p) {
 
-        .write.table(as.data.frame(print.object)[seq_len(p), ], left = 1L, right = 3L)
+        .write.table(as.data.frame(print.object)[seq_len(p), ], left = 1L, right = 3L, horiz = horiz)
 
         cat(paste(" ", paste(rep("\u2500", times = sum(nchar(print.object[1L, ])) + length(print.object[1L, ]) - 3L), collapse = "")), "\n")
 
@@ -11802,7 +12331,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       cat(paste0(" Little's MCAR Test\n\n"))
 
       # Print output
-      .write.table(print.object$little, left = 1L, right = 3L)
+      .write.table(print.object$little, left = 1L, right = 3L, horiz = horiz)
 
     }
 
@@ -11862,7 +12391,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       }
 
       # Print output
-      .write.table(print.object$hawkins, left = 3L, right = 5L)
+      .write.table(print.object$hawkins, left = 3L, right = 5L, horiz = horiz)
 
       #### Anderson-Darling Non-Parametric Test ####
       if (isTRUE(x$result$hawkins$p <= x$args$alpha)) {
@@ -11882,7 +12411,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         }
 
         # Print output
-        .write.table(print.object$anderson, left = 3L, right = 5L)
+        .write.table(print.object$anderson, left = 3L, right = 5L, horiz = horiz)
 
 
       }
@@ -11937,7 +12466,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       # Round variables
       print.object$randeff[, c("var", "sd")] <- sapply(c("var", "sd"), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
-      print.object$randeff[, setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd"))] <- sapply(setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd")), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+      print.object$randeff[, which(!colnames(print.object$randeff) %in% c("groups", "name", "var", "sd"))] <- sapply(which(!colnames(print.object$randeff) %in% c("groups", "name", "var", "sd")), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
 
       # Two-Level Model
       if (isTRUE(model.twolevel)) {
@@ -11964,6 +12493,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print.object$randeff.cor <- which(print.object$randeff$groups %in% names(lme4::getME(x$model, name = "cnms")))[2L] |> (\(y) list(print.object$randeff[1L:(y - 1L), setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd"))], print.object$randeff[y:(nrow(print.object$randeff) - 1L), setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd"))]))()
 
         for (i in seq_along(print.object$randeff.cor)) {
+
 
           # Lower triangular
           print.object$randeff.cor[[i]][upper.tri(print.object$randeff.cor[[i]])] <- NA
@@ -11997,7 +12527,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     print.object$randeff[, 1L] <- paste0("   ", print.object$randeff[, 1L] , sep = "")
 
     # Print
-    .write.table(print.object$randeff, left = 2L, right = 4L)
+    .write.table(print.object$randeff, left = 2L, right = 4L, horiz = horiz)
 
     #...................
     ### Fixed Effects ####
@@ -12042,7 +12572,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
     print.object$coef[, 1L] <- paste0("   ", print.object$coef[, 1L] , sep = "")
 
     # Print
-    .write.table(print.object$coe, left = 2L, right = 4L)
+    .write.table(print.object$coe, left = 2L, right = 4L, horiz = horiz)
 
     #...................
     ### Weights ####
@@ -12567,34 +13097,34 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     cat(" Multivariate Skewness\n\n")
 
-    .write.table(print.object, left = 1L, right = 3L)
+    .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
   #_____________________________________________________________________________
   #
   # Print Summary Output, summa() ----------------------------------------------
   }, summa = {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Linear Regression, lm() ####
 
     if (isTRUE(all(class(x$model) == "lm"))) {
 
-      #...................
+      #--------------------------------------
       ### Title ####
 
       cat(" Linear Regression\n\n")
 
-      #...................
+      #--------------------------------------
       ### Call ####
 
-      if (isTRUE(!is.null(print.object$call))) { cat("  Formula: ", print.object$call$formula, "\n", " Data:    ", print.object$call$data, "\n") }
+      if (isTRUE("call" %in% print && !is.null(print.object$call))) { cat("  Formula: ", print.object$call$formula, "\n", " Data:    ", print.object$call$data, "\n") }
 
-      #...................
+      #--------------------------------------
       ### Descriptive Statistics ####
 
-      if (isTRUE(!is.null(print.object$descript))) {
+      if (isTRUE("descript" %in% print && !is.null(print.object$descript))) {
 
-        if (isTRUE("call" %in% x$args$print)) { cat("\n") }
+        if (isTRUE("call" %in% print)) { cat("\n") }
 
         # Header
         cat("  Descriptive Statistics", "\n\n")
@@ -12618,16 +13148,16 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print.object$descript[, "variable"] <- format(c(print.object$descript[1L, "variable"], misty::chr.trim(print.object$descript[-1L, "variable"], side = "right")), justify = "left")
 
         # Print
-        .write.table(print.object$descript, left = 2, right = 4L)
+        .write.table(print.object$descript, left = 2, right = 4L, horiz = horiz)
 
       }
 
-      #...................
+      #--------------------------------------
       ### Correlation Matrix ####
 
-      if (isTRUE(!is.null(print.object$cormat))) {
+      if (isTRUE("cormat" %in% print && !is.null(print.object$cormat))) {
 
-        if (isTRUE(any(c("call", "descript") %in% x$args$print))) { cat("\n") }
+        if (isTRUE(any(c("call", "descript") %in% print))) { cat("\n") }
 
         # Header
         cat("  Pearson Product-Moment Correlation Coefficient", "\n\n")
@@ -12652,16 +13182,16 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print.object$cormat[, -1L] <- format(print.object$cormat[, -1L], justify = "right")
 
         # Print
-        .write.table(print.object$cormat, left = 2L, right = 4L)
+        .write.table(print.object$cormat, left = 2L, right = 4L, horiz = horiz)
 
       }
 
-      #...................
+      #--------------------------------------
       ### Model Summary ####
 
-      if (isTRUE(!is.null(print.object$modsum))) {
+      if (isTRUE("modsum" %in% print && !is.null(print.object$modsum))) {
 
-        if (isTRUE(any(c("call", "descript", "cormat") %in% x$args$print))) { cat("\n") }
+        if (isTRUE(any(c("call", "descript", "cormat") %in% print))) { cat("\n") }
 
         # Model with predictors
         if (all(!is.na(print.object$modsum))) {
@@ -12687,7 +13217,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
             print.object$modsum <- rbind(c("n", "nNA", "R", "R\U00B2", "adjR\U00B2", "df\U2081", "df\U2082", "F", "p"), print.object$modsum)
 
-            # R Markdown in progress
+          # R Markdown in progress
           } else {
 
             print.object$modsum <- rbind(c("n", "nNA", "R", "R2", "adjR2", "df1", "df2", "F", "p"), print.object$modsum)
@@ -12722,47 +13252,47 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print.object$modsum[, "n"] <- paste0("   ", print.object$modsum[, "n"] , sep = "")
 
         # Print
-        .write.table(print.object$modsum, left = 2L, right = 4L)
+        .write.table(print.object$modsum, left = 2L, right = 4L, horiz = horiz)
 
       }
 
-      #...................
+      #--------------------------------------
       ### Coefficients ####
 
-      if (isTRUE(!is.null(print.object$coef))) {
+      if (isTRUE("coef" %in% print && !is.null(print.object$coef))) {
 
-        if (isTRUE(any(c("call", "descript", "cormat", "modsum") %in% x$args$print))) { cat("\n") }
+        if (isTRUE(any(c("call", "descript", "cormat", "modsum") %in% print))) { cat("\n") }
 
         # Header
-        if (isTRUE(all(!x$args$print %in% c("confint", "stdcoef", "vif")))) {
+        if (isTRUE(all(!print %in% c("confint", "stdcoef", "vif")))) {
 
           cat("  Unstandardized Coefficients", "\n\n")
 
-        } else if (isTRUE(all(!x$args$print %in% c("stdcoef", "vif")))) {
+        } else if (isTRUE(all(!print %in% c("stdcoef", "vif")))) {
 
           cat(paste0("  Unstandardized Coefficients and ", round(x$args$conf.level * 100L, digits = 2L), "% Confidence Interval"), "\n")
 
-        } else if (isTRUE(all(!x$args$print %in% c("confint", "vif")))) {
+        } else if (isTRUE(all(!print %in% c("confint", "vif")))) {
 
           cat("  Unstandardized and Standardized Coefficients", "\n\n")
 
-        } else if (isTRUE(all(!x$args$print %in% c("confint", "stdcoef")))) {
+        } else if (isTRUE(all(!print %in% c("confint", "stdcoef")))) {
 
           cat("  Unstandardized Coefficients and Variance Inflation Factor", "\n\n")
 
-        } else if (isTRUE(all(!x$args$print %in% "vif"))) {
+        } else if (isTRUE(all(!print %in% "vif"))) {
 
           cat(paste0("  Unstandardized and Standardized Coefficients and ", round(x$args$conf.level * 100L, digits = 2L), "% CI"), "\n\n")
 
-        } else if (isTRUE(all(!x$args$print %in% "stdcoef"))) {
+        } else if (isTRUE(all(!print %in% "stdcoef"))) {
 
           cat(paste0("  Unstandardized Coefficients, ", round(x$args$conf.level * 100L, digits = 2L), "% CI and VIF"), "\n\n")
 
-        } else if (isTRUE(all(!x$args$print %in% "confint"))) {
+        } else if (isTRUE(all(!print %in% "confint"))) {
 
           cat("  Unstandardized and Standardized Coefficients and VIF", "\n\n")
 
-        } else if (isTRUE(all(c("coef", "confint", "stdcoef", "vif") %in% x$args$print))) {
+        } else if (isTRUE(all(c("coef", "confint", "stdcoef", "vif") %in% print))) {
 
           cat(paste0("  Unstandardized and Standardized Coefficients ", round(x$args$conf.level * 100L, digits = 2L), "% CI and VIF"), "\n\n")
 
@@ -12772,8 +13302,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print.object$coef[, setdiff(colnames(print.object$coef), c("df", "p"))] <- sapply(setdiff(colnames(print.object$coef), c("df", "p")), function(y) ifelse(!is.na(print.object$coef[, y]), formatC(print.object$coef[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
         print.object$coef[, "p"] <- formatC(print.object$coef[, "p"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
-        # Columns
-        print.object$coef <- data.frame(row.names(print.object$coef), print.object$coef, fix.empty.names = FALSE, row.names = NULL)
+        # Columns and spacing
+        print.object$coef <- data.frame(row.names(print.object$coef), Estimate = print.object$coef[, 1L], do.call("cbind", lapply(print.object$coef[, -1L], function(y) paste0(" ", y))), fix.empty.names = FALSE, row.names = NULL)
 
         # Row names
         print.object$coef <- rbind(c("", colnames(print.object$coef)[-1L]), print.object$coef)
@@ -12789,13 +13319,13 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print.object$coef[, 1L] <- paste0("   ", print.object$coef[, 1L] , sep = "")
 
         # Print
-        .write.table(print.object$coef, left = 2L, right = 4L)
+        .write.table(print.object$coef, left = 2L, right = 4L, horiz = horiz)
 
         if (isTRUE(x$args$robust)) { cat("\n  Note. Heteroscedasticity-Consistent Standard Errors (HC4)") }
 
       }
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Linear Mixed-Effects Model, lmer() ####
 
     } else if (all(class(x$model) %in% c("lmerMod", "rlmerMod", "lmerModLmerTest"))) {
@@ -12803,7 +13333,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
       # Two-level model
       model.twolevel <- ifelse(lme4::getME(x$model, name = "n_rtrms") == 1L, TRUE, FALSE)
 
-      #...................
+      #--------------------------------------
       ### Title ####
 
       if (!inherits(x$model, what = "rlmerMod")) {
@@ -12816,10 +13346,10 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      #...................
+      #--------------------------------------
       ### Call ####
 
-      if (isTRUE("call" %in% x$args$print)) {
+      if (isTRUE("call" %in% print && !is.null(print.object$call))) {
 
         cat("  Formula: ", print.object$call$formula, "\n", " Data:    ", print.object$call$data, "\n")
 
@@ -12827,12 +13357,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      #...................
+      #--------------------------------------
       ### Descriptive Statistics ####
 
-      if (isTRUE(!is.null(print.object$descript))) {
+      if (isTRUE("descript" %in% print && !is.null(print.object$descript))) {
 
-        if (isTRUE("call" %in% x$args$print)) { cat("\n") }
+        if (isTRUE("call" %in% print)) { cat("\n") }
 
         # Header
         cat("  Descriptive Statistics", "\n\n")
@@ -12876,16 +13406,16 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print.object$descript[, "variable"] <- format(c(print.object$descript[1L, "variable"], misty::chr.trim(print.object$descript[-1L, "variable"], side = "right")), justify = "left")
 
         # Print
-        .write.table(print.object$descript, left = 2L, right = 4L)
+        .write.table(print.object$descript, left = 2L, right = 4L, horiz = horiz)
 
       }
 
-      #...................
+      #--------------------------------------
       ### Correlation Matrix ####
 
-      if (isTRUE(!is.null(print.object$cormat))) {
+      if (isTRUE("cormat" %in% print && !is.null(print.object$cormat))) {
 
-        if (isTRUE(any(c("call", "descript") %in% x$args$print))) { cat("\n") }
+        if (isTRUE(any(c("call", "descript") %in% print))) { cat("\n") }
 
         # Header
         cat("  Within-Group and Between-Group Correlation Matrix", "\n\n")
@@ -12910,16 +13440,16 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print.object$cormat <- apply(print.object$cormat, 2L, function(y) gsub("NA", "  ", y))
 
         # Print
-        .write.table(print.object$cormat, left = 2L, right = 4L)
+        .write.table(print.object$cormat, left = 2L, right = 4L, horiz = horiz)
 
       }
 
-      #...................
+      #--------------------------------------
       ### Model Summary ####
 
-      if (isTRUE(!is.null(print.object$modsum))) {
+      if (isTRUE("modsum" %in% print && !is.null(print.object$modsum))) {
 
-        if (isTRUE(any(c("call", "descript", "cormat") %in% x$args$print))) { cat("\n") }
+        if (isTRUE(any(c("call", "descript", "cormat") %in% print))) { cat("\n") }
 
         # Header
         cat("  Model Summary, Marginal and Conditional R-Squared", "\n\n")
@@ -12938,7 +13468,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
             # Two- or Three-Level Model
             if (isTRUE(model.twolevel)) { print.object$modsum <- rbind(c("n", "nNA", "nCL", "nPar", "Method", "logLik", "Deviance", "margR\U00B2", "condR\U00B2"), print.object$modsum) } else { print.object$modsum <- rbind(c("n", "nNA", "nCL2", "nCL3", "nPar", "Method", "logLik", "Deviance", "margR\U00B2", "condR\U00B2"), print.object$modsum) }
 
-            # R Markdown in progress
+          # R Markdown in progress
           } else {
 
             # Two- or Three-Level Model
@@ -12956,7 +13486,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
             if (isTRUE(model.twolevel)) { print.object$modsum <- rbind(c("n", "nCL", "nPar", "Method", "logLik", "Deviance", "margR\U00B2", "condR\U00B2"), print.object$modsum) } else { print.object$modsum <- rbind(c("n", "nCL2", "nCL3", "nPar", "Method", "logLik", "Deviance", "margR\U00B2", "condR\U00B2"), print.object$modsum) }
 
 
-            # R Markdown in progress
+          # R Markdown in progress
           } else {
 
             # Two- or Three-Level Model
@@ -12973,20 +13503,20 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print.object$modsum[, "n"] <- paste0("   ", print.object$modsum[, "n"] , sep = "")
 
         # Print
-        .write.table(print.object$modsum, left = 2L, right = 4L)
+        .write.table(print.object$modsum, left = 2L, right = 4L, horiz = horiz)
 
       }
 
-      #...................
-      ### Coefficients ####
+      #--------------------------------------
+      ### Random Effects ####
 
-      if (isTRUE(any(c("coef", "confint", "stdcoef", "vif") %in% x$args$print) && !is.null(print.object$randeff) && !is.null(print.object$coef))) {
+      if (isTRUE("randeff" %in% print && !is.null(print.object$randeff))) {
 
-        if (isTRUE(any(c("call", "descript", "cormat", "modsum") %in% x$args$print))) { cat("\n") }
+        if (isTRUE(any(c("call", "descript", "cormat", "modsum") %in% print))) { cat("\n") }
 
-        #### Random Effects ####
+        #...................
+        #### Random Intercept Model ####
 
-        # Random intercept model
         if (isTRUE(length(misty::chr.omit(colnames(print.object$randeff), omit = c("groups", "name", "var", "sd", "cor"))) == 0L || (all(na.omit(print.object$randeff[, "cor"]) == 1L) && all(na.omit(print.object$randeff[, ncol(print.object$randeff)]) == 1L)))) {
 
           # Header
@@ -12998,10 +13528,11 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           print.object$randeff[, c("var", "sd")] <- sapply(c("var", "sd"), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
 
           # Columns
+          print.object$randeff <- data.frame(rbind(misty::rec(colnames(print.object$randeff), spec = "'groups' = 'Groups'; 'name' = 'Name'; 'var' = 'Var'; 'sd' = 'SD'; 'cor' = 'Cor'"), data.frame(print.object$randeff[, setdiff(colnames(print.object$randeff), c("var", "sd"))], do.call("cbind", lapply(print.object$randeff[, c("var", "sd")], function(y) paste0(" ", y))))), fix.empty.names = FALSE, row.names = NULL)
 
-          print.object$randeff <- data.frame(rbind(misty::rec(colnames(print.object$randeff), spec = "'groups' = 'Groups'; 'name' = 'Name'; 'var' = 'Var'; 'sd' = 'SD'; 'cor' = 'Cor'"), print.object$randeff), fix.empty.names = FALSE, row.names = NULL)
+        #...................
+        #### Random Intercept and Slope Model ####
 
-        # Random intercept and slope model
         } else {
 
           # Header
@@ -13009,7 +13540,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           # Round variables
           print.object$randeff[, c("var", "sd")] <- sapply(c("var", "sd"), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
-          print.object$randeff[, setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd"))] <- sapply(setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd")), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+          print.object$randeff[, setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd"))] <- sapply(setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd")), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA))
 
           # Two-Level Model
           if (isTRUE(model.twolevel)) {
@@ -13025,11 +13556,12 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
             print.object$randeff <- cbind(print.object$randeff[, c("groups", "name", "var", "sd")], rbind(print.object$randeff.cor, rep(NA, times = ncol(print.object$randeff.cor))))
 
             # Columns
-            print.object$randeff <- data.frame(rbind(c("Groups", "Name", "Var", "SD", "Cor", setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd", "cor"))), print.object$randeff), fix.empty.names = FALSE, row.names = NULL)
+            print.object$randeff <- data.frame(rbind(misty::rec(colnames(print.object$randeff), spec = "'groups' = 'Groups'; 'name' = 'Name'; 'var' = 'Var'; 'sd' = 'SD'; 'cor' = 'Cor'"), data.frame(print.object$randeff[, c("groups", "name")], do.call("cbind", lapply(print.object$randeff[, setdiff(colnames(print.object$randeff), c("groups", "name"))], function(y) paste0(" ", y))))), fix.empty.names = FALSE, row.names = NULL)
 
             # Remove last column
             print.object$randeff <- print.object$randeff[, -ncol(print.object$randeff)]
 
+          # Three-Level Model
           } else {
 
             # Extract correlation components
@@ -13049,7 +13581,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
             print.object$randeff <- cbind(print.object$randeff[, c("groups", "name", "var", "sd")], rbind(do.call("rbind", print.object$randeff.cor), rep(NA, times = unique(lapply(print.object$randeff.cor, ncol)))))
 
             # Columns
-            print.object$randeff <- data.frame(rbind(c("Groups", "Name", "Var", "SD", "Cor", setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd", "cor"))), print.object$randeff), fix.empty.names = FALSE, row.names = NULL)
+            print.object$randeff <- data.frame(rbind(misty::rec(colnames(print.object$randeff), spec = "'groups' = 'Groups'; 'name' = 'Name'; 'var' = 'Var'; 'sd' = 'SD'; 'cor' = 'Cor'"), data.frame(print.object$randeff[, c("groups", "name")], do.call("cbind", lapply(print.object$randeff[, setdiff(colnames(print.object$randeff), c("groups", "name"))], function(y) paste0(" ", y))))), fix.empty.names = FALSE, row.names = NULL)
 
             # Remove last column
             print.object$randeff <- print.object$randeff[, -ncol(print.object$randeff)]
@@ -13069,42 +13601,50 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print.object$randeff[, 1L] <- paste0("   ", print.object$randeff[, 1L] , sep = "")
 
         # Print
-        .write.table(print.object$randeff, left = 2L, right = 4L)
+        .write.table(print.object$randeff, left = 2L, right = 4L, horiz = horiz)
 
+      }
+
+      #--------------------------------------
+      ### Coefficients ####
+
+      if (isTRUE(any(c("coef", "confint", "stdcoef", "vif") %in% print) && !is.null(print.object$coef))) {
+
+        #...................
         #### Fixed Effects ####
 
-        cat("\n")
+        if (isTRUE(any(c("call", "descript", "cormat", "modsum", "randeff") %in% print))) { cat("\n") }
 
         # Header
-        if (isTRUE(all(!x$args$print %in% c("confint", "stdcoef", "vif")))) {
+        if (isTRUE(all(!print %in% c("confint", "stdcoef", "vif")))) {
 
           cat("  Fixed Effects: Unstandardized Coefficients", "\n\n")
 
-        } else if (isTRUE(all(!x$args$print %in% c("stdcoef", "vif")))) {
+        } else if (isTRUE(all(!print %in% c("stdcoef", "vif")))) {
 
           cat(paste0("  Fixed Effects: Unstandardized Coefficients and ", round(x$args$conf.level * 100L, digits = 2L), "% Confidence Interval"), "\n\n")
 
-        } else if (isTRUE(all(!x$args$print %in% c("confint", "vif")))) {
+        } else if (isTRUE(all(!print %in% c("confint", "vif")))) {
 
           cat("  Fixed Effects: Unstandardized and Standardized Coefficients", "\n\n")
 
-        } else if (isTRUE(all(!x$args$print %in% c("confint", "stdcoef")))) {
+        } else if (isTRUE(all(!print %in% c("confint", "stdcoef")))) {
 
           cat("  Fixed Effects: Unstandardized Coefficients and Variance Inflation Factor", "\n\n")
 
-        } else if (isTRUE(all(!x$args$print %in% "vif"))) {
+        } else if (isTRUE(all(!print %in% "vif"))) {
 
           cat(paste0("  Fixed Effects: Unstandardized and Standardized Coefficients and ", round(x$args$conf.level * 100L, digits = 2L), "% CI"), "\n\n")
 
-        } else if (isTRUE(all(!x$args$print %in% "stdcoef"))) {
+        } else if (isTRUE(all(!print %in% "stdcoef"))) {
 
           cat(paste0("  Fixed Effects: Unstandardized Coefficients, ", round(x$args$conf.level * 100L, digits = 2L), "% CI and VIF"), "\n\n")
 
-        } else if (isTRUE(all(!x$args$print %in% "confint"))) {
+        } else if (isTRUE(all(!print %in% "confint"))) {
 
           cat("  Fixed Effects: Unstandardized and Standardized Coefficients and VIF", "\n\n")
 
-        } else if (isTRUE(all(c("coef", "confint", "stdcoef", "vif") %in% x$args$print))) {
+        } else if (isTRUE(all(c("coef", "confint", "stdcoef", "vif") %in% print))) {
 
           cat(paste0("  Fixed Effects: Unstandardized and Standardized Coefficients, ", round(x$args$conf.level * 100L, digits = 2L), "% CI and VIF"), "\n\n")
 
@@ -13116,8 +13656,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           # Round variables
           print.object$coef[, setdiff(colnames(print.object$coef), "Level")] <- sapply(setdiff(colnames(print.object$coef), "Level"), function(y) ifelse(!is.na(print.object$coef[, y]), formatC(print.object$coef[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
 
-          # Columns
-          print.object$coef <- data.frame(row.names(print.object$coef), print.object$coef, fix.empty.names = FALSE, row.names = NULL)
+          # Columns and spacing
+          print.object$coef <- data.frame(row.names(print.object$coef), Estimate = print.object$coef[, 1L], do.call("cbind", lapply(print.object$coef[, -1L], function(y) paste0(" ", y))), fix.empty.names = FALSE, row.names = NULL)
 
           # Row names
           print.object$coef <- rbind(c("", colnames(print.object$coef)[-1L]), print.object$coef)
@@ -13129,8 +13669,8 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
           print.object$coef[, setdiff(colnames(print.object$coef), c("p", "Level"))] <- sapply(setdiff(colnames(print.object$coef), c("p", "Level")), function(y) ifelse(!is.na(print.object$coef[, y]), formatC(print.object$coef[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
           print.object$coef[, "p"] <- formatC(print.object$coef[, "p"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
 
-          # Columns
-          print.object$coef <- data.frame(row.names(print.object$coef), print.object$coef, fix.empty.names = FALSE, row.names = NULL)
+          # Columns and spacing
+          print.object$coef <- data.frame(row.names(print.object$coef), Estimate = print.object$coef[, 1L], do.call("cbind", lapply(print.object$coef[, -1L], function(y) paste0(" ", y))), fix.empty.names = FALSE, row.names = NULL)
 
           # Row names
           print.object$coef <- rbind(c("", colnames(misty::df.rename(print.object$coef, from = "p", to = "p"))[-1L]), print.object$coef)
@@ -13148,18 +13688,20 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
         print.object$coef[, 1L] <- paste0("   ", print.object$coef[, 1L] , sep = "")
 
         # Print
-        .write.table(print.object$coef, left = 2L, right = 4L)
+        .write.table(print.object$coef, left = 2L, right = 4L, horiz = horiz)
 
         if (isTRUE(x$args$robust)) { cat("\n  Note. Cluster-Robust Standard Errors (CR2)") }
 
       }
 
-      #...................
+      #--------------------------------------
       ### Weights ####
 
       if (isTRUE(inherits(x$model, what = "rlmerMod"))) {
 
+        #...................
         #### Two-Level Model ####
+
         if (isTRUE(model.twolevel)) {
 
           ##### Residuals
@@ -13208,7 +13750,9 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
           }
 
+        #...................
         #### Three-Level Model ####
+
         } else {
 
           ##### Residuals
@@ -13287,11 +13831,424 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      #...................
+      #--------------------------------------
       ### Model Convergence ####
 
       # -1 = not converged, 0 = singular, 1 = model converged
       switch(as.character(print.object$converg), "-1" = { cat("\n Warning. Model failed to converge.", "\n") }, "0" = { cat("\n Warning. Fitted model is singular, see help page: ?isSingular", "\n")})
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Linear Mixed-Effects Model, lme() ####
+
+    } else if (isTRUE(all(class(x$model) %in% "lme"))) {
+
+      # Two-level model
+      model.twolevel <- ifelse(ncol(x$model$groups) == 1L, TRUE, FALSE)
+
+      #--------------------------------------
+      ### Title ####
+
+      cat(" Multilevel and Linear Mixed-Effects Model\n\n")
+
+      #--------------------------------------
+      ### Call ####
+
+      if (isTRUE("call" %in% print && !is.null(print.object$call))) {
+
+        cat("  Formula: ", print.object$call$formula, "\n", " Data:    ", print.object$call$data, "\n")
+
+        if (isTRUE(inherits(x$model, what = "rlmerMod"))) { cat("  Method:  ", x$model@method, "\n") }
+
+      }
+
+      #--------------------------------------
+      ### Descriptive Statistics ####
+
+      if (isTRUE("descript" %in% print && !is.null(print.object$descript))) {
+
+        if (isTRUE("call" %in% print)) { cat("\n") }
+
+        # Header
+        cat("  Descriptive Statistics", "\n\n")
+
+        # Round variables
+        print.object$descript[, c("m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")] <- sapply(c("m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt"), function(y) ifelse(!is.na(print.object$descript[, y]), formatC(print.object$descript[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+        # Percentages
+        print.object$descript[, "p.min"] <- paste0(print.object$descript[, "p.min"], "%")
+        print.object$descript[, "p.max"] <- paste0(print.object$descript[, "p.max"], "%")
+
+        # Two-Level Model
+        if (isTRUE(model.twolevel)) {
+
+          # Round ICC(1)
+          print.object$descript[, "icc"] <- formatC(print.object$descript[, "icc"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+          # Row names
+          print.object$descript <- rbind(c("Variable", "n", "nUQ", "M", "SD", "Min", "%Min", "Max", "%Max", "Skew", "Kurt", "ICC(1)"), print.object$descript)
+
+        # Three-Level Model
+        } else {
+
+          # Round ICC(1)
+          print.object$descript[, c("icc.l2", "icc.l3")] <- sapply(c("icc.l2", "icc.l3"), function(y) ifelse(!is.na(print.object$descript[, y]), formatC(print.object$descript[, y], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA))
+
+          # Row names
+          print.object$descript <- rbind(c("Variable", "n", "nUQ", "M", "SD", "Min", "%Min", "Max", "%Max", "Skew", "Kurt", "ICC(1)2", "ICC(1)3"), print.object$descript)
+
+        }
+
+        # Justify left and right
+        print.object$descript[, 1L] <- format(print.object$descript[, 1L, drop = FALSE], justify = "left")
+        print.object$descript[, -1L] <- apply(print.object$descript[, -1L, drop = FALSE], 2L, function(y) format(y, justify = "right"))
+
+        # Replace NA with " "
+        print.object$descript <- apply(print.object$descript, 2L, function(y) gsub("NA", "  ", y))
+
+        # Add blank space
+        print.object$descript[, "variable"] <- c(paste0("   ", print.object$descript[1L, "variable"], collapse = ""), paste0("    ", print.object$descript[-1L, "variable"]))
+        print.object$descript[, "variable"] <- format(c(print.object$descript[1L, "variable"], misty::chr.trim(print.object$descript[-1L, "variable"], side = "right")), justify = "left")
+
+        # Print
+        .write.table(print.object$descript, left = 2L, right = 4L, horiz = horiz)
+
+      }
+
+      #--------------------------------------
+      ### Correlation Matrix ####
+
+      if (isTRUE("cormat" %in% print && !is.null(print.object$cormat))) {
+
+        if (isTRUE(any(c("call", "descript") %in% print))) { cat("\n") }
+
+        # Header
+        cat("  Within-Group and Between-Group Correlation Matrix", "\n\n")
+
+        # Round and format
+        print.object$cormat <- formatC(print.object$cormat, digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0"))
+
+        # Diagonal
+        diag(print.object$cormat) <- ""
+
+        # Row names
+        print.object$cormat <- cbind(paste0("   ", row.names(print.object$cormat)), print.object$cormat)
+
+        # Column names
+        print.object$cormat <- rbind(colnames(print.object$cormat), print.object$cormat)
+
+        # Justify right
+        print.object$cormat[, 1L] <- format(print.object$cormat[, 1L], justify = "left")
+        print.object$cormat[, -1L] <- format(print.object$cormat[, -1L], justify = "right")
+
+        # Replace NA with " "
+        print.object$cormat <- apply(print.object$cormat, 2L, function(y) gsub("NA", "  ", y))
+
+        # Print
+        .write.table(print.object$cormat, left = 2L, right = 4L, horiz = horiz)
+
+      }
+
+      #--------------------------------------
+      ### Model Summary ####
+
+      if (isTRUE("modsum" %in% print && !is.null(print.object$modsum))) {
+
+        if (isTRUE(any(c("call", "descript", "cormat") %in% print))) { cat("\n") }
+
+        # Header
+        if (isTRUE(all(c("margR2", "condR2") %in% colnames(print.object$modsum)))) {
+
+            cat("  Model Summary, Marginal and Conditional R-Squared", "\n\n")
+
+        } else {
+
+          cat("  Model Summary", "\n\n")
+
+        }
+
+        # Round variables
+        if (isTRUE(all(c("margR2", "condR2") %in% colnames(print.object$modsum)))) { print.object$modsum[, c("margR2", "condR2")] <- sapply(c("margR2", "condR2"), function(y) ifelse(!is.na(print.object$modsum[, y]), formatC(print.object$modsum[, y], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")), NA)) }
+        print.object$modsum[, c("loglik", "deviance")] <- sapply(c("loglik", "deviance"), function(y) ifelse(!is.na(print.object$modsum[, y]), formatC(print.object$modsum[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+        # Row names
+        # Model summary with nNA
+        if (isTRUE("nNA" %in% colnames(print.object$modsum))) {
+
+          # Two-level model
+          if (isTRUE(all(c("margR2", "condR2") %in% colnames(print.object$modsum)))) {
+
+            # R Markdown not in progress
+            if (isTRUE(is.null(getOption("knitr.in.progress")))) {
+
+              if (isTRUE(model.twolevel)) { print.object$modsum <- rbind(c("n", "nNA", "nCL", "nPar", "Method", "logLik", "Deviance", "margR\U00B2", "condR\U00B2"), print.object$modsum) } else { print.object$modsum <- rbind(c("n", "nNA", "nCL2", "nCL3", "nPar", "Method", "logLik", "Deviance", "margR\U00B2", "condR\U00B2"), print.object$modsum) }
+
+            # R Markdown in progress
+            } else {
+
+              if (isTRUE(model.twolevel)) { print.object$modsum <- rbind(c("n", "nNA", "nCL", "nPar", "Method", "logLik", "Deviance", "margR2", "condR2"), print.object$modsum) } else { print.object$modsum <- rbind(c("n", "nNA", "nCL2", "nCL3", "nPar", "Method", "logLik", "Deviance", "margR2", "condR2"), print.object$modsum) }
+
+            }
+
+          # Three-level model
+          } else {
+
+            print.object$modsum <- rbind(c("n", "nNA", "nCL2", "nCL3", "nPar", "Method", "logLik", "Deviance"), print.object$modsum)
+
+          }
+
+        }
+
+        # Justify right
+        print.object$modsum <- format(print.object$modsum, justify = "right")
+
+        # Add blank space
+        print.object$modsum[, "n"] <- paste0("   ", print.object$modsum[, "n"] , sep = "")
+
+        # Print
+        .write.table(print.object$modsum, left = 2L, right = 4L, horiz = horiz)
+
+      }
+
+      #--------------------------------------
+      ### Random Effects ####
+
+      if (isTRUE("randeff" %in% print && !is.null(print.object$randeff))) {
+
+        if (isTRUE(any(c("call", "descript", "cormat", "modsum") %in% print))) { cat("\n") }
+
+        #...................
+        #### Random Intercept Model ####
+
+        if (isTRUE(length(misty::chr.omit(colnames(print.object$randeff), omit = c("groups", "name", "var", "sd"))) == 0L)) {
+
+          # Header
+          cat("  Random Effects: Variance Components", "\n\n")
+
+          # Round variables
+          print.object$randeff[, c("var", "sd")] <- sapply(c("var", "sd"), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+          # Columns
+          print.object$randeff <- data.frame(rbind(misty::rec(colnames(print.object$randeff), spec = "'groups' = 'Groups'; 'name' = 'Name'; 'var' = 'Var'; 'sd' = 'SD'; 'cor' = 'Cor'"), data.frame(print.object$randeff[, c("groups", "name")], do.call("cbind", lapply(print.object$randeff[, c("var", "sd")], function(y) paste0(" ", y))))), fix.empty.names = FALSE, row.names = NULL)
+
+        #...................
+        #### Random Intercept and Slope Model ####
+
+        } else {
+
+          # Header
+          cat("  Random Effects: Variance and Correlation Components", "\n\n")
+
+          # Round variables
+          print.object$randeff[, c("var", "sd")] <- sapply(c("var", "sd"), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+          print.object$randeff[, which(!colnames(print.object$randeff) %in% c("groups", "name", "var", "sd"))] <- sapply(which(!colnames(print.object$randeff) %in% c("groups", "name", "var", "sd")), function(y) ifelse(!is.na(print.object$randeff[, y]), formatC(print.object$randeff[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+
+          # Columns
+          print.object$randeff <- data.frame(rbind(c("Groups", "Name", "Var", "SD", "Cor", setdiff(colnames(print.object$randeff), c("groups", "name", "var", "sd", "cor"))), data.frame(print.object$randeff[, c("groups", "name")], do.call("cbind", lapply(print.object$randeff[, setdiff(colnames(print.object$randeff), c("groups", "name"))], function(y) paste0(" ", y))))), fix.empty.names = FALSE, row.names = NULL)
+
+        }
+
+        # Justify right and left
+        print.object$randeff[, -c(1L, 2L)] <- format(print.object$randeff[, -c(1L, 2L)], justify = "right")
+        print.object$randeff[, c(1L, 2L)] <- format(print.object$randeff[, c(1L, 2L)], justify = "left")
+
+        # Replace NA with ""
+        print.object$randeff <- apply(print.object$randeff, 2L, function(y) gsub("NA", "  ", y))
+
+        # Add blank space
+        print.object$randeff[, 1L] <- paste0("   ", print.object$randeff[, 1L] , sep = "")
+
+        # Print
+        .write.table(print.object$randeff, left = 2L, right = 4L, horiz = horiz)
+
+      }
+
+      #--------------------------------------
+      ### Variance and Correlation Structure ####
+
+      if (isTRUE("varcor" %in% print && !is.null(print.object$varcor))) {
+
+        #...................
+        #### Correlation Structure ####
+
+        if (isTRUE(!is.null(print.object$varcor$corstruct))) {
+
+          # Extract correlational structure
+          corstruct <- print.object$varcor$corstruct
+
+          if (isTRUE(any(c("call", "descript", "cormat", "modsum", "randeff") %in% print))) { cat("\n") }
+
+          cat(paste0("  Correlation Structure: ", corstruct$class), "\n\n")
+
+          # Round and format
+          corstruct$corstruct <- formatC(as.matrix(corstruct$corstruct), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+          # Diagonal
+          diag(corstruct$corstruct) <- ""
+
+          # Upper diagonal
+          corstruct$corstruct[upper.tri(corstruct$corstruct)] <- NA
+
+          # Row names
+          corstruct$corstruct <- cbind(paste0("   ", row.names(corstruct$corstruct)), corstruct$corstruct)
+
+          # Column names
+          corstruct$corstruct <- rbind(colnames(corstruct$corstruct), corstruct$corstruct)
+
+          # Justify right
+          corstruct$corstruct[, 1L] <- format(corstruct$corstruct[, 1L], justify = "left")
+          corstruct$corstruct[, -1L] <- format(corstruct$corstruct[, -1L], justify = "right")
+
+          # Replace NA with " "
+          corstruct$corstruct <- apply(corstruct$corstruct, 2L, function(y) gsub("NA", "  ", y))
+
+          # Print
+          .write.table(corstruct$corstruct, left = 2L, right = 4L, horiz = horiz)
+
+        }
+
+        #...................
+        #### Variance Function ####
+
+        if (isTRUE(!is.null(print.object$varcor$varstruct))) {
+
+          # Extract variance function
+          varstruct <- print.object$varcor$varstruct
+
+          if (isTRUE(any(c("call", "descript", "cormat", "modsum", "randeff") %in% print) || !is.null(print.object$varcor$corstruct))) { cat("\n") }
+
+          cat(paste0("  Variance Function: ", varstruct$class))
+
+          if (isTRUE(!grepl("varFixed", varstruct$class))) { cat("\n\n") } else { cat("\n") }
+
+          if (isTRUE(!is.null(varstruct$varstruct))) {
+
+            if (isTRUE(!grepl("varComb", varstruct$class))) {
+
+              # Round and format
+              varstruct$varstruct <- formatC(as.matrix(varstruct$varstruct), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+              # Format
+              varstruct$varstruct <- c(paste0("   ", varstruct$varstruct[1L]), varstruct$varstruct[-1L])
+
+              # Column names
+              varstruct$varstruct <- rbind(names(print.object$varcor$varstruct$varstruct), varstruct$varstruct)
+
+              # Justify right
+              varstruct$varstruct <- apply(varstruct$varstruct, 2L, format, justify = "right")
+
+              # Print
+              .write.table(varstruct$varstruct, left = 2L, right = 4L, horiz = horiz)
+
+            # Combination of variance functions, varComb
+            } else {
+
+              # Round and format
+              varstruct$varstruct <- lapply(varstruct$varstruct, function(y) formatC(as.matrix(y), digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0")))
+
+              # Format
+              varstruct$varstruct <- lapply(varstruct$varstruct, function(y) c(paste0("    ", y[1L]), y[-1L]))
+
+              # Column names
+              varstruct$varstruct <- lapply(seq_along(varstruct$varstruct), function(y) rbind(names(print.object$varcor$varstruct$varstruct[[y]]), varstruct$varstruct[[y]]))
+
+              # Justify right
+              varstruct$varstruct <- lapply(varstruct$varstruct, function(y) apply(y, 2L, format, justify = "right"))
+
+              # Print
+              for (i in seq_along(varstruct$varstruct)) {
+
+                cat(paste0("   ", names(print.object$varcor$varstruct$varstruct)[i]), "\n\n")
+
+                .write.table(varstruct$varstruct[i], left = 3L, right = 5L, horiz = horiz)
+
+                if (isTRUE(i != length(varstruct$varstruct))) { cat("\n") }
+
+              }
+
+            }
+
+          }
+
+        }
+
+      }
+
+      #--------------------------------------
+      ### Coefficients ####
+
+      if (isTRUE(any(c("coef", "confint", "stdcoef", "vif") %in% print) && !is.null(print.object$coef))) {
+
+        #...................
+        #### Fixed Effects ####
+
+        if (isTRUE(any(c("call", "descript", "cormat", "modsum", "varcor", "randeff") %in% print))) { cat("\n") }
+
+        # Header
+        if (isTRUE(all(!print %in% c("confint", "stdcoef", "vif")))) {
+
+          cat("  Fixed Effects: Unstandardized Coefficients", "\n\n")
+
+        } else if (isTRUE(all(!print %in% c("stdcoef", "vif")))) {
+
+          cat(paste0("  Fixed Effects: Unstandardized Coefficients and ", round(x$args$conf.level * 100L, digits = 2L), "% Confidence Interval"), "\n\n")
+
+        } else if (isTRUE(all(!print %in% c("confint", "vif")))) {
+
+          cat("  Fixed Effects: Unstandardized and Standardized Coefficients", "\n\n")
+
+        } else if (isTRUE(all(!print %in% c("confint", "stdcoef")))) {
+
+          cat("  Fixed Effects: Unstandardized Coefficients and Variance Inflation Factor", "\n\n")
+
+        } else if (isTRUE(all(!print %in% "vif"))) {
+
+          cat(paste0("  Fixed Effects: Unstandardized and Standardized Coefficients and ", round(x$args$conf.level * 100L, digits = 2L), "% CI"), "\n\n")
+
+        } else if (isTRUE(all(!print %in% "stdcoef"))) {
+
+          cat(paste0("  Fixed Effects: Unstandardized Coefficients, ", round(x$args$conf.level * 100L, digits = 2L), "% CI and VIF"), "\n\n")
+
+        } else if (isTRUE(all(!print %in% "confint"))) {
+
+          cat("  Fixed Effects: Unstandardized and Standardized Coefficients and VIF", "\n\n")
+
+        } else if (isTRUE(all(c("coef", "confint", "stdcoef", "vif") %in% print))) {
+
+          cat(paste0("  Fixed Effects: Unstandardized and Standardized Coefficients, ", round(x$args$conf.level * 100L, digits = 2L), "% CI and VIF"), "\n\n")
+
+        }
+
+        # Round variables
+        print.object$coef[, setdiff(colnames(print.object$coef), c("p", "Level"))] <- sapply(setdiff(colnames(print.object$coef), c("p", "Level")), function(y) ifelse(!is.na(print.object$coef[, y]), formatC(print.object$coef[, y], digits = digits, format = "f", zero.print = ifelse(digits > 0L, paste0("0.", paste(rep(0L, times = digits), collapse = "")), "0")), NA))
+        print.object$coef[, "p"] <- formatC(print.object$coef[, "p"], digits = p.digits, format = "f", zero.print = ifelse(p.digits > 0L, paste0("0.", paste(rep(0L, times = p.digits), collapse = "")), "0"))
+
+        # Columns and spacing
+        print.object$coef <- data.frame(row.names(print.object$coef), Estimate = print.object$coef[, 1L], do.call("cbind", lapply(print.object$coef[, -1L], function(y) paste0(" ", y))), fix.empty.names = FALSE, row.names = NULL)
+
+        # Row names
+        print.object$coef <- rbind(c("", colnames(misty::df.rename(print.object$coef, from = "p", to = "p"))[-1L]), print.object$coef)
+
+        # Justify right and left
+        print.object$coef[, -1L] <- format(print.object$coef[, -1L], justify = "right")
+        print.object$coef[, 1L] <- format(print.object$coef[, 1L], justify = "left")
+
+        # Replace NA with ""
+        print.object$coef[, -1L] <- apply(print.object$coef[, -1L], 2L, function(y) gsub("NA", "  ", y))
+
+        # Add blank space
+        print.object$coef[, 1L] <- paste0("   ", print.object$coef[, 1L] , sep = "")
+
+        # Print
+        .write.table(print.object$coef, left = 2L, right = 4L, horiz = horiz)
+
+        if (isTRUE(x$args$robust)) { cat("\n  Note. Cluster-Robust Standard Errors (CR2)") }
+
+      }
+
+      #--------------------------------------
+      ### Model Convergence ####
+      #
+      # Info not available in the lme object
 
     }
 
@@ -13390,13 +14347,13 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
     if (isTRUE(descript)) {
 
-      .write.table(print.object[["descript"]], left = 1L, right = 3L)
+      .write.table(print.object[["descript"]], left = 1L, right = 3L, horiz = horiz)
 
       cat("\n")
 
     }
 
-    .write.table(print.object[["test"]], left = 1L, right = 3L)
+    .write.table(print.object[["test"]], left = 1L, right = 3L, horiz = horiz)
 
   #_____________________________________________________________________________
   #
@@ -13495,7 +14452,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      .write.table(print.object, left = 1L, right = 3L)
+      .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
       #### Note ####
 
@@ -13614,7 +14571,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      .write.table(print.object, left = 1L, right = 3L)
+      .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
       #### Note ####
 
@@ -13755,7 +14712,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       if (!isTRUE(descript)) { print.object <- print.object[, -which(colnames(print.object) %in% c("n", "nNA", "m1", "m2", "m.diff", "sd.diff", "se", "m.low", "m.upp"))] }
 
-      .write.table(print.object, left = 1L, right = 3L)
+      .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
       #### Note ####
 
@@ -13917,7 +14874,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      .write.table(print.object, left = 1L, right = 3L)
+      .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
       #### Note ####
 
@@ -14028,7 +14985,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       if (isTRUE(descript)) {
 
-        .write.table(print.object[["descript"]], left = 1L, right = 3L)
+        .write.table(print.object[["descript"]], left = 1L, right = 3L, horiz = horiz)
 
         cat("\n")
 
@@ -14044,7 +15001,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      .write.table(print.object[["test"]], left = 1L, right = 3L)
+      .write.table(print.object[["test"]], left = 1L, right = 3L, horiz = horiz)
 
       #### Post-Hoc Test ####
 
@@ -14052,7 +15009,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
         cat(paste0("\n  Games-Howell Post Hoc Test for Multiple Comparison\n\n"))
 
-        .write.table(print.object[["posthoc"]], left = 2L, right = 4L)
+        .write.table(print.object[["posthoc"]], left = 2L, right = 4L, horiz = horiz)
 
       }
 
@@ -14165,7 +15122,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      .write.table(print.object, left = 1L, right = 3L)
+      .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Two-Sample z-Test ####
@@ -14289,7 +15246,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       }
 
-      .write.table(print.object, left = 1L, right = 3L)
+      .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Paired-Sample z-Test ####
@@ -14385,7 +15342,7 @@ print.misty.object <- function(x, print = x$args$print, tri = x$args$tri,
 
       if (!isTRUE(descript)) { print.object <- print.object[, -which(colnames(print.object) %in% c("n", "nNA", "m1", "m2", "m.diff", "sd.diff", "se", "m.low", "m.upp"))] }
 
-      .write.table(print.object, left = 1L, right = 3L)
+      .write.table(print.object, left = 1L, right = 3L, horiz = horiz)
 
     })
 

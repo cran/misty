@@ -111,6 +111,9 @@
 
     if (isTRUE(!is.null(args))) {
 
+      # Check input 'alpha'
+      if (isTRUE("alpha" %in% args)) { eval(parse(text = "alpha"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'alpha'", call. = FALSE) })() }
+
       # Check input 'digits'
       if (isTRUE("digits" %in% args)) { eval(parse(text = "digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) })() }
 
@@ -5714,6 +5717,28 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
+# Internal functions for the difftest.chibarsq() function ----------------------
+
+.find.c2 <- function(weight, k, u, alpha) {
+
+  function(x) {
+
+    y <- numeric(1L)
+    p <- 0L
+
+    for (i in 1L:(k + 1L)) { p = p + weight[i] * (1L - pchisq(x, (u + i - 1L))) }
+
+    y <- p - alpha
+
+    return(y)
+
+  }
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
 # Internal functions for the dominance() function ------------------------------
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -6500,7 +6525,7 @@
     #...................
     ### Model estimation ####
 
-    mod.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = y, ordered = FALSE, se = "none", std.lv = TRUE, estimator = estimator, missing = missing))
+    mod.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = y, ordered = FALSE, se = "none", test = "none", std.lv = TRUE, estimator = estimator, missing = missing))
 
     #...................
     ### Check for convergence and negative degrees of freedom ####
@@ -6509,9 +6534,6 @@
 
       # Model convergence
       if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) { warning("CFA model did not converge, results are most likely unreliable.", call. = FALSE) }
-
-      # Degrees of freedom
-      if (isTRUE(lavaan::lavInspect(mod.fit, "fit")["df"] < 0L)) { warning("CFA model has negative degrees of freedom, results are most likely unreliable.", call. = FALSE) }
 
     }
 
@@ -6566,7 +6588,7 @@
     } else {
 
       mod.cov.fit <- paste(apply(combn(seq_len(length(vnames)), m = 2L), 2L, function(z) paste(vnames[z[1L]], "~~", vnames[z[2L]])), collapse = " \n ") |>
-        (\(z) suppressWarnings(lavaan::cfa(z, data = y, ordered = FALSE, se = "none", estimator = estimator, missing = missing)))()
+        (\(z) suppressWarnings(lavaan::cfa(z, data = y, ordered = FALSE, se = "none", test = "none", estimator = estimator, missing = missing)))()
 
       if (isTRUE(!y.std)) {
 
@@ -6628,7 +6650,7 @@
   if (isTRUE(!is.null(y.rescov))) { mod.factor <- vapply(y.rescov, function(y) paste(y, collapse = " ~~ "), FUN.VALUE = character(1L)) |> (\(y) paste(mod.factor, "\n", paste(y, collapse = " \n ")))() }
 
   # Estimate model
-  mod.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = dat, estimator = estimator, missing = missing, std.lv = TRUE, se = "none", ordered = TRUE))
+  mod.fit <- suppressWarnings(lavaan::cfa(mod.factor, data = dat, estimator = estimator, missing = missing, std.lv = TRUE, se = "none", test = "none", ordered = TRUE))
 
   # Model convergence
   if (isTRUE(check)) { if (!isTRUE(lavaan::lavInspect(mod.fit, "converged"))) { warning("CFA model did not converge, results are most likely unreliable.", call. = FALSE) } }
@@ -7111,6 +7133,304 @@
   ### Return Object ####
 
   return(model.param)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the item.nonequi() function ---------------------------
+#
+# https://github.com/ddueber/dmacs/blob/master/R/MeasEquiv_EffectSize_Wrappers.R
+#
+# .dmacs_summary
+# .dmacs_summary_single
+#
+# https://github.com/ddueber/dmacs/blob/master/R/MeasEquiv_EffectSize_Base.R
+#
+# .item_dmacs
+# .expected_value
+# .delta_mean_item
+# .delta_var
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Functions for Summary of Measurement Non-Equivalence ####
+#
+# Returns a list of dMACS measurement nonequivalence from Nye and Drasgow (2011)
+
+.dmacs_summary <- function(LambdaList, NuList, MeanList, VarList, SDList, Groups = NULL, RefGroup = 1, ThreshList = NULL, ThetaList = NULL, signed = FALSE, ordered = FALSE) {
+
+  #--------------------------------------
+  ### Continuous Indicators ####
+
+  if (!ordered) {
+
+    #...................
+    #### Two Groups or Time Points ####
+
+    if (isTRUE(length(Groups) == 2L)) {
+
+      .dmacs_summary_single(LambdaF = LambdaList[-RefGroup][[1L]], LambdaR = LambdaList[[RefGroup]],
+                            NuF = NuList[-RefGroup][[1L]], NuR = NuList[[RefGroup]],
+                            MeanF = MeanList[-RefGroup][[1L]], VarF = VarList[-RefGroup][[1L]],
+                            SD = SDList[-RefGroup][[1L]], signed = signed, ordered = ordered)
+
+    #...................
+    #### More than Two Groups or Time Points ####
+
+    } else {
+
+      mapply(.dmacs_summary_single, LambdaF = LambdaList[-RefGroup], NuF = NuList[-RefGroup], MeanF = MeanList[-RefGroup], VarF = VarList[-RefGroup], SD = SDList[-RefGroup],
+             MoreArgs = list(LambdaR = LambdaList[[RefGroup]], NuR = NuList[[RefGroup]], signed = signed, ordered = ordered), SIMPLIFY = FALSE)
+
+    }
+
+  #--------------------------------------
+  ### Ordered Categorical Indicators ####
+
+  } else {
+
+    #...................
+    #### Two Groups or Time Points ####
+
+    if (isTRUE(length(Groups) == 2L)) {
+
+      .dmacs_summary_single(LambdaF = LambdaList[-RefGroup][[1L]], LambdaR = LambdaList[[RefGroup]], NuF = NuList[-RefGroup][[1L]], NuR = NuList[[RefGroup]],
+                            ThreshF = ThreshList[-RefGroup][[1L]], ThreshR = ThreshList[[RefGroup]], ThetaF = ThetaList[-RefGroup][[1L]], ThetaR = ThetaList[[RefGroup]],
+                            MeanF = MeanList[-RefGroup][[1L]], VarF = VarList[-RefGroup][[1L]], SD = SDList[-RefGroup][[1L]], signed = signed, ordered = ordered)
+
+    #...................
+    #### More than Two Groups or Time Points ####
+
+    } else {
+
+      mapply(.dmacs_summary_single, LambdaF = LambdaList[-RefGroup], NuF = NuList[-RefGroup], ThreshF = ThreshList[-RefGroup], ThetaF = ThetaList[-RefGroup], MeanF = MeanList[-RefGroup], VarF = VarList[-RefGroup], SD = SDList[-RefGroup],
+             MoreArgs = list(LambdaR = LambdaList[[RefGroup]], NuR = NuList[[RefGroup]], ThreshR = ThreshList[[RefGroup]], ThetaR = ThetaList[[RefGroup]], signed = signed, ordered = ordered), SIMPLIFY = FALSE)
+
+    }
+
+  }
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Functions for Summary of Measurement Non-Equivalence for a Single Group ####
+#
+# A list of dMACS measurement nonequivalence effects from Nye and Drasgow (2011)
+
+.dmacs_summary_single <- function(LambdaR, LambdaF, NuR, NuF, MeanF, VarF, SD, ThreshR = NULL, ThreshF = NULL, ThetaR = NULL, ThetaF = NULL, signed = FALSE, ordered = FALSE) {
+
+  #--------------------------------------
+  ### Continuous Indicators ####
+
+  if (!ordered) {
+
+    #...................
+    #### One Factor ####
+
+    if (isTRUE(ncol(LambdaR) == 1L)) {
+
+      dmacs <- setNames(mapply(.item_dmacs, LambdaR = LambdaR, LambdaF = LambdaF, NuR = NuR, NuF = NuF, MeanF = MeanF, VarF = VarF, SD = SD, signed = signed, ordered = FALSE), nm = rownames(LambdaR))
+
+      m.diff <- setNames(sum(mapply(.delta_mean_item, LambdaR = LambdaR, LambdaF = LambdaF, NuR = NuR, NuF = NuF, MeanF = MeanF, VarF = VarF, ordered = FALSE), na.rm = TRUE), nm = colnames(LambdaR))
+
+      v.diff <- setNames(.delta_var(LambdaR = LambdaR, LambdaF = LambdaF, VarF = VarF), nm = colnames(LambdaR))
+
+      summary_single <- list(dmacs = dmacs, m.diff = m.diff, v.diff = v.diff)
+
+    #...................
+    #### More than One Factor ####
+
+    } else {
+
+      MeanF <- matrix(rep(as.vector(MeanF), nrow(LambdaR)), nrow = nrow(LambdaR), byrow = TRUE)
+      VarF <- matrix(rep(as.vector(VarF), nrow(LambdaR)), nrow = nrow(LambdaR), byrow = TRUE)
+
+      dmacs <- setNames(as.data.frame(matrix(mapply(.item_dmacs, LambdaR = LambdaR, LambdaF = LambdaF, NuR = NuR, NuF = NuF, MeanF = MeanF, VarF = VarF, SD = SD, signed = signed, ordered = FALSE), nrow = nrow(LambdaR)), row.names = rownames(LambdaR)), nm = colnames(LambdaR))
+
+      m.diff <- as.data.frame(matrix(colSums(matrix(mapply(.delta_mean_item, LambdaR = LambdaR, LambdaF = LambdaF, NuR = NuR, NuF = NuF, MeanF = MeanF, VarF = VarF, ordered = FALSE), nrow = nrow(LambdaR)), na.rm = TRUE), ncol = ncol(LambdaR), dimnames = list(NULL, colnames(LambdaR))))
+
+      v.diff <- as.data.frame(matrix(sapply(seq_len(ncol(LambdaR)), function(y) { .delta_var(LambdaR[, y] |> (\(p) p[p != 0])(), LambdaF[, y] |> (\(p) p[p != 0])(), VarF[y]) }), ncol = ncol(LambdaR), dimnames = list(NULL, colnames(LambdaR))))
+
+      summary_single <- list(dmacs = dmacs, m.diff = m.diff, v.diff = v.diff)
+
+    }
+
+  #--------------------------------------
+  ### Ordered Categorical Indicators ####
+
+  } else {
+
+    #...................
+    #### One Factor ####
+
+    if (isTRUE(ncol(LambdaR) == 1L)) {
+
+      dmacs <- setNames(mapply(.item_dmacs, LambdaR = LambdaR, LambdaF = LambdaF, NuR = NuR, NuF = NuF, MeanF = MeanF, VarF = VarF, SD = SD, ThreshR = ThreshR, ThreshF = ThreshF, ThetaR = ThetaR, ThetaF = ThetaF, signed = signed, ordered = ordered), nm = rownames(LambdaR))
+
+      m.diff <- setNames(sum(mapply(.delta_mean_item, LambdaR = LambdaR, LambdaF = LambdaF, NuR = NuR, NuF = NuF, MeanF = MeanF, VarF = VarF, ThreshR = ThreshR, ThreshF = ThreshF, ThetaR = ThetaR, ThetaF = ThetaF, ordered = ordered), na.rm = TRUE), nm = colnames(LambdaR))
+
+      summary_single <- list(dmacs = dmacs, m.diff = m.diff, v.diff = NULL)
+
+    #...................
+    #### More than One Factor ####
+
+    } else {
+
+      MeanF <- matrix(rep(as.vector(MeanF), nrow(LambdaR)), nrow = nrow(LambdaR), byrow = TRUE)
+      VarF <- matrix(rep(as.vector(VarF), nrow(LambdaR)), nrow = nrow(LambdaR), byrow = TRUE)
+
+      dmacs <- setNames(data.frame(matrix(mapply(.item_dmacs, LambdaR = LambdaR, LambdaF = LambdaF, NuR = NuR, NuF = NuF, MeanF = MeanF, VarF = VarF, SD = SD, ThreshR = ThreshR, ThreshF = ThreshF, ThetaR = ThetaR, ThetaF = ThetaF, signed = signed, ordered = ordered), nrow = nrow(LambdaR)), row.names = rownames(LambdaR)), nm = colnames(LambdaR))
+
+      m.diff <- as.data.frame(matrix(colSums(matrix(mapply(.delta_mean_item, LambdaR = LambdaR, LambdaF = LambdaF, NuR = NuR, NuF = NuF, MeanF = MeanF, VarF = VarF, ThreshR = ThreshR, ThreshF = ThreshF, ThetaR = ThetaR, ThetaF = ThetaF, ordered = ordered), nrow = nrow(LambdaR)), na.rm = TRUE), ncol = ncol(LambdaR), dimnames = list(NULL, colnames(LambdaR))))
+
+      summary_single <- list(dmacs = dmacs, m.diff = m.diff, v.diff = NULL)
+
+    }
+
+  }
+
+  return(summary_single)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Functions for Computing dMACS Effect Size for Measurement Non-Equivalence ####
+#
+# Returns dMACS effect size, see equation 3 in Nye & Drasgow (2011).
+
+.item_dmacs <- function(LambdaR, LambdaF, NuR, NuF, MeanF, VarF, SD, ThreshR = NULL, ThreshF = NULL, ThetaR = NULL, ThetaF = NULL, signed, ordered = FALSE) {
+
+  # Check the number of thresholds
+  if (isTRUE(ordered)) { if (isTRUE(length(ThreshR) != length(ThreshF))) { stop("Items must have the same number of thresholds in both reference and focal group.", call. = FALSE) } }
+
+  ## Check if items load on the factor
+  if (isTRUE(LambdaR != 0L)) {
+
+    # Function for the integrand
+    integrand <- function(z, LambdaR, LambdaF, NuR, NuF, ThreshR, ThreshF, ThetaR, ThetaF, MeanF, VarF, signed, ordered) {
+
+      if (isTRUE(!signed)) {
+
+        (.expected_value(LambdaF, NuF, MeanF + z*sqrt(VarF), ThreshF, ThetaF, ordered) - .expected_value(LambdaR, NuR, MeanF + z*sqrt(VarF), ThreshR, ThetaR, ordered))^2L * dnorm(z)
+
+      } else {
+
+        (.expected_value(LambdaF, NuF, MeanF + z*sqrt(VarF), ThreshF, ThetaF, ordered) - .expected_value(LambdaR, NuR, MeanF + z*sqrt(VarF), ThreshR, ThetaR, ordered)) * dnorm(z)
+
+      }
+
+    }
+
+    # Compute dMACS
+    if (isTRUE(!signed)) {
+
+      dmacs <- sqrt(integrate(integrand, -Inf, Inf, LambdaR = LambdaR, LambdaF = LambdaF, NuR = NuR, NuF = NuF, ThreshR = ThreshR, ThreshF = ThreshF, ThetaR = ThetaR, ThetaF = ThetaF, MeanF = MeanF, VarF = VarF, signed = signed, ordered = ordered)$value) / SD
+
+    } else {
+
+      # Compute Signed dMACS
+      dmacs <- integrate(integrand, -Inf, Inf, LambdaR = LambdaR, LambdaF = LambdaF, NuR = NuR, NuF = NuF, ThreshR = ThreshR, ThreshF = ThreshF, ThetaR = ThetaR, ThetaF = ThetaF, MeanF = MeanF, VarF = VarF, signed = signed, ordered = ordered)$value / SD
+
+    }
+
+  } else {
+
+    dmacs <- NA
+
+  }
+
+  return(dmacs)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Functions for Computing Expected Value of an Indicator ####
+#
+# Returns the expected value of an indicator given item parameters and factor value
+
+.expected_value <- function(Lambda, Nu, Eta, Thresh = NULL, Theta = NULL, ordered = FALSE) {
+
+  #--------------------------------------
+  ### Continuous Indicators ####
+
+  if (isTRUE(!ordered)) {
+
+    expected <- Nu + Lambda*Eta
+
+  #--------------------------------------
+  ### Ordered Categorical Indicators ####
+
+  } else {
+
+    Mu <- Nu + Lambda*Eta
+
+    max <- length(Thresh)
+
+    Thresh[max + 1L] <- Inf
+
+    expected <- 0L
+    for (i in seq_len(max)) { expected <- expected + i*(pnorm(Mu - Thresh[i], sd = sqrt(Theta)) - pnorm(Mu - Thresh[i + 1L], sd = sqrt(Theta))) }
+
+  }
+
+  return(expected)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Functions for Computing Expected Bias to the Item Mean ####
+#
+# Returns the expected bias in the item mean due to measurement non-equivalence
+# in equation 4 of Nye & Drasgow (2011).
+
+.delta_mean_item <- function(LambdaR, LambdaF, NuR, NuF, MeanF, VarF, ThreshR = NULL, ThreshF = NULL, ThetaR = NULL, ThetaF = NULL, ordered = FALSE) {
+
+  # Check the number of thresholds
+  if (isTRUE(ordered)) { if (isTRUE(length(ThreshR) != length(ThreshF))) { stop("Items must have the same number of thresholds in both reference and focal group.", call. = FALSE) } }
+
+  ## Check if items load on the factor
+  if (isTRUE(LambdaR != 0L)) {
+
+    integrand <- function(z, LambdaR, LambdaF, NuR, NuF, ThreshR, ThreshF, ThetaR, ThetaF, MeanF, VarF, ordered) {
+
+      (.expected_value(LambdaF, NuF, MeanF + z*sqrt(VarF), ThreshF, ThetaF, ordered) - .expected_value(LambdaR, NuR, MeanF + z*sqrt(VarF), ThreshR, ThetaR, ordered)) * dnorm(z)
+
+    }
+
+    delta_mean_item <- integrate(integrand, -Inf, Inf, LambdaR = LambdaR, LambdaF = LambdaF, NuR = NuR, NuF = NuF, ThreshR = ThreshR, ThreshF = ThreshF, ThetaR = ThetaR, ThetaF = ThetaF, MeanF = MeanF, VarF = VarF, ordered = ordered)$value
+
+  } else {
+
+    delta_mean_item <- NA
+
+  }
+
+  return(delta_mean_item)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Functions for Computing Expected Bias to the Total Score Variance ####
+#
+# Returns the expected bias in the total score variance due to measurement non-equivalence
+# in equation 7, 8, and 9 of Nye & Drasgow (2011).
+
+.delta_var <- function(LambdaR, LambdaF, VarF, ordered = FALSE) {
+
+  delta_cov_mat <- matrix(nrow = length(LambdaR), ncol = length(LambdaR))
+
+  for (i in seq_along(LambdaR)) {
+
+    for (j in seq_along(LambdaR)) {
+
+      (delta_cov_mat[i, j] <- LambdaR[[j]]*(LambdaF[[i]] - LambdaR[[i]])*VarF) + (LambdaR[[i]]*(LambdaF[[j]] - LambdaR[[j]])*VarF) + ((LambdaF[[i]] - LambdaR[[i]])*(LambdaF[[j]] - LambdaR[[j]])*VarF)
+
+    }
+
+  }
+
+  return(sum(delta_cov_mat))
 
 }
 
@@ -9811,7 +10131,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #
 # - .write.table
 
-.write.table <- function(print.object, left = 1L, right = 3L, line = 1L, group = FALSE, result = NULL) {
+.write.table <- function(print.object, left = 1L, right = 3L, line = 1L, group = FALSE, result = NULL, horiz = TRUE) {
 
   # Data frame
   print.object <- as.data.frame(print.object)
@@ -9819,7 +10139,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Markdown knitr Engine Not in Progress ####
 
-  if (isTRUE(is.null(getOption("knitr.in.progress")))) {
+  if (isTRUE(is.null(getOption("knitr.in.progress")) && horiz)) {
 
     # Header
     write.table(print.object[seq_len(line), , drop = FALSE], quote = FALSE, row.names = FALSE, col.names = FALSE)
@@ -10273,7 +10593,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
     if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
 
     # Print object
-    print(object, check = FALSE)
+    print(object, horiz = FALSE, check = FALSE)
 
     # Close file connection
     sink()

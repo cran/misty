@@ -160,7 +160,7 @@ item.alpha(dat, type = "categ", print = "all")
 
 # Example 6: Summary of the CFA model used to compute coefficient alpha
 lavaan::summary(item.alpha(dat, output = FALSE)$model.fit,
-                fit.measures = TRUE, standardized = TRUE)
+                standardized = TRUE)
 
 # Example 7a: Write Results into a text file
 item.alpha(dat, write = "Alpha.txt")

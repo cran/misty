@@ -12,7 +12,7 @@ coeff.robust(model, cluster = NULL,
 }
 \arguments{
 \item{model}{a fitted model of class \code{lm}, \code{glm}, \code{lmerMod},
-or \code{lmerModLmerTest}.}
+\code{lmerModLmerTest}, or \code{lme}.}
 
 \item{cluster}{a vector representing the nested grouping structure (i.e., group
 or cluster variable). This argument is used only when requesting
@@ -87,9 +87,10 @@ This function computes (1) heteroscedasticity-consistent or cluster-robust
 standard errors standard errors and significance values for (generalized) linear
 models estimated by using the \code{lm()} or the \code{glm()} function and
 (2) cluster-robust standard errors for multilevel and linear mixed-effects models
-estimated by using the \code{lmer()} function from the \pkg{lme4} package that
-are robust to the violation of the homoscedasticity assumption. For linear models
-the heteroscedasticity-robust F-test is computed as well. By default, the function
+estimated by using the \code{lmer()} function from the \pkg{lme4} package or by using the
+\code{lme()} function from the \pkg{nlme} package that are robust to the violation
+of the homoscedasticity assumption. For linear models the heteroscedasticity-robust
+F-test is computed as well. By default, the function
 uses the HC4 estimator for (generalized) linear models and the heteroscedastic-robust
 CR2 estimator for multilevel and linear mixed-effects models. Note that cluster-robust
 standard errors are available only for two-level models.
@@ -188,7 +189,7 @@ coeff.robust(mod.glm)
 # Example 3: Multilevel and Linear Mixed-Effects Model
 
 # Load lme4 and misty package
-misty::libraries(lme4, misty)
+misty::libraries(lme4,  nlme, misty)
 
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
@@ -199,11 +200,17 @@ Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
 # Grand-mean centering, center() from the misty package
 Demo.twolevel <- center(Demo.twolevel, w1, type = "CGM", cluster = "cluster")
 
-# Estimate two-level mixed-effects model
+# Estimate two-level mixed-effects model using the lme4 package
 mod.lmer <- lmer(y1 ~ x2.c + w1.c + x2.c:w1.c + (1 + x2.c | cluster), data = Demo.twolevel)
 
 # Statistical significance testing based on cluster-robust standard errors
 coeff.robust(mod.lmer)
+
+# Estimate two-level mixed-effects model using the nlme package
+mod.lme <- lme(y1 ~ x2.c + w1.c + x2.c:w1.c, random = ~ 1 + x2.c | cluster, data = Demo.twolevel)
+
+# Statistical significance testing based on cluster-robust SE
+coeff.robust(mod.lme)
 
 #----------------------------------------------------------------------------
 # Write Results

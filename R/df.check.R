@@ -118,7 +118,6 @@ df.check <- function(data, print = c("dim", "names", "head", "tail"),
 
     }
 
-
     # Variable print object
     data.names.print <- format(as.data.frame(matrix(sapply(data.names.temp, function(y) ifelse(y != "", shQuote(y), y)), nrow = i, byrow = TRUE)), justify = "left")
 

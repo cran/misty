@@ -624,7 +624,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
         # Fit Null model
         ffml0 <- formula(paste0(yvr, "~ 1"))
         rfml0 <- formula(paste0("~ 1 |", cvr, ""))
-        if (is.null(nlme::getData(model))) { stop("No data sets found in 'lme' fit. See '?testModels' for an example.", call. = FALSE) }
+        if (isTRUE(is.null(nlme::getData(model)))) { stop("No data sets found in 'lme' fit. See '?testModels' for an example.", call. = FALSE) }
 
         model0 <- update(model, fixed = ffml0, random = rfml0, data = model$data)
 

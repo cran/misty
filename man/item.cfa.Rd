@@ -18,7 +18,7 @@ item.cfa(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
          as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{data}{a data frame. If \code{model = NULL},
+\item{data}{\eqn{\Delta\lambda} a data frame. If \code{model = NULL},
 confirmatory factor analysis based on a measurement
 model with one factor labeled \code{f} comprising all
 variables in the data frame is conducted.
@@ -411,6 +411,8 @@ The function uses the functions \code{cfa}, \code{lavInspect}, \code{lavTech},
 provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 }
 \examples{
+\dontrun{
+
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
@@ -502,7 +504,6 @@ mod <- item.cfa(HolzingerSwineford1939, x1, x2, x3, output = FALSE)
 
 lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 
-\dontrun{
 #----------------------------------------------------------------------------
 # Write Results
 

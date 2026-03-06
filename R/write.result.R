@@ -7,9 +7,10 @@
 #' \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
 #' \code{\link{ci.sd}}, code{\link{coeff.robust}}, \code{\link{coeff.std}},
 #' \code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{descript}},
-#' \code{\link{dominance.manual}}, \code{\link{dominance}}, \code{\link{effsize}},
-#' \code{\link{freq}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
-#' \code{\link{item.invar}}, \code{\link{item.omega}}, \code{\link{mplus.bayes}},
+#' \code{\link{difftest.chibarsq}}, \code{\link{dominance.manual}},
+#' \code{\link{dominance}}, \code{\link{effsize}}, \code{\link{freq}},
+#' \code{\link{item.alpha}}, \code{\link{item.cfa}}, \code{\link{item.invar}},
+#' \code{\link{item.noninvar}}, \code{\link{item.omega}}, \code{\link{mplus.bayes}},
 #' \code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
 #' \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
 #' \code{\link{multilevel.invar}}, \code{\link{multilevel.omega}},
@@ -22,6 +23,8 @@
 #'                    'Details').
 #' @param file        a character string naming a file with or without file extension
 #'                    '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.
+#' @param write       a character string or character vector indicating which
+# '                   results to to be written into an Excel file.
 #' @param tri         a character string or character vector indicating which
 #'                    triangular of the matrix to show on the console, i.e.,
 #'                    \code{both} for upper and lower triangular, \code{lower}
@@ -68,7 +71,7 @@
 #' result <- multilevel.descript(y1:y3, data = Demo.twolevel, cluster = "cluster",
 #'                               output = FALSE)
 #' write.result(result, "Multilevel_Descript.xlsx")
-write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
+write.result <- function(x, file = "Results.xlsx", write = x$args$print, tri = x$args$tri,
                          digits = x$args$digits, p.digits = x$args$p.digits, icc.digits = x$args$icc.digits,
                          r.digits = x$args$r.digits, ess.digits = x$args$ess.digits, mcse.digits = x$args$mcse.digits,
                          check = TRUE) {
@@ -84,7 +87,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
   if (isTRUE(!inherits(x, "misty.object"))) { stop("Please specify a misty object for the argument 'x'.", call. = FALSE) }
 
   # Check if input 'x' is supported by the function
-  if (isTRUE(!x$type %in% c("blimp.bayes", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "coeff.robust", "coeff.std", "cor.matrix", "crosstab", "descript", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.omega", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "mplus.lca.summa", "robust.lmer", "summa", "uniq"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
+  if (isTRUE(!x$type %in% c("blimp.bayes", "ci.cor", "ci.mean", "ci.median", "ci.prop", "ci.var", "ci.sd", "coeff.robust", "coeff.std", "cor.matrix", "crosstab", "descript", "difftest.chibarsq", "dominance.manual", "dominance", "effsize", "freq", "item.alpha", "item.cfa", "item.invar", "item.noninvar", "item.omega", "mplus.bayes", "multilevel.cfa", "multilevel.cor", "multilevel.descript", "multilevel.fit", "multilevel.invar", "multilevel.omega", "na.auxiliary", "na.coverage", "na.descript", "na.pattern", "mplus.lca.summa", "robust.lmer", "summa", "uniq"))) { stop("This type of misty object is not supported by the function.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -133,7 +136,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ## Select Statistical Measures and Add Parameters ####
 
     # Print statistics
-    print <- misty::rec(x$args$print, spec = "'m' = 'M'; 'med' = 'Med'; 'map' = 'MAP'; 'sd' = 'SD'; 'mad' = 'MAD'; 'skew' = 'Skew'; 'kurt' = 'Kurt'; 'rhat' = 'R-hat'; 'b.ess' = 'B.ESS'; 't.ess' = 'T.ESS'; 'b.mcse' = 'B.MCSE'; 't.mcse' = 'T.MCSE'; 'rope' = 'ROPE'")
+    print <- misty::rec(write, spec = "'m' = 'M'; 'med' = 'Med'; 'map' = 'MAP'; 'sd' = 'SD'; 'mad' = 'MAD'; 'skew' = 'Skew'; 'kurt' = 'Kurt'; 'rhat' = 'R-hat'; 'b.ess' = 'B.ESS'; 't.ess' = 'T.ESS'; 'b.mcse' = 'B.MCSE'; 't.mcse' = 'T.MCSE'; 'rope' = 'ROPE'")
 
     if (isTRUE("eti" %in% print)) { print <- c(print, c("ETI.Low", "ETI.Upp")) }
     if (isTRUE("hdi" %in% print)) { print <- c(print, c("HDI.Low", "HDI.Upp")) }
@@ -1123,14 +1126,14 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     }
 
     # Print
-    if (isTRUE(!"cor" %in% x$args$print)) { write.object$Cor <- NULL }
-    if (isTRUE(!"n" %in% x$args$print)) { write.object$n <- NULL }
+    if (isTRUE(!"cor" %in% write)) { write.object$Cor <- NULL }
+    if (isTRUE(!"n" %in% write)) { write.object$n <- NULL }
 
     if (isTRUE(!x$args$method %in% c("tetra", "poly"))) {
 
-      if (isTRUE(!"stat" %in% x$args$print)) { write.object$Stat <- NULL }
-      if (isTRUE(!"df" %in% x$args$print)) { write.object$df <- NULL }
-      if (isTRUE(!"p" %in% x$args$print)) { write.object$p <- NULL }
+      if (isTRUE(!"stat" %in% write)) { write.object$Stat <- NULL }
+      if (isTRUE(!"df" %in% write)) { write.object$df <- NULL }
+      if (isTRUE(!"p" %in% write)) { write.object$p <- NULL }
 
     }
 
@@ -1313,7 +1316,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
         write.object[, 1L] <- ifelse(duplicated(write.object[, 1L]), NA, write.object[, 1L])
 
         #### Frequencies only ####
-        if (isTRUE(x$args$print == "no")) {
+        if (isTRUE(write == "no")) {
 
           write.object <- data.frame(write.object[write.object[, 2L] == "Freq" | is.na(write.object[, 2L]) , 1L],
                                      write.object[write.object[, 2L] == "Freq" | is.na(write.object[, 2L]), -c(1L, 2L)],
@@ -1323,13 +1326,13 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
         } else {
 
           # No row-wise percentages
-          if (isTRUE(!"row" %in% x$args$print)) { write.object <- write.object[-which(write.object[, 2L] == "Row %"), ] }
+          if (isTRUE(!"row" %in% write)) { write.object <- write.object[-which(write.object[, 2L] == "Row %"), ] }
 
           # No col-wise percentages
-          if (isTRUE(!"col" %in% x$args$print)) { write.object <- write.object[-which(write.object[, 2L] == "Col %"), ] }
+          if (isTRUE(!"col" %in% write)) { write.object <- write.object[-which(write.object[, 2L] == "Col %"), ] }
 
           # No total percentages
-          if (isTRUE(!"total" %in% x$args$print)) { write.object <- write.object[-which(write.object[, 2L] == "Tot %"), ] }
+          if (isTRUE(!"total" %in% write)) { write.object <- write.object[-which(write.object[, 2L] == "Tot %"), ] }
 
         }
 
@@ -1393,11 +1396,11 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
         if (isTRUE(x$args$freq)) { write.object$"Freq" <- write.object.abs }
 
-        if (isTRUE("row" %in% x$args$print)) { write.object$"Row%" <- write.object.row }
+        if (isTRUE("row" %in% write)) { write.object$"Row%" <- write.object.row }
 
-        if (isTRUE("col" %in% x$args$print)) { write.object$"Col%" <- write.object.col }
+        if (isTRUE("col" %in% write)) { write.object$"Col%" <- write.object.col }
 
-        if (isTRUE("total" %in% x$args$print)) { write.object$"Total%" <- write.object.tot }
+        if (isTRUE("total" %in% write)) { write.object$"Total%" <- write.object.tot }
 
       }
 
@@ -1418,7 +1421,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
         write.object[, 1L] <- ifelse(duplicated(write.object[, 1L]), NA, write.object[, 1L])
 
         #### Frequencies only ####
-        if (isTRUE(x$args$print == "no")) {
+        if (isTRUE(write == "no")) {
 
           write.object <- data.frame(write.object[write.object[, 3L] == "Freq" | is.na(write.object[, 3L]), 1L],
                                      write.object[write.object[, 3L] == "Freq" | is.na(write.object[, 3L]), -c(1L, 3L)],
@@ -1435,13 +1438,13 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
         } else {
 
           # No row-wise percentages
-          if (isTRUE(!"row" %in% x$args$print)) { write.object <- write.object[-which(write.object[, 3L] == "Row %"), ] }
+          if (isTRUE(!"row" %in% write)) { write.object <- write.object[-which(write.object[, 3L] == "Row %"), ] }
 
           # No col-wise percentages
-          if (isTRUE(!"col" %in% x$args$print)) { write.object <- write.object[-which(write.object[, 3L] == "Col %"), ] }
+          if (isTRUE(!"col" %in% write)) { write.object <- write.object[-which(write.object[, 3L] == "Col %"), ] }
 
           # No total percentages
-          if (isTRUE(!"total" %in% x$args$print)) { write.object <- write.object[-which(write.object[, 3L] == "Tot %"), ] }
+          if (isTRUE(!"total" %in% write)) { write.object <- write.object[-which(write.object[, 3L] == "Tot %"), ] }
 
           # Add variable names
           names(write.object)[c(1L, 2L, 3L)] <- colnames(x$data)
@@ -1522,11 +1525,11 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
         if (isTRUE(x$args$freq)) { write.object$"Freq" <- write.object.abs }
 
-        if (isTRUE("row" %in% x$args$print)) { write.object$"Row%" <- write.object.row }
+        if (isTRUE("row" %in% write)) { write.object$"Row%" <- write.object.row }
 
-        if (isTRUE("col" %in% x$args$print)) { write.object$"Col%" <- write.object.col }
+        if (isTRUE("col" %in% write)) { write.object$"Col%" <- write.object.col }
 
-        if (isTRUE("total" %in% x$args$print)) { write.object$"Total%" <- write.object.tot }
+        if (isTRUE("total" %in% write)) { write.object$"Total%" <- write.object.tot }
 
       }
 
@@ -1550,7 +1553,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
       #...............
       # Select statistical measures
 
-      print <- match(x$args$print, names(write.object))
+      print <- match(write, names(write.object))
 
       # Variable names
       names(write.object) <- c("Variable", "n", "nNA", "%NA", "nUQ", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")
@@ -1579,7 +1582,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
       #...............
       # Select statistical measures
 
-      print <- match(x$args$print, names(write.object))
+      print <- match(write, names(write.object))
 
       # Variable names
       names(write.object) <- c("Group", "Variable", "n", "nNA", "%NA", "nUQ", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")
@@ -1616,7 +1619,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
         #...............
         # Select statistical measures
 
-        print <- match(x$args$print, names(write.object[[1]]))
+        print <- match(write, names(write.object[[1]]))
 
         # Variable names
         write.object <- lapply(write.object, function(y) misty::df.rename(y, from = names(y), to = c("Variable", "n", "nNA", "%NA", "nUQ", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")))
@@ -1642,7 +1645,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
         #...............
         # Select statistical measures
 
-        print <- match(x$args$print, names(write.object[[1]]))
+        print <- match(write, names(write.object[[1]]))
 
         # Variable names
         write.object <- lapply(write.object, function(y) misty::df.rename(y, from = names(y), to = c("Group", "Variable", "n", "nNA", "%NA", "M", "SE.M", "Var", "SD", "Min", "%Min", "p25", "Med", "p75", "Max", "%Max", "Range", "IQR", "Skew", "Kurt")))
@@ -1696,6 +1699,32 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
   #_____________________________________________________________________________
   #
+  # Chi-Bar-Square Difference Test, difftest.chibarsq() ------------------------
+  }, difftest.chibarsq = {
+
+    # Write object
+    write.object <- write.object$difftest
+
+    # Remove chisq.crit column
+    write.object <- write.object[, setdiff(colnames(write.object), "chisq.crit")]
+
+    # Round variables
+    write.object[, setdiff(colnames(write.object), c("df", "df.diff", "p"))] <- sapply(setdiff(colnames(write.object), c("df", "df.diff", "p")), function(y) round(write.object[, y], digits = digits))
+    write.object[, "p"] <- round(write.object[, "p"], digits = p.digits)
+
+    # Column
+    colnames(write.object) <- c("df", "AIC", "BIC", "SABIC", "Chisq", "dChisq", "ddf","p")
+
+    # Rows
+    write.object <- data.frame(row.names(write.object), write.object, fix.empty.names = FALSE)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
+
+    write.object <- list(Difftest = summary, Weights = round(x$result$weights, digits = digits))
+
+  #_____________________________________________________________________________
+  #
   # Dominance Analysis, dominance() --------------------------------------------
 
   }, dominance = {
@@ -1704,7 +1733,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ## General Dominance ####
 
     print.gen <- NULL
-    if (isTRUE("gen" %in% x$args$print)) {
+    if (isTRUE("gen" %in% write)) {
 
       # Extract result table
       write.gen <- write.object$gen
@@ -1726,7 +1755,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ## Conditional Dominance ####
 
     write.cond <- NULL
-    if (isTRUE("cond" %in% x$args$print)) {
+    if (isTRUE("cond" %in% write)) {
 
       # Extract result table
       write.cond <- write.object$cond
@@ -1742,7 +1771,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ## Complete Dominance ####
 
     write.comp <- NULL
-    if (isTRUE("cond" %in% x$args$print)) {
+    if (isTRUE("cond" %in% write)) {
 
       # Extract result table
       write.comp <- write.object$comp
@@ -2070,8 +2099,8 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     } else {
 
-      if (isTRUE(!"perc" %in% x$args$print)) { write.object$Perc <- NULL }
-      if (isTRUE(!"v.perc" %in% x$args$print)) { write.object$`Valid Perc` <- NULL }
+      if (isTRUE(!"perc" %in% write)) { write.object$Perc <- NULL }
+      if (isTRUE(!"v.perc" %in% write)) { write.object$`Valid Perc` <- NULL }
 
     }
 
@@ -2090,8 +2119,8 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     write.object$Itemstat[, -1L] <- round(write.object$Itemstat[, -1L], digits = digits)
 
     # Print
-    if (isTRUE(!"alpha" %in% x$args$print)) { write.object$Alpha <- NULL }
-    if (isTRUE(!"item" %in% x$args$print)) { write.object$Itemstat <- NULL }
+    if (isTRUE(!"alpha" %in% write)) { write.object$Alpha <- NULL }
+    if (isTRUE(!"item" %in% write)) { write.object$Itemstat <- NULL }
 
   #_____________________________________________________________________________
   #
@@ -2102,69 +2131,99 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     #...................
     ### lavaan summary ####
 
-    # Column names
-    colnames(write.object$summary) <- c(write.object$summary[1, 1], "", "")
+    summary <- NULL
+    if (isTRUE("summary" %in% write)) {
 
-    summary <- write.object$summary[-1, ]
+      # Column names
+      colnames(write.object$summary) <- c(write.object$summary[1, 1], "", "")
+
+      summary <- write.object$summary[-1, ]
+
+    }
 
     #...................
     ### Covariance coverage ####
 
-    # Round
-    write.object$coverage <- sapply(data.frame(write.object$coverage), round, digits = digits)
+    coverage <- NULL
+    if (isTRUE("coverage" %in% write)) {
 
-    # Add variable names in the rows
-    coverage <- data.frame(colnames(write.object$coverage), write.object$coverage,
-                           row.names = NULL, check.rows = FALSE,
-                           check.names = FALSE, fix.empty.names = FALSE)
+      # Round
+      write.object$coverage <- sapply(data.frame(write.object$coverage), round, digits = digits)
+
+      # Add variable names in the rows
+      coverage <- data.frame(colnames(write.object$coverage), write.object$coverage,
+                             row.names = NULL, check.rows = FALSE,
+                             check.names = FALSE, fix.empty.names = FALSE)
+
+    }
 
     #...................
     ### Univariate Sample Statistics ####
 
-    itemstat <- write.object$descript
+    itemstat <- itemfreq <- NULL
+    if (isTRUE("descript" %in% write)) {
 
-    # Round
-    itemstat[, -1L] <- sapply(itemstat[, -1L], round, digits = digits)
+      itemstat <- write.object$descript
 
-    colnames(itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt")
+      # Round
+      itemstat[, -1L] <- sapply(itemstat[, -1L], round, digits = digits)
+
+      colnames(itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt")
 
     #...................
     ### Univariate Counts for Ordered Variables ####
 
-    itemfreq <- write.object$itemfreq$freq
+      itemfreq <- write.object$itemfreq$freq
 
-    colnames(itemfreq)[1] <- "Variable"
+      colnames(itemfreq)[1] <- "Variable"
+
+    }
 
     #...................
     ### Model fit ####
 
-    fit <- write.object$fit
+    fit <- NULL
+    if (isTRUE("fit" %in% write)) {
 
-    # Round
-    fit[, -1L] <- sapply(fit[, -1L], round, digits = digits)
+      fit <- write.object$fit
+
+      # Round
+      fit[, -1L] <- sapply(fit[, -1L], round, digits = digits)
+
+    }
 
     #...................
     ### Parameter estimates ####
 
-    param <- write.object$param[, -c(2L, 3L)]
+    param <- NULL
+    if (isTRUE("est" %in% write)) {
 
-    # Round
-    param[, -c(1L, 2L, 6L)] <- sapply(param[, -c(1L, 2L, 6L)], round, digits = digits)
-    param[, 6L] <- sapply(param[, 6L], round, digits = p.digits)
+      param <- write.object$param[, -c(2L, 3L)]
 
-    colnames(param) <- c("Parameter", "Variable", "Estimate", "SE", "z", "p", "StdYX")
+      # Round
+      param[, -c(1L, 2L, 6L)] <- sapply(param[, -c(1L, 2L, 6L)], round, digits = digits)
+      param[, 6L] <- sapply(param[, 6L], round, digits = p.digits)
+
+      colnames(param) <- c("Parameter", "Variable", "Estimate", "SE", "z", "p", "StdYX")
+
+    }
 
     #...................
     ### Modification indices ####
 
-    if (isTRUE(x$args$estimator != "PML")) {
+    modind <- NULL
+    if (isTRUE("modind" %in% write)) {
 
-      modind <- write.object$modind
+      if (isTRUE(x$args$estimator != "PML")) {
 
-      # Round
-      modind[, -c(1L, 2L, 3L)] <- sapply(modind[, -c(1L, 2L, 3L)], round, digits = digits)
+        modind <- write.object$modind
 
-      colnames(modind) <- c("lhs", "op", "rhs", "MI", "EPC", "STDYX EPC")
+        # Round
+        modind[, -c(1L, 2L, 3L)] <- sapply(modind[, -c(1L, 2L, 3L)], round, digits = digits)
+
+        colnames(modind) <- c("lhs", "op", "rhs", "MI", "EPC", "STDYX EPC")
+
+      }
 
     }
 
@@ -2172,17 +2231,20 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ## Residual Correlation Matrix ####
 
     resid <- NULL
+    if (isTRUE("resid" %in% write)) {
 
-    if (isTRUE("resid" %in% x$args$print && !is.null(write.object$resid))) {
+      if (isTRUE("resid" %in% write && !is.null(write.object$resid))) {
 
-      # Extract result table
-      resid <- write.object$resid
+        # Extract result table
+        resid <- write.object$resid
 
-      # Row names
-      resid <- data.frame(row.names(resid), resid, row.names = NULL, fix.empty.names = FALSE)
+        # Row names
+        resid <- data.frame(row.names(resid), resid, row.names = NULL, fix.empty.names = FALSE)
 
-      # Round
-      resid[, -1L] <- sapply(resid[, -1L], round, digits = p.digits)
+        # Round
+        resid[, -1L] <- sapply(resid[, -1L], round, digits = p.digits)
+
+      }
 
     }
 
@@ -2193,15 +2255,6 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
                          itemfreq = itemfreq, fit = fit, param = param, modind = modind,
                          resid = resid)
 
-    # Print
-    if (isTRUE(!"summary" %in% x$args$print)) { write.object$summary <- NULL }
-    if (isTRUE(!"coverage" %in% x$args$print)) { write.object$coverage <- NULL }
-    if (isTRUE(!"descript" %in% x$args$print)) { write.object$itemstat <- NULL; write.object$itemfreq <- NULL }
-    if (isTRUE(!"fit" %in% x$args$print)) { write.object$fit <- NULL }
-    if (isTRUE(!"est" %in% x$args$print)) { write.object$param <- NULL }
-    if (isTRUE(!"modind" %in% x$args$print)) { write.object$modind <- NULL }
-    if (isTRUE(!"resid" %in% x$args$print)) { write.object$resid <- NULL }
-
   #_____________________________________________________________________________
   #
   # Measurement Invariance Evaluation, item.invar() ----------------------------
@@ -2210,21 +2263,25 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## lavaan summary ####
 
-    # Extract result table
-    summary <- write.object$summary
+    summary <- NULL
+    if (isTRUE("summary" %in% write)) {
 
-    # Column names
-    colnames(summary) <- c(summary[1L, 1L], rep("", times = ncol(summary) - 1L))
+      # Extract result table
+      summary <- write.object$summary
 
-    # Remove first row
-    summary <- summary[-1, ]
+      # Column names
+      colnames(summary) <- c(summary[1L, 1L], rep("", times = ncol(summary) - 1L))
+
+      # Remove first row
+      summary <- summary[-1, ]
+
+    }
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Covariance coverage ####
 
     coverage <- NULL
-
-    if (isTRUE("coverage" %in% x$args$print)) {
+    if (isTRUE("coverage" %in% write)) {
 
       # Extract result table
       coverage <- write.object$coverage
@@ -2253,8 +2310,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ## Univariate Sample Statistics ####
 
     itemstat <- NULL
-
-    if (isTRUE("descript" %in% x$args$print)) {
+    if (isTRUE("descript" %in% write)) {
 
       #...................
       ### Continuous Indicators ####
@@ -2296,108 +2352,117 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Model fit ####
 
-    # Extract result table and remove NULL entries
-    fit <- write.object$fit |> (\(p) p[!sapply(p, is.null)])()
+    fit <- NULL
+    if (isTRUE("fit" %in% write)) {
 
-    # Standard fit indices
-    if (isTRUE(x$args$estimator %in% c("ML", "MLF", "GLS", "WLS", "DWLS", "ULS", "PML"))) {
+      # Extract result table and remove NULL entries
+      fit <- write.object$fit |> (\(p) p[!sapply(p, is.null)])()
 
-      # Combine data frames
-      fit <- data.frame(c("Standard", rep(NA, times = nrow(fit$stand))),
-                        do.call("rbind", lapply(fit, function(y) rbind(NA, y))),
-                        row.names = NULL, fix.empty.names = FALSE)
+      # Standard fit indices
+      if (isTRUE(x$args$estimator %in% c("ML", "MLF", "GLS", "WLS", "DWLS", "ULS", "PML"))) {
 
-    # Standard, scaled, and robust fit indices
-    } else {
+        # Combine data frames
+        fit <- data.frame(c("Standard", rep(NA, times = nrow(fit$stand))),
+                          do.call("rbind", lapply(fit, function(y) rbind(NA, y))),
+                          row.names = NULL, fix.empty.names = FALSE)
 
-      # Combine data frames
-      fit <- data.frame(c("Standard", rep(NA, times = nrow(fit$stand)), "Scaled", rep(NA, times = nrow(fit$scaled)), "Robust", rep(NA, times = nrow(fit$robust))),
-                        do.call("rbind", lapply(fit, function(y) rbind(NA, y))),
-                        row.names = NULL, fix.empty.names = FALSE)
+      # Standard, scaled, and robust fit indices
+      } else {
 
-    }
+        # Combine data frames
+        fit <- data.frame(c("Standard", rep(NA, times = nrow(fit$stand)), "Scaled", rep(NA, times = nrow(fit$scaled)), "Robust", rep(NA, times = nrow(fit$robust))),
+                          do.call("rbind", lapply(fit, function(y) rbind(NA, y))),
+                          row.names = NULL, fix.empty.names = FALSE)
 
-    # Round
-    fit[which(!fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))] <- sapply(fit[which(!fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))], round, digits = digits)
-    fit[which(fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))] <- sapply(fit[which(fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))], round, digits = p.digits)
+      }
 
-    #...................
-    ### Continuous Indicators ####
+      # Round
+      fit[which(!fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))] <- sapply(fit[which(!fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))], round, digits = digits)
+      fit[which(fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))] <- sapply(fit[which(fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))], round, digits = p.digits)
 
-    if (isTRUE(!x$args$ordered)) {
+      #...................
+      ### Continuous Indicators ####
 
-      # Column names
-      switch(x$args$invar,
-             config = { colnames(fit) <- c("", "", "Config") },
-             metric = { colnames(fit) <- c("", "", "Config", "Metric", "dMetric") },
-             scalar = { colnames(fit) <- c("", "", "Config", "Metric", "Scalar", "dMetric", "dScalar") },
-             strict = { colnames(fit) <- c("", "", "Config", "Metric", "Scalar", "Stict", "dMetric", "dScalar", "dStrict") })
+      if (isTRUE(!x$args$ordered)) {
 
-    #...................
-    ### Ordered Categorical Indicators ####
+        # Column names
+        switch(x$args$invar,
+               config = { colnames(fit) <- c("", "", "Config") },
+               metric = { colnames(fit) <- c("", "", "Config", "Metric", "dMetric") },
+               scalar = { colnames(fit) <- c("", "", "Config", "Metric", "Scalar", "dMetric", "dScalar") },
+               strict = { colnames(fit) <- c("", "", "Config", "Metric", "Scalar", "Stict", "dMetric", "dScalar", "dStrict") })
 
-    } else {
+      #...................
+      ### Ordered Categorical Indicators ####
 
-      # Column names
-      switch(x$args$invar,
-             config = { colnames(fit) <- c("", "", "Config") },
-             thres  = { colnames(fit) <- c("", "", "Config", "Thres", "dThres") },
-             metric = { colnames(fit) <- c("", "", "Config", "Thres", "Metric", "dMetric") },
-             scalar = { colnames(fit) <- c("", "", "Config", "Thres", "Metric", "Scalar", "dThres", "dMetric", "dScalar") },
-             strict = { colnames(fit) <- c("", "", "Config", "Thres", "Metric", "Scalar", "Stict", "dThres", "dMetric", "dScalar", "dStrict") })
+      } else {
+
+        # Column names
+        switch(x$args$invar,
+               config = { colnames(fit) <- c("", "", "Config") },
+               thres  = { colnames(fit) <- c("", "", "Config", "Thres", "dThres") },
+               metric = { colnames(fit) <- c("", "", "Config", "Thres", "Metric", "dMetric") },
+               scalar = { colnames(fit) <- c("", "", "Config", "Thres", "Metric", "Scalar", "dThres", "dMetric", "dScalar") },
+               strict = { colnames(fit) <- c("", "", "Config", "Thres", "Metric", "Scalar", "Stict", "dThres", "dMetric", "dScalar", "dStrict") })
+
+      }
 
     }
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Parameter estimates ####
 
-    # Extract result table and remove NULL entries
-    param <- write.object$param |> (\(p) p[!sapply(p, is.null)])()
+    param <- NULL
+    if (isTRUE("est" %in% write)) {
 
-    #...................
-    ### Continuous Indicators ####
+      # Extract result table and remove NULL entries
+      param <- write.object$param |> (\(p) p[!sapply(p, is.null)])()
 
-    if (isTRUE(!x$args$ordered)) {
+      #...................
+      ### Continuous Indicators ####
 
-      # Combine data frames
-      param <- data.frame(switch(x$args$invar,
-                                 config = { c("Config", rep(NA, times = nrow(param$config))) },
-                                 metric = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric))) },
-                                 scalar = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar))) },
-                                 strict = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar)), "Stict", rep(NA, times = nrow(param$strict))) }),
-                          do.call("rbind", lapply(param, function(y) rbind(NA, y))),
-                          row.names = NULL, fix.empty.names = FALSE)
+      if (isTRUE(!x$args$ordered)) {
 
-    #...................
-    ### Ordered Categorical Indicators ####
+        # Combine data frames
+        param <- data.frame(switch(x$args$invar,
+                                   config = { c("Config", rep(NA, times = nrow(param$config))) },
+                                   metric = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric))) },
+                                   scalar = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar))) },
+                                   strict = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar)), "Stict", rep(NA, times = nrow(param$strict))) }),
+                            do.call("rbind", lapply(param, function(y) rbind(NA, y))),
+                            row.names = NULL, fix.empty.names = FALSE)
 
-    } else {
+      #...................
+      ### Ordered Categorical Indicators ####
 
-      # Combine data frames
-      param <- data.frame(switch(x$args$invar,
-                                 config = { c("Config", rep(NA, times = nrow(param$config))) },
-                                 thres  = { c("Config", rep(NA, times = nrow(param$config)), "Thres", rep(NA, times = nrow(param$thres))) },
-                                 metric = { c("Config", rep(NA, times = nrow(param$config)), "Thres", rep(NA, times = nrow(param$thres)), "Metric", rep(NA, times = nrow(param$metric))) },
-                                 scalar = { c("Config", rep(NA, times = nrow(param$config)), "Thres", rep(NA, times = nrow(param$thres)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar))) },
-                                 strict = { c("Config", rep(NA, times = nrow(param$config)), "Thres", rep(NA, times = nrow(param$thres)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar)), "Stict", rep(NA, times = nrow(param$strict))) }),
-                          do.call("rbind", lapply(param, function(y) rbind(NA, y))),
-                          row.names = NULL, fix.empty.names = FALSE)
+      } else {
+
+        # Combine data frames
+        param <- data.frame(switch(x$args$invar,
+                                   config = { c("Config", rep(NA, times = nrow(param$config))) },
+                                   thres  = { c("Config", rep(NA, times = nrow(param$config)), "Thres", rep(NA, times = nrow(param$thres))) },
+                                   metric = { c("Config", rep(NA, times = nrow(param$config)), "Thres", rep(NA, times = nrow(param$thres)), "Metric", rep(NA, times = nrow(param$metric))) },
+                                   scalar = { c("Config", rep(NA, times = nrow(param$config)), "Thres", rep(NA, times = nrow(param$thres)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar))) },
+                                   strict = { c("Config", rep(NA, times = nrow(param$config)), "Thres", rep(NA, times = nrow(param$thres)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar)), "Stict", rep(NA, times = nrow(param$strict))) }),
+                            do.call("rbind", lapply(param, function(y) rbind(NA, y))),
+                            row.names = NULL, fix.empty.names = FALSE)
+
+      }
+
+      # Round
+      param[, c("est", "se", "z", "stdyx")] <- sapply(param[, c("est", "se", "z", "stdyx")], round, digits = digits)
+      param[, "pvalue"] <- round(param[, "pvalue"], digits = p.digits)
+
+      # Column names
+      colnames(param) <- c("", "Parameter", if (isTRUE(!x$args$long)) { "Group" }, "lhs", "op", "rhs", "label", "Estimate", "SE", "z", "pvalue", "StdYX")
 
     }
-
-    # Round
-    param[, c("est", "se", "z", "stdyx")] <- sapply(param[, c("est", "se", "z", "stdyx")], round, digits = digits)
-    param[, "pvalue"] <- round(param[, "pvalue"], digits = p.digits)
-
-    # Column names
-    colnames(param) <- c("", "Parameter", if (isTRUE(!x$args$long)) { "Group" }, "lhs", "op", "rhs", "label", "Estimate", "SE", "z", "pvalue", "StdYX")
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Modification indices ####
 
     modind <- NULL
-
-    if (isTRUE("modind" %in% x$args$print && any(!sapply(write.object$modind, is.null)))) {
+    if (isTRUE("modind" %in% write && any(!sapply(write.object$modind, is.null)))) {
 
       # Extract result table and remove NULL entries
       modind <- write.object$modind |> (\(p) p[!sapply(p, is.null)])()
@@ -2461,8 +2526,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ## Modification Indices for Parameter Constraints ####
 
     score <- NULL
-
-    if (isTRUE("modind" %in% x$args$print && any(!sapply(write.object$score, is.null)))) {
+    if (isTRUE("modind" %in% write && any(!sapply(write.object$score, is.null)))) {
 
       # Extract result table and remove NULL entries
       score <- write.object$score |> (\(p) p[!sapply(p, is.null)])()
@@ -2527,8 +2591,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ## Residual Correlation Matrix ####
 
     resid <- NULL
-
-    if (isTRUE("resid" %in% x$args$print && any(!sapply(write.object$resid, is.null)))) {
+    if (isTRUE("resid" %in% write && any(!sapply(write.object$resid, is.null)))) {
 
       # Extract result table and remove NULL entries
       resid <- write.object$resid |> (\(p) p[!sapply(p, is.null)])()
@@ -2647,14 +2710,254 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     write.object <- list(summary = summary, coverage = coverage, itemstat = itemstat, fit = fit, param = param, modind = modind, score = score, resid = resid)
 
-    # Print
-    if (isTRUE(!"summary" %in% x$args$print)) { write.object$summary <- NULL }
-    if (isTRUE(!"coverage" %in% x$args$print)) { write.object$coverage <- NULL }
-    if (isTRUE(!"descript" %in% x$args$print)) { write.object$itemstat <- NULL }
-    if (isTRUE(!"fit" %in% x$args$print)) { write.object$fit <- NULL }
-    if (isTRUE(!"est" %in% x$args$print)) { write.object$param <- NULL }
-    if (isTRUE(!"modind" %in% x$args$print)) { write.object$modind <- NULL; write.object$score <- NULL }
-    if (isTRUE(!"resid" %in% x$args$print)) { write.object$resid <- NULL }
+  #_____________________________________________________________________________
+  #
+  # Effect Size Measure of Measurement Non-Invariance, item.noninvar() ---------
+
+  }, item.noninvar = {
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Check Inputs ####
+
+    .check.input(m.character = list(write = c("summary", "dmacs", "bias")), envir = environment(), input.check = check)
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## lavaan summary ####
+
+    summary <- NULL
+    if (isTRUE("summary" %in% write)) {
+
+      # Extract result table
+      summary <- write.object$summary
+
+      # Column names
+      colnames(summary) <- c(summary[1L, 1L], rep("", times = ncol(summary) - 1L))
+
+      # Remove first row
+      summary <- summary[-1, ]
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## dMACS ####
+
+    write.dmacs <- NULL
+    if (isTRUE("dmacs" %in% write)) {
+
+      #--------------------------------------
+      ### Extract Output ####
+
+      write.dmacs <- write.object$noninvar$dmacs
+
+      #--------------------------------------
+      ### Two Groups or Time Points ####
+
+      if (isTRUE((is.null(dim(write.dmacs)) || is.data.frame(write.dmacs)) && class(write.dmacs) != "list")) {
+
+        #...................
+        #### One Factor ####
+
+        if (isTRUE(!is.data.frame(write.dmacs))) {
+
+          # Round
+          write.dmacs <- round(write.dmacs, digits = digits)
+
+          # Names and dMACS
+          write.dmacs <- as.data.frame(matrix(write.dmacs, ncol = length(write.dmacs), dimnames = list(NULL, names(write.dmacs))))
+
+        #...................
+        #### More than One Factor ####
+
+        } else {
+
+          # Round
+          write.dmacs <- round(write.dmacs, digits = digits)
+
+          # Names and dMACS
+          write.dmacs <- setNames(data.frame(names = rownames(write.dmacs), dMACS = write.dmacs), c("Var", names(write.object$noninvar$dmacs)))
+
+        }
+
+      #--------------------------------------
+      ### More than Two Groups or Time Points ####
+
+      } else {
+
+        #...................
+        #### One Factor ####
+
+        if (isTRUE(all(sapply(write.dmacs, function(y) is.null(dim(y)))))) {
+
+          # Round
+          write.dmacs <- lapply(write.dmacs, round, digits = digits)
+
+          # Names and dMACS
+          for (i in names(write.dmacs)) {
+
+            write.dmacs[[i]] <- setNames(data.frame(if (isTRUE(!x$args$long)) { paste0("Reference Group ", x$args$ref, " vs. ", "Focal Group ", i) } else { paste0("Reference Time Points ", x$args$ref, " vs. ", "Focal Time Point ", i) },
+                                                    matrix(write.dmacs[[i]], ncol = length(write.dmacs[[i]]))), nm = c("", names(write.object$noninvar$dmacs[[1L]])))
+
+          }
+
+          # Row bind
+          write.dmacs <- do.call("rbind", write.dmacs)
+
+        #...................
+        #### More than One Factor ####
+
+        } else {
+
+          # Round
+          write.dmacs <- lapply(write.dmacs, round, digits = digits)
+
+          # Names and dMACS
+          for (i in names(write.dmacs)) {
+
+            write.dmacs[[i]] <- setNames(data.frame(if (isTRUE(!x$args$long)) { paste0("Reference Group ", x$args$ref, " vs. ", "Focal Group ", i) } else { paste0("Reference Time Points ", x$args$ref, " vs. ", "Focal Time Point ", i) },
+                                                    rownames(write.dmacs[[i]]), write.dmacs[[i]]), nm = c("", "Var", names(write.object$noninvar$dmacs[[1L]])))
+
+          }
+
+          # Row bind
+          write.dmacs <- do.call("rbind", write.dmacs)
+
+          # Duplicated
+          write.dmacs[duplicated(write.dmacs[, 1L]), 1L] <- ""
+
+        }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Bias ####
+
+    write.bias <- NULL
+    if (isTRUE("bias" %in% write)) {
+
+      #--------------------------------------
+      ### Extract Output ####
+
+      write.bias <- write.object$noninvar[-1L]
+
+      #--------------------------------------
+      ### Two Groups or Time Points ####
+
+      if (isTRUE(all(sapply(write.bias, function(y) !is.list(y) || (is.list(y) & is.data.frame(y)))))) {
+
+        #...................
+        #### One Factor ####
+
+        if (isTRUE(is.null(dim(write.bias$m.diff)))) {
+
+          # Round
+          write.bias <- lapply(write.bias, function(y) if (isTRUE(!is.null(y))) { round(y, digits = digits) })
+
+          # Format
+          if (!isTRUE(x$args$ordered)) {
+
+            write.bias <- setNames(as.data.frame(rbind(c("DMean", write.bias$m.diff), c("DVar", write.bias$v.diff))), nm = c("D", "f"))
+
+          } else {
+
+            write.bias <- setNames(as.data.frame(cbind("DMean", write.bias$m.diff)), nm = c("D", "f"))
+
+          }
+
+        #...................
+        #### More than One Factor ####
+
+        } else {
+
+          # Round
+          write.bias <- lapply(write.bias, function(y) if (isTRUE(!is.null(y))) { sapply(y, function(z) round(z, digits = digits)) })
+
+          # Format
+          if (!isTRUE(x$args$ordered)) {
+
+            write.bias <- rbind(data.frame(D = "DMean", matrix(write.bias$m.diff, ncol = length(write.bias$m.diff), dimnames = list(NULL, names(write.bias$m.diff)))),
+                                data.frame(D = "VMean", matrix(write.bias$v.diff, ncol = length(write.bias$v.diff), dimnames = list(NULL, names(write.bias$v.diff)))))
+
+          } else {
+
+            write.bias <- data.frame(D = "DMean", matrix(write.bias$m.diff, ncol = length(write.bias$m.diff), dimnames = list(NULL, names(write.bias$m.diff))))
+
+          }
+
+        }
+
+      #--------------------------------------
+      ### More than Two Groups or Time Points ####
+
+      } else {
+
+        #...................
+        #### One Factor ####
+
+        if (isTRUE(all(sapply(write.bias, function(y) sapply(y, length)) <= 1L))) {
+
+          # Round
+          write.bias.temp <- lapply(write.bias, function(y) lapply(y, function(z) if (isTRUE(!is.null(z))) { round(z, digits = digits) }))
+
+          # Format
+          write.bias <- list()
+          if (!isTRUE(x$args$ordered)) {
+
+            for(i in names(write.bias.temp[[1L]])) { write.bias[[i]] <- setNames(data.frame(if (isTRUE(!x$args$long)) { paste0("Reference Group ", x$args$ref, " vs. ", "Focal Group ", i) } else { paste0("Reference Time Points ", x$args$ref, " vs. ", "Focal Time Point ", i) }, c("DMean", "DVar"), unlist(do.call("rbind", lapply(write.bias.temp, function(y) y[i])))), nm = c("", "D", "f"))  }
+
+          } else {
+
+            for(i in names(write.bias.temp[[1L]])) { write.bias[[i]] <- setNames(data.frame(if (isTRUE(!x$args$long)) { paste0("Reference Group ", x$args$ref, " vs. ", "Focal Group ", i) } else { paste0("Reference Time Points ", x$args$ref, " vs. ", "Focal Time Point ", i) }, "DMean", unlist(do.call("rbind", lapply(write.bias.temp, function(y) y[i])))), nm = c("", "D", "f"))  }
+
+          }
+
+          # Row bind
+          write.bias <- do.call("rbind", write.bias)
+
+          # Duplicated
+          write.bias[duplicated(write.bias[, 1L]), 1L] <- ""
+
+        #...................
+        #### More than One Factor ####
+
+        } else {
+
+          # Round
+          write.bias.temp <- lapply(write.bias, function(y) lapply(y, function(z) if (isTRUE(!is.null(z))) { round(z, digits = digits) }))
+
+          # Format
+          write.bias <- list()
+          if (!isTRUE(x$args$ordered)) {
+
+            for(i in names(write.bias.temp[[1L]])) {
+
+              write.bias[[i]] <- setNames(data.frame(i, c("DMean", "DVar"), do.call("rbind", lapply(write.bias.temp, function(y) y[[i]]))), nm = c(ifelse(!x$args$long, "Focal Group", "Focal Time Point"), "D", names(write.bias.temp$m.diff[[i]])))
+
+            }
+
+          } else {
+
+            for(i in names(write.bias.temp[[1L]])) { write.bias[[i]] <- setNames(data.frame(i, "DMean", do.call("rbind", lapply(write.bias.temp, function(y) y[[i]]))), nm = c(ifelse(!x$args$long, "Focal Group", "Focal Time Point"), "D", names(write.bias.temp$m.diff[[i]])))  }
+
+          }
+
+          # Row bind
+          write.bias <- do.call("rbind", write.bias)
+
+          # Duplicated
+          write.bias[duplicated(write.bias[, 1L]), 1L] <- ""
+
+        }
+
+      }
+
+    }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
+
+    write.object <- list(summary = summary, dMACS = write.dmacs, Bias = write.bias)
 
   #_____________________________________________________________________________
   #
@@ -2681,8 +2984,8 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     }
 
-    if (isTRUE(!"omega" %in% x$args$print)) { write.object$Omega <- NULL }
-    if (isTRUE(!"item" %in% x$args$print)) { write.object$Itemstat <- NULL }
+    if (isTRUE(!"omega" %in% write)) { write.object$Omega <- NULL }
+    if (isTRUE(!"item" %in% write)) { write.object$Itemstat <- NULL }
 
   #_____________________________________________________________________________
   #
@@ -2721,7 +3024,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ## Select Statistical Measures and Add Parameters ####
 
     # Print statistics
-    print <- misty::rec(x$args$print, spec = "'m' = 'M'; 'med' = 'Med'; 'map' = 'MAP'; 'sd' = 'SD'; 'mad' = 'MAD'; 'skew' = 'Skew'; 'kurt' = 'Kurt'; 'rhat' = 'R-hat'; 'b.ess' = 'B.ESS'; 't.ess' = 'T.ESS'; 'b.mcse' = 'B.MCSE'; 't.mcse' = 'T.MCSE'; 'rope' = 'ROPE'")
+    print <- misty::rec(write, spec = "'m' = 'M'; 'med' = 'Med'; 'map' = 'MAP'; 'sd' = 'SD'; 'mad' = 'MAD'; 'skew' = 'Skew'; 'kurt' = 'Kurt'; 'rhat' = 'R-hat'; 'b.ess' = 'B.ESS'; 't.ess' = 'T.ESS'; 'b.mcse' = 'B.MCSE'; 't.mcse' = 'T.MCSE'; 'rope' = 'ROPE'")
 
     if (isTRUE("eti" %in% print)) { print <- c(print, c("ETI.Low", "ETI.Upp")) }
     if (isTRUE("hdi" %in% print)) { print <- c(print, c("HDI.Low", "HDI.Upp")) }
@@ -2804,102 +3107,129 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     ### lavaan summary ####
 
-    # Column names
-    colnames(write.object$summary) <- c(write.object$summary[1, 1], "", "")
+    summary <- NULL
+    if (isTRUE("summary" %in% write)) {
 
-    summary <- write.object$summary[-1, ]
+      # Column names
+      colnames(write.object$summary) <- c(write.object$summary[1, 1], "", "")
+
+      summary <- write.object$summary[-1, ]
+
+    }
 
     #...................
     ### Covariance coverage ####
 
-    # Round
-    write.object$coverage <- sapply(data.frame(write.object$coverage), round, digits = digits)
+    coverage <- NULL
+    if (isTRUE("coverage" %in% write)) {
 
-    # Add variable names in the rows
-    coverage <- data.frame(colnames(write.object$coverage), write.object$coverage,
-                           row.names = NULL, check.rows = FALSE,
-                           check.names = FALSE, fix.empty.names = FALSE)
+      # Round
+      write.object$coverage <- sapply(data.frame(write.object$coverage), round, digits = digits)
+
+      # Add variable names in the rows
+      coverage <- data.frame(colnames(write.object$coverage), write.object$coverage,
+                             row.names = NULL, check.rows = FALSE,
+                             check.names = FALSE, fix.empty.names = FALSE)
+
+    }
 
     #...................
     ### Univariate Sample Statistics ####
 
-    itemstat <- write.object$descript
+    descript <- NULL
+    if (isTRUE("descript" %in% write)) {
 
-    # Round
-    itemstat[, -1L] <- sapply(itemstat[, -1L], round, digits = digits)
+      itemstat <- write.object$descript
 
-    colnames(itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt", "ICC(1)")
+      # Round
+      itemstat[, -1L] <- sapply(itemstat[, -1L], round, digits = digits)
+
+      colnames(itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt", "ICC(1)")
+
+    }
 
     #...................
     ### Model fit ####
 
-    fit <- write.object$fit
+    fit <- NULL
+    if (isTRUE("fit" %in% write)) {
 
-    # Round
-    fit[, -1L] <- sapply(fit[, -1L], round, digits = digits)
+      fit <- write.object$fit
 
-    # Estimator = "ML"
-    if (isTRUE(ncol(write.object$fit) == 2L)) {
+      # Round
+      fit[, -1L] <- sapply(fit[, -1L], round, digits = digits)
 
-      colnames(fit) <- c("", "Standard")
+      # Estimator = "ML"
+      if (isTRUE(ncol(write.object$fit) == 2L)) {
 
-    } else {
+        colnames(fit) <- c("", "Standard")
 
-      colnames(fit) <- c("", "Standard", "Scaled", "Robust")
+      } else {
+
+        colnames(fit) <- c("", "Standard", "Scaled", "Robust")
+
+      }
 
     }
 
     #...................
     ### Parameter estimates ####
 
-    param <- rbind(data.frame(Level = "Within", write.object$param$within),
-                   data.frame(Level = "Between", write.object$param$between))
+    param <- NULL
+    if (isTRUE("est" %in% write)) {
 
-    # Round
-    param[, -c(1L:5L, 9L)] <- sapply(param[, -c(1L:5L, 9L)], round, digits = digits)
-    param[, 9L] <- sapply(param[, 9L], round, digits = p.digits)
+      param <- rbind(data.frame(Level = "Within", write.object$param$within),
+                     data.frame(Level = "Between", write.object$param$between))
 
-    colnames(param) <- c("Parameter", "Variable", "lhs", "op", "rhs", "Estimate", "SE", "z", "pvalue", "StdYX")
+      # Round
+      param[, -c(1L:5L, 9L)] <- sapply(param[, -c(1L:5L, 9L)], round, digits = digits)
+      param[, 9L] <- sapply(param[, 9L], round, digits = p.digits)
+
+      colnames(param) <- c("Parameter", "Variable", "lhs", "op", "rhs", "Estimate", "SE", "z", "pvalue", "StdYX")
+
+    }
 
     #...................
     ### Modification indices ####
 
-    if (isTRUE(nrow(write.object$modind$within) == 0L)) {
+    modind <- score <- NULL
+    if (isTRUE("modind" %in% write)) {
 
-      write.object$modind$within <- data.frame(matrix(NA, ncol = 6L, dimnames = list(NULL, names(write.object$modind$within))))
+      if (isTRUE(nrow(write.object$modind$within) == 0L)) {
 
-    }
+        write.object$modind$within <- data.frame(matrix(NA, ncol = 6L, dimnames = list(NULL, names(write.object$modind$within))))
 
-    if (isTRUE(nrow(write.object$modind$between) == 0L)) {
+      }
 
-      write.object$modind$between <- data.frame(matrix(NA, ncol = 6L, dimnames = list(NULL, names(write.object$modind$between))))
+      if (isTRUE(nrow(write.object$modind$between) == 0L)) {
 
-    }
+        write.object$modind$between <- data.frame(matrix(NA, ncol = 6L, dimnames = list(NULL, names(write.object$modind$between))))
 
-    modind <- rbind(data.frame(Level = "Within", write.object$modind$within),
-                    data.frame(Level = "Between", write.object$modind$between))
+      }
 
-    # Round
-    modind[, -c(1L:4L)] <- sapply(modind[, -c(1L:4L)], round, digits = digits)
+      modind <- rbind(data.frame(Level = "Within", write.object$modind$within), data.frame(Level = "Between", write.object$modind$between))
 
-    colnames(modind) <- c("Level", "lhs", "op", "rhs", "MI", "EPC", "STDYX EPC")
+      # Round
+      modind[, -c(1L:4L)] <- sapply(modind[, -c(1L:4L)], round, digits = digits)
+
+      colnames(modind) <- c("Level", "lhs", "op", "rhs", "MI", "EPC", "STDYX EPC")
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Modification Indices for Parameter Constaints ####
 
-    score <- NULL
+      if (isTRUE(!is.null(write.object$score))) {
 
-    if (isTRUE("modind" %in% x$args$print && !is.null(write.object$score))) {
+        # Extract result table
+        score <- write.object$score
 
-      # Extract result table
-      score <- write.object$score
+        # Round
+        score[, c("mi", "lhs.epc", "rhs.epc", "lhs.stdyx", "rhs.stdyx")] <- sapply(score[, c("mi", "lhs.epc", "rhs.epc", "lhs.stdyx", "rhs.stdyx")], round, digits = digits)
+        score[, "pvalue"] <- round(score[, "pvalue"], digits = p.digits)
 
-      # Round
-      score[, c("mi", "lhs.epc", "rhs.epc", "lhs.stdyx", "rhs.stdyx")] <- sapply(score[, c("mi", "lhs.epc", "rhs.epc", "lhs.stdyx", "rhs.stdyx")], round, digits = digits)
-      score[, "pvalue"] <- round(score[, "pvalue"], digits = p.digits)
+        # Column names
+        colnames(score) <- c("Label", "lhs", "op", "rhs", "MI", "df", "pvalue", "lhs.EPC", "rhs.EPC", "lhs.StdYX", "rhs.StdYX")
 
-      # Column names
-      colnames(score) <- c("Label", "lhs", "op", "rhs", "MI", "df", "pvalue", "lhs.EPC", "rhs.EPC", "lhs.StdYX", "rhs.StdYX")
+      }
 
     }
 
@@ -2907,18 +3237,21 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ## Residual Correlation Matrix ####
 
     resid <- NULL
+    if (isTRUE("resid" %in% write)) {
 
-    if (isTRUE("resid" %in% x$args$print && !is.null(write.object$resid))) {
+      if (isTRUE(!is.null(write.object$resid))) {
 
-      # Extract result table
-      resid <- write.object$resid
+        # Extract result table
+        resid <- write.object$resid
 
-      # Combine Within and Between level
-      resid <- data.frame(c("Within", rep("", times = nrow(resid[[1L]])), "Between", rep("", times = nrow(resid[[1L]]))),
-                            do.call("rbind", lapply(resid, function(z) rbind(NA, z))), row.names = NULL, fix.empty.names = FALSE)
+        # Combine Within and Between level
+        resid <- data.frame(c("Within", rep("", times = nrow(resid[[1L]])), "Between", rep("", times = nrow(resid[[1L]]))),
+                              do.call("rbind", lapply(resid, function(z) rbind(NA, z))), row.names = NULL, fix.empty.names = FALSE)
 
-      # Round
-      resid[, -1L] <- sapply(resid[, -1L], round, digits = p.digits)
+        # Round
+        resid[, -1L] <- sapply(resid[, -1L], round, digits = p.digits)
+
+      }
 
     }
 
@@ -2928,15 +3261,6 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     write.object <- list(summary = summary, coverage = coverage, descript = itemstat,
                          fit = fit, param = param, modind = modind, score = score,
                          resid = resid)
-
-    # Print
-    if (isTRUE(!"summary" %in% x$args$print)) { write.object$summary <- NULL }
-    if (isTRUE(!"coverage" %in% x$args$print)) { write.object$coverage <- NULL }
-    if (isTRUE(!"descript" %in% x$args$print)) { write.object$itemstat <- NULL; write.object$itemfreq <- NULL }
-    if (isTRUE(!"fit" %in% x$args$print)) { write.object$fit <- NULL }
-    if (isTRUE(!"est" %in% x$args$print)) { write.object$param <- NULL }
-    if (isTRUE(!"modind" %in% x$args$print)) { write.object$modind <- NULL; write.object$score <- NULL  }
-    if (isTRUE(!"resid" %in% x$args$print)) { write.object$resid <- NULL }
 
   #_____________________________________________________________________________
   #
@@ -3001,10 +3325,10 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
                                          row.names = NULL, check.rows = FALSE, check.names = FALSE, fix.empty.names = FALSE)
 
       #### Print
-      if (isTRUE(!"cor" %in% x$args$print)) { write.object$with.cor <- NULL; write.object$betw.cor <- NULL }
-      if (isTRUE(!"se" %in% x$args$print)) { write.object$with.se <- NULL; write.object$betw.se <- NULL }
-      if (isTRUE(!"stat" %in% x$args$print)) { write.object$with.stat <- NULL; write.object$betw.stat <- NULL }
-      if (isTRUE(!"p" %in% x$args$print)) { write.object$with.p <- NULL; write.object$betw.p <- NULL }
+      if (isTRUE(!"cor" %in% write)) { write.object$with.cor <- NULL; write.object$betw.cor <- NULL }
+      if (isTRUE(!"se" %in% write)) { write.object$with.se <- NULL; write.object$betw.se <- NULL }
+      if (isTRUE(!"stat" %in% write)) { write.object$with.stat <- NULL; write.object$betw.stat <- NULL }
+      if (isTRUE(!"p" %in% write)) { write.object$with.p <- NULL; write.object$betw.p <- NULL }
 
     #............
     ### Combined results
@@ -3021,10 +3345,10 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
                            stat = write.object$wb.stat, p = write.object$wb.p)
 
       #### Print
-      if (isTRUE(!"cor" %in% x$args$print)) { write.object$cor <- NULL }
-      if (isTRUE(!"se" %in% x$args$print)) { write.object$se <- NULL }
-      if (isTRUE(!"stat" %in% x$args$print)) { write.object$stat <- NULL }
-      if (isTRUE(!"p" %in% x$args$print)) { write.object$p <- NULL }
+      if (isTRUE(!"cor" %in% write)) { write.object$cor <- NULL }
+      if (isTRUE(!"se" %in% write)) { write.object$se <- NULL }
+      if (isTRUE(!"stat" %in% write)) { write.object$stat <- NULL }
+      if (isTRUE(!"p" %in% write)) { write.object$p <- NULL }
 
     }
 
@@ -3095,8 +3419,8 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     }
 
     # Variance and/or SD
-    if (isTRUE(!"var" %in% x$args$print)) { write.object <- write.object[-grep("Variance", write.object[, 1L]), ] }
-    if (isTRUE(!"sd" %in% x$args$print)) { write.object <- write.object[-grep("SD", write.object[, 1L]), ] }
+    if (isTRUE(!"var" %in% write)) { write.object <- write.object[-grep("Variance", write.object[, 1L]), ] }
+    if (isTRUE(!"sd" %in% write)) { write.object <- write.object[-grep("SD", write.object[, 1L]), ] }
 
   #_____________________________________________________________________________
   #
@@ -3138,8 +3462,8 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     write.object <- list(summary = summary, fit = fit)
 
     # Print
-    if (isTRUE(!"summary" %in% x$args$print)) { write.object$summary <- NULL }
-    if (isTRUE(!"fit" %in% x$args$print)) { write.object$fit <- NULL }
+    if (isTRUE(!"summary" %in% write)) { write.object$summary <- NULL }
+    if (isTRUE(!"fit" %in% write)) { write.object$fit <- NULL }
 
   #_____________________________________________________________________________
   #
@@ -3150,128 +3474,156 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## lavaan summary ####
 
-    # Column names
-    colnames(write.object$summary) <- c(write.object$summary[1L, 1L], "", "")
+    summary <- NULL
+    if (isTRUE("summary" %in% write)) {
 
-    summary <- write.object$summary[-1L, ]
+      # Column names
+      colnames(write.object$summary) <- c(write.object$summary[1L, 1L], "", "")
+
+      summary <- write.object$summary[-1L, ]
+
+    }
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Covariance coverage ####
 
-    # Round
-    write.object$coverage <- sapply(data.frame(write.object$coverage), round, digits = digits)
+    coverage <- NULL
+    if (isTRUE("coverage" %in% write)) {
 
-    # Add variable names in the rows
-    coverage <- data.frame(colnames(write.object$coverage), write.object$coverage,
-                           row.names = NULL, check.rows = FALSE,
-                           check.names = FALSE, fix.empty.names = FALSE)
+      # Round
+      write.object$coverage <- sapply(data.frame(write.object$coverage), round, digits = digits)
+
+      # Add variable names in the rows
+      coverage <- data.frame(colnames(write.object$coverage), write.object$coverage,
+                             row.names = NULL, check.rows = FALSE,
+                             check.names = FALSE, fix.empty.names = FALSE)
+
+    }
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Univariate Sample Statistics ####
 
-    itemstat <- write.object$descript
+    descript <- NULL
+    if (isTRUE("descript" %in% write)) {
 
-    # Round
-    itemstat[, -1L] <- sapply(itemstat[, -1L], round, digits = digits)
+      itemstat <- write.object$descript
 
-    colnames(itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt", "ICC(1)")
+      # Round
+      itemstat[, -1L] <- sapply(itemstat[, -1L], round, digits = digits)
+
+      colnames(itemstat) <- c("Variable", "n", "nNA", "pNA", "M", "SD", "Min", "Max", "Skew", "Kurt", "ICC(1)")
+
+    }
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Model fit ####
 
-    # Extract result table
-    fit <- write.object$fit
+    fit <- NULL
+    if (isTRUE("fit" %in% write)) {
 
-    # Remove NULL entries
-    fit <- fit[!sapply(fit, is.null)]
+      # Extract result table
+      fit <- write.object$fit
 
-    #### Standard fit indices
-    if (isTRUE(x$args$estimator %in% c("ML", "MLF", "GLS", "WLS", "DWLS", "ULS", "PML"))) {
+      # Remove NULL entries
+      fit <- fit[!sapply(fit, is.null)]
 
-      # Combine data frames
-      fit <- data.frame(c("Standard", rep(NA, times = nrow(fit$stand))),
-                        rbind(NA, fit$stand),
-                        row.names = NULL, fix.empty.names = FALSE)
+      #### Standard fit indices
+      if (isTRUE(x$args$estimator %in% c("ML", "MLF", "GLS", "WLS", "DWLS", "ULS", "PML"))) {
 
-    #### Standard, scaled, and robust fit indices
-    } else {
+        # Combine data frames
+        fit <- data.frame(c("Standard", rep(NA, times = nrow(fit$stand))),
+                          rbind(NA, fit$stand),
+                          row.names = NULL, fix.empty.names = FALSE)
 
-      # Combine data frames
-      fit <- data.frame(c("Standard", rep(NA, times = nrow(fit$stand)), "Scaled", rep(NA, times = nrow(fit$scaled)), "Robust", rep(NA, times = nrow(fit$robust))),
-                        do.call("rbind", lapply(fit, function(y) rbind(NA, y))),
-                        row.names = NULL, fix.empty.names = FALSE)
+      #### Standard, scaled, and robust fit indices
+      } else {
+
+        # Combine data frames
+        fit <- data.frame(c("Standard", rep(NA, times = nrow(fit$stand)), "Scaled", rep(NA, times = nrow(fit$scaled)), "Robust", rep(NA, times = nrow(fit$robust))),
+                          do.call("rbind", lapply(fit, function(y) rbind(NA, y))),
+                          row.names = NULL, fix.empty.names = FALSE)
+
+      }
+
+      # Round
+      fit[which(!fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))] <- sapply(fit[which(!fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))], round, digits = digits)
+      fit[which(fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))] <- sapply(fit[which(fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))], round, digits = p.digits)
+
+      # Column names
+      switch(x$args$invar,
+             config = { colnames(fit) <- c("", "", "Config") },
+             metric = { colnames(fit) <- c("", "", "Config", "Metric", "dMetric") },
+             scalar = { colnames(fit) <- c("", "", "Config", "Metric", "Scalar", "dMetric", "dScalar") })
 
     }
-
-    # Round
-    fit[which(!fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))] <- sapply(fit[which(!fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))], round, digits = digits)
-    fit[which(fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))] <- sapply(fit[which(fit[, 2L] %in% c("P-value", "P-value RMSEA <= 0.05")), c(3L:ncol(fit))], round, digits = p.digits)
-
-    # Column names
-    switch(x$args$invar,
-           config = { colnames(fit) <- c("", "", "Config") },
-           metric = { colnames(fit) <- c("", "", "Config", "Metric", "dMetric") },
-           scalar = { colnames(fit) <- c("", "", "Config", "Metric", "Scalar", "dMetric", "dScalar") })
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Parameter estimates ####
 
-    # Extract result table
-    param <- write.object$param
+    param <- NULL
+    if (isTRUE("est" %in% write)) {
 
-    # Remove NULL entries
-    param <- param[!sapply(param, is.null)]
+      # Extract result table
+      param <- write.object$param
 
-    # Combine data frames
-    param <- lapply(lapply(param, function(y) do.call("rbind", lapply(y, function(z) rbind(NA, z)))), function(q) data.frame(c("Within", rep(NA, times = nrow(q) / 2L - 1L), "Between", rep(NA, times = nrow(q) / 2L - 1L)), q, row.names = NULL, fix.empty.names = FALSE))
+      # Remove NULL entries
+      param <- param[!sapply(param, is.null)]
 
-    # Combine data frames
-    param <- data.frame(switch(x$args$invar,
-                               config = { c("Config", rep(NA, times = nrow(param$config))) },
-                               metric = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric))) },
-                               scalar = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar))) }),
-                        do.call("rbind", lapply(param, function(y) rbind(NA, y))),
-                        row.names = NULL, fix.empty.names = FALSE)
+      # Combine data frames
+      param <- lapply(lapply(param, function(y) do.call("rbind", lapply(y, function(z) rbind(NA, z)))), function(q) data.frame(c("Within", rep(NA, times = nrow(q) / 2L - 1L), "Between", rep(NA, times = nrow(q) / 2L - 1L)), q, row.names = NULL, fix.empty.names = FALSE))
 
-    # Round
-    param[, c("est", "se", "z", "stdyx")] <- sapply(param[, c("est", "se", "z", "stdyx")], round, digits = digits)
-    param[, "pvalue"] <- round(param[, "pvalue"], digits = p.digits)
+      # Combine data frames
+      param <- data.frame(switch(x$args$invar,
+                                 config = { c("Config", rep(NA, times = nrow(param$config))) },
+                                 metric = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric))) },
+                                 scalar = { c("Config", rep(NA, times = nrow(param$config)), "Metric", rep(NA, times = nrow(param$metric)), "Scalar", rep(NA, times = nrow(param$scalar))) }),
+                          do.call("rbind", lapply(param, function(y) rbind(NA, y))),
+                          row.names = NULL, fix.empty.names = FALSE)
 
-    # Column names
-    colnames(param) <- c("", "Parameter", "lhs", "op", "rhs", "label", "Estimate", "SE", "z", "pvalue", "StdYX")
+      # Round
+      param[, c("est", "se", "z", "stdyx")] <- sapply(param[, c("est", "se", "z", "stdyx")], round, digits = digits)
+      param[, "pvalue"] <- round(param[, "pvalue"], digits = p.digits)
+
+      # Column names
+      colnames(param) <- c("", "Parameter", "lhs", "op", "rhs", "label", "Estimate", "SE", "z", "pvalue", "StdYX")
+
+    }
 
     #...................
     ### Modification indices ####
 
     modind <- NULL
+    if (isTRUE("modind" %in% write)) {
 
-    if (isTRUE("modind" %in% x$args$print && any(!sapply(write.object$modind, is.null)))) {
+      if (isTRUE(any(!sapply(write.object$modind, is.null)))) {
 
-      # Extract result table
-      modind <- write.object$modind
+        # Extract result table
+        modind <- write.object$modind
 
-      # Remove NULL entries
-      modind <- modind[!sapply(modind, is.null)]
+        # Remove NULL entries
+        modind <- modind[!sapply(modind, is.null)]
 
-      # Combine data frames
-      modind <- lapply(lapply(modind, function(y) do.call("rbind", lapply(y, function(z) rbind(NA, z)))), function(q) data.frame(c("Within", rep(NA, times = nrow(q) / 2L - 1L), "Between", rep(NA, times = nrow(q) / 2L - 1L)), q, row.names = NULL, fix.empty.names = FALSE))
+        # Combine data frames
+        modind <- lapply(lapply(modind, function(y) do.call("rbind", lapply(y, function(z) rbind(NA, z)))), function(q) data.frame(c("Within", rep(NA, times = nrow(q) / 2L - 1L), "Between", rep(NA, times = nrow(q) / 2L - 1L)), q, row.names = NULL, fix.empty.names = FALSE))
 
-      # Combine data frames
-      modind <- data.frame(switch(x$args$invar,
-                                  config = {   if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) } },
-                                  metric = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
-                                               if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) }) },
-                                  scalar = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
-                                               if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) },
-                                               if (is.null(modind$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(modind$scalar))) }) }),
-                           do.call("rbind", lapply(modind, function(y) rbind(NA, y))),
-                           row.names = NULL, fix.empty.names = FALSE)
+        # Combine data frames
+        modind <- data.frame(switch(x$args$invar,
+                                    config = {   if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) } },
+                                    metric = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
+                                                 if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) }) },
+                                    scalar = { c(if (is.null(modind$config)) { NULL } else { c("Config", rep(NA, times = nrow(modind$config))) },
+                                                 if (is.null(modind$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(modind$metric))) },
+                                                 if (is.null(modind$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(modind$scalar))) }) }),
+                             do.call("rbind", lapply(modind, function(y) rbind(NA, y))),
+                             row.names = NULL, fix.empty.names = FALSE)
 
-      # Round
-      modind[, c("mi", "epc", "stdyx")] <- sapply(modind[, c("mi", "epc", "stdyx")], round, digits = digits)
+        # Round
+        modind[, c("mi", "epc", "stdyx")] <- sapply(modind[, c("mi", "epc", "stdyx")], round, digits = digits)
 
-      # Column names
-      colnames(modind) <- c("", "lhs", "op", "rhs", "MI", "EPC", "StdYX")
+        # Column names
+        colnames(modind) <- c("", "lhs", "op", "rhs", "MI", "EPC", "StdYX")
+
+      }
 
     }
 
@@ -3279,30 +3631,33 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ## Residual Correlation Matrix ####
 
     resid <- NULL
+    if (isTRUE("resid" %in% write)) {
 
-    if (isTRUE("resid" %in% x$args$print && any(!sapply(write.object$resid, is.null)))) {
+      if (isTRUE(any(!sapply(write.object$resid, is.null)))) {
 
-      # Extract result table
-      resid <- write.object$resid
+        # Extract result table
+        resid <- write.object$resid
 
-      # Remove NULL entries
-      resid <- resid[!sapply(resid, is.null)]
+        # Remove NULL entries
+        resid <- resid[!sapply(resid, is.null)]
 
-      # Combine data frames
-      resid <- lapply(lapply(resid, function(y) do.call("rbind", lapply(y, function(z) rbind(NA, z)))), function(q) data.frame(c("Within", rep(NA, times = nrow(q) / 2L - 1L), "Between", rep(NA, times = nrow(q) / 2L - 1L)),  c(NA, rownames(resid[[1]]$within)), q, row.names = NULL, fix.empty.names = FALSE))
+        # Combine data frames
+        resid <- lapply(lapply(resid, function(y) do.call("rbind", lapply(y, function(z) rbind(NA, z)))), function(q) data.frame(c("Within", rep(NA, times = nrow(q) / 2L - 1L), "Between", rep(NA, times = nrow(q) / 2L - 1L)),  c(NA, rownames(resid[[1]]$within)), q, row.names = NULL, fix.empty.names = FALSE))
 
-      resid <- data.frame(switch(x$args$invar,
-                                 config = {   if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) } },
-                                 metric = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
-                                              if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) }) },
-                                 scalar = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
-                                              if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) },
-                                              if (is.null(resid$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(resid$scalar))) }) }),
-                          data.frame(do.call("rbind", lapply(resid, function(y) rbind(NA, y))),
-                                     row.names = NULL, fix.empty.names = FALSE), row.names = NULL, fix.empty.names = FALSE)
+        resid <- data.frame(switch(x$args$invar,
+                                   config = {   if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) } },
+                                   metric = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
+                                                if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) }) },
+                                   scalar = { c(if (is.null(resid$config)) { NULL } else { c("Config", rep(NA, times = nrow(resid$config))) },
+                                                if (is.null(resid$metric)) { NULL } else { c("Metric", rep(NA, times = nrow(resid$metric))) },
+                                                if (is.null(resid$scalar)) { NULL } else { c("Scalar", rep(NA, times = nrow(resid$scalar))) }) }),
+                            data.frame(do.call("rbind", lapply(resid, function(y) rbind(NA, y))),
+                                       row.names = NULL, fix.empty.names = FALSE), row.names = NULL, fix.empty.names = FALSE)
 
-      # Round
-      resid[, -c(1L:3L)] <- sapply(resid[, -c(1L:3L)], round, digits = p.digits)
+        # Round
+        resid[, -c(1L:3L)] <- sapply(resid[, -c(1L:3L)], round, digits = p.digits)
+
+      }
 
     }
 
@@ -3310,17 +3665,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     ### Write object ####
 
     write.object <- list(summary = summary, coverage = coverage, descript = itemstat,
-                         fit = fit, param = param, modind = modind,
-                         resid = resid)
-
-    # Print
-    if (isTRUE(!"summary" %in% x$args$print)) { write.object$summary <- NULL }
-    if (isTRUE(!"coverage" %in% x$args$print)) { write.object$coverage <- NULL }
-    if (isTRUE(!"descript" %in% x$args$print)) { write.object$itemstat <- NULL; write.object$itemfreq <- NULL }
-    if (isTRUE(!"fit" %in% x$args$print)) { write.object$fit  <- NULL }
-    if (isTRUE(!"est" %in% x$args$print)) { write.object$param <- NULL }
-    if (isTRUE(!"modind" %in% x$args$print)) { write.object$modind <- NULL }
-    if (isTRUE(!"resid" %in% x$args$print)) { write.object$resid <- NULL }
+                         fit = fit, param = param, modind = modind, resid = resid)
 
   #_____________________________________________________________________________
   #
@@ -3333,7 +3678,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     write.omega <- NULL
 
-    if (isTRUE("omega" %in% x$args$print)) {
+    if (isTRUE("omega" %in% write)) {
 
       # Extracr result table
       write.omega <- write.object$omega
@@ -3351,7 +3696,7 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     write.item <- NULL
 
-    if (isTRUE("item" %in% x$args$print)) {
+    if (isTRUE("item" %in% write)) {
 
       # Extracr result table
       write.item <- write.object$item
@@ -3904,12 +4249,12 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
     if (isTRUE(all(class(x$model) == "lm"))) {
 
-      #...................
+      #--------------------------------------
       ### Call ####
 
-      if (isTRUE(!is.null(write.object$call))) { write.object$call <- data.frame(c("Formula", "Data"), c(write.object$call$formula, write.object$call$data), fix.empty.names = FALSE) }
+      if (isTRUE("call" %in% write && !is.null(write.object$call))) { write.object$call <- data.frame(c("Formula", "Data"), c(write.object$call$formula, write.object$call$data), fix.empty.names = FALSE) }
 
-      #...................
+      #--------------------------------------
       ### Descriptive Statistics ####
 
       if (isTRUE(!is.null(write.object$descript))) {
@@ -3922,10 +4267,10 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
       }
 
-      #...................
+      #--------------------------------------
       ### Correlation Matrix ####
 
-      if (isTRUE(!is.null(write.object$cormat))) {
+      if (isTRUE("cormat" %in% write && !is.null(write.object$cormat))) {
 
         # Round variables
         write.object$cormat <- sapply(data.frame(write.object$cormat), round, digits = digits)
@@ -3941,10 +4286,10 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
       }
 
-      #...................
+      #--------------------------------------
       ### Model Summary ####
 
-      if (isTRUE(!is.null(write.object$modsum))) {
+      if (isTRUE("modsum" %in% write && !is.null(write.object$modsum))) {
 
         # Round variables
         write.object$modsum[, c("R", "R2", "R2.adj", "p")] <- sapply(c("R", "R2", "R2.adj", "p"), function(y) round(write.object$modsum[, y], digits = p.digits))
@@ -3952,10 +4297,10 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
       }
 
-      #...................
+      #--------------------------------------
       ### Coefficients ####
 
-      if (isTRUE(!is.null(write.object$coef))) {
+      if (isTRUE("coef" %in% write && !is.null(write.object$coef))) {
 
         # Round variables
         write.object$coef[, setdiff(colnames(write.object$coef), c("df", "p"))] <- sapply(setdiff(colnames(write.object$coef), c("df", "p")), function(y) round(write.object$coef[, y], digits = digits))
@@ -3969,20 +4314,20 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## Linear Mixed-Effects Model, lmer() ####
 
-    } else if (all(class(x$model) %in% c("lmerMod", "lmerModLmerTest"))) {
+    } else if (isTRUE(all(class(x$model) %in% c("lmerMod", "lmerModLmerTest")))) {
 
       # Two-level model
       model.twolevel <- ifelse(lme4::getME(x$model, name = "n_rtrms") == 1L, TRUE, FALSE)
 
-      #...................
+      #--------------------------------------
       ### Call ####
 
-      if (isTRUE(!is.null(write.object$call))) { write.object$call <- data.frame(c("Formula", "Data"), c(write.object$call$formula, write.object$call$data), fix.empty.names = FALSE) }
+      if (isTRUE("call" %in% write && !is.null(write.object$call))) { write.object$call <- data.frame(c("Formula", "Data"), c(write.object$call$formula, write.object$call$data), fix.empty.names = FALSE) }
 
-      #...................
+      #--------------------------------------
       ### Descriptive Statistics ####
 
-      if (isTRUE(!is.null(write.object$descript))) {
+      if (isTRUE("descript" %in% write && !is.null(write.object$descript))) {
 
         # Round variables
         write.object$descript[, c("m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")] <- round(write.object$descript[, c("m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")], digits = digits)
@@ -4009,10 +4354,10 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
       }
 
-      #...................
+      #--------------------------------------
       ### Correlation Matrix ####
 
-      if (isTRUE(!is.null(write.object$cormat))) {
+      if (isTRUE("cormat" %in% write && !is.null(write.object$cormat))) {
 
         # Round and format
         write.object$cormat <- round(write.object$cormat, digits = digits)
@@ -4025,10 +4370,10 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
       }
 
-      #...................
+      #--------------------------------------
       ### Model Summary ####
 
-      if (isTRUE(!is.null(write.object$modsum))) {
+      if (isTRUE("modsum" %in% write && !is.null(write.object$modsum))) {
 
         # Round variables
         write.object$modsum[, c("margR2", "condR2")] <- sapply(c("margR2", "condR2"), function(y) round(write.object$modsum[, y], digits = p.digits))
@@ -4065,12 +4410,10 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
       }
 
-      #...................
-      ### Coefficients ####
+      #--------------------------------------
+      ### Random Effects ####
 
-      if (isTRUE(!is.null(write.object$coef))) {
-
-        #### Random Effects ####
+      if (isTRUE("randeff" %in% write && !is.null(write.object$randeff))) {
 
         # Round variables
         write.object$randeff[, c("var", "sd")] <- sapply(c("var", "sd"), function(y) round(write.object$randeff[, y], digits = p.digits))
@@ -4082,8 +4425,12 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
         # Columns
         colnames(write.object$randeff) <- c("Groups", "Name", "Var", "SD", "Intercept", setdiff(colnames(write.object$randeff), c("groups", "name", "var", "sd", "cor")))
 
-        #...................
-        ### Coefficients ####
+      }
+
+      #--------------------------------------
+      ### Coefficients ####
+
+      if (isTRUE("coef" %in% write && !is.null(write.object$coef))) {
 
         if (isTRUE(all(class(x$model) == "lmerMod"))) {
 
@@ -4106,17 +4453,208 @@ write.result <- function(x, file = "Results.xlsx", tri = x$args$tri,
 
       }
 
-      #...................
+      #--------------------------------------
       ### Model Convergence ####
 
-      if (isTRUE(!is.null(write.object$converg))) { write.object$converg <- data.frame(switch(as.character(write.object$converg), "1" = "Model converged", "0" = "Model singular", "-1" = "Model not converged"), fix.empty.names = FALSE) }
+      if (isTRUE("converg" %in% write && !is.null(write.object$converg))) { write.object$converg <- data.frame(switch(as.character(write.object$converg), "1" = "Model converged", "0" = "Model singular", "-1" = "Model not converged"), fix.empty.names = FALSE) }
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Linear Mixed-Effects Model, lme() ####
+
+    } else if (isTRUE(all(class(x$model) %in% "lme"))) {
+
+      # Two-level model
+      model.twolevel <- ifelse(ncol(x$model$groups) == 1L, TRUE, FALSE)
+
+      #...................
+      ### Call ####
+
+      if (isTRUE("call" %in% write && !is.null(write.object$call))) { write.object$call <- data.frame(c("Formula", "Data"), c(write.object$call$formula, write.object$call$data), fix.empty.names = FALSE) }
+
+      #--------------------------------------
+      ### Descriptive Statistics ####
+
+      if (isTRUE("descript" %in% write && !is.null(write.object$descript))) {
+
+        # Round variables
+        write.object$descript[, c("m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")] <- round(write.object$descript[, c("m", "sd", "min", "p.min", "max", "p.max", "skew", "kurt")], digits = digits)
+
+        # Two-Level Model
+        if (isTRUE(model.twolevel)) {
+
+          # Round ICC(1)
+          write.object$descript[, "icc"] <- round(write.object$descript[, "icc"], digits = p.digits)
+
+          # Row names
+          colnames(write.object$descript) <- c("Variable", "n", "nUQ", "M", "SD", "Min", "%Min", "Max", "%Max", "Skew", "Kurt", "ICC(1)")
+
+        # Three-Level Model
+        } else {
+
+          # Round ICC(1)
+          write.object$descript[, c("icc.l2", "icc.l3")] <- sapply(c("icc.l2", "icc.l3"), function(y) round(write.object$descript[, y], digits = p.digits))
+
+          # Row names
+          colnames(write.object$descript) <- c("Variable", "n", "nUQ", "M", "SD", "Min", "%Min", "Max", "%Max", "Skew", "Kurt", "ICC(1)2", "ICC(1)3")
+
+        }
+
+      }
+
+      #--------------------------------------
+      ### Correlation Matrix ####
+
+      if (isTRUE("cormat" %in% write && !is.null(write.object$cormat))) {
+
+        # Round and format
+        write.object$cormat <- round(write.object$cormat, digits = digits)
+
+        # Diagonal
+        diag(write.object$cormat) <- NA
+
+        # Row names
+        write.object$cormat <- data.frame(colnames(write.object$cormat), write.object$cormat, fix.empty.names = FALSE)
+
+      }
+
+      #--------------------------------------
+      ### Model Summary ####
+
+      if (isTRUE("modsum" %in% write && !is.null(write.object$modsum))) {
+
+        # Two-Level Model
+        if (isTRUE(model.twolevel)) {
+
+          # Round variables
+          write.object$modsum[, c("margR2", "condR2")] <- sapply(c("margR2", "condR2"), function(y) round(write.object$modsum[, y], digits = p.digits))
+          write.object$modsum[, c("loglik", "deviance")] <- sapply(c("loglik", "deviance"), function(y) round(write.object$modsum[, y], digits = digits))
+
+          # Row names
+          if (isTRUE("nNA" %in% colnames(write.object$modsum))) {
+
+            colnames(write.object$modsum) <-  c("n", "nNA", "nCL", "nPar", "Method", "logLik", "Deviance", "margR2", "condR2")
+
+          } else {
+
+            colnames(write.object$modsum) <-  c("n", "nCL", "nPar", "Method", "logLik", "Deviance", "margR2", "condR2")
+
+          }
+
+        # Three-Level Model
+        } else {
+
+          # Round variables
+          write.object$modsum[, c("loglik", "deviance")] <- sapply(c("loglik", "deviance"), function(y) round(write.object$modsum[, y], digits = digits))
+
+
+          if (isTRUE("nNA" %in% colnames(write.object$modsum))) {
+
+            colnames(write.object$modsum) <-  c("n", "nNA", "nCL2", "nCL3", "nPar", "Method", "logLik", "Deviance")
+
+          } else {
+
+            colnames(write.object$modsum) <-  c("n", "nCL2", "nCL3", "Method", "logLik", "Deviance")
+
+          }
+
+        }
+
+      }
+
+      #--------------------------------------
+      ### Random Effects ####
+
+      if (isTRUE("randeff" %in% write && !is.null(write.object$randeff))) {
+
+        #### Random Effects ####
+
+        # Round variables
+        write.object$randeff[, c("var", "sd")] <- sapply(c("var", "sd"), function(y) round(write.object$randeff[, y], digits = p.digits))
+
+        # Replace NA with ""
+        write.object$randeff[, c("groups", "name")] <- apply(write.object$randeff[, c("groups", "name")], 2L, function(y) gsub("NA", "  ", y))
+
+        # Columns
+        colnames(write.object$randeff) <- rec(colnames(write.object$randeff), spec = "'groups' = 'Groups'; 'name' = 'Name'; 'var' = 'Var'; 'sd' = 'SD'; 'cor' = 'Cor'", check = FALSE)
+
+      }
+
+      #--------------------------------------
+      ### Variance and Correlation Structure ####
+
+      if (isTRUE("varcor" %in% write && !is.null(write.object$varcor))) {
+
+        #...................
+        #### Correlation Structure ####
+
+        if (isTRUE(!is.null(write.object$varcor$corstruct))) {
+
+          # Round
+          write.object$varcor$corstruct$corstruct <- round(write.object$varcor$corstruct$corstruct, digits = digits)
+
+          # Row names
+          write.object$varcor$corstruct$corstruct <- setNames(data.frame(row.names(write.object$varcor$corstruct$corstruct), write.object$varcor$corstruct$corstruct, fix.empty.names = FALSE, row.names = NULL),
+                                                              nm = c("", colnames(write.object$varcor$corstruct$corstruct)))
+
+        }
+
+        #...................
+        #### Variance Function ####
+
+        if (isTRUE(!is.null(write.object$varcor$varstruct))) {
+
+          if (isTRUE(!is.null(write.object$varcor$varstruct$varstruct))) {
+
+            if (isTRUE(!grepl("varComb", write.object$varcor$varstruct$class))) {
+
+              # Round
+              write.object$varcor$varstruct$varstruct <- round(write.object$varcor$varstruct$varstruct, digits = digits)
+
+            # Combination of variance functions, varComb
+            } else {
+
+              # Round
+              write.object$varcor$varstruct$varstruct <- lapply(write.object$varcor$varstruct$varstruct, round, digits = digits)
+
+              # Combine
+              write.object$varcor$varstruct$varstruct <- do.call("cbind", lapply(names(write.object$varcor$varstruct$varstruct), function(y) {
+
+                setNames(data.frame(names(write.object$varcor$varstruct$varstruct[[y]]), t(write.object$varcor$varstruct$varstruct[[y]]), fix.empty.names = FALSE, row.names = NULL),
+                         nm = c("", misty::chr.trim(sub("Variance function structure of class ", "", y))))
+
+              }))
+
+              # Names
+              names(write.object$varcor$varstruct$varstruct)[which(!names(write.object$varcor$varstruct$varstruct) %in% c("varExp", "varPower", "varConstPower", "varConstProp", "varIdent", "varFixed", "varComb"))] <- ""
+
+            }
+
+          }
+
+        }
+
+      }
+
+      #--------------------------------------
+      ### Coefficients ####
+
+      if (isTRUE("coef" %in% write && !is.null(write.object$coef))) {
+
+        # Round variables
+        write.object$coef[, setdiff(colnames(write.object$coef), c("p", "Level"))] <- sapply(setdiff(colnames(write.object$coef), c("p", "Level")), function(y) round(write.object$coef[, y], digits = digits))
+        write.object$coef[, "p"] <- round(write.object$coef[, "p"], digits = p.digits)
+
+        # Row names
+        write.object$coef <- data.frame(row.names(write.object$coef), write.object$coef, fix.empty.names = FALSE, row.names = NULL)
+
+      }
 
     }
 
-    #...................
-    ### Write object ####
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ## Write Object ####
 
-    write.object <- list(Call = write.object$call, Descript = write.object$descript, Cormat = write.object$cormat, Modsum = write.object$modsum, Randeff = write.object$randeff, Coef = write.object$coef, Conv = write.object$converg) |> (\(y) y[!sapply(y, is.null)])()
+    write.object <- list(Call = write.object$call, Descript = write.object$descript, Cormat = write.object$cormat, Modsum = write.object$modsum, Randeff = write.object$randeff, CorStruct = write.object$varcor$corstruct$corstruct, VarStruct = write.object$varcor$varstruct$varstruct, Coef = write.object$coef, Conv = write.object$converg) |> (\(y) y[!sapply(y, is.null)])()
 
   #_____________________________________________________________________________
   #

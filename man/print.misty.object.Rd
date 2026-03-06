@@ -11,7 +11,8 @@
       table = x$args$table, digits = x$args$digits, p.digits = x$args$p.digits,
       icc.digits = x$args$icc.digits, r.digits = x$args$r.digits,
       ess.digits = x$args$ess.digits, mcse.digits = x$args$mcse.digits,
-      sort.var = x$args$sort.var, order = x$args$order, check = TRUE, ...)
+      sort.var = x$args$sort.var, order = x$args$order, horiz = TRUE,
+      check = TRUE, ...)
 }
 \arguments{
 \item{x}{\code{misty.object} object.}
@@ -82,6 +83,9 @@ to be used for displaying monte carlo standard errors.}
 \item{order}{logical: if \code{TRUE}, variables are ordered from left to
 right in increasing order
 of missing values (\code{na.descript()} function).}
+
+\item{horiz}{logical: if \code{TRUE}, a horizontal line under the table
+header is drawn.}
 
 \item{check}{logical: if \code{TRUE}, argument specification is checked.}
 

@@ -4,15 +4,16 @@
 #' standard errors and significance values for (generalized) linear models estimated
 #' by using the \code{lm()} or the \code{glm()} function and (2) cluster-robust
 #' standard errors for multilevel and linear mixed-effects models estimated by
-#' using the \code{lmer()} function from the \pkg{lme4} package that are robust
-#' to the violation of the homoscedasticity assumption. For linear models the
-#' heteroscedasticity-robust F-test is computed as well. By default, the function
-#' uses the HC4 estimator for (generalized) linear models and the heteroscedastic-robust
-#' CR2 estimator for multilevel and linear mixed-effects models. Note that
-#' cluster-robust standard errors are available only for two-level models.
+#' using the \code{lmer()} function from the \pkg{lme4} package or by using the
+#' \code{lme()} function from the \pkg{nlme} package that are robust to the violation
+#' of the homoscedasticity assumption. For linear models the heteroscedasticity-robust
+#' F-test is computed as well. By default, the function uses the HC4 estimator
+#' for (generalized) linear models and the heteroscedastic-robust CR2 estimator
+#' for multilevel and linear mixed-effects models. Note that cluster-robust
+#' standard errors are available only for two-level models.
 #'
 #' @param model    a fitted model of class \code{lm}, \code{glm}, \code{lmerMod},
-#'                 or \code{lmerModLmerTest}.
+#'                 \code{lmerModLmerTest}, or \code{lme}.
 #' @param cluster  a vector representing the nested grouping structure (i.e., group
 #'                 or cluster variable). This argument is used only when requesting
 #'                 cluster-robust standard errors for (generalized) linear models
@@ -279,7 +280,7 @@
 #' # Example 3: Multilevel and Linear Mixed-Effects Model
 #'
 #' # Load lme4 and misty package
-#' misty::libraries(lme4, misty)
+#' misty::libraries(lme4, nlme, misty)
 #'
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
@@ -290,11 +291,17 @@
 #' # Grand-mean centering, center() from the misty package
 #' Demo.twolevel <- center(Demo.twolevel, w1, type = "CGM", cluster = "cluster")
 #'
-#' # Estimate two-level mixed-effects model
+#' # Estimate two-level mixed-effects model using the lme4 package
 #' mod.lmer <- lmer(y1 ~ x2.c + w1.c + x2.c:w1.c + (1 + x2.c | cluster), data = Demo.twolevel)
 #'
 #' # Statistical significance testing based on cluster-robust SE
 #' coeff.robust(mod.lmer)
+#'
+#' # Estimate two-level mixed-effects model using the nlme package
+#' mod.lme <- lme(y1 ~ x2.c + w1.c + x2.c:w1.c, random = ~ 1 + x2.c | cluster, data = Demo.twolevel)
+#'
+#' # Statistical significance testing based on cluster-robust SE
+#' coeff.robust(mod.lme)
 #'
 #' #----------------------------------------------------------------------------
 #' # Write Results
@@ -318,8 +325,8 @@ coeff.robust <- function(model, cluster = NULL,
   # Check if input 'model' is missing or NULL
   if (isTRUE(missing(model) || is.null(model))) { stop("Please specify a fitted model for the argument 'model'.", call. = FALSE) }
 
-  # Check if input 'model' is not 'lm', 'glm', "lmerMod", or "lmerModLmerTest"
-  if (isTRUE(!any(class(model) %in% c("lm", "glm", "lmerMod", "lmerModLmerTest")) )) { stop("Please specify a fitted model object from the \"lm\", \"glm\", \"lmerMod\", or \"lmerModLmerTest\", function for the argument 'model'.", call. = FALSE) }
+  # Check if input 'model' is not 'lm', 'glm', "lmerMod", "lmerModLmerTest", or "lme"
+  if (isTRUE(!any(class(model) %in% c("lm", "glm", "lmerMod", "lmerModLmerTest", "lme")) )) { stop("Please specify a fitted model object from the \"lm\", \"glm\", \"lmer\", or \"lme\" function for the argument 'model'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
@@ -345,6 +352,10 @@ coeff.robust <- function(model, cluster = NULL,
 
     model.class <- "lmer"
 
+  } else if (all(class(model) %in% "lme")) {
+
+    model.class <- "lme"
+
   }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -359,7 +370,7 @@ coeff.robust <- function(model, cluster = NULL,
 
       if (isTRUE(is.null(cluster))) { type <- "HC4"  } else { type <- "CR2" }
 
-    } else if (isTRUE(model.class == "lmer")) { type <- "CR2" }
+    } else if (isTRUE(model.class %in% c("lmer", "lme"))) { type <- "CR2" }
 
   }
 
@@ -383,7 +394,7 @@ coeff.robust <- function(model, cluster = NULL,
             sandw <- .sandw(model, type = type)
 
             # Inference for estimated coefficients
-            modcoef <- .coeftest(model, vcov = sandw)
+            modcoef <- data.frame(.coeftest(model, vcov = sandw))
 
             # Linear model
             if (isTRUE(length(class(model)) == 1L)) {
@@ -414,7 +425,7 @@ coeff.robust <- function(model, cluster = NULL,
              sandw <- suppressMessages(clubSandwich::vcovCR(model, cluster = cluster, type = type))
 
              # Significance testing
-             modcoef <- clubSandwich::coef_test(model, vcov = sandw, test = "Satterthwaite") |> (\(p) setNames(as.data.frame(p)[, c("beta", "SE", "tstat", "df_Satt", "p_Satt")], nm = c("Estimate", "SE", "df", "t", "p")))()
+             modcoef <- data.frame(clubSandwich::coef_test(model, vcov = sandw, test = "Satterthwaite") |> (\(p) setNames(as.data.frame(p)[, c("beta", "SE", "tstat", "df_Satt", "p_Satt")], nm = c("Estimate", "SE", "df", "t", "p")))())
 
              # Object F.test
              F.test <- NULL
@@ -439,7 +450,30 @@ coeff.robust <- function(model, cluster = NULL,
            sandw <- suppressMessages(clubSandwich::vcovCR(model, type = type))
 
            # Significance testing
-           modcoef <- clubSandwich::coef_test(model, vcov = sandw, test = "Satterthwaite") |> (\(p) setNames(as.data.frame(p)[, c("beta", "SE", "tstat", "df_Satt", "p_Satt")], nm = c("Estimate", "SE", "df", "t", "p")))()
+           modcoef <- data.frame(clubSandwich::coef_test(model, vcov = sandw, test = "Satterthwaite") |> (\(p) setNames(as.data.frame(p)[, c("beta", "SE", "tstat", "df_Satt", "p_Satt")], nm = c("Estimate", "SE", "df", "t", "p")))())
+
+           # Object F.test
+           F.test <- NULL
+
+         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         ## Linear Mixed-Effects Model, lme() ####
+
+         }, lme = {
+
+           # Argument 'type'
+           if (isTRUE(!type %in% c("CR0", "CR1", "CR1p", "CR1S", "CR2", "CR3"))) { stop("Please specify a \"CR\" estimator for the argument 'type'.", call. = FALSE) }
+
+           # Package clubSandwich installed?
+           if (isTRUE(!nzchar(system.file(package = "clubSandwich")))) { stop("Package \"clubSandwich\", please install the package.", call. = FALSE) }
+
+           # Two-level model
+           if (isTRUE(ifelse(ncol(model$groups) == 1L, FALSE, TRUE))) { stop("This function supports only two-level models.", call. = FALSE) }
+
+           # Sandwich variance-covariance matrix
+           sandw <- suppressMessages(clubSandwich::vcovCR(model, type = type))
+
+           # Significance testing
+           modcoef <- data.frame(clubSandwich::coef_test(model, vcov = sandw, test = "Satterthwaite") |> (\(p) setNames(as.data.frame(p)[, c("beta", "SE", "tstat", "df_Satt", "p_Satt")], nm = c("Estimate", "SE", "df", "t", "p")))())
 
            # Object F.test
            F.test <- NULL

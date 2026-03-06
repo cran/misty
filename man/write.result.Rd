@@ -4,7 +4,7 @@
 \alias{write.result}
 \title{Write Results of a misty Object into an Excel file}
 \usage{
-write.result(x, file = "Results.xlsx", tri = x$args$tri,
+write.result(x, file = "Results.xlsx", write = x$args$print, tri = x$args$tri,
              digits = x$args$digits, p.digits = x$args$p.digits,
              icc.digits = x$args$icc.digits, r.digits = x$args$r.digits,
              ess.digits = x$args$ess.digits, mcse.digits = x$args$mcse.digits,
@@ -16,6 +16,9 @@ supported by the \code{write.result} function (see 'Details').}
 
 \item{file}{a character string naming a file with or without file extension
 '.xlsx', e.g., \code{"Results.xlsx"} or \code{"Results"}.}
+
+\item{write}{a character string or character vector indicating which
+results to to be written into an Excel file.}
 
 \item{tri}{a character string or character vector indicating which triangular
 of the matrix to show on the console, i.e., \code{both} for upper and lower
@@ -51,13 +54,14 @@ Currently the function supports result objects from the following functions:
 \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
 \code{\link{ci.sd}}, \code{\link{coeff.robust}}, \code{\link{coeff.std}},
 \code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{descript}},
-\code{\link{dominance.manual}}, \code{\link{dominance}}, \code{\link{effsize}},
-\code{\link{freq}}, \code{\link{item.alpha}}, \code{\link{item.cfa}},
-\code{\link{item.invar}}, \code{\link{item.omega}}, \code{\link{mplus.bayes}},
-\code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
+\code{\link{difftest.chibarsq}}, \code{\link{dominance.manual}}, \code{\link{dominance}},
+\code{\link{effsize}}, \code{\link{freq}}, \code{\link{item.alpha}},
+\code{\link{item.cfa}}, \code{\link{item.invar}}, \code{\link{item.omega}},
+\code{\link{mplus.bayes}}, \code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
 \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
-\code{\link{multilevel.invar}}, \code{\link{multilevel.omega}},
-\code{\link{na.auxiliary}}, \code{\link{na.coverage}}, \code{\link{na.descript}},
+\code{\link{multilevel.invar}}, \code{\link{item.noninvar}},
+\code{\link{multilevel.omega}}, \code{\link{na.auxiliary}},
+\code{\link{na.coverage}}, \code{\link{na.descript}},
 \code{\link{na.pattern}}, \code{\link{mplus.lca.summa}},
 \code{\link{summa}} and \code{\link{uniq}}
 }

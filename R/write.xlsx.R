@@ -68,22 +68,13 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
   file <- ifelse(length(grep(".xlsx", file)) == 0L, file <- paste0(file, ".xlsx"), file)
 
   # Matrix
-
   if (isTRUE(is.list(x))) {
 
-    if(any(sapply(x, is.matrix))) {
-
-      x <- lapply(x, as.data.frame)
-
-    }
+    if (isTRUE(any(sapply(x, is.matrix)))) { x <- lapply(x, as.data.frame) }
 
   } else {
 
-    if (is.matrix(x)) {
-
-      x <- as.data.frame(x)
-
-    }
+    if (isTRUE(is.matrix(x))) { x <- as.data.frame(x) }
 
   }
 

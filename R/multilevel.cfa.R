@@ -1505,7 +1505,7 @@ multilevel.cfa <- function(data, ..., cluster, model = NULL, rescov = NULL,
                                         # Identification
                                         switch(ident,
                                                "marker" = "Marker Variable",
-                                               "var" = "Factor Variance",
+                                               "var" = "Std. LV",
                                                "effect" = "Effects Coding"), "",
                                         # Number of model parameters
                                         npar, npar.l1, npar.l2,

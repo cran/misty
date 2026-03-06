@@ -5,41 +5,46 @@
 \title{Print Summary Output}
 \usage{
 summa(model, print = c("all", "default", "call", "descript", "cormat", "modsum",
-                       "coef", "confint", "stdcoef", "vif"),
+                       "randeff", "varcor", "coef", "confint", "stdcoef", "vif"),
       robust = FALSE, ddf = c("Satterthwaite", "Kenward-Roger", "lme4"),
-      conf.level = 0.95, method = c("profile", "wald", "boot"), R = 1000,
+      method = c("profile", "wald", "boot"), conf.level = 0.95, R = 1000,
       boot = c("perc", "basic", "norm"), seed = NULL, digits = 2, p.digits = 3,
       write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{model}{a fitted model of class \code{"lm"}, \code{"lmerMod"}, \code{"rlmerMod"},
-or \code{"lmerModLmerTest"}}
+\code{"lmerModLmerTest"}, or \code{"lme"}}
 
 \item{print}{a character vector indicating which results to print, i.e.
 \code{"all"}, for all results, \code{"call"} for the function
-call, \code{"descript"} for descriptive statistics,
-\code{cormat} for the Pearson product-moment correlation
-matrix for models estimated by \code{"lm"} (see
-\code{\link{cor.matrix}} function) or within- and between-group
-correlation matrix for models estimated by \code{"lmer"}
-(see \code{\link{multilevel.cor}} function), \code{modsum}
-for the multiple correlation, r-squared, and F-test for models
+call, \code{"descript"} for descriptive statistics, \code{cormat}
+for the Pearson product-moment correlation matrix for models
+estimated by \code{"lm"} (see \code{\link{cor.matrix}} function)
+or within- and between-group correlation matrix for models
+estimated by \code{"lmer"} or \code{"lme"} (see
+\code{\link{multilevel.cor}} function), \code{modsum} for
+the multiple correlation, r-squared, and F-test for models
 estimated by \code{"lm"} or model summary, marginal, and
 conditional R-squared for models estimated by \code{"lmer"}
-(see \code{\link{multilevel.r2}} function), \code{coef} for the
-unstandardized coefficients for models estimated by \code{"lm"}
-or random effects and fixed effects for models estimated
-by \code{"lmer"}, \code{confint} for the confidence interval
-for unstandardized coefficients, \code{stdcoef} for the
-standardized coefficients (see \code{\link{coeff.std} function}),
-and \code{vif} for the variance inflation factor (see
-\code{\link{check.collin}} function). The default setting is
-\code{print = c("call", "modsum", "coef")}. Note that when
-a fitted model of class \code{"rlmerMod"} is specified for
-the argument \code{model}, the argument \code{print} is always
-\code{c("call", "coef")}, i.e., \code{"descript"}, \code{"cormat"},
-\code{"modsum"}, \code{"confint"}, \code{"stdcoef"}, and
-\code{"vif"} are not available for an \code{"rlmerMod"}
+or \code{"lme"} (see \code{\link{multilevel.r2}} function),
+\code{"randeff"} for the random effects (variance and
+correlation components) for models estimated by \code{"lmer"}
+or \code{"lme"}, \code{"varcor"} for the variance and correlation
+structure for models estimated by \code{"lme"},
+\code{coef} for the unstandardized coefficients for models
+estimated by \code{"lm"} and fixed effects for models
+estimated by \code{"lmer"} or \code{"lme"}, \code{confint}
+for the confidence interval for unstandardized coefficients,
+\code{stdcoef} for the standardized coefficients (see
+\code{\link{coeff.std} function}), and \code{vif} for the
+variance inflation factor (see \code{\link{check.collin}}
+function). The default setting is
+\code{print = c("call", "modsum", "randeff", "varcor", "coef")}. Note
+that when a fitted model of class \code{"rlmerMod"} is specified
+for the argument \code{model}, the default setting is
+\code{c("call", "randeff", "coef")} and that \code{"descript"},
+\code{"cormat"}, \code{"modsum"}, \code{"confint"}, \code{"stdcoef"},
+and \code{"vif"} are not available for an \code{"rlmerMod"}
 object.}
 
 \item{robust}{logical: if \code{TRUE}, heteroscedasticity-consistent
@@ -48,7 +53,7 @@ F-test using the HC4 estimator are computed for linear models
 estimated by using the \code{lm()} function or cluster-robust
 standard errors using the CR2 estimator is computed for
 multilevel and linear mixed-effects models estimated by using
-the \code{lmer()} function (see \code{\link{coeff.robust}}
+the \code{lmer()} or \code{lme()} function (see \code{\link{coeff.robust}}
 function).}
 
 \item{ddf}{a character string for specifying the method for computing
@@ -63,17 +68,18 @@ model of class \code{"rlmerMod"} is specified for the argument
 \code{model}, Satterthwaite or Kenward-Roger degrees of freedom
 are computed only if the R package \pkg{lmerTest} is loaded.}
 
-\item{conf.level}{a numeric value between 0 and 1 indicating the confidence
-level of the interval.}
-
 \item{method}{a character string for specifying the method for computing
-confidence intervals (CI), i.e., \code{"profile"} (default)
-for computing a likelihood profile and finding the appropriate
-cutoffs based on the likelihood ratio test, \code{"Wald"}
+confidence intervals (CI), i.e., \code{"profile"} (default
+for \code{"lmer"} objects) for computing a likelihood profile
+and finding the appropriate cutoffs based on the likelihood
+ratio test, \code{"wald"} (default for \code{"lme"} objects)
 for approximating the CIs based on the estimated local curvature
 of the likelihood surface, and \code{"boot"} for performing
 bootstrapping with CIs computed from the bootstrap distribution
-according to the argument \code{boot}.}
+according to the argument \code{boot}..}
+
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence
+level of the interval.}
 
 \item{R}{a numeric value indicating the number of bootstrap replicates
 (default is 1000).}
@@ -121,20 +127,21 @@ entries:
 \item{\code{args}}{specification of function arguments}
 \item{\code{result}}{list with results, i.e., \code{call} for the the function
 call, \code{descript} for descriptive statistics, \code{cormat} for the
-correlation matrix, \code{modsum} for the model summary, \code{randeff} for
-the variance and correlation components,\code{coef} for the model coefficients,
-\code{weights} for the robustness weights and \code{converg} for the convergence
-check, i.e., \code{1} = model converged, \code{0} = model singular, and \code{-1}
-model not converged.}
+correlation matrix, \code{modsum} for the model summary, \code{varcor} for the
+variance and correlation structure, \code{randeff} for the variance and correlation
+components,\code{coef} for the model coefficients, \code{weights} for the robustness
+weights and \code{converg} for the convergence check, i.e., \code{1} = model
+converged, \code{0} = model singular, and \code{-1} model not converged.}
 }
 \description{
 This function prints a summary of the result object returned by the function
 \code{"lm"} for estimating linear regression models and for the result object
 returned by the function \code{"lmer"} from the \pkg{lme4} or \pkg{lmerTest}
-package, or by the function \code{"rlmer"} from the \pkg{robustlmm} package to
-estimate two- or three-level (robust) multilevel and linear mixed-effects models.
-By default, the function prints the function call, model summary, and the regression
-coefficient table.
+package, result object returned by the function \code{"lme"} from the \pkg{nlme}
+package, or by the function \code{"rlmer"} from the \pkg{robustlmm} package
+to estimate two- or three-level (robust) multilevel and linear mixed-effects
+models. By default, the function prints the function call, model summary,
+variance and correlation components, and the regression coefficient table.
 }
 \details{
 \describe{
@@ -170,8 +177,8 @@ summa(mod.lm, print = c("default", "stdcoef"))
 #----------------------------------------------------------------------------
 # Multilevel and Linear Mixed-Effects Model
 
-# Load lme4 and misty package
-misty::libraries(lme4, misty)
+# Load lme4, nlme, and misty package
+misty::libraries(lme4, nlme, misty)
 
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
@@ -185,18 +192,23 @@ Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
 # Grand-mean centering, center() from the misty package
 Demo.twolevel <- center(Demo.twolevel, w1, type = "CGM", cluster = "cluster")
 
-# Estimate two-level mixed-effects model
-mod.lmer2 <- lmer(y1 ~ x2.c + w1.c + x2.c:w1.c + (1 + x2.c | cluster),
-                  data = Demo.twolevel)
+# Estimate two-level mixed-effects model using the lme4 package
+mod.lmer2 <- lmer(y1 ~ x2.c + w1.c + x2.c:w1.c + (1 + x2.c | cluster), data = Demo.twolevel)
+
+# Estimate two-level mixed-effects model using the nlme package
+mod.lme2 <- lme(y1 ~ x2.c + w1.c + x2.c:w1.c, random = ~ 1 + x2.c | cluster, data = Demo.twolevel)
 
 # Example 2a: Default setting
 summa(mod.lmer2)
+summa(mod.lme2)
 
 # Example 2b: Print all available results
 summa(mod.lmer2, print = "all")
+summa(mod.lme2, print = "all")
 
 # Example 2c: Print default results plus standardized coefficient
 summa(mod.lmer2, print = c("default", "stdcoef"))
+summa(mod.lme2, print = c("default", "stdcoef"))
 
 # Load lmerTest package
 library(lmerTest)
@@ -238,11 +250,16 @@ Demo.threelevel <- center(Demo.threelevel, w1, type = "CWC", cluster = c("cluste
 # Estimate three-level model using the lme4 package
 mod.lmer3 <- lmer(y1 ~ x1.c + w1.c + (1 | cluster3/cluster2), data = Demo.threelevel)
 
+# Estimate three-level model using the nlme package
+mod.lme3 <- lme(y1 ~ x1.c + w1.c, random = ~ 1 | cluster3/cluster2, data = Demo.threelevel)
+
 # Example 3a: Default setting
 summa(mod.lmer3)
+summa(mod.lme3)
 
 # Example 3b: Print all available results
 summa(mod.lmer3, print = "all")
+summa(mod.lme3, print = "all")
 
 #------------------
 ## Robust Estimation using the R package robustlmm

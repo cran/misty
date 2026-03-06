@@ -74,6 +74,14 @@
 #'                         in \code{data} or a vector representing the groups for
 #'                         conducting multiple-group analysis to evaluate
 #'                         between-group measurement invariance.
+#' @param cluster          either a character string indicating the variable name
+#'                         of the cluster variable in \code{data}, or a vector
+#'                         representing the nested grouping structure (i.e., group
+#'                         or cluster variable) for computing scaled chi-square
+#'                         test statistic that takes into account non-independence
+#'                         of observations. Note that this option is not available
+#'                         when evaluating measurement invariance for ordered
+#'                         categorical indicators by specifying \code{ordered = TRUE).
 #' @param long             logical: if \code{TRUE}, longitudinal measurement
 #'                         invariance evaluation is conducted. The longitudinal
 #'                         measurement model is specified by using the argument
@@ -103,14 +111,6 @@
 #'                         \code{ordinal = TRUE}), i.e., \code{"delta"} (default)
 #'                         for delta parameterization or \code{"theta"} for theta
 #'                         parameterization.
-#' @param cluster          either a character string indicating the variable name
-#'                         of the cluster variable in \code{data}, or a vector
-#'                         representing the nested grouping structure (i.e., group
-#'                         or cluster variable) for computing scaled chi-square
-#'                         test statistic that takes into account non-independence
-#'                         of observations. Note that this option is not available
-#'                         when evaluating measurement invariance for ordered
-#'                         categorical indicators by specifying \code{ordered = TRUE).
 #' @param rescov           a character vector or a list of character vectors for
 #'                         specifying residual covariances, e.g., \code{rescov = c("x1", "x2")}
 #'                         for specifying a residual covariance between items \code{x1}
@@ -291,6 +291,8 @@
 #'                         evaluating measurement invariance will be estimated by
 #'                         using the \code{cfa()} function from the R package
 #'                         lavaan.
+#' @param se               internal argument only used in the \code{item.nonequi()}
+#'                         function, this argument should never be specified.
 #' @param digits           an integer value indicating the number of decimal places
 #'                         to be used for displaying results. Note that information
 #'                         criteria and chi-square test statistic are printed with
@@ -324,7 +326,7 @@
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
 #'
 #' @seealso
-#' \code{\link{item.cfa}}, \code{\link{multilevel.invar}}, \code{\link{write.result}}
+#' \code{\link{item.noninvar}}, \code{\link{item.cfa}}, \code{\link{multilevel.invar}}
 #'
 #' @references
 #' Brosseau-Liard, P. E., & Savalei, V. (2014) Adjusting incremental fit indices
@@ -403,17 +405,17 @@
 #' # Measurement model with one factor
 #'
 #' # Example 1a: Model specification using the argument '...'
-#' item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "sex")
+#' item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school")
 #'
 #' # Example 1b: Alternative model specification without using the argument '...'
 #' item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
 #'            group = HolzingerSwineford1939$sex)
 #'
 #' # Example 1c: Alternative model specification without using the argument '...'
-#' item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "sex")], group = "sex")
+#' item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "school")], group = "school")
 #'
 #' # Example 1d: Alternative model specification using the argument 'model'
-#' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "sex")
+#' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "school")
 #'
 #' #..................
 #' # Measurement model with two factors
@@ -421,14 +423,14 @@
 #' # Example 2: Model specification using the argument 'model'
 #' item.invar(HolzingerSwineford1939,
 #'            model = list(c("x1", "x2", "x3", "x4"), c("x5", "x6", "x7", "x8")),
-#'            group = "sex")
+#'            group = "school")
 #'
 #' #..................
 #' # Configural, metric, scalar, and strict measurement invariance
 #'
 #' # Example 3: Evaluate configural, metric, scalar, and strict measurement invariance
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "sex", invar = "strict")
+#'            group = "school", invar = "strict")
 #'
 #' #..................
 #' # Between-group partial measurement invariance
@@ -438,19 +440,19 @@
 #' #             Free intercept for 'x1'
 #' #             Free residual variance for 'x4'
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "sex", invar = "strict",
+#'            group = "school", invar = "strict",
 #'            partial = list(load = c("x2", "x3"),
 #'                           inter = "x1",
 #'                           resid = "x4"))
 #'
 #' # Example 4b: More than Two Groups
 #' #             Free factor loading for 'x2' in group 2
-#' #             Free factor loading for 'x4' in group 1 and 4
+#' #             Free factor loading for 'x4' in group 1 and 3
 #' #             Free intercept for 'x1' in group 3
 #' #             Free residual variance for 'x3' in group 1 and 3
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "ageyr", invar = "strict",
-#'            partial = list(load = list(x2 = "g2", x4 = c("g1", "g4")),
+#'            partial = list(load = list(x2 = "g2", x4 = c("g1", "g3")),
 #'                           inter = list(x1 = "g3"),
 #'                           resid = list(x3 = c("g1", "g3"))))
 #'
@@ -459,59 +461,59 @@
 #'
 #' # Example 5a: One residual covariance
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            rescov = c("x3", "x4"), group = "sex")
+#'            rescov = c("x3", "x4"), group = "school")
 #'
 #' # Example 5b: Two residual covariances
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            rescov = list(c("x1", "x4"), c("x3", "x4")), group = "sex")
+#'            rescov = list(c("x1", "x4"), c("x3", "x4")), group = "school")
 #'
 #' #..................
 #' # Scaled test statistic
 #'
 #' # Example 6a: Specify cluster variable using a variable name in 'data'
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "sex", cluster = "agemo")
+#'            group = "school", cluster = "agemo")
 #'
 #' # Example 6b: Specify cluster variable as vector
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "sex", cluster = HolzingerSwineford1939$agemo)
+#'            group = "school", cluster = HolzingerSwineford1939$agemo)
 #'
 #' #..................
 #' # Default Null model
 #'
 #' # Example 7: Specify default null model for computing incremental fit indices
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "sex", null.model = FALSE)
+#'            group = "school", null.model = FALSE)
 #'
 #' #..................
 #' # Print argument
 #'
 #' # Example 8a: Request all results
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "sex", print = "all")
+#'            group = "school", print = "all")
 #'
 #' # Example 8b: Request fit indices with ad hoc non-normality correction
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "sex", print.fit = "scaled")
+#'            group = "school", print.fit = "scaled")
 #'
 #' # Example 8c: Request modification indices with value equal or higher than 2
 #' # and highlight residual correlations equal or higher than 0.3
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "sex", print = c("modind", "resid"),
+#'            group = "school", print = c("modind", "resid"),
 #'            mod.minval = 2, resid.minval = 0.3)
 #'
 #' #..................
 #' # Model syntax and lavaan summary of the estimated model
 #'
 #' # Example 9a: Model specification using the argument '...'
-#' mod1 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "sex",
+#' mod1 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school",
 #'                    output = FALSE)
 #'
 #' # lavaan summary of the scalar invariance model
 #' lavaan::summary(mod1$model.fit$scalar, standardized = TRUE, fit.measures = TRUE)
 #'
 #' # Example 9b: Do not estimate any models
-#' mod2 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "sex",
+#' mod2 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school",
 #'                    lavaan.run = FALSE)
 #'
 #' # lavaan model syntax metric invariance model
@@ -611,15 +613,15 @@
 #'
 #' # Example 16a: Write Results into a text file
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "sex", print = "all", write = "Invariance.txt", output = FALSE)
+#'            group = "school", print = "all", write = "Invariance.txt", output = FALSE)
 #'
 #' # Example 16b: Write Results into a Excel file
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-#'            group = "sex", print = "all", write = "Invariance.xlsx", output = FALSE)
+#'            group = "school", print = "all", write = "Invariance.xlsx", output = FALSE)
 #' }
-item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, ordered = FALSE,
-                       parameterization = c("delta", "theta"), rescov = NULL,
-                       rescov.long = TRUE, cluster = NULL,
+item.invar <- function(data, ..., model = NULL, group = NULL, cluster = NULL,
+                       long = FALSE, ordered = FALSE, parameterization = c("delta", "theta"),
+                       rescov = NULL, rescov.long = TRUE,
                        invar = c("config", "thres", "metric", "scalar", "strict"),
                        partial = NULL, ident = c("marker", "var", "effect"),
                        estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
@@ -628,7 +630,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
                        missing = c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust"),
                        null.model = TRUE, print = c("all", "summary", "partial", "coverage", "descript", "fit", "est", "modind", "resid"),
                        print.fit = c("all", "standard", "scaled", "robust"), mod.minval = 6.63, resid.minval = 0.1,
-                       lavaan.run = TRUE, digits = 3, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
+                       lavaan.run = TRUE, se = NULL, digits = 3, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
                        check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
@@ -636,7 +638,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
   # Initial Check --------------------------------------------------------------
 
   # Check if input 'data' is missing or NULL
-  if (isTRUE(missing(data) ||is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
+  if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a data frame for the argument 'data'", call. = FALSE) }
 
   # Check if input 'model' is a character vector or list of character vectors
   if (isTRUE(!is.null(model) && !all(sapply(model, is.character)))) { stop("Please specify a character vector or list of character vectors for the argument 'model'.", call. = FALSE) }
@@ -656,8 +658,8 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
 
   if (isTRUE(!missing(...))) {
 
-    # Extract data and convert tibble into data frame or vector
-    x <- as.data.frame(data[, .var.names(data = data, ..., group = group, cluster = cluster)])
+    # Extract data and convert tibble into a data frame
+    x <- data[, .var.names(data = data, ..., group = group, cluster = cluster)] |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { as.data.frame(p) } else { return(p) })()
 
     # Grouping variable
     if (isTRUE(!is.null(group))) { group <- data[, group] }
@@ -670,8 +672,8 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
 
   } else {
 
-    # Data frame
-    x <- as.data.frame(data)
+    # Convert 'data' as tibble into a data frame
+    x <- data |> (\(p) if (isTRUE("tbl" %in% substr(class(p), 1L, 3L))) { as.data.frame(p) } else { return(p) })()
 
     # Data and cluster
     var.group <- .var.group(data = x, group = group, cluster = cluster)
@@ -686,10 +688,6 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
     if (isTRUE(!is.null(var.group$cluster))) { cluster <- var.group$cluster }
 
   }
-
-  # Convert 'group' and 'cluster' as tibble into a vector
-  if (!is.null(group) && isTRUE("tbl" %in% substr(class(group), 1L, 3L))) { group <- unname(unlist(group)) }
-  if (!is.null(cluster) && isTRUE("tbl" %in% substr(class(cluster), 1L, 3L))) { cluster <- unname(unlist(cluster)) }
 
   #_____________________________________________________________________________
   #
@@ -930,22 +928,29 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Model ####
 
-  if (isTRUE(!is.null(model) && is.list(model) && (is.null(names(model)) || any(names(model) == "")))) {
+  # Specification with the argument 'model'
+  if (isTRUE(!is.null(model) && is.list(model))) {
 
-    # Factor labels for evaluating between-group measurement invariance
-    if (isTRUE(!long)) {
+    # No factor labels
+    if (isTRUE(is.null(names(model)))) {
 
-      names(model) <- paste0("f", seq_along(model))
+      # Factor labels for between-group measurement invariance
+      if (isTRUE(!long)) {
 
-    # Factor labels for evaluating within-group measurement invariance
-    } else {
+        names(model) <- paste0("f", seq_along(model))
 
-      names(model) <- paste0("t", seq_along(model))
+      # Factor labels for within-group measurement invariance
+      } else {
+
+        names(model) <- paste0("t", seq_along(model))
+
+      }
 
     }
 
     lv.label <- names(model)
 
+  # Specification without the argument 'model'
   } else {
 
     lv.label <- "f"
@@ -1726,7 +1731,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
       #### Model Specification: Configural Measurement Invariance ####
 
       ##### Marker variable method
-      if (isTRUE(ident == "metric")) {
+      if (isTRUE(ident == "marker")) {
 
         # Fix intercept of first indicators at 0 and estimate latent means
         mod.config <- paste0(mod.load.config, "\n",
@@ -2594,14 +2599,26 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
 
     if (isTRUE(!is.null(mod.config))) {
 
-      #### Model estimation ####
-      mod.config.fit <- suppressWarnings(lavaan::cfa(mod.config, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
-                                                     ordered = ordered, parameterization = parameterization, meanstructure = TRUE,
-                                                     cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
-                                                     std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing))
+      # Function not used in the item.nonequi() function
+      if (isTRUE(is.null(se))) {
+
+        mod.config.fit <- suppressWarnings(lavaan::cfa(mod.config, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
+                                                       ordered = ordered, parameterization = parameterization, meanstructure = TRUE,
+                                                       cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
+                                                       std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing))
+
+      # Function used in the item.nonequi() function
+      } else {
+
+        mod.config.fit <- suppressWarnings(lavaan::cfa(mod.config, data = x, group = if (isTRUE(long)) { NULL } else { ".group" },
+                                                       ordered = ordered, parameterization = "delta", meanstructure = TRUE,
+                                                       cluster = if (isTRUE(is.null(cluster))) { NULL } else { ".cluster" },
+                                                       se = "none", std.lv = std.lv, effect.coding = effect.coding, estimator = estimator, missing = missing))
+
+      }
 
       #### Convergence and model identification checks ####
-      if (isTRUE(check)) { mod.config.fit.check <- .conv.ident(mod.config.fit, invar = "config", long = long) }
+      if (isTRUE(check && is.null(se))) { mod.config.fit.check <- .conv.ident(mod.config.fit, invar = "config", long = long) }
 
     }
 
@@ -2823,45 +2840,53 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
 
   lav.fit.config <- lav.fit.thres <- lav.fit.metric <- lav.fit.scalar <- lav.fit.strict <- NULL
 
-  # Configural invariance model
-  if (isTRUE(!is.null(mod.config.fit))) { lav.fit.config <- suppressWarnings(lavaan::fitmeasures(mod.config.fit, baseline.model = if (isTRUE(null.model)) { mod.null.fit } else { NULL })) }
+  if (isTRUE("fit" %in% print)) {
 
-  # Threshold invariance model
-  if (isTRUE(!is.null(mod.thres.fit))) { lav.fit.thres <- suppressWarnings(lavaan::fitmeasures(mod.thres.fit)) }
+    # Configural invariance model
+    if (isTRUE(!is.null(mod.config.fit))) { lav.fit.config <- suppressWarnings(lavaan::fitmeasures(mod.config.fit, baseline.model = if (isTRUE(null.model)) { mod.null.fit } else { NULL })) }
 
-  # Metric invariance model
-  if (isTRUE(!is.null(mod.metric.fit))) { lav.fit.metric <- suppressWarnings(lavaan::fitmeasures(mod.metric.fit, baseline.model = if (isTRUE(null.model)) { mod.null.fit } else { NULL })) }
+    # Threshold invariance model
+    if (isTRUE(!is.null(mod.thres.fit))) { lav.fit.thres <- suppressWarnings(lavaan::fitmeasures(mod.thres.fit)) }
 
-  # Scalar invariance model
-  if (isTRUE(!is.null(mod.scalar.fit))) { lav.fit.scalar <- suppressWarnings(lavaan::fitmeasures(mod.scalar.fit, baseline.model = if (isTRUE(null.model)) { mod.null.fit } else { NULL })) }
+    # Metric invariance model
+    if (isTRUE(!is.null(mod.metric.fit))) { lav.fit.metric <- suppressWarnings(lavaan::fitmeasures(mod.metric.fit, baseline.model = if (isTRUE(null.model)) { mod.null.fit } else { NULL })) }
 
-  # Strict invariance model
-  if (isTRUE(!is.null(mod.strict.fit))) { lav.fit.strict <- suppressWarnings(lavaan::fitmeasures(mod.strict.fit, baseline.model = if (isTRUE(null.model)) { mod.null.fit } else { NULL })) }
+    # Scalar invariance model
+    if (isTRUE(!is.null(mod.scalar.fit))) { lav.fit.scalar <- suppressWarnings(lavaan::fitmeasures(mod.scalar.fit, baseline.model = if (isTRUE(null.model)) { mod.null.fit } else { NULL })) }
+
+    # Strict invariance model
+    if (isTRUE(!is.null(mod.strict.fit))) { lav.fit.strict <- suppressWarnings(lavaan::fitmeasures(mod.strict.fit, baseline.model = if (isTRUE(null.model)) { mod.null.fit } else { NULL })) }
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Parameter Estimates ####
 
   mod.config.param <- mod.thres.param <- mod.metric.param <- mod.scalar.param <- mod.strict.param <- NULL
 
- # Configural invariance model
- if (isTRUE(!is.null(mod.config.fit))) { mod.config.param <- within(data.frame(lavaan::parameterEstimates(mod.config.fit), stdyx = lavaan::standardizedsolution(mod.config.fit)[, "est.std"]), assign("label", "")) |>
-    (\(p) if (isTRUE(!long)) { p[, c("group", "lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] } else { p[, c("lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] })() }
+  if (isTRUE("est" %in% print)) {
 
-  # Threshold invariance model
-  if (isTRUE(!is.null(mod.thres.fit))) { mod.thres.param <- within(data.frame(lavaan::parameterEstimates(mod.thres.fit), stdyx = lavaan::standardizedsolution(mod.config.fit)[, "est.std"]), assign("label", "")) |>
-    (\(p) if (isTRUE(!long)) { p[, c("group", "lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] } else { p[, c("lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] })() }
+    # Configural invariance model
+    if (isTRUE(!is.null(mod.config.fit))) { mod.config.param <- within(data.frame(lavaan::parameterEstimates(mod.config.fit), stdyx = lavaan::standardizedsolution(mod.config.fit)[, "est.std"]), assign("label", "")) |>
+       (\(p) if (isTRUE(!long)) { p[, c("group", "lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] } else { p[, c("lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] })() }
 
-  # Metric invariance model
-  if (isTRUE(!is.null(mod.metric.fit))) { mod.metric.param <- data.frame(lavaan::parameterEstimates(mod.metric.fit), stdyx = lavaan::standardizedsolution(mod.metric.fit)[, "est.std"]) |>
-    (\(p) if (isTRUE(!long)) { p[, c("group", "lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] } else { p[, c("lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] })() }
+     # Threshold invariance model
+     if (isTRUE(!is.null(mod.thres.fit))) { mod.thres.param <- within(data.frame(lavaan::parameterEstimates(mod.thres.fit), stdyx = lavaan::standardizedsolution(mod.config.fit)[, "est.std"]), assign("label", "")) |>
+       (\(p) if (isTRUE(!long)) { p[, c("group", "lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] } else { p[, c("lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] })() }
 
-  # Scalar invariance model
-  if (isTRUE(!is.null(mod.scalar.fit))) { mod.scalar.param <- data.frame(lavaan::parameterEstimates(mod.scalar.fit), stdyx = lavaan::standardizedsolution(mod.scalar.fit)[, "est.std"]) |>
-    (\(p) if (isTRUE(!long)) { p[, c("group", "lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] } else { p[, c("lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] })() }
+     # Metric invariance model
+     if (isTRUE(!is.null(mod.metric.fit))) { mod.metric.param <- data.frame(lavaan::parameterEstimates(mod.metric.fit), stdyx = lavaan::standardizedsolution(mod.metric.fit)[, "est.std"]) |>
+       (\(p) if (isTRUE(!long)) { p[, c("group", "lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] } else { p[, c("lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] })() }
 
-  # Strict invariance model
-  if (isTRUE(!is.null(mod.strict.fit))) { mod.strict.param <- data.frame(lavaan::parameterEstimates(mod.strict.fit), stdyx = lavaan::standardizedsolution(mod.strict.fit)[, "est.std"])|>
-    (\(p) if (isTRUE(!long)) { p[, c("group", "lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] } else { p[, c("lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] })() }
+     # Scalar invariance model
+     if (isTRUE(!is.null(mod.scalar.fit))) { mod.scalar.param <- data.frame(lavaan::parameterEstimates(mod.scalar.fit), stdyx = lavaan::standardizedsolution(mod.scalar.fit)[, "est.std"]) |>
+       (\(p) if (isTRUE(!long)) { p[, c("group", "lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] } else { p[, c("lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] })() }
+
+     # Strict invariance model
+     if (isTRUE(!is.null(mod.strict.fit))) { mod.strict.param <- data.frame(lavaan::parameterEstimates(mod.strict.fit), stdyx = lavaan::standardizedsolution(mod.strict.fit)[, "est.std"])|>
+       (\(p) if (isTRUE(!long)) { p[, c("group", "lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] } else { p[, c("lhs", "op", "rhs", "label", "est", "se", "z", "pvalue", "stdyx")] })() }
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Modification Indices ####
@@ -3234,14 +3259,14 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
 
   #_____________________________________________________________________________
   #
-  # Return object --------------------------------------------------------------
+  # Return Object --------------------------------------------------------------
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## lavaan summary ####
 
   lavaan.summary <- NULL
 
-  if (isTRUE(lavaan.run)) {
+  if (isTRUE(lavaan.run && "summary" %in% print)) {
 
     #--------------------------------------
     ### Cluster ####
@@ -3295,7 +3320,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
                                                            "robust.two.stage" = "Robust Two-Stage",
                                                            "doubly.robust" = "Doubly-Robust")), "",
                                              # Identification
-                                             switch(ident, "marker" = "Marker Variable", "var" = "Factor Variance", "effect" = "Effects Coding"),
+                                             switch(ident, "marker" = "Marker Variable", "var" = "Std. LV", "effect" = "Effects Coding"),
                                              # Parameterization
                                              ifelse(isTRUE(parameterization == "delta"), "Delta", "Theta"), "", "Config",
                                              # Number of model parameters
@@ -6002,30 +6027,34 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
 
   param.config <- param.metric <- param.thres <- param.scalar <- param.strict <- NULL
 
-  #--------------------------------------
-  ### Configural invariance model
+  if (isTRUE("est" %in% print)) {
 
-  if (isTRUE(!is.null(mod.config.fit))) { param.config <- .model.fit.param(mod.config.param, long = long) }
+    #--------------------------------------
+    ### Configural invariance model
 
-  #--------------------------------------
-  ### Threshold invariance model
+    if (isTRUE(!is.null(mod.config.fit))) { param.config <- .model.fit.param(mod.config.param, long = long) }
 
-  if (isTRUE(!is.null(mod.thres.fit)))  { param.thres <- .model.fit.param(mod.thres.param, long = long)  }
+    #--------------------------------------
+    ### Threshold invariance model
 
-  #--------------------------------------
-  ### Metric invariance model
+    if (isTRUE(!is.null(mod.thres.fit)))  { param.thres <- .model.fit.param(mod.thres.param, long = long)  }
 
-  if (isTRUE(!is.null(mod.metric.fit))) { param.metric <- .model.fit.param(mod.metric.param, long = long) }
+    #--------------------------------------
+    ### Metric invariance model
 
-  #--------------------------------------
-  ### Scalar invariance model
+    if (isTRUE(!is.null(mod.metric.fit))) { param.metric <- .model.fit.param(mod.metric.param, long = long) }
 
-  if (isTRUE(!is.null(mod.scalar.fit))) { param.scalar <- .model.fit.param(mod.scalar.param, long = long) }
+    #--------------------------------------
+    ### Scalar invariance model
 
-  #--------------------------------------
-  ### Strict invariance model
+    if (isTRUE(!is.null(mod.scalar.fit))) { param.scalar <- .model.fit.param(mod.scalar.param, long = long) }
 
-  if (isTRUE(!is.null(mod.strict.fit))) { param.strict <- .model.fit.param(mod.strict.param, long = long) }
+    #--------------------------------------
+    ### Strict invariance model
+
+    if (isTRUE(!is.null(mod.strict.fit))) { param.strict <- .model.fit.param(mod.strict.param, long = long) }
+
+  }
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Return Object ####
@@ -6033,7 +6062,7 @@ item.invar <- function(data, ..., model = NULL, group = NULL, long = FALSE, orde
   object <- list(call = match.call(),
                  type = "item.invar",
                  data = x,
-                 args = list(model = model, long = long, ordered = ordered, parameterization = parameterization, rescov = rescov, rescov.long = rescov.long, cluster = cluster, invar = invar,
+                 args = list(model = model, group = group, cluster = cluster, long = long, ordered = ordered, parameterization = parameterization, rescov = rescov, rescov.long = rescov.long, invar = invar,
                              partial = partial, ident = ident, estimator = estimator, missing = missing, null.model = null.model, print = print, print.fit = print.fit, mod.minval = mod.minval, resid.minval = resid.minval,
                              lavaan.run = lavaan.run, digits = digits, p.digits = p.digits, as.na = as.na, write = write, append = append, check = check, output = output),
                  model = list(config = mod.config, thres = mod.thres, metric = mod.metric, scalar = mod.scalar, strict = mod.strict),

@@ -1,8 +1,8 @@
 Package: misty
 Type: Package
 Title: Miscellaneous Functions 'T. Yanagida'
-Version: 0.8.0
-Date: 2026-01-18
+Version: 0.8.1
+Date: 2026-03-06
 Authors@R: person(given = "Takuya", family = "Yanagida", email="takuya.yanagida@univie.ac.at", role = c("aut","cre"))
 Author: Takuya Yanagida [aut, cre]
 Maintainer: Takuya Yanagida <takuya.yanagida@univie.ac.at>
@@ -10,11 +10,12 @@ Description: Miscellaneous functions for (1) data handling (e.g., grand-mean and
 Depends: R (>= 4.3.0)
 License: MIT + file LICENSE
 Imports: ggplot2, haven, lavaan, lme4, rstudioapi
-Suggests: boot, clubSandwich, data.table, hdf5r, Matrix, mice, mnormt,
-        mvnmle, nlme, patchwork, readxl, robustlmm, plyr, writexl
+Suggests: boot, clubSandwich, data.table, hdf5r, ic.infer, Matrix,
+        mice, mnormt, mvnmle, nleqslv, nlme, patchwork, readxl,
+        robustlmm, plyr, writexl
 Encoding: UTF-8
 RoxygenNote: 7.3.1
 NeedsCompilation: no
-Packaged: 2026-01-18 13:59:07 UTC; takuy
+Packaged: 2026-03-05 22:24:58 UTC; takuy
 Repository: CRAN
-Date/Publication: 2026-01-18 15:20:02 UTC
+Date/Publication: 2026-03-06 06:30:09 UTC

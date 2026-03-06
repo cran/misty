@@ -1238,7 +1238,7 @@ item.cfa <- function(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
                                  # Identification
                                  switch(ident,
                                         "marker" = "Marker Variable",
-                                        "var" = "Factor Variance",
+                                        "var" = "Std. LV",
                                         "effect" = "Effects Coding"), "",
                                  # Number of Model Parameters
                                  max(lavaan::parTable(model.fit)$free),"", "Used",

@@ -4,9 +4,10 @@
 \alias{item.invar}
 \title{Between-Group and Longitudinal Measurement Invariance Evaluation}
 \usage{
-item.invar(data, ..., model = NULL, group = NULL, long = FALSE, ordered = FALSE,
-           parameterization = c("delta", "theta"), rescov = NULL, rescov.long = TRUE,
-           cluster = NULL, invar = c("config", "thres", "metric", "scalar", "strict"),
+item.invar(data, ..., model = NULL, group = NULL, cluster = NULL, long = FALSE,
+           ordered = FALSE, parameterization = c("delta", "theta"),
+           rescov = NULL, rescov.long = TRUE,
+           invar = c("config", "thres", "metric", "scalar", "strict"),
            partial = NULL, ident = c("marker", "var", "effect"),
            estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
                          "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
@@ -16,7 +17,7 @@ item.invar(data, ..., model = NULL, group = NULL, long = FALSE, ordered = FALSE,
            print = c("all", "summary", "partial", "coverage", "descript", "fit",
                      "est", "modind", "resid"),
            print.fit = c("all", "standard", "scaled", "robust"),
-           mod.minval = 6.63, resid.minval = 0.1, lavaan.run = TRUE,
+           mod.minval = 6.63, resid.minval = 0.1, lavaan.run = TRUE, se = NULL,
            digits = 3, p.digits = 3, as.na = NULL, write = NULL, append = TRUE,
            check = TRUE, output = TRUE)
 }
@@ -76,6 +77,15 @@ in \code{x} or a vector representing the groups
 for conducting multiple-group analysis to evaluate between-group
 measurement invariance.}
 
+\item{cluster}{either a character string indicating the variable name
+of the cluster variable in \code{data}, or a vector
+representing the nested grouping structure (i.e., group
+or cluster variable) for computing scaled chi-square
+test statistic that takes into account non-independence
+of observations. Note that this option is not available
+when evaluating measurement invariance for ordered categorical
+indicators by specifying \code{ordered = TRUE).}}
+
 \item{long}{logical: if \code{TRUE}, longitudinal measurement invariance
 evaluation is conducted. The longitudinal measurement model
 is specified by using the argument \code{model}. Note
@@ -124,15 +134,6 @@ be estimated even if the parameter estimates are statistically
 not significant since indicator-specific systematic variance
 is likely to correlate with itself over time (Little, 2013,
 p. 164).}
-
-\item{cluster}{either a character string indicating the variable name
-of the cluster variable in \code{data}, or a vector
-representing the nested grouping structure (i.e., group
-or cluster variable) for computing scaled chi-square
-test statistic that takes into account non-independence
-of observations. Note that this option is not available
-when evaluating measurement invariance for ordered categorical
-indicators by specifying \code{ordered = TRUE).}}
 
 \item{invar}{a character string indicating the level of measurement
 invariance to be evaluated, i.e., \code{config} to evaluate
@@ -280,6 +281,9 @@ evaluating measurement invariance will be estimated by
 using the \code{cfa()} function from the R package
 lavaan.}
 
+\item{se}{internal argument only used in the \code{item.nonequi()}
+function, this argument should never be specified.}
+
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying results. Note that information
 criteria and chi-square test statistic are printed with
@@ -389,17 +393,17 @@ data("HolzingerSwineford1939", package = "lavaan")
 # Measurement model with one factor
 
 # Example 1a: Model specification using the argument '...'
-item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "sex")
+item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school")
 
 # Example 1b: Alternative model specification without using the argument '...'
 item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
            group = HolzingerSwineford1939$sex)
 
 # Example 1c: Alternative model specification without using the argument '...'
-item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "sex")], group = "sex")
+item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "school")], group = "school")
 
 # Example 1d: Alternative model specification using the argument 'model'
-item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "sex")
+item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "school")
 
 #..................
 # Measurement model with two factors
@@ -407,14 +411,14 @@ item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "s
 # Example 2: Model specification using the argument 'model'
 item.invar(HolzingerSwineford1939,
            model = list(c("x1", "x2", "x3", "x4"), c("x5", "x6", "x7", "x8")),
-           group = "sex")
+           group = "school")
 
 #..................
 # Configural, metric, scalar, and strict measurement invariance
 
 # Example 3: Evaluate configural, metric, scalar, and strict measurement invariance
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "sex", invar = "strict")
+           group = "school", invar = "strict")
 
 #..................
 # Between-group partial measurement invariance
@@ -424,19 +428,19 @@ item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #             Free intercept for 'x1'
 #             Free residual variance for 'x4'
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "sex", invar = "strict",
+           group = "school", invar = "strict",
            partial = list(load = c("x2", "x3"),
                           inter = "x1",
                           resid = "x4"))
 
 # Example 4b: More than Two Groups
 #             Free factor loading for 'x2' in group 2
-#             Free factor loading for 'x4' in group 1 and 4
+#             Free factor loading for 'x4' in group 1 and 3
 #             Free intercept for 'x1' in group 3
 #             Free residual variance for 'x3' in group 1 and 3
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "ageyr", invar = "strict",
-           partial = list(load = list(x2 = "g2", x4 = c("g1", "g4")),
+           partial = list(load = list(x2 = "g2", x4 = c("g1", "g3")),
                           inter = list(x1 = "g3"),
                           resid = list(x3 = c("g1", "g3"))))
 
@@ -445,59 +449,59 @@ item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 
 # Example 5a: One residual covariance
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           rescov = c("x3", "x4"), group = "sex")
+           rescov = c("x3", "x4"), group = "school")
 
 # Example 5b: Two residual covariances
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           rescov = list(c("x1", "x4"), c("x3", "x4")), group = "sex")
+           rescov = list(c("x1", "x4"), c("x3", "x4")), group = "school")
 
 #..................
 # Scaled test statistic
 
 # Example 6a: Specify cluster variable using a variable name in 'data'
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "sex", cluster = "agemo")
+           group = "school", cluster = "agemo")
 
 # Example 6b: Specify cluster variable as vector
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "sex", cluster = HolzingerSwineford1939$agemo)
+           group = "school", cluster = HolzingerSwineford1939$agemo)
 
 #..................
 # Default Null model
 
 # Example 7: Specify default null model for computing incremental fit indices
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "sex", null.model = FALSE)
+           group = "school", null.model = FALSE)
 
 #..................
 # Print argument
 
 # Example 8a: Request all results
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "sex", print = "all")
+           group = "school", print = "all")
 
 # Example 8b: Request fit indices with ad hoc non-normality correction
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "sex", print.fit = "scaled")
+           group = "school", print.fit = "scaled")
 
 # Example 8c: Request modification indices with value equal or higher than 2
 # and highlight residual correlations equal or higher than 0.3
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "sex", print = c("modind", "resid"),
+           group = "school", print = c("modind", "resid"),
            mod.minval = 2, resid.minval = 0.3)
 
 #..................
 # Model syntax and lavaan summary of the estimated model
 
 # Example 9a: Model specification using the argument '...'
-mod1 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "sex",
+mod1 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school",
                    output = FALSE)
 
 # lavaan summary of the scalar invariance model
 lavaan::summary(mod1$model.fit$scalar, standardized = TRUE, fit.measures = TRUE)
 
 # Example 9b: Do not estimate any models
-mod2 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "sex",
+mod2 <- item.invar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school",
                    lavaan.run = FALSE)
 
 # lavaan model syntax metric invariance model
@@ -597,11 +601,11 @@ item.invar(data, model = list(c("aitem1", "aitem2", "aitem3"),
 
 # Example 16a: Write Results into a text file
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "sex", print = "all", write = "Invariance.txt", output = FALSE)
+           group = "school", print = "all", write = "Invariance.txt", output = FALSE)
 
 # Example 16b: Write Results into a Excel file
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
-           group = "sex", print = "all", write = "Invariance.xlsx", output = FALSE)
+           group = "school", print = "all", write = "Invariance.xlsx", output = FALSE)
 }
 }
 \references{
@@ -624,7 +628,7 @@ models of different levels of invariance for ordered categorical outcomes.
 \emph{Psychometrika, 81}(4), 1014–1045. doi:10.1007/s11336-016-9506-0
 }
 \seealso{
-\code{\link{item.cfa}}, \code{\link{multilevel.invar}}, \code{\link{write.result}}
+\code{\link{item.noninvar}}, \code{\link{item.cfa}}, \code{\link{multilevel.invar}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

@@ -748,12 +748,12 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
     # Model with intercept
     if (isTRUE("(Intercept)" %in% names(model$coefficients))) {
 
-      restab <- cbind(summary(model)$coefficients, SDy = c(NA, rep(sd.crit, times = length(sd.pred))), SDx = c(NA, sd.pred), StdX = c(NA, coeff * sd.pred), StdY = c(NA, coeff / sd.crit), StdYX = c(NA, coeff * (sd.pred / sd.crit)))
+      restab <- as.data.frame(cbind(summary(model)$coefficients, SDy = c(NA, rep(sd.crit, times = length(sd.pred))), SDx = c(NA, sd.pred), StdX = c(NA, coeff * sd.pred), StdY = c(NA, coeff / sd.crit), StdYX = c(NA, coeff * (sd.pred / sd.crit))))
 
     # Model without intercept
     } else {
 
-      restab <- cbind(summary(model)$coefficients, SDy = rep(sd.crit, times = length(sd.pred)), SDx = sd.pred, StdX = coeff * sd.pred, StdY = coeff / sd.crit, StdYX = coeff * (sd.pred / sd.crit))
+      restab <- as.data.frame(cbind(summary(model)$coefficients, SDy = rep(sd.crit, times = length(sd.pred)), SDx = sd.pred, StdX = coeff * sd.pred, StdY = coeff / sd.crit, StdYX = coeff * (sd.pred / sd.crit)))
 
     }
 
@@ -763,12 +763,12 @@ coeff.std <- function(model, print = c("all", "stdx", "stdy", "stdyx"),
     # Model with intercept
     if (isTRUE("(Intercept)" %in% names(lme4::fixef(model)))) {
 
-      restab <- cbind(if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest"))) { summary(model)$coefficients } else { summary(model)$tTable }, Level = c(NA, pred.level), SDy = c(NA, sd.crit), SDx = c(NA, sd.pred), StdX = c(NA, coeff * sd.pred), StdY = c(NA, coeff / sd.crit), StdYX = c(NA, coeff * (sd.pred / sd.crit)))
+      restab <- as.data.frame(cbind(if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest"))) { summary(model)$coefficients } else { summary(model)$tTable }, Level = c(NA, pred.level), SDy = c(NA, sd.crit), SDx = c(NA, sd.pred), StdX = c(NA, coeff * sd.pred), StdY = c(NA, coeff / sd.crit), StdYX = c(NA, coeff * (sd.pred / sd.crit))))
 
     # Model without intercept
     } else {
 
-      restab <- cbind(if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest"))) { summary(model)$coefficients } else { summary(model)$tTable }, Level = (pred.level), SDy = sd.crit, SDx = sd.pred, StdX = coeff * sd.pred, StdY = coeff / sd.crit, StdYX = coeff * (sd.pred / sd.crit))
+      restab <- as.data.frame(cbind(if (isTRUE(class(model) %in% c("lmerMod", "lmerModLmerTest"))) { summary(model)$coefficients } else { summary(model)$tTable }, Level = (pred.level), SDy = sd.crit, SDx = sd.pred, StdX = coeff * sd.pred, StdY = coeff / sd.crit, StdYX = coeff * (sd.pred / sd.crit)))
 
     }
 

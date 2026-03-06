@@ -1,3 +1,26 @@
+### misty 0.8.1 (2026-03.06)
+
+##### New features
+* New function `item.noninvar()` for computing the effect size measure dMACS by 
+Nye and Drasgow (2011) and signed dMACS by Nye et al. (2019) for evaluating the 
+magnitude and the direction of between-group and longitudinal measurement 
+non-invariance for continuous and ordered categorical items.
+* New function `difftest.chibarsq()` for perfoming the chi-bar-square difference 
+test to compare the random intercept cross-lagged panel model (RI-CLPM) and traditional 
+cross-lagged panel model (CLPM) as discussed in Hamaker et al. (2015).
+
+##### Minor features and improvements
+* Added the characters `randeff` and `varcor` to the argument `print` of the function `summa()`.
+* The function `coef.robust()` computes cluster-robust standard errors for multilevel 
+and linear mixed-effects models estimated by using the `lme()` function from the 
+nlme package.
+* The function `summa()` prints a summary of the result object returned by the function
+`lme()` from the nlme package.
+
+##### User-visible changes
+* Added the arguments `write` to the function `write.result()`.
+* Added the arguments `horiz` to the function `print.misty.object()`.
+
 ### misty 0.8.0 (2026-01-18)
 
 ##### New features

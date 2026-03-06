@@ -1,0 +1,902 @@
+#' Effect Size Measure of Measurement Non-Invariance, dMACS
+#'
+#' This function computes the effect size measure dMACS by Nye and Drasgow (2011)
+#' and the signed dMACS by Nye et al. (2019) for evaluating the magnitude and
+#' the direction of between-group and longitudinal measurement non-invariance or
+#' non-equivalence for continuous and ordered categorical items and also computes
+#' the expected bias in the mean and variance of the total score.
+#'
+#' @param data        a data frame. If \code{model = NULL}, confirmatory factor
+#'                    analysis based on a measurement model with one factor
+#'                    labeled \code{f} comprising all variables in the data frame
+#'                    specified in \code{data} for evaluating between-group
+#'                    measurement non-invariance for the grouping variable
+#'                    specified in the argument \code{group} is conducted.
+#'                    Longitudinal measurement non-invariance evaluation can
+#'                    only be conducted by specifying the model using the argument
+#'                    \code{model}. Note that the cluster variable is excluded
+#'                    from \code{data} when specifying \code{cluster}. If \code{model}
+#'                    is specified, the data frame needs to contain all variables
+#'                    used in the argument \code{model} and the cluster variable
+#'                    when specifying the name of the cluster variable in the
+#'                    argument \code{cluster}.
+#' @param ...         an expression indicating the variable names in \code{data},
+#'                    e.g., \code{item.noninvar(dat, x1, x2, x2, group = "group")}.
+#'                    Note that the operators \code{+}, \code{-}, \code{~},
+#'                    \code{:}, \code{::}, and \code{!} can also be used to
+#'                    select variables, see 'Details' in the \code{\link{df.subset}}
+#'                    function.
+#' @param object      an object of class lavaan, i.e., a fitted latent variable
+#'                    model. Between-group measurement non-invariance is evaluated
+#'                    when specifying a fitted multiple-group model, while
+#'                    longitudinal measurement non-invariance is evaluated
+#'                    when specifying a fitted single-group model with at least
+#'                    two latent variables each representing a factor at different
+#'                    time points.
+#' @param model       a character vector specifying a measurement model with
+#'                    one factor, or a list of character vectors for specifying
+#'                    a measurement model with more than one factor for
+#'                    evaluating between-group measurement non-invariance
+#'                    when \code{long = FALSE} or a list of character vectors
+#'                    for specifying a measurement model with one factor for
+#'                    each time of measurement for evaluating longitudinal
+#'                    measurement non-invariance when specifying \code{long = TRUE}.
+#'                    For example, \code{model = c("x1", "x2", "x3", "x4")}
+#'                    for specifying a measurement model with one factor
+#'                    labeled \code{f} comprising four indicators, or
+#'                    \code{model = list(factor1 = c("x1", "x2", "x3", "x4"),
+#'                    factor2 = c("x5", "x6", "x7", "x8"))} for specifying a
+#'                    measurement model with two latent factors labeled
+#'                    \code{factor1} and \code{factor2} each comprising four
+#'                    indicators for evaluating between-group measurement
+#'                    non-invariance, or
+#'                    \code{model = list(time1 = c("ax1", "ax2", "ax3", "ax4"),
+#'                    time2 = c("bx1", "bx2", "bx3", "bx4"),
+#'                    time3 = c("cx1", "cx2", "cx3", "cx4"))} for specifying
+#'                    a longitudinal measurement model with three time points
+#'                    comprising four indicators at each time point. This
+#'                    function cannot evaluate longitudinal measurement
+#'                    invariance for a measurement model with more than one
+#'                    factor. Note that the name of each list element is used
+#'                    to label factors, i.e., all list elements need to be
+#'                    named, otherwise factors are labeled with \code{"f1", "f2", "f3"}
+#'                    when \code{long = FALSE} and with \code{"t1", "t2", "t3"}
+#'                    when \code{long = TRUE} and so on.
+#' @param group       either a character string indicating the variable name
+#'                    of the grouping variable in the data frame specified
+#'                    in \code{data} or a vector representing the groups for
+#'                    conducting multiple-group analysis to evaluate
+#'                    between-group measurement non-invariance. Note that when
+#'                    specifying a grouping variable with more than two groups,
+#'                    the function compares each group with the reference group
+#'                    specified in the argument \code{ref}.
+#' @param ref         a numeric value or character string indicating the name of
+#'                    the reference group or reference time point. By default,
+#'                    the the first group or time point is used as reference.
+#' @param pooled      logical: if \code{TRUE} (default), the item-level pooled
+#'                    standard deviation is used in the denominator of the
+#'                    effect size measure, if \code{FALSE} the item-level
+#'                    standard deviation of the reference group or reference
+#'                    time point is used.
+#' @param signed      logical: if \code{TRUE}, the signed dMACS is computed
+#'                    that incorporates the unsquared differences between
+#'                    groups or time points illustrating the direction of
+#'                    the differences and allowing effects in opposite
+#'                    directions to cancel out (see Nye et al., 2019).
+#' @param cluster     either a character string indicating the variable name
+#'                    of the cluster variable in \code{data}, or a vector
+#'                    representing the nested grouping structure (i.e., group
+#'                    or cluster variable). Note that this option is not
+#'                    available when evaluating measurement invariance for
+#'                    ordered categorical indicators by specifying
+#'                    \code{ordered = TRUE).
+#' @param long        logical: if \code{TRUE}, longitudinal measurement
+#'                    non-invariance evaluation is conducted. The longitudinal
+#'                    measurement model is specified by using the argument
+#'                    \code{model}. Note that this function can only deal with a
+#'                    measurement model with one factor at each time point when
+#'                    investigating longitudinal measurement non-invariance.
+#'                    Moreover, this function can only evaluate either between-group
+#'                    or longitudinal measurement non-invariance, but not both
+#'                    at the same time.
+#' @param ordered     logical: if \code{TRUE}, all indicator variables of the
+#'                    measurement model are treated as ordered categorical
+#'                    variables. Note that the function only supports delta
+#'                    parameterization. Also note that all indicators variables
+#'                    need to have the same number of response categories.
+#'                    Accordingly, zero cell counts are not allowed, e.g., zero
+#'                    observations for a response category of an indicator within
+#'                    a group when investigating between-group measurement
+#'                    non-invariance or zero observations for a response category
+#'                    of an indicator at a time point when investigating longitudinal
+#'                    measurement non-invariance.
+#' @param rescov      a character vector or a list of character vectors for
+#'                    specifying residual covariances, e.g., \code{rescov = c("x1", "x2")}
+#'                    for specifying a residual covariance between items \code{x1}
+#'                    and \code{x2}, or \code{rescov = list(c("x1", "x2"), c("x3", "x4"))}
+#'                    for specifying residual covariances between items \code{x1}
+#'                    and \code{x2}, and items \code{x3} and \code{x4}.
+#' @param rescov.long logical: if \code{TRUE} (default), residual covariances
+#'                    between parallel indicators are estimated across time
+#'                    when evaluating longitudinal measurement non-invariance
+#'                    (\code{long = TRUE}), i.e., residual variances of the
+#'                    same indicators that are measured at different time points
+#'                    are correlated across all possible time points. Note that
+#'                    residual covariances should be estimated even if the parameter
+#'                    estimates are statistically not significant since
+#'                    indicator-specific systematic variance is likely to correlate
+#'                    with itself over time (Little, 2013, p. 164).
+#' @param ident       a character string indicating the method used for identifying
+#'                    and scaling latent variables, i.e., \code{"marker"} for
+#'                    the marker variable method fixing the first factor
+#'                    loading of the latent variable to 1 and fixing the
+#'                    first intercept to 0, \code{"var"} (default) for the
+#'                    fixed variance method fixing the variance of the latent
+#'                    variable to 1 and the latent mean to 0, or \code{"effect"}
+#'                    for the effects-coding method using equality constraints
+#'                    so that the average of the factor loading of the latent
+#'                    variable equals 1 and the sum of intercepts equals 0.
+#'                    Note that measurement non-invariance evaluation for
+#'                    ordered categorical indicators can only be conducted
+#'                    based on the fixed variance method (\code{"var"}).
+#' @param estimator   a character string indicating the estimator to be used
+#'                    (see 'Details' in the help page of the \code{item.cfa()}
+#'                    function). By default, \code{"MLR"} is used for CFA
+#'                    models with continuous indicators and \code{"WLSMV"}
+#'                    is used for CFA models with ordered categorical
+#'                    indicators. Note that the estimators
+#'                    \code{"ML", "MLM", "MLMV", "MLMVS", "MLF"} and
+#'                    \code{"MLR"} are not available when \code{ordered = TRUE}.
+#' @param missing     a character string indicating how to deal with missing
+#'                    data, i.e., \code{"listwise"} for listwise deletion,
+#'                    \code{"pairwise"} for pairwise deletion, \code{"fiml"}
+#'                    for full information maximum likelihood method, \code{"two.stage"}
+#'                    for two-stage maximum likelihood method, \code{"robust.two.stage"}
+#'                    for robust two-stage maximum likelihood method, and
+#'                    \code{"doubly-robust"} for doubly-robust method (see 'Details'
+#'                    in the help page of the\code{item.cfa()} function). By
+#'                    default, \code{"fiml"} is used for CFA models with continuous
+#'                    indicators and \code{"listwise"} is used for CFA models
+#'                    with ordered categorical indicators given that \code{"fiml"}
+#'                    is not available for a limited-information estimator used
+#'                    to estimate the CFA model with ordered categorical
+#'                    indicators.
+#' @param print       a character string or character vector indicating which
+#'                    results to show on the console, i.e. \code{"all"} for all
+#'                    results, \code{"summary"} for a summary of the specification,
+#'                    \code{"dmacs"} for the effect sizes measure dMACS, and
+#'                    \code{"bias"} for the expected bias in the mean and variance
+#'                    of the total score. By default, a summary of the specification
+#'                    and the effect size measure dMACS are printed.
+#' @param digits     an integer value indicating the number of decimal places
+#'                    to be used for displaying results.
+#' @param as.na       a numeric vector indicating user-defined missing values,
+#'                    i.e., these values are converted to \code{NA} before
+#'                    conducting the analysis. Note that \code{as.na()}
+#'                    function is only applied to \code{data} but not to
+#'                    \code{group} or \code{cluster}.
+#' @param write       a character string naming a file for writing the output
+#'                    into either a text file with file extension \code{".txt"}
+#'                    (e.g., \code{"Output.txt"}) or Excel file with file
+#'                    extension \code{".xlsx"}  (e.g., \code{"Output.xlsx"}).
+#'                    If the file name does not contain any file extension,
+#'                    an Excel file will be written.
+#' @param append      logical: if \code{TRUE} (default), output will be
+#'                    appended to an existing text file with extension
+#'                    \code{.txt} specified in \code{write}, if \code{FALSE}
+#'                    existing text file will be overwritten.
+#' @param check       logical: if \code{TRUE} (default), argument specification
+#'                    is checked and convergence and model identification
+#'                    checks are conducted for all estimated models.
+#' @param output      logical: if \code{TRUE} (default), output is shown.
+#'
+#' @details
+#' Nye and Drasgow (2011) introduced the effect size measure \eqn{d_{MACS}} (Mean
+#' and Covariance Structure) for evaluating measurement non-invariance at the item
+#' level on a standardized metric similar to Cohen's \emph{d} (1988) or Glass's
+#' (1976) measures:
+#' \describe{
+#' \item{\strong{Effect Size Measure \eqn{d_{MACS}}}}{\eqn{d_{MACS}} (Nye & Drasgow,
+#' 2011) ranging \eqn{[0, \infty]} is based on the predicted response \eqn{\hat{X}_{iR}}
+#' to an item \eqn{i} for an individual in the reference group (or reference time point)
+#' \eqn{R} and the corresponding response \eqn{\hat{X}_{iF}} for an individual in
+#' the focal group (or focal time point) \eqn{F}:
+#'
+#' \deqn{\hat{X}_{iR} = \tau_{iR} + \lambda_{iR}\xi}
+#' \deqn{\hat{X}_{iF} = \tau_{iF} + \lambda_{iF}\xi}
+#'
+#' where \eqn{\tau_{iR}} and \eqn{\tau_{iF}} are the interepts, \eqn{\lambda_{iR}}
+#' and \eqn{\lambda_{iF}} are the factor loadings of item \eqn{i} in the reference
+#' and focal group, and \eqn{\xi} is the score on the latent variable.
+#'
+#' The effect size evaluating the magnitude of measurement non-invariance is a
+#' weighted average difference in predicted responses in standardized metric
+#' defined as:
+#'
+#' \deqn{d_{MACS} = \frac{1}{SD_{iP}} \sqrt{\int (\hat{X}_{iR} - \hat{X}_{iF}|\xi)^2 f_F(\xi)d\xi }}
+#'
+#' where \eqn{SD_{iP}} is the pooled within-group standard deviation of item \eqn{i}
+#' across reference and focal group given by
+#'
+#' \deqn{SD_{iP} = \frac{(N_R - 1)SD_R + (N_F - 1)SD_F}{(N_R - 1) + (N_F - 1)}}
+#'
+#' Note that \eqn{f_F(\xi)} is the distribution of the latent trait \eqn{\xi} in
+#' the focal group, which is assumed to have a normal distribution with a mean
+#' and variance estimated from the latent factor in the focal group.}
+#'
+#' \item{\strong{Effect Size Measure \eqn{d_{MACS\_Signed}}}}{\eqn{d_{MACS\_Signed}}
+#' (Nye et al., 2019) ranging \eqn{[-\infty, \infty]} incorporates the unsquared
+#' differences between predicted response to an item \eqn{i} between two groups:
+#'
+#' \deqn{d_{MACS\_Signed} = \frac{1}{SD_{iP}} \int (\hat{X}_{iR} - \hat{X}_{iF}|\xi) f_F(\xi)d\xi }
+#'
+#' Note that \eqn{d_{MACS\_Signed}} provides complementary information to the
+#' unsigned version by (1) capturing the direction of the difference and (2)
+#' allowing cancellation of effects in opposite direction.}
+#'
+#' \item{\strong{Guidelines for Interpreting Effect Size Measure \eqn{d_{MACS}} and \eqn{d_{MACS\_Signed}}}}{
+#' The effect size measures \eqn{d_{MACS}} and \eqn{d_{MACS\_Signed}} represent
+#' the differences in both the factor loadings and the intercepts across two
+#' groups and can be interpreted based on following guidelines (see Nye et al.,
+#' 2019):
+#'
+#'    \itemize{
+#'        \item{\emph{Effect Size Measure \eqn{d_{MACS}}}}:
+#'        \itemize{
+#'            \item Results of a simulation study provided benchmarks for interpreting \eqn{d_{MACS}}:
+#'            \itemize{
+#'                \item Small effect: \eqn{0.20}
+#'                \item Medium effect: \eqn{0.40}
+#'                \item Large effect: \eqn{0.70}
+#'            }
+#'            \item The simulation study operationalized effect sizes empirically
+#'            based on a literature review of journals in organizational behavior
+#'            and entrepreneurship:
+#'            \itemize{
+#'                \item Difference in standardized factor loadings: 0.10 (small), 0.20 (medium), and 0.30 (large)
+#'                \item Difference in intercept: 0.25 (small), 0.50 (medium), and 0.75 (large)
+#'            }
+#'            \item Results also showed that when the sample size (\eqn{n_g = 250})
+#'            and/or the number of items (\eqn{k = 8}) were small, \eqn{d_{MACS}}
+#'            can become greater than 0.20 due to poorly estimated model parameters.
+#'        }
+#'        Note that \eqn{d_{MACS}} does not provide information about the direction
+#'        of the effect, i.e., it is unclear which group the item is biased against.
+#'
+#'        \item{\emph{Effect Size Measure \eqn{d_{MACS\_Signed}}}}:
+#'        \itemize{
+#'            \item Results of a simulation study provided benchmarks for interpreting \eqn{d_{MACS\_Signed}}:
+#'            \itemize{
+#'                \item Small effect: \eqn{|0.40|}
+#'                \item Medium effect: \eqn{|0.60|}
+#'                \item Large effect: \eqn{|0.80|}
+#'            }
+#'            \item Simulation study investigated the practical importance of
+#'            non-invariance when no true latent mean difference exist between
+#'            groups, i.e., false positive results due to non-invariance:
+#'            \itemize{
+#'                \item \eqn{d_{MACS\_Signed}} = |0.40| in one out of eight items
+#'                results in Cohen's \eqn{d} ~ 0.13 and a .13 probability for
+#'                finding statistically significant differences due to non-invariance.
+#'                \item \eqn{d_{MACS\_Signed}} = |0.60| in one out of eight items
+#'                results in Cohen's \eqn{d} ~ 0.26 and a .85 probability for
+#'                finding statistically significant differences due to non-invariance.
+#'                \item \eqn{d_{MACS\_Signed}} = |0.80| in one out of eight items
+#'                results in Cohen's \eqn{d} ~ 0.26 and a 1.00 probability for
+#'                finding statistically significant differences due to non-invariance.
+#'            }
+#'        }
+#'    }
+#'   }
+#'
+#' \item{\strong{Practical Consequences of Measurement Non-Invariance}}{
+#' The practical consequences of non-invariance can be investigated by computing
+#' the amount of the observed mean and variance difference of a scale between
+#' groups that can be attributed to non-invariance:
+#'
+#' \deqn{\Delta mean(x_s) = \sum_{1}^{n}\int (\hat{X}_{iR} - \hat{X}_{iF}|\xi) f_F(\xi)d\xi}
+#' \deqn{\Delta var(x_s) = 2C_i\lambda_{iR} \phi_F + C_i^2\phi_F}
+#'
+#' where \eqn{X_s} is the scale score, \eqn{\lambda_{iR}} is the factor loading
+#' of item \eqn{i} in the reference group, \eqn{C_i} is the difference
+#' between the factor loading for item \eqn{i} in the reference and focal groups,
+#' and \eqn{\phi_F} is the variance of the latent factor in the focal group.
+#' According to these formula, two items with high \eqn{d_{MACS\_Signed}} in
+#' opposite directions can have no impact on \eqn{\Delta mean(x_s)} and
+#' \eqn{\Delta var(x_s)} due to the cancellation effect.
+#'
+#' Note that with fewer items in the scale, the practical importance of a single
+#' item with high \eqn{d_{MACS\_Signed}} would increase, while a single non-invariant
+#' item in a longer measure would have less practical importance. For example,
+#' the practical importance of a single non-invariant item with a \eqn{d_{MACS\_Signed} = 0.40}
+#' in a 30-item measure would correspond to a Cohen’s \emph{d} value of 0.05 and
+#' a .14 probability of a statistically significant mean differences in the absence
+#' of a true differences between groups. That is, the same cutoffs used for an 8-item
+#' measure might not apply to a 30-item measure. Moreover, a measure with more than
+#' one non-invariant item would have a greater chance of distorting research outcomes.
+#'
+#' In summary, the findings in Nye et al. (2019) suggest that a more nuanced
+#' interpretation of the effect size of non-invariance may be required. Accordingly,
+#' Lai et al. (2025) notet that cutoff values should be used with caution as the
+#' interpretation of the magnitude of non-invariance should be based on many other
+#' factors, such as the construct of interest, the grouping variables, the main
+#' usage of the instrument, the context of the measurement, and so on.
+#' }
+#' }
+#'
+#' @author
+#' Takuya Yanagida
+#'
+#' @seealso
+#' \code{\link{item.invar}}, \code{\link{item.cfa}}, \code{\link{multilevel.invar}}
+#'
+#' @references
+#' Cohen, J. (1988). \emph{Statistical power analysis for the behavioral sciences}
+#' (2nd ed.). Lawrence Erlbaum.
+#'
+#' Dueber D (2026). \emph{dmacs: Measurement Nonequivalence Effect Size Calculator}.
+#' R package version 0.1.0.9002. https://github.com/ddueber/dmacs
+#'
+#' Glass, G. V. (1976). Primary, secondary, and meta-analysis of research.
+#' \emph{Educational Researcher}, 5, 3-8.
+#'
+#' Lai, M. H. C., Zhang, Y., Ozcan, M., Tse, W. W. Y., & Miles, A. (2025).
+#' fMACS: Generalizing dMACS effect size for measurement noninvariance with
+#' multiple groups and multiple grouping variables.
+#'  \emph{Structural Equation Modeling: A Multidisciplinary Journal, 32}(4),
+#' 638-646. https://doi.org/10.1080/10705511.2025.2484812
+#'
+#' Nye, C. D., Bradburn, J., Olenick, J., Bialko, C., & Drasgow, F. (2019).
+#' How big are my effects? Examining the magnitude of the effect sizes in studies
+#' of measurement equivalence. \emph{Organizational Research Methods, 22}(3), 678–709.
+#' https://doi.org/ 10.1177/1094428118761122
+#'
+#' Nye, C., & Drasgow, F. (2011). Effect size indices for analyses of
+#' measurement equivalence: Understanding the practical importance of
+#' differences between groups. \emph{Journal of Applied Psychology, 96}(5),
+#' 966-980.
+#'
+#' @note This function is based on modified copies of the functions \code{dmacs_summary}
+#' \code{dmacs_summary_single}, \code{item_dmacs}, \code{expected_value},
+#' \code{delta_mean_item} and \code{delta_var} from the \pkg{dmacs} package by
+#' David Dueber.
+#'
+#' @return
+#' Returns an object of class \code{misty.object}, which is a list with following
+#' entries:
+#'
+#' \item{\code{call}}{function call}
+#' \item{\code{type}}{type of analysis}
+#' \item{\code{data}}{data frame including all variables used in the analysis, i.e.,
+#'                    indicators for the factor, grouping variable and cluster
+#'                    variable}
+#' \item{\code{args}}{specification of function arguments}
+#' \item{\code{model}}{model specification for the for the configural invariance model}
+#' \item{\code{model.fit}}{fitted lavaan object of the configural invariance model}
+#' \item{\code{check}}{list with the results of the convergence and model identification
+#'                     check for the configural invariance model}
+#' \item{\code{result}}{list with result tables, i.e., \code{summary} for the
+#'                      summary of the specification and \code{noninvar} for the
+#'                      dMACS effect size measure, expected bias in the mean total
+#'                      score, and expected bias in the variance of the total score}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Load data set "HolzingerSwineford1939" in the lavaan package
+#' data("HolzingerSwineford1939", package = "lavaan")
+#'
+#' #----------------------------------------------------------------------------
+#' # Between-Group Measurement Non-Invariance: Continuous Indicators
+#'
+#' #..................
+#' # Measurement model with one factor
+#'
+#' # Example 1a: Model specification using the argument '...'
+#' item.noninvar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school")
+#'
+#' # Example 1b: Alternative model specification without using the argument '...'
+#' item.noninvar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4")],
+#'               group = HolzingerSwineford1939$school)
+#'
+#' # Example 1c: Alternative model specification without using the argument '...'
+#' item.noninvar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "school")], group = "school")
+#'
+#' # Example 1d: Alternative model specification using the argument 'model'
+#' item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "school")
+#'
+#' # Example 1e: Estimate model and specify the 'object' argument
+#' fit <- cfa('f =~ x1 + x2 + x3 + x4', data = HolzingerSwineford1939, group = "school", std.lv = TRUE)
+#' item.noninvar(object = fit)
+#'
+#' #..................
+#' # Measurement model with two factors
+#'
+#' # Example 2a: Model specification using the argument 'model'
+#' item.noninvar(HolzingerSwineford1939,
+#'               model = list(c("x1", "x2", "x3", "x4"), c("x5", "x6", "x7", "x8")),
+#'               group = "school")
+#'
+#' # Example 2b: Model specification using the argument 'model'
+#' model <- 'f1 =~ x1 + x2 + x3 + x4
+#'           f2 =~ x5 + x6 + x7 + x8'
+#'
+#' fit <- cfa(model, data = HolzingerSwineford1939, group = "school", std.lv = TRUE)
+#' item.noninvar(object = fit)
+#'
+#' #..................
+#' # Signed dMACS and reference group
+#'
+#' # Example 3a: Signed dMACS
+#' item.noninvar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school", signed = TRUE)
+#'
+#' # Example 3b: Specify reference group and use SD of the reference group
+#' item.noninvar(HolzingerSwineford1939, x1, x2, x3, x4, group = "school",
+#'               ref = "Pasteur", pooled = FALSE)
+#'
+#' #..................
+#' # Residual covariances
+#'
+#' # Example 4a: One residual covariance
+#' item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
+#'               rescov = c("x3", "x4"), group = "school")
+#'
+#' # Example 4b: Two residual covariances
+#' item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
+#'               rescov = list(c("x1", "x4"), c("x3", "x4")), group = "school")
+#'
+#' #..................
+#' # Print argument
+#'
+#' # Example 5: Request all results
+#' item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
+#'               group = "school", print = "all")
+#'
+#' #----------------------------------------------------------------------------
+#' # Longitudinal Measurement Non-Invariance: Continuous Indicators
+#'
+#' # Example 6: Two time points with three indicators at each time point
+#' item.noninvar(HolzingerSwineford1939,
+#'               model = list(c("x1", "x2", "x3"), c("x5", "x6", "x7")), long = TRUE)
+#'
+#' #----------------------------------------------------------------------------
+#' # Between-Group Measurement Non-Invariance: Ordered Categorical Indicators
+#' #
+#' # Note that the example analysis for ordered categorical indicators cannot be
+#' # conduct since the data set 'data' is not available.
+#'
+#' # Example 7: Two groups
+#' item.noninvar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE)
+#'
+#' #----------------------------------------------------------------------------
+#' # Longitudinal Measurement Non-Invariance: Ordered Categorical Indicators
+#'
+#' # Example 8: Two Time Points
+#' item.noninvar(data, model = list(c("aitem1", "aitem2", "aitem3"),
+#'                                  c("bitem1", "bitem2", "bitem3")),
+#'            long = TRUE, ordered = TRUE)
+#' #------------------------------------------------
+#' # Write Results
+#'
+#' # Example 9a: Write Results into a text file
+#' item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
+#'               group = "school", print = "all", write = "Non-Invariance.txt", output = FALSE)
+#'
+#' # Example 9b: Write Results into a Excel file
+#' item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
+#'               group = "school", print = "all", write = "Non-Invariance.xlsx", output = FALSE)
+#' }
+item.noninvar <- function(data = NULL, ..., object = NULL, model = NULL, group = NULL,
+                          ref = NULL, pooled = TRUE, signed = FALSE, cluster = NULL, long = FALSE, ordered = FALSE,
+                          rescov = NULL, rescov.long = TRUE, ident = c("marker", "var", "effect"),
+                          estimator = c("ML", "MLM", "MLMV", "MLMVS", "MLF", "MLR",
+                                        "GLS", "WLS", "DWLS", "WLSM", "WLSMV",
+                                        "ULS", "ULSM", "ULSMV", "DLS", "PML"),
+                          missing = c("listwise", "pairwise", "fiml", "two.stage", "robust.two.stage", "doubly.robust"),
+                          print = c("all", "summary", "dmacs", "bias"), digits = 3, as.na = NULL,
+                          write = NULL, append = TRUE, check = TRUE, output = TRUE) {
+
+  #_____________________________________________________________________________
+  #
+  # Initial Check --------------------------------------------------------------
+
+  # Check if input 'data' and object are NULL
+  if (isTRUE(is.null(data) && is.null(object))) { stop("Please specify the argument 'data' or the argument object.", call. = FALSE) }
+
+  # Check if input 'data' and object are not NULL
+  if (isTRUE(!is.null(data) && !is.null(object))) { stop("Please specify either the argument 'data' or the argument object, but not both.", call. = FALSE) }
+
+  #_____________________________________________________________________________
+  #
+  # Object of Class lavaan -----------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Argument 'object' Not Specified ####
+
+  if (isTRUE(is.null(object))) {
+
+    #--------------------------------------
+    ### Model Estimation ####
+
+    # Between-Group and Longitudinal Measurement Invariance Evaluation
+    item.invar.fit <- misty::item.invar(data = data, ... = ..., model = model, group = group, cluster = cluster, long = long,
+                                        ordered = ordered, parameterization = "delta", rescov = rescov, rescov.long = rescov.long,
+                                        invar = "config", ident = ident, estimator = estimator, missing = missing, null.model = FALSE,
+                                        print = NULL, se = "none", as.na = as.na, write = NULL, check = check, output = FALSE)
+
+    # Extract fitted lavaan object
+    mod.fit <- item.invar.fit$model.fit$config
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Argument 'object' Specified ####
+
+  } else {
+
+    #--------------------------------------
+    ### Check Argument 'object' ####
+
+    # Class lavaan
+    if (isTRUE(class(object) != "lavaan")) { stop("Please specify an object of class lavaan for the argument 'object'.", call. = FALSE) }
+
+    #...................
+    #### Longitudinal Model ####
+
+    if (isTRUE(length(lavaan::lavInspect(object, what = "group.label")) == 0L)) {
+
+      # At least two factors
+      if (isTRUE(length(colnames(lavaan::lavInspect(object, what = "est")$lambda)) == 1L)) { stop("Please specify a fitted model with at least two factors for the argument 'object' to investigate longitudinal invariance.", call. = FALSE) }
+
+      long <- TRUE
+
+    }
+
+    #...................
+    #### Ordered Categorical Indicators ####
+
+    if (isTRUE(length(lavaan::lavInspect(object, what = "ordered")) != 0L)) {
+
+      if (isTRUE(lavaan::lavInspect(object, what = "parameterization") == "theta")) { stop("Please use delta parameterization for estimating  a CFA model with ordered categorical indicators.", call. = FALSE) }
+
+      ordered <- TRUE
+
+    }
+
+    mod.fit <- object
+
+  }
+
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Check Inputs ####
+
+  .check.input(logical = c("pooled", "signed"), m.character = list(print = c("all", "summary", "dmacs", "bias")), envir = environment(), input.check = check)
+
+  #--------------------------------------
+  ### Argument 'ref' ####
+
+  if (isTRUE(!is.null(ref))) {
+
+    # Check argument
+    if (isTRUE(length(ref) != 1L || (!is.numeric(ref) && !is.character(ref)))) { stop("Please specify a numeric value or character string for the argument 'ref.'", call. = FALSE) }
+
+    # Multiple-Group Model
+    if (isTRUE(length(lavaan::lavInspect(mod.fit, what = "group.label")) != 0L)) {
+
+      if (isTRUE(!ref %in% lavaan::lavInspect(mod.fit, what = "group.label"))) { stop(paste0("Reference group specified in the argument 'ref' was not found: ", ref), call. = FALSE) }
+
+    # Longitudinal Model
+    } else {
+
+      if (isTRUE(!ref %in% colnames(lavaan::lavInspect(mod.fit, what = "est")$lambda))) { stop(paste0("Reference time point specified in the argument 'ref' was not found: ", ref), call. = FALSE) }
+
+    }
+
+  }
+
+  #--------------------------------------
+  ### Argument 'print' ####
+
+  # Default Setting
+  if (isTRUE(all(c("all", "summary", "dmacs", "bias") %in% print))) {
+
+    print  <- c("summary", "dmacs")
+
+  # User-Specified Setting
+  } else if (isTRUE(length(print) == 1L && "all" %in% print)) {
+
+    print <- c("summary", "dmacs", "bias")
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Between-Group Measurement Invariance ####
+
+  if (isTRUE(!long)) {
+
+    #--------------------------------------
+    ### Group Label ####
+
+    group.label <- lavaan::lavInspect(mod.fit, what = "group.label")
+
+    #--------------------------------------
+    ### Reference Group ####
+
+    if (isTRUE(!is.null(ref))) {
+
+      ref.group <- match(as.character(ref), group.label)
+
+    } else {
+
+      ref.group <- 1L
+
+    }
+
+    ref <- group.label[ref.group]
+
+    #--------------------------------------
+    ### Extract Parameter Estimates ####
+
+    LambdaList <- NuList <- MeanList <- VarList <- NULL
+    lavaan::lavInspect(mod.fit, what = "est") |>
+      (\(p) {
+
+        # Factor Loadings
+        LambdaList <<- lapply(p, function(y) { y$lambda })
+
+        # Intercepts
+        NuList <<- lapply(p, function(y) { y$nu })
+
+        # Latent Means
+        MeanList <<- lapply(p, function(y) { y$alpha })
+
+        # Latent Variances
+        VarList <<- lapply(p, function(y) { diag(y$psi) })
+
+        })()
+
+    #--------------------------------------
+    ### Standard Deviations for the Denominator of the dMACS Effect Size ####
+
+    #...................
+    #### Pooled Within-Group Standard Deviation ####
+
+    focsd <- focn <- NULL
+    if (isTRUE(pooled)) {
+
+      SDList <- NULL
+      lavaan::lavInspect(mod.fit, what = "data") |>
+        (\(p) {
+
+          # Reference group SD
+          refsd <- apply(p[[ref.group]], 2L, sd, na.rm = TRUE)
+
+          # Reference group n
+          refn <- colSums(!is.na(p[[ref.group]]))
+
+          SDList <<- lapply(p, function(y) {
+
+            # Focal group SD
+            focsd <- apply(y, 2L, sd, na.rm = TRUE)
+
+            # Focal group n
+            focn <- colSums(!is.na(y))
+
+            # Pooled within-group SD of item i
+            ((focn - 1L) * focsd + (refn - 1L) * refsd) / ((focn - 1L) + (refn - 1L))
+
+          })
+
+
+        })()
+
+    #...................
+    #### Standard Deviation of the Reference Group ####
+
+    } else  {
+
+      SDList <- setNames(apply(lavaan::lavInspect(mod.fit, what = "data")[[ref.group]], 2L, sd, na.rm = TRUE) |> (\(p) lapply(seq_along(group.label), function(y) { return(p) }))(), nm = group.label)
+
+    }
+
+    #...................
+    #### Ordered Categorical Indicators ####
+
+    ThreshList <- ThetaList <- NULL
+    if (isTRUE(ordered)) {
+
+      # Thresholds
+      ThreshList <- lapply(lavaan::lavInspect(mod.fit, what = "est"), function(y) {
+
+                             lapply(lavaan::lavInspect(mod.fit, what = "ordered"), function(iname, threshlist) {
+
+                               threshlist[grepl(paste0(iname, "\\|"), rownames(threshlist))]
+
+                             }, y$tau)
+
+                           })
+
+      # Residual variances
+      ThetaList <- lapply(lavaan::lavInspect(mod.fit, what = "est"), function(y) { diag(y$theta) })
+
+    }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Longitudinal Measurement Invariance ####
+
+  } else {
+
+    #--------------------------------------
+    ### Labels for Time Points ####
+
+    group.label <- colnames(lavaan::lavInspect(mod.fit, what = "est")$lambda)
+
+    #--------------------------------------
+    ### Reference Time Point ####
+
+    if (isTRUE(!is.null(ref))) {
+
+      ref.group <- if (isTRUE(is.character(ref))) { match(ref, group.label) } else { ref }
+
+    } else {
+
+      ref.group <- 1L
+
+    }
+
+    ref <- group.label[ref.group]
+
+    #--------------------------------------
+    ### Extract Parameter Estimates ####
+
+    LambdaList <- NuList <- MeanList <- VarList <- NULL
+    lavaan::lavInspect(mod.fit, what = "est") |>
+      (\(p) {
+
+        # Factor Loadings
+        LambdaList <<- setNames(lapply(group.label, function(y) { p$lambda[p$lambda[, y] != 0L, y] |> (\(p) matrix(p, ncol = 1L, dimnames = list(names(p))))() }), nm = group.label)
+
+        # Intercepts
+        NuList <<- setNames(lapply(seq_along(group.label), function(y) { p$nu[rownames(LambdaList[[y]]), ] }), nm = group.label)
+
+        # Latent Means
+        MeanList <<- setNames(lapply(group.label, function(y) { p$alpha[y, 1L] } ), nm = group.label)
+
+        # Latent Variances
+        VarList <<- setNames(lapply(group.label, function(y) { p$psi[y, y] }), nm = group.label)
+
+      })()
+
+    #--------------------------------------
+    ### Standard Deviations for the Denominator of the dMACS Effect Size ####
+
+    #...................
+    #### Pooled Within-Time Standard Deviation ####
+
+    if (isTRUE(pooled)) {
+
+      SDList <- NULL
+      lavaan::lavInspect(mod.fit, "data") |>
+        (\(p) {
+
+          # Reference time SD
+          refsd <- apply(p[, rownames(LambdaList[[ref.group]])], 2L, sd, na.rm = TRUE)
+
+          # Reference time n
+          refn <- colSums(!is.na(p[, rownames(LambdaList[[ref.group]])]))
+
+          # Pooled within-time SD of item i
+          SDList <<- lapply(seq_along(group.label), function(y) {
+
+            # Focal time SD
+            focsd <<- apply(p[, rownames(LambdaList[[y]])], 2L, sd, na.rm = TRUE)
+
+            # Focal time n
+            focn <<- colSums(!is.na(p[, rownames(LambdaList[[y]])]))
+
+            ((focn - 1L) * focsd + (refn - 1L) * refsd) / ((focn - 1L) + (refn - 1L))
+
+          })
+
+        })()
+
+    #...................
+    #### Standard Deviation of the Reference Group ####
+
+    } else  {
+
+      SDs <- setNames(apply(lavaan::lavInspect(mod.fit, "data")[, rownames(LambdaList[[ref.group]])], 2L, sd, na.rm = TRUE) |> (\(p) lapply(seq_along(group.label), function(y) { p }))(), nm = group.label)
+
+    }
+
+    #--------------------------------------
+    ### Ordered Categorical Indicators ####
+
+    ThreshList <- ThetaList <- NULL
+    if (isTRUE(ordered)) {
+
+      # Thresholds
+      ThreshList <- lavaan::lavInspect(mod.fit, what = "est") |> (\(p) lapply(seq_along(group.label), function(y) { lapply(rownames(LambdaList[[y]]), function(z) { p$tau[grepl(paste0(z, "\\|"), rownames(p$tau))] })}))()
+
+      # Residual variances
+      ThetaList <- lapply(seq_along(group.label), function(y) { diag(lavaan::lavInspect(mod.fit, what = "est")$theta)[rownames(LambdaList[[y]])] })
+
+    }
+
+  }
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Compute dMACS ####
+
+  result <- .dmacs_summary(LambdaList = LambdaList, NuList = NuList, MeanList = MeanList, VarList = VarList, SDList = SDList, Groups = group.label, RefGroup = ref.group, ThreshList = ThreshList, ThetaList = ThetaList, signed = signed, ordered = ordered) |>
+    (\(p) if (isTRUE(all(sapply(p, is.list)) && all(!sapply(p, is.data.frame)))) { list(dmacs = lapply(p, function(y) y$dmacs), m.diff = lapply(p, function(y) y$m.diff), v.diff = lapply(p, function(y) y$v.diff)) } else { return(p) } )()
+
+  #_____________________________________________________________________________
+  #
+  # Return Object --------------------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## lavaan summary ####
+
+  lavaan.summary <- data.frame(### First column
+                               label = c(paste("lavaan", lavaan::lavInspect(mod.fit, what = "version")), "",
+                                         "Indicators", "Identification", ifelse(isTRUE(!long), "Reference Group", "Reference Time Point"),
+                                         "Denominator Standard Deviation"),
+                               ### Second column
+                               second = c("", "",
+                                          # Indicators
+                                          ifelse(isTRUE(!ordered), "Continuous", "Ordered Categorical"),
+                                          # Identification
+                                          if (isTRUE(is.null(object))) { switch(item.invar.fit$args$ident, "marker" = "Marker Variable", "var" = "Std. LV", "effect" = "Effects Coding") } else { NA },
+                                          # Reference Group or Time Point
+                                          ref,
+                                          # Denominator Standard Deviation
+                                          ifelse(isTRUE(pooled), "Pooled", "Reference")))
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Return Object ####
+
+  object <- list(call = match.call(),
+                 type = "item.noninvar",
+                 data = if (isTRUE(!is.null(data))) { item.invar.fit$data } else { lavaan::lavInspect(mod.fit, what = "data") },
+                 args = if (isTRUE(is.null(object))) {
+
+                          list(model = item.invar.fit$model$config, group = group, ref = ref, pooled = pooled, signed = signed, cluster = item.invar.fit$args$cluster,
+                               long = item.invar.fit$args$long, ordered = item.invar.fit$args$ordered, rescov = item.invar.fit$args$rescov, rescov.long = item.invar.fit$args$rescov.long,
+                               ident = item.invar.fit$args$ident, estimator = item.invar.fit$args$estimator, missing = item.invar.fit$args$missing, print = print,
+                               digits = digits, as.na = item.invar.fit$args$as.na, write = write, append = append, check = check, output = output)
+
+                         } else {
+
+                           list(model = NULL, group = lavaan::lavInspect(mod.fit, what = "group"), ref = ref, pooled = pooled, signed = signed, cluster = lavaan::lavInspect(mod.fit, what = "cluster") |> (\(p) if (isTRUE(length(p) == 0L)) { NULL } else { p })(),
+                                long = long, ordered = ordered, rescov = NULL, rescov.long = NULL, ident = NULL, estimator = NULL, missing = NULL, print = print,
+                                digits = digits, as.na = as.na, write = write, append = append, check = check, output = output)
+
+                         },
+                 model = if (isTRUE(is.null(object))) { item.invar.fit$model$config } else { NULL },
+                 check = if (isTRUE(is.null(object))) { item.invar.fit$check$config } else { NULL },
+                 model.fit = mod.fit,
+                 result = list(summary = lavaan.summary, noninvar = result))
+
+  class(object) <- "misty.object"
+
+  #_____________________________________________________________________________
+  #
+  # Write Results --------------------------------------------------------------
+
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
+
+  #_____________________________________________________________________________
+  #
+  # Output ---------------------------------------------------------------------
+
+  if (isTRUE(output)) { print(object, check = FALSE) }
+
+  return(invisible(object))
+
+}
+
+#_______________________________________________________________________________
