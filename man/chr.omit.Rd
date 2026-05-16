@@ -28,8 +28,9 @@ This function omits user-specified values or strings from a numeric vector,
 character vector or factor.
 }
 \examples{
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Charater vector
+
 x.chr <- c("a", "", "c", NA, "", "d", "e", NA)
 
 # Example 1: Omit character string ""
@@ -44,8 +45,9 @@ chr.omit(x.chr, omit = c("c", "e"))
 # Example 4: Omit character string "c", "e", and missing values (NA)
 chr.omit(x.chr, omit = c("c", "e"), na.omit = TRUE)
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Numeric vector
+
 x.num <- c(1, 2, NA, 3, 4, 5, NA)
 
 # Example 5: Omit values 2 and 4
@@ -54,8 +56,9 @@ chr.omit(x.num, omit = c(2, 4))
 # Example 6: Omit values 2, 4, and missing values (NA)
 chr.omit(x.num, omit = c(2, 4), na.omit = TRUE)
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Factor
+
 x.factor <- factor(letters[1:10])
 
 # Example 7: Omit factor levels "a", "c", "e", and "g"

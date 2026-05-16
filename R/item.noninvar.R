@@ -205,7 +205,7 @@
 #' \deqn{\hat{X}_{iR} = \tau_{iR} + \lambda_{iR}\xi}
 #' \deqn{\hat{X}_{iF} = \tau_{iF} + \lambda_{iF}\xi}
 #'
-#' where \eqn{\tau_{iR}} and \eqn{\tau_{iF}} are the interepts, \eqn{\lambda_{iR}}
+#' where \eqn{\tau_{iR}} and \eqn{\tau_{iF}} are the intercepts, \eqn{\lambda_{iR}}
 #' and \eqn{\lambda_{iF}} are the factor loadings of item \eqn{i} in the reference
 #' and focal group, and \eqn{\xi} is the score on the latent variable.
 #'
@@ -349,7 +349,7 @@
 #' Nye, C. D., Bradburn, J., Olenick, J., Bialko, C., & Drasgow, F. (2019).
 #' How big are my effects? Examining the magnitude of the effect sizes in studies
 #' of measurement equivalence. \emph{Organizational Research Methods, 22}(3), 678–709.
-#' https://doi.org/ 10.1177/1094428118761122
+#' https://doi.org/10.1177/1094428118761122
 #'
 #' Nye, C., & Drasgow, F. (2011). Effect size indices for analyses of
 #' measurement equivalence: Understanding the practical importance of
@@ -475,7 +475,8 @@
 #' # Example 8: Two Time Points
 #' item.noninvar(data, model = list(c("aitem1", "aitem2", "aitem3"),
 #'                                  c("bitem1", "bitem2", "bitem3")),
-#'            long = TRUE, ordered = TRUE)
+#'               long = TRUE, ordered = TRUE)
+#'
 #' #------------------------------------------------
 #' # Write Results
 #'
@@ -483,7 +484,7 @@
 #' item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'               group = "school", print = "all", write = "Non-Invariance.txt", output = FALSE)
 #'
-#' # Example 9b: Write Results into a Excel file
+#' # Example 9b: Write Results into an Excel file
 #' item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'               group = "school", print = "all", write = "Non-Invariance.xlsx", output = FALSE)
 #' }

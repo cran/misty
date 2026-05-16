@@ -98,7 +98,7 @@ write.data <- function(x, file = "Data.csv", sep = ";", dec = ",", na = "",
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is not missing and a matrix or data frame
   if (isTRUE(missing(x) || !is.matrix(x) && !is.data.frame(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
@@ -110,7 +110,7 @@ write.data <- function(x, file = "Data.csv", sep = ";", dec = ",", na = "",
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("row.names", "col.names"), character = list(file = 1L, sep = 1L, dec = 1L, na = 1L),
@@ -135,35 +135,35 @@ write.data <- function(x, file = "Data.csv", sep = ";", dec = ",", na = "",
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## CSV, DAT, or TXT file ####
 
   if (isTRUE(file.exten %in% c("csv", "dat", "txt"))) {
 
     suppressMessages(data.table::fwrite(x = x, file = file, sep = sep, dec = dec, na = na, row.names = row.names, col.names = col.names, ...))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## SPSS, Excel, or Stat file ####
 
   } else {
 
-    #...................
+    #——————————————————————————————————————
     ### SPSS File ####
 
     switch(file.exten, "sav" = {
 
       misty::write.sav(x = x, file = file, ...)
 
-    #...................
+    #——————————————————————————————————————
     ### Excel File ####
 
     }, "xlsx" =  {
 
       misty::write.xlsx(x = x, file = file, ...)
 
-    #...................
+    #——————————————————————————————————————
     ### Stata File ####
 
     }, "dta" = {

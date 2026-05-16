@@ -230,7 +230,7 @@ The function uses the functions \code{lavTestLRT} provided in the R package
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Cluster variable specification
 
 # Example 1a: Specification using the argument '...'
@@ -242,10 +242,10 @@ multilevel.invar(Demo.twolevel[, c("y1", "y2", "y3", "y4", "cluster")], cluster 
 # Example 1b: Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.invar(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Model specification using 'data' for a one-factor model
 
-#..........
+#···················
 # Level of measurement invariance
 
 # Example 2a: Configural invariance
@@ -257,7 +257,7 @@ multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", invar = "me
 # Example 2c: Scalar invariance
 multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", invar = "scalar")
 
-#..........
+#···················
 # Residual covariance at the Within level and residual variance at the Between level
 
 # Example 3a: Residual covariance between "y3" and "y4" at the Within level
@@ -267,11 +267,11 @@ multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster",
 # Example 3b: Residual variances of 'y1' at the Between level fixed at 0
 multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", fix.resid = "y1")
 
-#..........
+#···················
 # Example 4: Print all results
 multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", print = "all")
 
-#..........
+#···················
 # Example 5: lavaan model and summary of the estimated model
 mod <- multilevel.invar(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", output = FALSE)
 
@@ -281,7 +281,7 @@ mod$model$metric
 # Fitted lavaan object of the metric invariance model
 lavaan::summary(mod$model.fit$metric, standardized = TRUE, fit.measures = TRUE)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Model specification using 'model' for one or multiple factor model
 
 # Example 6a: One-factor model
@@ -291,7 +291,7 @@ multilevel.invar(Demo.twolevel, cluster = "cluster", model = c("y1", "y2", "y3",
 multilevel.invar(Demo.twolevel, cluster = "cluster",
                  model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write results
 
 # Example 7a: Write Results into a Excel file

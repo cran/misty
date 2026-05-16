@@ -73,7 +73,7 @@ based on precision requirements (i.e., type-I-risk, type-II-risk and an effect
 size).
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1: One- and two-sample t-test
 
 # Example 1a: One-sample t-test
@@ -88,7 +88,7 @@ size.mean(delta = 0.5, sample = "one.sample",
 size.mean(delta = 1, sample = "two.sample",
           alternative = "less", alpha = 0.01, beta = 0.1)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 2: One- and two-sample test for proportions
 
 # Example 2a: Two-sided one-sample test
@@ -103,7 +103,7 @@ size.prop(pi = 0.5, delta = 0.2, sample = "one.sample",
 size.prop(pi = 0.5, delta = 0.2, sample = "two.sample",
           alternative = "greater", alpha = 0.01, beta = 0.1)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 3: Testing the Pearson product-moment correlation coefficient
 
 # H0: rho = 0.3, H1: rho != 0.3

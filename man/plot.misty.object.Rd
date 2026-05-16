@@ -48,209 +48,167 @@
 \arguments{
 \item{x}{\code{misty.object} object.}
 
-\item{plot}{see 'Arguments' in the functions \code{ci.*} (e.g.,
-\code{\link{ci.cor}}).}
+\item{plot}{see 'Details'}
 
-\item{bar}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{bar}{see 'Details'}
 
-\item{box}{see 'Arguments' in the function \code{\link{test.levene}}.}
+\item{box}{see 'Details'}
 
-\item{violin}{see 'Arguments' in the function \code{\link{test.levene}}.}
+\item{violin}{see 'Details'}
 
-\item{hist}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{hist}{see 'Details'}
 
-\item{point}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{ci.*} (e.g., \code{\link{ci.cor}}), or \code{\link{test.welch}}.}
+\item{point}{see 'Details'}
 
-\item{line}{see 'Arguments' in the functions \code{\link{aov.w}},
-\code{ci.*} (e.g., \code{\link{ci.cor}}), or \code{\link{test.t}}.}
+\item{line}{see 'Details'}
 
-\item{ci}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{ci}{see 'Details'}
 
-\item{conf.level}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{conf.level}{see 'Details'}
 
-\item{adjust}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{\link{test.t}}, or
-\code{\link{test.welch}},}
+\item{adjust}{see 'Details'}
 
-\item{jitter}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}},  \code{\link{test.t}},
-\code{\link{test.levene}},or \code{\link{test.welch}}.}
+\item{jitter}{see 'Details'}
 
-\item{density}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{density}{see 'Details'}
 
-\item{square}{see 'Arguments' in the function \code{\link{na.pattern}}.}
+\item{square}{see 'Details'}
 
-\item{rotate}{see 'Arguments' in the function \code{\link{na.pattern}}.}
+\item{rotate}{see 'Details'}
 
-\item{binwidth}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{binwidth}{see 'Details'}
 
-\item{bins}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{bins}{see 'Details'}
 
-\item{fill}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{fill}{see 'Details'}
 
-\item{hist.alpha}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{hist.alpha}{see 'Details'}
 
-\item{tile.alpha}{see 'Arguments' in the function \code{\link{na.pattern}}.}
+\item{tile.alpha}{see 'Details'}
 
-\item{violin.alpha}{see 'Arguments' in the function \code{\link{test.levene}}.}
+\item{violin.alpha}{see 'Details'}
 
-\item{violin.trim}{see 'Arguments' in the function \code{\link{test.levene}}.}
+\item{violin.trim}{see 'Details'}
 
-\item{box.width}{see 'Arguments' in the function \code{\link{test.levene}}.}
+\item{box.width}{see 'Details'}
 
-\item{box.alpha}{see 'Arguments' in the function \code{\link{test.levene}}.}
+\item{box.alpha}{see 'Details'}
 
-\item{linetype}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}})
-or \code{\link{test.t}}.}
+\item{linetype}{see 'Details'}
 
-\item{linewidth}{see 'Arguments' in the function \code{\link{test.t}}.}
+\item{linewidth}{see 'Details'}
 
-\item{line.col}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{line.col}{see 'Details'}
 
-\item{intercept}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{intercept}{see 'Details'}
 
-\item{density.col}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{density.col}{see 'Details'}
 
-\item{density.linewidth}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{density.linewidth}{see 'Details'}
 
-\item{density.linetype}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{density.linetype}{see 'Details'}
 
-\item{point.size}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}), \code{\link{test.t}},
-or \code{\link{test.welch}}.}
+\item{point.size}{see 'Details'}
 
-\item{point.linewidth}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{point.linewidth}{see 'Details'}
 
-\item{point.linetype}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{point.linetype}{see 'Details'}
 
-\item{point.shape}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{point.shape}{see 'Details'}
 
-\item{point.col}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{point.col}{see 'Details'}
 
-\item{ci.col}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{ci.col}{see 'Details'}
 
-\item{ci.linewidth}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{ci.linewidth}{see 'Details'}
 
-\item{ci.linetype}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{ci.linetype}{see 'Details'}
 
-\item{errorbar.width}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}), \code{\link{test.t}},
-or \code{\link{test.welch}},}
+\item{errorbar.width}{see 'Details'}
 
-\item{dodge.width}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{dodge.width}{see 'Details'}
 
-\item{jitter.size}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{\link{test.levene}},
-\code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{jitter.size}{see 'Details'}
 
-\item{jitter.width}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{\link{test.levene}},
-\code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{jitter.width}{see 'Details'}
 
-\item{jitter.height}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{test.levene}}, \code{\link{test.t}}, or
-\code{\link{test.welch}}.}
+\item{jitter.height}{see 'Details'}
 
-\item{jitter.alpha}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{\link{test.levene}},
-\code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{jitter.alpha}{see 'Details'}
 
-\item{gray}{see 'Arguments' in the functions \code{\link{multilevel.r2}}
-or \code{\link{test.levene}}.}
+\item{gray}{see 'Details'}
 
-\item{start}{see 'Arguments' in the functions \code{\link{multilevel.r2}}
-or \code{\link{test.levene}}.}
+\item{start}{see 'Details'}
 
-\item{end}{see 'Arguments' in the functions \code{\link{multilevel.r2}}
-or \code{\link{test.levene}}.}
+\item{end}{see 'Details'}
 
-\item{color}{see 'Arguments' in the functions \code{\link{multilevel.r2}},
-\code{\link{na.pattern}}, or \code{\link{test.levene}}.}
+\item{color}{see 'Details'}
 
-\item{xlab}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{xlab}{see 'Details'}
 
-\item{ylab}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{ylab}{see 'Details'}
 
-\item{xlim}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or
-\code{\link{test.welch}}.}
+\item{xlim}{see 'Details'}
 
-\item{ylim}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{ylim}{see 'Details'}
 
-\item{xbreaks}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or
-\code{\link{test.welch}}.}
+\item{xbreaks}{see 'Details'}
 
-\item{ybreaks}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{ybreaks}{see 'Details'}
 
-\item{axis.title.size}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{axis.title.size}{see 'Details'}
 
-\item{axis.text.size}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{axis.text.size}{see 'Details'}
 
-\item{strip.text.size}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{strip.text.size}{see 'Details'}
 
-\item{title}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{title}{see 'Details'}
 
-\item{subtitle}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{subtitle}{see 'Details'}
 
-\item{group.col}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{group.col}{see 'Details'}
 
-\item{plot.margin}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{plot.margin}{see 'Details'}
 
-\item{legend.title}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{legend.title}{see 'Details'}
 
-\item{legend.position}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{legend.position}{see 'Details'}
 
-\item{legend.box.margin}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}})
-or \code{\link{na.pattern}}.}
+\item{legend.box.margin}{see 'Details'}
 
-\item{legend.key.size}{see 'Arguments' in the function \code{\link{na.pattern}}.}
+\item{legend.key.size}{see 'Details'}
 
-\item{legend.text.size}{see 'Arguments' in the functions \code{\link{na.pattern}}.}
+\item{legend.text.size}{see 'Details'}
 
-\item{facet.ncol}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{facet.ncol}{see 'Details'}
 
-\item{facet.nrow}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{facet.nrow}{see 'Details'}
 
-\item{facet.scales}{see 'Arguments' in the functions \code{ci.*} (e.g., \code{\link{ci.cor}}).}
+\item{facet.scales}{see 'Details'}
 
-\item{filename}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{filename}{a character string indicating the \code{filename}
+argument including the file extension in the \code{ggsave}
+function. Note that one of \code{".eps"}, \code{".ps"},
+\code{".tex"}, \code{".pdf"} (default),
+\code{".jpeg"}, \code{".tiff"}, \code{".png"},
+\code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+to be specified as file extension in the \code{file}
+argument.}
 
-\item{width}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{width}{a numeric value indicating the \code{width} argument
+for the \code{ggsave} function.}
 
-\item{height}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{height}{a numeric value indicating the \code{height} argument
+(default is the size of the current graphics device)
+for the \code{ggsave} function.}
 
-\item{units}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{units}{a character string indicating the \code{units} argument
+in the \code{ggsave} function. Note that one of
+\code{"in"}, \code{"cm"}, \code{"mm"}, or \code{"px"}
+needs to be specified.}
 
-\item{dpi}{see 'Arguments' in the functions \code{\link{aov.b}},
-\code{\link{aov.w}}, \code{ci.*} (e.g., \code{\link{ci.cor}}),
-\code{\link{test.levene}}, \code{\link{test.t}}, or \code{\link{test.welch}}.}
+\item{dpi}{a numeric value indicating the \code{dpi} argument
+for the \code{ggsave} function.}
 
 \item{check}{logical: if \code{TRUE} (default), argument specification
 is checked.}
@@ -260,6 +218,387 @@ is checked.}
 }
 \description{
 This function plots an \code{misty.object} object.
+}
+\details{
+This function provides plotting arguments depending on the type of the output
+object specified for the argument \code{x}:
+\describe{
+\item{\strong{Output object from \code{aov.b}, \code{aov.w}, and \code{test.welch} Function}}{
+The \code{plot} function for the misty object of type \code{"aov.b"}, \code{"aov.w"},
+and \code{"test.welch"} has following plotting arguments:
+\itemize{
+   \item{\code{bar}}: logical: if \code{TRUE} (default), bars representing means
+   for each groups are drawn. Note that this argument is only available for the
+   misty object of type \code{"aov.b"} and \code{"test.welch"}.
+   \item{\code{point}}: logical: if \code{TRUE}, points representing means for
+   each groups are drawn.
+   \item{\code{line}}:  logical: if \code{TRUE} (default), a line connecting means
+   of each groups and lines connecting data points are drawn
+   when \code{jitter = TRUE}. Note that this argument is only available for
+   misty object of type \code{"aov.w"}.
+   \item{\code{ci}}: logical: if \code{TRUE} (default), error bars representing
+   confidence intervals are drawn.
+   \item{\code{jitter}}: jittered data points are drawn. Note that subject-specific
+   lines are also drawn for the \code{"aov.w"} function when \code{line = TRUE}.
+   \item{\code{conf.level}}: a numeric value between 0 and 1 (default: 0.95) indicating
+   the confidence level of the interval.
+   \item{\code{adjust}}: logical: if \code{TRUE} (default), difference-adjustment
+   for the confidence intervals in a two-sample design is applied.
+   \item{\code{point.size}}: a numeric value indicating the \code{size} (default:
+   \code{3}) aesthetic for the point representing the mean value.
+   \item{\code{line.width}}: a numeric value (default: \code{0.5}) indicating
+   the \code{linewidth} aesthetic for the line connecting means of each Groups.
+   Note that this argument is only available for the \code{"aov.w"} function.
+   \item{\code{errorbar.width}}: a numeric value (default: \code{0.1}) indicating
+   the horizontal bar width of the error bar.
+   \item{\code{jitter.size}}: a numeric value (default: \code{1.25}) indicating
+   the \code{size} aesthetic for the jittered data points.
+   \item{\code{jitter.width}}: a numeric value (default: \code{0.05}) indicating
+   the amount of horizontal jitter.
+   \item{\code{jitter.height}}: a numeric value (default: \code{0}) indicating
+   the amount of vertical jitter.
+   \item{\code{jitter.alpha}}: a numeric value between 0 and 1 (default: \code{0.1})
+   for specifying the \code{alpha} argument in the \code{geom_jitter} function
+   for controlling the opacity of the jittered data points.
+   \item{\code{xlab}}: a character string (default: \code{NULL}) specifying the
+   labels for the x-axis.
+   \item{\code{ylab}}: a character string (default: \code{"y"}) specifying the
+   labels for the y-axis.
+   \item{\code{ylim}}: a numeric vector of length two (default: \code{NULL})
+   specifying limits of the limits of the y-axis.
+   \item{\code{ybreaks}}: a numeric vector (default: \code{waiver()}) specifying
+   the points at which tick-marks are drawn at the y-axis.
+   \item{\code{title}}: a character string (default: \code{""}) specifying the
+   text for the title for the plot.
+   \item{\code{subtitle}}: a character string (default: \code{"Two-Sided Confidence Interval"}
+   when \code{adjust = FALSE} or \code{"Two-Sided Difference-Adjusted Confidence Interval"}
+   for the \code{aov.b} function and
+   \code{"Two-Sided Difference-Adjusted Cousineau-Morey Confidence Interval Confidence Interval"}
+   for the \code{aov.w} function when \code{adjust = TRUE}) specifying the text
+   for the subtitle for the plot.
+   \item{\code{filename}}:  character string indicating the \code{filename}
+   argument including the file extension in the \code{ggsave} function.
+   \item{\code{width}}: a numeric value indicating the \code{width} argument
+   for the \code{ggsave} function.
+   \item{\code{height}}: a numeric value indicating the \code{height} argument
+   for the \code{ggsave} function.
+   \item{\code{dpi}}: a numeric value indicating the \code{dpi} argument for
+   the \code{ggsave} function.
+   \item{\code{units}}: a character string (default: \code{"in"}) indicating
+   the \code{units} argument  (default: \code{in}) for the \code{ggsave}
+   function.
+}
+}
+\item{\strong{Output object from \code{ci.*} Functions}}{The \code{plot}
+function for the misty object of type \code{"ci.cor"}, \code{"ci.mean"},
+\code{"ci.median"}, \code{"ci.prop"}, \code{"ci.var"}, and \code{"ci.sd"} has
+following plotting arguments:
+\itemize{
+   \item{\code{plot}}: a character string indicating the type of the plot
+   to display, i.e., \code{"ci"} (default) for displaying confidence intervals
+   or \code{"boot"} for displaying bootstrap samples with histograms and density
+   curves when the argument.
+   \item{\code{hist}}: logical: if \code{TRUE} (default), histograms are
+   drawn when \code{plot = "boot"}.
+   \item{\code{density}}: logical: if \code{TRUE} (default), density curves are
+   drawn when \code{plot = "boot"}.
+   \item{\code{point}}: logical: if \code{TRUE} (default), vertical lines
+   representing the point estimate are drawn when \code{plot = "boot"}.
+   \item{\code{ci}}: logical: if \code{TRUE} (default), vertical lines
+   representing the bootstrap confidence intervals are drawn when \code{plot = "boot"}.
+   \item{\code{line}}: logical: if \code{TRUE} (default), a horizontal line
+   is drawn when \code{plot = "ci"} or a vertical line is drawn when
+   \code{plot = "boot"}.
+   \item{\code{point.size}}: a numeric value (default: \code{2.5}) indicating
+   the \code{size} argument in the \code{geom_point} function for controlling
+   the size of points when plotting confidence intervals (\code{plot = "ci"}).
+   \item{\code{point.shape}}: a numeric value between 0 and 25 (default: \code{19})
+   or a character string as plotting symbol indicating the \code{shape} argument
+   in the \code{geom_point} function for controlling the symbols of points
+   when plotting confidence intervals (\code{plot = "ci"}).
+   \item{\code{errorbar.width}}: a numeric value (default: \code{0.3}) indicating
+   the \code{width} argument in the \code{geom_errorbar} function for controlling
+   the width of the whiskers in the \code{geom_errorbar} function when plotting
+   confidence intervals (\code{plot = "ci"}).
+   \item{\code{dodge.width}}: a numeric value (default: \code{0.5}) indicating
+   the \code{width} argument controlling the width of the \code{geom} elements
+   to be dodged when specifying a grouping variable using the argument \code{group}
+   when plotting confidence intervals (\code{plot = "ci"}).
+   \item{\code{binwidth}}: a numeric value or a function (default: \code{NULL})
+   for specifying the \item{\code{bins}}: a numeric value for specifying the
+   \code{bins} argument in the \code{geom_histogram} function for controlling
+   the number of bins when plotting bootstrap samples (\code{plot = "boot"}).
+   \item{\code{hist.alpha}}: a numeric value between 0 and 1 (default: \code{0.4})
+   for specifying the \code{alpha} argument in the \code{geom_histogram}
+   function for controlling the opacity of the bars when plotting bootstrap
+   samples (\code{plot = "boot"}).
+   \item{\code{fill}}: a character string (default: \code{"gray85"}) specifying
+   the \code{fill} argument in the \code{geom_histogram} function controlling
+   the fill aesthetic when plotting bootstrap samples (\code{plot = "boot"}).
+   Note that this argument applied only when no grouping variable was specified
+   \code{group = NULL}.
+   \item{\code{density.col}}: a character string (default: \code{"#0072B2"})
+   specifying the \code{color} argument in the \code{geom_density} function
+   controlling the color of the density curves when plotting bootstrap samples
+   (\code{plot = "boot"}). Note that this argument applied only when no grouping
+   variable was specified \code{group = NULL}.
+   \item{\code{density.linewidth}}: a numeric value (default: \code{0.5}) specifying
+   the \code{linewidth} argument in the \code{geom_density} function controlling
+   the line width of the density curves when plotting bootstrap samples
+   (\code{plot = "boot"}).
+   \item{\code{density.linetype}}: a numeric value or character string (default:
+   \code{0.5}) specifying the \code{linetype} argument in the \code{geom_density}
+   function controlling the line type of the density curves when plotting
+   bootstrap samples (\code{plot = "boot"}).
+   \item{\code{point.col}}: a character string (default: \code{"#CC79A7"}) specifying
+   the \code{color} argument in the \code{geom_vline} function for controlling
+   the color of the vertical line displaying the point estimate when plotting
+   bootstrap samples (\code{plot = "boot"}). Note that this argument applied
+   only when no grouping variable was specified \code{group = NULL}.
+   \item{\code{point.linewidth}}: a numeric value (default: \code{0.6}) specifying
+   the \code{linewdith} argument in the \code{geom_vline} function for
+   controlling the line width of the vertical line displaying the point estimate
+   when plotting bootstrap samples (\code{plot = "boot"}).
+   \item{\code{point.linetype}}: a numeric value or character string (default:
+   \code{"solid"}) specifying the \code{linetype} argument in the \code{geom_vline}
+   function controlling the line type of the vertical line displaying the
+   point estimate when plotting bootstrap samples (\code{plot = "boot"}).
+   \item{\code{ci.col}}: character string (default: \code{"black"}) specifying the
+   \code{color} argument in the \code{geom_vline} function for controlling the
+   color of the vertical line displaying bootstrap confidence intervals when
+   plotting bootstrap samples (\code{plot = "boot"}). Note that this argument
+   applied only when no grouping variable was specified \code{group = NULL}.
+   \item{\code{ci.linewidth}}: a numeric value (default: \code{0.6}) specifying
+   the \code{linewdith} argument in the \code{geom_vline} function for controlling
+   the line width of the vertical line displaying bootstrap confidence intervals
+   when plotting bootstrap samples (\code{plot = "boot"}).
+   \item{\code{ci.linetype}}: a numeric value or character string (default:
+   \code{"dashed"}) specifying the \code{linetype} argument in the \code{geom_vline}
+   function controlling the line type of the vertical line displaying bootstrap
+   confidence intervals when plotting bootstrap samples (\code{plot = "boot"}).
+   \item{\code{intercept}}: a numeric value (default = \code{0}) indicating the
+   \code{yintercept} or \code{xintercept} argument in the \code{geom_hline}
+   or \code{geom_vline} function controlling the position of the horizontal
+   or vertical line when \code{plot = "ci"} and \code{line = TRUE} or when
+   \code{plot = "boot"} and \code{line = TRUE}.
+   \item{\code{linetype}}: a character string (default: \code{"solid"}) indicating
+   the \code{linetype} argument in the \code{geom_hline} or \code{geom_vline}
+   function controlling the line type of the horizontal or vertical line
+   \item{\code{line.col}}: a character string (default: \code{"gray65"}) indicating
+   the \code{color} argument in the \code{geom_hline} or \code{geom_vline}
+   function for controlling the color of the horizontal or vertical line.
+   \item{\code{xlab}}: a character string indicating the \code{name} argument
+   in the \code{scale_x_continuous} function for labeling the x-axis. The default
+   setting is \code{xlab = NULL} when \code{plot = "ci"} and
+   \code{xlab = "Correlation Coefficient"}, \code{xlab = "Arithmetic Mean"},
+   \code{xlab = "Median"}, \code{xlab = "Proportion"}, \code{xlab = "Variance"},
+   or \code{xlab = "Standard Deviation"}.
+   \item{\code{ylab}}: a character string indicating the \code{name} argument
+   in the \code{scale_y_continuous} function for labeling the y-axis. The
+   default setting is \code{ylab = "Correlation Coefficient"}, \code{ylab = "Arithmetic Mean"},
+   \code{ylab = "Median"}, \code{ylab = "Proportion"}, \code{ylab = "Variance"},
+   or \code{ylab = "Standard Deviation"} when \code{plot = "ci"} and
+   \code{ylab = "Probability Density f(x)"} when \code{plot = "boot"}.
+   \item{\code{xlim}}: a numeric vector with two elements indicating the
+   \code{limits} argument in the \code{scale_x_continuous} function for controlling
+   the scale range of the x-axis. The default setting is \code{xlim = NULL}
+   when \code{plot = "ci"} and \code{xlim = c(-1, 1)} for the correlation
+   coefficient and proportion or \code{xlim = NULL}) for the arithmetic mean,
+   median, variance and standard deviation when \code{plot = "boot"}.
+   \item{\code{ylim}}: a numeric vector with two elements indicating the
+   \code{limits} argument in the \code{scale_y_continuous} function for controlling
+   the scale range of the y-axis. The default setting is \code{ylim = c(-1, 1)}
+   fpr the correlation coefficient and proportion and \code{ylim = NULL} for
+   the arithmetic mean, median, variance and standard deviation when \code{plot = "ci"}
+   and \code{xlim = NULL} when \code{plot = "boot"}.
+   \item{\code{xbreaks}}: a numeric vector (default: \code{waiver()}) indicating
+   the \code{breaks} argument in the \code{scale_x_continuous} function for
+   controlling the x-axis breaks.
+   \item{\code{ybreaks}}:  a numeric vector (default: \code{waiver()}) indicating
+   the \code{breaks} argument in the \code{scale_y_continuous} function for
+   controlling the y-axis breaks.
+   \item{\code{axis.title.size}}: a numeric value (default: \code{11}) indicating
+   the \code{size} argument in the \code{element_text} function for specifying
+   the function controlling the font size of the axis title, i.e.
+   \code{theme(axis.title = element_text(size = axis.text.size))}
+   \item{\code{axis.text.size}}: a numeric value (default: 10) indicating the
+   \code{size} argument in the \code{element_text} function for specifying the
+   function controlling the font size of the axis text,
+   i.e. \code{theme(axis.text = element_text(size = axis.text.size))}.
+   \item{\code{strip.text.size}}: a numeric value (default: \code{11}) indicating
+   the \code{size} argument in the \code{element_text} function for specifying
+   the function controlling the font size of the strip text, i.e.
+   \code{theme(strip.text = element_text(size = strip.text.size))}.
+   \item{\code{title}}: a character string (default: \code{NULL}) indicating the
+   \code{title} argument in the \code{labs} function for the subtitle of the
+   plot.
+   \item{\code{subtitle}}: a character string (default: \code{NULL}) indicating
+   the \code{subtite} argument in the \code{labs} function for the subtitle of
+   the plot.
+   \item{\code{group.col}}: a character vector (default: \code{NULL}) indicating
+   the \code{color} argument in the \code{scale_color_manual} and \code{scale_fill_manual}
+   functions when specifying a grouping variable using the argument \code{group}.
+   \item{\code{plot.margin}}: a numeric vector (default: \code{NA}) with four
+   elements indicating the \code{plot.margin} argument in the \code{theme} function
+   controlling the plot margins. The default setting is \code{c(5.5, 5.5, 5.5, 5.5)}
+   but switches to \code{c(5.5, 5.5, -2.5, 5.5)} when specifying a grouping
+   variable using the argument \code{group}.
+   \item{\code{legend.title}}: a character string (default: \code{""}) indicating
+   the \code{color} argument in the \code{labs} function for specifying the
+   legend title when specifying a grouping variable using the argument \code{group}.
+   \item{\code{legend.position}}: a character string (default: \code{"bottom"})
+   indicating the \code{legend.position} in the \code{theme} argument for
+   controlling the position of the legend  function when specifying a
+   grouping variable using the argument \code{group}.
+   \item{\code{legend.box.margin}}: a numeric vector (default: \code{c(-10, 0, 0, 0)})
+   with four elements indicating the \code{legend.box.margin} argument in the
+   \code{theme} function for controlling the margins around the full legend
+   area when specifying a grouping variable using the argument \code{group}.
+   \item{\code{facet.ncol}}: a numeric value (default: \code{NULL}) indicating the
+   \code{ncol} argument in the \code{facet_wrap} function for controlling the
+   number of columns when specifying a split variable using the argument \code{split}.
+   \item{\code{facet.nrow}}: a numeric value (default: \code{NULL}) indicating the
+   \code{nrow} argument in the \code{facet_wrap} function for controlling the
+   number of rows when specifying a split variable using the argument \code{split}.
+   \item{\code{facet.scales}}: a character string (default: \code{"free_y"}) indicating
+   the \code{scales} argument in the \code{facet_wrap} function for controlling the
+   scales shared across facets i.e. \code{"fixed"}, \code{"free_x"},
+   \code{"free_y"} (default) or \code{"free"} when specifying a split variable
+   using the argument \code{split}.
+   \item{\code{filename}}:  character string indicating the \code{filename}
+   argument including the file extension in the \code{ggsave} function.
+   \item{\code{width}}: a numeric value indicating the \code{width} argument
+   for the \code{ggsave} function.
+   \item{\code{height}}: a numeric value indicating the \code{height} argument
+   for the \code{ggsave} function.
+   \item{\code{dpi}}: a numeric value indicating the \code{dpi} argument for
+   the \code{ggsave} function.
+   \item{\code{units}}: a character string (default: \code{"in"}) indicating
+   the \code{units} argument  (default: \code{in}) for the \code{ggsave}
+   function.
+}
+}
+\item{\strong{Output object from \code{test.levene} Function}}{The \code{plot}
+function for the misty object of type \code{"test.levene"} has following plotting
+arguments:
+\itemize{
+   \item{\code{violin.alpha}}: a numeric value between 0 and 1 (default: \code{0.3})
+   for specifying the \code{alpha} argument in the \code{geom_violin} function
+   for controlling the opacity of the violins.
+   \item{\code{violin.trim}}: logical: if \code{TRUE} (default: \code{FALSE}),
+   the tails of the violins to the range of the data is trimmed.
+   \item{\code{box.alpha}}: a numeric value between 0 and 1 (default: \code{0.2})
+   for specifying the \code{alpha} argument in the \code{geom_boxplot} function
+   for controlling the opacity of the boxplots.
+   \item{\code{box.width}}: a numeric value between 0 and 1 (default: \code{0.2})
+   for specifying the \code{alpha} argument in the \code{geom_boxplot} function
+   for controlling the opacity of the boxplots.
+   \item{\code{jitter.size}}: a numeric value (default: \code{1.25}) indicating
+   the \code{size} aesthetic for the jittered data points.
+   \item{\code{jitter.width}}: a numeric value (default: \code{0.05}) indicating
+   the  amount of horizontal jitter.
+   \item{\code{jitter.height}}: a numeric value (default: \code{0}) indicating
+   the amount of vertical jitter.
+   \item{\code{jitter.alpha}}: a numeric value between 0 and 1 (default: \code{0.2})
+   for specifying the \code{alpha} argument in the \code{geom_jitter} function
+   for controlling the opacity of the jittered data points.
+   \item{\code{start}}: a numeric value between 0 and 1 (default: \code{0.9}),
+   graphical  parameter to specify the gray value at the low end of the palette.
+   \item{\code{end}}: a numeric value between 0 and 1 (default: \code{0.4}),
+   graphical  parameter to specify the gray value at the high end of the palette.
+   \item{\code{color}}: a character vector (default: \code{NULL}), indicating
+   the color of the violins and the boxes. By default, default ggplot2 colors
+   are used.
+   \item{\code{xlab}}: a character string (default: \code{NULL}) specifying
+   the labels for the x-axis.
+   \item{\code{ylab}}: a character string (default: \code{NULL}) specifying
+   the labels for the y-axis.
+   \item{\code{ylim}}: a numeric vector (default: \code{NULL}) of length two specifying
+   limits of the limits of the y-axis.
+   \item{\code{ybreaks}}: a numeric vector (default: \code{waiver()})
+   specifying the points at which tick-marks are drawn at the y-axis.
+   \item{\code{title}}: a character string (default: \code{""}) specifying the
+   text for the title for the plot.
+   \item{\code{subtitle}}: a character string (default: \code{""}) specifying
+   the text for the subtitle for the plot.
+   \item{\code{filename}}:  character string indicating the \code{filename}
+   argument including the file extension in the \code{ggsave} function.
+   \item{\code{width}}: a numeric value indicating the \code{width} argument
+   for the \code{ggsave} function.
+   \item{\code{height}}: a numeric value indicating the \code{height} argument
+   for the \code{ggsave} function.
+   \item{\code{dpi}}: a numeric value indicating the \code{dpi} argument for
+   the \code{ggsave} function.
+   \item{\code{units}}: a character string (default: \code{"in"}) indicating
+   the \code{units} argument  (default: \code{in}) for the \code{ggsave}
+   function.
+}
+}
+\item{\strong{Output Object from \code{test.t} and \code{test.z} Function}}{
+The \code{plot} function for the misty object of type \code{"test.t"} and
+\code{"test.z"} has following plotting arguments:
+\itemize{
+   \item{\code{bar}}: logical: if \code{TRUE} (default), bars representing means for
+   each groups are drawn.
+   \item{\code{point}}: logical: if \code{TRUE}, points representing means for
+   each groups are drawn.
+   \item{\code{ci}}: logical: if \code{TRUE} (default), error bars representing confidence
+   intervals are drawn.
+   \item{\code{jitter}}: logical: if \code{TRUE}, jittered data points are drawn.
+   \item{\code{line}}: logical: if \code{TRUE} (default), a horizontal line is drawn at
+   \code{mu} for the one-sample t- or z-test or at 0 for the paired-sample
+   t- or z-test.
+   \item{\code{conf.level}}: a numeric value between 0 and 1 (default: 0.95) indicating
+   the confidence level of the interval.
+   \item{\code{adjust}}: logical: if \code{TRUE} (default), difference-adjustment
+   for the confidence intervals in a two-sample design is applied.
+   \item{\code{point.size}}: a numeric value indicating the \code{size} (default:
+   \code{3}) aesthetic for the point representing the mean value.
+   \item{\code{errorbar.width}}: a numeric value (default: \code{0.1}) indicating
+   the horizontal bar width of the error bar.
+   \item{\code{linetype}}: an integer value or character string (default: \code{3})
+   specifying the line type for the line representing the population mean under
+   the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed, 3 = dotted,
+   4 = dotdash, 5 = longdash, or 6 = twodash.
+   \item{\code{linewidth}}: a numeric value indicating the \code{linewidth}
+   (default: \code{0.8} aesthetic for the line representing the population mean
+   under the null hypothesis.
+   \item{\code{jitter.size}}: a numeric value (default: \code{1.25}) indicating
+   the \code{size} aesthetic for the jittered data points.
+   \item{\code{jitter.width}}: a numeric value (default: \code{0.05}) indicating
+   the amount of horizontal jitter.
+   \item{\code{jitter.height}}: a numeric value (default: \code{0}) indicating
+   the amount of vertical jitter.
+   \item{\code{jitter.alpha}}: a numeric value between 0 and 1 (default: \code{0.1})
+   for specifying the \code{alpha} argument in the \code{geom_jitter} function
+   for controlling the opacity of the jittered data points.
+   \item{\code{xlab}}: a character string (default: \code{NULL}) specifying the
+   labels for the x-axis.
+   \item{\code{ylab}}: a character string (default: \code{"y"}) specifying the
+   labels for the y-axis.
+   \item{\code{ylim}}: a numeric vector of length two (default: \code{NULL})
+   specifying limits of the limits of the y-axis.
+   \item{\code{ybreaks}}: a numeric vector (default: \code{waiver()}) specifying
+   the points at which tick-marks are drawn at the y-axis.
+   \item{\code{title}}: a character string (default: \code{""}) specifying the
+   text for the title for the plot.
+   \item{\code{subtitle}}: a character string (default: \code{"Two-Sided Confidence Interval"}
+   when \code{adjust = FALSE} or \code{"Two-Sided Difference-Adjusted Confidence Interval"}
+   when \code{adjust = TRUE}) specifying the text for the subtitle for the plot.
+   \item{\code{filename}}:  character string indicating the \code{filename}
+   argument including the file extension in the \code{ggsave} function.
+   \item{\code{width}}: a numeric value indicating the \code{width} argument
+   for the \code{ggsave} function.
+   \item{\code{height}}: a numeric value indicating the \code{height} argument
+   for the \code{ggsave} function.
+   \item{\code{dpi}}: a numeric value indicating the \code{dpi} argument for
+   the \code{ggsave} function.
+   \item{\code{units}}: a character string (default: \code{"in"}) indicating
+   the \code{units} argument  (default: \code{in}) for the \code{ggsave}
+   function.
+}
+}
+}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

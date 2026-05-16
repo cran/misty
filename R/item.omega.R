@@ -173,7 +173,7 @@
 #' # Example 7a: Write Results into a text file
 #' item.omega(dat, write = "Omega.txt")
 #'
-#' # Example 7b: Write Results into a Excel file
+#' # Example 7b: Write Results into an Excel file
 #' item.omega(dat, write = "Omega.xlsx")
 #' }
 item.omega <- function(data, ..., rescov = NULL,

@@ -358,7 +358,7 @@ misty::libraries(misty, lme4, nlme, ggplot2)
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 
 # Cluster mean centering, center() from the misty package
 Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
@@ -374,7 +374,7 @@ mod1a <- lmer(y1 ~ x2.c + x2.b + w1 + (1 + x2.c | cluster), data = Demo.twolevel
 mod1b <- lme(y1 ~ x2.c + x2.b + w1, random = ~ 1 + x2.c | cluster, data = Demo.twolevel,
              method = "ML")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1a: R-squared measures according to Rights and Sterba (2019)
 multilevel.r2(mod1a)
 
@@ -384,7 +384,7 @@ multilevel.r2(mod1b)
 # Example 1a: Write Results into a text file
 multilevel.r2(mod1a, write = "ML-R2.txt")
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 2: Bar chart showing the decomposition of scaled total, within-cluster,
 # and between-cluster outcome variance
 multilevel.r2(mod1a, plot = TRUE)
@@ -396,7 +396,7 @@ multilevel.r2(mod1a, plot = TRUE, gray = TRUE)
 multilevel.r2(mod1a, plot = TRUE, filename = "Proportion_of_Variance.png",
               dpi = 600, width = 5.5, height = 5.5)
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 3: Estimate multilevel model without random slopes
 # Note. R-squared measures by Raudenbush and Bryk (2002), and  Snijders and
 # Bosker (2012) should be computed based on the random intercept model
@@ -406,7 +406,7 @@ mod2 <- lmer(y1 ~ x2.c + x2.b + w1 + (1 | cluster), data = Demo.twolevel,
 # Print all available R-squared measures
 multilevel.r2(mod2, print = "all")
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 4: Draw bar chart manually
 mod1a.r2 <- multilevel.r2(mod1a, output = FALSE)
 

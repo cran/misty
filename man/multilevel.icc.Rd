@@ -5,7 +5,7 @@
 \title{Intraclass Correlation Coefficient, ICC(1) and ICC(2)}
 \usage{
 multilevel.icc(data, ..., cluster, type = c("1a", "1b", "2"),
-               method = c("aov", "lme4", "nlme"), REML = TRUE,
+               method = c("lme4", "nlme"), REML = TRUE,
                as.na = NULL, check = TRUE)
 }
 \arguments{
@@ -40,13 +40,10 @@ specifying a three-level model (i.e., two cluster variables). See 'Details'
 for the formula used in this function.}
 
 \item{method}{a character string indicating the method used to estimate
-intraclass correlation coefficients, i.e., \code{method = "aov"}
-ICC estimated using the \code{aov} function, \code{method = "lme4"}
+intraclass correlation coefficients, i.e., \code{method = "lme4"}
 (default) ICC estimated using the \code{lmer} function in the
 \pkg{lme4} package, \code{method = "nlme"} ICC estimated using
-the \code{lme} function in the \pkg{nlme} package. Note that
-if the lme4 or nlme package is needed when estimating ICCs in
-a three-level model.}
+the \code{lme} function in the \pkg{nlme} package.}
 
 \item{REML}{logical: if \code{TRUE} (default), restricted maximum likelihood
 is used to estimate the null model when using the \code{lmer}
@@ -148,10 +145,10 @@ where \eqn{n_j} is the average group size at Level 2 and \eqn{n_j} is the averag
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Two-Level Data
 
-#..........
+#···················
 # Cluster variable specification
 
 # Example 1a: Specification using the argument '...'
@@ -163,7 +160,7 @@ multilevel.icc(Demo.twolevel[, c("y1", "cluster")], cluster = "cluster")
 # Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.icc(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 
-#..........
+#···················
 
 # Example 2: ICC(1) for 'y1'
 multilevel.icc(Demo.twolevel, y1, cluster = "cluster")
@@ -181,14 +178,14 @@ multilevel.icc(Demo.twolevel, y1, y2, y3, cluster = "cluster")
 # Alternative specification without using the '...' argument
 multilevel.icc(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Three-Level Data
 
 # Create arbitrary three-level data
 Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
                                              cluster3 = rep(1:10, each = 250))
 
-#..........
+#···················
 # Cluster variable specification
 
 # Example 6a: Specification using the argument '...'
@@ -201,7 +198,7 @@ multilevel.icc(Demo.threelevel[, c("y1", "cluster3", "cluster2")],
 # Example 6c: Alternative specification with cluster variables 'cluster' not in 'data'
 multilevel.icc(Demo.threelevel$y1, cluster = Demo.threelevel[, c("cluster3", "cluster2")])
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 
 # Example 7a: ICC(1), proportion of variance at Level 2 and Level 3
 multilevel.icc(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"))

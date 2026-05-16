@@ -263,7 +263,7 @@ the focal group (or focal time point) \eqn{F}:
 \deqn{\hat{X}_{iR} = \tau_{iR} + \lambda_{iR}\xi}
 \deqn{\hat{X}_{iF} = \tau_{iF} + \lambda_{iF}\xi}
 
-where \eqn{\tau_{iR}} and \eqn{\tau_{iF}} are the interepts, \eqn{\lambda_{iR}}
+where \eqn{\tau_{iR}} and \eqn{\tau_{iF}} are the intercepts, \eqn{\lambda_{iR}}
 and \eqn{\lambda_{iF}} are the factor loadings of item \eqn{i} in the reference
 and focal group, and \eqn{\xi} is the score on the latent variable.
 
@@ -391,10 +391,10 @@ David Dueber.
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Between-Group Measurement Non-Invariance: Continuous Indicators
 
-#..................
+#···················
 # Measurement model with one factor
 
 # Example 1a: Model specification using the argument '...'
@@ -416,7 +416,7 @@ model <- 'f =~ x1 + x2 + x3 + x4'
 fit <- cfa(model, data = HolzingerSwineford1939, group = "school", std.lv = TRUE)
 item.noninvar(object = fit)
 
-#..................
+#···················
 # Measurement model with two factors
 
 # Example 2a: Model specification using the argument 'model'
@@ -428,7 +428,7 @@ item.noninvar(HolzingerSwineford1939,
 model <- 'f1 =~ x1 + x2 + x3 + x4
           f2 =~ x5 + x6 + x7 + x8'
 
-#..................
+#···················
 # Signed dMACS and reference group
 
 # Example 3a: Signed dMACS
@@ -456,14 +456,14 @@ item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
               group = "school", print = "all")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Longitudinal Measurement Non-Invariance: Continuous Indicators
 
 # Example 6: Two time points with three indicators at each time point
 item.noninvar(HolzingerSwineford1939,
               model = list(c("x1", "x2", "x3"), c("x5", "x6", "x7")), long = TRUE)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Between-Group Measurement Non-Invariance: Ordered Categorical Indicators
 #
 # Note that the example analysis for ordered categorical indicators cannot be
@@ -472,21 +472,22 @@ item.noninvar(HolzingerSwineford1939,
 # Example 7: Two groups
 item.noninvar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Longitudinal Measurement Non-Invariance: Ordered Categorical Indicators
 
 # Example 8: Two Time Points
 item.noninvar(data, model = list(c("aitem1", "aitem2", "aitem3"),
                                  c("bitem1", "bitem2", "bitem3")),
-           long = TRUE, ordered = TRUE)
-#------------------------------------------------
+              long = TRUE, ordered = TRUE)
+
+#————————————————————————————————————————————————————————————————————————————
 # Write Results
 
 # Example 9a: Write Results into a text file
 item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
               group = "school", print = "all", write = "Non-Invariance.txt", output = FALSE)
 
-# Example 9b: Write Results into a Excel file
+# Example 9b: Write Results into an Excel file
 item.noninvar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
               group = "school", print = "all", write = "Non-Invariance.xlsx", output = FALSE)
 }
@@ -510,7 +511,7 @@ multiple groups and multiple grouping variables.
 Nye, C. D., Bradburn, J., Olenick, J., Bialko, C., & Drasgow, F. (2019).
 How big are my effects? Examining the magnitude of the effect sizes in studies
 of measurement equivalence. \emph{Organizational Research Methods, 22}(3), 678–709.
-https://doi.org/ 10.1177/1094428118761122
+https://doi.org/10.1177/1094428118761122
 
 Nye, C., & Drasgow, F. (2011). Effect size indices for analyses of
 measurement equivalence: Understanding the practical importance of

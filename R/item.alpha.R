@@ -186,7 +186,7 @@
 #' # Example 7a: Write Results into a text file
 #' item.alpha(dat, write = "Alpha.txt")
 #'
-#' # Example 7b: Write Results into a Excel file
+#' # Example 7b: Write Results into an Excel file
 #' item.alpha(dat, write = "Alpha.xlsx")
 #' }
 item.alpha <- function(data, ..., rescov = NULL, type = c("alpha", "hierarch", "categ"),

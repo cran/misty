@@ -18,7 +18,7 @@ item.cfa(data, ..., model = NULL, rescov = NULL, hierarch = FALSE,
          as.na = NULL, write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
-\item{data}{\eqn{\Delta\lambda} a data frame. If \code{model = NULL},
+\item{data}{a data frame. If \code{model = NULL},
 confirmatory factor analysis based on a measurement
 model with one factor labeled \code{f} comprising all
 variables in the data frame is conducted.
@@ -416,8 +416,8 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
-#----------------------------------------------------------------------------
-# Measurement model with one factor
+#————————————————————————————————————————————————————————————————————————————
+# Measurement Model with One Factor
 
 # Example 1a: Specification using the argument '...'
 item.cfa(HolzingerSwineford1939, x1:x3)
@@ -431,8 +431,8 @@ item.cfa(HolzingerSwineford1939, model = c("x1", "x2", "x3"))
 # Example 1e: Alternative specification using the argument 'model'
 item.cfa(HolzingerSwineford1939, model = list(visual = c("x1", "x2", "x3")))
 
-#----------------------------------------------------------------------------
-# Measurement model with three factors
+#————————————————————————————————————————————————————————————————————————————
+# Measurement Model with Three Factors
 
 # Example 2: Specification using the argument 'model'
 item.cfa(HolzingerSwineford1939,
@@ -440,8 +440,8 @@ item.cfa(HolzingerSwineford1939,
                       textual = c("x4", "x5", "x6"),
                       speed = c("x7", "x8", "x9")))
 
-#----------------------------------------------------------------------------
-# Residual covariances
+#————————————————————————————————————————————————————————————————————————————
+# Residual Covariances
 
 # Example 3a: One residual covariance
 item.cfa(HolzingerSwineford1939,
@@ -457,8 +457,8 @@ item.cfa(HolzingerSwineford1939,
                       speed = c("x7", "x8", "x9")),
          rescov = list(c("x1", "x2"), c("x4", "x5")))
 
-#----------------------------------------------------------------------------
-# Second-order factor model based on three first-order factors
+#————————————————————————————————————————————————————————————————————————————
+# Second-Order Factor Model based on Three First-Order Factors
 
 # Example 4
 item.cfa(HolzingerSwineford1939,
@@ -466,14 +466,14 @@ item.cfa(HolzingerSwineford1939,
                       textual = c("x4", "x5", "x6"),
                       speed = c("x7", "x8", "x9")), hierarch = TRUE)
 
-#----------------------------------------------------------------------------
-# Measurement model with ordered-categorical indicators
+#————————————————————————————————————————————————————————————————————————————
+# Measurement Model with Ordered-Categorical Indicators
 
 # Example 5
 item.cfa(round(HolzingerSwineford1939[, c("x4", "x5", "x6")]), ordered = TRUE)
 
-#----------------------------------------------------------------------------
-# Cluster-robust standard errors
+#————————————————————————————————————————————————————————————————————————————
+# Cluster-Robust Standard Errors
 
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
@@ -487,8 +487,8 @@ item.cfa(Demo.twolevel[, c("y4", "y5", "y6")], cluster = Demo.twolevel$cluster)
 # Example 6c: Alternative specification without using the '...' argument
 item.cfa(Demo.twolevel[, c("y4", "y5", "y6", "cluster")], cluster = "cluster")
 
-#----------------------------------------------------------------------------
-# Print argument
+#————————————————————————————————————————————————————————————————————————————
+# Print Argument
 
 # Example 7a: Request all results
 item.cfa(HolzingerSwineford1939, x1, x2, x3, print = "all")
@@ -496,21 +496,21 @@ item.cfa(HolzingerSwineford1939, x1, x2, x3, print = "all")
 # Example 7b: Request modification indices with value equal or higher than 5
 item.cfa(HolzingerSwineford1939, x1, x2, x3, x4, print = "modind", mod.minval = 5)
 
-#----------------------------------------------------------------------------
-# lavaan summary of the estimated model
+#————————————————————————————————————————————————————————————————————————————
+# lavaan Summary of the Estimated Model
 
 # Example 8
 mod <- item.cfa(HolzingerSwineford1939, x1, x2, x3, output = FALSE)
 
 lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write Results
 
 # Example 9a: Write Results into a text file
 item.cfa(HolzingerSwineford1939, x1, x2, x3, write = "CFA.txt")
 
-# Example 9b: Write Results into a Excel file
+# Example 9b: Write Results into an Excel file
 item.cfa(HolzingerSwineford1939, x1, x2, x3, write = "CFA.xlsx")
 }
 }

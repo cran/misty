@@ -57,7 +57,7 @@ df.merge(adat, bdat, cdat, ddat, by = "id")
 df.merge(adat, bdat, cdat, ddat, by = "id", output = FALSE)
 
 \dontrun{
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Error messages
 
 adat <- data.frame(id = c(1, 2, 3),

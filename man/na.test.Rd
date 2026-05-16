@@ -6,7 +6,7 @@
 \usage{
 na.test(data, ..., print = c("all", "little", "jamjal"),
         impdat = NULL, delete = 6, method = c("npar", "normal"),
-        m = 20, seed = 123, nrep = 10000, n.min = 30,
+        m = 20, seed = 42, nrep = 10000, n.min = 30,
         pool = c("m", "med", "min", "max", "random"),
         alpha = 0.05, digits = 2, p.digits = 3, as.na = NULL,
         write = NULL, append = TRUE, check = TRUE, output = TRUE)
@@ -53,7 +53,7 @@ The default setting is \code{m = 20}.}
 \item{seed}{an integer value that is used as argument by the \code{set.seed}
 function for offsetting the random number generator before
 performing Jamshidian and Jalal's approach. The default
-setting is \code{seed = 123}. Set the value to \code{NULL} to
+setting is \code{seed = 42}. Set the value to \code{NULL} to
 specify a system selected seed.}
 
 \item{nrep}{an integer value indicating the replications used to simulate
@@ -251,8 +251,7 @@ na.test(airquality, print = "jamjal")
 
 \dontrun{
 # Example 3: Write results into a text file
-na.test(airquality, write = "NA_Test.txt")
-}
+na.test(airquality, write = "NA_Test.txt")}
 }
 \references{
 Beaujean, A. A. (2012). \emph{BaylorEdPsych: R Package for Baylor University

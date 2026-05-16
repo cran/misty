@@ -537,7 +537,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
   if (isTRUE(check)) {
 
-    #--------------------------------------
+    #——————————————————————————————————————
     ### Check Input 'type' ####
 
     if (isTRUE(all(type == "latent"))) {
@@ -553,7 +553,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
     }
 
-    #--------------------------------------
+    #——————————————————————————————————————
     ### Check Input 'name' ####
 
     if (isTRUE(!is.character(name))) { stop("Please specify a character string or characster vector for the argument 'name'.", call. = FALSE) }
@@ -584,7 +584,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
     if (isTRUE(!is.null(cluster))) {
 
-      #--------------------------------------
+      #——————————————————————————————————————
       ### One Cluster Variable ####
 
       if (isTRUE(no.clust == "one")) {
@@ -605,7 +605,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
         }
 
-      #--------------------------------------
+      #——————————————————————————————————————
       ### Two Cluster Variables ####
 
       } else if (isTRUE(no.clust == "two")) {
@@ -643,14 +643,14 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
     if (isTRUE(all(c("CGM", "CWC", "latent") %in% type))) {
 
-      #--------------------------------------
+      #——————————————————————————————————————
       ### Single-level Data ####
 
       if (isTRUE(is.null(cluster))) {
 
         type <- "CGM"
 
-      #--------------------------------------
+      #——————————————————————————————————————
       ### Multilevel Data ####
 
       } else {
@@ -676,7 +676,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
     if (isTRUE(type != "latent")) {
 
-      #--------------------------------------
+      #——————————————————————————————————————
       ### Single-Level Data: No Cluster Variable ####
 
       if (isTRUE(is.null(cluster))) {
@@ -695,13 +695,14 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
         }
 
-      #--------------------------------------
+      #——————————————————————————————————————
       ### Two-Level Data: One Cluster Variable ####
 
       } else if (isTRUE(no.clust == "one")) {
 
         #...................
         #### Centering at the grand mean (CGM) ####
+
         if (isTRUE(type == "CGM")) {
 
           switch(vartype,
@@ -719,6 +720,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
         #...................
         #### Centering within cluster (CWC) ####
+
         } else if (isTRUE(type == "CWC")) {
 
           switch(vartype,
@@ -737,13 +739,14 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
         }
 
-      #--------------------------------------
+      #——————————————————————————————————————
       ### Three-Level Data: Two Cluster Variables ####
 
       } else if (isTRUE(no.clust == "two")) {
 
         #...................
         #### Centering at the grand mean (CGM) ####
+
         if (isTRUE(type == "CGM")) {
 
           switch(vartype,
@@ -766,6 +769,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
         #...................
         #### Centering within cluster (CWC) ####
+
         } else if (isTRUE(type == "CWC")) {
 
           ##### Level-2 or Level-3 Cluster Means
@@ -808,7 +812,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
       }
 
-      #--------------------------------------
+      #——————————————————————————————————————
       ### Append ####
 
       if (isTRUE(!missing(...) && append)) {
@@ -834,7 +838,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
     } else {
 
-      #--------------------------------------
+      #——————————————————————————————————————
       ### Two-Level Data: One Cluster Variable ####
 
       if (isTRUE(no.clust == "one")) {
@@ -851,7 +855,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
         # Return object
         object <- data.frame(x.l1, x.l2)
 
-      #--------------------------------------
+      #——————————————————————————————————————
       ### Three-Level Data: Two Cluster Variables ####
 
       } else if (isTRUE(no.clust == "two")) {
@@ -906,7 +910,7 @@ center <- function(data, ..., cluster = NULL, type = c("CGM", "CWC", "latent"),
 
       }
 
-      #--------------------------------------
+      #——————————————————————————————————————
       ### Append ####
 
       if (isTRUE(!missing(...) && append)) {

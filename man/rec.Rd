@@ -78,7 +78,7 @@ This function was adapted from the \code{recode()} function in the \pkg{car}
 package by John Fox and Sanford Weisberg (2019).
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1: Numeric vector
 x.num <- c(1, 2, 4, 5, 6, 8, 12, 15, 19, 20)
 
@@ -94,7 +94,7 @@ rec(x.num, spec = "lo:10 = 100; 11:hi = 200")
 # Example 1d: Recode 5 = 50 and 19 = 190 and check recoding
 rec(x.num, spec = "5 = 50; 19 = 190", table = TRUE)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 2: Character vector
 x.chr <- c("a", "c", "f", "j", "k")
 
@@ -107,7 +107,7 @@ rec(x.chr, spec = "c('a', 'f') = 'x'; c('c', 'j') = 'y'; else = 'z'")
 # Example 2c: Recode a to x and coerce to a factor
 rec(x.chr, spec = "'a' = 'X'", as.factor = TRUE)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 3: Factor
 x.fac <- factor(c("a", "b", "a", "c", "d", "d", "b", "b", "a"))
 
@@ -117,7 +117,7 @@ rec(x.fac, spec = "'a' = 'x'")
 # Example 3b: Recode a to x, user-defined factor levels
 rec(x.fac, spec = "'a' = 'x'", levels = c("x", "b", "c", "d"))
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 4: Multiple variables
 dat <- data.frame(x1.num = c(1, 2, 4, 5, 6),
                   x2.num = c(5, 19, 2, 6, 3),

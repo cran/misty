@@ -10,27 +10,18 @@ test.z(x, ...)
 
 \method{test.z}{default}(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
        paired = FALSE, alternative = c("two.sided", "less", "greater"),
-       conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
+       hypo = FALSE, descript = TRUE, effsize = FALSE, conf.level = 0.95,
        digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE,
        point = FALSE, ci = TRUE, line = TRUE, jitter = FALSE, adjust = TRUE,
-       point.size = 4, errorbar.width = 0.1, xlab = NULL, ylab = NULL,
-       ylim = NULL, ybreaks = ggplot2::waiver(), linetype = 3, linewidth = 0.8,
-       jitter.size = 1.25, jitter.width = 0.05, jitter.height = 0,
-       jitter.alpha = 0.1, title = "", subtitle = "Confidence Interval",
-       filename = NULL, width = NA, height = NA, units = c("in", "cm", "mm", "px"),
-       dpi = 600, write = NULL, append = TRUE, check = TRUE,
-       output = TRUE, ...)
+       filename = NULL, width = NA, height = NA, dpi = 600, write = NULL,
+       append = TRUE, check = TRUE, output = TRUE, ...)
 
 \method{test.z}{formula}(formula, data, sigma = NULL, sigma2 = NULL,
-       alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
-       hypo = TRUE, descript = TRUE, effsize = FALSE, digits = 2, p.digits = 3,
-       as.na = NULL, plot = FALSE, bar = TRUE, point = FALSE, ci = TRUE,
-       line = TRUE, jitter = FALSE, adjust = TRUE, point.size = 4, errorbar.width = 0.1,
-       xlab = NULL, ylab = NULL, ylim = NULL, ybreaks = ggplot2::waiver(),
-       linetype = 3, linewidth = 0.8, jitter.size = 1.25, jitter.width = 0.05,
-       jitter.height = 0, jitter.alpha = 0.1, title = "",
-       subtitle = "Confidence Interval", filename = NULL, width = NA, height = NA,
-       units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
+       alternative = c("two.sided", "less", "greater"), hypo = FALSE,
+       descript = TRUE, effsize = FALSE, conf.level = 0.95, digits = 2,
+       p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE, point = FALSE,
+       ci = TRUE, line = TRUE, jitter = FALSE, adjust = TRUE, filename = NULL,
+       width = NA, height = NA, dpi = 600, write = NULL, append = TRUE,
        check = TRUE, output = TRUE, ...)
 }
 \arguments{
@@ -64,11 +55,11 @@ when computing a one-sample z-test.}
 must be one of \code{"two.sided"} (default), \code{"greater"}
 or \code{"less"}.}
 
-\item{hypo}{logical: if \code{TRUE} (default), null and alternative hypothesis are
-shown on the console.}
+\item{hypo}{logical: if \code{TRUE} (default), null and alternative
+hypothesis are shown on the console.}
 
-\item{descript}{logical: if \code{TRUE} (default), descriptive statistics are shown
-on the console.}
+\item{descript}{logical: if \code{TRUE} (default), descriptive statistics
+are shown on the console.}
 
 \item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d is
 shown on the console.}
@@ -76,19 +67,20 @@ shown on the console.}
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence
 level of the interval.}
 
-\item{digits}{an integer value indicating the number of decimal places to
-be used for displaying descriptive statistics and confidence
-interval.}
+\item{digits}{an integer value indicating the number of decimal places
+to be used for displaying descriptive statistics and
+confidence interval.}
 
-\item{p.digits}{an integer value indicating the number of decimal places to
-be used for displaying the \emph{p}-value.}
+\item{p.digits}{an integer value indicating the number of decimal places
+to be used for displaying the \emph{p}-value.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting
-the analysis.}
+i.e. these values are converted to \code{NA} before
+conducting the analysis.}
 
 \item{plot}{logical: if \code{TRUE}, a plot showing bar plots with
-error bars for confidence intervals is drawn.}
+error bars for confidence intervals is drawn. For additional plotting arguments,
+see \code{Details} in the help page of the function \code{plot.misty.object}.}
 
 \item{bar}{logical: if \code{TRUE} (default), bars representing means
 for each groups are drawn.}
@@ -105,64 +97,27 @@ confidence intervals are drawn.}
 is drawn at \code{mu} for the one-sample z-test or at
 0 for the paired-sample z-test.}
 
-\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment for the
-confidence intervals in a two-sample design is applied.}
+\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment
+for the confidence intervals in a two-sample design is
+applied.}
 
-\item{point.size}{a numeric value indicating the \code{size} aesthetic for
-the point representing the mean value.}
+\item{filename}{a character string indicating the \code{filename}
+argument including the file extension in the \code{ggsave}
+function. Note that one of \code{".eps"}, \code{".ps"},
+\code{".tex"}, \code{".pdf"} (default),
+\code{".jpeg"}, \code{".tiff"}, \code{".png"},
+\code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+to be specified as file extension in the \code{file}
+argument. Note that plots can only be saved when
+\code{plot = TRUE}.}
 
-\item{errorbar.width}{a numeric value indicating the horizontal bar width of
-the error bar.}
-
-\item{xlab}{a character string specifying the labels for the x-axis.}
-
-\item{ylab}{a character string specifying the labels for the y-axis.}
-
-\item{ylim}{a numeric vector of length two specifying limits of the
-limits of the y-axis.}
-
-\item{ybreaks}{a numeric vector specifying the points at which tick-marks
-are drawn at the y-axis.}
-
-\item{linetype}{an integer value or character string specifying the line
-type for the line representing the population mean under
-the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed,
-3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash.}
-
-\item{linewidth}{a numeric value indicating the \code{linewidth} aesthetic
-for the line representing the population mean under the
-null hypothesis.}
-
-\item{jitter.size}{a numeric value indicating the \code{size} aesthetic}
-
-\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
-
-\item{jitter.height}{a numeric value indicating the amount of vertical jitter.}
-
-\item{jitter.alpha}{ a numeric value between 0 and 1 for specifying the
-\code{alpha} argument in the \code{geom_jitter}
-function for controlling the opacity of the jittered
-data points.}
-
-\item{title}{a character string specifying the text for the title for
-the plot.}
-
-\item{subtitle}{a character string specifying the text for the subtitle for
-the plot.}
-
-\item{filename}{a character string indicating the \code{filename} argument (default is \code{"NA_Pattern.pdf"}) including
-the file extension for the \code{ggsave} function. Note that one of \code{".eps"}, \code{".ps"},
-\code{".tex"}, \code{".pdf"} (default), \code{".jpeg"}, \code{".tiff"}, \code{".png"}, \code{".bmp"},
-\code{".svg"} or \code{".wmf"} needs to be specified as file extension in the \code{file} argument.}
-
-\item{width}{a numeric value indicating the \code{width} argument (default is the
-size of the current graphics device) for the \code{ggsave} function.}
+\item{width}{a numeric value indicating the \code{width} argument
+(default is the size of the current graphics device)
+for the \code{ggsave} function.}
 
 \item{height}{a numeric value indicating the \code{height} argument
-(default is the size of the current graphics device) for the \code{ggsave} function.}
-
-\item{units}{a character string indicating the \code{units} argument
-(default is \code{in}) for the \code{ggsave} function.}
+(default is the size of the current graphics device)
+for the \code{ggsave} function.}
 
 \item{dpi}{a numeric value indicating the \code{dpi} argument
 (default is \code{600}) for the \code{ggsave} function.}
@@ -176,9 +131,11 @@ to an existing text file with extension \code{.txt} specified
 in \code{write}, if \code{FALSE} existing text file will be
 overwritten.}
 
-\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification
+is checked.}
 
-\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
+\item{output}{logical: if \code{TRUE} (default), output is shown on the
+console.}
 
 \item{formula}{in case of two sample z-test (i.e., \code{paired = FALSE}),
 a formula of the form \code{y ~ group} where \code{group}
@@ -192,7 +149,6 @@ formula \code{formula}.}
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
 \item{\code{sample}}{type of sample, i.e., one-, two-, or paired sample}
@@ -203,24 +159,33 @@ entries:
 \item{\code{result}}{result table}
 }
 \description{
-This function performs one-sample, two-sample, and paired-sample z-tests and
-provides descriptive statistics, effect size measure, and a plot showing error
-bars for (difference-adjusted) confidence intervals with jittered data points.
+This function performs the one-sample, two-sample, and paired-sample z-test
+and provides descriptive statistics, effect size measure, and a plot showing
+error bars for (difference-adjusted) confidence intervals with jittered data
+points.
 }
 \details{
-Cohen's d reported when argument \code{effsize = TRUE} is based on the population
-standard deviation specified in \code{sigma} or the square root of the population
-variance specified in \code{sigma2}. In a one-sample and paired-sample design,
-Cohen's d is the mean of the difference scores divided by the population standard
-deviation of the difference scores (i.e., equivalent to Cohen's \eqn{d_z} according
-to Lakens, 2013). In a two-sample design, Cohen's d is the difference between
-means of the two groups of observations divided by either the population standard
-deviation when assuming and specifying equal standard deviations or the unweighted
-pooled population standard deviation when assuming and specifying unequal standard
-deviations.
+\describe{
+\item{\strong{Effect Size}}{The Cohen's d reported when the argument \code{effsize}
+is set to \code{TRUE} is based on the population standard deviation specified
+in the argument \code{sigma} or the square root of the population variance specified
+in the argument \code{sigma2}.
+  \itemize{
+   \item{\strong{One-Sample and Paired-Sample Design}} In a one-sample and paired-sample
+   design, Cohen's d is the mean of the difference scores divided by the population
+   standard deviation of the (difference) scores equivalent to Cohen's \eqn{d_z}
+    (Lakens, 2013).
+    \item{\strong{Two-Sample Design}} In a two-sample design, Cohen's d is the difference
+    between means of the two groups of observations divided by either the population
+    standard deviation when assuming and specifying equal standard deviations or
+    the unweighted pooled population standard deviation when assuming and specifying
+    unequal standard deviations.
+  }
+}
+}
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # One-Sample Design
 
 # Example 1a: Two-sided one-sample z-test, population mean = 20, population SD = 6
@@ -230,17 +195,7 @@ test.z(mtcars$mpg, sigma = 6, mu = 20)
 # print Cohen's d
 test.z(mtcars$mpg, sigma = 6, mu = 20, alternative = "greater", effsize = TRUE)
 
-# Example 1c: Two-sided one-sample z-test, population mean = 20, population SD = 6,
-# plot results
-test.z(mtcars$mpg, sigma = 6, mu = 20, plot = TRUE)
-
-\dontrun{
-# Example 1d: Two-sided one-sample z-test, save plot
-test.z(mtcars$mpg, sigma = 6, mu = 20, plot = TRUE, filename = "One-sample_z-test.png",
-       width = 4, height = 5)
-}
-
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Two-Sample Design
 
 # Example 2a: Two-sided two-sample z-test, population SD = 6, equal SD assumption
@@ -254,20 +209,9 @@ test.z(mpg ~ vs, data = mtcars, sigma = c(4, 6))
 
 # Example 2d: One-sided two-sample z-test, population SD = 4 and 6, unequal SD assumption
 # print Cohen's d
-test.z(mpg ~ vs, data = mtcars, sigma = c(4, 6), alternative = "greater",
-       effsize = TRUE)
+test.z(mpg ~ vs, data = mtcars, sigma = c(4, 6), alternative = "greater", effsize = TRUE)
 
-# Example 2e: Two-sided two-sample z-test, population SD = 6, equal SD assumption
-# plot results
-test.z(mpg ~ vs, data = mtcars, sigma = 6, plot = TRUE)
-
-\dontrun{
-# Example 2f: Two-sided two-sample z-test, save plot
-test.z(mpg ~ vs, data = mtcars, sigma = 6, plot = TRUE, filename = "Two-sample_z-test.png",
-       width = 5, height = 6)
-}
-
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Paired-Sample Design
 
 # Example 3a: Two-sided paired-sample z-test, population SD of difference score = 1.2
@@ -275,17 +219,65 @@ test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE)
 
 # Example 3b: One-sided paired-sample z-test, population SD of difference score = 1.2,
 # print Cohen's d
-test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE,
-       alternative = "greater", effsize = TRUE)
+test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE, alternative = "greater",
+       effsize = TRUE)
 
-# Example 3c: Two-sided paired-sample z-test, population SD of difference score = 1.2,
-# plot results
+#————————————————————————————————————————————————————————————————————————————
+# Plot
+
+# Example 4a: One-Sample Design
+test.z(mtcars$mpg, sigma = 6, mu = 20, plot = TRUE)
+
+# Example 4b: Two-Sample Design
+test.z(mpg ~ vs, data = mtcars, sigma = 6, plot = TRUE)
+
+# Example 4c: Paired-Sample Design
 test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE, plot = TRUE)
 
+# Example 4d: Plot results using the plot() function, use additional arguments
+# see Details in the help page of the function plot.misty.object
+object <- test.z(mpg ~ vs, data = mtcars, sigma = 6)
+plot(object, jitter = TRUE, jitter.alpha = 0.4, title = "Two-Sample z-Test")
+
+#————————————————————————————————————————————————————————————————————————————
+# Create Plot Manually
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Example 4a: Two-sample z-test
+ci.table <- ci.mean(mtcars, mpg, group = "vs", adjust = TRUE, output = FALSE)$result
+
+ggplot(ci.table, aes(group, m), stat = "identity", size = 3) +
+  geom_bar(aes(group, m), stat = "summary", fun = "mean") +
+  geom_errorbar(aes(group, m, ymin = low, ymax = upp), width = 0.1) +
+  theme_bw()
+
+# Example 4b: Paired-sample z-test
+object <- test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE)
+
+ggplot(data.frame(x = object$data$y - object$data$x), aes(x = 0L, y = x)) +
+ geom_bar(data = object$result, aes(0, m.diff), stat = "summary", fun = "mean") +
+ geom_errorbar(data = object$result, aes(0, m.diff, ymin = m.low, ymax = m.upp), width = 0.1) +
+ geom_hline(yintercept = 0L, linetype = 3, linewidth = 0.8) +
+ scale_x_continuous(name = "", limits = c(-2, 2)) +
+ theme_bw()  +
+ theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+
+#————————————————————————————————————————————————————————————————————————————
+# Write Results and Save Plot
+
 \dontrun{
-# Example 3d: Two-sided paired-sample z-test, save plot
-test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE, plot = TRUE,
-       filename = "Paired-sample_z-test.png", width = 4, height = 5)
+
+# Example 6a: Write results into a text file
+test.z(mpg ~ vs, data = mtcars, sigma = 6, write = "z-Test.txt")
+
+# Example 6b:  Write results into an Excel file
+test.z(mpg ~ vs, data = mtcars, sigma = 6, write = "z-Test.xlsx")
+
+# Example 4c: Two-Sample Design
+test.z(mpg ~ vs, data = mtcars, sigma = 6, plot = TRUE, filename = "z-Test.png",
+       width = 6, height = 5)
 }
 }
 \references{

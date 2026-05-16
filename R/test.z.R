@@ -1,8 +1,9 @@
 #' z-Test
 #'
-#' This function performs one-sample, two-sample, and paired-sample z-tests and
-#' provides descriptive statistics, effect size measure, and a plot showing error
-#' bars for (difference-adjusted) confidence intervals with jittered data points.
+#' This function performs the one-sample, two-sample, and paired-sample z-test
+#' and provides descriptive statistics, effect size measure, and a plot showing
+#' error bars for (difference-adjusted) confidence intervals with jittered data
+#' points.
 #'
 #' @param x              a numeric vector of data values.
 #' @param y              a numeric vector of data values.
@@ -42,7 +43,9 @@
 #'                       i.e. these values are converted to \code{NA} before
 #'                       conducting the analysis.
 #' @param plot           logical: if \code{TRUE}, a plot showing bar plots with
-#'                       error bars for confidence intervals is drawn.
+#'                       error bars for confidence intervals is drawn. For
+#'                       additional plotting arguments, see \code{Details} in
+#'                       the help page of the function \code{plot.misty.object}.
 #' @param bar            logical: if \code{TRUE} (default), bars representing means
 #'                       for each groups are drawn.
 #' @param point          logical: if \code{TRUE}, points representing means for
@@ -56,34 +59,6 @@
 #' @param adjust         logical: if \code{TRUE} (default), difference-adjustment
 #'                       for the confidence intervals in a two-sample design is
 #'                       applied.
-#' @param point.size     a numeric value indicating the \code{size} aesthetic for
-#'                       the point representing the mean value.
-#' @param errorbar.width a numeric value indicating the horizontal bar width of
-#'                       the error bar.
-#' @param xlab           a character string specifying the labels for the x-axis.
-#' @param ylab           a character string specifying the labels for the y-axis.
-#' @param ylim           a numeric vector of length two specifying limits of the
-#'                       limits of the y-axis.
-#' @param ybreaks        a numeric vector specifying the points at which tick-marks
-#'                       are drawn at the y-axis.
-#' @param linetype       an integer value or character string specifying the line
-#'                       type for the line representing the population mean under
-#'                       the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed,
-#'                       3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash.
-#' @param linewidth      a numeric value indicating the \code{linewidth} aesthetic
-#'                       for the line representing the population mean under the
-#'                       null hypothesis.
-#' @param jitter.size    a numeric value indicating the \code{size} aesthetic
-#' @param jitter.width   a numeric value indicating the amount of horizontal jitter.
-#' @param jitter.height  a numeric value indicating the amount of vertical jitter.
-#' @param jitter.alpha   a numeric value between 0 and 1 for specifying the
-#'                       \code{alpha} argument in the \code{geom_jitter}
-#'                       function for controlling the opacity of the jittered
-#'                       data points.
-#' @param title          a character string specifying the text for the title for
-#'                       the plot.
-#' @param subtitle       a character string specifying the text for the subtitle for
-#'                       the plot.
 #' @param filename       a character string indicating the \code{filename}
 #'                       argument including the file extension in the \code{ggsave}
 #'                       function. Note that one of \code{".eps"}, \code{".ps"},
@@ -99,8 +74,6 @@
 #' @param height         a numeric value indicating the \code{height} argument
 #'                       (default is the size of the current graphics device)
 #'                       for the \code{ggsave} function.
-#' @param units          a character string indicating the \code{units} argument
-#'                       (default is \code{in}) for the \code{ggsave} function.
 #' @param dpi            a numeric value indicating the \code{dpi} argument
 #'                       (default is \code{600}) for the \code{ggsave} function.
 #' @param write          a character string naming a text file with file extension
@@ -124,16 +97,24 @@
 #' @param ...            further arguments to be passed to or from methods.
 #'
 #' @details
-#' Cohen's d reported when argument \code{effsize = TRUE} is based on the population
-#' standard deviation specified in \code{sigma} or the square root of the population
-#' variance specified in \code{sigma2}. In a one-sample and paired-sample design,
-#' Cohen's d is the mean of the difference scores divided by the population standard
-#' deviation of the difference scores (i.e., equivalent to Cohen's \eqn{d_z} according
-#' to Lakens, 2013). In a two-sample design, Cohen's d is the difference between
-#' means of the two groups of observations divided by either the population standard
-#' deviation when assuming and specifying equal standard deviations or the unweighted
-#' pooled population standard deviation when assuming and specifying unequal standard
-#' deviations.
+#' \describe{
+#' \item{\strong{Effect Size}}{The Cohen's d reported when the argument \code{effsize}
+#' is set to \code{TRUE} is based on the population standard deviation specified
+#' in the argument \code{sigma} or the square root of the population variance specified
+#' in the argument \code{sigma2}.
+#'    \itemize{
+#'      \item{\strong{One-Sample and Paired-Sample Design}} In a one-sample and paired-sample
+#'      design, Cohen's d is the mean of the difference scores divided by the population
+#'      standard deviation of the (difference) scores equivalent to Cohen's \eqn{d_z}
+#'      (Lakens, 2013).
+#'      \item{\strong{Two-Sample Design}} In a two-sample design, Cohen's d is the difference
+#'      between means of the two groups of observations divided by either the population
+#'      standard deviation when assuming and specifying equal standard deviations or
+#'      the unweighted pooled population standard deviation when assuming and specifying
+#'      unequal standard deviations.
+#'    }
+#' }
+#' }
 #'
 #' @author
 #' Takuya Yanagida \email{takuya.yanagida@@univie.ac.at}
@@ -165,7 +146,7 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # One-Sample Design
 #'
 #' # Example 1a: Two-sided one-sample z-test, population mean = 20, population SD = 6
@@ -175,15 +156,7 @@
 #' # print Cohen's d
 #' test.z(mtcars$mpg, sigma = 6, mu = 20, alternative = "greater", effsize = TRUE)
 #'
-#' # Example 1c: Two-sided one-sample z-test, population mean = 20, population SD = 6,
-#' # plot results
-#' test.z(mtcars$mpg, sigma = 6, mu = 20, plot = TRUE)
-#'
-#' # Example 1d: Two-sided one-sample z-test, save plot
-#' test.z(mtcars$mpg, sigma = 6, mu = 20, plot = TRUE, filename = "One-sample_z-test.png",
-#'        width = 4, height = 5)
-#'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Two-Sample Design
 #'
 #' # Example 2a: Two-sided two-sample z-test, population SD = 6, equal SD assumption
@@ -197,18 +170,9 @@
 #'
 #' # Example 2d: One-sided two-sample z-test, population SD = 4 and 6, unequal SD assumption
 #' # print Cohen's d
-#' test.z(mpg ~ vs, data = mtcars, sigma = c(4, 6), alternative = "greater",
-#'        effsize = TRUE)
+#' test.z(mpg ~ vs, data = mtcars, sigma = c(4, 6), alternative = "greater", effsize = TRUE)
 #'
-#' # Example 2e: Two-sided two-sample z-test, population SD = 6, equal SD assumption
-#' # plot results
-#' test.z(mpg ~ vs, data = mtcars, sigma = 6, plot = TRUE)
-#'
-#' # Example 2f: Two-sided two-sample z-test, save plot
-#' test.z(mpg ~ vs, data = mtcars, sigma = 6, plot = TRUE, filename = "Two-sample_z-test.png",
-#'        width = 5, height = 6)
-#'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Paired-Sample Design
 #'
 #' # Example 3a: Two-sided paired-sample z-test, population SD of difference score = 1.2
@@ -216,16 +180,66 @@
 #'
 #' # Example 3b: One-sided paired-sample z-test, population SD of difference score = 1.2,
 #' # print Cohen's d
-#' test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE,
-#'        alternative = "greater", effsize = TRUE)
+#' test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE, alternative = "greater",
+#'        effsize = TRUE)
 #'
-#' # Example 3c: Two-sided paired-sample z-test, population SD of difference score = 1.2,
-#' # plot results
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Plot
+#'
+#' # Example 4a: One-Sample Design
+#' test.z(mtcars$mpg, sigma = 6, mu = 20, plot = TRUE)
+#'
+#' # Example 4b: Two-Sample Design
+#' test.z(mpg ~ vs, data = mtcars, sigma = 6, plot = TRUE)
+#'
+#' # Example 4c: Paired-Sample Design
 #' test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE, plot = TRUE)
 #'
-#' # Example 3d: Two-sided paired-sample z-test, save plot
-#' test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE, plot = TRUE,
-#'        filename = "Paired-sample_z-test.png", width = 4, height = 5)
+#' # Example 4d: Plot results using the plot() function, use additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' object <- test.z(mpg ~ vs, data = mtcars, sigma = 6)
+#' plot(object, jitter = TRUE, jitter.alpha = 0.4, title = "Two-Sample z-Test")
+#'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Create Plot Manually
+#'
+#' # Load ggplot2 package
+#' library(ggplot2)
+#'
+#' # Example 4a: Two-sample z-test
+#' ci.table <- ci.mean(mtcars, mpg, group = "vs", adjust = TRUE, output = FALSE)$result
+#'
+#' ggplot(ci.table, aes(group, m)) +
+#'   geom_bar(aes(group, m), stat = "summary", fun = "mean") +
+#'   geom_errorbar(aes(group, m, ymin = low, ymax = upp), width = 0.1) +
+#'   theme_bw()
+#'
+#' # Example 4b: Paired-sample z-test
+#' object <- test.z(mtcars$drat, mtcars$wt, sigma = 1.2, paired = TRUE)
+#'
+#' ggplot(data.frame(x = object$data$y - object$data$x), aes(x = 0L, y = x)) +
+#'  geom_bar(data = object$result, aes(0, m.diff), stat = "summary", fun = "mean") +
+#'  geom_errorbar(data = object$result, aes(0, m.diff, ymin = m.low, ymax = m.upp), width = 0.1) +
+#'  geom_hline(yintercept = 0L, linetype = 3, linewidth = 0.8) +
+#'  scale_x_continuous(name = "", limits = c(-2, 2)) +
+#'  theme_bw()  +
+#'  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+#'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Write Results and Save Plot
+#'
+#' \dontrun{
+#'
+#' # Example 6a: Write results into a text file
+#' test.z(mpg ~ vs, data = mtcars, sigma = 6, write = "z-Test.txt")
+#'
+#' # Example 6b:  Write results into an Excel file
+#' test.z(mpg ~ vs, data = mtcars, sigma = 6, write = "z-Test.xlsx")
+#'
+#' # Example 4c: Two-Sample Design
+#' test.z(mpg ~ vs, data = mtcars, sigma = 6, plot = TRUE, filename = "z-Test.png",
+#'        width = 6, height = 5)
+#' }
 test.z <- function(x, ...) {
 
   UseMethod("test.z")
@@ -238,16 +252,16 @@ test.z <- function(x, ...) {
 
 test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
                            paired = FALSE, alternative = c("two.sided", "less", "greater"),
-                           conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
+                           hypo = FALSE, descript = TRUE, effsize = FALSE, conf.level = 0.95,
                            digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE,
                            point = FALSE, ci = TRUE, line = TRUE, jitter = FALSE,
-                           adjust = TRUE, point.size = 4, errorbar.width = 0.1, xlab = NULL,
-                           ylab = NULL, ylim = NULL, ybreaks = ggplot2::waiver(), linetype = 3,
-                           linewidth = 0.8, jitter.size = 1.25, jitter.width = 0.05, jitter.height = 0,
-                           jitter.alpha = 0.1, title = "", subtitle = "Confidence Interval",
-                           filename = NULL, width = NA, height = NA, units = c("in", "cm", "mm", "px"),
+                           adjust = TRUE, filename = NULL, width = NA, height = NA,
                            dpi = 600, write = NULL, append = TRUE, check = TRUE,
                            output = TRUE, ...) {
+
+  #_____________________________________________________________________________
+  #
+  ## Initial Check ####
 
   # Check if input 'x' is missing or NULL
   if (isTRUE(missing(x) ||is.null(x))) { stop("Please specify a numeric vector for the argument 'x'", call. = FALSE) }
@@ -261,7 +275,7 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
   # Convert 'x' into a vector
   x <- unlist(x, use.names = FALSE)
 
-  if (!is.null(y)) {
+  if (isTRUE(!is.null(y))) {
 
     # Check if only one variable specified in the input 'y'
     if (ncol(data.frame(y)) != 1L) { stop("More than one variable specified for the argument 'y'.",call. = FALSE) }
@@ -274,8 +288,8 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
   # Check input 'paired'
   if (isTRUE(!is.logical(paired))) { stop("Please specify TRUE or FALSE for the argument 'paired'.", call. = FALSE) }
 
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #_____________________________________________________________________________
+  #
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) {
@@ -297,7 +311,8 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #_____________________________________________________________________________
+  #
   ## Paired sample ####
 
   if (isTRUE(is.null(y) && isTRUE(paired))) {
@@ -312,20 +327,14 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  ## Input Check ####
 
   # Check inputs
   .check.input(logical = c("hypo", "descript", "effsize", "plot", "adjust", "line", "jitter", "append", "output"),
-               numeric = list(mu = 1L, point.size = 1L, errorbar.width = 1L, ylim = 2L, linewidth = 1L, jitter.size = 1L, jitter.width = 1L, jitter.height = 1L, jitter.alpha = 1L),
-               character = list(xlab = 1L, ylab = 1L, title = 1L, subtitle = 1L),
-               args = c("alternative", "conf.level", "digits", "p.digits", "write1"),
-               envir = environment(), input.check = check)
+               numeric = list(mu = 1L), args = c("alternative", "conf.level", "digits", "p.digits", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
-
-    # Package ggplot2
-    if (isTRUE(plot)) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
 
     # Check input 'sigma' and 'sigma2'
     if (isTRUE(!is.null(sigma) && !is.null(sigma2))) { if (isTRUE(!identical(sigma^2, sigma2))) { stop("Arguments 'sigma' and 'sigma2' do not match.", call. = FALSE) } }
@@ -342,13 +351,13 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
         # Length of 'sigma'
         if (isTRUE(length(sigma) > 1L)) { stop("Please specify one numeric values for the argument 'sigma' for one sample.", call. = FALSE) }
 
-      # Two samples
+      # Two sample
       } else if (isTRUE(!is.null(y) && !isTRUE(paired))) {
 
         # Length of 'sigma'
         if (isTRUE(length(sigma) > 2L)) { stop("Please specify one or two numeric values for the argument 'sigma' in independent samples.", call. = FALSE) }
 
-      # Paired samples
+      # Paired sample
       } else if (isTRUE(!is.null(y) && isTRUE(paired))) {
 
         # Length of 'sigma'
@@ -372,7 +381,7 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
       } else {
 
         # Length of 'sigma2'
-        if (isTRUE(length(sigma2) > 1L)) { stop("Please specify one numeric values for the argument 'sigma2' in dependent samples.", call. = FALSE) }
+        if (isTRUE(length(sigma2) > 1L)) { stop("Please specify one numeric values for the argument 'sigma2' in paired samples.", call. = FALSE) }
 
       }
 
@@ -382,20 +391,20 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  ## Arguments ####
 
-  # Global variables
-  m <- m.low <- m.upp <- group <- low <- upp <- m.diff <- NULL
+  #——————————————————————————————————————
+  ### Population standard deviation and variance ####
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Population standard deviation and variance ####
+  #···················
+  #### One-Sample Design ####
 
   if (isTRUE(is.null(sigma) && !is.null(sigma2))) { sigma <- sqrt(sigma2) }
 
   if (isTRUE(!is.null(sigma) && is.null(sigma2))) { sigma2 <- sigma^2 }
 
-  #...................
-  ### Two-sample design ####
+  #···················
+  #### Two-Sample Design ####
 
   if (isTRUE(!is.null(y) && !isTRUE(paired))) {
 
@@ -405,17 +414,16 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   }
 
-  #...................
-  ### Alternative hypothesis ####
-
+  # 'alternative' Argument
   if (all(c("two.sided", "less", "greater") %in% alternative)) { alternative <- "two.sided" }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  ## Main Function ####
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## One-sample design ####
+  #——————————————————————————————————————
+  ### One-Sample Design ####
+
   if (isTRUE(is.null(y))) {
 
     # Descriptive statistics
@@ -439,13 +447,13 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
     sample <- "one"
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Two samples design ####
+  #——————————————————————————————————————
+  ### Two-Sample Design ####
+
   } else if (isTRUE(!is.null(y) && !isTRUE(paired))) {
 
     # Descriptive statistics
-    x.ci <- misty::df.rename(misty::ci.mean.diff(x = x, y = y, sigma = sigma, alternative = alternative, output = FALSE)$result,
-                             from = c("between", "low", "upp"), to = c("group", "m.low", "m.upp"))
+    x.ci <- misty::df.rename(misty::ci.mean.diff(x = x, y = y, sigma = sigma, alternative = alternative, output = FALSE)$result, from = c("between", "low", "upp"), to = c("group", "m.low", "m.upp"))
 
     # Standard error of the mean difference
     se <- sqrt((sigma2[1L] / x.ci[1L, "n"]) + (sigma2[2L] / x.ci[2L, "n"]))
@@ -463,8 +471,9 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
     sample <- "two"
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Paired samples ####
+  #——————————————————————————————————————
+  ### Paired-Sample Design ####
+
   } else if (isTRUE(!is.null(y) && isTRUE(paired))) {
 
     # Descriptive statistics
@@ -493,23 +502,17 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  ## Return Object ####
 
   object <- list(call = match.call(),
                  type = "test.z",
                  sample = sample,
                  data = list(x = x, y = y),
                  args = list(sigma = sigma, sigma2 = sigma2, mu = mu, paired = paired,
-                             alternative = alternative, conf.level = conf.level,
-                             hypo = hypo, descript = descript, effsize = effsize,
-                             digits = 2, p.digits = 3, as.na = NULL, plot = plot, bar = bar,
+                             alternative = alternative,  hypo = hypo, descript = descript, effsize = effsize,
+                             conf.level = conf.level, digits = 2, p.digits = 3, as.na = NULL, plot = plot, bar = bar,
                              point = point, ci = ci, line = line, jitter = jitter,
-                             adjust = adjust, point.size = point.size, errorbar.width = errorbar.width,
-                             xlab = xlab, ylab = ylab, ylim = ylim, ybreaks = ybreaks,
-                             linetype = linetype, linewidth = linewidth, jitter.size = jitter.size,
-                             jitter.width = jitter.width, jitter.height = jitter.height,
-                             jitter.alpha = jitter.alpha, title = title, subtitle = subtitle,
-                             filename = filename, width = width, height = height, units = units,
+                             adjust = adjust, filename = filename, width = width, height = height,
                              dpi = dpi, write = write, append = append, check = check, output = output),
                  plot = NULL, result = result)
 
@@ -517,35 +520,19 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Results ------------------------------------------------------
+  ## Plot and Save Results ####
 
-  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
-
-  #_____________________________________________________________________________
-  #
-  # Write Results --------------------------------------------------------------
-
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    # Send R output to textfile
-    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-    if (append && isTRUE(file.exists(write))) { write("", file = write, append = TRUE) }
-
-    # Print object
-    print(object, check = FALSE)
-
-    # Close file connection
-    sink()
-
-  }
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  ## Write Results ####
+
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
+
+  #_____________________________________________________________________________
+  #
+  ## Output ####
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 
@@ -559,17 +546,16 @@ test.z.default <- function(x, y = NULL, sigma = NULL, sigma2 = NULL, mu = 0,
 
 test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
                            alternative = c("two.sided", "less", "greater"),
-                           conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE,
-                           digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE,
-                           point = FALSE, ci = TRUE, line = TRUE, jitter = FALSE,
-                           adjust = TRUE, point.size = 4, errorbar.width = 0.1,
-                           xlab = NULL, ylab = NULL, ylim = NULL, ybreaks = ggplot2::waiver(),
-                           linetype = 3, linewidth = 0.8, jitter.size = 1.25, jitter.width = 0.05,
-                           jitter.height = 0, jitter.alpha = 0.1, title = "",
-                           subtitle = "Confidence Interval", filename = NULL,
-                           width = NA, height = NA, units = c("in", "cm", "mm", "px"),
-                           dpi = 600, write = NULL, append = TRUE, check = TRUE,
-                           output = TRUE, ...) {
+                           hypo = FALSE, descript = TRUE, effsize = FALSE,
+                           conf.level = 0.95, digits = 2, p.digits = 3, as.na = NULL,
+                           plot = FALSE, bar = TRUE, point = FALSE, ci = TRUE, line = TRUE,
+                           jitter = FALSE, adjust = TRUE, filename = NULL,
+                           width = NA, height = NA, dpi = 600, write = NULL, append = TRUE,
+                           check = TRUE, output = TRUE, ...) {
+
+  #_____________________________________________________________________________
+  #
+  ## Initial Check ####
 
   # Check if input 'formula' is missing
   if (isTRUE(missing(formula))) { stop("Please specify a formula using the argument 'formula'", call. = FALSE) }
@@ -577,10 +563,11 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #_____________________________________________________________________________
+  #
   ## Formula ####
 
-  #...................
+  #——————————————————————————————————————
   ### Variables ####
 
   var.formula <- all.vars(as.formula(formula))
@@ -591,7 +578,8 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
   # Outcome(s)
   y.vars <- var.formula[-grep(group.var, var.formula)]
 
-  #...................
+  #_____________________________________________________________________________
+  #
   ### Check ####
 
   # Check input 'check'
@@ -612,40 +600,30 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  ## Arguments ####
 
-  # Global variables
-  group <- m <- low <- upp <- NULL
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Alternative hypothesis ####
-
+  # 'alternative' argument
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  ## Main Function ####
 
   data.split <- split(unlist(data[, y.vars]), f = unlist(data[, group.var]))
 
   object <- test.z.default(x = data.split[[1L]], y = data.split[[2L]],
                            sigma = sigma, sigma2 = sigma2, alternative = alternative,
-                           conf.level = conf.level, hypo = hypo, descript = descript,
-                           effsize = effsize, plot = FALSE, bar = bar, point = point,
+                           hypo = hypo, descript = descript, effsize = effsize,
+                           conf.level = conf.level, plot = FALSE, bar = bar, point = point,
                            ci = ci, line = line, jitter = jitter, adjust = adjust,
-                           point.size = point.size, errorbar.width = errorbar.width,
-                           xlab = xlab, ylab = ylab, ylim = ylim, ybreaks = ybreaks,
-                           linetype = linetype, linewidth = linewidth, jitter.size = jitter.size,
-                           jitter.width = jitter.width, jitter.height = jitter.height,
-                           jitter.alpha = jitter.alpha, title = title, subtitle = subtitle,
-                           filename = filename, width = width, height = height, units = units,
+                           filename = filename, width = width, height = height,
                            dpi = dpi, write = write, append = append, check = check, output = FALSE)
 
   object$result[, "group"] <- names(data.split)
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  ## Return Object ####
 
   object <- list(call = match.call(),
                  type = "test.z",
@@ -653,16 +631,10 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
                  data = data[, var.formula],
                  formula = formula,
                  args = list(sigma = object$args$sigma, sigma2 = object$args$sigma2,
-                             alternative = alternative, conf.level = conf.level,
-                             hypo = hypo, descript = descript, effsize = effsize,
-                             digits = digits, p.digits = p.digits, as.na = as.na,
+                             alternative = alternative,  hypo = hypo, descript = descript, effsize = effsize,
+                             conf.level = conf.level, digits = digits, p.digits = p.digits, as.na = as.na,
                              plot = plot, bar = bar, point = point, ci = ci, line = line, jitter = jitter,
-                             adjust = adjust, point.size = point.size, errorbar.width = errorbar.width,
-                             xlab = xlab, ylab = ylab, ylim = ylim, ybreaks = ybreaks,
-                             linetype = linetype, linewidth = linewidth, jitter.size = jitter.size,
-                             jitter.width = jitter.width, jitter.height = jitter.height,
-                             jitter.alpha = jitter.alpha, title = title, subtitle = subtitle,
-                             filename = filename, width = width, height = height, units = units,
+                             adjust = adjust, filename = filename, width = width, height = height,
                              dpi = dpi, write = write, append = append, check = check, output = output),
                  plot = NULL, result = object$result)
 
@@ -670,35 +642,19 @@ test.z.formula <- function(formula, data, sigma = NULL, sigma2 = NULL,
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Results ------------------------------------------------------
+  ## Plot and Save Plot ####
 
-  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
-
-  #_____________________________________________________________________________
-  #
-  # Write Results --------------------------------------------------------------
-
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    # Send R output to text file
-    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-    if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-    # Print object
-    print(object, check = FALSE)
-
-    # Close file connection
-    sink()
-
-  }
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  ## Write Results ####
+
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
+
+  #_____________________________________________________________________________
+  #
+  ## Output ####
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 

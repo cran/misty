@@ -181,7 +181,7 @@ Blimp output file by using the \code{blimp.print()} function.
 \examples{
 \dontrun{
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1a: Update BURN and ITERATIONS section
 
 # Specify Blimp input
@@ -209,7 +209,7 @@ ITERATIONS: 20000;
 # Run updated Blimp input
 mod1 <- blimp.update(mod0, update1, file = "Ex4.3_update1.imp")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1b: Remove CENTER section
 
 # Remove section

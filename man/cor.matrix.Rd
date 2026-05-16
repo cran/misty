@@ -137,43 +137,45 @@ package by William Revelle to estimate tetrachoric and polychoric correlation
 coefficients.
 }
 \examples{
-# Example 1: Pearson product-moment correlation coefficient between 'Ozone' and 'Solar.R
-cor.matrix(airquality, Ozone, Solar.R)
+#————————————————————————————————————————————————————————————————————————————
+# Pearson Product-Moment Correlation Coefficient
 
-# Alternative specification without using the '...' argument
-cor.matrix(airquality[, c("Ozone", "Solar.R")])
-
-# Example 2: Pearson product-moment correlation matrix using pairwise deletion
+# Example 1a: Pearson product-moment correlation matrix using pairwise deletion
 cor.matrix(airquality, Ozone:Wind)
 
 # Alternative specification without using the '...' argument
 cor.matrix(airquality[, c("Ozone", "Solar.R", "Wind")])
 
-# Example 3: Spearman's rank-order correlation matrix
-cor.matrix(airquality, Ozone, Solar.R, Wind, method = "spearman")
-
-# Example 4: Pearson product-moment correlation matrix
+# Example 1b: Pearson product-moment correlation matrix
 # highlight statistically significant result at alpha = 0.05
 cor.matrix(airquality, Ozone, Solar.R, Wind, sig = TRUE)
 
-# Example 5: Pearson product-moment correlation matrix
-# highlight statistically significant result at alpha = 0.05
-cor.matrix(airquality, Ozone, Solar.R, Wind, sig = TRUE, alpha = 0.10)
-
-# Example 6: Pearson product-moment correlation matrix
-# print sample size and significance values
+# Example 1c: Pearson product-moment correlation matrix
+# print sample size, degrees of freedom, and significance values
 cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all")
 
-# Example 7: Pearson product-moment correlation matrix using listwise deletion,
+# Example 1d: Pearson product-moment correlation matrix using listwise deletion
 # print sample size and significance values
 cor.matrix(airquality, Ozone, Solar.R, Wind, na.omit = TRUE, print = "all")
 
-# Example 8: Pearson product-moment correlation matrix
+# Example 1e: Pearson product-moment correlation matrix
 # print sample size and significance values with Bonferroni correction
 cor.matrix(airquality, Ozone, Solar.R, Wind, na.omit = TRUE, print = "all",
            p.adj = "bonferroni")
 
-# Example 9: Pearson product-moment correlation matrix for 'mpg', 'cyl', and 'disp'
+#————————————————————————————————————————————————————————————————————————————
+# Spearman's Rank-Order Correlation Coefficient and Kendall's Tau
+
+# Example 2a: Spearman's rank-order correlation matrix
+cor.matrix(airquality, Ozone, Solar.R, Wind, method = "spearman")
+
+# Example 2b: Kendall's Tau-c
+cor.matrix(airquality, Ozone, Solar.R, Wind, method = "kendall-c")
+
+#————————————————————————————————————————————————————————————————————————————
+# Grouping Variable
+
+# Example 3: Pearson product-moment correlation matrix for 'mpg', 'cyl', and 'disp'
 # results for group "0" and "1" separately
 cor.matrix(mtcars, mpg:disp, group = "vs")
 
@@ -181,11 +183,14 @@ cor.matrix(mtcars, mpg:disp, group = "vs")
 cor.matrix(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs)
 
 \dontrun{
-# Example 10a: Write Results into a text file
+#————————————————————————————————————————————————————————————————————————————
+# Write Results
+
+# Example 4a: Write Results into a text file
 cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.txt")
 
-# Example 10b: Write Results into a Excel file
-cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.xlsx")
+# Example 4b: Write Results into an Excel file
+cor.matrix(airquality, Ozone, Solar.R, Wind, print = "all", write = "Correlation.xlsx"
 }
 }
 \references{

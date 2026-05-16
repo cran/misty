@@ -811,7 +811,7 @@ multilevel.r2 <- function(model, print = c("all", "RB", "SB", "NS", "RS"), digit
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Results ------------------------------------------------------
+  # Plot and Save Plot ---------------------------------------------------------
 
   if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 

@@ -95,7 +95,7 @@ model <- 'level: 1
               fb =~ y1 + y2 + y3
               fb ~ w1 + w2'
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 
 # Example 1: Model estimation with estimator = "ML"
 fit1 <- lavaan::sem(model = model, data = Demo.twolevel, cluster = "cluster",

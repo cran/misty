@@ -13,7 +13,7 @@
 #'                 in the \code{\link{df.subset}} function.
 #' @param print    a character string indicating which percentage(s) to be printed
 #'                 on the console, i.e., no percentages (\code{"no"}), all percentages
-#'                 (\code{"all"}), percentage frequencies (\code{"print"}), and
+#'                 (\code{"all"}), percentage frequencies (\code{"perc"}), and
 #'                 valid percentage frequencies \code{"v.perc"}). Default setting
 #'                 when specifying one variable is \code{print = "all"}, while
 #'                 default setting when specifying more than one variable is
@@ -85,37 +85,46 @@
 #' @export
 #'
 #' @examples
-#' # Example 1: Frequency table for 'cyl'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Frequency Table for One Variable
+#'
+#' # Example 1a: Frequency table for 'cyl'
 #' freq(mtcars, cyl)
 #'
 #' # Alternative specification without using the '...' argument
 #' freq(mtcars$cyl)
 #'
-#' # Example 2: Frequency table, values shown in columns
-#' freq(mtcars, cyl, val.col = TRUE)
-#'
-#' # Example 3: Frequency table, use 3 digit for displaying percentages
+#' # Example 1b: Frequency table, use 3 digit for displaying percentages
 #' freq(mtcars, cyl, digits = 3)
 #'
-#' # Example 4: Frequency table for 'cyl', 'gear', and 'carb'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Frequency Table for More Than One Variable
+#'
+#' # Example 2a: Frequency table for 'cyl', 'gear', and 'carb'
 #' freq(mtcars, cyl, gear, carb)
 #'
 #' # Alternative specification without using the '...' argument
 #' freq(mtcars[, c("cyl", "gear", "carb")])
 #'
-#' # Example 5: Frequency table, with percentage frequencies
+#' # Example 2b: Frequency table, with percentage frequencies
 #' freq(mtcars, cyl, gear, carb, print = "all")
 #'
-#' # Example 6: Frequency table, split output table
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Grouping and Split Variable
+#'
+#' # Example 3a: Frequency table, split output table
 #' freq(mtcars, cyl, gear, carb, split = TRUE)
 #'
-#' # Example 7: Frequency table, exclude variables with more than 5 unique values
+#' # Example 3b: Frequency table, exclude variables with more than 5 unique values
 #' freq(mtcars, exclude = 5)
 #'
-#' # Example 8a: Write Results into a text file
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Write Results
+#'
+#' # Example 4a: Write Results into a text file
 #' freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.txt")
 #'
-#' # Example 8b: Write Results into a Excel file
+#' # Example 4b: Write Results into an Excel file
 #' freq(mtcars, cyl, gear, carb, split = TRUE, write = "Frequencies.xlsx")
 freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
                  freq = TRUE, split = FALSE, labels = TRUE, val.col = FALSE,
@@ -274,7 +283,7 @@ freq <- function(data, ..., print = c("no", "all", "perc", "v.perc"),
 
           if (isTRUE(ncol(x) == 0L)) {
 
-            stop(paste0("No variable left for the analysis after excluding variables with all values missing."), call. = FALSE)
+            stop(paste0("No variable left for the analysis after excluding variables with more than ", exclude, " unique values."), call. = FALSE)
 
           } else {
 

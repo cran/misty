@@ -236,7 +236,7 @@ to exclude result sections from the output (e.g., \code{exclude = "mod.result"})
 \examples{
 \dontrun{
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Mplus Example 3.1: Linear Regression
 
 # Example 1a: Default setting
@@ -260,7 +260,7 @@ mplus.print("ex3.1.out", result = "all", exclude = "fit")
 # Example 1g: Print result section in a different order
 mplus.print("ex3.1.out", result = c("mod.result", "fit", "summary.analysis"))
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # misty.object of type 'mplus.print'
 
 # Example 2
@@ -270,10 +270,10 @@ object <- mplus.print("ex3.1.out", output = FALSE)
 # Print misty.object
 mplus.print(object)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write Results
 
-# # Example 3: Write Results into a text file
+# Example 3: Write Results into a text file
 mplus.print("ex3.1.out", write = "Output_3-1.txt")
 }
 }

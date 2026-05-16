@@ -147,7 +147,7 @@ section used to assign names to the variables in the data set can be specified b
 \examples{
 \dontrun{
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1: Write data, specify input, and run input
 
 # Write Mplus Data File
@@ -164,7 +164,7 @@ OUTPUT:   SAMPSTAT;
 # Run Mplus input
 mplus(input1, file = "ex3_1.inp")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 2: Alternative specification using the data argument
 
 # Specify Mplus input, leave out the NAMES option

@@ -158,7 +158,7 @@ using \code{weighted = FALSE} and \code{cor = FALSE}. Corresponding Hedges' \eqn
 and \eqn{g_{av}} are computed when using \code{correct = TRUE} in addition.
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # One-sample design
 
 # Example 1a: Cohen's d.z with two-sided 95% CI
@@ -181,7 +181,7 @@ cohens.d(mtcars$mpg, mu = 20, split = mtcars$vs)
 # population mean = 3, by 'vs' separately, split by 'am'
 cohens.d(mtcars$mpg, mu = 20, group = mtcars$vs, split = mtcars$am)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Two-sample design
 
 # Example 2a: Cohen's d.s with two-sided 95% CI
@@ -224,7 +224,7 @@ cohens.d(mpg ~ vs, data = mtcars, group = mtcars$am)
 # weighted pooled SD, split analysis by 'am'
 cohens.d(mpg ~ vs, data = mtcars, split = mtcars$am)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Paired-sample design
 
 # Example 3a: Cohen's d.z with two-sided 95% CI

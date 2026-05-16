@@ -123,6 +123,7 @@ Computation of the hierarchical and categorical omega is based on the
 }
 \examples{
 \dontrun{
+
 dat <- data.frame(item1 = c(3, NA, 3, 4, 1, 2, 4, 2), item2 = c(5, 3, 3, 2, 2, 1, 3, 1),
                   item3 = c(4, 2, 4, 2, 1, 3, 4, 1), item4 = c(4, 1, 2, 2, 1, 3, 4, 3))
 
@@ -151,7 +152,7 @@ lavaan::summary(item.omega(dat, output = FALSE)$model.fit,
 # Example 7a: Write Results into a text file
 item.omega(dat, write = "Omega.txt")
 
-# Example 7b: Write Results into a Excel file
+# Example 7b: Write Results into an Excel file
 item.omega(dat, write = "Omega.xlsx")
 }
 }

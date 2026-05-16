@@ -225,8 +225,6 @@
 #' multilevel.descript(Demo.threelevel$y1,
 #'                     cluster = Demo.threelevel[, c("cluster3", "cluster2")])
 #'
-#' #----------------------------------------------------------------------------
-#'
 #' # Example 8: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
 #' multilevel.descript(Demo.threelevel, y1:y3, w1, w2, cluster = c("cluster3", "cluster2"))
 #'

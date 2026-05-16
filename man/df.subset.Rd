@@ -81,13 +81,13 @@ Operators can be combined within the same function call. For example,
 }
 \examples{
 \dontrun{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Select single variables
 
 # Example 1: Select 'Sepal.Length' and 'Petal.Width'
 df.subset(iris, Sepal.Length, Petal.Width)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Select rows
 
 # Example 2a: Select all variables, select rows with 'Species' equal 'setosa'
@@ -96,37 +96,37 @@ df.subset(iris, subset = Species == "setosa")
 # Example 2b: Select all variables, select rows with 'Petal.Length' smaller 1.2
 df.subset(iris, subset = Petal.Length < 1.2)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Select variables matching a prefix using the + operator
 
 # Example 3: Select variables with prefix 'Petal'
 df.subset(iris, +Petal)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Select variables matching a suffix using the - operator
 
 # Example 4: Select variables with suffix 'Width'
 df.subset(iris, -Width)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Select variables containing a word using the ~ operator
-#
+
 # Example 5: Select variables containing 'al'
 df.subset(iris, ~al)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Select consecutive variables using the : operator
 
 # Example 6: Select all variables from 'Sepal.Width' to 'Petal.Width'
 df.subset(iris, Sepal.Width:Petal.Width)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Select numbered variables using the :: operator
 
 # Example 7: Select all variables from 'x1' to 'x3' and 'y1' to 'y3'
 df.subset(anscombe, x1::x3, y1::y3)
-#
-#----------------------------------------------------------------------------
+
+#————————————————————————————————————————————————————————————————————————————
 # Drop variables using the ! operator
 
 # Example 8a: Select all variables except 'Sepal.Width'
@@ -141,7 +141,7 @@ df.subset(iris, !-Width)
 # Example 8d: Select all variables except 'Sepal.Width' to 'Petal.Width'
 df.subset(iris, !Sepal.Width:Petal.Width)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Combine +, -, !, and : operators
 
 # Example 9: Select variables with prefix 'x' and suffix '3', but exclude

@@ -65,50 +65,52 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Two-Dimensional Table
 #'
-#' # Example 1: Cross Tabulation for 'vs' and 'am'
+#' # Example 1a: Cross Tabulation for 'vs' and 'am'
 #' crosstab(mtcars, vs, am)
 #'
 #' # Alternative specification without using the '...' argument
 #' crosstab(mtcars[, c("vs", "am")])
 #'
-#' # Example 2: Cross Tabulation, print all percentages
+#' # Example 1b: Cross Tabulation, print all percentages
 #' crosstab(mtcars, vs, am, print = "all")
 #'
-#' # Example 3: Cross Tabulation, print row-wise percentages
+#' # Example 1c: Cross Tabulation, print row-wise percentages
 #' crosstab(mtcars, vs, am, print = "row")
 #'
-#' # Example 4: Cross Tabulation, print col-wise percentages
+#' # Example 1d: Cross Tabulation, print col-wise percentages
 #' crosstab(mtcars, vs, am, print = "col")
 #'
-#' # Example 5: Cross Tabulation, print total percentages
-#' crosstab(mtcars, vs, am, print = "total")
-#'
-#' # Example 6: Cross Tabulation, print all percentages, split output table
+#' # Example 1e: Cross Tabulation, print all percentages, split output table
 #' crosstab(mtcars, vs, am, print = "all", split = TRUE)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Three-Dimensional Table
 #'
-#' # Example 7: Cross Tabulation for 'vs', 'am', ane 'gear'
+#' # Example 2a: Cross Tabulation for 'vs', 'am', ane 'gear'
 #' crosstab(mtcars, vs:gear)
 #'
 #' # Alternative specification without using the '...' argument
 #' crosstab(mtcars[, c("vs", "am", "gear")])
 #'
-#' # Example 8: Cross Tabulation, print all percentages
+#' # Example 2b: Cross Tabulation, print all percentages
 #' crosstab(mtcars, vs:gear, print = "all")
 #'
-#' # Example 9: Cross Tabulation, print all percentages, split output table
+#' # Example 2c: Cross Tabulation, print all percentages, split output table
 #' crosstab(mtcars, vs:gear, print = "all", split = TRUE)
 #'
-#' # Example 10a: Write Results into a text file
+#' \dontrun{
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Write Results
+#'
+#' # Example 3a: Write Results into a text file
 #' crosstab(mtcars, vs:gear, print = "all", write = "Crosstab.txt")
 #'
-#' # Example 10b: Write Results into a Excel file
+#' # Example 3b: Write Results into an Excel file
 #' crosstab(mtcars, vs:gear, print = "all", write = "Crosstab.xlsx")
+#' }
 crosstab <- function(data, ..., print = c("no", "all", "row", "col", "total"),
                      freq = TRUE, split = FALSE, na.omit = TRUE, digits = 2,
                      as.na = NULL, write = NULL, append = TRUE, check = TRUE,

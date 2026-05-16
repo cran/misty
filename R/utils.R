@@ -7,7 +7,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Check Argument Specification -------------------------------------------------
+# Check Argument Specification —————————————————————————————————————————————————
 
 .check.input <- function(logical = NULL, numeric = NULL, character = NULL, m.character = NULL, s.character = NULL, args = NULL, package = NULL, envir = environment(), input.check = check) {
 
@@ -114,8 +114,17 @@
       # Check input 'alpha'
       if (isTRUE("alpha" %in% args)) { eval(parse(text = "alpha"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'alpha'", call. = FALSE) })() }
 
+      # Check input 'alternative'
+      if (isTRUE("alternative" %in% args)) { eval(parse(text = "alternative"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("two.sided", "less", "greater") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("two.sided", "less", "greater"))))) { stop("Character string specified in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) })() }
+
       # Check input 'digits'
       if (isTRUE("digits" %in% args)) { eval(parse(text = "digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'digits'.", call. = FALSE) })() }
+
+      # Check input 'fit.digits'
+      if (isTRUE("fit.digits" %in% args)) { eval(parse(text = "fit.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'fit.digits'.", call. = FALSE) })() }
+
+      # Check input 'ic.digits'
+      if (isTRUE("ic.digits" %in% args)) { eval(parse(text = "ic.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'ic.digits'.", call. = FALSE) })() }
 
       # Check input 'p.digits'
       if (isTRUE("p.digits" %in% args)) { eval(parse(text = "p.digits"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'p.digits'.", call. = FALSE) })() }
@@ -135,6 +144,15 @@
       # Check input 'conf.level'
       if (isTRUE("conf.level" %in% args)) { eval(parse(text = "conf.level"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'start'", call. = FALSE) })() }
 
+      # Check input 'res.cor'
+      if (isTRUE("res.cor" %in% args)) { eval(parse(text = "res.cor"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'res.cor'", call. = FALSE) })() }
+
+      # Check input 'specific'
+      if (isTRUE("specific" %in% args)) { eval(parse(text = "specific"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'specific'", call. = FALSE) })() }
+
+      # Check input 'sensitiv'
+      if (isTRUE("sensitiv" %in% args)) { eval(parse(text = "sensitiv"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specify a numeric value between 0 and 1 for the argument 'sensitiv'", call. = FALSE) })() }
+
       # Check input 'start'
       if (isTRUE("start" %in% args)) { eval(parse(text = "start"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y >= 1L || y <= 0L))) { stop("Please specifiy a numeric value between 0 and 1 for the argument 'start '.", call. = FALSE) })() }
 
@@ -147,8 +165,11 @@
       # Check input 'R'
       if (isTRUE("R" %in% args)) { eval(parse(text = "R"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'R'.", call. = FALSE) })() }
 
-      # Check input 'alternative'
-      if (isTRUE("alternative" %in% args)) { eval(parse(text = "alternative"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("two.sided", "less", "greater") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("two.sided", "less", "greater"))))) { stop("Character string specified in the argument 'alternative' does not match with \"two.sided\", \"less\", or \"greater\".", call. = FALSE) })() }
+      # Check input 'n'
+      if (isTRUE("n" %in% args)) { eval(parse(text = "n"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'n'.", call. = FALSE) })() }
+
+      # Check input 'nrep'
+      if (isTRUE("nrep" %in% args)) { eval(parse(text = "nrep"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.numeric(y) || length(y) != 1L || y %% 1L != 0L || y < 0L))) { stop("Please specify a positive integer number for the argument 'nrep'.", call. = FALSE) })() }
 
       # Check input 'p.adj'
       if (isTRUE("p.adj" %in% args)) { eval(parse(text = "p.adj"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("none", "holm", "bonferroni", "hochberg", "hommel", "BH", "BY", "fdr"))))) { stop("Character string specified in the argument 'p.adj' does not match with \"none\", \"bonferroni\", \"holm\", \"hochberg\", \"hommel\", \"BH\", \"BY\", or \"fdr\".", call. = FALSE) })() }
@@ -156,14 +177,14 @@
       # Check input 'linetype'
       if (isTRUE("linetype" %in% args)) { eval(parse(text = "linetype"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.character(y) || any(!y %in% c("twodash", "solid", "longdash", "dotted", "dotdash", "dashed"))))) { stop("Character string specified in the argument 'linetype' does not match with \"twodash\", \"solid\", \"longdash\", \"dotted\", \"ldotdash\", or \"dashed\".", call. = FALSE) })() }
 
-      # Check input 'units'
-      if (isTRUE("units" %in% args)) { eval(parse(text = "units"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("in", "cm", "mm", "px") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("in", "cm", "mm", "px"))))) { stop("Character string specified in the argument 'units' does not match with \"in\", \"cm\", \"mm\", or \"px\".", call. = FALSE) })() }
-
       # Check input 'facet.scales'
       if (isTRUE("facet.scales" %in% args)) { eval(parse(text = "facet.scales"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("fixed", "free_x", "free_y", "free") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("fixed", "free_x", "free_y", "free"))))) { stop("Character string specified in the argument 'facet.scales' does not match with \"fixed\", \"free_x\", \"free_y\", or \"free\".", call. = FALSE) })() }
 
       # Check input 'legend.position'
       if (isTRUE("legend.position" %in% args)) { eval(parse(text = "legend.position"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("right", "top", "left", "bottom", "none") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("right", "top", "left", "bottom", "none"))))) { stop("Character string specified in the argument 'legend.position' does not match with \"right\", \"top\", \"left\", \"bottom\", or \"none\".", call. = FALSE) })() }
+
+      # Check input 'units'
+      if (isTRUE("units" %in% args)) { eval(parse(text = "units"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && !all(c("in", "cm", "mm", "px") %in% y) && (length(y) != 1L || !is.character(y) || any(!y %in% c("in", "cm", "mm", "px"))))) { stop("Character string specified in the argument 'units' does not match with \"in\", \"cm\", \"mm\", or \"px\".", call. = FALSE) })() }
 
       # Check input 'write' text file
       if (isTRUE("write1" %in% args)) { eval(parse(text = "write"), envir = envir) |> (\(y) if (isTRUE(!is.null(y) && (!is.null(y) && (!is.character(y) || !grepl(".txt", y))))) { stop("Please specify a character string with file extenstion '.txt' for the argument 'write'.") })() }
@@ -597,7 +618,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Extract Grouping, Split, or Cluster Variable ---------------------------------
+# Extract Grouping, Split, or Cluster Variable —————————————————————————————————
 
 .var.group <- function(data, group = NULL, split = NULL, cluster = NULL, id = NULL,
                        obs = NULL, day = NULL, time = NULL, drop = TRUE) {
@@ -1064,7 +1085,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Exclude Non-Numeric Variables ------------------------------------------------
+# Exclude Non-Numeric Variables ————————————————————————————————————————————————
 
 .exclude.non.numeric <- function(x, func = NULL) {
 
@@ -1105,7 +1126,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Convert user-missing values into NA ------------------------------------------
+# Convert user-missing values into NA ——————————————————————————————————————————
 
 .as.na <- function(x, na) {
 
@@ -1170,7 +1191,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the blimp.run() function ------------------------------
+# Internal functions for the blimp.run() function ——————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Run Blimp ####
@@ -1442,8 +1463,8 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the blimp.bayes() function ----------------------------
-#                            mplus.bayes() function ----------------------------
+# Internal functions for the blimp.bayes() function ————————————————————————————
+#                            mplus.bayes() function ————————————————————————————
 #
 # - .map
 # - .hdi
@@ -1716,7 +1737,184 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the check.resid() function ----------------------------
+# Internal functions for the boot.bs() function ————————————————————————————————
+#
+# https://github.com/simsem/semTools/blob/master/semTools/R/missingBootstrap.R
+#
+# .trans1
+# .trans2
+# .getBootSample
+# .fitBootSample
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function to execute transformation 1 on a single missing-data pattern ####
+
+.trans1 <- function(MDpattern, pattern, dat, sigma, mu) {
+
+  X <- apply(dat[which(pattern == MDpattern), ], 2, scale, scale = FALSE)
+  observed <- !is.na(X[1, ])
+  Xreduced <- X[ , observed]
+  Y <- replace(X, !is.na(X), t((t(chol(sigma[observed, observed])) %*% t(solve(chol(t(Xreduced) %*% Xreduced / nrow(X))))) %*% t(Xreduced) + as.numeric(mu[observed])))
+
+  return(Y)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function to execute transformation 2 on a single group ####
+
+.trans2 <- function(dat, sigma, mu, em.cov) {
+
+  # Function of A (eq. 12)
+  eq12 <- function(A) {
+
+    ga <- rep(0L, pStar)
+    for (j in seq_len(J)) {
+
+      ga <- ga + Njs[j] * Dupinv %*% c(Mjs[[j]] %*% A %*% Hjs[[j]] %*% A %*% Mjs[[j]] - Mjs[[j]])
+
+    }
+
+    return(ga)
+
+  }
+
+  # Derivative of Function of A (eq. 13)
+  eq13 <- function(A) {
+
+    deriv12 <- matrix(0L, nrow = pStar, ncol = pStar)
+    for (j in seq_len(J)) {
+
+      deriv12 <- deriv12 + 2*Njs[j]*Dupinv %*% kronecker((Mjs[[j]] %*% A %*% Hjs[[j]]), Mjs[[j]]) %*% Dup
+
+    }
+
+    return(deriv12)
+
+  }
+
+  # Missing data patterns
+  rowMissPatt <- apply(ifelse(is.na(dat), 1L, 0L), 1, function(x) paste(x, collapse = ""))
+  MDpattern <- unique(rowMissPatt)
+
+  # Sample size within each MD pattern
+  Njs <- sapply(MDpattern, function(patt) sum(rowMissPatt == patt))
+  J <- length(MDpattern)
+  p <- ncol(dat)
+  pStar <- p*(p + 1L) / 2L
+
+  # Empty lists for each MD pattern
+  Xjs <- vector("list", J)
+  Hjs <- vector("list", J)
+  Mjs <- vector("list", J)
+
+  # Duplication Matrix and its inverse (Magnus & Neudecker, 1999)
+  Dup <- lavaan::lav_matrix_duplication(p)
+  Dupinv <- solve(t(Dup) %*% Dup) %*% t(Dup)
+
+  # Step through each MD pattern, populate Hjs and Mjs
+  for (j in seq_len(J)) {
+
+    Xjs[[j]] <- apply(dat[rowMissPatt == MDpattern[j], ], 2L, scale, scale = FALSE)
+
+    if (isTRUE(!is.matrix(Xjs[[j]]))) { Xjs[[j]] <- t(Xjs[[j]]) }
+
+    observed <- !is.na(Xjs[[j]][1L, ])
+    Sj <- t(Xjs[[j]]) %*% Xjs[[j]] / Njs[j]
+    Hjs[[j]] <- replace(Sj, is.na(Sj), 0L)
+    Mjs[[j]] <- replace(Sj, !is.na(Sj), solve(sigma[observed, observed]))
+    Mjs[[j]] <- replace(Mjs[[j]], is.na(Mjs[[j]]), 0L)
+
+  }
+
+  ## Compute starting Values for A
+  if (isTRUE(is.null(em.cov))) {
+
+    A <- diag(p)
+
+  } else {
+
+    EMeig <- eigen(em.cov)
+    Sigeig <- eigen(sigma)
+    B <- (Sigeig$vectors %*% diag(sqrt(Sigeig$values)) %*% t(Sigeig$vectors)) %*% (EMeig$vectors %*% diag(1L / sqrt(EMeig$values)) %*% t(EMeig$vectors))
+    A <- 0.5*(B + t(B))
+
+  }
+
+  # Newton Algorithm for finding root (eq. 14)
+  crit <- 0.1
+  a <- c(A)
+  fA <- eq12(A)
+  while (isTRUE(crit > 1e-11)) {
+    dvecF <- eq13(A)
+    a <- a - Dup %*% solve(dvecF) %*% fA
+    A <- matrix(a, ncol = p)
+    fA <- eq12(A)
+    crit <- max(abs(fA))
+
+  }
+
+  # Transform dataset X to dataset Y
+  Yjs <- Xjs
+  for (j in seq_len(J)) {
+
+    Yjs[[j]] <- (!is.na(Xjs[[j]][1L, ])) |> (\(p) replace(Yjs[[j]], !is.na(Yjs[[j]]), (t((A[p, p, drop = FALSE]) %*% t((Xjs[[j]][ , p, drop = FALSE])) + as.numeric(mu[p])))))()
+
+  }
+
+  Y <- setNames(as.data.frame(do.call("rbind", Yjs)), nm = colnames(dat))
+
+  return(Y)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function to draw a single bootstrap sample from the transformed data ####
+
+.getBootSample <- function(dat, group, group.label) {
+
+  bootSamp <- list()
+  for (i in seq_along(dat)) {
+
+    temp <- dat[[i]]
+    temp[ , group] <- group.label[i]
+    bootSamp[[i]] <- temp[sample(seq_len(nrow(temp)), nrow(temp), replace = TRUE), ]
+
+  }
+
+  return(do.call("rbind", bootSamp))
+
+}
+
+## fit the model to a single bootstrapped sample and return chi-squared
+.fitBootSample <- function(dat, args) {
+
+  args$data <- dat
+
+  lavaanlavaan <- function(...) { lavaan::lavaan(...) }
+
+  fit <- do.call(lavaanlavaan, args)
+
+  if (isTRUE(!exists("fit"))) { return(c(chisq = NA)) }
+
+  if (isTRUE(lavaan::lavInspect(fit, what = "converged"))) {
+
+    chisq <- lavaan::lavInspect(fit, what = "fit")[c("chisq", "chisq.scaled")]
+
+  } else {
+
+    chisq <- NA
+
+  }
+
+  if (isTRUE(is.na(chisq[2L]))) { return(chisq[1L]) } else { return(chisq[2L]) }
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the check.resid() function ————————————————————————————
 #
 # - .resid.partial
 # - .calc_ranef
@@ -1790,7 +1988,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the chr.gsub() function -------------------------------
+# Internal functions for the chr.gsub() function ———————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Fast escape replace ####
@@ -1936,7 +2134,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the ci.cor() function ---------------------------------
+# Internal functions for the ci.cor() function —————————————————————————————————
 #
 # - .multsolvefun
 # - .sqerrVMc
@@ -2867,7 +3065,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the ci._() functions ----------------------------------
+# Internal functions for the ci._() functions ——————————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Nonparametric Bootstrap Confidence Intervals ####
@@ -2965,7 +3163,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the ci.mean() function --------------------------------
+# Internal functions for the ci.mean() function ————————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence interval for the mean ####
@@ -3041,7 +3239,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the ci.median() function ------------------------------
+# Internal functions for the ci.median() function ——————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence interval for the median ####
@@ -3107,7 +3305,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the ci.prop() function ------------------------------
+# Internal functions for the ci.prop() function ————————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence interval for the proportion ####
@@ -3173,7 +3371,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the ci.var() function ---------------------------------
+# Internal functions for the ci.var() function —————————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence interval for the variance ####
@@ -3263,7 +3461,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the ci.sd() function ----------------------------------
+# Internal functions for the ci.sd() function ——————————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence interval for the standard deviation ####
@@ -3352,7 +3550,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the ci.mean.diff() function ---------------------------
+# Internal functions for the ci.mean.diff() function ———————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence interval for the difference of arithmetic means ####
@@ -3509,7 +3707,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the ci.prop.diff() function ---------------------------
+# Internal functions for the ci.prop.diff() function ———————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Confidence interval for the difference of proportions ####
@@ -3707,9 +3905,9 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for Plotting Confidence Intervals -------------------------
+# Internal functions for Plotting Confidence Intervals —————————————————————————
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Plot Function Confidence Interval ####
 
 .plot.ci <- function(result, stat, group = NULL, split = NULL, point.size, point.shape, errorbar.width, dodge.width,
@@ -3719,13 +3917,13 @@
 
   low <- upp <- x <- NULL
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## No Grouping, No Split ####
+  #——————————————————————————————————————
+  ### No Grouping, No Split ####
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
     #...................
-    ### Plot Data ####
+    #### Plot Data ####
 
     # Correlation coefficient
     if (isTRUE(stat == "cor")) {
@@ -3740,17 +3938,17 @@
     }
 
     #...................
-    ### Create ggplot ####
+    #### Create ggplot ####
 
     p <- ggplot2::ggplot(plotdat, ggplot2::aes(x, y))
 
     #...................
-    ### Horizontal Line ####
+    #### Horizontal Line ####
 
     if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = intercept, linetype = linetype, color = line.col) }
 
     #...................
-    ### Error Bars  ####
+    #### Error Bars  ####
 
     p <- p + ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = errorbar.width) +
       ggplot2::geom_point(size = point.size, shape = point.shape) +
@@ -3764,13 +3962,13 @@
                      axis.text = ggplot2::element_text(size = axis.text.size),
                      axis.title = ggplot2::element_text(size = axis.title.size))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Grouping, No Split ####
+  #——————————————————————————————————————
+  ### Grouping, No Split ####
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     #...................
-    ### Plot Data ####
+    #### Plot Data ####
 
     # Correlation coefficient
     if (isTRUE(stat == "cor")) {
@@ -3785,17 +3983,17 @@
     }
 
     #...................
-    ### Create ggplot ####
+    #### Create ggplot ####
 
     p <- ggplot2::ggplot(plotdat, ggplot2::aes(x, y, group = group, color = group))
 
     #...................
-    ### Horizontal Line ####
+    #### Horizontal Line ####
 
     if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = intercept, linetype = linetype, color = line.col) }
 
     #...................
-    ### Error Bars  ####
+    #### Error Bars  ####
 
     p <- p +
       ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = errorbar.width,
@@ -3815,17 +4013,17 @@
                      legend.box.margin = ggplot2::margin(legend.box.margin[1L], legend.box.margin[2L], legend.box.margin[3L], legend.box.margin[4L]))
 
     #...................
-    ### Manual Colors ####
+    #### Manual Colors ####
 
     if (isTRUE(!is.null(group.col))) { p <- p + ggplot2::scale_color_manual(values = group.col) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## No Grouping, Split ####
+  #——————————————————————————————————————
+  ### No Grouping, Split ####
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     #...................
-    ### Plot Data ####
+    #### Plot Data ####
 
     # Correlation coefficient
     if (isTRUE(stat == "cor")) {
@@ -3842,17 +4040,17 @@
     }
 
     #...................
-    ### Create ggplot ####
+    #### Create ggplot ####
 
     p <- ggplot2::ggplot(plotdat, ggplot2::aes(x, y))
 
     #...................
-    ### Horizontal Line ####
+    #### Horizontal Line ####
 
     if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = intercept, linetype = linetype, color = line.col) }
 
     #...................
-    ### Error Bars  ####
+    #### Error Bars  ####
 
     p <- p + ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = errorbar.width) +
       ggplot2::geom_point(size = point.size, shape = point.shape) +
@@ -3867,13 +4065,13 @@
                      axis.text = ggplot2::element_text(size = axis.text.size),
                      axis.title = ggplot2::element_text(size = axis.title.size))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Grouping, Split ####
+  #——————————————————————————————————————
+  ### Grouping, Split ####
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     #...................
-    ### Plot Data ####
+    #### Plot Data ####
 
     # Correlation coefficient
     if (isTRUE(stat == "cor")) {
@@ -3890,17 +4088,17 @@
     }
 
     #...................
-    ### Create ggplot ####
+    #### Create ggplot ####
 
     p <- ggplot2::ggplot(plotdat, ggplot2::aes(x, y, group = group, color = group))
 
     #...................
-    ### Horizontal Line ####
+    #### Horizontal Line ####
 
     if (isTRUE(line)) { p <- p + ggplot2::geom_hline(yintercept = intercept, linetype = linetype, color = line.col) }
 
     #...................
-    ### Error Bars  ####
+    #### Error Bars  ####
 
     p <- p +
       ggplot2::geom_errorbar(ggplot2::aes(ymin = low, ymax = upp), width = errorbar.width,
@@ -3920,7 +4118,7 @@
                      legend.box.margin = ggplot2::margin(legend.box.margin[1L], legend.box.margin[2L], legend.box.margin[3L], legend.box.margin[4L]))
 
     #...................
-    ### Manual Colors ####
+    #### Manual Colors ####
 
     if (isTRUE(!is.null(group.col))) { p <- p + ggplot2::scale_color_manual(values = group.col) }
 
@@ -3930,7 +4128,7 @@
 
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Plot Function Bootstrap Samples ####
 
 .plot.boot <- function(result, boot.sample, stat, group = NULL, split = NULL, hist, binwidth, bins, alpha, fill,
@@ -3941,13 +4139,13 @@
 
   point <- low <- upp <- NULL
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## No Grouping, No Split ####
+  #——————————————————————————————————————
+  ### No Grouping, No Split ####
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
     #...................
-    ### Plot Data ####
+    #### Plot Data ####
 
     # Correlation coefficient
     if (isTRUE(stat == "cor")) {
@@ -3964,7 +4162,7 @@
     }
 
     #...................
-    ### Create ggplot ####
+    #### Create ggplot ####
 
     p <- ggplot2::ggplot(plotdat, ggplot2::aes(y)) +
       ggplot2::facet_wrap(~ x, scales = facet.scales) +
@@ -3980,22 +4178,22 @@
                      axis.title = ggplot2::element_text(size = axis.title.size))
 
     #...................
-    ### Histogram ####
+    #### Histogram ####
 
     if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density)), binwidth = binwidth, bins = bins, color = "black", alpha = alpha, fill = fill) }
 
     #...................
-    ### Density Curve ####
+    #### Density Curve ####
 
     if (isTRUE(density)) { p <- p + ggplot2::geom_density(color = density.col, linewidth = density.linewidth, linetype = density.linetype) }
 
     #...................
-    ### Vertical Line ####
+    #### Vertical Line ####
 
     if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = intercept, linetype = linetype, color = line.col) }
 
     #...................
-    ### Point Estimate ####
+    #### Point Estimate ####
 
     if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = point), color = point.col, linetype = point.linetype, linewidth = point.linewidth) }
 
@@ -4004,13 +4202,13 @@
 
     if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low), color = ci.col, linetype = ci.linetype, linewidth = ci.linewidth) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp), color = ci.col, linetype = ci.linetype , linewidth = ci.linewidth) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Grouping, No Split ####
+  #——————————————————————————————————————
+  ### Grouping, No Split ####
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
     #...................
-    ### Plot Data ####
+    #### Plot Data ####
 
     # Correlation coefficient
     if (isTRUE(stat == "cor")) {
@@ -4027,7 +4225,7 @@
     }
 
     #...................
-    ### Create ggplot ####
+    #### Create ggplot ####
 
     p <- ggplot2::ggplot(plotdat, ggplot2::aes(y, group = group, color = group)) +
       ggplot2::facet_wrap(~ x, scales = facet.scales) +
@@ -4047,42 +4245,42 @@
                      legend.box.margin = ggplot2::margin(legend.box.margin[1L], legend.box.margin[2L], legend.box.margin[3L], legend.box.margin[4L]))
 
     #...................
-    ### Histogram ####
+    #### Histogram ####
 
     if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density), fill = group), position = "identity", binwidth = binwidth, bins = bins, color = "black", alpha = alpha) }
 
     #...................
-    ### Density Curve ####
+    #### Density Curve ####
 
     if (isTRUE(density)) { p <- suppressMessages(p + ggplot2::geom_density(alpha = alpha, linewidth = density.linewidth, linetype = density.linetype)) }
 
     #...................
-    ### Vertical Line ####
+    #### Vertical Line ####
 
     if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = intercept, linetype = linetype, color = line.col) }
 
     #...................
-    ### Point Estimate ####
+    #### Point Estimate ####
 
     if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = point, color = group), linetype = point.linetype, linewidth = point.linewidth) }
 
     #...................
-    ### Confidence Interval ####
+    #### Confidence Interval ####
 
     if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low, color = group), linetype = ci.linetype, linewidth = ci.linewidth) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp, color = group), linetype = ci.linetype, linewidth = ci.linewidth) }
 
     #...................
-    ### Manual Colors ####
+    #### Manual Colors ####
 
     if (isTRUE(!is.null(group.col))) { p <- p + ggplot2::scale_color_manual(values = group.col) + ggplot2::scale_fill_manual(values = group.col) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## No Grouping, Split ####
+  #——————————————————————————————————————
+  ### No Grouping, Split ####
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
     #...................
-    ### Plot Data ####
+    #### Plot Data ####
 
     # Correlation coefficient
     if (isTRUE(stat == "cor")) {
@@ -4099,7 +4297,7 @@
     }
 
     #...................
-    ### Create ggplot ####
+    #### Create ggplot ####
 
     p <- ggplot2::ggplot(plotdat, ggplot2::aes(y)) +
       ggplot2::facet_wrap(~ x + split, scales = facet.scales) +
@@ -4115,37 +4313,37 @@
                      axis.title = ggplot2::element_text(size = axis.title.size))
 
     #...................
-    ### Histogram ####
+    #### Histogram ####
 
     if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density)), binwidth = binwidth, bins = bins, color = "black", alpha = alpha, fill = fill) }
 
     #...................
-    ### Density Curve ####
+    #### Density Curve ####
 
     if (isTRUE(density)) { p <- p + ggplot2::geom_density(color = density.col, linewidth = density.linewidth, linetype = density.linetype) }
 
     #...................
-    ### Vertical Line ####
+    #### Vertical Line ####
 
     if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = intercept, linetype = linetype, color = line.col) }
 
     #...................
-    ### Point Estimate ####
+    #### Point Estimate ####
 
     if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = point), color = point.col, linetype = point.linetype, linewidth = point.linewidth) }
 
     #...................
-    ### Confidence Interval ####
+    #### Confidence Interval ####
 
     if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low), color = ci.col, linetype = ci.linetype, linewidth = ci.linewidth) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp), color = ci.col, linetype = ci.linetype, linewidth = ci.linewidth) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Grouping, Split ####
+  #——————————————————————————————————————
+  ### Grouping, Split ####
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
     #...................
-    ### Plot Data ####
+    #### Plot Data ####
 
     # Correlation coefficient
     if (isTRUE(stat == "cor")) {
@@ -4162,7 +4360,7 @@
     }
 
     #...................
-    ### Create ggplot ####
+    #### Create ggplot ####
 
     p <- ggplot2::ggplot(plotdat, ggplot2::aes(y, group = group, color = group)) +
       ggplot2::facet_wrap(~ x + split, scales = facet.scales) +
@@ -4182,32 +4380,32 @@
                      legend.box.margin = ggplot2::margin(legend.box.margin[1L], legend.box.margin[2L], legend.box.margin[3L], legend.box.margin[4L]))
 
     #...................
-    ### Histogram ####
+    #### Histogram ####
 
     if (isTRUE(hist)) { p <- p + ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density), fill = group), position = "identity", binwidth = binwidth, bins = bins, color = "black", alpha = alpha) }
 
     #...................
-    ### Density Curve ####
+    #### Density Curve ####
 
     if (isTRUE(density)) { p <- p + ggplot2::geom_density(alpha = alpha, linewidth = density.linewidth, linetype = density.linetype) }
 
     #...................
-    ### Vertical Line ####
+    #### Vertical Line ####
 
     if (isTRUE(line)) { p <- p + ggplot2::geom_vline(xintercept = intercept, linetype = linetype, color = line.col) }
 
     #...................
-    ### Point Estimate ####
+    #### Point Estimate ####
 
     if (isTRUE(plot.point)) { p <- p + ggplot2::geom_vline(plotdat, ggplot2::aes(xintercept = point, color = group), linetype = point.linetype, linewidth = point.linewidth) }
 
     #...................
-    ### Confidence Interval ####
+    #### Confidence Interval ####
 
     if (isTRUE(plot.ci)) { p <- p + ggplot2::geom_vline(ggplot2::aes(xintercept = low, color = group), linetype = ci.linetype, linewidth = ci.linewidth) + ggplot2::geom_vline(ggplot2::aes(xintercept = upp, color = group), linetype = ci.linetype, linewidth = ci.linewidth) }
 
     #...................
-    ### Manual Colors ####
+    #### Manual Colors ####
 
     if (isTRUE(!is.null(group.col))) { p <- p + ggplot2::scale_color_manual(values = group.col) }
 
@@ -4220,7 +4418,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the df.rbind() function ---------------------------------
+# Internal functions for the df.rbind() function ———————————————————————————————
 #
 # - .make_names
 # - .quickdf
@@ -4457,7 +4655,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the coding() function ---------------------------------
+# Internal functions for the coding() function —————————————————————————————————
 #
 # - .contr.sum
 # - .contr.wec
@@ -4557,7 +4755,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the cohens.d() function -------------------------------
+# Internal functions for the cohens.d() function ———————————————————————————————
 
 .internal.d.function <- function(x, y, mu, paired, weighted, cor, ref, correct,
                                  alternative, conf.level) {
@@ -4957,7 +5155,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the cor.matrix() function -----------------------------
+# Internal functions for the cor.matrix() function —————————————————————————————
 #
 # - .internal.cor.test.pearson
 # - .internal.cor.test.spearman
@@ -5717,7 +5915,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the difftest.chibarsq() function ----------------------
+# Internal functions for the difftest.chibarsq() function ——————————————————————
 
 .find.c2 <- function(weight, k, u, alpha) {
 
@@ -5739,7 +5937,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the dominance() function ------------------------------
+# Internal functions for the dominance() function ——————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Dominance analysis supporting formula-based modeling functions ####
@@ -5954,7 +6152,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the dominance.manual() function -----------------------
+# Internal functions for the dominance.manual() function ———————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Enumerate the Combinations or Permutation of the ELements of a Vector ####
@@ -5962,8 +6160,8 @@
 # combinations() from the gtools package
 .combinations <- function(n, r, v = 1:n, set = TRUE, repeats.allowed = FALSE) {
 
-  if (isTRUE(mode(n) != "numeric" || length(n) != 1L || n < 1L || (n %% 1) != 0L)) { stop("bad value of n") }
-  if (isTRUE(mode(r) != "numeric" || length(r) != 1L || r < 1L || (r %% 1) != 0L)) { stop("bad value of r") }
+  if (isTRUE(mode(n) != "numeric" || length(n) != 1L || n < 1L || (n %% 1L) != 0L)) { stop("bad value of n") }
+  if (isTRUE(mode(r) != "numeric" || length(r) != 1L || r < 1L || (r %% 1L) != 0L)) { stop("bad value of r") }
 
   if (isTRUE(!is.atomic(v) || length(v) < n)) { stop("v is either non-atomic or too short") }
 
@@ -6067,7 +6265,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the effsize() function --------------------------------
+# Internal functions for the effsize() function ————————————————————————————————
 #
 # - .phi
 # - .cramer
@@ -6396,7 +6594,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the indirect() function -------------------------------
+# Internal functions for the indirect() function ———————————————————————————————
 #
 # - .qprodnormalMeeker
 
@@ -6480,7 +6678,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the item.alpha() and item.omega() function ------------
+# Internal functions for the item.alpha() and item.omega() function ————————————
 #
 # - .alpha.omega
 # - .categ.alpha.omega
@@ -6821,9 +7019,9 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the item.invar() function -----------------------------
+# Internal functions for the item.invar() function —————————————————————————————
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Function for Convergence and Model Identification Checks ####
 
 .conv.ident <- function(model.fit, invar, long) {
@@ -7139,7 +7337,940 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the item.nonequi() function ---------------------------
+# Internal functions for the modcomp() function ————————————————————————————————
+#
+# .caic
+# .sabic
+#
+# https://github.com/cran/semTools/blob/master/R/fitIndices.R
+#
+# .aicc
+# .hqc
+# .hbic
+# .spbic
+# .ibic
+# .sic
+# .icomp
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Consistent Akaike's Information Criterion ####
+
+.caic <- function(x) {
+
+  caic <- if (isTRUE(class(x) == "lavaan")) {
+
+    suppressWarnings(tryCatch(BIC(x) + unname(lavaan::fitmeasures(x)["npar"]), error = function(e) { return(NA) }))
+
+  } else {
+
+    suppressWarnings(tryCatch(BIC(x) + attr(logLik(x), which = "df"), error = function(e) { return(NA) }))
+
+  }
+
+  return(caic)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Sample-Size Adjusted BIC ####
+
+.sabic <- function(x) {
+
+  sabic <- if (isTRUE(class(x) == "lavaan")) {
+
+    suppressWarnings(tryCatch(unname(lavaan::fitmeasures(x) |> (\(p) -2L*p["logl"] + p["npar"] * log((lavaan::nobs(x) + 2L) / 24L))()), error = function(e) { return(NA) }))
+
+  } else {
+
+    suppressWarnings(tryCatch(as.numeric(-2L*logLik(x) + attr(logLik(x), which = "df") * log((nobs(x) + 2L) / 24L)), error = function(e) { return(NA) }))
+
+  }
+
+  return(sabic)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Corrected Akaike Information Criterion ####
+
+.aicc <- function(x) {
+
+  aicc <- if (isTRUE(class(x) == "lavaan")) {
+
+    suppressWarnings(tryCatch(unname(lavaan::fitmeasures(x)["npar"]) |> (\(p) AIC(x) + (2L * p * (p + 1L)) / (lavaan::nobs(x) - p - 1L))(), error = function(e) { return(NA) }))
+
+  } else {
+
+    suppressWarnings(tryCatch(attr(lavaan::logLik(x), which = "df") |> (\(p) AIC(x) + (2L * p * (p + 1L)) / (nobs(x) - p - 1L))(), error = function(e) { return(NA) }))
+
+  }
+
+  return(unname(aicc))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Hannan-Quinn Information Criterion ####
+
+.hqc <- function(x) {
+
+  hqc <- if (isTRUE(class(x) == "lavaan")) {
+
+    suppressWarnings(tryCatch(lavaan::fitmeasures(x) |> (\(p) unname(-2L*p["logl"] + 2L*p["npar"]*log(log(lavaan::nobs(x)))))(), error = function(e) { return(NA) }))
+
+  } else {
+
+    suppressWarnings(tryCatch(unname(-2L*as.numeric(logLik(x)) + 2L*attr(logLik(x), which = "df")*log(log(nobs(x)))), error = function(e) { return(NA) }))
+
+  }
+
+  return(unname(hqc))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Haughton’s BIC ####
+
+.hbic <- function(x) {
+
+  hbic <- if (isTRUE(class(x) == "lavaan")) {
+
+    suppressWarnings(tryCatch(lavaan::fitmeasures(x) |> (\(p) unname(-2L*p["logl"] + p["npar"]*log(lavaan::nobs(x) / (2L * pi))))(), error = function(e) { return(NA) }))
+
+  } else {
+
+    suppressWarnings(tryCatch(-2L*as.numeric(logLik(x)) + attr(logLik(x), which = "df") * log(nobs(x) / (2L * pi)), error = function(e) { return(NA) }))
+
+  }
+
+  return(unname(hbic))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Scaled Unit-Information Prior BIC ####
+
+.spbic <- function(x) {
+
+  spbic <- suppressWarnings(tryCatch({
+
+    lavaan::coef(x) |> (\(p) t(p) %*% lavaan::lavInspect(x, "information.observed") %*% p)() |>
+      (\(q) if (lavaan::fitmeasures(x)["npar"] < q) {
+
+        return(as.vector(-2L*lavaan::fitmeasures(x)["logl"] + lavaan::fitmeasures(x)["npar"]*(1L - log(lavaan::fitmeasures(x)["npar"] / q))))
+
+      } else {
+
+       return(as.vector(-2L*lavaan::fitmeasures(x)["logl"] + q))
+
+      })()
+
+  }, error = function(e) { return(NA) })) |> (\(p) if (is.nan(p)) { return(NA) } else { return(p) } )()
+
+  return(unname(spbic))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Information-Matrix-based BIC ####
+
+.ibic <- function(x) {
+
+  ibic <- suppressWarnings(tryCatch({
+
+    det(lavaan::lavInspect(x, what = "vcov")) |> (\(p) if (isTRUE(p <= 0L)) {
+
+      return(NA)
+
+    } else {
+
+      return(-2L*lavaan::fitmeasures(x)["logl"] - lavaan::fitmeasures(x)["npar"]*log(2L*pi) - log(p))
+
+    })()
+
+  }, error = function(e) { return(NA) })) |> (\(p) if (isTRUE(is.nan(p))) { return(NA) } else { return(p) } )()
+
+  return(unname(ibic))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Stochastic Information Criterion ####
+
+.sic <- function(x) {
+
+  sic <- suppressWarnings(tryCatch({
+
+    det(lavaan::lavInspect(x, what = "vcov")) |> (\(p) if (isTRUE(p <= 0L)) {
+
+      return(NA)
+
+    } else {
+
+      return(-2L*lavaan::fitmeasures(x)["logl"] - log(p))
+
+    })()
+
+  }, error = function(e) { return(NA) })) |> (\(p) if (isTRUE(is.nan(p))) { return(NA) } else { return(p) } )()
+
+  return(unname(sic))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Bozdogan Information Complexity ####
+
+.icomp <- function(x) {
+
+  icomp <- suppressWarnings(tryCatch({
+
+    suppressWarnings(unname(lavaan::lavInspect(x, "inverted.information.expected") |> (\(p) -2L*lavaan::fitmeasures(x)["logl"] + 2L*qr(p)$rank |> (\(q) (q / 2L)*log((sum(diag(p))) / q) - 0.5*log(det(p)))())()))
+
+  }, error = function(e) { return(NA) })) |> (\(p) if (isTRUE(is.nan(p))) { return(NA) } else { return(p) } )()
+
+  return(icomp)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the item.dfi() function ———————————————————————————————
+#
+# https://github.com/melissagwolf/dynamic/tree/master/R
+# - .sim.fit
+# - .n.factors
+# - .misspec.one
+# - .items.no.cor
+# - .resid.cov
+# - .misspec.multi
+# - .cross.load
+# - .items.n.crossload
+# - .sim.data.likert
+# - .ordsample
+# - .ordsample
+# - .contord
+# - .sim.data.categ
+# - .sim.fit
+#
+# https://stackoverflow.com/questions/19796736/changing-numbers-within-string-in-r
+# - .chr.round
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Determine the Number of Factors ####
+
+.n.factors <- function(model.syntax) {
+
+  return(lavaan::lavaanify(model.syntax, fixed.x = FALSE) |> (\(p) misty::uniq.n(p[p$op == "=~", "lhs"]))())
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Simulating Fit Indices for Misspecified and True Models in One-Factor CFA Model ####
+#
+# # Function DGM_one() in the dynamic package
+
+.misspec.one <- function(model.syntax, res.cor) {
+
+  # Number of items without residual correlation
+  n.items <- nrow(.items.no.cor(model.syntax))
+
+  # Number of levels given number of items without residual correlation
+  if (isTRUE(n.items == 4L)) {
+
+    levels <- 1L
+
+  } else if (isTRUE(n.items == 5L)) {
+
+    levels <- rbind(1L, 2L)
+
+  } else {
+
+    levels <- floor(n.items / 2L) |> (\(p) rbind(floor(p / 3L), floor((2L*p) / 3L), as.numeric(p)))()
+
+  }
+
+  # Residual covariance misspecification
+  mod.resid.cov <- .resid.cov(model.syntax, res.cor)
+
+  # Model misspecification
+  mod.syntax.misspec <- setNames(lapply(levels, function(y) paste0(model.syntax, "\n", paste(mod.resid.cov[seq_len(y)], collapse = "\n"))), nm = paste0("Level ", levels))
+
+  return(mod.syntax.misspec)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Extracting Items Without Residual Correlations in One-Factor CFA Model ####
+#
+# Function one_num() in the dynamic package
+
+.items.no.cor <- function(model.syntax){
+
+  # lavaan parameter table
+  model.lavaan <- lavaan::lavaanify(model.syntax, fixed.x = FALSE) |> (\(p) p[which(p$lhs != p$rhs), ])()
+
+  # Factor loadings
+  model.lavaan.load <- model.lavaan |> (\(p) p[which(p$op == "=~"), ] )()
+  model.lavaan.load <- model.lavaan |> (\(s) s[which(s$op == "=~"), ] )()
+
+  # Factor labels
+  factor.labels <- model.lavaan |> (\(p) unique(p[which(p$op == "=~"), "lhs"]))()
+
+  # Items without residual correlation
+  items.result <- model.lavaan |> (\(p) p[which(p$op == "~~"), ])() |>
+    (\(q) setdiff(unique(c(q$lhs, q$rhs)), factor.labels))() |>
+    (\(r) model.lavaan.load[which(!model.lavaan.load$rhs %in% r), ])()
+
+  return(items.result)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Creating Residual Correlation Misspecification in One-Factor CFA Model ####
+#
+# Function one_add() in the dynamic package
+
+.resid.cov <- function(model.syntax, res.cor){
+
+  # Items without residual correlation
+  items <- .items.no.cor(model.syntax) |> (\(p) p[order(p$ustart), ])()
+
+  # Number of items without residual correlation
+  n.items <- nrow(items)
+
+  # Select items for misspecification
+  if (isTRUE(n.items == 4L)) {
+
+    items.m <- items[1L:2L, ]
+
+  } else if (isTRUE(n.items == 5L)) {
+
+    items.m <- items[1L:4L, ]
+
+  } else {
+
+    items.m <- items[seq_len(floor(n.items / 2L)*2L), ]
+
+  }
+
+  # Residual correlation
+  resid.cor <- paste0(items.m[seq(1L, nrow(items.m), by = 2), "rhs"] , " ~~ ", res.cor, "*", items.m[seq(2L, nrow(items.m), by = 2), "rhs"])
+
+  return(resid.cor)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Simulating Fit Indices for Misspecified and True Models in Multi-Factor CFA Model ####
+#
+# Function DGM_Multi_HB() in the dynamic package
+
+.misspec.multi <- function(model.syntax) {
+
+  # Cross loading misspecification
+  mod.cross.load <- .cross.load(model.syntax)
+
+  # Model misspecification
+  mod.syntax.misspec <- setNames(lapply(seq_len(length(mod.cross.load)), function(y) paste0(model.syntax, "\n", paste(mod.cross.load[seq_len(y)], collapse = "\n"))), nm = paste0("Level ", seq_len(length(mod.cross.load))))
+
+  return(mod.syntax.misspec)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Creating Cross-Loading Misspecification in Multi-Factor CFA Model ####
+#
+# Function multi_add_HB() in the dynamic package
+
+.cross.load <- function(model.syntax) {
+
+  priority <- loading <- NULL
+
+  # lavaan model syntax
+  model.lavaan <- lavaan::lavaanify(model.syntax, fixed.x = FALSE) |>(\(p) p[p$lhs != p$rhs, ])()
+
+  # Number of factors
+  n.fact <- .n.factors(model.syntax)
+
+  # Viable items from each factor
+  itemoptions <- .items.n.crossload(model.syntax)
+
+  # Lowest loading from each factor
+  crosses <- do.call("rbind", lapply(split(itemoptions, itemoptions$lhs), function(y) y[which.min(abs(y$loading)), ])) |> (\(p) p[order(abs(p$loading)), ])() |> (\(q) q[seq_len(n.fact - 1L), ])()
+
+  # Factor names
+  factors <- data.frame(lhs = unique(model.lavaan[model.lavaan$op == "=~", "lhs"]))
+
+  # Coefficient H for each factor
+  coef.H <- suppressMessages(model.lavaan[model.lavaan$op == "=~", ] |> (\(p) data.frame(p, L_Sq = p$ustart^2L, E_Var = 1L - (p$ustart^2L), Div = (p$ustart^2L) / (1L - (p$ustart^2L))))() |>
+    (\(q) do.call("rbind", lapply(split(q, f = q$lhs), function(y) data.frame(sum = sum(y$Div), rand = runif(n = length(factors), 0L, 0.001)) |> (\(r) data.frame(H = ((1 + (r$sum^-1L))^-1L) + r$rand ))())))() |>
+    (\(s) data.frame(rhs = row.names(s), s, row.names = NULL))() |> (\(t) t[order(t$H, decreasing = TRUE), ])())
+
+  # Factors and factor correlations
+  fact.cor1 <- model.lavaan[model.lavaan$op == "~~", ] |> (\(p) data.frame(p[p$lhs %in% unlist(factors) & p$rhs %in% unlist(factors), c("lhs", "op", "rhs", "ustart")], type = "Factor"))()
+
+  # Factors and factor correlations reversed
+  fact.cor2 <- setNames(fact.cor1, nm = c("rhs", "op", "lhs", "ustart", "type"))[, c("lhs", "op", "rhs", "ustart", "type")]
+
+  # Isolate items
+  dup1 <- merge(merge(rbind(fact.cor1, fact.cor2), crosses, by = "lhs", all = TRUE), coef.H, by = "rhs")[, c("lhs", "op", "rhs", "ustart", "type", "item", "loading", "priority", "H")] |>
+    (\(p) p[which(!is.na(p$item)), ])() |>(\(q) q[order(abs(q$loading)), ])()
+
+  # Run twice for cleaning later
+  dup2 <- dup1
+
+  # Manipulate to create model statement
+  setup <- misty::df.unique(rbind(dup1, dup2) |> (\(p) data.frame(p, facts = paste(pmin(p$lhs, p$rhs), pmax(p$lhs, p$rhs), sep = "_")))())
+
+  # Rename for iteration
+  setup.copy <- setup
+
+  # Create empty data frame
+  cleaned <- setup[0L, ]
+
+  # Select the highest H for first item i for cross-loading
+  for (i in unique(setup.copy$item)){
+
+    cleaned[i, ] <- setup.copy[setup.copy$item == i, ] |> (\(p) p[which.max(p$H), ])()
+
+    setup.copy <- setup.copy[which(!setup.copy$facts %in%cleaned$facts), ]
+
+  }
+
+  # Data frame
+  modinfo <- data.frame(cleaned, operator = "=~") |> (\(p) misty::df.sort(p, priority, loading) |> (\(q) do.call("rbind", lapply(split(q, f = paste0(q$priority, q$loading)), function(y) y[order(y$H, decreasing = TRUE), ])))())  ()
+
+  # Compute maximum cross loading value
+  cross.loading <- data.frame(modinfo, F1 = modinfo$ustart, F1.sq = modinfo$ustart^2L, L1 = modinfo$loading, L1.sq = modinfo$loading^2, E = 1L - modinfo$loading^2L) |>
+    (\(p) data.frame(modinfo, loading.final = pmin(abs(p$loading), abs(round((sqrt(((p$L1.sq * p$F1.sq) + p$E)) - (abs(p$L1 * p$F1)))*0.95, digits = 4))), times = "*" )[, c("rhs", "operator", "loading.final", "times", "item")])() |>
+    (\(q) unname(apply(q, 1L, function(y) paste0(paste(y["rhs"], y["operator"], y["loading.final"], collapse = " "), y["times"], y["item"], collapse = ""))))()
+
+  return(cross.loading)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Extracting Items Without Residual Correlations and Cross Loadings in Multi-Factor CFA Model ####
+#
+# Function multi_num_HB() in the dynamic package
+
+.items.n.crossload <- function(model.syntax){
+
+  # lavaan model syntax
+  model.lavaan <- lavaan::lavaanify(model.syntax, fixed.x = FALSE) |>(\(p) p[p$lhs != p$rhs, ])()
+
+  # Factor names
+  factors <- unique(model.lavaan[model.lavaan$op == "=~", "lhs"])
+
+  # Number of items per factor
+  n.items <- model.lavaan[model.lavaan$op == "=~", ] |> (\(p) sapply(split(p, f = p$lhs), nrow))() |> (\(q) data.frame(lhs = names(q), original = q))()
+
+  # Items that have an error covariance
+  item.covar <- intersect(model.lavaan[model.lavaan$op == "=~", "rhs"],  unlist(model.lavaan[model.lavaan$op == "~~", c("lhs", "rhs")]))
+
+  # Items that have a cross loading
+  item.crossload <- model.lavaan[model.lavaan$op == "=~", ] |> (\(p) p[duplicated(p$rhs), "rhs"])()
+
+  # Items that do not already have an error covariance or cross-loading
+  solo.items <- model.lavaan[model.lavaan$op == "=~" & !model.lavaan$rhs %in% union(item.covar, item.crossload), ]
+
+  # Number of remaining and original items per factor
+  remaining <- merge(if (isTRUE(nrow(solo.items) != 0L)) { solo.items |> (\(p) sapply(split(p, f = p$lhs), nrow))() |> (\(q) data.frame(lhs = names(q), remaining = q))() } else { data.frame(lhs = factors, remaining = 0L) }, n.items,  by = "lhs", all = TRUE)
+
+  # Add  factor loadings, group by number of items per factor (>2 or 2), sort factor loadings within group
+  itemoptions <- merge(solo.items, remaining, by = "lhs", all = TRUE) |>
+    (\(p) data.frame(p, priority = ifelse(p$original > 2 & !is.na(p$remaining), "three", "two")))() |>
+    (\(q) data.frame(setNames(do.call("rbind", lapply(split(q, q$priority), function(y) y[order(abs(y$ustart)), ]))[, c("lhs", "rhs", "ustart", "priority")], nm = c("lhs","item","loading","priority")), row.names = NULL))()
+
+  return(itemoptions)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Converting Continuous Data into Likert-Type Item Data ####
+#
+# Function true_fit_one_likert() and one_fit_likert() from the dynamic package
+
+.sim.data.likert <- function(model.syntax, data, n = n, nrep = nrep) {
+
+  # Number of factors
+  n.fac <- .n.factors(model.syntax)
+
+  # Model-implied covariance matrix
+  sigma <- .sim.standardized.matrices(model.syntax, max.iter = 100L, check = FALSE)$correlations$R |> (\(p) p[seq_len(nrow(p) - n.fac), seq_len(nrow(p) - n.fac)])()
+  diag(sigma) <- 1
+
+  # Remove cases with missing on all variables
+  data1 <- data[, colnames(sigma)] |> (\(p) p[rowSums(is.na(p)) != ncol(p), ])()
+
+  # Rescale so that minimum value is always 1
+  d2 <- matrix(sapply(data1, function(y) min(y, na.rm = TRUE) - 1L), nrow = 1L, ncol = ncol(data1))
+  d3 <- matrix(rep(d2, each = nrow(data1)), nrow = nrow(data1), ncol = ncol(data1), dimnames = list(NULL, colnames(data1)))
+  d4 <- matrix(rep(d2, each = nrow(data1)), nrow = nrep*nrow(data1), ncol = ncol(data1), dimnames = list(NULL, colnames(data1)))
+
+  data1 <- data1 - d3
+
+  # Create empty matrix for proportions in each category (g)
+  g <- matrix(nrow = (max(data1, na.rm = TRUE) - min(data1, na.rm = TRUE)), ncol = ncol(data1))
+
+  p <- list()
+  # Loop through all variables in the fitted model
+  for (i in seq_len(ncol(data1))) {
+
+    # Loop through all categories for each variable
+    for (h in min(data1[, i], na.rm = TRUE):(max(data1[, i], na.rm = TRUE) - 1L)) {
+
+      # Proportion of responses at or below each category, only count non-missing in the denominator
+      g[h, i] <- sum(table(data1[, i])[names(table(data1[, i])) <= h]) / sum(!is.na(data1[, i]))
+      p[[i]] <- g[, i]
+
+    }
+
+  }
+
+  # Handle different number of categories per item
+  marginal <- list()
+  for (i in seq_len(length(p))) {
+
+    marginal[[i]] <- p[[i]][!is.na(p[[i]])]
+
+  }
+
+  # Simulate ordinal data with same observed correlation matrix as observed data
+  return(setNames(as.data.frame(.ordsample(n = n*nrep, marginal = marginal, Sigma = sigma) + d4), nm = colnames(d4)))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Drawing a Sample of Discrete Data ####
+#
+# Function ordsample() from the GenOrd package
+
+.ordsample <- function(n, marginal, Sigma, support = list(), df = Inf) {
+
+  # k = number of variables
+  k <- length(marginal)
+
+  # kj = number of categories for the k variables (vector of k integer numbers)
+  kj <- numeric(k)
+  len <- length(support)
+  for (i in seq_len(k)) {
+
+    kj[i] <- length(marginal[[i]]) + 1L
+
+    if (isTRUE(len == 0L)) { support[[i]] <- seq_len(kj[i]) }
+
+  }
+
+  Sigma <- .ordcont(marginal = marginal, Sigma = Sigma, support = support, df = df)[[1L]]
+
+  # Sample of size n from k-dimensional Student's t or normal with vector of zero means and correlation matrix Sigma
+  restab <- mvtnorm::rmvt(n, sigma = Sigma, delta = rep(0L, k), df = df, type = "shifted")
+
+  if (isTRUE(n == 1L)) { restab <- matrix(restab, nrow = 1L) }
+
+  # Discretization according to the marginal distributions
+  for(i in seq_len(k)) {
+
+    restab[,i] <- as.integer(cut(restab[, i], breaks = c(min(restab[, i]) - 1L, qt(marginal[[i]], df = df), max(restab[, i]) + 1L)))
+    restab[,i] <- support[[i]][restab[, i]]
+
+  }
+
+  return(restab)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Computing the "intermediate" Correlation mMtrix for the Multivariate Standard Normal ####
+#
+# Function ordcont() from the GenOrd package
+
+.ordcont <- function (marginal, Sigma, support = list(), epsilon = 1e-06, maxit = 100, df = Inf) {
+
+  len <- length(support)
+  k <- length(marginal)
+
+  niter <- matrix(0L, k, k)
+  kj <- numeric(k)
+
+  for (i in seq_len(k)) {
+
+    kj[i] <- length(marginal[[i]]) + 1L
+
+    if (isTRUE(len == 0L)) {
+      support[[i]] <- seq_len(kj[i])
+    }
+
+  }
+
+  Sigmaold <- Sigma0 <- Sigma
+  Sigmaordold <- Sigmaord <- .contord(marginal, Sigma, support, df = df)
+
+  for (q in 1:(k - 1L)) {
+
+    for (r in (q + 1L):k) {
+
+      if (isTRUE(Sigma0[q, r] == 0L)) {
+
+        Sigma[q, r] <- 0L
+
+      } else {
+
+        it <- 0L
+        while (max(abs(Sigmaord[q, r] - Sigma0[q, r]) > epsilon) & it < maxit) {
+
+          if (Sigma0[q, r] * (Sigma0[q, r]/Sigmaordold[q, r]) >= 1L) {
+
+            Sigma[q, r] <- Sigmaold[q, r] * (1L + 0.1 * (1L - Sigmaold[q, r]) * sign(Sigma0[q, r] - Sigmaord[q, r]))
+
+          } else {
+
+            Sigma[q, r] <- Sigmaold[q, r] * (Sigma0[q, r] / Sigmaord[q, r])
+
+          }
+
+          Sigma[r, q] <- Sigma[q, r]
+          Sigmaord[r, q] <- .contord(list(marginal[[q]], marginal[[r]]), matrix(c(1L, Sigma[q, r],Sigma[q, r], 1L), 2L, 2L), list(support[[q]], support[[r]]), df = df)[2L]
+          Sigmaord[q, r] <- Sigmaord[r, q]
+          Sigmaold[q, r] <- Sigma[q, r]
+          Sigmaold[r, q] <- Sigmaold[q, r]
+          it <- it + 1
+
+        }
+
+        niter[q, r] <- it
+        niter[r, q] <- it
+
+      }
+
+    }
+
+  }
+
+
+  if (eigen(Sigma)$values[k] <= 0) {
+    message("The Sigma matrix is not coherent with the given margins or
+             it is impossible to find a feasible correlation matrix for MVN
+             ensuring Sigma for the given margins")
+
+    Sigma <- matrix(NA, k, k)
+    diag(Sigma) <- 1L
+
+  }
+
+  emax <- max(abs(Sigmaord - Sigma0))
+
+  list(SigmaC = Sigma, SigmaO = Sigmaord, Sigma = Sigma0, niter = niter, maxerr = emax)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Computing the Correlations of Discretized Variables ####
+#
+# Function contord() from the GenOrd package
+
+.contord <- function(marginal, Sigma, support = list(), df = Inf) {
+
+  len <- length(support)
+  k <- length(marginal)
+  kj <- numeric(k)
+
+  Sigmaord <- diag(k)
+  for (i in seq_len(k)) {
+
+    kj[i] <- length(marginal[[i]]) + 1L
+    if (isTRUE(len == 0L)) {
+
+      support[[i]] <- 1L:kj[i]
+
+    }
+
+  }
+  L <- vector("list", k)
+  for (i in seq_len(k)) {
+
+    L[[i]] <- qt(marginal[[i]], df = df)
+    L[[i]] <- c(-Inf, L[[i]], +Inf)
+
+  }
+
+  for (q in seq_len(k - 1L)) {
+
+    for (r in (q + 1L):k) {
+
+      pij <- matrix(0, kj[q], kj[r])
+
+      for (i in seq_len(kj[q])) {
+
+        for (j in seq_len(kj[r])) {
+
+          low <- rep(-Inf, k)
+          upp <- rep(Inf, k)
+          low[q] <- L[[q]][i]
+          low[r] <- L[[r]][j]
+          upp[q] <- L[[q]][i + 1L]
+          upp[r] <- L[[r]][j + 1L]
+
+          pij[i, j] <- mvtnorm::pmvt(low, upp, rep(0L, k), corr = Sigma, df = df)
+          low <- rep(-Inf, k)
+          upp <- rep(Inf, k)
+
+        }
+
+      }
+
+      my <- sum(apply(pij, 2L, sum) * support[[r]])
+      sigmay <- sqrt(sum(apply(pij, 2L, sum) * support[[r]]^2L) - my^2L)
+
+      mx <- sum(apply(pij, 1L, sum) * support[[q]])
+      sigmax <- sqrt(sum(apply(pij, 1L, sum) * support[[q]]^2L) - mx^2L)
+      mij <- support[[q]] %*% t(support[[r]])
+      muij <- sum(mij * pij)
+      covxy <- muij - mx * my
+      corxy <- covxy / (sigmax * sigmay)
+      Sigmaord[q, r] <- corxy
+
+    }
+
+  }
+
+  SO <- as.matrix(Matrix::forceSymmetric(Sigmaord))
+
+  return(SO)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Converting Continuous Data into Categorical Item Data ####
+#
+# Function true_fit_one_cat() from the dynamic package
+
+.sim.data.categ <- function(model.syntax, model.syntax.thres, n = n, nrep = nrep) {
+
+  # Simulate standardized data
+  all_data_true <- sim.data <- misty::sim.lavaan(model.syntax, n = n*nrep, std = TRUE)
+
+  # Thresholds
+  a2 <- as.data.frame(t(unique(model.syntax.thres[model.syntax.thres$op == "|", "lhs"])))
+  a1 <- setNames(reshape(model.syntax.thres, idvar = "rhs", timevar = "lhs", direction = "wide", drop = "op")[, -1L], nm = a2)
+
+  for (i in seq_len(ncol(a1))) {
+
+    u <- as.numeric(sum(!is.na(a1[, i])))
+
+    # Column name to modify
+    colname <- a2[, i]
+
+    # Original and current values
+    res <- x <- sim.data[[colname]]
+
+    # Piecewise updates
+    res[which(!is.na(x) & x <= a1[1, i])] <- 100L
+    res[which(!is.na(x) & x > a1[u, i])]  <- 100L * (u + 1L)
+
+    # Write back to data frame
+    sim.data[[colname]] <- res
+
+    if (isTRUE(sum(!is.na(a1[, i])) > 1L)) {
+
+      for (j in seq_len(sum(!is.na(a1[, i])))) {
+
+        colname <- a2[, i]
+
+        x <- sim.data[[colname]]
+        x[!is.na(x) & x >= a1[j, i] & x <= a1[j + 1L, i]] <- as.numeric(100L * (j + 1L))
+
+        sim.data[[colname]] <- x
+
+      }
+
+    }
+
+  }
+
+  #sim.data <- sim.data / 100
+
+  return(sim.data)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Simulating Fit Indices for Misspecified and True Models ####
+#
+# Function one_fit() from the dynamic package
+
+.sim.fit <- function(model.syntax, model.syntax.thres, sim.model = sim.model, type, data, n, estimator, se, sim.fit.indices, nrep, seed = seed, progress) {
+
+  # Model without Parameter Estimates
+  model.syntax.free <- .fixed2free(model.syntax)
+
+  #——————————————————————————————————————
+  ### Simulate Data ####
+
+  #...................
+  #### Normal Continuous Indicators ####
+
+  switch(type, "norm" = {
+
+    # Set seed
+    if (isTRUE(!is.null(seed))) { set.seed(seed[1L]) }
+
+    # Simulate Level 0 Misspecification Data
+    sim.data0 <- list("Level 0" = split(misty::sim.lavaan(sim.model[[1L]], n = n*nrep, std = TRUE), f = rep(seq_len(nrep), times = n)))
+
+    # Set seed
+    if (isTRUE(!is.null(seed))) { set.seed(seed[2L]) }
+
+    # Simulate Level 1-3 Misspecification Data
+    sim.data1 <- lapply(sim.model[-1L], function(y) misty::sim.lavaan(y, n = n*nrep, std = TRUE)) |> (\(p) lapply(p, function(z) split(z, f = rep(seq_len(nrep), times = n))))()
+
+    # Append lists
+    sim.data <- append(sim.data0, sim.data1)
+
+  #...................
+  #### Non-Normal Continuous Indicators ####
+
+  }, "nnorm" = {
+
+    # Number of factors
+    n.fac <- .n.factors(model.syntax)
+
+    # Model-implied covariance matrix
+    sigma <- .sim.standardized.matrices(sim.model[[1L]], max.iter = 100L, check = FALSE)$correlations$R |> (\(p) p[seq_len(nrow(p) - n.fac), seq_len(nrow(p) - n.fac)])() |> (\(q) q[order(rownames(q)), order(rownames(q))])()
+
+    # Remove cases with missing on all variables
+    data1 <- data[, colnames(sigma)] |> (\(p) p[rowSums(is.na(p)) != ncol(p), ])()
+
+    # Model-implied mean vector
+    mu <- colMeans(data1, na.rm = TRUE)
+
+    # Set seed
+    if (isTRUE(!is.null(seed))) { set.seed(seed[1L]) }
+
+    # Simulate Level 0 Misspecification Data
+    sim.data0 <- list("Level 0" = misty::boot.bs(sigma = sigma, mu = mu, data = data1, R = nrep, return = "bootsamp"))
+
+    # Simulate Level 1-3 Misspecification Data
+    sim.data1 <- lapply(sim.model[-1L], function(y) misty::boot.bs(sigma = .sim.standardized.matrices(y, max.iter = 100L, check = FALSE)$correlations$R |> (\(p) p[seq_len(nrow(p) - n.fac), seq_len(nrow(p) - n.fac)])() |> (\(q) q[order(rownames(q)), order(rownames(q))])(), mu = mu, data = data1, R = nrep, return = "bootsamp", seed = seed[2]))
+
+    # Append lists
+    sim.data <- append(sim.data0, sim.data1)
+
+  #...................
+  #### Likert-Type Indicators ####
+
+  }, "likert" = {
+
+    # Set seed
+    if (isTRUE(!is.null(seed))) { set.seed(seed[1L]) }
+
+    # Simulate Level 0 Misspecification Data
+    sim.data0 <- list("Level 0" = split(.sim.data.likert(sim.model[[1L]], data = data, n = n, nrep = nrep), f = rep(seq_len(nrep), times = n)))
+
+    # Set seed
+    if (isTRUE(!is.null(seed))) { set.seed(seed[2L]) }
+
+    # Simulate Level 1-3 Misspecification Data
+    sim.data1 <- lapply(sim.model[-1L], function(y) .sim.data.likert(y, data = data, n = n, nrep = nrep)) |> (\(p) lapply(p, function(z) split(z, f = rep(seq_len(nrep), times = n))))()
+
+    # Append lists
+    sim.data <- append(sim.data0, sim.data1)
+
+  #...................
+  #### Categorical Indicators ####
+
+  }, "categ" = {
+
+    # Set seed
+    if (isTRUE(!is.null(seed))) { set.seed(seed[1L]) }
+
+    # Simulate Level 0 Misspecification Data
+    sim.data0 <- list("Level 0" = split(.sim.data.categ(sim.model[[1L]], model.syntax.thres = model.syntax.thres, n = n, nrep = nrep), f = rep(seq_len(nrep), times = n)))
+
+    # Set seed
+    if (isTRUE(!is.null(seed))) { set.seed(seed[2L]) }
+
+    # Simulate Level 1-3 Misspecification Data
+    sim.data1 <- lapply(sim.model[-1L], function(y) .sim.data.categ(y, model.syntax.thres = model.syntax.thres, n = n, nrep = nrep)) |> (\(p) lapply(p, function(z) split(z, f = rep(seq_len(nrep), times = n))))()
+
+    # Append lists
+    sim.data <- append(sim.data0, sim.data1)
+
+  })
+
+  #——————————————————————————————————————
+  ### Estimate Models ####
+
+  #···················
+  #### With Progress Bar ####
+
+  fit.result <- vector(mode = "list", length = length(sim.data))
+  if (isTRUE(progress)) {
+
+    for (i in seq_along(sim.data)) {
+
+      message(paste0(" Simulating Misspecification ", names(sim.data)[i]))
+
+      # Open progress bar
+      progress.bar <- txtProgressBar(min = 1L, max = nrep, initial = 1L, char = "=", width = getOption("width") - 13L, style = 3, file = "")
+
+      for (j in seq_len(nrep)) {
+
+        fit.result[[i]][[j]] <- tryCatch(suppressWarnings(lavaan::fitmeasures(lavaan::cfa(model = model.syntax.free, estimator = estimator, data = sim.data[[i]][[j]],
+                                                                              std.lv = TRUE, ordered = ifelse(type == "categ", TRUE, FALSE),
+                                                                              se = se, warn = FALSE, check.lv.names = FALSE, check.gradient = FALSE,
+                                                                              check.start = FALSE, check.post = FALSE, check.vcov = FALSE, h1 = FALSE,
+                                                                              baseline = FALSE, store.vcov = FALSE, control = list(rel.tol = 0.001)), fit.measures = sim.fit.indices)),
+                                         error = function(y) { return(setNames(rep(NA, times = 4L), sim.fit.indices)) })
+
+        setTxtProgressBar(progress.bar, value = j)
+
+      }
+
+      # Close progress bar
+      close(progress.bar)
+
+    }
+
+  #···················
+  #### Without Progress Bar ####
+
+  } else {
+
+    # Model estimation
+    fit.result <- lapply(sim.data, function(y) lapply(y, function(z) tryCatch(suppressWarnings(lavaan::fitmeasures(lavaan::cfa(model = model.syntax.free, estimator = estimator, data = z, std.lv = TRUE,
+                                                                                                                   se = se, warn = FALSE, check.lv.names = FALSE, check.gradient = FALSE,
+                                                                                                                   check.start = FALSE, check.post = FALSE, check.vcov = FALSE, h1 = FALSE,
+                                                                                                                   baseline = FALSE, store.vcov = FALSE, control = list(rel.tol = 0.001)), fit.measures = sim.fit.indices)),
+                                                                              error = function(y) { return(setNames(rep(NA, times = 4L), sim.fit.indices)) })))
+  }
+
+  # Combine Results
+  sim.result <- setNames(lapply(fit.result, function(y) setNames(as.data.frame(do.call("rbind", y)), nm = c("cfi", "tli", "rmsea", "srmr"))), nm = names(sim.data))
+
+  # Return object
+  return(sim.result)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Function for Rounding Number Within a Character String ####
+
+.chr.round <- function(x, digits) {
+
+  m <- gregexpr("(-)?[[:digit:]]+\\.[[:digit:]]*", x)
+  regmatches(x, m) <- lapply(regmatches(x, m), function(y) round(as.numeric(y), digits = digits))
+
+  return(x)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal functions for the item.nonequi() function ———————————————————————————
 #
 # https://github.com/ddueber/dmacs/blob/master/R/MeasEquiv_EffectSize_Wrappers.R
 #
@@ -7154,7 +8285,7 @@
 # .delta_var
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## Functions for Summary of Measurement Non-Equivalence ####
+## Function for Summary of Measurement Non-Equivalence ####
 #
 # Returns a list of dMACS measurement nonequivalence from Nye and Drasgow (2011)
 
@@ -7214,7 +8345,7 @@
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## Functions for Summary of Measurement Non-Equivalence for a Single Group ####
+## Function for Summary of Measurement Non-Equivalence for a Single Group ####
 #
 # A list of dMACS measurement nonequivalence effects from Nye and Drasgow (2011)
 
@@ -7295,7 +8426,7 @@
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## Functions for Computing dMACS Effect Size for Measurement Non-Equivalence ####
+## Function for Computing dMACS Effect Size for Measurement Non-Equivalence ####
 #
 # Returns dMACS effect size, see equation 3 in Nye & Drasgow (2011).
 
@@ -7345,7 +8476,7 @@
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## Functions for Computing Expected Value of an Indicator ####
+## Function for Computing Expected Value of an Indicator ####
 #
 # Returns the expected value of an indicator given item parameters and factor value
 
@@ -7379,7 +8510,7 @@
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## Functions for Computing Expected Bias to the Item Mean ####
+## Function for Computing Expected Bias to the Item Mean ####
 #
 # Returns the expected bias in the item mean due to measurement non-equivalence
 # in equation 4 of Nye & Drasgow (2011).
@@ -7411,7 +8542,7 @@
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## Functions for Computing Expected Bias to the Total Score Variance ####
+## Function for Computing Expected Bias to the Total Score Variance ####
 #
 # Returns the expected bias in the total score variance due to measurement non-equivalence
 # in equation 7, 8, and 9 of Nye & Drasgow (2011).
@@ -7437,7 +8568,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the mplus.print() function ----------------------------
+# Internal functions for the mplus.print() function ————————————————————————————
 #
 # - .section.ind.from.to
 
@@ -7466,7 +8597,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the mplus.lca.summa() function ------------------------
+# Internal functions for the mplus.lca.summa() function ————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Functions for Extracting Results ####
@@ -7732,7 +8863,7 @@
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the mplus.run() function ------------------------------
+# Internal functions for the mplus.run() function ——————————————————————————————
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Functions to identify the operating system ####
@@ -8078,8 +9209,8 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the mplus() and mplus.update() function ---------------
-#                        the blimp() and blimp.update() function ---------------
+# Internal functions for the mplus() and mplus.update() function ———————————————
+#                        the blimp() and blimp.update() function ———————————————
 #
 # - .extract.section
 
@@ -8145,7 +9276,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the multilevel.r2() function ---------------------------
+# Internal functions for the multilevel.r2() function ——————————————————————————
 #
 # - .variable.section
 # - .r2mlm
@@ -8794,7 +9925,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the mplus.update() function ---------------------------
+# Internal functions for the mplus.update() function ———————————————————————————
 #
 # - .variable.section
 
@@ -8842,7 +9973,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the na.auxiliary() function --------------------------------
+# Internal functions for the na.auxiliary() function ———————————————————————————
 
 .cohens.d.na.auxiliary <- function(formula, data, weighted = TRUE, correct = FALSE) {
 
@@ -8933,7 +10064,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the multilevel.omega() function -----------------------
+# Internal functions for the multilevel.omega() function ———————————————————————
 #
 # - .internal.mvrnorm
 
@@ -8968,7 +10099,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the multilevel.r2() function --------------------------
+# Internal functions for the multilevel.r2() function ——————————————————————————
 # - .var.random
 
 ### Modified Function from the MuMIn Package ####
@@ -8997,7 +10128,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the na.test() function --------------------------------
+# Internal functions for the na.test() function ————————————————————————————————
 #
 # - .LittleMCAR
 # - .TestMCARNormality
@@ -10127,7 +11258,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the print.misty.object() function ---------------------
+# Internal functions for the print.misty.object() function —————————————————————
 #
 # - .write.table
 
@@ -10136,7 +11267,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
   # Data frame
   print.object <- as.data.frame(print.object)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Markdown knitr Engine Not in Progress ####
 
   if (isTRUE(is.null(getOption("knitr.in.progress")) && horiz)) {
@@ -10144,7 +11275,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
     # Header
     write.table(print.object[seq_len(line), , drop = FALSE], quote = FALSE, row.names = FALSE, col.names = FALSE)
 
-    #...................
+    #——————————————————————————————————————
     ### Grouping Variable ####
 
     if (isTRUE(group)) {
@@ -10159,22 +11290,23 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 
         })()
 
-    #...................
+    #——————————————————————————————————————
     ### No Grouping Variable ####
+
     } else {
 
       # Horizontal line
       cat(paste(rep(" ", times = left), collapse = ""), paste(rep("\u2500", times = sum(nchar(print.object[max(seq_len(line)), ])) + length(print.object[max(seq_len(line)), ]) - right), collapse = ""), "\n")
 
       # Output not including 'Total'
-      if (isTRUE(all(misty::chr.trim(print.object[, 1]) != "Total"))) {
+      if (isTRUE(all(misty::chr.trim(print.object[, 1L]) != "Total") && (if (isTRUE(misty::chr.trim(print.object[1L, 2L]) == "Source")) { all(misty::chr.trim(print.object[, 2L]) != "Total") } else { TRUE }))) {
 
         write.table(print.object[-seq_len(line), ], quote = FALSE, row.names = FALSE, col.names = FALSE)
 
-      # Output including 'Total', i.e., crosstab(), dominance.manual(), and dominance() functions
+      # Output including 'Total', e.g, crosstab(), dominance.manual(), and dominance() functions
       } else {
 
-        (which(misty::chr.trim(print.object[, 1]) == "Total") - 1L) |>
+        (which(misty::chr.trim(print.object[, ifelse(isTRUE(misty::chr.trim(print.object[1L, 2L]) != "Source"), 1L, 2L)]) == "Total") - 1L) |>
           (\(p) {
 
             write.table(print.object[(max(seq_len(line)) + 1L):p, ], quote = FALSE, row.names = FALSE, col.names = FALSE)
@@ -10190,7 +11322,7 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 
     }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Markdown knitr Engine in Progress ####
 
   } else {
@@ -10201,10 +11333,11 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 
 }
 
+
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Internal functions for the robust.coef() function ----------------------------
+# Internal functions for the robust.coef() function ————————————————————————————
 #
 # - .sandw
 # - .coeftest
@@ -10578,7 +11711,406 @@ splitFilePath <- function(filepath, normalize = FALSE) {
 #_______________________________________________________________________________
 #_______________________________________________________________________________
 #
-# Write Results ----------------------------------------------------------------
+# Internal functions for the sim.lavaan() function —————————————————————————————
+#
+# https://github.com/wjschne/simstandard/blob/main/R/main.R
+#
+# .sim.standardized.matrices
+# .str.affix
+# .fixed2free
+#
+# https://github.com/cran/mvtnorm/blob/master/R/mvnorm.R
+#
+# .rmvnorm
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Functions for Returning Model Characteristics ####
+
+.sim.standardized.matrices <- function(model, max.iter = max.iter, check = check) {
+
+  #——————————————————————————————————————
+  ### Parameter Table ####
+
+  pt <- lavaan::lavParTable(model, fixed.x = FALSE)
+
+  #——————————————————————————————————————
+  ### Checks ####
+
+  if (isTRUE(check)) {
+
+    # Check for formative variables
+    if (isTRUE(any(pt$op == "<~"))) { stop("Formative variables (defined with <~) are not allowed for this function.", call. = FALSE) }
+
+    # Check for user-set variances
+    if (isTRUE(any((pt$user != 0L) & (pt$lhs == pt$rhs) & (pt$op == "~~")))) {
+
+      pt_manual_var <- pt[(pt$user != 0L) & (pt$lhs == pt$rhs) & (pt$op == "~~"), ]
+      pt_manual_rows <- paste0(pt_manual_var$lhs, " ", pt_manual_var$op, " ", ifelse(is.na(pt_manual_var$ustart), "", paste0(pt_manual_var$ustart, " * ")), pt_manual_var$rhs, collapse = "\n")
+
+      stop(paste0("All variances are set automatically to create standardized data.", " You may not set variances manually. ", ifelse(nrow(pt_manual_var) > 1L, "Remove the following parameters:\n", "Remove the following parameter:\n"), pt_manual_rows), call. = FALSE)
+
+    }
+
+    # Check for unset paths and covariances
+    if (isTRUE(any(pt$free == 1L, na.rm = TRUE))) {
+
+      pt_unset <- pt[pt$free == 1L, ]
+      pt_unset_rows <- paste0(pt_unset$lhs, " ", pt_unset$op, " ", pt_unset$rhs, collapse = "\n")
+
+      warning(paste0(ifelse(nrow(pt_unset) > 1L, paste0("Because the following relations were not set, ", "they are assumed to be 0:\n"), paste0("Because the following relationship was not set, ", "it is assumed to be 0:\n")), pt_unset_rows), call. = FALSE)
+
+    }
+
+    # Check for paths greater than 1
+    if (isTRUE(any(abs(pt$ustart) > 1L, na.rm = TRUE))) {
+
+      pt_greater <- pt[abs(pt$ustart) > 1L, ]
+      pt_greater_rows <- paste0(pt_greater$lhs, " ", pt_greater$op, " ", pt_greater$ustart, " * ", pt_greater$rhs, collapse = "\n" )
+
+      warning(paste0("It is possible to set standardized parameters ",
+                     "greater than 1 or less than -1, but this may causes model convergence problems. ",
+                     "Check to make sure you set such a value on purpose. ",
+                     ifelse(nrow(pt_greater) > 1L, "The following paths were set to values outside the range of -1 to 1:\n", "The following path was set to a value outside the range of -1 to 1:\n"), pt_greater_rows), call. = FALSE)
+
+    }
+
+  }
+
+  #——————————————————————————————————————
+  ### Variable Names ####
+
+  v_all <- unique(c(pt$lhs, pt$rhs))
+  v_latent <- unique(pt$lhs[pt$op == "=~"])
+  v_observed <- v_all[!(v_all %in% v_latent)]
+  v_indicator <- unique(pt$rhs[pt$op == "=~"])
+  v_y <- unique(pt$lhs[pt$op == "~"])
+  v_latent_endogenous <- v_latent[(v_latent %in% v_y) | (v_latent %in% v_indicator)]
+  v_latent_exogenous <- v_latent[!(v_latent %in% v_latent_endogenous)]
+
+  v_observed_endogenous <- v_observed[v_observed %in% v_y | v_observed %in% v_indicator]
+  v_observed_exogenous <- v_observed[!v_observed %in% v_observed_endogenous]
+  v_observed_indicator <- v_observed[v_observed %in% v_indicator]
+  v_latent_indicator <- v_latent[v_latent %in% v_indicator]
+  v_observed_y <- v_observed_endogenous[!(v_observed_endogenous %in% v_observed_indicator)]
+  v_order <- c(v_observed, v_latent)
+
+  v_error_y <- .str.affix(v_observed_y, prefix = "e_")
+  v_disturbance <- .str.affix(v_latent_endogenous, prefix = "d_")
+  v_error <- .str.affix(v_observed_endogenous, prefix = "e_")
+  v_exogenous <- c(v_latent_exogenous, v_observed_exogenous)
+  v_endogenous <- c(v_latent_endogenous, v_observed_endogenous)
+  v_residual <- c(v_disturbance, v_error)
+  v_ellipse <- c(v_latent, v_residual)
+  v_source <- c(v_exogenous, v_residual)
+  v_factor_score <- v_ellipse[!(v_ellipse %in% v_error_y)]
+  v_FS <- .str.affix(v_factor_score, suffix = "_FS")
+
+  # Set unspecified parameters to 0
+  pt[is.na(pt[, "ustart"]), "ustart"] <- 0L
+
+  #——————————————————————————————————————
+  ### Make RAM Matrices ####
+
+  # Names for A, S and new S matrices
+  vS <- vA <- c(v_endogenous, v_exogenous)
+
+  # Number of Variables
+  k <- length(vA)
+
+  # Initialize A matrix and exogenous correlation matrix
+  exo_cor <- A <- matrix(0L, k, k, dimnames = list(vA, vA))
+
+  # Assign loadings to A
+  for (i in pt[pt[, "op"] == "=~", "id"]) { A[pt$rhs[i], pt$lhs[i]] <- pt$ustart[i] }
+
+  # Assign regressions to A
+  for (i in pt[pt[, "op"] == "~", "id"]) { A[pt$lhs[i], pt$rhs[i]] <- pt$ustart[i] }
+
+  # Assign correlations to exo_cor
+  diag(exo_cor) <- 1L
+  for (i in pt[(pt[, "op"] == "~~") & pt$lhs != pt$rhs, "id"]) {
+
+    exo_cor[pt$lhs[i], pt$rhs[i]] <- pt$ustart[i]
+    exo_cor[pt$rhs[i], pt$lhs[i]] <- pt$ustart[i]
+
+  }
+
+  #——————————————————————————————————————
+  ### Solving for Error Variances and Correlation Matrix ####
+
+  # Column of k ones
+  v1 <- matrix(1L, k)
+
+  # Initial estimate of error variances
+  varS <- as.vector(v1 - (A * A) %*% v1)
+  S <- diag(varS) %*% exo_cor %*% diag(varS)
+
+  # Initial estimate of the correlation matrix
+  iA <- solve(diag(k) - A)
+  R <- iA %*% S %*% t(iA)
+
+  # Set interaction count at 0
+  iterations <- 0L
+
+  # Find values for S matrix
+  while ((round(sum(diag(R)), digits = 10) != k) * (iterations < max.iter)) {
+
+    R <- iA %*% S %*% t(iA)
+    sdS <- diag(diag(S) ^ 0.5)
+    S <- diag(diag(diag(k) - R)) + (sdS %*% exo_cor %*% sdS)
+    diag(S)[diag(S) < 0] <- 0.00000001
+    iterations <- iterations + 1L
+
+  }
+
+  if (iterations >= max.iter) { stop(paste0("Model did not converge after ", max.iter, " iterations because at least one variable had a negative variance: ", paste0(colnames(A)[(diag(S) == 0.00000001)], collapse = ", ")), call. = FALSE) }
+
+  dimnames(S) <- dimnames(A)
+
+  # Filter Matrix
+  filter_matrix <- diag((vA %in% v_observed) * 1L)
+  dimnames(filter_matrix) <- dimnames(A)
+
+  # Big Matrices----
+
+  A_residual_diag <- sqrt(diag(S[v_endogenous, v_endogenous, drop = FALSE]))
+  if (isTRUE(length(A_residual_diag) > 1L)) {
+
+    A_residual <- diag(A_residual_diag)
+
+  } else {
+
+    if (length(A_residual_diag) == 1) {
+
+      A_residual <- matrix(A_residual_diag, nrow = 1L, ncol = 1L)
+
+    } else {
+
+      A_residual <- matrix(nrow = 0L, ncol = 0L)
+
+    }
+
+  }
+
+  A_big <- rbind(cbind(A[v_endogenous, , drop = FALSE], A_residual), matrix(0L, nrow = nrow(A), ncol = nrow(A) + length(v_residual)))
+  v_big <- c(vA, v_residual)
+  dimnames(A_big) <- list(v_big, v_big)
+
+  # Initialize S_big
+  S_big <- matrix(0L, nrow = length(v_big), ncol = length(v_big), dimnames = dimnames(A_big) )
+
+  # Insert off-diagonal values of S into S_big
+  S_big[v_source, v_source] <- exo_cor[c(v_exogenous, v_endogenous), c(v_exogenous, v_endogenous), drop = FALSE]
+
+  # Insert diagonal values of S_big
+  diag(S_big) <- c(rep(0L, length(v_endogenous)), rep(1L, length(v_exogenous) + length(v_residual)))
+
+  # Compute big correlation matrix of all variables
+  iA_big <- solve(diag(nrow(A_big)) - A_big)
+  R_big <- iA_big %*% S_big %*% t(iA_big)
+
+  R_xx <- R_big[v_observed_indicator, v_observed_indicator, drop = FALSE]
+  R_xy <- R_big[v_observed_indicator, v_factor_score, drop = FALSE]
+
+  #——————————————————————————————————————
+  ### Factor and Composite Scores ####
+
+  if (isTRUE(length(v_observed_indicator) > 0L)) {
+
+    i_Rxx <- solve(R_xx)
+
+    A_factor_score <- i_Rxx %*% R_xy
+
+    colnames(A_factor_score) <- v_factor_score
+
+    if (isTRUE(length(v_latent) > 0L)) {
+
+      v_composite_score <- paste0(v_latent, "_Composite")
+
+    } else {
+
+      v_composite_score <- character(0L)
+
+    }
+
+    # Matrix of which observed variables are summed to create composite scores for each latent variable
+    A_composite <- matrix(0L, nrow =  length(v_observed_indicator), ncol = length(v_latent), dimnames = list(v_observed_indicator, v_latent))
+
+    find_observed_indicators <- function(v) {
+
+      indicators <- pt[pt[,"op"] == "=~" & pt[,"lhs"] == v, "rhs"]
+      observed_indicators <- indicators[indicators %in% v_observed_indicator]
+      latent_indicators <- indicators[indicators %in% v_latent]
+
+      if (length(latent_indicators > 0)) {
+
+        for (li in latent_indicators) {
+
+          observed_indicators <- c(observed_indicators,find_observed_indicators(li))
+
+        }
+
+      }
+
+      unique(observed_indicators)
+
+    }
+
+    for (v in v_latent) {
+
+      which_indicators <- find_observed_indicators(v)
+      A_composite[which_indicators, v] <- sign(R_big[which_indicators, v])
+
+    }
+
+    CM_composite <- t(A_composite) %*% R[v_observed_indicator, v_observed_indicator, drop = FALSE] %*% A_composite
+
+    A_composite_w <- A_composite %*% diag(diag(CM_composite) ^ -0.5, nrow = nrow(CM_composite))
+
+    colnames(A_composite_w) <- v_composite_score
+
+    colnames(A_factor_score) <- v_FS
+
+    # Factor weights
+    fw <- cbind(A_factor_score, A_composite_w)
+    W <- matrix(0L, nrow = nrow(A_big), ncol = nrow(A_big) + ncol(fw), dimnames = list(rownames(A_big), c(rownames(A_big), colnames(fw))))
+
+    diag(W) <- 1L
+
+    W[rownames(fw), colnames(fw)] <- fw
+
+    # Grand correlation matrix of all variables
+    R_all <- stats::cov2cor(t(W) %*% R_big %*% W)
+
+    v_order_all <- c(v_order, v_residual, v_FS, v_composite_score)
+
+    R_all <- R_all[v_order_all, v_order_all]
+
+  } else {
+
+    R_all <- R_big
+    A_factor_score <- NULL
+    A_composite_w <- NULL
+    v_FS <- character(0L)
+    v_composite_score <- character(0L)
+
+  }
+
+  # Make complete lavaan model syntax
+  lavaan_variances <- paste0(v_order, " ~~ ", diag(S[v_order, v_order]), " * ", v_order, collapse = "\n")
+
+  # Factor Score Validity
+  factor_score_validity <- diag(R_all[v_FS, v_factor_score, drop = FALSE])
+  names(factor_score_validity) <- v_FS
+  factor_score_se <- sqrt(1 - factor_score_validity^2L)
+
+  # Composite Score Validity
+  composite_score_validity <- diag(R_all[v_latent, v_composite_score, drop = FALSE])
+  names(composite_score_validity) <- v_composite_score
+
+  #——————————————————————————————————————
+  ### Return Object ####
+
+  l_names <- list(v_observed = v_observed,
+                  v_latent = v_latent,
+                  v_latent_exogenous = v_latent_exogenous,
+                  v_latent_endogenous = v_latent_endogenous,
+                  v_observed_exogenous = v_observed_exogenous,
+                  v_observed_endogenous = v_observed_endogenous,
+                  v_observed_indicator = v_observed_indicator,
+                  v_disturbance = v_disturbance,
+                  v_error = v_error,
+                  v_residual = v_residual,
+                  v_factor_score = .str.affix(v_latent, suffix = "_FS"),
+                  v_factor_score_disturbance = .str.affix(v_disturbance, suffix = "_FS"),
+                  v_factor_score_error = .str.affix(v_error, suffix = "_FS"),
+                  v_composite_score = v_composite_score)
+
+  object <- list(RAM_matrices = list(A = A[v_order, v_order], S = S[v_order, v_order], filter_matrix = filter_matrix[v_order, v_order], iA = iA[v_order, v_order]),
+                 correlations = list(R = R[v_order, v_order], R_all = R_all),
+                 coefficients = list(factor_score = A_factor_score,
+                                     factor_score_validity = factor_score_validity,
+                                     factor_score_se = factor_score_se,
+                                     composite_score = A_composite_w,
+                                     composite_score_validity = composite_score_validity),
+                 lavaan_models = list(model_without_variances = model,
+                                      model_with_variances = paste0(model, "\n# Variances\n", lavaan_variances),
+                                      model_free = .fixed2free(model)),
+                 v_names = l_names, iterations = iterations)
+
+  return(object)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Functions for Affix a Prefix and/or Suffix to a Vector ####
+
+.str.affix <- function(x, prefix = "", suffix = "", ...) {
+
+  if (isTRUE(length(x) == 0L)) { return(character(0)) }
+
+  return(paste0(prefix, x, suffix, ...))
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Functions for Removing Fixed Parameters from a lavaan Model ####
+
+.fixed2free <- function(model) {
+
+  model <- sapply(lavaan::lavaanify(model, fixed.x = FALSE) |> (\(p) p[p$lhs != p$rhs, ])() |>
+                    (\(q) data.frame(split = factor(paste(q$lhs, q$op), levels = unique(paste(q$lhs, q$op))), q))() |>
+                    (\(r) split(r, f = (r$split)))(), function(y) { paste(y$rhs, collapse = " + ") }) |>
+    (\(s) paste(paste(names(s), s), collapse = "\n"))()
+
+  return(model)
+
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Functions for Random Number Generator for the Multivariate Normal Distribution ####
+
+.rmvnorm <- function(n, mean = rep(0L, nrow(sigma)), sigma = diag(length(mean)),
+                     method = c("eigen", "svd", "chol"), pre0.9_9994 = FALSE, checkSymmetry = FALSE,
+                     rnorm = stats::rnorm) {
+
+  if (isTRUE(checkSymmetry && !isSymmetric(sigma, tol = sqrt(.Machine$double.eps), check.attributes = FALSE))) { stop("Sigma must be a symmetric matrix", call. = FALSE) }
+
+  if (isTRUE(length(mean) != nrow(sigma))) { stop("Mean and sigma have non-conforming size", call. = FALSE) }
+
+  method <- match.arg(method)
+
+  R <- switch(method, "eigen" = {
+
+    ev <- eigen(sigma, symmetric = TRUE)
+    if (isTRUE(!all(ev$values >= -sqrt(.Machine$double.eps) * abs(ev$values[1L])))) { warning("sigma is numerically not positive semidefinite", call. = FALSE) }
+
+    t(ev$vectors %*% (t(ev$vectors) * sqrt(pmax(ev$values, 0L))))
+
+  }, "svd" = {
+
+    s. <- svd(sigma)
+    if (isTRUE(!all(s.$d >= -sqrt(.Machine$double.eps) * abs(s.$d[1L])))) { warning("sigma is numerically not positive semidefinite", call. = FALSE) }
+
+    t(s.$v %*% (t(s.$u) * sqrt(pmax(s.$d, 0L))))
+
+  }, "chol" = {
+
+    chol(sigma, pivot = TRUE) |> (\(p) p[, order(attr(p, "pivot"))])()
+
+  })
+
+  retval <- sweep(matrix(rnorm(n * ncol(sigma)), nrow = n, byrow = !pre0.9_9994) %*% R, 2L, mean, "+")
+  colnames(retval) <- names(mean)
+
+  return(retval)
+
+}
+
+#_______________________________________________________________________________
+#_______________________________________________________________________________
+#
+# Internal Function for Writing Results ————————————————————————————————————————
 
 .write.result <- function(object, write, append) {
 

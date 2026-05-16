@@ -50,13 +50,13 @@ This function writes the results of a \code{misty.object}) into an Excel file.
 }
 \details{
 Currently the function supports result objects from the following functions:
-\code{\link{blimp.bayes}}, \code{\link{ci.cor}}, \code{\link{ci.mean}},
-\code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
+\code{\link{blimp.bayes}}, \code{\link{boot.bs}},\code{\link{ci.cor}},
+\code{\link{ci.mean}}, \code{\link{ci.median}}, \code{\link{ci.prop}}, \code{\link{ci.var}},
 \code{\link{ci.sd}}, \code{\link{coeff.robust}}, \code{\link{coeff.std}},
 \code{\link{cor.matrix}}, \code{\link{crosstab}}, \code{\link{descript}},
 \code{\link{difftest.chibarsq}}, \code{\link{dominance.manual}}, \code{\link{dominance}},
 \code{\link{effsize}}, \code{\link{freq}}, \code{\link{item.alpha}},
-\code{\link{item.cfa}}, \code{\link{item.invar}}, \code{\link{item.omega}},
+\code{\link{item.cfa}}, \code{\link{item.dfi}} \code{\link{item.invar}}, \code{\link{item.omega}},
 \code{\link{mplus.bayes}}, \code{\link{multilevel.cfa}}, \code{\link{multilevel.cor}},
 \code{\link{multilevel.descript}}, \code{\link{multilevel.fit}},
 \code{\link{multilevel.invar}}, \code{\link{item.noninvar}},
@@ -67,7 +67,7 @@ Currently the function supports result objects from the following functions:
 }
 \examples{
 \dontrun{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1: item.cfa() function
 
 # Load data set "HolzingerSwineford1939" in the lavaan package
@@ -76,7 +76,7 @@ data("HolzingerSwineford1939", package = "lavaan")
 result <- item.cfa(HolzingerSwineford1939[, c("x1", "x2", "x3")], output = FALSE)
 write.result(result, "CFA.xlsx")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 2: multilevel.descript() function
 
 # Load data set "Demo.twolevel" in the lavaan package

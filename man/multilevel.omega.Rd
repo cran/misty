@@ -137,7 +137,7 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012). The internal func
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Cluster variable specification
 
 # Example 1a: Specification using the argument '...'
@@ -149,7 +149,7 @@ multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4", "cluster")], cluster 
 # Example 1b: Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.omega(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Type of construct
 
 # Example 2a: Within-Cluster Construct
@@ -162,7 +162,7 @@ multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "sh
 # Example 2c: Configural Construct
 multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "config")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Residual covariance at the Within level and residual variance at the Between level
 
 # Example 3a: Residual covariance between "y4" and "y5" at the Within level
@@ -173,7 +173,7 @@ multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "co
 multilevel.omega(Demo.twolevel, y1, y2, y3, y4, cluster = "cluster", const = "config",
                  fix.resid = c("y1", "y2"), digits = 3)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write results
 
 # Example 4a: Write results into a text file

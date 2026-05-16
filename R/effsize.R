@@ -136,7 +136,7 @@
 #' # Example 7a: Write Results into a text file
 #' effsize(mtcars, cyl, vs:carb, write = "Cramer.txt")
 #'
-#' # Example 7b: Write Results into a Excel file
+#' # Example 7b: Write Results into an Excel file
 #' effsize(mtcars, cyl, vs:carb, write = "Cramer.xlsx")
 effsize <- function(data, ..., type = c("phi", "cramer", "tschuprow", "cont", "w", "fei"),
                     alternative = c("two.sided", "less", "greater"), conf.level = 0.95,

@@ -127,206 +127,22 @@
 #'                          \code{"boot"} for displaying bootstrap samples with
 #'                          histograms and density curves when the argument
 #'                          \code{"boot"} is other than \code{"none"}.
-#' @param point.size        a numeric value indicating the \code{size} argument
-#'                          in the \code{geom_point} function for controlling the
-#'                          size of points when plotting confidence intervals
-#'                          (\code{plot = "ci"}).
-#' @param point.shape       a numeric value between 0 and 25 or a character string
-#'                          as plotting symbol indicating the \code{shape} argument
-#'                          in the \code{geom_point} function for controlling the
-#'                          symbols of points. when plotting confidence intervals
-#'                          (\code{plot = "ci"}).
-#' @param errorbar.width    a numeric value indicating the \code{width} argument
-#'                          in the \code{geom_errorbar} function for controlling
-#'                          the width of the whiskers in the \code{geom_errorbar}
-#'                          function when plotting confidence intervals
-#'                          (\code{plot = "ci"}).
-#' @param dodge.width       a numeric value indicating the \code{width} argument
-#'                          controlling the width of the \code{geom} elements to
-#'                          be dodged when specifying a grouping variable using
-#'                          the argument \code{group} when plotting confidence
-#'                          intervals (\code{plot = "ci"}).
 #' @param hist              logical: if \code{TRUE} (default), histograms are
 #'                          drawn when plotting bootstrap samples (\code{plot = "boot"}).
-#' @param binwidth          a numeric value or a function for specifying the
-#'                          \code{binwidth} argument in the \code{geom_histogram}
-#'                          function for controlling the width of the bins when
-#'                          plotting bootstrap samples (\code{plot = "boot"}).
-#' @param bins              a numeric value for specifying the \code{bins} argument
-#'                          in the \code{geom_histogram} function for controlling
-#'                          the number of bins when plotting bootstrap samples
-#'                          (\code{plot = "boot"}).
-#' @param hist.alpha        a numeric value between 0 and 1 for specifying the
-#'                          \code{alpha} argument in the \code{geom_histogram}
-#'                          function for controlling the opacity of the bars
-#'                          when plotting bootstrap samples (\code{plot = "boot"}).
-#' @param fill              a character string specifying the \code{fill} argument
-#'                          in the \code{geom_histogram} function controlling the
-#'                          fill aesthetic when plotting bootstrap samples
-#'                          (\code{plot = "boot"}). Note that this argument applied
-#'                          only when no grouping variable was specified
-#'                          \code{group = NULL}.
 #' @param density           logical: if \code{TRUE} (default), density curves are
 #'                          drawn when plotting bootstrap samples
-#'                          (\code{plot = "boot"}).
-#' @param density.col       a character string specifying the \code{color} argument
-#'                          in the \code{geom_density} function controlling the
-#'                          color of the density curves when plotting bootstrap samples
-#'                          (\code{plot = "boot"}). Note that this argument applied
-#'                          only when no grouping variable was specified
-#'                          \code{group = NULL}.
-#' @param density.linewidth a numeric value specifying the \code{linewidth}
-#'                          argument in the \code{geom_density} function controlling
-#'                          the line width of the density curves when plotting
-#'                          bootstrap samples (\code{plot = "boot"}).
-#' @param density.linetype  a numeric value or character string specifying the
-#'                          \code{linetype} argument in the \code{geom_density}
-#'                          function controlling the line type of the density
-#'                          curves when plotting bootstrap samples
 #'                          (\code{plot = "boot"}).
 #' @param point             logical: if \code{TRUE} (default), vertical lines
 #'                          representing the point estimate of the correlation
 #'                          coefficients are drawn when plotting bootstrap samples
 #'                          (\code{plot = "boot"}).
-#' @param point.col         a character string specifying the \code{color} argument
-#'                          in the \code{geom_vline} function for controlling the
-#'                          color of the vertical line displaying the correlation
-#'                          coefficient when plotting bootstrap samples
-#'                          (\code{plot = "boot"}). Note that this argument applied
-#'                          only when no grouping variable was specified
-#'                          \code{group = NULL}.
-#' @param point.linewidth   a numeric value specifying the \code{linewdith} argument
-#'                          in the \code{geom_vline} function for controlling the
-#'                          line width of the vertical line displaying the
-#'                          correlation coefficient when plotting bootstrap samples
-#'                          (\code{plot = "boot"}).
-#' @param point.linetype    a numeric value or character string specifying the
-#'                          \code{linetype} argument in the \code{geom_vline}
-#'                          function controlling the line type of the vertical
-#'                          line displaying the correlation  coefficient when
-#'                          plotting bootstrap samples (\code{plot = "boot"}).
 #' @param ci                logical: if \code{TRUE} (default), vertical lines
 #'                          representing the bootstrap confidence intervals of
 #'                          the correlation coefficient are drawn when plotting
 #'                          bootstrap samples (\code{plot = "boot"}).
-#' @param ci.col            character string specifying the \code{color} argument
-#'                          in the \code{geom_vline} function for controlling the
-#'                          color of the vertical line displaying bootstrap
-#'                          confidence intervals when plotting bootstrap samples
-#'                          (\code{plot = "boot"}). Note that this argument applied
-#'                          only when no grouping variable was specified
-#'                          \code{group = NULL}.
-#' @param c.linewidth       a numeric value specifying the \code{linewdith} argument
-#'                          in the \code{geom_vline} function for controlling the
-#'                          line width of the vertical line displaying bootstrap
-#'                          confidence intervals when plotting bootstrap samples
-#'                          (\code{plot = "boot"}).
-#' @param ci.linetype       a numeric value or character string specifying the
-#'                          \code{linetype} argument in the \code{geom_vline}
-#'                          function controlling the line type of the vertical
-#'                          line displaying bootstrap confidence intervals when
-#'                          plotting bootstrap samples (\code{plot = "boot"}).
 #' @param line              logical: if \code{TRUE} (default), a horizontal line
 #'                          is drawn when \code{plot = "ci"} or a vertical line
-#'                          is drawn when \code{plot = "boot"}
-#' @param intercept         a numeric value indicating the \code{yintercept} or
-#'                          \code{xintercept} argument in the \code{geom_hline}
-#'                          or \code{geom_vline} function controlling the position
-#'                          of the horizontal or vertical line when \code{plot = "ci"}
-#'                          and \code{line = TRUE} or when \code{plot = "boot"}
-#'                          and \code{line = TRUE}. By default, the horizontal or
-#'                          vertical line is drawn at 0.
-#' @param linetype          a character string indicating the \code{linetype}
-#'                          argument in the \code{geom_hline} or \code{geom_vline}
-#'                          function controlling the line type of the horizontal
-#'                          or vertical line (default is \code{linetype = "dashed"}).
-#' @param line.col          a character string indicating the \code{color} argument
-#'                          in the \code{geom_hline} or \code{geom_vline} function
-#'                          for controlling the color of the horizontal or vertical
-#'                          line.
-#' @param xlab              a character string indicating the \code{name} argument
-#'                          in the \code{scale_x_continuous} function for labeling
-#'                          the x-axis. The default setting is \code{xlab = NULL}
-#'                          when \code{plot = "ci"} and \code{xlab = "Correlation Coefficient"}
-#'                          when \code{plot = "boot"}.
-#' @param ylab              a character string indicating the \code{name} argument
-#'                          in the \code{scale_y_continuous} function for labeling
-#'                          the y-axis. The default setting is \code{ylab = "Correlation Coefficient"}
-#'                          when \code{plot = "ci"} and \code{ylab = "Probability Density, f(x)"}
-#'                          when \code{plot = "boot"}.
-#' @param xlim              a numeric vector with two elements indicating the
-#'                          \code{limits} argument in the \code{scale_x_continuous}
-#'                          function for controlling the scale range of the x-axis.
-#'                          The default setting is \code{xlim = NULL}
-#'                          when \code{plot = "ci"} and \code{xlim = c(-1, 1)}
-#'                          when \code{plot = "boot"}.
-#' @param ylim              a numeric vector with two elements indicating the
-#'                          \code{limits} argument in the \code{scale_y_continuous}
-#'                          function for controlling the scale range of the y-axis.
-#'                          The default setting is \code{ylim = c(-1, 1)} when
-#'                          \code{plot = "ci"} and \code{xlim = NULL} when
-#'                          \code{plot = "boot"}.
-#' @param xbreaks           a numeric vector indicating the \code{breaks} argument
-#'                          in the \code{scale_x_continuous} function for controlling
-#'                          the x-axis breaks.
-#' @param ybreaks           a numeric vector indicating the \code{breaks} argument
-#'                          in the \code{scale_y_continuous} function for controlling
-#'                          the y-axis breaks.
-#' @param axis.title.size   a numeric value indicating the \code{size} argument
-#'                          in the \code{element_text} function for specifying the
-#'                          function controlling the font size of the axis title,
-#'                          i.e., \code{theme(axis.title = element_text(size = axis.text.size))}.
-#' @param axis.text.size    a numeric value indicating the \code{size} argument
-#'                          in the \code{element_text} function for specifying the
-#'                          function controlling the font size of the axis text,
-#'                          i.e., \code{theme(axis.text = element_text(size = axis.text.size))}.
-#' @param strip.text.size   a numeric value indicating the \code{size} argument
-#'                          in the \code{element_text} function for specifying the
-#'                          function controlling the font size of the strip text,
-#'                          i.e., \code{theme(strip.text = element_text(size = strip.text.size))}.
-#' @param title             a character string indicating the \code{title} argument
-#'                          in the \code{labs} function for the subtitle of the plot.
-#' @param subtitle          a character string indicating the \code{subtite} argument
-#'                          in the \code{labs} function for the subtitle of the plot.
-#' @param group.col         a character vector indicating the \code{color} argument
-#'                          in the \code{scale_color_manual} and \code{scale_fill_manual}
-#'                          functions when specifying a grouping variable using
-#'                          the argument \code{group}.
-#' @param plot.margin       a numeric vector with four elements indicating the
-#'                          \code{plot.margin} argument in the \code{theme} function
-#'                          controlling the plot margins . The default setting
-#'                          is \code{c(5.5, 5.5, 5.5, 5.5)}, but switches
-#'                          to \code{c(5.5, 5.5, -2.5, 5.5)} when specifying a
-#'                          grouping variable using the argument \code{group}.
-#' @param legend.title      a character string indicating the \code{color} argument
-#'                          in the \code{labs} function for specifying the legend
-#'                          title when specifying a grouping variable using the
-#'                          argument \code{group}.
-#' @param legend.position   a character string indicating the \code{legend.position}
-#'                          in the \code{theme} argument for controlling the
-#'                          position of the legend  function when specifying a
-#'                          grouping variable using the argument \code{group}.
-#'                          By default, the legend is placed at the bottom the
-#'                          plot.
-#' @param legend.box.margin a numeric vector with four elements indicating the
-#'                          \code{legend.box.margin} argument in the \code{theme}
-#'                          function for controlling the margins around the full
-#'                          legend area when specifying a grouping variable using
-#'                          the argument \code{group}.
-#' @param facet.ncol        a numeric value indicating the \code{ncol} argument
-#'                          in the \code{facet_wrap} function for controlling
-#'                          the number of columns when specifying a split variable
-#'                          using the argument \code{split}.
-#' @param facet.nrow        a numeric value indicating the \code{nrow} argument
-#'                          in the \code{facet_wrap} function for controlling the
-#'                          number of rows when specifying a split variable using
-#'                          the argument \code{split}.
-#' @param facet.scales      a character string indicating the \code{scales} argument
-#'                          in the \code{facet_wrap} function for controlling the
-#'                          scales shared across facets, i.e., \code{"fixed"},
-#'                          \code{"free_x"}, \code{"free_y"} (default), or
-#'                          \code{"free"} when specifying a split variable using
-#'                          the argument \code{split}.
+#'                          is drawn when \code{plot = "boot"}.
 #' @param filename          a character string indicating the \code{filename}
 #'                          argument including the file extension in the \code{ggsave}
 #'                          function. Note that one of \code{".eps"}, \code{".ps"},
@@ -342,8 +158,6 @@
 #' @param height            a numeric value indicating the \code{height} argument
 #'                          (default is the size of the current graphics device)
 #'                          in the \code{ggsave} function.
-#' @param units             a character string indicating the \code{units} argument
-#'                          (default is \code{in}) in the \code{ggsave} function.
 #' @param dpi               a numeric value indicating the \code{dpi} argument
 #'                          (default is \code{600}) in the \code{ggsave} function.
 #' @param write             a character string naming a file for writing the output
@@ -670,8 +484,8 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
-#' # Pearson product-moment correlation coefficient
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Pearson Product-Moment Correlation Coefficient
 #'
 #' # Example 1a: Approximate distribution method
 #' ci.cor(mtcars, mpg, drat, qsec)
@@ -682,8 +496,8 @@
 #' # Example 1b: Joint moments method
 #' ci.cor(mtcars, mpg, drat, qsec, adjust = "joint")
 #'
-#' #----------------------------------------------------------------------------
-#' # Spearman's rank-order correlation coefficient
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Spearman's Rank-Order Correlation Coefficient
 #'
 #' # Example 2a: Fieller et al. (1957) approximate standard error
 #' ci.cor(mtcars, mpg, drat, qsec, method = "spearman")
@@ -694,7 +508,7 @@
 #' # Example 2c: Rank-based inverse normal (RIN) transformation
 #' ci.cor(mtcars, mpg, drat, qsec, method = "spearman", se = "rin")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Kendall's Tau
 #'
 #' # Example 3a:  Kendall's Tau-b
@@ -704,7 +518,7 @@
 #' ci.cor(mtcars, mpg, drat, qsec, method = "kendall-c")
 #'
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Bootstrap Confidence Interval (CI)
 #'
 #' # Example 4a: Bias-corrected (BC) percentile bootstrap CI
@@ -712,9 +526,9 @@
 #'
 #' # Example 4b: Bias-corrected and accelerated (BCa) bootstrap CI,
 #' # 5000 bootstrap replications, set seed of the pseudo-random number generator
-#' ci.cor(mtcars, mpg, drat, qsec, boot = "bca", R = 5000, seed = 123)
+#' ci.cor(mtcars, mpg, drat, qsec, boot = "bca", R = 5000, seed = 42)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Grouping and Split Variable
 #'
 #' # Example 5a: Grouping variable
@@ -735,16 +549,7 @@
 #' # Alternative specification without using the argument '...'
 #' ci.cor(mtcars[, c("mpg", "drat", "qsec")], group = mtcars$vs, split = mtcars$am)
 #'
-#' #----------------------------------------------------------------------------
-#' # Write Output
-#'
-#' # Example 6a: Text file
-#' ci.cor(mtcars, mpg, drat, qsec, write = "CI_Cor_Text.txt")
-#'
-#' # Example 6b: Excel file
-#' ci.cor(mtcars, mpg, drat, qsec, write = "CI_Cor_Excel.xlsx")
-#'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Plot Confidence Intervals
 #'
 #' # Example 7a: Pearson product-moment correlation coefficient
@@ -756,15 +561,12 @@
 #' # Example 7c: Split variable
 #' ci.cor(mtcars, mpg, drat, qsec, split = "am", plot = "ci")
 #'
-#' # Example 7d: Save plot as PDF file
-#' ci.cor(mtcars, mpg, drat, qsec, plot = "ci", filename = "CI_Cor.pdf",
-#'        width = 8, height = 6)
+#' # Example 7d: Plot results using the plot() function, use additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' object <- ci.cor(mtcars, mpg, drat, qsec, plot = "ci")
+#' plot(object, ybreaks = seq(-1, 1, by = 0.25), title = "Confidence Intervals")
 #'
-#' # Example 7e: Save plot as PNG file
-#' ci.cor(mtcars, mpg, drat, qsec, plot = "ci", filename = "CI_Cor.png",
-#'        width = 8, height = 6)
-#'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Plot Bootstrap Samples
 #'
 #' # Example 8a: Pearson product-moment correlation coefficient
@@ -776,37 +578,33 @@
 #' # Example 8c: Split variable
 #' ci.cor(mtcars, mpg, drat, qsec, split = "am", boot = "bc", plot = "boot")
 #'
-#' # Example 8d: Save plot as PDF file
-#' ci.cor(mpg, drat, qsec, data = mtcars, boot = "bc", plot = "boot",
-#'        filename = "CI_Cor_Boot.pdf", width = 14, height = 9)
+#' # Example 8d: Plot results using the plot() function, use additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' object <- ci.cor(mtcars, mpg, drat, qsec, boot = "bc", plot = "boot")
+#' plot(object, fill = "gray30", title = "Bootstrap Samples")
 #'
-#' # Example 8e: Save plot as PNG file
-#' ci.cor(mtcars, mpg, drat, qsec, boot = "bc", plot = "boot",
-#'        filename = "CI_Cor_Boot.png", width = 14, height = 9)
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Write Results and Save Plot
+#'
+#' # Example 9a: Write results into a text file
+#' ci.cor(mtcars, mpg, drat, qsec, write = "CI_Cor_Text.txt")
+#'
+#' # Example 9b: Write results into an Excel file
+#' ci.cor(mtcars, mpg, drat, qsec, write = "CI_Cor_Excel.xlsx")
+#'
+#' # Example 9c: Save plot as PNG file
+#' ci.cor(mtcars, mpg, drat, qsec, plot = "ci", filename = "CI_Cor.png",
+#'        width = 8, height = 6)
 #' }
-ci.cor <- function(data, ...,
-                   method = c("pearson", "spearman", "kendall-b", "kendall-c"),
-                   adjust = c("none", "joint", "approx"),
-                   se = c("fisher", "fieller", "bonett", "rin"),
+ci.cor <- function(data, ..., method = c("pearson", "spearman", "kendall-b", "kendall-c"),
+                   adjust = c("none", "joint", "approx"), se = c("fisher", "fieller", "bonett", "rin"),
                    sample = TRUE, seed = NULL, maxtol = 1e-05, nudge = 0.001,
                    boot = c("none", "norm", "basic", "perc", "bc", "bca"), R = 1000,
                    fisher = TRUE, alternative = c("two.sided", "less", "greater"),
-                   conf.level = 0.95, group = NULL, split = NULL, na.omit = FALSE, digits = 2,
-                   as.na = NULL, plot = c("none", "ci", "boot"), point.size = 2.5,
-                   point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5, hist = TRUE,
-                   binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85", density = TRUE,
-                   density.col = "#0072B2", density.linewidth = 0.5, density.linetype = "solid",
-                   point = TRUE, point.col = "#CC79A7", point.linewidth = 0.6,
-                   point.linetype = "solid", ci = TRUE, ci.col = "black",
-                   ci.linewidth = 0.6, ci.linetype = "dashed", line = TRUE, intercept = 0,
-                   linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
-                   xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
-                   axis.title.size = 11, axis.text.size = 10, strip.text.size = 11, title = NULL,
-                   subtitle = NULL, group.col = NULL, plot.margin = NA,  legend.title = "",
-                   legend.position = c("right", "top", "left", "bottom", "none"),
-                   legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-                   facet.scales = "free_y", filename = NULL, width = NA, height = NA,
-                   units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL,
+                   conf.level = 0.95, group = NULL, split = NULL, na.omit = FALSE,
+                   digits = 2, as.na = NULL, plot = c("none", "ci", "boot"),
+                   hist = TRUE, density = TRUE, point = TRUE, ci = TRUE, line = TRUE,
+                   filename = NULL, width = NA, height = NA, dpi = 600, write = NULL,
                    append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
@@ -820,7 +618,7 @@ ci.cor <- function(data, ...,
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
@@ -834,7 +632,7 @@ ci.cor <- function(data, ...,
     # Extract splitting variable and convert tibble into a vector
     if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
 
   } else {
@@ -856,7 +654,7 @@ ci.cor <- function(data, ...,
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping and Split Variable ####
 
   # Grouping variable
@@ -880,12 +678,12 @@ ci.cor <- function(data, ...,
   # Grouping and split variable are identical
   if (isTRUE(!is.null(group) && !is.null(split) && identical(group, split))) { stop("Grouping and split variables are identical.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
 
     x <- x |>
@@ -904,7 +702,7 @@ ci.cor <- function(data, ...,
 
   if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
 
   # Check inputs 'na.omit'
@@ -924,11 +722,9 @@ ci.cor <- function(data, ...,
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical = c("sample", "fisher", "point", "ci", "line", "append", "output"),
-               numeric = list(seed = 1L, maxtol = 1L, nudge = 1L, point.size = 1L, point.shape  = 1L, errorbar.width = 1L, dodge.width = 1L, bins = 1L, density.linewidth = 1L, point.linewidth = 1L, ci.linewidth = 1L, intercept = 1L, xlim = 2L, ylim = 2L, axis.title.size = 1L, axis.text.size = 1L, strip.text.size = 1L, plot.margin = 4L, legend.box.margin = 4L, facet.ncol = 1L, facet.nrow = 1L, width = 1L, height = 1L, dpi = 1L),
-               character = list(title = 1L, subtitle = 1L, legend.title = 1L),
+  .check.input(logical = c("sample", "fisher", "hist", "point", "ci", "line", "append", "output"), numeric = list(seed = 1L, maxtol = 1L, nudge = 1L, width = 1L, height = 1L, dpi = 1L),
                s.character = list(method = c("pearson", "spearman", "kendall-b", "kendall-c"), adjust = c("none", "joint", "approx"), se = c("fisher", "fieller", "bonett", "rin"), boot = c("none", "norm", "basic", "perc", "bc", "bca"), plot = c("none", "ci", "boot")),
-               args = c("R", "alternative", "conf.level", "digits", "hist.alpha", "linetype", "units", "legend.position", "facet.scales", "write2"), envir = environment(), input.check = check)
+               args = c("R", "alternative", "conf.level", "digits", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(isTRUE(check))) {
@@ -972,82 +768,29 @@ ci.cor <- function(data, ...,
     # Check input 'plot'
     if (isTRUE(all(plot == "boot") && (all(boot == "none") || all(c("none", "norm", "basic", "stud", "perc", "bc", "bca") %in% boot)))) { stop("Please request bootstrap confidence intervals by specifying the 'boot' argument to plot bootstrap samples.", call. = FALSE) }
 
-    # Check input 'intercept'
-    if (isTRUE(!is.numeric(intercept) || length(intercept) != 1L || intercept > 1L || intercept < -1L)) { stop("Please specify a numeric value between -1 and 1 for the argument 'intercept'.", call. = FALSE) }
-
-    # Check input 'group.col'
-    if (isTRUE(!is.null(group.col) && length(group.col) != length(unique(group)))) { stop(paste0("Please specify a character vector with ", length(unique(group)), " elements for the argument 'group.col'."), call. = FALSE) }
-
   }
 
   #_____________________________________________________________________________
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'method' Argument ####
-
+  # 'method' Argument
   method <- ifelse(all(c("pearson", "spearman", "kendall-b", "kendall-c") %in% method), "pearson", method)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Non-Normality Adjustment Method ####
-
+  # 'adjust' Argument
   if (isTRUE(method == "pearson")) { adjust <- ifelse(all(c("none", "joint", "approx") %in% adjust), "approx", adjust) } else { adjust <- "none" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'se' Argument ####
-
+  # 'se' Argument
   if (isTRUE(method != "pearson")) { se <- ifelse(all(c("fisher", "fieller", "bonett", "rin") %in% se), "fieller", se) } else if (isTRUE(method %in% c("kendall-b", "kendall-c"))) { se <- "fieller" } else { se <- "fisher" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'boot' Argument ####
-
+  # 'boot' Argument
   boot <- ifelse(all(c("none", "norm", "basic", "perc", "bc", "bca") %in% boot), "none", boot)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'alternative' Argument ####
-
+  # 'alternative' Argument
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'plot' Argument ####
-
+  # 'plot' Argument
   plot <- ifelse(all(c("none", "ci", "boot") %in% plot), "none", plot)
-
-  # Package ggplot2
-  if (isTRUE(check && plot != "none")) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'xlab', 'ylab', 'xlim', 'ylim', 'xbreaks', and 'ybreaks' Argument ####
-
-  switch(plot, "ci" = {
-
-    ylab <- if (isTRUE(is.null(ylab))) { "Correlation Coefficient" } else { ylab }
-    ylim <- if (isTRUE(is.null(ylim))) { c(-1, 1) } else { ylim }
-
-  }, "boot" = {
-
-    xlab <- if (isTRUE(is.null(xlab))) { "Correlation Coefficient" } else { xlab }
-    ylab <- if (isTRUE(is.null(ylab))) { "Probability Density, f(x)" } else { ylab }
-    xlim <- if (isTRUE(is.null(xlim))) { c(-1, 1) } else { xlim }
-
-  })
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'plot.margin' Argument ####
-
-  if (isTRUE(is.na(plot.margin))) { if (isTRUE(is.null(group))) { plot.margin <- c(5.5, 5.5, 5.5, 5.5) } else { plot.margin <- c(5.5, 5.5, -2.5, 5.5) } }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'legend.position' Argument ####
-
-  if (isTRUE(all(c("right", "top", "left", "bottom", "none") %in% legend.position))) { legend.position  <- "bottom" }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'units' Argument ####
-
-  # Default setting
-  if (isTRUE(all(c("in", "cm", "mm", "px") %in% units))) { units <- "in" }
 
   #_____________________________________________________________________________
   #
@@ -1060,13 +803,13 @@ ci.cor <- function(data, ...,
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No Bootstrapping ####
+    #——————————————————————————————————————
+    ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
-      #...................
-      ### Product-Moment Correlation Coefficient ####
+      #···················
+      #### Product-Moment Correlation Coefficient ####
 
       switch(method, "pearson" = {
 
@@ -1078,8 +821,8 @@ ci.cor <- function(data, ...,
       # Skewness > 4.4 or kurtosis > 43.4
       if (isTRUE(adjust == "approx" && any(!is.na(result$cor) & (abs(result$skew1) > 4.4 | abs(result$skew1) > 4.4 | abs(result$kurt1) > 43.4 | abs(result$kurt2) > 43.4)))) { warning(paste0("Variables with |skewness| above 4.4 or |kurtosis| above 43.4 may lead to coverage rates lower than ", conf.level, "."), call. = FALSE) }
 
-      #...................
-      ### Spearman Correlation Coefficient ####
+      #···················
+      #### Spearman Correlation Coefficient ####
 
       }, "spearman" = {
 
@@ -1094,8 +837,8 @@ ci.cor <- function(data, ...,
         # |rs| >= 0.9
         if (isTRUE(se == "bonett" && any(!is.na(result$cor) & (abs(result$cor) > 0.9)))) { warning(paste0("Absolute correlation rs > 0.9 may lead to coverage rates lower than ", conf.level, "."), call. = FALSE) }
 
-      #...................
-      ### Kendall's Tau-b ####
+      #···················
+      #### Kendall's Tau-b ####
 
       }, "kendall-b" = {
 
@@ -1108,8 +851,8 @@ ci.cor <- function(data, ...,
         # n <= 10 or |rs| >= 0.8
         if (isTRUE(any(!is.na(result$cor) & (result$n <= 10L | abs(result$cor) >= 0.8)))) { warning(paste0("Sample size n <= 10 or absolute correlation tau >= 0.8 may lead to coverage rates lower than ", conf.level, "."), call. = FALSE) }
 
-      #...................
-      ### Kendall's Tau-c ####
+      #···················
+      #### Kendall's Tau-c ####
 
       }, "kendall-c" = {
 
@@ -1123,8 +866,8 @@ ci.cor <- function(data, ...,
 
       })
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Bootstrapping ####
+    #——————————————————————————————————————
+    ### Bootstrapping ####
 
     } else {
 
@@ -1142,16 +885,16 @@ ci.cor <- function(data, ...,
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No Bootstrapping ####
+    #——————————————————————————————————————
+    ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(x, f = group), function(y) misty::ci.cor(y, group = NULL, split = NULL, method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)$result) |>
         (\(z) data.frame(group = rep(names(z), each = unique(unlist(lapply(z, nrow)))), do.call("rbind", z), row.names = NULL))()
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Bootstrapping ####
+    #——————————————————————————————————————
+    ### Bootstrapping ####
 
     } else {
 
@@ -1168,15 +911,15 @@ ci.cor <- function(data, ...,
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No Bootstrapping ####
+    #——————————————————————————————————————
+    ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(x, f = split), function(y) misty::ci.cor(y, group = NULL, split = NULL, method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, alternative = alternative, conf.level = conf.level, na.omit = FALSE, as.na = NULL, check = FALSE, output = FALSE)$result)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Bootstrapping ####
+    #——————————————————————————————————————
+    ### Bootstrapping ####
 
     } else {
 
@@ -1193,15 +936,15 @@ ci.cor <- function(data, ...,
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No Bootstrapping ####
+    #——————————————————————————————————————
+    ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(data.frame(x, group = group), f = split), function(y) misty::ci.cor(y[, -grep("group", names(y))], group = y$group, split = NULL, method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)$result)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Bootstrapping ####
+    #——————————————————————————————————————
+    ### Bootstrapping ####
 
     } else {
 
@@ -1222,7 +965,7 @@ ci.cor <- function(data, ...,
   object <- list(call = match.call(),
                  type = "ci.cor",
                  data = list(x = x, group = group, split = split),
-                 args = list(method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, boot = boot, R = R, fisher = fisher, alternative = alternative, conf.level = conf.level, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, point.size = point.size, point.shape = point.shape, errorbar.width = errorbar.width, dodge.width = dodge.width, hist = hist, binwidth = binwidth, bins = bins, hist.alpha = hist.alpha, fill = fill, density = density, density.col = density.col, density.linewidth = density.linewidth, density.linetype = density.linetype, point = point, point.col = point.col, point.linewidth = point.linewidth, point.linetype = point.linetype, ci = ci, ci.col = ci.col, ci.linewidth = ci.linewidth, ci.linetype = ci.linetype, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales, filename = filename, width = width, height = height, units = units, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(method = method, adjust = adjust, se = se, sample = sample, seed = seed, maxtol = maxtol, nudge = nudge, boot = boot, R = R, fisher = fisher, alternative = alternative, conf.level = conf.level, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  boot = if (isTRUE(boot != "none")) { boot.sample } else { NULL },
                  plot = NULL, result = result)
 
@@ -1230,9 +973,9 @@ ci.cor <- function(data, ...,
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Results ------------------------------------------------------
+  # Plot and Save Plot ---------------------------------------------------------
 
-  if (isTRUE(plot != "none")) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+  if (isTRUE(plot != "none")) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #

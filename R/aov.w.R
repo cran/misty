@@ -15,18 +15,9 @@
 #'                       formula \code{formula}.
 #' @param print          a character vector indicating which sphericity correction
 #'                       to use, i.e., \code{all} for all corrections, \code{none}
-#'                       for no correction, \code{LB} for lower bound correction,
-#'                       \code{GG} for Greenhouse-Geisser correction, and \code{HF},
-#'                       for Huynh-Feldt correction.
-#' @param posthoc        logical: if \code{TRUE}, paired-samples t-tests for
-#'                       multiple comparison are conducted.
-#' @param conf.level     a numeric value between 0 and 1 indicating the confidence
-#'                       level of the interval.
-#' @param p.adj          a character string indicating an adjustment method for
-#'                       multiple testing based on \code{\link{p.adjust}}, i.e.,
-#'                       \code{none}, \code{bonferroni}, \code{holm} (default),
-#'                       \code{h ochberg}, \code{hommel}, \code{BH}, \code{BY}, or
-#'                       \code{fdr}.
+#'                       for no correction, \code{GG} for Greenhouse-Geisser correction,
+#'                       \code{HF} for Huynh-Feldt correction, and \code{LB} for
+#'                       lower bound correction.
 #' @param hypo           logical: if \code{TRUE} (default), null and alternative
 #'                       hypothesis are shown on the console.
 #' @param descript       logical: if \code{TRUE} (default), descriptive statistics
@@ -41,9 +32,18 @@
 #'                       (\eqn{\omega^2_p}) for the repeated measures ANOVA and
 #'                       Cohen's \emph{d} for the post hoc tests are shown on
 #'                       the console.
+#' @param posthoc        logical: if \code{TRUE}, paired-samples t-tests for
+#'                       multiple comparison are conducted.
 #' @param na.omit        logical: if \code{TRUE} (default), incomplete cases are
 #'                       removed before conducting the analysis (i.e., listwise
 #'                       deletion).
+#' @param conf.level     a numeric value between 0 and 1 indicating the confidence
+#'                       level of the interval.
+#' @param p.adj          a character string indicating an adjustment method for
+#'                       multiple testing based on \code{\link{p.adjust}}, i.e.,
+#'                       \code{none}, \code{bonferroni}, \code{holm} (default),
+#'                       \code{h ochberg}, \code{hommel}, \code{BH}, \code{BY}, or
+#'                       \code{fdr}.
 #' @param digits         an integer value indicating the number of decimal places
 #'                       to be used for displaying descriptive statistics and
 #'                       confidence interval.
@@ -66,29 +66,6 @@
 #' @param adjust         logical: if \code{TRUE} (default), difference-adjustment
 #'                       for the Cousineau-Morey within-subject confidence
 #'                       intervals is applied.
-#' @param point.size     a numeric value indicating the \code{size} aesthetic for
-#'                       the point representing the mean value.
-#' @param line.width     a numeric value indicating the \code{linewidth} aesthetic
-#'                       for the line connecting means of each groups.
-#' @param errorbar.width a numeric value indicating the horizontal bar width of
-#'                       the error bar.
-#' @param jitter.size    a numeric value indicating the \code{size} aesthetic
-#'                       for the jittered data points.
-#' @param jitter.width   a numeric value indicating the amount of horizontal jitter.
-#' @param jitter.alpha   a numeric value between 0 and 1 for specifying the
-#'                       \code{alpha} argument in the \code{geom_histogram}
-#'                       function for controlling the opacity of the jittered
-#'                       data points.
-#' @param xlab           a character string specifying the labels for the x-axis.
-#' @param ylab           a character string specifying the labels for the y-axis.
-#' @param ylim           a numeric vector of length two specifying limits of the
-#'                       limits of the y-axis.
-#' @param ybreaks        a numeric vector specifying the points at which tick-marks
-#'                       are drawn at the y-axis.
-#' @param title          a character string specifying the text for the title of
-#'                       the plot.
-#' @param subtitle       a character string specifying the text for the subtitle
-#'                       of the plot.
 #' @param filename       a character string indicating the \code{filename}
 #'                       argument including the file extension in the \code{ggsave}
 #'                       function. Note that one of \code{".eps"}, \code{".ps"},
@@ -104,8 +81,6 @@
 #' @param height         a numeric value indicating the \code{height} argument
 #'                       (default is the size of the current graphics device)
 #'                       in the \code{ggsave} function.
-#' @param units          a character string indicating the \code{units} argument
-#'                       (default is \code{in}) in the \code{ggsave} function.
 #' @param dpi            a numeric value indicating the \code{dpi} argument
 #'                       (default is \code{600}) in the \code{ggsave} function.
 #' @param write          a character string naming a text file with file extension
@@ -129,8 +104,8 @@
 #' However, test of assumptions addresses an irrelevant hypothesis because what
 #' matters is the degree of violation rather than its presence (Baguley, 2012a).
 #' Moreover, the test is not recommended because it lacks statistical power (Abdi,
-#' 2010). Instead, the Box index of sphericity (\eqn{\varepsilon}) should be used to
-#' assess the degree of violation of the sphericity assumption. The \eqn{\varepsilon}
+#' 2010). Instead, the Box index of sphericity (\eqn{\varepsilon}) should be used
+#' to assess the degree of violation of the sphericity assumption. The \eqn{\varepsilon}
 #' parameter indicates the degree to which the population departs from sphericity
 #' with \eqn{\varepsilon = 1} indicating that sphericity holds. As the departure
 #' becomes more extreme, \eqn{\varepsilon} approaches its lower bound
@@ -171,8 +146,8 @@
 #' the \emph{F}-Test without any sphericity corrections may be reliable, but it
 #' is not clear whether results based on Greenhouse-Geiser or Huynh-Feldt correction
 #' are trustworthy given that pairwise deletion is used for estimating the
-#' variance-covariance matrix when computing \eqn{\hat{\varepsilon}_{gg}} and the total
-#' number of subjects regardless of missing values (i.e., complete and incomplete
+#' variance-covariance matrix when computing \eqn{\hat{\varepsilon}_{gg}} and the
+#' total number of subjects regardless of missing values (i.e., complete and incomplete
 #' cases) are used for computing \eqn{\hat{\varepsilon}_{hf}}.
 #' }
 #' \item{\strong{Within-Subject Confidence Intervals}}{The function provides a
@@ -248,44 +223,84 @@
 #' @export
 #'
 #' @examples
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Within-Subject Analysis of Variance
+#'
+#' # Data frame
 #' dat <- data.frame(time1 = c(3, 2, 1, 4, 5, 2, 3, 5, 6, 7),
 #'                   time2 = c(4, 3, 6, 5, 8, 6, 7, 3, 4, 5),
 #'                   time3 = c(1, 2, 2, 3, 6, 5, 1, 2, 4, 6))
 #'
-#' # Example 1: Repeated measures ANOVA
+#' # Example 1a: Within-Subject ANOVA
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat)
 #'
-#' # Example 2: Repeated measures ANOVA, print results of all sphericity corrections
-#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, print = "all")
+#' # Example 1b: Within-Subject ANOVA
+#' # Print descriptive statistics and Paired-samples t-tests
+#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, descript = TRUE, posthoc = TRUE)
 #'
-#' # Example 3: Repeated measures ANOVA, print post hoc test and effect size measures
-#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, posthoc = TRUE, effsize = TRUE)
+#' # Example 1c: Within-Subject ANOVA, print eta-squared and omega-squared
+#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, effsize = TRUE)
 #'
-#' # Example 4: Repeated measures ANOVA, do not print hypotheses and descriptive statistics,
-#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, descript = FALSE, hypo = FALSE)
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Plot
 #'
-#' # Example 5: Repeated measures ANOVA, plot results
+#' # Example 2a: Plot results, default setting
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE)
 #'
+#' # Example 2b: Plot results
+#' # No bars, jittered data points without subject-specific lines
+#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE,
+#'       line = FALSE, jitter = TRUE)
+#'
+#' # Example 2c: Plot results using the plot() function, use additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' object <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat)
+#' plot(object, jitter = TRUE, jitter.alpha = 0.4, title = "Within-Subject ANOVA")
+#'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Create Plot Manually
+#'
+#' # Load ggplot2 package
+#' library(ggplot2)
+#'
+#' # Create misty object
+#' object <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat)
+#'
+#' # Compute Means and difference-adjusted confidence intervals
+#' ci.table <- ci.mean.w(object$data$wide, adjust = TRUE, output = FALSE)$result
+#'
+#' # Example 3: Plot
+#' ggplot(object$data$long, aes(time, y, group = 1)) +
+#'   geom_errorbar(data = ci.table, aes(variable, m, ymin = low, ymax = upp),
+#'                 width = 0.1) +
+#'   geom_point(data = ci.table, aes(variable, m), stat = "identity", size = 3) +
+#'   geom_line(data = ci.table, aes(variable, m), stat = "identity") +
+#'   geom_jitter(alpha = 0.2, width = 0.05, height = 0, size = 1.25) +
+#'   theme_bw()
+#'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Write Results and Save Plot
+#'
 #' \dontrun{
-#' # Example 6: Write Results into a text file
+#'
+#' # Example 4a: Write results into a text file
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.txt")
 #'
-#' # Example 7: Save plot
+#' # Example 4b: Write results into an Excel file
+#' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.xlsx")
+#'
+#' # Example 4c: Save plot as PNG fine
 #' aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE,
-#'       filename = "Repeated_measures_ANOVA.png", width = 7, height = 6)
+#'             filename = "RM-ANOVA.png", width = 6, height = 5)
 #' }
-aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
-                  posthoc = FALSE, conf.level = 0.95,
+aov.w <- function(formula, data, print = c("all", "none", "GG", "HF", "LB"),
+                  hypo = FALSE, epsilon = FALSE, descript = FALSE, effsize = FALSE,
+                  posthoc = FALSE, na.omit = TRUE, conf.level = 0.95,
                   p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
-                  hypo = TRUE, descript = TRUE, epsilon = TRUE, effsize = FALSE, na.omit = TRUE,
-                  digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, point = TRUE, line = TRUE,
-                  ci = TRUE, jitter = FALSE, adjust = TRUE, point.size = 3, line.width = 0.5,
-                  errorbar.width = 0.1, jitter.size = 1.25,jitter.width = 0.05, jitter.alpha = 0.1,
-                  xlab = NULL, ylab = "y", ylim = NULL, ybreaks = ggplot2::waiver(), title = NULL,
-                  subtitle = "Confidence Interval", filename = NULL, width = NA, height = NA,
-                  units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
-                  check = TRUE, output = TRUE) {
+                  digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, point = TRUE,
+                  line = TRUE, ci = TRUE, jitter = FALSE, adjust = TRUE,
+                  filename = NULL, width = NA, height = NA, dpi = 600, write = NULL,
+                  append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -310,44 +325,32 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
 
   # Check inputs and R package
   .check.input(logical = c("posthoc", "hypo", "descript", "effsize", "na.omit", "plot", "point", "line", "ci", "jitter", "adjust", "append", "output"),
-               numeric = list(point.size = 1L, errorbar.width = 1L, jitter.size = 1L, jitter.alpha = 1L, jitter.width = 1L),
-               character = list(xlab = 1L, ylab = 1L, title = 1L, subtitle = 1L), m.character = list(print = c("all", "none", "LB",  "GG", "HF")), args = c("digts", "p.digits", "conf.level", "p.adj", "write1"), envir = environment(), input.check = check)
-
-  # Additional checks
-  if (isTRUE(check)) {
-
-    # Package ggplot2
-    if (isTRUE(check && plot != "none")) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
-
-    # Check if variables are in the data
-    (!var.formula %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0(ifelse(sum(y) == 1L, "Variable ", "Variables "), "specified in the formula ", ifelse(sum(y) == 1L, "was ", "were "), "not found in 'data': ", paste(var.formula[y], collapse = ", ")), call. = FALSE) })()
-
-  }
+               m.character = list(print = c("all", "none", "LB",  "GG", "HF")), args = c("digts", "p.digits", "conf.level", "p.adj", "write2"), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
-  # Data and Arguments ---------------------------------------------------------
+  # Data -----------------------------------------------------------------------
 
-  # Global variables
-  id <- low <- m <- upp <- variable <- NULL
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data frame ####
 
   data <- data.frame(data[, var.formula])
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Check if variables are in the data
+  (!var.formula %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(y)], collapse = ", ")), call. = FALSE) })()
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Attach ID variable ####
 
-  data.id <- data.frame(data, id = factor(1L:nrow(data)))
+  data.id <- data.frame(data, id = factor(seq_len(nrow(data))))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Convert user-missing values into NA ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Convert User-Missing Values into NA ####
 
   if (isTRUE(!is.null(as.na))) { .as.na(data.id[, var.formula], na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Missing data ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Missing Data ####
 
   if (isTRUE(any(is.na(data.id[, var.formula])))) {
 
@@ -367,13 +370,13 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
       # Remove cases with NA on all variables
       data.id <- data.id[which(apply(data.id[, var.formula], 1L, function(y) !all(is.na(y)))), ]
 
-      if (nrow(data.id) < 2L) { stop("After removing cases with NA on all variables, there are not enough cases for conducting the analysis.", call. = FALSE) }
+      if (isTRUE(nrow(data.id) < 2L)) { stop("After removing cases with NA on all variables, there are not enough cases for conducting the analysis.", call. = FALSE) }
 
     }
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Reshape Data Frame ####
 
   # Wide data frame into long format
@@ -414,33 +417,25 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Adjustment method for multiple testing ####
-
+  # 'p.adj' Argument
   p.adj <- ifelse(all(c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr") %in% p.adj), "holm", p.adj)
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'units' Argument ####
-
-  # Default setting
-  if (isTRUE(all(c("in", "cm", "mm", "px") %in% units))) { units <- "in" }
 
   #_____________________________________________________________________________
   #
   # Main Function --------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Descriptive statistics ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Descriptive Statistics ####
 
   ci.table <- misty::ci.mean(data.id[, var.formula], conf.level = conf.level, output = FALSE)$result[, c("variable", "n", "nNA", "m", "low", "upp", "sd", "skew", "kurt")]
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Fit ANOVA model ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Fit ANOVA Model ####
 
   aov.res <- aov(y ~ time + Error(id), data = data.l)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Box index of sphericity ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Box Index of Sphericity ####
   #
   # https://crumplab.com/rstatsforpsych/repeated-measures-anova.html
 
@@ -452,33 +447,33 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
 
   dc.matrix <- cov(data.id[, var.formula], use = "pairwise.complete.obs") |> (\(y) y - (y*0L + colMeans(y)) - (t(y*0L + rowMeans(y))) + mean(y))()
 
-  #...................
-  ### Lower bound ####
+  #——————————————————————————————————————
+  ### Lower Bound ####
 
   lb <- 1L  / (k - 1L)
 
-  #...................
+  #——————————————————————————————————————
   ### Greenhouse-Geisser ####
 
   gg <- sum(diag(dc.matrix))^2L / ((nrow(dc.matrix) - 1L) * sum(dc.matrix^2L))
 
-  #...................
+  #——————————————————————————————————————
   ### Huynh-Feldt ####
 
   hf <- (n*(k - 1L)*gg - 2L) / ((k - 1L) * (n - 1L - (k - 1L)*gg))
 
-  #...................
+  #——————————————————————————————————————
   ### Average of Greenhouse-Geisser and Huynh-Feldt ####
 
   gg.hf <- mean(c(gg, hf), na.rm = TRUE)
 
-  #...................
+  #——————————————————————————————————————
   ### Epsilon table ####
 
-  epsilon.table <- data.frame(index = c("lower bound", "greenhouse and geisser", "huynh and feldt", "average of gg and hf"), epsilon = c(lb, gg, hf, gg.hf))
+  epsilon.table <- data.frame(index = c("greenhouse and geisser", "huynh and feldt", "average of gg and hf", "lower bound"), epsilon = c(gg, hf, gg.hf, lb))
 
-  #...................
-  ### print argument ####
+  #——————————————————————————————————————
+  ### print Argument ####
   #
   # Baguley (2012), p. 633
   # - if gg.hf < 0.75 -> Greenhouse-Geisser
@@ -491,8 +486,8 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
 
   if (isTRUE(any(is.na(data.id[, var.formula])) && any(print %in% c("GG", "HF")))) { warning("Greenhouse-Geisser and Huynh-Feldt correction might not be reliable due to the presence of missing data.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Extract sum of squares ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Extract Sum of Squares ####
 
   # ANOVA table subject
   aov.table.id <- summary(aov.res)[["Error: id"]]
@@ -525,38 +520,36 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
   # Total mean sum of squares
   ms.t <- sum(c(aov.table.within[[1L]][, "Mean Sq"], ms.id))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Effect Size Measures ####
   #
   # Olejnik and Algina (2000), Table 17
 
-  #...................
+  #——————————————————————————————————————
   ### Eta squared ####
 
   eta.sq <- ss.e.within / ss.t
 
-  #...................
-  ### Partial Eta squared ####
+  #——————————————————————————————————————
+  ### Partial Eta Squared ####
 
   eta.sq.p <- ss.e.within / sum(aov.table.within[[1L]][, "Sum Sq"])
 
-  #...................
-  ### Omega squared ####
+  #——————————————————————————————————————
+  ### Omega Squared ####
 
-  omega.sq <- (df.e.within*(ms.e.within - ms.r.within)) / (ss.t + ms.id) |>
-    (\(y) ifelse(y < 0L, 0L, y))()
+  omega.sq <- (df.e.within*(ms.e.within - ms.r.within)) / (ss.t + ms.id) |> (\(y) ifelse(y < 0L, 0L, y))()
 
-  #...................
-  ### Partial Omega squared ####
+  #——————————————————————————————————————
+  ### Partial Omega Squared ####
 
-  omega.sq.p <- (df.e.within*(ms.e.within - ms.r.within)) / (df.e.within*ms.e.within + (nrow(data.l) - df.e.within)*ms.r.within) |>
-    (\(y) ifelse(y < 0L, 0L, y))()
+  omega.sq.p <- (df.e.within*(ms.e.within - ms.r.within)) / (df.e.within*ms.e.within + (nrow(data.l) - df.e.within)*ms.r.within) |> (\(y) ifelse(y < 0L, 0L, y))()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## ANOVA table ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## ANOVA Table ####
 
-  #...................
-  ### Sphericity Correction: None  ####
+  #——————————————————————————————————————
+  ### Sphericity Correction: None ####
 
   test.none <- data.frame(source = c("Within-Subjects", "Factor", "Residuals", "Between-Subjects", "Total"),
                           sum.sq = c(NA, ss.e.within, ss.r.within, ss.id, ss.t),
@@ -569,21 +562,9 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
                           omega.sq = c(NA, omega.sq, NA, NA, NA),
                           omega.sq.p = c(NA, omega.sq.p, NA, NA, NA))
 
-  test.lb <- test.gg <- test.hf <- test.none
+  test.lb <- test.hf <- test.gg <- test.none
 
-  #...................
-  ### Sphericity Correction: Lower Bound ####
-
-  # Correct degrees of freedom
-  test.lb[test.lb$source %in% c("Factor", "Residuals"), "df"] <- test.lb[test.lb$source %in% c("Factor", "Residuals"), "df"] * lb
-
-  # Correct mean sum of squares
-  test.lb[test.lb$source %in% c("Factor", "Residuals"), "mean.sq"] <- test.lb[test.lb$source %in% c("Factor", "Residuals"), "sum.sq"] / test.lb[test.lb$source %in% c("Factor", "Residuals"), "df"]
-
-  # Correct p value
-  test.lb[test.lb$source == "Factor", "p"] <- pf(test.lb[test.lb$source == "Factor", "F"], df1 = test.lb[test.lb$source == "Factor", "df"], df2 = test.lb[test.lb$source == "Residuals", "df"], lower.tail = FALSE)
-
-  #...................
+  #——————————————————————————————————————
   ### Sphericity Correction: Greenhouse-Geisser ####
 
   # Correct degrees of freedom
@@ -595,7 +576,7 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
   # Correct p value
   test.gg[test.gg$source == "Factor", "p"] <- pf(test.gg[test.gg$source == "Factor", "F"], df1 = test.gg[test.gg$source == "Factor", "df"], df2 = test.gg[test.gg$source == "Residuals", "df"], lower.tail = FALSE)
 
-  #...................
+  #——————————————————————————————————————
   ### Sphericity Correction: Huynh-Feldt ####
 
   # Correct degrees of freedom
@@ -607,8 +588,20 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
   # Correct p value
   test.hf[test.hf$source == "Factor", "p"] <- pf(test.hf[test.hf$source == "Factor", "F"], df1 = test.hf[test.hf$source == "Factor", "df"], df2 = test.hf[test.hf$source == "Residuals", "df"], lower.tail = FALSE)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Post-hoc test ####
+  #——————————————————————————————————————
+  ### Sphericity Correction: Lower Bound ####
+
+  # Correct degrees of freedom
+  test.lb[test.lb$source %in% c("Factor", "Residuals"), "df"] <- test.lb[test.lb$source %in% c("Factor", "Residuals"), "df"] * lb
+
+  # Correct mean sum of squares
+  test.lb[test.lb$source %in% c("Factor", "Residuals"), "mean.sq"] <- test.lb[test.lb$source %in% c("Factor", "Residuals"), "sum.sq"] / test.lb[test.lb$source %in% c("Factor", "Residuals"), "df"]
+
+  # Correct p value
+  test.lb[test.lb$source == "Factor", "p"] <- pf(test.lb[test.lb$source == "Factor", "F"], df1 = test.lb[test.lb$source == "Factor", "df"], df2 = test.lb[test.lb$source == "Residuals", "df"], lower.tail = FALSE)
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Post-Hoc Test ####
 
   result.ph <- combn(var.formula, m = 2L) |>
     (\(y) apply(y, 2L, function(y) misty::test.t(data.id[, y[1L]], data.id[, y[2L]], paired = TRUE, conf.level = conf.level, output = FALSE)$result[c("m.diff", "t", "df", "p", "d", "d.low", "d.upp")]) |>
@@ -616,15 +609,6 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
 
   # Adjust p-values for multiple comparisons
   if (isTRUE(p.adj != "none")) { result.ph$p <- p.adjust(result.ph$p, method = p.adj) }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Result object ####
-
-  result <- list(descript = ci.table,
-                 epsilon = epsilon.table,
-                 test = list(none = test.none, lb = test.lb, gg = test.gg, hf = test.hf),
-                 posthoc = result.ph,
-                 aov = aov.res)
 
   #_____________________________________________________________________________
   #
@@ -634,48 +618,29 @@ aov.w <- function(formula, data, print = c("all", "none", "LB", "GG", "HF"),
                  type = "aov.w",
                  data = list(wide = data, long = data.l),
                  formula = formula,
-                 args = list(print = print, posthoc = posthoc, conf.level = conf.level,
-                             p.adjust = p.adj, hypo = hypo, descript = descript,
-                             epsilon = epsilon, effsize = effsize, na.omit = na.omit,
-                             digits = digits, p.digits = p.digits, as.na = as.na,
-                             plot = plot, point = point, line = line, ci = ci,
-                             jitter = jitter, adjust = adjust, point.size = point.size,
-                             line.width = line.width, errorbar.width = errorbar.width,
-                             jitter.size = jitter.size, jitter.width = jitter.width, jitter.alpha = jitter.alpha,
-                             xlab = xlab, ylab = ylab, ylim = ylim, ybreaks = ybreaks, title = title,
-                             subtitle = subtitle, filename = filename, width = width, height = height,
-                             units = units, dpi = dpi, check = check, write = write, append = append, output = output),
-                 plot = NULL, result = result)
+                 args = list(print = print, p.adjust = p.adj, hypo = hypo, descript = descript,epsilon = epsilon, effsize = effsize, posthoc = posthoc,
+                             na.omit = na.omit, conf.level = conf.level, digits = digits, p.digits = p.digits, as.na = as.na,
+                             plot = plot, point = point, line = line, ci = ci, jitter = jitter, adjust = adjust, filename = filename,
+                             width = width, height = height, dpi = dpi, check = check, write = write, append = append, output = output),
+                 plot = NULL,
+                 result = list(descript = ci.table, epsilon = epsilon.table,
+                               test = list(none = test.none, gg = test.gg, hf = test.hf, lb = test.lb),
+                               posthoc = result.ph,
+                               aov = aov.res))
 
   class(object) <- "misty.object"
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Results ------------------------------------------------------
+  # Plot and Save Plot ---------------------------------------------------------
 
-  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
-  # Write results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    # Send R output to textfile
-    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-    if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-    # Print object
-    print(object, check = FALSE)
-
-    # Close file connection
-    sink()
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #

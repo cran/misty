@@ -48,21 +48,21 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is missing
   if (isTRUE(missing(x) || is.null(x))) { stop("Please specify a matrix, data frame or list of matrices or data frames for the argument 'x'.", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = c("col.names", "use.zip64"), character = list(file = 1L), envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
-  # Arguments ------------------------------------------------------------------
+  # Arguments ——————————————————————————————————————————————————————————————————
 
   # File extension .xlsx
   file <- ifelse(length(grep(".xlsx", file)) == 0L, file <- paste0(file, ".xlsx"), file)
@@ -80,7 +80,7 @@ write.xlsx <- function(x, file = "Excel_Data.xlsx", col.names = TRUE, format = F
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   writexl::write_xlsx(x = x, path = file, col_names = col.names, format_headers = format, use_zip64 = use.zip64)
 

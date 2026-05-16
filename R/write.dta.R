@@ -49,7 +49,7 @@ write.dta <- function(x, file = "Stata_Data.dta", version = 14, label = NULL,
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'x' is missing
   if (isTRUE(missing(x))) { stop("Please specify a matrix or data frame for the argument 'x'.", call. = FALSE) }
@@ -65,7 +65,7 @@ write.dta <- function(x, file = "Stata_Data.dta", version = 14, label = NULL,
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   # Check inputs
   .check.input(logical = "adjust.tz", numeric = list(version = 1L), character = list(file = 1L), package = "haven", input.check = check, envir = environment())
@@ -74,13 +74,13 @@ write.dta <- function(x, file = "Stata_Data.dta", version = 14, label = NULL,
   if (isTRUE(check)) {
 
     # Check input 'version'
-    if (isTRUE(version < 8L || version > 15L)) { stop("This function does not support the Stat file version specified in 'version'", call. = FALSE)}
+    if (isTRUE(version < 8L || version > 15L)) { stop("This function does not support the Stata file version specified in 'version'", call. = FALSE)}
 
   }
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
   # Write Stata data file
   haven::write_dta(x, path = file, version = version, label = label, strl_threshold = str.thres, adjust_tz = adjust.tz)

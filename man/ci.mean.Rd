@@ -11,44 +11,19 @@ ci.mean(data, ..., sigma = NULL, sigma2 = NULL, adjust = FALSE,
         alternative = c("two.sided", "less", "greater"),
         conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
         na.omit = FALSE, digits = 2, as.na = NULL,
-        plot = c("none", "ci", "boot"), point.size = 2.5, point.shape = 19,
-        errorbar.width = 0.3, dodge.width = 0.5, hist = TRUE,
-        binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85", density = TRUE,
-        density.col = "#0072B2", density.linewidth = 0.5, density.linetype = "solid",
-        point = TRUE, point.col = "#CC79A7", point.linewidth = 0.6,
-        point.linetype = "solid", ci = TRUE, ci.col = "black",
-        ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE, intercept = 0,
-        linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
-        xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(),
-        ybreaks = ggplot2::waiver(), axis.title.size = 11, axis.text.size = 10,
-        strip.text.size = 11, title = NULL, subtitle = NULL, group.col = NULL,
-        plot.margin = NA, legend.title = "",
-        legend.position = c("right", "top", "left", "bottom", "none"),
-        legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-        facet.scales = "free", filename = NULL, width = NA, height = NA,
-        units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL,
-        append = TRUE, check = TRUE, output = TRUE)
+        plot = c("none", "ci", "boot"), hist = TRUE, density = TRUE,
+        point = TRUE, ci = TRUE, line = TRUE, filename = NULL,
+        width = NA, height = NA, dpi = 600, write = NULL, append = TRUE,
+        check = TRUE, output = TRUE)
 
 ci.median(data, ..., boot = c("none", "norm", "basic", "stud", "perc", "bc", "bca"),
           R = 1000, seed = NULL, sample = TRUE,
           alternative = c("two.sided", "less", "greater"),
           conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
-          na.omit = FALSE, digits = 2, as.na = NULL, plot = c("none", "ci", "boot"),
-          point.size = 2.5, point.shape = 19, errorbar.width = 0.3, dodge.width = 0.5,
-          hist = TRUE, binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85",
-          density = TRUE, density.col = "#0072B2", density.linewidth = 0.5,
-          density.linetype = "solid", point = TRUE, point.col = "#CC79A7",
-          point.linewidth = 0.6, point.linetype = "solid", ci = TRUE, ci.col = "black",
-          ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE, intercept = 0,
-          linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
-          xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(),
-          ybreaks = ggplot2::waiver(), axis.title.size = 11, axis.text.size = 10,
-          strip.text.size = 11, title = NULL, subtitle = NULL, group.col = NULL,
-          plot.margin = NA,  legend.title = "",
-          legend.position = c("right", "top", "left", "bottom", "none"),
-          legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-          facet.scales = "free", filename = NULL, width = NA, height = NA,
-          units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
+          na.omit = FALSE, digits = 2, as.na = NULL,
+          plot = c("none", "ci", "boot"), hist = TRUE, density = TRUE,
+          point = TRUE, ci = TRUE, line = TRUE, filename = NULL,
+          width = NA, height = NA, dpi = 600, write = NULL, append = TRUE,
           check = TRUE, output = TRUE)
 }
 \arguments{
@@ -155,249 +130,26 @@ confidence intervals for the arithmetic mean or median,
 histograms and density curves when the argument
 \code{"boot"} is other than \code{"none"}.}
 
-\item{point.size}{a numeric value indicating the \code{size} argument
-in the \code{geom_point} function for controlling the
-size of points when plotting confidence intervals
-(\code{plot = "ci"}).}
-
-\item{point.shape}{a numeric value between 0 and 25 or a character string
-as plotting symbol indicating the \code{shape} argument
-in the \code{geom_point} function for controlling the
-symbols of points when plotting confidence intervals
-(\code{plot = "ci"}).}
-
-\item{errorbar.width}{a numeric value indicating the \code{width} argument
-in the \code{geom_errorbar} function for controlling
-the width of the whiskers in the \code{geom_errorbar}
-function when plotting confidence intervals
-(\code{plot = "ci"}).}
-
-\item{dodge.width}{a numeric value indicating the \code{width} argument
-controlling the width of the \code{geom} elements to
-be dodged when specifying a grouping variable using
-the argument \code{group} and plotting confidence
-intervals (\code{plot = "ci"}).}
-
 \item{hist}{logical: if \code{TRUE} (default), histograms are
 drawn when plotting bootstrap samples
 (\code{plot = "boot"}).}
 
-\item{binwidth}{a numeric value or a function for specifying the
-\code{binwidth} argument in the \code{geom_histogram}
-function for controlling the width of the bins when
-plotting bootstrap samples (\code{plot = "boot"}).}
-
-\item{bins}{a numeric value for specifying the \code{bins} argument
-in the \code{geom_histogram} function for controlling
-the number of bins when plotting bootstrap samples
-(\code{plot = "boot"}).}
-
-\item{hist.alpha}{a numeric value between 0 and 1 for specifying the
-\code{alpha} argument in the \code{geom_histogram}
-function for controlling the opacity of the bars
-when plotting bootstrap samples (\code{plot = "boot"}).}
-
-\item{fill}{a character string specifying the \code{fill} argument
-in the \code{geom_histogram} function controlling the
-fill aesthetic when plotting bootstrap samples
-(\code{plot = "boot"}). Note that this argument applied
-only when no grouping variable was specified
-\code{group = NULL}.}
-
 \item{density}{logical: if \code{TRUE} (default), density curves are
 drawn when plotting bootstrap samples (\code{plot = "boot"}).}
-
-\item{density.col}{a character string specifying the \code{color} argument
-in the \code{geom_density} function controlling the
-color of the density curves when plotting bootstrap
-samples (\code{plot = "boot"}). Note that this argument
-applied only when no grouping variable was specified
-\code{group = NULL}.}
-
-\item{density.linewidth}{a numeric value specifying the \code{linewidth}
-argument in the \code{geom_density} function controlling
-the line width of the density curves when plotting
-bootstrap samples (\code{plot = "boot"}).}
-
-\item{density.linetype}{a numeric value or character string specifying the
-\code{linetype} argument in the \code{geom_density}
-function controlling the line type of the density
-curves when plotting bootstrap samples
-(\code{plot = "boot"}).}
 
 \item{point}{logical: if \code{TRUE} (default), vertical lines
 representing the point estimate of the arithmetic
 mean or median are drawn when plotting bootstrap samples
 (\code{plot = "boot"}).}
 
-\item{point.col}{a character string specifying the \code{color} argument
-in the \code{geom_vline} function for controlling the
-color of the vertical line displaying the arithmetic
-mean or median when plotting bootstrap samples
-(\code{plot = "boot"}). Note that this argument
-applied only when no grouping variable was specified
-\code{group = NULL}.}
-
-\item{point.linewidth}{a numeric value specifying the \code{linewdith}
-argument in the \code{geom_vline} function for
-controlling the line width of the vertical line
-displaying the arithmetic mean or median when plotting
-bootstrap samples (\code{plot = "boot"}).}
-
-\item{point.linetype}{a numeric value or character string specifying the
-\code{linetype} argument in the \code{geom_vline}
-function controlling the line type of the vertical
-line displaying the arithmetic mean or median when
-plotting bootstrap samples (\code{plot = "boot"}).}
-
 \item{ci}{logical: if \code{TRUE} (default), vertical lines
 representing the bootstrap confidence intervals of
 the arithmetic mean or median are drawn when
 plotting bootstrap samples (\code{plot = "boot"}).}
 
-\item{ci.col}{character string specifying the \code{color} argument
-in the \code{geom_vline} function for controlling the
-color of the vertical line displaying bootstrap
-confidence intervals when plotting bootstrap samples
-(\code{plot = "boot"}). Note that this argument applied
-only when no grouping variable was specified
-\code{group = NULL}.}
-
-\item{ci.linewidth}{a numeric value specifying the \code{linewdith} argument
-in the \code{geom_vline} function for controlling the
-line width of the vertical line displaying bootstrap
-confidence intervals when plotting bootstrap samples
-(\code{plot = "boot"}).}
-
-\item{ci.linetype}{a numeric value or character string specifying the
-\code{linetype} argument in the \code{geom_vline}
-function controlling the line type of the vertical
-line displaying bootstrap confidence intervals when
-plotting bootstrap samples (\code{plot = "boot"}).}
-
 \item{line}{logical: if \code{TRUE}, a horizontal line
 is drawn when \code{plot = "ci"} or a vertical line
 is drawn when \code{plot = "boot"}}
-
-\item{intercept}{a numeric value indicating the \code{yintercept} or
-\code{xintercept} argument in the \code{geom_hline}
-or \code{geom_vline} function controlling the position
-of the horizontal or vertical line when \code{plot = "ci"}
-and \code{line = TRUE} or when \code{plot = "boot"}
-and \code{line = TRUE}. By default, the horizontal or
-vertical line is drawn at 0.}
-
-\item{linetype}{a character string indicating the \code{linetype}
-argument in the \code{geom_hline} or \code{geom_vline}
-function controlling the line type of the horizontal
-or vertical line (default is \code{linetype = "dashed"}).}
-
-\item{line.col}{a character string indicating the \code{color} argument
-in the \code{geom_hline} or \code{geom_vline} function
-for controlling the color of the horizontal or vertical
-line.}
-
-\item{xlab}{a character string indicating the \code{name} argument
-in the \code{scale_x_continuous} function for labeling
-the x-axis. The default setting is \code{xlab = NULL}
-when \code{plot = "ci"} and \code{xlab = "Arithmetic Mean"}
-or \code{xlab = "Median"} when \code{plot = "boot"}.}
-
-\item{ylab}{a character string indicating the \code{name} argument
-in the \code{scale_y_continuous} function for labeling
-the y-axis. The default setting is \code{ylab = "Arithmetic Mean"}
-or \code{ylab = "Median"} when \code{plot = "ci"} and
-\code{ylab = "Probability Density, f(x)"} when \code{plot = "boot"}.}
-
-\item{xlim}{a numeric vector with two elements indicating the
-\code{limits} argument in the \code{scale_x_continuous}
-function for controlling the scale range of the x-axis.}
-
-\item{ylim}{a numeric vector with two elements indicating the
-\code{limits} argument in the \code{scale_y_continuous}
-function for controlling the scale range of the y-axis.}
-
-\item{xbreaks}{a numeric vector indicating the \code{breaks} argument
-in the \code{scale_x_continuous} function for controlling
-the x-axis breaks. The default setting is
-\code{xbreaks = NULL} when \code{plot = "ci"}
-and \code{xbreaks = seq(-1, 1, by = 0.25)} when
-\code{plot = "boot"}.}
-
-\item{ybreaks}{a numeric vector indicating the \code{breaks} argument
-in the \code{scale_y_continuous} function for controlling
-the y-axis breaks. The default setting is
-\code{ybreaks = seq(-1, 1, by = 0.25)} when
-\code{plot = "ci"} and \code{ybreaks = NULL} when
-\code{plot = "boot"}.}
-
-\item{axis.title.size}{a numeric value indicating the \code{size} argument
-in the \code{element_text} function for specifying the
-function controlling the font size of the axis title,
-i.e., \code{theme(axis.title = element_text(size = axis.text.size))}.}
-
-\item{axis.text.size}{a numeric value indicating the \code{size} argument
-in the \code{element_text} function for specifying the
-function controlling the font size of the axis text,
-i.e., \code{theme(axis.text = element_text(size = axis.text.size))}.}
-
-\item{strip.text.size}{a numeric value indicating the \code{size} argument
-in the \code{element_text} function for specifying the
-function controlling the font size of the strip text,
-i.e., \code{theme(strip.text = element_text(size = strip.text.size))}.}
-
-\item{title}{a character string indicating the \code{title} argument
-in the \code{labs} function for the subtitle of the plot.}
-
-\item{subtitle}{a character string indicating the \code{subtite} argument
-in the \code{labs} function for the subtitle of the plot.}
-
-\item{group.col}{a character vector indicating the \code{color} argument
-in the \code{scale_color_manual} and \code{scale_fill_manual}
-functions when specifying a grouping variable using
-the argument \code{group}.}
-
-\item{plot.margin}{a numeric vector with four elements indicating the
-\code{plot.margin} argument in the \code{theme} function
-controlling the plot margins . The default setting
-is \code{c(5.5, 5.5, 5.5, 5.5)}, but switches
-to \code{c(5.5, 5.5, -2.5, 5.5)} when specifying a
-grouping variable using the argument \code{group}.}
-
-\item{legend.title}{a character string indicating the \code{color} argument
-in the \code{labs} function for specifying the legend
-title when specifying a grouping variable using the
-argument \code{group}.}
-
-\item{legend.position}{a character string indicating the \code{legend.position}
-in the \code{theme} argument for controlling the
-position of the legend  function when specifying a
-grouping variable using the argument \code{group}.
-By default, the legend is placed at the bottom the
-plot.}
-
-\item{legend.box.margin}{a numeric vector with four elements indicating the
-\code{legend.box.margin} argument in the \code{theme}
-function for controlling the margins around the full
-legend area when specifying a grouping variable using
-the argument \code{group}.}
-
-\item{facet.ncol}{a numeric value indicating the \code{ncol} argument
-in the \code{facet_wrap} function for controlling
-the number of columns when specifying a split variable
-using the argument \code{split}.}
-
-\item{facet.nrow}{a numeric value indicating the \code{nrow} argument
-in the \code{facet_wrap} function for controlling the
-number of rows when specifying a split variable using
-the argument \code{split}.}
-
-\item{facet.scales}{a character string indicating the \code{scales} argument
-in the \code{facet_wrap} function for controlling the
-scales shared across facets, i.e., \code{"fixed"},
-\code{"free_x"}, \code{"free_y"}, or \code{"free"}
-(default) when specifying a split variable using
-the argument \code{split}.}
 
 \item{filename}{a character string indicating the \code{filename}
 argument including the file extension in the \code{ggsave}
@@ -416,9 +168,6 @@ in the \code{ggsave} function.}
 \item{height}{a numeric value indicating the \code{height} argument
 (default is the size of the current graphics device)
 in the \code{ggsave} function.}
-
-\item{units}{a character string indicating the \code{units} argument
-(default is \code{in}) in the \code{ggsave} function.}
 
 \item{dpi}{a numeric value indicating the \code{dpi} argument
 (default is \code{600}) in the \code{ggsave} function.}
@@ -468,7 +217,7 @@ Bootstrap confidence intervals are computed using the R package \code{boot}
 by Angelo Canty and Brain Ripley (2024).
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Confidence Interval (CI) for the Arithmetic Mean
 
 # Example 1a: Two-Sided 95% CI
@@ -483,7 +232,7 @@ ci.mean(mtcars, mpg, sigma = 6)
 # Alternative specification without using the '...' argument
 ci.mean(mtcars$mpg, sigma = 6)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Confidence Interval (CI) for the Median
 
 # Example 2a: Two-Sided 95% CI
@@ -493,7 +242,7 @@ ci.median(mtcars)
 ci.median(mtcars, alternative = "less", conf.level = 0.99)
 
 \dontrun{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Bootstrap Confidence Interval (CI)
 
 # Example 3a: Bias-corrected (BC) percentile bootstrap CI
@@ -501,9 +250,9 @@ ci.mean(mtcars, boot = "bc")
 
 # Example 3b: Bias-corrected and accelerated (BCa) bootstrap CI,
 # 5000 bootstrap replications, set seed of the pseudo-random number generator
-ci.mean(mtcars, boot = "bca", R = 5000, seed = 123)
+ci.mean(mtcars, boot = "bca", R = 5000, seed = 42)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Grouping and Split Variable
 
 # Example 4a: Grouping variable
@@ -524,54 +273,52 @@ ci.mean(mtcars, mpg, cyl, disp, group = "vs", split = "am")
 # Alternative specification
 ci.mean(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, split = mtcars$am)
 
-#----------------------------------------------------------------------------
-# Write Output
-
-# Example 5a: Text file
-ci.mean(mtcars, write = "CI_Mean_Text.txt")
-
-# Example 5b: Excel file
-ci.mean(mtcars, write = "CI_Mean_Excel.xlsx")
-
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Plot Confidence Intervals
 
-# Example 6a: Two-Sided 95% CI
+# Example 5a: Two-Sided 95% CI
 ci.mean(mtcars, disp, hp, plot = "ci")
 
-# Example 6b: Grouping variable
+# Example 5b: Grouping variable
 ci.mean(mtcars, disp, hp, group = "vs", plot = "ci")
 
-# Example 6c: Split variable
+# Example 5c: Split variable
 ci.mean(mtcars, disp, hp, split = "am", plot = "ci")
 
-# Example 6d: Save plot as PDF file
-ci.mean(mtcars, disp, hp, plot = "ci", saveplot = "CI_Mean.pdf",
-        width = 9, height = 6)
+# Example 5d: Plot results using the plot() function, use additional arguments
+# see Details in the help page of the function plot.misty.object
+object <- ci.mean(mtcars, disp, hp, plot = "ci")
+plot(object, ybreaks = seq(0, 300, by = 50), title = "Confidence Intervals")
 
-# Example 6e: Save plot as PNG file
-ci.mean(mtcars, disp, hp, plot = "ci", saveplot = "CI_Mean.png",
-        width = 9, height = 6)
+#————————————————————————————————————————————————————————————————————————————
+# Plot Bootstrap Samples
 
-#----------------------------------------------------------------------------
-# Example 7: Plot Bootstrap Samples
-
-# Example 7a: Two-Sided 95% CI
+# Example 6a: Two-Sided 95% CI
 ci.mean(mtcars, disp, hp, boot = "bc", plot = "boot")
 
-# Example 7b: Grouping variable
+# Example 6b: Grouping variable
 ci.mean(mtcars, disp, hp, group = "vs", boot = "bc", plot = "boot")
 
-# Example 7c: Split variable
+# Example 6c: Split variable
 ci.mean(mtcars, disp, hp, split = "am", boot = "bc", plot = "boot")
 
-# Example 7d: Save plot as PDF file
-ci.mean(mtcars, disp, hp, boot = "bc", plot = "boot", saveplot = "CI_Mean_Boot.pdf",
-        width = 12, height = 7)
+# Example 6d: Plot results using the plot() function, use additional arguments
+# see Details in the help page of the function plot.misty.object
+object <- ci.mean(mtcars, disp, hp, boot = "bc", plot = "boot")
+plot(object, fill = "gray30", title = "Bootstrap Samples")
 
-# Example 7e: Save plot as PNG file
-ci.mean(mtcars, disp, hp, boot = "bc", plot = "boot", saveplot = "CI_Mean_Boot.png",
-        width = 12, height = 7)
+#————————————————————————————————————————————————————————————————————————————
+# Write Results and Save Plot
+
+# Example 7a: Write results into a text file
+ci.mean(mtcars, write = "CI_Mean_Text.txt")
+
+# Example 7b: Write results into an Excel file
+ci.mean(mtcars, write = "CI_Mean_Excel.xlsx")
+
+# Example 7ce: Save plot as PNG file
+ci.mean(mtcars, disp, hp, plot = "ci", filename = "CI_Mean.png",
+        width = 9, height = 6)
 }
 }
 \references{

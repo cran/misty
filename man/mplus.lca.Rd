@@ -245,14 +245,14 @@ profile-varying (i.e., unequal variances and covariances across profiles).}
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1: LCA with k = 1 to k = 8 profiles, continuous indicators
 # Input statements that contain parameter estimates
 # Vuong-Lo-Mendell-Rubin LRT and bootstrapped LRT
 mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
           classes = 8, output = c("SVALUES", "TECH11", "TECH14"))
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 22: LCA with k = 1 to k = 6 profiles, ordered categorical indicators
 # Select observations with ageyr <= 13
 # Estimate all models in Mplus

@@ -31,13 +31,10 @@
 #'                specifying a three-level model (i.e., two cluster variables).
 #'                See 'Details' for the formula used in this function.
 #' @param method  a character string indicating the method used to estimate
-#'                intraclass correlation coefficients, i.e., \code{method = "aov"}
-#'                ICC estimated using the \code{aov} function, \code{method = "lme4"}
+#'                intraclass correlation coefficients, i.e., \code{method = "lme4"}
 #'                (default) ICC estimated using the \code{lmer} function in the
 #'                \pkg{lme4} package, \code{method = "nlme"} ICC estimated using
-#'                the \code{lme} function in the \pkg{nlme} package. Note that
-#'                if the lme4 or nlme package is needed when estimating ICCs in
-#'                a three-level model.
+#'                the \code{lme} function in the \pkg{nlme} package.
 #' @param REML    logical: if \code{TRUE} (default), restricted maximum likelihood
 #'                is used to estimate the null model when using the \code{lmer}
 #'                function in the \pkg{lme4} package or the \code{lme} function
@@ -214,7 +211,7 @@
 #' # Example 7c: ICC(2)
 #' multilevel.icc(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "2")
 multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
-                           method = c("aov", "lme4", "nlme"), REML = TRUE,
+                           method = c("lme4", "nlme"), REML = TRUE,
                            as.na = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
@@ -294,7 +291,7 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical = "REML", s.character = list(type = c("1a", "1b", "2"), method = c("aov", "lme4", "nlme")), envir = environment(), input.check = check)
+  .check.input(logical = "REML", s.character = list(type = c("1a", "1b", "2"), method = c("lme4", "nlme")), envir = environment(), input.check = check)
 
   # Package lme4 installed?
   if (isTRUE(method == "lme4")) { if (isTRUE(!nzchar(system.file(package = "lme4")))) { stop("Package \"lme4\" is needed for method = \"lme4\", please install the package or switch to a different method.", call. = FALSE) } }
@@ -311,13 +308,12 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
 
   if (isTRUE(all(c("1a", "1b", "2") %in% type))) { type <- "1a" }
 
+  if (isTRUE(type == "1b" && no.clust == "one")) { stop("Please specify \"1a\" or \"2\" for the argument 'type' when specifying one cluster variable.", call. = FALSE) }
+
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Method default option ####
 
-  if (isTRUE(all(c("aov", "lme4", "nlme") %in% method))) { method <- "lme4" }
-
-  # Two cluster variables
-  if (isTRUE(ncol(as.data.frame(cluster)) == 2L && method == "aov")) { stop("Please specify \"lme4\" or \"nlme\" for the argument 'method' when specifying two cluster variables.", call. = FALSE) }
+  if (isTRUE(all(c("lme4", "nlme") %in% method))) { method <- "lme4" }
 
   #_____________________________________________________________________________
   #
@@ -336,26 +332,8 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
       #### Variance Components Given One Cluster Variable
       if (isTRUE(ncol(as.data.frame(cluster)) == 1L)) {
 
-        ##### aov() function
-        switch(method, "aov" = {
-
-          # Estimate model
-          mod <- aov(x ~ 1 + Error(as.factor(cluster)))
-
-          # Model summary
-          mod.summary <- summary(mod)
-
-          # Between-cluster variance
-          var.u <- unname(unlist(mod.summary[[1L]])["Mean Sq"])
-
-          # Within-cluster variance
-          var.r <- unname(unlist(mod.summary[[2L]])["Mean Sq"])
-
-          # Total variance
-          var.total <- var.u + var.r
-
         ##### lmer() function
-        }, "lme4" = {
+        switch(method, "lme4" = {
 
           # Estimate model
           mod <- suppressWarnings(suppressMessages(lme4::lmer(x ~ 1 + (1|cluster), REML = REML, control = lme4::lmerControl(optimizer = "bobyqa"))))
@@ -395,23 +373,16 @@ multilevel.icc <- function(data, ..., cluster, type = c("1a", "1b", "2"),
 
         })
 
-        ##### ICC
-        if (isTRUE(method %in% c("lme4", "nlme"))) {
+        ##### ICC(1)
+        if (isTRUE(type == "1a")) {
 
-          # ICC(1)
-          if (isTRUE(type == "1a")) {
+          object <- (var.u / var.total) |> (\(p) if (isTRUE(p < .Machine$double.eps^0.5)) { 0 } else { p })()
 
-            object <- (var.u / var.total) |> (\(p) if (isTRUE(p < .Machine$double.eps^0.5)) { 0 } else { p })()
+        ##### ICC(2)
+        } else if (isTRUE(type == "2")) {
 
-          # ICC(2)
-          } else if (isTRUE(type == "2")) {
-
-            # Intraclass correlation coefficient, ICC(2)
-            object <- (var.u / (var.u + (var.r / mean(table(cluster))))) |> (\(p) if (isTRUE(p < .Machine$double.eps^0.5)) { 0 } else { p })()
-
-          }
-
-          if (isTRUE(object < 0L)) { object <- 0L }
+          # Intraclass correlation coefficient, ICC(2)
+          object <- (var.u / (var.u + (var.r / mean(table(cluster))))) |> (\(p) if (isTRUE(p < .Machine$double.eps^0.5)) { 0 } else { p })()
 
         }
 

@@ -207,7 +207,7 @@ Yves Rosseel (2012).
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Cluster variable specification
 
 # Example 1: Specification using the argument '...'
@@ -219,7 +219,7 @@ multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3", "cluster")], cluster = "clust
 # Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.cor(Demo.twolevel[, c("y1", "y2", "y3")], cluster = Demo.twolevel$cluster)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 2: All variables modeled at both the within and between level
 # Highlight statistically significant result at alpha = 0.05
 multilevel.cor(Demo.twolevel, y1, y2, y3, sig = TRUE, cluster = "cluster")
@@ -236,7 +236,7 @@ multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", sig = TRUE, print
 multilevel.cor(Demo.twolevel, y1, y2, y3, cluster = "cluster", sig = TRUE,
                print = c("cor", "p"), p.adj = "bonferroni")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 6: Variables "y1", "y2", and "y2" modeled at both the within and between level
 # Variables "w1" and "w2" modeled at the cluster level
 multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
@@ -246,7 +246,7 @@ multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
 multilevel.cor(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster",
                between = c("w1", "w2"), order = TRUE)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 8: lavaan model and summary of the multilevel model used to compute the
 # within-group and between-group correlation matrix
 
@@ -258,7 +258,7 @@ mod$model
 # Fitted lavaan object
 lavaan::summary(mod$model.fit, standardized = TRUE)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write Results
 
 # Example 9a: Write Results into a text file

@@ -272,10 +272,10 @@ post-burn-in phase for all parameters saved in long format in a file called
 \examples{
 \dontrun{
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Blimp Example 4.3: Linear Regression
 
-#..........
+#···················
 # Trace Plots
 
 # Example 1a: Default setting, specifying name of the folder
@@ -293,7 +293,7 @@ blimp.plot("Posterior_Ex4.3", ncol = 3)
 # Example 1f: Specify "Pastel 1" palette for the hcl.colors function
 blimp.plot("Posterior_Ex4.3", palette = "Pastel 1")
 
-#..........
+#···················
 # Posterior Distribution Plots
 
 # Example 2a: Default setting, i.e., posterior median and equal-tailed interval
@@ -311,7 +311,7 @@ blimp.plot("Posterior_Ex4.3", plot = "post", point = "none", ci = "none")
 # Example 2d: Do not display histograms
 blimp.plot("Posterior_Ex4.3", plot = "post", hist = FALSE)
 
-#..........
+#···················
 # Save Plots
 
 # Example 3a: Save all plots in pdf format
@@ -324,7 +324,7 @@ blimp.plot("Posterior_Ex4.3", saveplot = "all", filename = "Blimp_Plot.png", dpi
 blimp.plot("Posterior_Ex4.3", plot = "none", saveplot = "post",
            width = 7.5, height = 7)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Plot from misty.object
 
 # Create misty.object
@@ -336,7 +336,7 @@ blimp.plot(object, plot = "trace")
 # Posterior distribution plot
 blimp.plot(object, plot = "post")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Create Plots Manually
 
 # Load ggplot2 package
@@ -345,7 +345,7 @@ library(ggplot2)
 # Create misty object
 object <- blimp.plot("Posterior_Ex4.3", plot = "none")
 
-#..........
+#···················
 # Example 4: Trace Plots
 
 # Extract data
@@ -370,7 +370,7 @@ ggplot(data.trace, aes(x = iter, y = value, color = chain)) +
         legend.box.margin = margin(c(-16, 6, 6, 6)),
         legend.background = element_rect(fill = "transparent"))
 
-#..........
+#···················
 # Example 5: Posterior Distribution Plots
 
 # Extract data

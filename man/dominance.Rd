@@ -102,7 +102,7 @@ This function is based on the \code{domir} function from the \code{domir}
 package (Luchman, 2023).
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1: Dominance analysis for a linear model
 
 # Example 1
@@ -113,7 +113,7 @@ dominance(mod)
 dominance(mod, print = "all")
 
 \dontrun{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write results into a Text or Excel file
 
 # Example 2a: Text file

@@ -165,7 +165,7 @@ misty::libraries(misty, lme4)
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 
 Demo.twolevel <- center(Demo.twolevel, x2, type = "CWC", cluster = "cluster")
 
@@ -180,7 +180,7 @@ mod1 <- lmer(y1 ~ x2.c + x2.b + w1 + (1| cluster), data = Demo.twolevel,
 mod2 <- lmer(y1 ~ x2.c + x2.b + w1 + (1 + x2.c | cluster), data = Demo.twolevel,
              REML = FALSE, control = lmerControl(optimizer = "bobyqa"))
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1: Random intercept model
 
 # Fixed slope estimates
@@ -197,7 +197,7 @@ multilevel.r2.manual(data = Demo.twolevel,
                      tau = 0.9297401,
                      sigma2 = 1.813245794)
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 2: Random intercept and slope model
 
 # Fixed slope estimates

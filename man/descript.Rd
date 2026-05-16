@@ -33,7 +33,7 @@ omitting missing values), \code{m} (arithmetic mean), \code{se.m}
 \code{p.min} (percentage of observations at the minimum),
 \code{p25} (25th percentile, first quartile), \code{p75} (75th
 percentile, third quartile), \code{max} (maximum), \code{p.max}
-(percentage of observations at the maximum)\code{range} (range),
+(percentage of observations at the maximum), \code{range} (range),
 \code{iqr} (interquartile range), \code{skew} (skewness),
 and \code{kurt} (excess kurtosis). The default setting is
 \code{print = c("n", "nNA", "pNA", "nUQ", "m", "sd", "min", "pmin", "max", "p.max", "skew", "kurt")}.}
@@ -112,8 +112,8 @@ avoided when the floor or ceiling effect of the outcome variable exceeds 25\%.}
 }
 }
 \examples{
-#----------------------------------------------------------------------------
-# Descriptive statistics
+#————————————————————————————————————————————————————————————————————————————
+# Descriptive Statistics
 
 # Example 1a: Descriptive statistics for 'mpg', 'cyl', and 'hp'
 descript(mtcars, mpg, cyl, hp)
@@ -127,7 +127,7 @@ descript(mtcars, mpg, cyl, hp, print = "all")
 # Example 1c: Print default statistical measures plus median
 descript(mtcars, mpg, cyl, hp, print = c("default", "med"))
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Grouping and Split Variable
 
 # Example 2a: Grouping variable
@@ -158,14 +158,14 @@ descript(mtcars[, c("mpg", "cyl", "hp")], group = mtcars$vs, split = mtcars$am)
 descript(mtcars[, c("mpg", "cyl", "hp", "vs", "am")], group = "vs", split = "am")
 
 \dontrun{
-#----------------------------------------------------------------------------
-# Write Output
+#————————————————————————————————————————————————————————————————————————————
+# Write Results
 
 # Example 3a: Text file
-descript(mtcars, write = "Descript_Text.txt")
+descript(mtcars, write = "Descript.txt")
 
 # Example 3b: Excel file
-descript(mtcars, write = "Descript_Excel.xlsx")
+descript(mtcars, write = "Descript.xlsx")
 }
 }
 \references{

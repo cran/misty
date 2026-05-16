@@ -63,214 +63,23 @@
 #'                          \code{"boot"} for displaying bootstrap samples with
 #'                          histograms and density curves when the argument
 #'                          \code{"boot"} is other than \code{"none"}.
-#' @param point.size        a numeric value indicating the \code{size} argument
-#'                          in the \code{geom_point} function for controlling the
-#'                          size of points when plotting confidence intervals
-#'                          (\code{plot = "ci"}).
-#' @param point.shape       a numeric value between 0 and 25 or a character string
-#'                          as plotting symbol indicating the \code{shape} argument
-#'                          in the \code{geom_point} function for controlling the
-#'                          symbols of points when plotting confidence intervals
-#'                          (\code{plot = "ci"}).
-#' @param errorbar.width    a numeric value indicating the \code{width} argument
-#'                          in the \code{geom_errorbar} function for controlling
-#'                          the width of the whiskers in the \code{geom_errorbar}
-#'                          function when plotting confidence intervals
-#'                          (\code{plot = "ci"}).
-#' @param dodge.width       a numeric value indicating the \code{width} argument
-#'                          controlling the width of the \code{geom} elements to
-#'                          be dodged when specifying a grouping variable using
-#'                          the argument \code{group} and plotting confidence
-#'                          intervals (\code{plot = "ci"}).
 #' @param hist              logical: if \code{TRUE} (default), histograms are
 #'                          drawn when plotting bootstrap samples
 #'                          (\code{plot = "boot"}).
-#' @param binwidth          a numeric value or a function for specifying the
-#'                          \code{binwidth} argument in the \code{geom_histogram}
-#'                          function for controlling the width of the bins when
-#'                          plotting bootstrap samples (\code{plot = "boot"}).
-#' @param bins              a numeric value for specifying the \code{bins} argument
-#'                          in the \code{geom_histogram} function for controlling
-#'                          the number of bins when plotting bootstrap samples
-#'                          (\code{plot = "boot"}).
-#' @param hist.alpha        a numeric value between 0 and 1 for specifying the
-#'                          \code{alpha} argument in the \code{geom_histogram}
-#'                          function for controlling the opacity of the bars
-#'                          when plotting bootstrap samples (\code{plot = "boot"}).
-#' @param fill              a character string specifying the \code{fill} argument
-#'                          in the \code{geom_histogram} function controlling the
-#'                          fill aesthetic when plotting bootstrap samples
-#'                          (\code{plot = "boot"}). Note that this argument applied
-#'                          only when no grouping variable was specified
-#'                          \code{group = NULL}.
 #' @param density           logical: if \code{TRUE} (default), density curves are
 #'                          drawn when plotting bootstrap samples
-#'                          (\code{plot = "boot"}).
-#' @param density.col       a character string specifying the \code{color} argument
-#'                          in the \code{geom_density} function controlling the
-#'                          color of the density curves when plotting bootstrap
-#'                          samples (\code{plot = "boot"}). Note that this argument
-#'                          applied only when no grouping variable was specified
-#'                          \code{group = NULL}.
-#' @param density.linewidth a numeric value specifying the \code{linewidth}
-#'                          argument in the \code{geom_density} function controlling
-#'                          the line width of the density curves when plotting
-#'                          bootstrap samples (\code{plot = "boot"}).
-#' @param density.linetype  a numeric value or character string specifying the
-#'                          \code{linetype} argument in the \code{geom_density}
-#'                          function controlling the line type of the density
-#'                          curves when plotting bootstrap samples
 #'                          (\code{plot = "boot"}).
 #' @param point             logical: if \code{TRUE} (default), vertical lines
 #'                          representing the point estimate of the variance or
 #'                          standard deviation are drawn when plotting bootstrap
 #'                          samples (\code{plot = "boot"}).
-#' @param point.col         a character string specifying the \code{color} argument
-#'                          in the \code{geom_vline} function for controlling the
-#'                          color of the vertical line displaying the variance
-#'                          or standard deviation when plotting bootstrap samples
-#'                          (\code{plot = "boot"}). Note that this argument
-#'                          applied only when no grouping variable was specified
-#'                          \code{group = NULL}.
-#' @param point.linewidth   a numeric value specifying the \code{linewdith}
-#'                          argument in the \code{geom_vline} function for
-#'                          controlling the line width of the vertical line
-#'                          displaying the variance or standard deviation when
-#'                          plotting bootstrap samples (\code{plot = "boot"}).
-#' @param point.linetype    a numeric value or character string specifying the
-#'                          \code{linetype} argument in the \code{geom_vline}
-#'                          function controlling the line type of the vertical
-#'                          line displaying the variance or standard deviation
-#'                          when plotting bootstrap samples (\code{plot = "boot"}).
 #' @param ci                logical: if \code{TRUE} (default), vertical lines
 #'                          representing the bootstrap confidence intervals of
 #'                          the variance or standard deviation are drawn when
 #'                          plotting bootstrap samples (\code{plot = "boot"}).
-#' @param ci.col            character string specifying the \code{color} argument
-#'                          in the \code{geom_vline} function for controlling the
-#'                          color of the vertical line displaying bootstrap
-#'                          confidence intervals when plotting bootstrap samples
-#'                          (\code{plot = "boot"}). Note that this argument applied
-#'                          only when no grouping variable was specified
-#'                          \code{group = NULL}.
-#' @param ci.linewidth      a numeric value specifying the \code{linewdith} argument
-#'                          in the \code{geom_vline} function for controlling the
-#'                          line width of the vertical line displaying bootstrap
-#'                          confidence intervals when plotting bootstrap samples
-#'                          (\code{plot = "boot"}).
-#' @param ci.linetype       a numeric value or character string specifying the
-#'                          \code{linetype} argument in the \code{geom_vline}
-#'                          function controlling the line type of the vertical
-#'                          line displaying bootstrap confidence intervals when
-#'                          plotting bootstrap samples (\code{plot = "boot"}).
 #' @param line              logical: if \code{TRUE}, a horizontal line
 #'                          is drawn when \code{plot = "ci"} or a vertical line
 #'                          is drawn when \code{plot = "boot"}
-#' @param intercept         a numeric value indicating the \code{yintercept} or
-#'                          \code{xintercept} argument in the \code{geom_hline}
-#'                          or \code{geom_vline} function controlling the position
-#'                          of the horizontal or vertical line when \code{plot = "ci"}
-#'                          and \code{line = TRUE} or when \code{plot = "boot"}
-#'                          and \code{line = TRUE}. By default, the horizontal or
-#'                          vertical line is drawn at 0.
-#' @param linetype          a character string indicating the \code{linetype}
-#'                          argument in the \code{geom_hline} or \code{geom_vline}
-#'                          function controlling the line type of the horizontal
-#'                          or vertical line (default is \code{linetype = "dashed"}).
-#' @param line.col          a character string indicating the \code{color} argument
-#'                          in the \code{geom_hline} or \code{geom_vline} function
-#'                          for controlling the color of the horizontal or vertical
-#'                          line.
-#' @param xlab              a character string indicating the \code{name} argument
-#'                          in the \code{scale_x_continuous} function for labeling
-#'                          the x-axis. The default setting is \code{xlab = NULL}
-#'                          when \code{plot = "ci"} and \code{xlab = "Variance"}
-#'                          or \code{xlab = "Standard Deviation"} when \code{plot = "boot"}.
-#' @param ylab              a character string indicating the \code{name} argument
-#'                          in the \code{scale_y_continuous} function for labeling
-#'                          the y-axis. The default setting is \code{ylab = "Variance"}
-#'                          or \code{ylab = "Standard Deviation"} when \code{plot = "ci"}
-#'                          and \code{ylab = "Probability Density, f(x)"} when
-#'                          \code{plot = "boot"}.
-#' @param xlim              a numeric vector with two elements indicating the
-#'                          \code{limits} argument in the \code{scale_x_continuous}
-#'                          function for controlling the scale range of the x-axis.
-#'                          The default setting is \code{xlim = NULL}
-#'                          when \code{plot = "ci"} and \code{xlim = c(-1, 1)}
-#'                          when \code{plot = "boot"}.
-#' @param ylim              a numeric vector with two elements indicating the
-#'                          \code{limits} argument in the \code{scale_y_continuous}
-#'                          function for controlling the scale range of the y-axis.
-#'                          The default setting is \code{ylim = c(-1, 1)} when
-#'                          \code{plot = "ci"} and \code{xlim = NULL} when
-#'                          \code{plot = "boot"}.
-#' @param xbreaks           a numeric vector indicating the \code{breaks} argument
-#'                          in the \code{scale_x_continuous} function for controlling
-#'                          the x-axis breaks. The default setting is
-#'                          \code{xbreaks = NULL} when \code{plot = "ci"}
-#'                          and \code{xbreaks = seq(-1, 1, by = 0.25)} when
-#'                          \code{plot = "boot"}.
-#' @param ybreaks           a numeric vector indicating the \code{breaks} argument
-#'                          in the \code{scale_y_continuous} function for controlling
-#'                          the y-axis breaks. The default setting is
-#'                          \code{ybreaks = seq(-1, 1, by = 0.25)} when
-#'                          \code{plot = "ci"} and \code{ybreaks = NULL} when
-#'                          \code{plot = "boot"}.
-#' @param axis.title.size   a numeric value indicating the \code{size} argument
-#'                          in the \code{element_text} function for specifying the
-#'                          function controlling the font size of the axis title,
-#'                          i.e., \code{theme(axis.title = element_text(size = axis.text.size))}.
-#' @param axis.text.size    a numeric value indicating the \code{size} argument
-#'                          in the \code{element_text} function for specifying the
-#'                          function controlling the font size of the axis text,
-#'                          i.e., \code{theme(axis.text = element_text(size = axis.text.size))}.
-#' @param strip.text.size   a numeric value indicating the \code{size} argument
-#'                          in the \code{element_text} function for specifying the
-#'                          function controlling the font size of the strip text,
-#'                          i.e., \code{theme(strip.text = element_text(size = strip.text.size))}.
-#' @param title             a character string indicating the \code{title} argument
-#'                          in the \code{labs} function for the subtitle of the plot.
-#' @param subtitle          a character string indicating the \code{subtite} argument
-#'                          in the \code{labs} function for the subtitle of the plot.
-#' @param group.col         a character vector indicating the \code{color} argument
-#'                          in the \code{scale_color_manual} and \code{scale_fill_manual}
-#'                          functions when specifying a grouping variable using
-#'                          the argument \code{group}.
-#' @param plot.margin       a numeric vector with four elements indicating the
-#'                          \code{plot.margin} argument in the \code{theme} function
-#'                          controlling the plot margins . The default setting
-#'                          is \code{c(5.5, 5.5, 5.5, 5.5)}, but switches
-#'                          to \code{c(5.5, 5.5, -2.5, 5.5)} when specifying a
-#'                          grouping variable using the argument \code{group}.
-#' @param legend.title      a character string indicating the \code{color} argument
-#'                          in the \code{labs} function for specifying the legend
-#'                          title when specifying a grouping variable using the
-#'                          argument \code{group}.
-#' @param legend.position   a character string indicating the \code{legend.position}
-#'                          in the \code{theme} argument for controlling the
-#'                          position of the legend  function when specifying a
-#'                          grouping variable using the argument \code{group}.
-#'                          By default, the legend is placed at the bottom the
-#'                          plot.
-#' @param legend.box.margin a numeric vector with four elements indicating the
-#'                          \code{legend.box.margin} argument in the \code{theme}
-#'                          function for controlling the margins around the full
-#'                          legend area when specifying a grouping variable using
-#'                          the argument \code{group}.
-#' @param facet.ncol        a numeric value indicating the \code{ncol} argument
-#'                          in the \code{facet_wrap} function for controlling
-#'                          the number of columns when specifying a split variable
-#'                          using the argument \code{split}.
-#' @param facet.nrow        a numeric value indicating the \code{nrow} argument
-#'                          in the \code{facet_wrap} function for controlling the
-#'                          number of rows when specifying a split variable using
-#'                          the argument \code{split}.
-#' @param facet.scales      a character string indicating the \code{scales} argument
-#'                          in the \code{facet_wrap} function for controlling the
-#'                          scales shared across facets, i.e., \code{"fixed"},
-#'                          \code{"free_x"}, \code{"free_y"}, or \code{"free"}
-#'                          (default) when specifying a split variable using
-#'                          the argument \code{split}.
 #' @param filename          a character string indicating the \code{filename}
 #'                          argument including the file extension in the \code{ggsave}
 #'                          function. Note that one of \code{".eps"}, \code{".ps"},
@@ -286,8 +95,6 @@
 #' @param height            a numeric value indicating the \code{height} argument
 #'                          (default is the size of the current graphics device)
 #'                          in the \code{ggsave} function.
-#' @param units             a character string indicating the \code{units} argument
-#'                          (default is \code{in}) in the \code{ggsave} function.
 #' @param dpi               a numeric value indicating the \code{dpi} argument
 #'                          (default is \code{600}) in the \code{ggsave} function.
 #' @param write             a character string naming a file for writing the output
@@ -305,7 +112,7 @@
 #' @param output            logical: if \code{TRUE} (default), output is shown
 #'                          on the console.
 #'
-#' @details#'
+#' @details
 #' The confidence interval based on the chi-square distribution is computed by
 #' specifying \code{method = "chisq"}, while the Bonett (2006) confidence interval
 #' is requested by specifying \code{method = "bonett"}. By default, the Bonett
@@ -355,7 +162,7 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Confidence Interval (CI) for the Variance
 #'
 #' # Example 1a: Two-Sided 95% CI
@@ -364,17 +171,17 @@
 #' # Example 1b: One-Sided 99% CI based on the chi-square distributio
 #' ci.var(mtcars, alternative = "less", method = "chisq")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Confidence Interval (CI) for the Standard Deviation
 #'
 #' # Example 2a: Two-Sided 95% CI
 #' ci.sd(mtcars)
 #'
-#' # Example 2b: One-Sided 99% CI based on the chi-square distributio
+#' # Example 2b: One-Sided 99% CI based on the chi-square distribution
 #' ci.sd(mtcars, alternative = "less", method = "chisq")
 #'
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Bootstrap Confidence Interval (CI)
 #'
 #' # Example 3a: Bias-corrected (BC) percentile bootstrap CI
@@ -382,9 +189,9 @@
 #'
 #' # Example 3b: Bias-corrected and accelerated (BCa) bootstrap CI,
 #' # 5000 bootstrap replications, set seed of the pseudo-random number generator
-#' ci.var(mtcars, boot = "bca", R = 5000, seed = 123)
+#' ci.var(mtcars, boot = "bca", R = 5000, seed = 42)
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Grouping and Split Variable
 #'
 #' # Example 4a: Grouping variable
@@ -405,16 +212,7 @@
 #' # Alternative specification without using the '...' argument
 #' ci.var(mtcars[, c("mpg", "cyl", "disp")], group = mtcars$vs, split = mtcars$am)
 #'
-#' #----------------------------------------------------------------------------
-#' # Write Output
-#'
-#' # Example 5a: Text file
-#' ci.var(mtcars, write = "CI_Var_Text.txt")
-#'
-#' # Example 5b: Excel file
-#' ci.var(mtcars, write = "CI_Var_Excel.xlsx")
-#'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Plot Confidence Intervals
 #'
 #' # Example 6a: Two-Sided 95% CI
@@ -426,15 +224,12 @@
 #' # Example 6c: Split variable
 #' ci.var(mtcars, disp, hp, split = "am", plot = "ci")
 #'
-#' # Example 6d: Save plot as PDF file
-#' ci.var(mtcars, disp, hp, plot = "ci", filename = "CI_Var.pdf",
-#'        width = 9, height = 6)
+#' # Example 6d: Plot results using the plot() function, use additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' object <- ci.var(mtcars, disp, hp, plot = "ci")
+#' plot(object, ybreaks = seq(0, 25000, by = 2500), title = "Confidence Intervals")
 #'
-#' # Example 6e: Save plot as PNG file
-#' ci.var(mtcars, disp, hp, plot = "ci", filename = "CI_Var.png",
-#'        width = 9, height = 6)
-#'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Plot Bootstrap Samples
 #'
 #' # Example 7a: Two-Sided 95% CI
@@ -446,51 +241,46 @@
 #' # Example 7c: Split variable
 #' ci.var(mtcars, disp, hp, split = "am", boot = "bc", plot = "boot")
 #'
-#' # Example 7d: Save plot as PDF file
-#' ci.var(mtcars, disp, hp, boot = "bc", plot = "boot",
-#'        filename = "CI_Var_Boot.pdf", width = 12, height = 7)
+#' # Example 7d: Plot results using the plot() function, use additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' object <- ci.var(mtcars, disp, hp, boot = "bc", plot = "boot")
+#' plot(object, fill = "gray30", title = "Bootstrap Samples")
 #'
-#' # Example 7e: Save plot as PNG file
-#' ci.var(mtcars, disp, hp, boot = "bc", plot = "boot",
-#'        filename = "CI_Var_Boot.png", width = 12, height = 7)
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Write Results and Save Plot
+#'
+#' # Example 8a: Write results into a text file
+#' ci.var(mtcars, disp, write = "CI_Var.txt")
+#'
+#' # Example 8b: Write results into an Excel file
+#' ci.var(mtcars, disp, write = "CI_Var.xlsx")
+#'
+#' # Example 8c: Save plot as PNG file
+#' ci.var(mtcars, disp, plot = "ci", filename = "CI_Var.png",
+#'         width = 9, height = 6)
 #' }
 ci.var <- function(data, ..., method = c("chisq", "bonett"),
                    boot = c("none", "perc", "bc", "bca"), R = 1000, seed = NULL,
                    alternative = c("two.sided", "less", "greater"),
                    conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
                    na.omit = FALSE, digits = 2, as.na = NULL,
-                   plot = c("none", "ci", "boot"), point.size = 2.5, point.shape = 19,
-                   errorbar.width = 0.3, dodge.width = 0.5, hist = TRUE,
-                   binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85", density = TRUE,
-                   density.col = "#0072B2", density.linewidth = 0.5, density.linetype = "solid",
-                   point = TRUE, point.col = "#CC79A7", point.linewidth = 0.6,
-                   point.linetype = "solid", ci = TRUE, ci.col = "black",
-                   ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE, intercept = 0,
-                   linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
-                   xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
-                   axis.title.size = 11, axis.text.size = 10, strip.text.size = 11, title = NULL,
-                   subtitle = NULL, group.col = NULL, plot.margin = NA,  legend.title = "",
-                   legend.position = c("right", "top", "left", "bottom", "none"),
-                   legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-                   facet.scales = "free", filename = NULL, width = NA, height = NA,
-                   units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
+                   plot = c("none", "ci", "boot"), hist = TRUE, density = TRUE,
+                   point = TRUE, ci = TRUE, line = TRUE, filename = NULL,
+                   width = NA, height = NA, dpi = 600, write = NULL, append = TRUE,
                    check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
   # Initial Check --------------------------------------------------------------
 
-  # Check if input 'data' is missing
-  if (isTRUE(missing(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
-
-  # Check if input 'data' is NULL
-  if (isTRUE(is.null(data))) { stop("Input specified for the argument 'data' is NULL.", call. = FALSE) }
+  # Check if input 'data' is missing or NULL
+  if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a numeric vector or data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument 'data' ####
 
   if (isTRUE(!missing(...))) {
@@ -504,7 +294,7 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
     # Extract splitting variable and convert tibble into a vector
     if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument 'data' ####
 
   } else {
@@ -526,7 +316,7 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
 
   x <- x |> (\(y) !vapply(y, is.numeric, FUN.VALUE = logical(1L)))() |> (\(z) if (isTRUE(any(z))) {
@@ -543,7 +333,7 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
   if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping and Split Variable ####
 
   # Grouping variable
@@ -567,12 +357,12 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
   # Grouping and split variable are identical
   if (isTRUE(!is.null(group) && !is.null(split) && identical(group, split))) { stop("Grouping and split variables are identical.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
 
   # Check input 'na.omit'
@@ -595,11 +385,9 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical = c("sort.var", "na.omit", "append", "output"),
-               numeric = list(seed = 1L, point.size = 1L, point.shape  = 1L, errorbar.width = 1L, dodge.width = 1L, bins = 1L, density.linewidth = 1L, point.linewidth = 1L, ci.linewidth = 1L, intercept = 1L, xlim = 2L, ylim = 2L, axis.title.size = 1L, axis.text.size = 1L, strip.text.size = 1L, plot.margin = 4L, legend.box.margin = 4L, facet.ncol = 1L, facet.nrow = 1L, width = 1L, height = 1L, dpi = 1L),
-               character = list(title = 1L, subtitle = 1L, legend.title = 1L),
+  .check.input(logical = c("sort.var", "na.omit", "append", "output"), numeric = list(seed = 1L, width = 1L, height = 1L, dpi = 1L),
                s.character = list(method = c("chisq", "bonett"), boot = c("none", "perc", "bc", "bca"), plot = c("none", "ci", "boot")),
-               args = c("R", "alternative", "conf.level", "digits", "hist.alpha", "linetype", "units", "legend.position", "facet.scales", "write2"), envir = environment(), input.check = check)
+               args = c("R", "alternative", "conf.level", "digits", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
@@ -632,67 +420,23 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
     # Check input 'plot'
     if (isTRUE(all(plot == "boot") && boot == "none")) { stop("Please request bootstrap confidence intervals by specifying the 'boot' argument to plot bootstrap samples.", call. = FALSE) }
 
-    # Check input 'group.col'
-    if (isTRUE(!is.null(group.col) && length(group.col) != length(unique(group)))) { stop(paste0("Please specify a character vector with ", length(unique(group)), " elements for the argument 'group.col'."), call. = FALSE) }
-
   }
 
   #_____________________________________________________________________________
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Method ####
-
+  # 'method' Argument
   if (isTRUE(all(c("chisq", "bonett") %in% method))) { method <- "bonett" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'boot' Argument ####
-
+  # 'boot' Argument
   boot <- ifelse(all(c("none", "perc", "bc", "bca") %in% boot), "none", boot)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Alternative hypothesis ####
-
+  # 'alternative' Argument
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'plot' Argument ####
-
+  # 'plot' Argument
   plot <- ifelse(all(c("none", "ci", "boot") %in% plot), "none", plot)
-
-  # Package ggplot2
-  if (isTRUE(check && plot != "none")) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'xlab' and 'ylab', Argument ####
-
-  switch(plot, "ci" = {
-
-    ylab <- if (isTRUE(is.null(ylab))) { "Variance" } else { ylab }
-
-  }, "boot" = {
-
-    xlab <- if (isTRUE(is.null(xlab))) { "Variance" } else { xlab }
-    ylab <- if (isTRUE(is.null(ylab))) { "Probability Density, f(x)" } else { ylab }
-
-  })
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'plot.margin' Argument ####
-
-  if (isTRUE(is.na(plot.margin))) { if (isTRUE(is.null(group))) { plot.margin <- c(5.5, 5.5, 5.5, 5.5) } else { plot.margin <- c(5.5, 5.5, -2.5, 5.5) } }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'legend.position' Argument ####
-
-  if (isTRUE(all(c("right", "top", "left", "bottom", "none") %in% legend.position))) { legend.position  <- "bottom" }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'units' Argument ####
-
-  # Default setting
-  if (isTRUE(all(c("in", "cm", "mm", "px") %in% units))) { units <- "in" }
 
   #_____________________________________________________________________________
   #
@@ -703,8 +447,8 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No Bootstrapping ####
+    #——————————————————————————————————————
+    ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
@@ -725,8 +469,8 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
                            upp = vapply(x, .var.conf, method = method, alternative = alternative, conf.level = conf.level, side = "upp", FUN.VALUE = double(1L)),
                            row.names = NULL, check.names = FALSE)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Bootstrapping ####
+    #——————————————————————————————————————
+    ### Bootstrapping ####
 
     } else {
 
@@ -744,8 +488,8 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No Bootstrapping ####
+    #——————————————————————————————————————
+    ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
@@ -753,8 +497,8 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
       result <- data.frame(group = rep(names(object.group), each = ncol(x)), eval(parse(text = paste0("rbind(", paste0("object.group[[", seq_len(length(object.group)), "]]", collapse = ", "), ")"))))
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Bootstrapping ####
+    #——————————————————————————————————————
+    ### Bootstrapping ####
 
     } else {
 
@@ -772,15 +516,15 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No Bootstrapping ####
+    #——————————————————————————————————————
+    ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split), function(y) misty::ci.var(y, group = NULL, split = NULL, method = method, alternative = alternative, conf.level = conf.level, sort.var = sort.var,  check = FALSE, output = FALSE)$result)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Bootstrapping ####
+    #——————————————————————————————————————
+    ### Bootstrapping ####
 
     } else {
 
@@ -797,15 +541,15 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No Bootstrapping ####
+    #——————————————————————————————————————
+    ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
     result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split), function(y) misty::ci.var(y[, -grep("group", names(y))], group = y$group, split = NULL, method = method, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Bootstrapping ####
+    #——————————————————————————————————————
+    ### Bootstrapping ####
 
     } else {
 
@@ -826,7 +570,7 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
   object <- list(call = match.call(),
                  type = "ci.var",
                  data = list(x = x, group = group, split = split),
-                 args = list(method = method, boot = boot, R = R, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, point.size = point.size, point.shape = point.shape, errorbar.width = errorbar.width, dodge.width = dodge.width, hist = hist, binwidth = binwidth, bins = bins, hist.alpha = hist.alpha, fill = fill, density = density, density.col = density.col, density.linewidth = density.linewidth, density.linetype = density.linetype, point = point, point.col = point.col, point.linewidth = point.linewidth, point.linetype = point.linetype, ci = ci, ci.col = ci.col, ci.linewidth = ci.linewidth, ci.linetype = ci.linetype, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales, filename = filename, width = width, height = height, units = units, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(method = method, boot = boot, R = R, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  boot = if (isTRUE(boot != "none")) { boot.sample } else { NULL },
                  plot = NULL, result = result)
 
@@ -834,9 +578,9 @@ ci.var <- function(data, ..., method = c("chisq", "bonett"),
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Results ------------------------------------------------------
+  # Plot and Save Plot ---------------------------------------------------------
 
-  if (isTRUE(plot != "none")) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+  if (isTRUE(plot != "none")) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
@@ -863,22 +607,10 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
                   alternative = c("two.sided", "less", "greater"),
                   conf.level = 0.95, group = NULL, split = NULL, sort.var = FALSE,
                   na.omit = FALSE, digits = 2, as.na = NULL,
-                  plot = c("none", "ci", "boot"), point.size = 2.5, point.shape = 19,
-                  errorbar.width = 0.3, dodge.width = 0.5, hist = TRUE,
-                  binwidth = NULL, bins = NULL, hist.alpha = 0.4, fill = "gray85", density = TRUE,
-                  density.col = "#0072B2", density.linewidth = 0.5, density.linetype = "solid",
-                  point = TRUE, point.col = "#CC79A7", point.linewidth = 0.6,
-                  point.linetype = "solid", ci = TRUE, ci.col = "black",
-                  ci.linewidth = 0.6, ci.linetype = "dashed", line = FALSE, intercept = 0,
-                  linetype = "solid", line.col = "gray65", xlab = NULL, ylab = NULL,
-                  xlim = NULL, ylim = NULL, xbreaks = ggplot2::waiver(), ybreaks = ggplot2::waiver(),
-                  axis.title.size = 11, axis.text.size = 10, strip.text.size = 11, title = NULL,
-                  subtitle = NULL, group.col = NULL, plot.margin = NA,  legend.title = "",
-                  legend.position = c("right", "top", "left", "bottom", "none"),
-                  legend.box.margin = c(-10, 0, 0, 0), facet.ncol = NULL, facet.nrow = NULL,
-                  facet.scales = "free", filename = NULL, width = NA, height = NA,
-                  units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL,
-                  append = TRUE, check = TRUE, output = TRUE) {
+                  plot = c("none", "ci", "boot"), hist = TRUE, density = TRUE,
+                  point = TRUE, ci = TRUE, line = TRUE, filename = NULL,
+                  width = NA, height = NA, dpi = 600, write = NULL, append = TRUE,
+                  check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
   #
@@ -891,7 +623,7 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
   #
   # Data -----------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
@@ -905,7 +637,7 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
     # Extract splitting variable and convert tibble into a vector
     if (isTRUE(!is.null(split))) { split <- data[, split] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { unname(unlist(y)) } else { return(y) })() }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
 
   } else {
@@ -927,7 +659,7 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
 
   }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Numeric Variables ####
 
   x <- x |> (\(y) !vapply(y, is.numeric, FUN.VALUE = logical(1L)))() |> (\(z) if (isTRUE(any(z))) {
@@ -944,7 +676,7 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
 
   if (isTRUE(ncol(x) == 0L)) { stop("No variables left for analysis after excluding non-numeric variables.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Grouping and Split Variable ####
 
   # Grouping variable
@@ -968,12 +700,12 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
   # Grouping and split variable are identical
   if (isTRUE(!is.null(group) && !is.null(split) && identical(group, split))) { stop("Grouping and split variables are identical.", call. = FALSE) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { x <- .as.na(x, na = as.na) }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Listwise deletion ####
 
   # Check input 'na.omit'
@@ -996,11 +728,9 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
   # Input Check ----------------------------------------------------------------
 
   # Check inputs
-  .check.input(logical = c("sort.var", "na.omit", "append", "output"),
-               numeric = list(seed = 1L, point.size = 1L, point.shape  = 1L, errorbar.width = 1L, dodge.width = 1L, bins = 1L, density.linewidth = 1L, point.linewidth = 1L, ci.linewidth = 1L, intercept = 1L, xlim = 2L, ylim = 2L, axis.title.size = 1L, axis.text.size = 1L, strip.text.size = 1L, plot.margin = 4L, legend.box.margin = 4L, facet.ncol = 1L, facet.nrow = 1L, width = 1L, height = 1L, dpi = 1L),
-               character = list(title = 1L, subtitle = 1L, legend.title = 1L),
+  .check.input(logical = c("sort.var", "na.omit", "append", "output"), numeric = list(seed = 1L, width = 1L, height = 1L, dpi = 1L),
                s.character = list(method = c("chisq", "bonett"), boot = c("none", "perc", "bc", "bca"), plot = c("none", "ci", "boot")),
-               args = c("R", "alternative", "conf.level", "digits", "hist.alpha", "linetype", "units", "legend.position", "facet.scales", "write2"), envir = environment(), input.check = check)
+               args = c("R", "alternative", "conf.level", "digits", "write2"), envir = environment(), input.check = check)
 
   # Additional checks
   if (isTRUE(check)) {
@@ -1033,67 +763,23 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
     # Check input 'plot'
     if (isTRUE(all(plot == "boot") && (all(boot == "none") || all(c("none", "norm", "basic", "stud", "perc", "bc", "bca") %in% boot)))) { stop("Please request bootstrap confidence intervals by specifying the 'boot' argument to plot bootstrap samples.", call. = FALSE) }
 
-    # Check input 'group.col'
-    if (isTRUE(!is.null(group.col) && length(group.col) != length(unique(group)))) { stop(paste0("Please specify a character vector with ", length(unique(group)), " elements for the argument 'group.col'."), call. = FALSE) }
-
   }
 
   #_____________________________________________________________________________
   #
   # Arguments ------------------------------------------------------------------
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Method ####
-
+  # 'method' Argument
   if (isTRUE(all(c("chisq", "bonett") %in% method))) { method <- "bonett" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'boot' Argument ####
-
+  # 'boot' Argument
   boot <- ifelse(all(c("none", "perc", "bc", "bca") %in% boot), "none", boot)
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Alternative hypothesis ####
-
+  # 'alternative' Argument
   if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'plot' Argument ####
-
+  # 'plot' Argument
   plot <- ifelse(all(c("none", "ci", "boot") %in% plot), "none", plot)
-
-  # Package ggplot2
-  if (isTRUE(check && plot != "none")) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'xlab' and 'ylab', Argument ####
-
-  switch(plot, "ci" = {
-
-    ylab <- if (isTRUE(is.null(ylab))) { "Standard Deviation" } else { ylab }
-
-  }, "boot" = {
-
-    xlab <- if (isTRUE(is.null(xlab))) { "Standard Deviation" } else { xlab }
-    ylab <- if (isTRUE(is.null(ylab))) { "Probability Density, f(x)" } else { ylab }
-
-  })
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'plot.margin' Argument ####
-
-  if (isTRUE(is.na(plot.margin))) { if (isTRUE(is.null(group))) { plot.margin <- c(5.5, 5.5, 5.5, 5.5) } else { plot.margin <- c(5.5, 5.5, -2.5, 5.5) } }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'legend.position' Argument ####
-
-  if (isTRUE(all(c("right", "top", "left", "bottom", "none") %in% legend.position))) { legend.position  <- "bottom" }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## 'units' Argument ####
-
-  # Default setting
-  if (isTRUE(all(c("in", "cm", "mm", "px") %in% units))) { units <- "in" }
 
   #_____________________________________________________________________________
   #
@@ -1104,8 +790,8 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
 
   if (isTRUE(is.null(group) && is.null(split))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No Bootstrapping ####
+    #——————————————————————————————————————
+    ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
@@ -1126,8 +812,8 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
                            upp = vapply(x, .sd.conf, method = method, alternative = alternative, conf.level = conf.level, side = "upp", FUN.VALUE = double(1L)),
                            row.names = NULL, check.names = FALSE)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Bootstrapping ####
+    #——————————————————————————————————————
+    ### Bootstrapping ####
 
     } else {
 
@@ -1145,16 +831,16 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
 
   } else if (isTRUE(!is.null(group) && is.null(split))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No Bootstrapping ####
+    #——————————————————————————————————————
+    ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(x, f = group), function(y) misty::ci.sd(y, group = NULL, split = NULL, method = method, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result) |>
         (\(y) data.frame(group = rep(names(y), each = ncol(x)), eval(parse(text = paste0("rbind(", paste0("y[[", seq_len(length(y)), "]]", collapse = ", "), ")")))))()
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Bootstrapping ####
+    #——————————————————————————————————————
+    ### Bootstrapping ####
 
     } else {
 
@@ -1172,15 +858,15 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
 
   } else if (isTRUE(is.null(group) && !is.null(split))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No Bootstrapping ####
+    #——————————————————————————————————————
+    ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(data.frame(x, stringsAsFactors = FALSE), f = split), function(y) misty::ci.sd(y, group = NULL, split = NULL, method = method, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Bootstrapping ####
+    #——————————————————————————————————————
+    ### Bootstrapping ####
 
     } else {
 
@@ -1197,15 +883,15 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
 
   } else if (isTRUE(!is.null(group) && !is.null(split))) {
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## No Bootstrapping ####
+    #——————————————————————————————————————
+    ### No Bootstrapping ####
 
     if (isTRUE(boot == "none")) {
 
       result <- lapply(split(data.frame(x, group = group, stringsAsFactors = FALSE), f = split), function(y) misty::ci.sd(y[, -grep("group", names(y))], group = y$group, split = NULL, method = method, alternative = alternative, conf.level = conf.level, sort.var = sort.var, check = FALSE, output = FALSE)$result)
 
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Bootstrapping ####
+    #——————————————————————————————————————
+    ### Bootstrapping ####
 
     } else {
 
@@ -1226,7 +912,7 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
   object <- list(call = match.call(),
                  type = "ci.sd",
                  data = list(x = x, group = group, split = split),
-                 args = list(method = method, boot = boot, R = R, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, point.size = point.size, point.shape = point.shape, errorbar.width = errorbar.width, dodge.width = dodge.width, hist = hist, binwidth = binwidth, bins = bins, hist.alpha = hist.alpha, fill = fill, density = density, density.col = density.col, density.linewidth = density.linewidth, density.linetype = density.linetype, point = point, point.col = point.col, point.linewidth = point.linewidth, point.linetype = point.linetype, ci = ci, ci.col = ci.col, ci.linewidth = ci.linewidth, ci.linetype = ci.linetype, line = line, intercept = intercept, linetype = linetype, line.col = line.col, xlab = xlab, ylab = ylab, xlim = xlim, ylim = ylim, xbreaks = xbreaks, ybreaks = ybreaks, axis.title.size = axis.title.size, axis.text.size = axis.text.size, strip.text.size = strip.text.size, title = title, subtitle = subtitle, group.col = group.col, plot.margin = plot.margin, legend.title = legend.title, legend.position = legend.position, legend.box.margin = legend.box.margin, facet.ncol = facet.ncol, facet.nrow = facet.nrow, facet.scales = facet.scales, filename = filename, width = width, height = height, units = units, dpi = dpi, write = write, append = append, check = check, output = output),
+                 args = list(method = method, boot = boot, R = R, seed = seed, sample = sample, alternative = alternative, conf.level = conf.level, sort.var = sort.var, na.omit = na.omit, digits = digits, as.na = as.na, plot = plot, hist = hist, density = density, point = point, ci = ci, line = line, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
                  boot = if (isTRUE(boot != "none")) { boot.sample } else { NULL },
                  plot = NULL, result = result)
 
@@ -1234,9 +920,9 @@ ci.sd <- function(data, ..., method = c("chisq", "bonett"),
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Results ------------------------------------------------------
+  # Plot and Save Plot ---------------------------------------------------------
 
-  if (isTRUE(plot != "none")) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+  if (isTRUE(plot != "none")) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #

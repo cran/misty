@@ -749,7 +749,7 @@ multilevel.r2.manual <- function(data, within = NULL, between = NULL, random = N
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Results ------------------------------------------------------
+  # Plot and Save Plot ---------------------------------------------------------
 
   if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 

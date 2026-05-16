@@ -234,11 +234,11 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Model specification using 'data' for a one-factor model
 # with the same factor structure with one factor at the Within and Between Level
 
-#..........
+#···················
 # Cluster variable specification
 
 # Example 1a: Specification using the argument '...'
@@ -250,7 +250,7 @@ multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4", "cluster")], cluster = 
 # Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.cfa(Demo.twolevel[, c("y1", "y2", "y3", "y4")], cluster = Demo.twolevel$cluster)
 
-#..........
+#···················
 # Type of construct
 
 # Example 2a: Within-cluster constructs
@@ -265,7 +265,7 @@ multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", const = "config")
 # Example 2d: Simultaneous shared and configural cluster construct
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", const = "shareconf")
 
-#..........
+#···················
 # Residual covariances at the Within level
 
 # Example 3a: Residual covariance between 'y1' and 'y3'
@@ -275,7 +275,7 @@ multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", rescov = c("y1", "y3")
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster",
                rescov = list(c("y1", "y3"), c("y2", "y4")))
 
-#..........
+#···················
 # Residual variances at the Between level fixed at 0
 
 # Example 4a: All residual variances fixed at 0
@@ -286,14 +286,14 @@ multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", fix.resid = "all")
 # i.e., partial strong factorial invariance across clusters
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", fix.resid = c("y1", "y2", "y4"))
 
-#..........
+#···················
 # Print all results
 
 # Example 5: Set minimum value for modification indices to 1
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", print = "all",
                mod.minval = 1)
 
-#..........
+#···················
 # Example 6: lavaan model and summary of the estimated model
 
 mod <- multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", output = FALSE)
@@ -304,7 +304,7 @@ cat(mod$model)
 # Fitted lavaan object
 lavaan::summary(mod$model.fit, standardized = TRUE, fit.measures = TRUE)
 
-#..........
+#···················
 # Write results
 
 # Example 7a: Assign results into an object and write results into an Excel file
@@ -322,7 +322,7 @@ write.result(mod, "Multilevel_CFA.xlsx")
 multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", print = "all",
                write = "Multilevel_CFA.xlsx")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Model specification using 'model' for one or multiple factor model
 # with the same factor structure at the Within and Between Level
 
@@ -337,7 +337,7 @@ multilevel.cfa(Demo.twolevel, cluster = "cluster",
 multilevel.cfa(Demo.twolevel, cluster = "cluster",
                model = list(factor1 = c("y1", "y2", "y3"), factor2 = c("y4", "y5", "y6")))
 
-#..........
+#···················
 # Type of construct
 
 # Example 9a: Within-cluster constructs
@@ -356,7 +356,7 @@ multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "config",
 multilevel.cfa(Demo.twolevel, cluster = "cluster", const = "shareconf",
                model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")))
 
-#..........
+#···················
 # Residual covariances at the Within level
 
 # Example 10a: Residual covariance between 'y1' and 'y4' at the Within level
@@ -370,7 +370,7 @@ multilevel.cfa(Demo.twolevel, cluster = "cluster",
                model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
                fix.resid = "all")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Model specification using 'model.w' and 'model.b' for one or multiple factor model
 # with different factor structure at the Within and Between Level
 

@@ -93,7 +93,7 @@ df.rbind <- function(...) {
 
   for (i in seq_along(rows)) {
 
-    rng <- seq(pos[i, 1], length.out = pos[i, 2L])
+    rng <- seq(pos[i, 1L], length.out = pos[i, 2L])
 
     df <- dfs[[i]]
 

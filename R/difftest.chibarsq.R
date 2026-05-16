@@ -115,7 +115,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Step-wise Procedure (Sukpan & Kuiper, 2026)
 #' #
 #' # Note that only the first step is shown in this example:
@@ -294,6 +294,7 @@ difftest.chibarsq <- function(clpm, riclpm, alpha = 0.05, digits = 2, p.digits =
   # Check inputs
   .check.input(logical = c("append", "output"), args = c("alpha", "digits", "p.digits", "write2"), envir = environment(), input.check = check)
 
+  # Additional checks
   if (isTRUE(check)) {
 
     # Convergence

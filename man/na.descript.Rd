@@ -74,7 +74,7 @@ of missing values, and summary statistics for the number of missing
 values across all variables.
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Single-Level Data
 
 # Example 1: Descriptive statistics for missing data
@@ -86,7 +86,7 @@ na.descript(airquality, digits = 3)
 # Example 3: Descriptive statistics for missing data with frequency table
 na.descript(airquality, table = TRUE)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Two-Level Data
 
 # Load data set "Demo.twolevel" in the lavaan package
@@ -95,7 +95,7 @@ data("Demo.twolevel", package = "lavaan")
 # Example 4: Descriptive statistics for missing data
 na.descript(Demo.twolevel, cluster = "cluster")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Three-Level Data
 
 # Create arbitrary three-level data

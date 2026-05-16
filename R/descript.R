@@ -115,8 +115,8 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
-#' # Descriptive statistics
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Descriptive Statistics
 #'
 #' # Example 1a: Descriptive statistics for 'mpg', 'cyl', and 'hp'
 #' descript(mtcars, mpg, cyl, hp)
@@ -130,7 +130,7 @@
 #' # Example 1c: Print default statistical measures plus median
 #' descript(mtcars, mpg, cyl, hp, print = c("default", "med"))
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Grouping and Split Variable
 #'
 #' # Example 2a: Grouping variable
@@ -161,14 +161,14 @@
 #' descript(mtcars[, c("mpg", "cyl", "hp", "vs", "am")], group = "vs", split = "am")
 #'
 #' \dontrun{
-#' #----------------------------------------------------------------------------
-#' # Write Output
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Write Results
 #'
 #' # Example 3a: Text file
-#' descript(mtcars, write = "Descript_Text.txt")
+#' descript(mtcars, write = "Descript.txt")
 #'
 #' # Example 3b: Excel file
-#' descript(mtcars, write = "Descript_Excel.xlsx")
+#' descript(mtcars, write = "Descript.xlsx")
 #' }
 descript <- function(data, ...,
                      print = c("all", "default", "n", "nNA", "pNA", "nUQ", "m", "se.m", "var", "sd", "min", "p.min", "p25", "med", "p75", "max", "p.max", "range", "iqr", "skew", "kurt"),

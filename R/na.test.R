@@ -39,7 +39,7 @@
 #' @param seed     an integer value that is used as argument by the \code{set.seed}
 #'                 function for offsetting the random number generator before
 #'                 performing Jamshidian and Jalalꞌs approach. The default
-#'                 setting is \code{seed = 123}. Set the value to \code{NULL} to
+#'                 setting is \code{seed = 42}. Set the value to \code{NULL} to
 #'                 specify a system selected seed.
 #'                 is not used before performing Jamshidian and Jalalꞌs approach.
 #' @param nrep     an integer value indicating the replications used to simulate
@@ -265,7 +265,7 @@
 #' na.test(airquality, write = "NA_Test.txt")
 na.test <- function(data, ..., print = c("all", "little", "jamjal"),
                     impdat = NULL, delete = 6, method = c("npar", "normal"),
-                    m = 20, seed = 123, nrep = 10000, n.min = 30,
+                    m = 20, seed = 42, nrep = 10000, n.min = 30,
                     pool = c("m", "med", "min", "max", "random"),
                     alpha = 0.05, digits = 2, p.digits = 3, as.na = NULL,
                     write = NULL, append = TRUE, check = TRUE, output = TRUE) {

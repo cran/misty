@@ -56,7 +56,7 @@ copied the function \code{combinations()} from the \code{gtools} package
 (Bolker, Warnes, & Lumley, 2022).
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Linear model
 
 # Example 1a: Dominance analysis, 'mpg' predicted by 'cyl', 'disp', and 'hp'
@@ -73,7 +73,7 @@ dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]), out = "hp")
 dominance.manual(cor(mtcars[, c("mpg", "cyl", "disp", "hp")]),
                  write = "Dominance_Manual.txt")}
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 2: Structural equation modeling
 
 library(lavaan)
@@ -120,7 +120,7 @@ fit.cor <- lavInspect(fit, what = "cor.lv")
 # Dominance analysis
 dominance.manual(fit.cor)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 4: Multilevel modeling
 
 # Model specification
@@ -156,7 +156,7 @@ dominance.manual(fit.cor$within)
 dominance.manual(fit.cor$cluster)
 
 \dontrun{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 5: Mplus
 #
 # In Mplus, the model-implied correlation matrix of the latent variables

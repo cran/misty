@@ -92,7 +92,7 @@ dat <- data.frame(group = c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4),
                   y1 = c(2, 7, 4, 4, 7, 8, 4, 2, 5, 1, 3, 8),
                   y2 = c(0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1), stringsAsFactors = TRUE)
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Linear model
 
 # Estimate linear model with continuous predictors
@@ -111,7 +111,7 @@ mod.lm2 <- lm(y1 ~ x1 + x2 + x3 + x4, data = dat)
 # Example 3: Tolerance, generalized std. error, and variance inflation factor
 check.collin(mod.lm2)
 
-#-------------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Generalized linear model
 
 # Estimate logistic regression model with continuous predictors
@@ -121,7 +121,7 @@ mod.glm <- glm(y2 ~ x1 + x2 + x3, data = dat, family = "binomial")
 check.collin(mod.glm)
 
 \dontrun{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Linear mixed-effects model
 
 # Load lme4, nlme, and glmmTMB package
@@ -145,7 +145,7 @@ mod.glmmTMB1 <- glmmTMB(y1 ~ x1 + x2 + x3 + (1|group), data = dat)
 # Example 7: Tolerance, std. error, and variance inflation factor
 check.collin(mod.glmmTMB1)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Generalized linear mixed-effects model
 
 # Estimate mixed-effects logistic regression model using lme4 package
@@ -160,7 +160,7 @@ mod.glmmTMB2 <- glmmTMB(y2 ~ x1 + x2 + x3 + (1|group), data = dat, family = "bin
 # Example 9: Tolerance, std. error, and variance inflation factor
 check.collin(mod.glmmTMB2)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write Results
 
 # Example 10: Write Results into a text file

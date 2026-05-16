@@ -66,7 +66,7 @@ functions in the \pkg{semTools} package by Terrence D. Jorgensen et al.
 # Load lavaan package
 library(lavaan)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1: Saturated correlates model for the sem function
 
 # Model specification

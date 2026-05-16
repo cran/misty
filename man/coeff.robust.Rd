@@ -51,7 +51,8 @@ to be used for displaying results. Note that information
 criteria and chi-square test statistic are printed with
 \code{digits} minus 1 decimal places.}
 
-\item{p.digits}{an integer value indicating the number of decimal places}
+\item{p.digits}{an integer value indicating the number of decimal places
+to be used for displaying the \emph{p}-value.}
 
 \item{write}{a character string naming a file for writing the output into
 either a text file with file extension \code{".txt"} (e.g.,
@@ -172,20 +173,20 @@ function in the \pkg{clubSandwich} package.
 
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1: Linear model
 
 mod.lm <- lm(mpg ~ cyl + disp, data = mtcars)
 coeff.robust(mod.lm)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 2: Generalized linear model
 
 mod.glm <- glm(carb ~ cyl + disp, data = mtcars, family = poisson())
 coeff.robust(mod.glm)
 
 \dontrun{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 3: Multilevel and Linear Mixed-Effects Model
 
 # Load lme4 and misty package
@@ -212,13 +213,13 @@ mod.lme <- lme(y1 ~ x2.c + w1.c + x2.c:w1.c, random = ~ 1 + x2.c | cluster, data
 # Statistical significance testing based on cluster-robust SE
 coeff.robust(mod.lme)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write Results
 
 # Example 3a: Write results into a text file
 coeff.robust(mod.lm, write = "Robust_Coef.txt", output = FALSE)
 
-# Example 3b: Write results into a Excel file
+# Example 3b: Write results into an Excel file
 coeff.robust(mod.lm, write = "Robust_Coef.xlsx", output = FALSE)
 }
 }

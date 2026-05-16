@@ -194,7 +194,7 @@ section:
 \examples{
 \dontrun{
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1: Update VARIABLE and MODEL section
 
 # Write Mplus Data File
@@ -221,7 +221,7 @@ MODEL:    y1 ON x1;
 # Run updated Mplus input
 mod1 <- mplus.update(mod0, update1, file = "ex3_1_update1.inp")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 2: Update ANALYSIS section
 
 # Update ANALYSIS section
@@ -232,7 +232,7 @@ ANALYSIS: ESTIMATOR IS MLR;
 # Run updated Mplus input
 mod2 <- mplus.update(mod1, update2, file = "ex3_1_update2.inp")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 3: Remove OUTPUT section
 
 # Remove OUTPUT section

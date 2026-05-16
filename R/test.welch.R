@@ -5,102 +5,83 @@
 #' statistics, effect size measures, and a plot showing bars representing means
 #' for each group and error bars for difference-adjusted confidence intervals.
 #'
-#' @param formula        a formula of the form \code{y ~ group} where \code{y} is
-#'                       a numeric variable giving the data values and \code{group}
-#'                       a numeric variable, character variable or factor with two
-#'                       or more than two values or factor levels giving the
-#'                       corresponding groups.
-#' @param data           a matrix or data frame containing the variables in the
-#'                       formula \code{formula}.
-#' @param alternative    a character string specifying the alternative hypothesis,
-#'                       must be one of \code{"two.sided"} (default), \code{"greater"}
-#'                       or \code{"less"}. Note that this argument is only used when
-#'                       conducting Welch's two-sample t-test.
-#' @param posthoc        logical: if \code{TRUE}, Games-Howell post hoc test for
-#'                       multiple comparison is conducted when performing Welch's
-#'                       ANOVA.
-#' @param conf.level     a numeric value between 0 and 1 indicating the confidence
-#'                       level of the interval.
-#' @param hypo           logical: if \code{TRUE} (default), null and alternative
-#'                       hypothesis are shown on the console.
-#' @param descript       logical: if \code{TRUE} (default), descriptive statistics
-#'                       are shown on the console.
-#' @param effsize        logical: if \code{TRUE}, effect size measure Cohen's d for
-#'                       Welch's two-sample t-test (see \code{\link{cohens.d}}),
-#'                       \eqn{\eta^2} and \eqn{\omega^2} for Welch's ANOVA and
-#'                       Cohen's d for the post hoc tests are shown on the console.
-#' @param weighted       logical: if \code{TRUE}, the weighted pooled standard
-#'                       deviation is used to compute Cohen's d.
-#' @param ref            a numeric value or character string indicating the reference
-#'                       group. The standard deviation of the reference group is
-#'                       used to standardized the mean difference to compute
-#'                       Cohen's d.
-#' @param correct        logical: if \code{TRUE}, correction factor to remove
-#'                       positive bias in small samples is used.
-#' @param plot           logical: if \code{TRUE}, a plot is drawn.
-#' @param bar            logical: if \code{TRUE} (default), bars representing means
-#'                       for each groups are drawn.
-#' @param point          logical: if \code{TRUE}, points representing means for
-#'                       each groups are drawn.
-#' @param ci             logical: if \code{TRUE} (default), error bars representing
-#'                       confidence intervals are drawn.
-#' @param jitter         logical: if \code{TRUE}, jittered data points are drawn.
-#' @param adjust         logical: if \code{TRUE} (default), difference-adjustment
-#'                       for the confidence intervals is applied.
-#' @param point.size     a numeric value indicating the \code{size} aesthetic for
-#'                       the point representing the mean value.
-#' @param errorbar.width a numeric value indicating the horizontal bar width of
-#'                       the error bar.
-#' @param jitter.size    a numeric value indicating the \code{size} aesthetic
-#'                       for the jittered data points.
-#' @param jitter.width   a numeric value indicating the amount of horizontal jitter.
-#'                       data points.
-#' @param jitter.height  a numeric value indicating the amount of vertical jitter.
-#'                       data points.
-#' @param jitter.alpha   a numeric value between 0 and 1 for specifying the
-#'                       \code{alpha} argument in the \code{geom_jitter}
-#'                       function for controlling the opacity of the jittered
-#'                       data points.
-#' @param xlab           a character string specifying the labels for the x-axis.
-#' @param ylab           a character string specifying the labels for the y-axis.
-#' @param ylim           a numeric vector of length two specifying limits of the
-#'                       limits of the y-axis.
-#' @param ybreaks        a numeric vector specifying the points at which tick-marks
-#'                       are drawn at the y-axis.
-#' @param title          a character string specifying the text for the title of
-#'                       the plot.
-#' @param subtitle       a character string specifying the text for the subtitle
-#'                       of the plot.
-#' @param filename       a character string indicating the \code{filename}
-#'                       argument including the file extension in the \code{ggsave}
-#'                       function. Note that one of \code{".eps"}, \code{".ps"},
-#'                       \code{".tex"}, \code{".pdf"} (default),
-#'                       \code{".jpeg"}, \code{".tiff"}, \code{".png"},
-#'                       \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
-#'                       to be specified as file extension in the \code{filename}
-#'                       argument. Note that plots can only be saved when
-#'                       \code{plot = TRUE}.
-#' @param width          a numeric value indicating the \code{width} argument
-#'                       (default is the size of the current graphics device)
-#'                       in the \code{ggsave} function.
-#' @param height         a numeric value indicating the \code{height} argument
-#'                       (default is the size of the current graphics device)
-#'                       in the \code{ggsave} function.
-#' @param units          a character string indicating the \code{units} argument
-#'                       (default is \code{in}) in the \code{ggsave} function.
-#' @param dpi            a numeric value indicating the \code{dpi} argument
-#'                       (default is \code{600}) in the \code{ggsave} function.
-#' @param write          a character string naming a text file with file extension
-#'                       \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
-#'                       output into a text file.
-#' @param append         logical: if \code{TRUE} (default), output will be appended
-#'                       to an existing text file with extension \code{.txt} specified
-#'                       in \code{write}, if \code{FALSE} existing text file will be
-#'                       overwritten.
-#' @param check          logical: if \code{TRUE} (default), argument specification
-#'                       is checked.
-#' @param output         logical: if \code{TRUE} (default), output is shown on the
-#'                       console.
+#' @param formula     a formula of the form \code{y ~ group} where \code{y} is
+#'                    a numeric variable giving the data values and \code{group}
+#'                    a numeric variable, character variable or factor with two
+#'                    or more than two values or factor levels giving the
+#'                    corresponding groups.
+#' @param data        a matrix or data frame containing the variables in the
+#'                    formula \code{formula}.
+#' @param alternative a character string specifying the alternative hypothesis,
+#'                    must be one of \code{"two.sided"} (default), \code{"greater"}
+#'                    or \code{"less"}. Note that this argument is only used when
+#'                    conducting Welch's two-sample t-test.
+#' @param hypo        logical: if \code{TRUE} (default), null and alternative
+#'                    hypothesis are shown on the console.
+#' @param descript    logical: if \code{TRUE}, descriptive statistics are shown
+#'                    on the console when conducting Welch's ANOVA.
+#' @param effsize     logical: if \code{TRUE}, effect size measure Cohen's d for
+#'                    Welch's two-sample t-test (see \code{\link{cohens.d}}),
+#'                    \eqn{\eta^2} and \eqn{\omega^2} for Welch's ANOVA and
+#'                    Cohen's d for the post hoc tests are shown on the console.
+#' @param weighted    logical: if \code{TRUE}, the weighted pooled standard
+#'                    deviation is used to compute Cohen's d.
+#' @param ref         a numeric value or character string indicating the reference
+#'                    group. The standard deviation of the reference group is
+#'                    used to standardized the mean difference to compute
+#'                    Cohen's d.
+#' @param correct     logical: if \code{TRUE}, correction factor to remove positive
+#'                    bias in small samples for is used to compute Cohen's d.
+#' @param posthoc     logical: if \code{TRUE}, Games-Howell post hoc test for
+#'                    multiple comparison is conducted when performing Welch's
+#'                    ANOVA.
+#' @param conf.level  a numeric value between 0 and 1 indicating the confidence
+#'                    level of the interval.
+#' @param digits      an integer value indicating the number of decimal places
+#'                    to be used for displaying results.
+#' @param p.digits    an integer value indicating the number of decimal places
+#'                    to be used for displaying the \emph{p}-value.
+#' @param as.na       a numeric vector indicating user-defined missing values,
+#'                    i.e. these values are converted to \code{NA} before
+#'                    conducting the analysis.
+#' @param plot        logical: if \code{TRUE}, a plot is drawn.
+#' @param bar         logical: if \code{TRUE} (default), bars representing means
+#'                    for each groups are drawn.
+#' @param point       logical: if \code{TRUE}, points representing means for
+#'                    each groups are drawn.
+#' @param ci          logical: if \code{TRUE} (default), error bars representing
+#'                    confidence intervals are drawn.
+#' @param jitter      logical: if \code{TRUE}, jittered data points are drawn.
+#' @param adjust      logical: if \code{TRUE} (default), difference-adjustment
+#'                    for the confidence intervals is applied.
+#' @param filename    a character string indicating the \code{filename}
+#'                    argument including the file extension in the \code{ggsave}
+#'                    function. Note that one of \code{".eps"}, \code{".ps"},
+#'                    \code{".tex"}, \code{".pdf"} (default),
+#'                    \code{".jpeg"}, \code{".tiff"}, \code{".png"},
+#'                    \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+#'                    to be specified as file extension in the \code{filename}
+#'                    argument. Note that plots can only be saved when
+#'                    \code{plot = TRUE}.
+#' @param width       a numeric value indicating the \code{width} argument
+#'                    (default is the size of the current graphics device)
+#'                    in the \code{ggsave} function.
+#' @param height      a numeric value indicating the \code{height} argument
+#'                    (default is the size of the current graphics device)
+#'                    in the \code{ggsave} function.
+#' @param dpi         a numeric value indicating the \code{dpi} argument
+#'                    (default: \code{600}) in the \code{ggsave} function.
+#' @param write       a character string naming a text file with file extension
+#'                    \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
+#'                    output into a text file.
+#' @param append      logical: if \code{TRUE} (default), output will be appended
+#'                    to an existing text file with extension \code{.txt} specified
+#'                    in \code{write}, if \code{FALSE} existing text file will be
+#'                    overwritten.
+#' @param check       logical: if \code{TRUE} (default), argument specification
+#'                    is checked.
+#' @param output      logical: if \code{TRUE} (default), output is shown on the
+#'                    console.
 #'
 #' @details
 #' \describe{
@@ -143,49 +124,87 @@
 #' @export
 #'
 #' @examples
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Two-Sample Design
 #'
 #' # Example 1a: Two-sided two-sample Welch-test
-#' test.welch(mpg ~ vs, data = mtcars)
+#' test.welch(hp ~ am, data = mtcars)
 #'
 #' # Example 1b: One-sided two-sample Welch-test
-#' test.welch(mpg ~ vs, data = mtcars, alternative = "greater")
+#' test.welch(hp ~ am, data = mtcars, alternative = "less")
 #'
-#' # Example 1c: Two-sided two-sample Welch-test, print Cohen's d
-#' test.welch(mpg ~ vs, data = mtcars, effsize = TRUE)
+#' # Example 1c: Two-sided two-sample Welch-test,
+#' # Print descriptive statistics and Cohen's d
+#' test.welch(hp ~ am, data = mtcars, descript = TRUE, effsize = TRUE)
 #'
-#' # Example 1d: Two-sided two-sample Welch-test, plot results
-#' test.welch(mpg ~ vs, data = mtcars, plot = TRUE)
-#'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Multiple-Sample Design
 #'
 #' # Example 2a: Welch's ANOVA
-#' test.welch(mpg ~ gear, data = mtcars)
+#' test.welch(hp ~ gear, data = mtcars)
 #'
-#' # Example 2b: Welch's ANOVA, Games-Howell post hoc test
-#' test.welch(mpg ~ gear, data = mtcars, posthoc = TRUE)
+#' # Example 2b: Welch's ANOVA,
+#' # Print descriptive statistics and Games-Howell post hoc test
+#' test.welch(hp ~ gear, data = mtcars, descript = TRUE, posthoc = TRUE)
 #'
 #' # Example 2c: Welch's ANOVA, print eta-squared and omega-squared
-#' test.welch(mpg ~ gear, data = mtcars, effsize = TRUE)
+#' test.welch(hp ~ gear, data = mtcars, effsize = TRUE)
 #'
-#' # Example 2d: Welch's ANOVA, plot results
-#' test.welch(mpg ~ gear, data = mtcars, plot = TRUE)
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Plot
 #'
-#' # Example 2e: Welch's ANOVA, save plot
-#' test.welch(mpg ~ gear, data = mtcars, plot = TRUE,
-#'            filename = "Multiple-sample_Welch-test.png", width = 6, height = 5)
+#' # Example 3a: Plot results, default setting
+#' test.welch(hp ~ gear, data = mtcars, plot = TRUE)
+#'
+#' # Example 3b: Plot results
+#' # No bars, draw points representing means and jittered data points
+#' test.welch(hp ~ gear, data = mtcars, plot = TRUE, bar = FALSE, point = TRUE,
+#'            jitter = TRUE)
+#'
+#' # Example 3c: Plot results using the plot() function, use additional arguments
+#' # see Details in the help page of the function plot.misty.object
+#' object <- test.welch(hp ~ gear, data = mtcars)
+#' plot(object, jitter = TRUE, jitter.alpha = 0.4, title = "Welch's Test")
+#'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Create Plot Manually
+#'
+#' # Load ggplot2 package
+#' library(ggplot2)
+#'
+#' # Create misty object
+#' object <- test.welch(hp ~ gear, data = mtcars)
+#'
+#' # Example 4: Plot
+#' ggplot(object$result$descript, aes(group, y)) +
+#'   geom_bar(aes(group, m), stat = "summary", fun = "mean") +
+#'   geom_jitter(data = object$data, aes(group, y), alpha = 0.1, width = 0.05,
+#'              height = 0, size = 1.25) +
+#'   geom_point(aes(group, m), stat = "identity", size = 3) +
+#'   geom_errorbar(aes(group, m, ymin = low, ymax = upp), width = 0.1) +
+#'   theme_bw()
+#'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Write Results and Save Plot
+#'
+#' \dontrun{
+#'
+#' # Example 5a: Write results into a text file
+#' test.welch(hp ~ gear, data = mtcars, write = "Welch-Test.txt")
+#'
+#' # Example 5b: Write results into an Excel file
+#' test.welch(hp ~ gear, data = mtcars, write = "Welch-Test.xlsx")
+#'
+#' # Example 5c: Save plot as PNG fine
+#' test.welch(hp ~ gear, data = mtcars, plot = TRUE,
+#'             filename = "Welch-Test.png", width = 6, height = 5)
+#' }
 test.welch <- function(formula, data, alternative = c("two.sided", "less", "greater"),
-                       posthoc = FALSE, conf.level = 0.95, hypo = TRUE, descript = TRUE,
-                       effsize = FALSE, weighted = FALSE, ref = NULL, correct = FALSE,
-                       digits = 2, p.digits = 3, as.na = NULL, plot = FALSE,
-                       bar = TRUE, point = FALSE, ci = TRUE, jitter = FALSE,
-                       adjust = TRUE, point.size = 3, errorbar.width = 0.1, jitter.size = 1.25,
-                       jitter.width = 0.05, jitter.height = 0, jitter.alpha = 0.1,
-                       xlab = NULL, ylab = "y", ylim = NULL, ybreaks = ggplot2::waiver(),
-                       title = NULL, subtitle = "Confidence Interval", filename = NULL,
-                       width = NA, height = NA, units = c("in", "cm", "mm", "px"), dpi = 600,
+                       hypo = FALSE, descript = FALSE, effsize = FALSE, weighted = FALSE,
+                       ref = NULL, correct = FALSE, posthoc = FALSE, conf.level = 0.95,
+                       digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE,
+                       point = FALSE, ci = TRUE, jitter = FALSE, adjust = TRUE,
+                       filename = NULL, width = NA, height = NA,  dpi = 600,
                        write = NULL, append = TRUE, check = TRUE, output = TRUE) {
 
   #_____________________________________________________________________________
@@ -200,7 +219,10 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
 
   #_____________________________________________________________________________
   #
-  # Variables ------------------------------------------------------------------
+  # Formula and Data Frame -----------------------------------------------------
+
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Variables ####
 
   var.formula <- all.vars(as.formula(formula))
 
@@ -212,39 +234,48 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Data -----------------------------------------------------------------------
 
-  # Check inputs
-  .check.input(logical = c("posthoc", "hypo", "descript", "effsize", "weighted", "correct", "plot", "bar", "point", "ci", "jitter", "adjust", "append", "output"),
-               numeric = list(point.size = 1L, errorbar.width = 1L, jitter.size = 1L, jitter.width = 1L, jitter.height = 1L, jitter.alpha = 1L, ylim = 2L),
-               character = list(xlab = 1L, ylab = 1L, title = 1L, subtitle = 1L),
-               args = c("conf.level", "digits", "p.digits", "write1"), envir = environment(), input.check = check)
+  # As data frame
+  data <- as.data.frame(data)
 
-  # Additional checks
-  if (isTRUE(check)) {
+  # Check if variables are in the data
+  (!var.formula %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(y)], collapse = ", ")), call. = FALSE) })()
 
-    # Package ggplot2
-    if (isTRUE(plot)) { if (isTRUE(!nzchar(system.file(package = "ggplot2")))) { stop("Package \"ggplot2\" is needed to draw a plot, please install the package.", call. = FALSE) } }
+  # Check if input 'formula' has only one grouping variable
+  if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
 
-    # Check if variables are in the data
-    (!var.formula %in% colnames(data)) |> (\(y) if (isTRUE(any(y))) { stop(paste0("Variables specified in the the formula were not found in 'data': ", paste(var.formula[which(y)], collapse = ", ")), call. = FALSE) })()
+  # Check if input 'formula' has only one outcome variable
+  if (isTRUE(length(y.var) != 1L)) { stop("Please specify a formula with only one outcome variable.", call. = FALSE) }
 
-    # Check if input 'formula' has only one grouping variable
-    if (isTRUE(length(group.var) != 1L)) { stop("Please specify a formula with only one grouping variable.", call. = FALSE) }
-
-    # Check if input 'formula' has only one outcome variable
-    if (isTRUE(length(y.var) != 1L)) { stop("Please specify a formula with only one outcome variable.", call. = FALSE) }
-
-  }
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Convert user-missing values into NA ####
 
   if (isTRUE(!is.null(as.na))) { data[, y.var] <- .as.na(data[, y.var], na = as.na) }
 
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Listwise Deletion ####
+
+  data <- na.omit(data[, var.formula])
+
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Input Check ----------------------------------------------------------------
+
+  # Check inputs
+  .check.input(logical = c("posthoc", "hypo", "descript", "effsize", "weighted", "correct", "plot", "bar", "point", "ci", "jitter", "adjust", "append", "output"),
+               args = c("conf.level", "digits", "p.digits", "write2"), envir = environment(), input.check = check)
+
+  #_____________________________________________________________________________
+  #
+  # Arguments ------------------------------------------------------------------
+
+  # 'alternative' Argument
+  if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
+
+  #_____________________________________________________________________________
+  #
+  # Main Function --------------------------------------------------------------
 
   # Outcome
   y <- unlist(data[, y.var])
@@ -255,62 +286,49 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
   # Sample
   sample <- ifelse(length(levels(group)) == 2L, "two", "multiple")
 
-  #_____________________________________________________________________________
-  #
-  # Arguments ------------------------------------------------------------------
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Two-sample Welch Test ####
 
-  # Global variables
-  m <- low <- upp <- NULL
-
-  # Alternative hypothesis
-  if (isTRUE(all(c("two.sided", "less", "greater") %in% alternative))) { alternative <- "two.sided" }
-
-  #_____________________________________________________________________________
-  #
-  # Main Function --------------------------------------------------------------
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Two-sample Welch test ####
   if (isTRUE(sample == "two")) {
+
+    # Argument 'descript'
+    descript <- TRUE
 
     # Descriptive statistics
     ci.table <- misty::df.rename(misty::ci.mean.diff(formula = formula, data = data,  paired = FALSE, adjust = adjust, alternative = alternative, conf.level = conf.level, check = FALSE, output = FALSE)$result,
                                  from = c("between", "low", "upp"), to = c("group", "m.low", "m.upp"))
 
     # Cohen's d
-    d <- misty::cohens.d(formula = formula, data = data, paired = FALSE, mu = 0L,
-                         weighted = weighted, cor = TRUE, ref = ref, correct = correct,
-                         alternative = alternative, conf.level = conf.level,
-                         group = NULL, split = NULL, sort.var = FALSE,
-                         check = FALSE, output = FALSE)$result
+    d <- misty::cohens.d(formula = formula, data = data, paired = FALSE, mu = 0L, weighted = weighted, cor = TRUE, ref = ref,
+                         correct = correct, alternative = alternative, conf.level = conf.level,
+                         group = NULL, split = NULL, sort.var = FALSE, check = FALSE, output = FALSE)$result
 
     # Welch's test for two groups
-    welch <- t.test(formula = formula, data = data,
-                    alternative = switch(alternative, two.sided = "two.sided", greater = "less", less = "greater"),
-                    var.equal = FALSE)
+    welch <- t.test(formula = formula, data = data, alternative = switch(alternative, two.sided = "two.sided", greater = "less", less = "greater"), var.equal = FALSE)
 
-    #...................
+    #——————————————————————————————————————
     ### Result object ####
 
     result <- data.frame(cbind(ci.table[, c("group", "n", "nNA", "m", "sd", "m.diff")],
                                se = c(NA, welch$stderr), ci.table[, c("m.low", "m.upp")],
-                               t = c(NA, welch$statistic)*-1L, df = c(NA, welch$parameter), pval = c(NA, welch$p.value),
-                               d = d$d, d.low = d$low, d.upp = d$upp),
-                         row.names = NULL)
+                               t = c(NA, welch$statistic)*-1L, df = c(NA, welch$parameter),
+                               pval = c(NA, welch$p.value),
+                               d = d$d, d.low = d$low, d.upp = d$upp), row.names = NULL)
 
     sample <- "two"
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ## Welch's test for more than two groups ####
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ## Welch's Test for More Than Two Groups ####
+
   } else if (isTRUE(sample == "multiple")) {
 
-    #...................
+    #——————————————————————————————————————
     ### Descriptive statistics ####
 
     ci.table <- misty::ci.mean(y, group = group, adjust = adjust, output = FALSE)$result[, c("group", "n", "nNA", "m", "low", "upp", "sd", "skew", "kurt")]
 
-    #...................
-    ### ANOVA table ####
+    #——————————————————————————————————————
+    ### ANOVA Table ####
 
     aov.table <- summary(aov(y ~ group))[[1L]]
 
@@ -320,23 +338,23 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
     ms.r <- aov.table[["Mean Sq"]][2L]
     ss.t <- sum(aov.table[["Sum Sq"]])
 
-    #...................
-    ### Eta squared ####
+    #——————————————————————————————————————
+    ### Eta Squared ####
 
     eta.sq <- ss.m / ss.t
 
-    #...................
-    ### Omega squared ####
+    #——————————————————————————————————————
+    ### Omega Squared ####
 
     omega.sq <- (ss.m - df.m*ms.r) / (ss.t + ms.r) |> (\(y) ifelse(y < 0L, 0L, y))()
 
-    #...................
+    #——————————————————————————————————————
     ### Welch's ANOVA ####
 
-    welch <- oneway.test(formula = formula, data = data, var.equal = FALSE)
+    welch <- oneway.test(y ~ as.factor(group), data = data, var.equal = FALSE)
 
-    #...................
-    ### Post Hoc test ####
+    #——————————————————————————————————————
+    ### Post Hoc Test ####
 
     # Generate all pairwise combinations
     combs <- combn(levels(group), m = 2L)
@@ -351,7 +369,6 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
     means <- setNames(ci.table[["m"]], ci.table[["group"]])
     vars <- setNames(ci.table[["sd"]]^2L, ci.table[["group"]])
 
-    ###
     # Conduct post-hoc test
     result.ph <- lapply(seq_len(ncol(combs)), function(x) {
 
@@ -396,27 +413,23 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
 
       cohen <- misty::cohens.d(y ~ group, data = data.temp, weighted = weighted, correct = correct, conf.level = conf.level, check = FALSE, output = FALSE)$result
 
-      ###
       # Collect results
       result.ph <- list(combs[1L, x], combs[2L, x], m.diff, se, m.low, m.upp, t, df, pval, d = cohen[2L, "d"], cohen[2L, "low"], cohen[2L, "upp"])
 
     })
 
     # Result table
-    result.ph <- data.frame(matrix(unlist(lapply(result.ph, function(x) { unlist(x) })), nrow = ncol(combs), byrow = TRUE,
+    result.ph <- data.frame(matrix(unlist(lapply(result.ph, function(y) { unlist(y) })), nrow = ncol(combs), byrow = TRUE,
                                    dimnames = list(NULL, c("group1", "group2", "m.diff", "se", "m.low", "m.upp", "t", "df", "pval", "d", "d.low", "d.upp"))))
 
     # Convert to numeric
     result.ph[, c(3L:ncol(result.ph))] <- as.numeric(as.matrix(result.ph[, c(3L:ncol(result.ph))]))
 
-    #...................
+    #——————————————————————————————————————
     ### Result object ####
 
     result <- list(descript = ci.table,
-                   test = data.frame(F = welch$statistic,
-                                     df1 = welch$parameter["num df"], df2 = welch$parameter["denom df"],
-                                     pval = welch$p.value,
-                                     eta.sq = eta.sq, omega.sq = omega.sq, row.names = NULL),
+                   test = data.frame(F = welch$statistic, df1 = welch$parameter["num df"], df2 = welch$parameter["denom df"], pval = welch$p.value, eta.sq = eta.sq, omega.sq = omega.sq, row.names = NULL),
                    posthoc = result.ph)
 
     sample <- "multiple"
@@ -430,50 +443,25 @@ test.welch <- function(formula, data, alternative = c("two.sided", "less", "grea
   object <- list(call = match.call(),
                  type = "test.welch",
                  sample = sample,
-                 data = data.frame(y, group),
+                 data = data.frame(y, group = factor(group)),
                  formula = formula,
-                 args = list(alternative = alternative, posthoc = posthoc,
-                             conf.level = conf.level, hypo = hypo, descript = descript,
-                             effsize = effsize, weighted = weighted, ref = ref, correct = correct,
-                             digits = digits, p.digits = p.digits, as.na = as.na, plot = plot,
-                             bar = bar, point = point, ci = ci, jitter = jitter,
-                             adjust = adjust, point.size = point.size, errorbar.width = errorbar.width,
-                             jitter.size = jitter.size, jitter.width = jitter.width, jitter.height = jitter.height,
-                             jitter.alpha = jitter.alpha, xlab = xlab, ylab = ylab, ylim = ylim, ybreaks = ybreaks,
-                             title = title, subtitle = subtitle, filename = filename,
-                             width = width, height = height, units = units, dpi = dpi,
-                             write = write, append = append, check = check, output = output),
-                 plot = NULL, result = result)
+                 args = list(alternative = alternative, posthoc = posthoc, conf.level = conf.level, hypo = hypo, descript = descript, effsize = effsize, weighted = weighted, ref = ref, correct = correct, digits = digits, p.digits = p.digits, as.na = as.na, plot = plot, bar = bar, point = point, ci = ci, jitter = jitter, adjust = adjust, filename = filename, width = width, height = height, dpi = dpi, write = write, append = append, check = check, output = output),
+                 plot = NULL,
+                 result = result)
 
   class(object) <- "misty.object"
 
   #_____________________________________________________________________________
   #
-  # Plot and Save Results ------------------------------------------------------
+  # Plot and Save Plot ---------------------------------------------------------
 
-  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, units = units, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
+  if (isTRUE(plot)) { object$plot <- plot(object, filename = filename, width = width, height = height, dpi = dpi, check = FALSE) |> (\(y) suppressMessages(suppressWarnings(print(y))))() }
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
-  if (isTRUE(!is.null(write))) {
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    ## Text file ####
-
-    # Send R output to text file
-    sink(file = write, append = ifelse(isTRUE(file.exists(write)), append, FALSE), type = "output", split = FALSE)
-
-    if (isTRUE(append && file.exists(write))) { write("", file = write, append = TRUE) }
-
-    # Print object
-    print(object, check = FALSE)
-
-    # Close file connection
-    sink()
-
-  }
+  if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #

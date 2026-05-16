@@ -1,4 +1,41 @@
-### misty 0.8.1 (2026-03.06)
+### misty 0.8.2 (2026-05-16)
+
+##### New features
+* New function `modcomp()` for model comparison by providing a table with fit indices
+for lavaan model objects, information criteria, and likelihood ratio or F-test for
+various model objects, e.g., from the `lm()`, `lme()`, `nlme()`, `lmer()`, and
+`glmer()` function.
+.
+* New function `boot.bs()` for perfoming Bollen-Stine bootstrapping with incomplete
+data.
+* New function `sim.lavaan()` for generating simulated data from a lavaan model 
+syntax with unstandardized and standardized parameters.
+* New function `item.dfi()` for computing simulation-based dynamic fit index cutoffs
+for evaluating confirmatory factor models based on multivariate normal, multivariate
+non-normal, likert-type, and categorical data.
+
+##### Minor features and improvements
+* The function `write.result()` supports result objects from the functions 
+`aov.b()`, `test.levene()`, `test.welch()`.
+
+##### User-visible changes
+* Removed the option `aov` from the `method` argument in the `multilevel.icc()` 
+function.
+* Moved the package `data.table` from `Suggests` to `Imports`.
+* Changed the default setting of the argument `hypo` and `descript` in the functions
+`aov.b`, `test.levene`, `test.welch`, `test.t`, `test.z` to `FALSE`.
+* Changed the default setting of the argument `weighted` in the function
+`aov.b` and `test.t` to `TRUE`.
+* Changed the default setting of the argument `epsilon` in the function
+`aov.w` to `FALSE`.
+* Removed the numerous plotting arguments from the functions `aov.b`, `aov.w`,
+ `ci.cor`, `ci.mean`, `ci.median`, `ci.var`, `ci.sd`, `test.levene`, `test.t`,
+ `test.welch`, amd `test.z`.
+* Renamed columns in the output of the functions `aov.b`, `aov.w`, `test.levene` 
+from `Df`, `Sum Sq`, `Mean Sq`, `F value`, and `Pr(>F)` to `df`, `SS`, `MSS`, `F`, 
+and `p`.
+
+### misty 0.8.1 (2026-03-06)
 
 ##### New features
 * New function `item.noninvar()` for computing the effect size measure dMACS by 

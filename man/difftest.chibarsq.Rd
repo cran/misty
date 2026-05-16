@@ -102,7 +102,7 @@ from the \pkg{ChiBarSq.DiffTest} package by Rebecca M. Kuiper.
 }
 \examples{
 \dontrun{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Step-wise Procedure (Sukpan & Kuiper, 2026)
 #
 # Note that only the first step is shown in this example:
@@ -112,7 +112,7 @@ from the \pkg{ChiBarSq.DiffTest} package by Rebecca M. Kuiper.
 # Model specification based on code provided on the accompanying website of
 # Mulder and Hamaker (2021)
 
-#..................
+#···················
 # Model Specification: Cross-Lagged Panel Model (CLPM)
 # i.e., Var(Kappa) = 0, Var(Omega) = 0, Cov(Kappa, Omega) = 0
 
@@ -154,7 +154,7 @@ mod.clpm <- '
   wy3 ~~ wy3
 '
 
-#..................
+#···················
 # Model Specification: Random Intercept Cross-Lagged Panel Model RI-CLPM(Kappa)
 # i.e., Var(Kappa) > 0, Var(Omega) = 0, Cov(Kappa, Omega) = 0
 
@@ -196,7 +196,7 @@ mod.ri.clpm.k <- '
   wy3 ~~ wy3
 '
 
-#..................
+#···················
 # Model Specification: Random Intercept Cross-Lagged Panel Model RI-CLPM(Omega)
 # i.e., Var(Kappa) = 0, Var(Omega) > 0, Cov(Kappa, Omega) = 0
 
@@ -238,7 +238,7 @@ mod.ri.clpm.o <- '
   wy3 ~~ wy3
 '
 
-#..................
+#···················
 # Estimate Models
 #
 # Note that the example analysis cannot be conduct as the data set 'data'
@@ -253,7 +253,7 @@ fit.ri.clpm.k <- lavaan(mod.ri.clpm.k, data = data, estimator = "MLR")
 # RI-CLPM(Omega)
 fit.ri.clpm.o <- lavaan(mod.ri.clpm.o, data = data, estimator = "MLR")
 
-#..................
+#···················
 # Chi-Bar-Square Difference Test
 
 # CLPM vs. RI-CLPM(Kappa)

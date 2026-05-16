@@ -111,7 +111,7 @@ to exclude result sections from the output (e.g., \code{exclude = "algo.options"
 \examples{
 \dontrun{
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Blimp Example 4.3: Linear Regression
 
 # Example 1a: Default setting
@@ -132,7 +132,7 @@ blimp.print("Ex4.3.blimp-out", result = "all", exclude = "fit")
 # Example 1g: Print result section in a different order
 blimp.print("Ex4.3.blimp-out", result = c("model.info", "fit", "algo.options"))
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # misty.object of type 'blimp.print'
 
 # Example 2
@@ -142,7 +142,7 @@ object <- blimp.print("Ex4.3.blimp-out", output = FALSE)
 # Print misty.object
 blimp.print(object)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write Results
 
 # Example 3: Write Results into a text file

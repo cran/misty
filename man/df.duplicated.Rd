@@ -58,7 +58,7 @@ dat <- data.frame(x1 = c(1, 1, 2, 1, 4), x2 = c(1, 1, 2, 1, 6),
                   x3 = c(2, 2, 3, 2, 6), x4 = c(1, 1, 2, 2, 4),
                   x5 = c(1, 1, 4, 4, 3))
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # df.duplicated() function
 
 # Example 1: Extract duplicated rows based on all variables
@@ -86,7 +86,7 @@ df.duplicated(dat, x4, first = FALSE, from.last = TRUE)
 # set row names to NULL
 df.duplicated(dat, x2, x3, keep.row.names = FALSE)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # df.unique() function
 
 # Example 8: Extract unique rows based on all variables

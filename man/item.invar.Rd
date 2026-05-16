@@ -386,10 +386,10 @@ provided in the R package \pkg{lavaan} by Yves Rosseel (2012).
 # Load data set "HolzingerSwineford1939" in the lavaan package
 data("HolzingerSwineford1939", package = "lavaan")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Between-Group Measurement Invariance: Continuous Indicators
 
-#..................
+#···················
 # Measurement model with one factor
 
 # Example 1a: Model specification using the argument '...'
@@ -405,7 +405,7 @@ item.invar(HolzingerSwineford1939[, c("x1", "x2", "x3", "x4", "school")], group 
 # Example 1d: Alternative model specification using the argument 'model'
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"), group = "school")
 
-#..................
+#···················
 # Measurement model with two factors
 
 # Example 2: Model specification using the argument 'model'
@@ -413,14 +413,14 @@ item.invar(HolzingerSwineford1939,
            model = list(c("x1", "x2", "x3", "x4"), c("x5", "x6", "x7", "x8")),
            group = "school")
 
-#..................
+#···················
 # Configural, metric, scalar, and strict measurement invariance
 
 # Example 3: Evaluate configural, metric, scalar, and strict measurement invariance
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "school", invar = "strict")
 
-#..................
+#···················
 # Between-group partial measurement invariance
 
 # Example 4a: Two Groups
@@ -444,7 +444,7 @@ item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
                           inter = list(x1 = "g3"),
                           resid = list(x3 = c("g1", "g3"))))
 
-#..................
+#···················
 # Residual covariances
 
 # Example 5a: One residual covariance
@@ -455,7 +455,7 @@ item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            rescov = list(c("x1", "x4"), c("x3", "x4")), group = "school")
 
-#..................
+#···················
 # Scaled test statistic
 
 # Example 6a: Specify cluster variable using a variable name in 'data'
@@ -466,14 +466,14 @@ item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "school", cluster = HolzingerSwineford1939$agemo)
 
-#..................
+#···················
 # Default Null model
 
 # Example 7: Specify default null model for computing incremental fit indices
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "school", null.model = FALSE)
 
-#..................
+#···················
 # Print argument
 
 # Example 8a: Request all results
@@ -490,7 +490,7 @@ item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "school", print = c("modind", "resid"),
            mod.minval = 2, resid.minval = 0.3)
 
-#..................
+#···················
 # Model syntax and lavaan summary of the estimated model
 
 # Example 9a: Model specification using the argument '...'
@@ -510,14 +510,14 @@ cat(mod2$model$metric)
 # lavaan model syntax scalar invariance model
 cat(mod2$model$scalar)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Longitudinal Measurement Invariance: Continuous Indicators
 
 # Example 10: Two time points with three indicators at each time point
 item.invar(HolzingerSwineford1939,
            model = list(c("x1", "x2", "x3"), c("x5", "x6", "x7")), long = TRUE)
 
-#..................
+#···················
 # Longitudinal partial measurement invariance
 
 # Example 11: Two Time Points with three indicators at each time point
@@ -528,7 +528,7 @@ item.invar(HolzingerSwineford1939,
            partial = list(load = "x2",
                           inter = c("x1", "x2")))
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Between-Group Measurement Invariance: Ordered Categorical Indicators
 #
 # Note that the example analysis for ordered categorical indicators cannot be
@@ -541,7 +541,7 @@ item.invar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE
 item.invar(data, item1, item2, item3, item4, group = "two.group", ordered = TRUE,
            parameterization = "theta")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Between-Group Partial Measurement Invariance: Ordered Categorical Indicators
 
 # Example 13a: Two Groups
@@ -571,7 +571,7 @@ item.invar(data, item1, item2, item3, item4, group = "four.group", ordered = TRU
                           inter = list(item2 = "g1", item3 = c("g2", "g4")),
                           resid = list(item1 = c("g1", "g3"))))
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Longitudinal Measurement Invariance: Ordered Categorical Indicators
 
 # Example 14: Two Time Points
@@ -579,7 +579,7 @@ item.invar(data, model = list(c("aitem1", "aitem2", "aitem3"),
                               c("bitem1", "bitem2", "bitem3")),
            long = TRUE, ordered = TRUE)
 
-#..................
+#···················
 # Longitudinal partial measurement invariance: Ordered Categorical Indicators
 
 # Example 15: Two Time Points
@@ -596,14 +596,14 @@ item.invar(data, model = list(c("aitem1", "aitem2", "aitem3"),
                           inter = c("aitem1", "bitem2"),
                           resid = "aitem3"))
 
-#------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write Results
 
 # Example 16a: Write Results into a text file
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "school", print = "all", write = "Invariance.txt", output = FALSE)
 
-# Example 16b: Write Results into a Excel file
+# Example 16b: Write Results into an Excel file
 item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
            group = "school", print = "all", write = "Invariance.xlsx", output = FALSE)
 }

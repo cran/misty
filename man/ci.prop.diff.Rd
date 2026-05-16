@@ -102,7 +102,7 @@ as well as moderate to larger samples(n > 30 in each sample) and with proportion
 Wald confidence intervals does not perform well unless the sample size is large (Fagerland, Lydersen & Laake, 2011).
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Two-sample design
 
 # Example 1a: Two-Sided 95% CI for 'vs' by 'am'
@@ -117,7 +117,7 @@ ci.prop.diff(vs ~ am, data = mtcars, method = "wald")
 # Newcombes Hybrid Score interval
 ci.prop.diff(c(0, 1, 1, 0, 0, 1, 0, 1), c(1, 1, 1, 0, 0))
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Paired-sample design
 
 dat.p <- data.frame(pre = c(0, 1, 1, 0, 1), post = c(1, 1, 0, 1, 1))

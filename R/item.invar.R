@@ -615,7 +615,7 @@
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "school", print = "all", write = "Invariance.txt", output = FALSE)
 #'
-#' # Example 16b: Write Results into a Excel file
+#' # Example 16b: Write Results into an Excel file
 #' item.invar(HolzingerSwineford1939, model = c("x1", "x2", "x3", "x4"),
 #'            group = "school", print = "all", write = "Invariance.xlsx", output = FALSE)
 #' }

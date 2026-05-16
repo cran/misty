@@ -224,7 +224,7 @@ function in the \pkg{remef} package by Sven Hohenstein and Reinhold Kliegl (2025
 when requesting partial residual plots for linear mixed-effects models.
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Linear Model
 
 # Estimate linear model
@@ -249,7 +249,7 @@ object$plotdat
 object$plot
 
 \dontrun{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Multilevel and Linear Mixed-Effects Model
 
 # Estimate two-level mixed-effects model

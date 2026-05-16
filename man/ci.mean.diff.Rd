@@ -134,7 +134,7 @@ population standard deviation or population variance for one or more variables,
 optionally by a grouping and/or split variable.
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # One-sample design
 
 # Example 1a: Two-Sided 95% CI for 'mpg'
@@ -145,7 +145,7 @@ ci.mean.diff(mtcars$mpg, mu = 20)
 # population mean = 20
 ci.mean.diff(mtcars$mpg, mu = 20, alternative = "greater")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Two-sample design
 
 # Example 2a: Two-Sided 95% CI for 'mpg' by 'vs'
@@ -185,7 +185,7 @@ group2 <- c(5, 2, 4, 3, 1)
 
 ci.mean.diff(group1, group2)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Paired-sample design
 
 dat.p <- data.frame(pre = c(1, 3, 2, 5, 7, 6), post = c(2, 2, 1, 6, 8, 9),

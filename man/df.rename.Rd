@@ -34,7 +34,7 @@ and a character vector indicating the corresponding replacement values (argument
 \code{to}).
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Rename using variable names
 
 # Example 1a: Rename 'cyl' in 'mtcars' to 'cylinder' using 'old_name = new_name'
@@ -51,7 +51,7 @@ df.rename(mtcars, cyl = cylinder, wt = weight)
 # using using 'from' and 'to'
 df.rename(mtcars, from = c("cyl", "wt"), to = c("cylinder", "weight"))
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Rename using functions
 
 # Example 3: Convert all variable names to lowercase

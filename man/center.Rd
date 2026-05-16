@@ -255,7 +255,7 @@ recommend at this
 time.
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Single-Level Data
 
 # Example 1a: Center predictor 'disp' at the grand mean
@@ -276,13 +276,13 @@ center(mtcars, disp, value = 3)
 # Example 1d: Center predictors 'disp' and 'hp' and label with the suffix ".v"
 center(mtcars, disp, hp, name = ".v")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Two-Level Data
 
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#.........................................
+#·········································
 # Level-1 (L1) Predictor
 
 # Example 2a: Center L1 predictor 'y1' within L2 clusters
@@ -298,21 +298,21 @@ center(Demo.twolevel, y1, cluster = "cluster", type = "CGM")
 # Alternative specification
 center(Demo.twolevel, y1)
 
-#.........................................
+#·········································
 # Level-2 (L2) Predictor
 
 # Example 2c: Center L2 predictor 'w2' at the average L2 cluster scores
 #             Note that cluster ID is needed
 center(Demo.twolevel, w1, cluster = "cluster")
 
-#.........................................
+#·········································
 # L1 and L2 Predictors
 
 # Example 2d: Center L1 predictor 'y1' within L2 clusters
 #             and L2 predictor 'w1' at the average L2 cluster scores
 center(Demo.twolevel, y1, w1, cluster = "cluster")
 
-#.........................................
+#·········································
 # Two-Step Latent Mean Centering
 
 # Example 2e: Decompose L1 predictor 'y1' as within-between components
@@ -323,7 +323,7 @@ center(Demo.twolevel, y1, cluster = "cluster", type = "latent")
 center(Demo.twolevel, y1, cluster = "cluster", type = "latent", name = c("l1.y1", "l2.y1"))
 
 \dontrun{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Three-Level Data
 
 # Load data set "Demo.twolevel" in the lavaan package
@@ -336,7 +336,7 @@ Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
 # Compute L3 cluster scores for the L2 predictor 'w1'
 Demo.threelevel <- cluster.scores(Demo.threelevel, w1, cluster = "cluster3", name = "w1.l3")
 
-#.........................................
+#·········································
 # Level-1 (L1) Predictor
 
 # Example 3a: Center L1 predictor 'y1' within L2 clusters (CWC L2)
@@ -357,7 +357,7 @@ center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "CGM")
 # Alternative specification
 center(Demo.threelevel, y1)
 
-#.........................................
+#·········································
 # Level-2 (L2) Predictor
 
 # Example 3d: Center L2 predictor 'w1' within L3 cluster
@@ -368,7 +368,7 @@ center(Demo.threelevel, w1, cluster = c("cluster3", "cluster2"))
 #             Note that both L3 and L2 cluster IDs are needed
 center(Demo.threelevel, y1, cluster = c("cluster3", "cluster2"), type = "CGM")
 
-#.........................................
+#·········································
 # Level-3 (L3) Predictor
 
 # Example 3f: Center L3 predictor 'w1.l3' at the average L3 cluster scores
@@ -378,14 +378,14 @@ center(Demo.threelevel, w1.l3, cluster = c("cluster3", "cluster2"))
 # Alternative specification
 center(Demo.threelevel, w1.l3, cluster = "cluster3")
 
-#.........................................
+#·········································
 # L1, L2, and L3 Predictors
 
 # Example 3g: Center L1 predictor 'y1' within L2 cluster, L2 predictor 'w1' within
 #            L3 clusters, and L3 predictor 'w1.l3' at the average L3 cluster scores
 center(Demo.threelevel, y1, w1, w1.l3, cluster = c("cluster3", "cluster2"))
 
-#.........................................
+#·········································
 # Two-Step Latent Mean Centering
 
 # Load data set "Demo.twolevel" in the lavaan package

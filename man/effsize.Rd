@@ -128,7 +128,7 @@ effsize(mtcars[, c("cyl", "vs", "am", "gear", "carb")])
 # Example 7a: Write Results into a text file
 effsize(mtcars, cyl, vs:carb, write = "Cramer.txt")
 
-# Example 7b: Write Results into a Excel file
+# Example 7b: Write Results into an Excel file
 effsize(mtcars, cyl, vs:carb, write = "Cramer.xlsx")
 }
 }

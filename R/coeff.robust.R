@@ -48,7 +48,8 @@
 #'                 to be used for displaying results. Note that information
 #'                 criteria and chi-square test statistic are printed with
 #'                 \code{digits} minus 1 decimal places.
-#' @param p.digits an integer value indicating the number of decimal places
+#' @param p.digits an integer value indicating the number of decimal places to
+#'                 be used for displaying the \emph{p}-value.
 #' @param write    a character string naming a file for writing the output into
 #'                 either a text file with file extension \code{".txt"} (e.g.,
 #'                 \code{"Output.txt"}) or Excel file with file extension
@@ -309,7 +310,7 @@
 #' # Example 3a: Write results into a text file
 #' coeff.robust(mod.lm, write = "Robust_Coef.txt", output = FALSE)
 #'
-#' # Example 3b: Write results into a Excel file
+#' # Example 3b: Write results into an Excel file
 #' coeff.robust(mod.lm, write = "Robust_Coef.xlsx", output = FALSE)
 #' }
 coeff.robust <- function(model, cluster = NULL,

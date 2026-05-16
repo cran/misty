@@ -9,28 +9,21 @@
 test.t(x, ...)
 
 \method{test.t}{default}(x, y = NULL, mu = 0, paired = FALSE,
-       alternative = c("two.sided", "less", "greater"), conf.level = 0.95,
-       hypo = TRUE, descript = TRUE, effsize = FALSE, weighted = FALSE,
-       cor = TRUE, ref = NULL, correct = FALSE, digits = 2, p.digits = 3,
+       alternative = c("two.sided", "less", "greater"), hypo = FALSE,
+       descript = TRUE, effsize = FALSE, weighted = TRUE, cor = TRUE,
+       ref = NULL, correct = FALSE, conf.level = 0.95, digits = 2, p.digits = 3,
        as.na = NULL, plot = FALSE, bar = TRUE, point = FALSE, ci = TRUE,
-       line = TRUE, jitter = FALSE, adjust = TRUE, point.size = 4, errorbar.width = 0.1,
-       xlab = NULL, ylab = NULL, ylim = NULL, ybreaks = ggplot2::waiver(),
-       linetype = 3, linewidth = 0.8, jitter.size = 1.25, jitter.width = 0.05,
-       jitter.height = 0, jitter.alpha = 0.1, title = "",
-       subtitle = "Confidence Interval", filename = NULL, width = NA, height = NA,
-       units = c("in", "cm", "mm", "px"),
-       dpi = 600, write = NULL, append = TRUE, check = TRUE, output = TRUE, ...)
+       line = TRUE, jitter = FALSE, adjust = TRUE, filename = NULL,
+       width = NA, height = NA, dpi = 600, write = NULL, append = TRUE,
+       check = TRUE, output = TRUE, ...)
 
 \method{test.t}{formula}(formula, data, alternative = c("two.sided", "less", "greater"),
-       conf.level = 0.95, hypo = TRUE, descript = TRUE, effsize = FALSE, weighted = FALSE,
-       cor = TRUE, ref = NULL, correct = FALSE, digits = 2, p.digits = 3, as.na = NULL,
-       plot = FALSE, bar = TRUE, point = FALSE, ci = TRUE, line = TRUE,
-       jitter = FALSE, adjust = TRUE, point.size = 4, errorbar.width = 0.1, xlab = NULL,
-       ylab = NULL, ylim = NULL, ybreaks = ggplot2::waiver(), linetype = 3,
-       linewidth = 0.8, jitter.size = 1.25, jitter.width = 0.05, jitter.height = 0,
-       jitter.alpha = 0.1, title = "", subtitle = "Confidence Interval", filename = NULL,
-       width = NA, height = NA, units = c("in", "cm", "mm", "px"), dpi = 600,
-       write = NULL, append = TRUE, check = TRUE, output = TRUE, ...)
+       hypo = FALSE, descript = TRUE, effsize = FALSE, weighted = TRUE,
+       cor = TRUE, ref = NULL, correct = FALSE, conf.level = 0.95, digits = 2,
+       p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE, point = FALSE,
+       ci = TRUE, line = TRUE, jitter = FALSE, adjust = TRUE, filename = NULL,
+       width = NA, height = NA, dpi = 600, write = NULL, append = TRUE,
+       check = TRUE, output = TRUE, ...)
 }
 \arguments{
 \item{x}{a numeric vector of data values.}
@@ -43,26 +36,25 @@ test.t(x, ...)
 null hypothesis. Note that the argument \code{mu} is only
 used when computing a one sample t-test.}
 
-\item{paired}{logical: if \code{TRUE}, paired-samples t-test is computed.}
+\item{paired}{logical: if \code{TRUE}, paired-sample t-test is computed.}
 
 \item{alternative}{a character string specifying the alternative hypothesis,
 must be one of \code{"two.sided"} (default),
 \code{"greater"} or \code{"less"}.}
 
-\item{hypo}{logical: if \code{TRUE} (default), null and alternative hypothesis
-are shown on the console.}
+\item{hypo}{logical: if \code{TRUE} (default), null and alternative
+hypothesis are shown on the console.}
 
-\item{descript}{logical: if \code{TRUE} (default), descriptive statistics are shown
-on the console.}
+\item{descript}{logical: if \code{TRUE} (default), descriptive statistics
+are shown on the console.}
 
 \item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d is
 shown on the console, see \code{\link{cohens.d}} function.}
 
-\item{weighted}{logical: if \code{TRUE}, the weighted pooled standard deviation
-is used to compute Cohen's d for a two-sample design (i.e.,
-\code{paired = FALSE}), while standard deviation of the
-difference scores is used to compute Cohen's d for a
-paired-sample design (i.e., \code{paired = TRUE}).}
+\item{weighted}{logical: if \code{TRUE} (default), the weighted pooled standard
+deviation is used to compute Cohen's d for a two-sample design (i.e., \code{paired = FALSE}),
+while standard deviation of the difference scores is used to compute Cohen's d
+for a paired-sample design (i.e., \code{paired = TRUE}).}
 
 \item{cor}{logical: if \code{TRUE} (default), \code{paired = TRUE},
 and \code{weighted = FALSE}, Cohen's d for a paired-sample
@@ -100,9 +92,10 @@ i.e. these values are converted to \code{NA} before
 conducting the analysis.}
 
 \item{plot}{logical: if \code{TRUE}, a plot showing bar plots with
-error bars for confidence intervals is drawn.}
+error bars for confidence intervals is drawn. For additional plotting arguments,
+see \code{Details} in the help page of the function \code{plot.misty.object}.}
 
-\item{bar}{ogical: if \code{TRUE} (default), bars representing means
+\item{bar}{logical: if \code{TRUE} (default), bars representing means
 for each groups are drawn.}
 
 \item{point}{logical: if \code{TRUE}, points representing means for
@@ -117,64 +110,27 @@ confidence intervals are drawn.}
 is drawn at \code{mu} for the one-sample t-test or at
 0 for the paired-sample t-test.}
 
-\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment for the
-confidence intervals in a two-sample design is applied.}
+\item{adjust}{logical: if \code{TRUE} (default), difference-adjustment
+for the confidence intervals in a two-sample design is
+applied.}
 
-\item{point.size}{a numeric value indicating the \code{size} aesthetic for
-the point representing the mean value.}
+\item{filename}{a character string indicating the \code{filename}
+argument including the file extension in the \code{ggsave}
+function. Note that one of \code{".eps"}, \code{".ps"},
+\code{".tex"}, \code{".pdf"} (default),
+\code{".jpeg"}, \code{".tiff"}, \code{".png"},
+\code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
+to be specified as file extension in the \code{file}
+argument. Note that plots can only be saved when
+\code{plot = TRUE}.}
 
-\item{errorbar.width}{a numeric value indicating the horizontal bar width of
-the error bar.}
-
-\item{xlab}{a character string specifying the labels for the x-axis.}
-
-\item{ylab}{a character string specifying the labels for the y-axis.}
-
-\item{ylim}{a numeric vector of length two specifying limits of the
-limits of the y-axis.}
-
-\item{ybreaks}{a numeric vector specifying the points at which tick-marks
-are drawn at the y-axis.}
-
-\item{linetype}{an integer value or character string specifying the line
-type for the line representing the population mean under
-the null hypothesis, i.e., 0 = blank, 1 = solid, 2 = dashed,
-3 = dotted, 4 = dotdash, 5 = longdash, 6 = twodash.}
-
-\item{linewidth}{a numeric value indicating the \code{linewidth} aesthetic
-for the line representing the population mean under the
-null hypothesis.}
-
-\item{jitter.size}{a numeric value indicating the \code{size} aesthetic}
-
-\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
-
-\item{jitter.height}{a numeric value indicating the amount of vertical jitter.}
-
-\item{jitter.alpha}{ a numeric value between 0 and 1 for specifying the
-\code{alpha} argument in the \code{geom_jitter}
-function for controlling the opacity of the jittered
-data points.}
-
-\item{title}{a character string specifying the text for the title for
-the plot.}
-
-\item{subtitle}{a character string specifying the text for the subtitle for
-the plot.}
-
-\item{filename}{a character string indicating the \code{filename} argument (default is \code{"NA_Pattern.pdf"}) including
-the file extension for the \code{ggsave} function. Note that one of \code{".eps"}, \code{".ps"},
-\code{".tex"}, \code{".pdf"} (default), \code{".jpeg"}, \code{".tiff"}, \code{".png"}, \code{".bmp"},
-\code{".svg"} or \code{".wmf"} needs to be specified as file extension in the \code{file} argument.}
-
-\item{width}{a numeric value indicating the \code{width} argument (default is the
-size of the current graphics device) for the \code{ggsave} function.}
+\item{width}{a numeric value indicating the \code{width} argument
+(default is the size of the current graphics device)
+for the \code{ggsave} function.}
 
 \item{height}{a numeric value indicating the \code{height} argument
-(default is the size of the current graphics device) for the \code{ggsave} function.}
-
-\item{units}{a character string indicating the \code{units} argument
-(default is \code{in}) for the \code{ggsave} function.}
+(default is the size of the current graphics device)
+for the \code{ggsave} function.}
 
 \item{dpi}{a numeric value indicating the \code{dpi} argument
 (default is \code{600}) for the \code{ggsave} function.}
@@ -188,9 +144,11 @@ to an existing text file with extension \code{.txt} specified
 in \code{write}, if \code{FALSE} existing text file will be
 overwritten.}
 
-\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification
+is checked.}
 
-\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
+\item{output}{logical: if \code{TRUE} (default), output is shown on the
+console.}
 
 \item{formula}{in case of two sample t-test (i.e., \code{paired = FALSE}),
 a formula of the form \code{y ~ group} where \code{group}
@@ -204,7 +162,6 @@ formula \code{formula}.}
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
 \item{\code{sample}}{type of sample, i.e., one-, two-, or paired sample}
@@ -219,18 +176,8 @@ This function performs one-sample, two-sample, and paired-sample t-tests and
 provides descriptive statistics, effect size measure, and a plot showing bar
 plots with error bars for (difference-adjusted) confidence intervals.
 }
-\details{
-\describe{
-\item{\strong{Effect Size Measure}}{By default, Cohen's d based on the non-weighted
-standard deviation (i.e., \code{weighted = FALSE}) which does not assume homogeneity
-of variance is computed (see Delacre et al., 2021) when requesting an effect size
-measure (i.e., \code{effsize = TRUE}). Cohen's d based on the pooled standard
-deviation assuming equality of variances between groups can be requested by
-specifying \code{weighted = TRUE}.}
-}
-}
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # One-Sample Design
 
 # Example 1a: Two-sided one-sample t-test, population mean = 20
@@ -239,16 +186,7 @@ test.t(mtcars$mpg, mu = 20)
 # Example 1b: One-sided one-sample t-test, population mean = 20, print Cohen's d
 test.t(mtcars$mpg, mu = 20, alternative = "greater", effsize = TRUE)
 
-# Example 1c: Two-sided one-sample t-test, population mean = 20, plot results
-test.t(mtcars$mpg, mu = 20, plot = TRUE)
-
-\dontrun{
-# Example 1d: Two-sided one-sample t-test, population mean = 20, save plot
-test.t(mtcars$mpg, mu = 20, plot = TRUE, filename = "One-sample_t-test.png",
-       width = 4, height = 5)
-}
-
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Two-Sample Design
 
 # Example 2a: Two-sided two-sample t-test
@@ -257,50 +195,84 @@ test.t(mpg ~ vs, data = mtcars)
 # Example 2b: Two-sided two-sample t-test, alternative specification
 test.t(c(3, 1, 4, 2, 5, 3, 6, 7), c(5, 2, 4, 3, 1))
 
-# Example 2c: One-sided two-sample t-test, print Cohen's d with weighted pooled SD
+# Example 2c: One-sided two-sample t-test, print Cohen's d
 test.t(mpg ~ vs, data = mtcars, alternative = "greater", effsize = TRUE)
 
-# Example 2d: Two-sided two-sample t-test, plot results
-test.t(mpg ~ vs, data = mtcars, plot = TRUE)
-
-\dontrun{
-# Example 2e: Two-sided two-sample t-test, plot results
-test.t(mpg ~ vs, data = mtcars, plot = TRUE, filename = "Two-sample_t-test.png",
-       width = 5, height = 6)
-}
-
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Paired-Sample Design
 
 # Example 3a: Two-sided paired-sample t-test
 test.t(mtcars$drat, mtcars$wt, paired = TRUE)
 
-# Example 3b: One-sided paired-sample t-test,
-# print Cohen's d based on the SD of the difference scores
-test.t(mtcars$drat, mtcars$wt, paired = TRUE, alternative = "greater",
-       effsize = TRUE)
+# Example 3b: One-sided paired-sample t-test, print Cohen's d
+test.t(mtcars$drat, mtcars$wt, paired = TRUE, alternative = "greater", effsize = TRUE)
 
-# Example 3c: Two-sided paired-sample t-test, plot results
+#————————————————————————————————————————————————————————————————————————————
+# Plot
+
+# Example 4a: One-Sample Design
+test.t(mtcars$mpg, mu = 20, plot = TRUE)
+
+# Example 4b: Two-Sample Design
+test.t(mpg ~ vs, data = mtcars, plot = TRUE)
+
+# Example 4c: Paired-Sample Design
 test.t(mtcars$drat, mtcars$wt, paired = TRUE, plot = TRUE)
 
+# Example 4d: Plot results using the plot() function, use additional arguments
+# see Details in the help page of the function plot.misty.object
+object <- test.t(mpg ~ vs, data = mtcars)
+plot(object, jitter = TRUE, jitter.alpha = 0.4, title = "Two-Sample t-Test")
+
+#————————————————————————————————————————————————————————————————————————————
+# Create Plot Manually
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Example 4a: Two-sample t-test
+ci.table <- ci.mean(mtcars, mpg, group = "vs", adjust = TRUE, output = FALSE)$result
+
+ggplot(ci.table, aes(group, m)) +
+  geom_bar(aes(group, m), stat = "summary", fun = "mean") +
+  geom_errorbar(aes(group, m, ymin = low, ymax = upp), width = 0.1) +
+  theme_bw()
+
+# Example 4b: Paired-sample t-test
+object <- test.t(mtcars$drat, mtcars$wt, paired = TRUE)
+
+ggplot(data.frame(x = object$data$y - object$data$x), aes(x = 0L, y = x)) +
+ geom_bar(data = object$result, aes(0, m.diff), stat = "summary", fun = "mean") +
+ geom_errorbar(data = object$result, aes(0, m.diff, ymin = m.low, ymax = m.upp), width = 0.1) +
+ geom_hline(yintercept = 0L, linetype = 3, linewidth = 0.8) +
+ scale_x_continuous(name = "", limits = c(-2, 2)) +
+ theme_bw()  +
+ theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+
+#————————————————————————————————————————————————————————————————————————————
+# Write Results and Save Plot
+
 \dontrun{
-# Example 3d: Two-sided paired-sample t-test, save plot
-test.t(mtcars$drat, mtcars$wt, paired = TRUE, plot = TRUE,
-       filename = "Paired-sample_t-test.png", width = 4, height = 5)
+
+# Example 6a: Write results into a text file
+test.t(mpg ~ vs, data = mtcars, write = "t-Test.txt")
+
+# Example 6b: Write results into an Excel file
+test.t(mpg ~ vs, data = mtcars, write = "t-Test.xlsx")
+
+# Example 6c: Save plot as PNG fine
+test.t(mpg ~ vs, data = mtcars, plot = TRUE, filename = "t-Test.png",
+       width = 6, height = 5)
 }
 }
 \references{
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in
 psychology - Using R and SPSS}. John Wiley & Sons.
-
-Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why Hedges' g*s
-based on the non-pooled standard deviation should be reported with Welch's t-test.
-https://doi.org/10.31234/osf.io/tu6mp
 }
 \seealso{
-\code{\link{aov.b}}, \code{\link{aov.w}}, \code{\link{test.welch}}, \code{\link{test.z}},
-\code{\link{test.levene}}, \code{\link{cohens.d}}, \code{\link{ci.mean.diff}},
-\code{\link{ci.mean}}
+\code{\link{aov.b}}, \code{\link{aov.w}}, \code{\link{test.welch}},
+\code{\link{test.z}}, \code{\link{test.levene}}, \code{\link{cohens.d}},
+\code{\link{ci.mean.diff}}, \code{\link{ci.mean}}
 }
 \author{
 Takuya Yanagida \email{takuya.yanagida@univie.ac.at}

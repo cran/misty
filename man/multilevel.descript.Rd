@@ -173,10 +173,10 @@ cluster size at Level 3.}
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Two-Level Data
 
-#..........
+#···················
 # Cluster variable specification
 
 # Example 1a: Specification using the argument '...'
@@ -188,7 +188,7 @@ multilevel.descript(Demo.twolevel[, c("y1", "cluster")], cluster = "cluster")
 # Example 1c: Alternative specification with cluster variable 'cluster' not in 'data'
 multilevel.descript(Demo.twolevel$y1, cluster = Demo.twolevel$cluster)
 
-#---------------------------
+#···················
 
 # Example 2: Multilevel descriptive statistics for 'y1'
 multilevel.descript(Demo.twolevel, y1, cluster = "cluster")
@@ -210,14 +210,14 @@ multilevel.descript(Demo.twolevel, y1, y2, y3, w1, w2, cluster = "cluster")
 multilevel.descript(Demo.twolevel[, c("y1", "y2", "y3", "w1", "w2")],
                     cluster = Demo.twolevel$cluster)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Three-Level Data
 
 # Create arbitrary three-level data
 Demo.threelevel <- data.frame(Demo.twolevel, cluster2 = Demo.twolevel$cluster,
                                              cluster3 = rep(1:10, each = 250))
 
-#..........
+#···················
 # Cluster variable specification
 
 # Example 7a: Specification using the argument '...'
@@ -231,12 +231,10 @@ multilevel.descript(Demo.threelevel[, c("y1", "cluster3", "cluster2")],
 multilevel.descript(Demo.threelevel$y1,
                     cluster = Demo.threelevel[, c("cluster3", "cluster2")])
 
-#----------------------------------------------------------------------------
-
 # Example 8: Multilevel descriptive statistics for 'y1', 'y2', 'y3', 'w1', and 'w2'
 multilevel.descript(Demo.threelevel, y1:y3, w1, w2, cluster = c("cluster3", "cluster2"))
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write Results
 
 # Example 9a: Write Results into a text file

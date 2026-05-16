@@ -110,16 +110,16 @@ uniq <- function(data, ..., na.rm = TRUE, sort = TRUE, decreasing = FALSE, digit
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a vector, factor, matrix, or data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
@@ -130,7 +130,7 @@ uniq <- function(data, ..., na.rm = TRUE, sort = TRUE, decreasing = FALSE, digit
     # Extract data and convert tibble into data frame or vector
     x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
 
   } else {
@@ -142,15 +142,15 @@ uniq <- function(data, ..., na.rm = TRUE, sort = TRUE, decreasing = FALSE, digit
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   .check.input(logical = c("na.rm", "sort", "decreasing", "table"), args = "digits", envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dimension of the object = NULL ####
 
   if (isTRUE(is.null(dim(x)))) {
@@ -161,7 +161,7 @@ uniq <- function(data, ..., na.rm = TRUE, sort = TRUE, decreasing = FALSE, digit
     # Extract unique elements
     result <- unique(x) |> (\(y) if (isTRUE(na.rm)) { as.vector(na.omit(y)) } else { y })() |> (\(z) if (isTRUE(sort)) { sort(z, decreasing = decreasing, na.last = TRUE) } else { z })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dimension of the object != NULL ####
 
   } else {
@@ -176,7 +176,7 @@ uniq <- function(data, ..., na.rm = TRUE, sort = TRUE, decreasing = FALSE, digit
 
   #_____________________________________________________________________________
   #
-  # Return Object --------------------------------------------------------------
+  # Return Object ——————————————————————————————————————————————————————————————
 
   object <- list(call = match.call(),
                  type = "uniq",
@@ -188,13 +188,13 @@ uniq <- function(data, ..., na.rm = TRUE, sort = TRUE, decreasing = FALSE, digit
 
   #_____________________________________________________________________________
   #
-  # Write Results --------------------------------------------------------------
+  # Write Results ——————————————————————————————————————————————————————————————
 
   if (isTRUE(!is.null(write))) { .write.result(object = object, write = write, append = append) }
 
   #_____________________________________________________________________________
   #
-  # Output ---------------------------------------------------------------------
+  # Output —————————————————————————————————————————————————————————————————————
 
   if (isTRUE(output)) { print(object, check = FALSE) }
 
@@ -210,16 +210,16 @@ uniq.n <- function(data, ..., na.rm = TRUE, digits = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Initial Check --------------------------------------------------------------
+  # Initial Check ——————————————————————————————————————————————————————————————
 
   # Check if input 'data' is missing or NULL
   if (isTRUE(missing(data) || is.null(data))) { stop("Please specify a vector, factor, matrix, or data frame for the argument 'data'", call. = FALSE) }
 
   #_____________________________________________________________________________
   #
-  # Data -----------------------------------------------------------------------
+  # Data ———————————————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data using the argument '...' ####
 
   if (isTRUE(!missing(...))) {
@@ -230,7 +230,7 @@ uniq.n <- function(data, ..., na.rm = TRUE, digits = NULL, check = TRUE) {
     # Extract data and convert tibble into data frame or vector
     x <- data[, var.names] |> (\(y) if (isTRUE("tbl" %in% substr(class(y), 1L, 3L))) { if (isTRUE(ncol(as.data.frame(y)) == 1L)) { unname(unlist(y)) } else { as.data.frame(y) } } else { y })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Data without using the argument '...' ####
 
   } else {
@@ -242,15 +242,15 @@ uniq.n <- function(data, ..., na.rm = TRUE, digits = NULL, check = TRUE) {
 
   #_____________________________________________________________________________
   #
-  # Input Check ----------------------------------------------------------------
+  # Input Check ————————————————————————————————————————————————————————————————
 
   .check.input(logical = "na.rm", args = "digits", envir = environment(), input.check = check)
 
   #_____________________________________________________________________________
   #
-  # Main Function --------------------------------------------------------------
+  # Main Function ——————————————————————————————————————————————————————————————
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dimension of the object = NULL ####
 
   if (isTRUE(is.null(dim(x)))) {
@@ -261,7 +261,7 @@ uniq.n <- function(data, ..., na.rm = TRUE, digits = NULL, check = TRUE) {
     # Number of unique elements
     object <- unique(x) |> (\(y) if (isTRUE(na.rm)) { length(na.omit(y)) } else { length(y) })()
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ## Dimension of the object != NULL ####
 
   } else {

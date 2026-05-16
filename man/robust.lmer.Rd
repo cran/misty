@@ -104,7 +104,7 @@ misty::libraries(lme4, lmerTest, misty)
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Multilevel and Linear Mixed-Effects Model
 
 # Cluster-mean centering, center() from the misty package
@@ -123,7 +123,7 @@ mod.lmer2r <- robust.lmer(mod.lmer2)
 mod.lmer2r$result$weight$iresid
 mod.lmer2r$result$weight$iranef
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write Results
 
 # Example 2a: Write results into a text file

@@ -153,7 +153,7 @@ the \code{data} argument:
 \examples{
 \dontrun{
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 1: Write data, specify input without VARIABLES section, and run input
 
 # Write Data File
@@ -176,7 +176,7 @@ ITERATIONS: 10000;
 # Run Blimp input
 blimp(input1, file = "Ex4.3.imp")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 2: Write data, specify input with VARIABLES section, and run input
 
 # Write Data File
@@ -199,7 +199,7 @@ ITERATIONS: 10000;
 # Run Blimp input
 blimp(input2, file = "Ex4.3.imp")
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 3: Alternative specification using the data argument
 
 # Write Data File

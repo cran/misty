@@ -179,7 +179,7 @@ the slope of the cross-level interaction.
 }
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Linear Model
 
 # Example 1a: Continuous predictors
@@ -209,7 +209,7 @@ coeff.std(mod.lm5)
 mod.lm6 <- lm(mpg ~ cyl + I(cyl^2), data = mtcars)
 coeff.std(mod.lm6)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Multilevel and Linear Mixed-Effects Model
 
 # Load lme4, nlme, and ggplot2 package
@@ -245,7 +245,7 @@ coeff.std(mod2a)
 coeff.std(mod2b)
 
 \dontrun{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Example 3: Write Results into a text or Excel file
 
 # Example 3a: Text file

@@ -5,16 +5,12 @@
 \title{Welch's Test}
 \usage{
 test.welch(formula, data, alternative = c("two.sided", "less", "greater"),
-           posthoc = FALSE, conf.level = 0.95, hypo = TRUE, descript = TRUE,
-           effsize = FALSE, weighted = FALSE, ref = NULL, correct = FALSE,
+           hypo = FALSE, descript = FALSE, effsize = FALSE, weighted = FALSE,
+           ref = NULL, correct = FALSE, posthoc = FALSE, conf.level = 0.95,
            digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, bar = TRUE,
            point = FALSE, ci = TRUE, jitter = FALSE, adjust = TRUE,
-           point.size = 3, errorbar.width = 0.1, jitter.size = 1.25,
-           jitter.width = 0.05, jitter.height = 0, jitter.alpha = 0.1,
-           xlab = NULL, ylab = "y", ylim = NULL, ybreaks = ggplot2::waiver(),
-           title = NULL, subtitle = "Confidence Interval", filename = NULL,
-           width = NA, height = NA, units = c("in", "cm", "mm", "px"),
-           dpi = 600, write = NULL, append = TRUE, check = TRUE, output = TRUE)
+           filename = NULL, width = NA, height = NA, dpi = 600,
+           write = NULL, append = TRUE, check = TRUE, output = TRUE)
 }
 \arguments{
 \item{formula}{a formula of the form \code{y ~ group} where \code{y} is
@@ -31,18 +27,11 @@ must be one of \code{"two.sided"} (default), \code{"greater"}
 or \code{"less"}. Note that this argument is only used when
 conducting Welch's two-sample t-test.}
 
-\item{posthoc}{logical: if \code{TRUE}, Games-Howell post hoc test for
-multiple comparison is conducted when performing Welch's
-ANOVA.}
+\item{hypo}{logical: if \code{TRUE} (default), null and alternative
+hypothesis are shown on the console.}
 
-\item{conf.level}{a numeric value between 0 and 1 indicating the confidence
-level of the interval.}
-
-\item{hypo}{logical: if \code{TRUE} (default), null and alternative hypothesis
-are shown on the console.}
-
-\item{descript}{logical: if \code{TRUE} (default), descriptive statistics are shown
-on the console.}
+\item{descript}{logical: if \code{TRUE}, descriptive statistics are shown
+on the console when conducting Welch's ANOVA.}
 
 \item{effsize}{logical: if \code{TRUE}, effect size measure Cohen's d for
 Welch's two-sample t-test (see \code{\link{cohens.d}}),
@@ -53,25 +42,30 @@ Cohen's d for the post hoc tests are shown on the console.}
 deviation is used to compute Cohen's d.}
 
 \item{ref}{a numeric value or character string indicating the reference
-group. The standard deviation of the reference group is used
-to standardized the mean difference to compute Cohen's d.}
+group. The standard deviation of the reference group is
+used to standardized the mean difference to compute
+Cohen's d.}
 
-\item{correct}{logical: if \code{TRUE}, correction factor to remove positive
-bias in small samples is used.}
+\item{correct}{logical: if \code{TRUE}, correction factor to remove
+positive bias in small samples for is used to compute Cohen's d.}
+
+\item{posthoc}{logical: if \code{TRUE}, Games-Howell post hoc test for
+multiple comparison is conducted when performing Welch's ANOVA.}
+
+\item{conf.level}{a numeric value between 0 and 1 indicating the confidence
+level of the interval.}
 
 \item{digits}{an integer value indicating the number of decimal places
-to be used for displaying descriptive statistics and
-confidence interval.}
+to be used for displaying results.}
 
 \item{p.digits}{an integer value indicating the number of decimal places
 to be used for displaying the \emph{p}-value.}
 
 \item{as.na}{a numeric vector indicating user-defined missing values,
-i.e. these values are converted to \code{NA} before conducting
-the analysis.}
+i.e. these values are converted to \code{NA} before
+conducting the analysis.}
 
-\item{plot}{logical: if \code{TRUE}, a plot showing error bars for
-confidence intervals is drawn.}
+\item{plot}{logical: if \code{TRUE}, a plot is drawn.}
 
 \item{bar}{logical: if \code{TRUE} (default), bars representing means
 for each groups are drawn.}
@@ -86,40 +80,6 @@ confidence intervals are drawn.}
 
 \item{adjust}{logical: if \code{TRUE} (default), difference-adjustment
 for the confidence intervals is applied.}
-
-\item{point.size}{a numeric value indicating the \code{size} aesthetic for
-the point representing the mean value.}
-
-\item{errorbar.width}{a numeric value indicating the horizontal bar width of
-the error bar.}
-
-\item{jitter.size}{a numeric value indicating the \code{size} aesthetic
-for the jittered data points.}
-
-\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
-
-\item{jitter.height}{a numeric value indicating the amount of vertical jitter.}
-
-\item{jitter.alpha}{ a numeric value between 0 and 1 for specifying the
-\code{alpha} argument in the \code{geom_jitter}
-function for controlling the opacity of the jittered
-data points.}
-
-\item{xlab}{a character string specifying the labels for the x-axis.}
-
-\item{ylab}{a character string specifying the labels for the y-axis.}
-
-\item{ylim}{a numeric vector of length two specifying limits of the
-limits of the y-axis.}
-
-\item{ybreaks}{a numeric vector specifying the points at which tick-marks
-are drawn at the y-axis.}
-
-\item{title}{a character string specifying the text for the title of
-the plot.}
-
-\item{subtitle}{a character string specifying the text for the subtitle of
-the plot.}
 
 \item{filename}{a character string indicating the \code{filename}
 argument including the file extension in the \code{ggsave}
@@ -139,11 +99,8 @@ in the \code{ggsave} function.}
 (default is the size of the current graphics device)
 in the \code{ggsave} function.}
 
-\item{units}{a character string indicating the \code{units} argument
-(default is \code{in}) in the \code{ggsave} function.}
-
 \item{dpi}{a numeric value indicating the \code{dpi} argument
-(default is \code{600}) in the \code{ggsave} function.}
+(default: \code{600}) in the \code{ggsave} function.}
 
 \item{write}{a character string naming a text file with file extension
 \code{".txt"} (e.g., \code{"Output.txt"}) for writing the
@@ -154,14 +111,15 @@ to an existing text file with extension \code{.txt} specified
 in \code{write}, if \code{FALSE} existing text file will be
 overwritten.}
 
-\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification
+is checked.}
 
-\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
+\item{output}{logical: if \code{TRUE} (default), output is shown on the
+console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-
 \item{\code{call}}{function call}
 \item{\code{type}}{type of analysis}
 \item{\code{sample}}{type of sample, i.e., one-, two-, or paired sample}
@@ -188,40 +146,80 @@ specifying \code{weighted = TRUE}.}
 }
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Two-Sample Design
 
 # Example 1a: Two-sided two-sample Welch-test
-test.welch(mpg ~ vs, data = mtcars)
+test.welch(hp ~ am, data = mtcars)
 
 # Example 1b: One-sided two-sample Welch-test
-test.welch(mpg ~ vs, data = mtcars, alternative = "greater")
+test.welch(hp ~ am, data = mtcars, alternative = "less")
 
-# Example 1c: Two-sided two-sample Welch-test, print Cohen's d
-test.welch(mpg ~ vs, data = mtcars, effsize = TRUE)
+# Example 1c: Two-sided two-sample Welch-test,
+# Print descriptive statistics and Cohen's d
+test.welch(hp ~ am, data = mtcars, descript = TRUE, effsize = TRUE)
 
-# Example 1d: Two-sided two-sample Welch-test, plot results
-test.welch(mpg ~ vs, data = mtcars, plot = TRUE)
-
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Multiple-Sample Design
 
 # Example 2a: Welch's ANOVA
-test.welch(mpg ~ gear, data = mtcars)
+test.welch(hp ~ gear, data = mtcars)
 
-# Example 2b: Welch's ANOVA, Games-Howell post hoc test
-test.welch(mpg ~ gear, data = mtcars, posthoc = TRUE)
+# Example 2b: Welch's ANOVA,
+# Print descriptive statistics and Games-Howell post hoc test
+test.welch(hp ~ gear, data = mtcars, descript = TRUE, posthoc = TRUE)
 
 # Example 2c: Welch's ANOVA, print eta-squared and omega-squared
-test.welch(mpg ~ gear, data = mtcars, effsize = TRUE)
+test.welch(hp ~ gear, data = mtcars, effsize = TRUE)
 
-# Example 2d: Welch's ANOVA, plot results
-test.welch(mpg ~ gear, data = mtcars, plot = TRUE)
+#————————————————————————————————————————————————————————————————————————————
+# Plot
+
+# Example 3a: Plot results, default setting
+test.welch(hp ~ gear, data = mtcars, plot = TRUE)
+
+# Example 3b: Plot results
+# No bars, draw points representing means and jittered data points
+test.welch(hp ~ gear, data = mtcars, plot = TRUE, bar = FALSE, point = TRUE,
+           jitter = TRUE)
+
+# Example 3c: Plot results using the plot() function, use additional arguments
+# see Details in the help page of the function plot.misty.object
+object <- test.welch(hp ~ gear, data = mtcars)
+plot(object, jitter = TRUE, jitter.alpha = 0.4, title = "Welch's Test")
+
+#————————————————————————————————————————————————————————————————————————————
+# Create Plot Manually
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Create misty object
+object <- test.welch(hp ~ gear, data = mtcars)
+
+# Example 4: Plot
+ggplot(object$result$descript, aes(group, y)) +
+  geom_bar(aes(group, m), stat = "summary", fun = "mean") +
+  geom_jitter(data = object$data, aes(group, y), alpha = 0.1, width = 0.05,
+             height = 0, size = 1.25) +
+  geom_point(aes(group, m), stat = "identity", size = 3) +
+  geom_errorbar(aes(group, m, ymin = low, ymax = upp), width = 0.1) +
+  theme_bw()
+
+#————————————————————————————————————————————————————————————————————————————
+# Write Results and Save Plot
 
 \dontrun{
-# Example 2e: Welch's ANOVA, save plot
-test.welch(mpg ~ gear, data = mtcars, plot = TRUE,
-           filename = "Multiple-sample_Welch-test.png", width = 6, height = 5)
+
+# Example 5a: Write results into a text file
+test.welch(hp ~ gear, data = mtcars, write = "Welch-Test.txt")
+
+# Example 5a: Write results into an Excel file
+test.welch(hp ~ gear, data = mtcars, write = "Welch-Test.xlsx")
+
+# Example 5b: Save plot as PNG fine
+test.welch(hp ~ gear, data = mtcars, plot = TRUE,
+            filename = "Welch-Test.png", width = 6, height = 5)
 }
 }
 \references{
@@ -229,8 +227,8 @@ Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psycholog
 - Using R and SPSS}. John Wiley & Sons.
 
 Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why Hedges' g*s
-based on the non-pooled standard deviation should be reported with Welch's t-test.
-https://doi.org/10.31234/osf.io/tu6mp
+based on the non-pooled standard deviation should be reported with Welch's
+t-test. https://doi.org/10.31234/osf.io/tu6mp
 }
 \seealso{
 \code{\link{test.t}}, \code{\link{test.z}}, \code{\link{test.levene}},

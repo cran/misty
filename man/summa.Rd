@@ -155,7 +155,7 @@ and standard error of the robust multilevel mixed-effects (see Sleegers et al.
 (2021).}
 }}
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Linear Model
 
 # Estimate linear model
@@ -174,7 +174,8 @@ summa(mod.lm, print = "all")
 summa(mod.lm, print = c("default", "stdcoef"))
 
 \dontrun{
-#----------------------------------------------------------------------------
+
+#————————————————————————————————————————————————————————————————————————————
 # Multilevel and Linear Mixed-Effects Model
 
 # Load lme4, nlme, and misty package
@@ -183,7 +184,7 @@ misty::libraries(lme4, nlme, misty)
 # Load data set "Demo.twolevel" in the lavaan package
 data("Demo.twolevel", package = "lavaan")
 
-#------------------
+#···················
 ## Two-Level Data
 
 # Cluster-mean centering, center() from the misty package
@@ -225,7 +226,7 @@ summa(mod.lmer2, ddf = "Kenward-Roger")
 # Example 2f: Cluster-robust standard errors
 summa(mod.lmer2, robust = TRUE)
 
-#------------------
+#···················
 ## Robust Estimation using the R package robustlmm
 
 # Estimate two-level mixed-effects model
@@ -234,7 +235,7 @@ mod.lmer2r <- robustlmm::rlmer(y1 ~ x2.c + w1.c + (1| cluster), data = Demo.twol
 # Example 2f: Default setting
 summa(mod.lmer2r)
 
-#------------------
+#···················
 ## Three-Level Data
 
 # Create arbitrary three-level data
@@ -261,7 +262,7 @@ summa(mod.lme3)
 summa(mod.lmer3, print = "all")
 summa(mod.lme3, print = "all")
 
-#------------------
+#···················
 ## Robust Estimation using the R package robustlmm
 
 # Estimate three-level model using the lme4 package
@@ -271,7 +272,7 @@ mod.lmer3r <- robustlmm::rlmer(y1 ~ x1.c + w1.c + (1 | cluster3/cluster2),
 # Example 3c: Default setting
 summa(mod.lmer3r)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Write Results
 
 # Example 4a: Write Results into a text file

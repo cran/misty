@@ -317,13 +317,16 @@
 #' mplus.lca(HolzingerSwineford1939, ind = c("x1", "x2", "x3", "x4"),
 #'           mplus.run = TRUE)
 #'
+#' #————————————————————————————————————————————————————————————————————————————
+#' # Example 1: Summary Result Tables and Grouped Bar Charts
+#'
 #' # Example 1a: Read Mplus output files, create result table, write table, and save plots
 #' mplus.lca.summa(write = "Results_LCA.xlsx", plot = TRUE)
 #'
 #' # Example 1b: Write results into a text file
 #' mplus.lca.summa(write = "Results_LCA.txt")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Example 2: Draw bar chart manually
 #'
 #' library(ggplot2)

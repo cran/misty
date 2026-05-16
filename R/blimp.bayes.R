@@ -263,7 +263,7 @@
 #' # Example 6: Write Results into a text file
 #' blimp.bayes("Posterior_Ex4.3", write = "Bayes_Summary.txt")
 #'
-#' # Example 7b: Write Results into a Excel file
+#' # Example 7b: Write Results into an Excel file
 #' blimp.bayes("Posterior_Ex4.3", write = "Bayes_Summary.xlsx")
 #' }
 blimp.bayes <- function(x, param = NULL,

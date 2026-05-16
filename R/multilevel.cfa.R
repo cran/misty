@@ -219,7 +219,7 @@
 #' # Load data set "Demo.twolevel" in the lavaan package
 #' data("Demo.twolevel", package = "lavaan")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Model specification using 'data' for a one-factor model
 #' # with the same factor structure with one factor at the Within and Between Level
 #'
@@ -307,7 +307,7 @@
 #' multilevel.cfa(Demo.twolevel, y1:y4, cluster = "cluster", print = "all",
 #'                write = "Multilevel_CFA.xlsx")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Model specification using 'model' for one or multiple factor model
 #' # with the same factor structure at the Within and Between Level
 #'
@@ -355,7 +355,7 @@
 #'                model = list(c("y1", "y2", "y3"), c("y4", "y5", "y6")),
 #'                fix.resid = "all")
 #'
-#' #----------------------------------------------------------------------------
+#' #————————————————————————————————————————————————————————————————————————————
 #' # Model specification using 'model.w' and 'model.b' for one or multiple factor model
 #' # with different factor structure at the Within and Between Level
 #'

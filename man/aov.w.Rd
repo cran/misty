@@ -4,36 +4,55 @@
 \alias{aov.w}
 \title{Repeated Measures Analysis of Variance (Within-Subject ANOVA)}
 \usage{
-aov.w(formula, data, print = c("all", "none", "LB", "GG", "HF"),
-      posthoc = FALSE, conf.level = 0.95,
+aov.w(formula, data, print = c("all", "none", "GG", "HF", "LB"),
+      hypo = FALSE, epsilon = FALSE, descript = FALSE, effsize = FALSE,
+      posthoc = FALSE, na.omit = TRUE, conf.level = 0.95,
       p.adj = c("none", "bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "fdr"),
-      hypo = TRUE, descript = TRUE, epsilon = TRUE, effsize = FALSE, na.omit = TRUE,
-      digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, point = TRUE, line = TRUE,
-      ci = TRUE, jitter = FALSE, adjust = TRUE, point.size = 3, line.width = 0.5,
-      errorbar.width = 0.1, jitter.size = 1.25,jitter.width = 0.05, jitter.alpha = 0.1,
-      xlab = NULL, ylab = "y", ylim = NULL, ybreaks = ggplot2::waiver(), title = NULL,
-      subtitle = "Confidence Interval", filename = NULL, width = NA, height = NA,
-      units = c("in", "cm", "mm", "px"), dpi = 600, write = NULL, append = TRUE,
+      digits = 2, p.digits = 3, as.na = NULL, plot = FALSE, point = TRUE,
+      line = TRUE, ci = TRUE, jitter = FALSE, adjust = TRUE, filename = NULL,
+      width = NA, height = NA, dpi = 600, write = NULL, append = TRUE,
       check = TRUE, output = TRUE)
 }
 \arguments{
 \item{formula}{a formula of the form \code{cbind(time1, time2, time3) ~ 1}
 where \code{time1}, \code{time2}, and \code{time3} are
-numeric variables representing the levels of the within-subject
-factor, i.e., data are specified in wide-format (i.e.,
-multivariate person level format).}
+numeric variables representing the levels of the within-
+subject factor, i.e., data are specified in wide-format
+(i.e., multivariate person level format).}
 
 \item{data}{a matrix or data frame containing the variables in the
 formula \code{formula}.}
 
 \item{print}{a character vector indicating which sphericity correction
 to use, i.e., \code{all} for all corrections, \code{none}
-for no correction, \code{LB} for lower bound correction,
-\code{GG} for Greenhouse-Geisser correction, and \code{HF},
-for Huynh-Feldt correction.}
+for no correction, \code{GG} for Greenhouse-Geisser correction,
+\code{HF} for Huynh-Feldt correction, and \code{LB} for
+lower bound correction.}
 
-\item{posthoc}{logical: if \code{TRUE}, paired-samples t-tests for multiple
-comparison are conducted.}
+\item{hypo}{logical: if \code{TRUE} (default), null and alternative
+hypothesis are shown on the console.}
+
+\item{epsilon}{logical: if \code{TRUE} (default), box indices of sphericity
+(epsilon) are shown on the console, i.e., lower bound,
+Greenhouse and Geiser (GG), Huynh and Feldt (HF) and average
+of GG and HF.}
+
+\item{descript}{logical: if \code{TRUE} (default), descriptive statistics
+are shown on the console.}
+
+\item{effsize}{logical: if \code{TRUE}, effect size measures eta-squared
+(\eqn{\eta^2}), partial eta-squared (\eqn{\eta^2_p}),
+omega-squared (\eqn{\omega^2}), and partial omega-squared
+(\eqn{\omega^2_p}) for the repeated measures ANOVA and
+Cohen's \emph{d} for the post hoc tests are shown on
+the console.}
+
+\item{posthoc}{logical: if \code{TRUE}, paired-samples t-tests for
+multiple comparison are conducted.}
+
+\item{na.omit}{logical: if \code{TRUE} (default), incomplete cases are
+removed before conducting the analysis (i.e., listwise
+deletion).}
 
 \item{conf.level}{a numeric value between 0 and 1 indicating the confidence
 level of the interval.}
@@ -43,27 +62,6 @@ multiple testing based on \code{\link{p.adjust}}, i.e.,
 \code{none}, \code{bonferroni}, \code{holm} (default),
 \code{h ochberg}, \code{hommel}, \code{BH}, \code{BY}, or
 \code{fdr}.}
-
-\item{hypo}{logical: if \code{TRUE} (default), null and alternative hypothesis
-are shown on the console.}
-
-\item{descript}{logical: if \code{TRUE} (default), descriptive statistics are shown
-on the console.}
-
-\item{epsilon}{logical: if \code{TRUE} (default), box indices of sphericity (epsilon)
-are shown on the console, i.e., lower bound, Greenhouse
-and Geiser (GG), Huynh and Feldt (HF) and average of GG
-and HF.}
-
-\item{effsize}{logical: if \code{TRUE}, effect size measures eta-squared
-(\eqn{\eta^2}), partial eta-squared (\eqn{\eta^2_p}),
-omega-squared (\eqn{\omega^2}), and partial omega-squared
-(\eqn{\omega^2_p}) for the repeated measures ANOVA and
-Cohen's \emph{d} for the post hoc tests are shown on
-the console.}
-
-\item{na.omit}{logical: if \code{TRUE}, incomplete cases are removed
-before conducting the analysis (i.e., listwise deletion).}
 
 \item{digits}{an integer value indicating the number of decimal places
 to be used for displaying descriptive statistics and
@@ -96,41 +94,6 @@ subject-specific lines are drawn.}
 for the Cousineau-Morey within-subject confidence
 intervals is applied.}
 
-\item{point.size}{a numeric value indicating the \code{size} aesthetic for
-the point representing the mean value.}
-
-\item{line.width}{a numeric value indicating the \code{linewidth} aesthetic
-for the line connecting means of each groups.}
-
-\item{errorbar.width}{a numeric value indicating the horizontal bar width of
-the error bar.}
-
-\item{jitter.size}{a numeric value indicating the \code{size} aesthetic
-for the jittered data points.}
-
-\item{jitter.width}{a numeric value indicating the amount of horizontal jitter.}
-
-\item{jitter.alpha}{a numeric value between 0 and 1 for specifying the
-\code{alpha} argument in the \code{geom_histogram}
-function for controlling the opacity of the jittered
-data points.}
-
-\item{xlab}{a character string specifying the labels for the x-axis.}
-
-\item{ylab}{a character string specifying the labels for the y-axis.}
-
-\item{ylim}{a numeric vector of length two specifying limits of the
-limits of the y-axis.}
-
-\item{ybreaks}{a numeric vector specifying the points at which tick-marks
-are drawn at the y-axis.}
-
-\item{title}{a character string specifying the text for the title for
-the plot.}
-
-\item{subtitle}{a character string specifying the text for the subtitle for
-the plot.}
-
 \item{filename}{a character string indicating the \code{filename}
 argument including the file extension in the \code{ggsave}
 function. Note that one of \code{".eps"}, \code{".ps"},
@@ -139,7 +102,7 @@ function. Note that one of \code{".eps"}, \code{".ps"},
 \code{".bmp"}, \code{".svg"} or \code{".wmf"} needs
 to be specified as file extension in the \code{filename}
 argument. Note that plots can only be saved when
-\code{plot = TRUE} or \code{plot = "boot"}.}
+\code{plot = TRUE}.}
 
 \item{width}{a numeric value indicating the \code{width} argument
 (default is the size of the current graphics device)
@@ -148,9 +111,6 @@ in the \code{ggsave} function.}
 \item{height}{a numeric value indicating the \code{height} argument
 (default is the size of the current graphics device)
 in the \code{ggsave} function.}
-
-\item{units}{a character string indicating the \code{units} argument
-(default is \code{in}) in the \code{ggsave} function.}
 
 \item{dpi}{a numeric value indicating the \code{dpi} argument
 (default is \code{600}) in the \code{ggsave} function.}
@@ -164,28 +124,24 @@ to an existing text file with extension \code{.txt} specified
 in \code{write}, if \code{FALSE} existing text file will be
 overwritten.}
 
-\item{check}{logical: if \code{TRUE} (default), argument specification is checked.}
+\item{check}{logical: if \code{TRUE} (default), argument specification
+is checked.}
 
-\item{output}{logical: if \code{TRUE} (default), output is shown on the console.}
-
+\item{output}{logical: if \code{TRUE} (default), output is shown on the
+console.}
 }
 \value{
 Returns an object of class \code{misty.object}, which is a list with following
 entries:
-  \item{\code{call}}{function call}
-  \item{\code{type}}{type of analysis}
-  \item{\code{data}}{list with the data (\code{data}) in wide-format (\code{wide}), reshaped data in long-format (\code{long}), and within-subject confidence intervals (\code{ci})}
-  \item{\code{formula}}{formula of the current analysis}
-  \item{\code{args}}{specification of function arguments}
-  \item{\code{plot}}{ggplot2 object for plotting the results}
-  \item{\code{result}}{list with result tables, i.e., \code{descript} for descriptive
-                       statistics, \code{epsilon} for a table with indices of sphericity,
-                       \code{test} for the ANOVA table (\code{none} for no sphericity
-                       correction, \code{lb} for lower bound correction, \code{gg}
-                       for Greenhouse and Geiser correction, and \code{hf} for
-                       Huynh and Feldt correction), \code{posthoc} for post hoc
-                       tests, and \code{aov} for the return object of the \code{aov}
-                       function}
+\item{\code{call}}{function call}
+\item{\code{type}}{type of analysis}
+\item{\code{data}}{list with the data (\code{data}) in wide-format (\code{wide}),
+                   reshaped data in long-format (\code{long}), and within-subject
+                   confidence intervals (\code{ci})}
+\item{\code{formula}}{formula of the current analysis}
+\item{\code{args}}{specification of function arguments}
+\item{\code{plot}}{ggplot2 object for plotting the results}
+\item{\code{result}}{list with result tables}
 }
 \description{
 This function performs an one-way repeated measures analysis of variance (within
@@ -203,8 +159,8 @@ population. The Mauchly's test is commonly used to test this hypothesis.
 However, test of assumptions addresses an irrelevant hypothesis because what
 matters is the degree of violation rather than its presence (Baguley, 2012a).
 Moreover, the test is not recommended because it lacks statistical power (Abdi,
-2010). Instead, the Box index of sphericity (\eqn{\varepsilon}) should be used to
-assess the degree of violation of the sphericity assumption. The \eqn{\varepsilon}
+2010). Instead, the Box index of sphericity (\eqn{\varepsilon}) should be used
+to assess the degree of violation of the sphericity assumption. The \eqn{\varepsilon}
 parameter indicates the degree to which the population departs from sphericity
 with \eqn{\varepsilon = 1} indicating that sphericity holds. As the departure
 becomes more extreme, \eqn{\varepsilon} approaches its lower bound
@@ -245,8 +201,8 @@ specifying \code{na.omit = FALSE}. Note that in the presence of missing data,
 the \emph{F}-Test without any sphericity corrections may be reliable, but it
 is not clear whether results based on Greenhouse-Geiser or Huynh-Feldt correction
 are trustworthy given that pairwise deletion is used for estimating the
-variance-covariance matrix when computing \eqn{\hat{\varepsilon}_{gg}} and the total
-number of subjects regardless of missing values (i.e., complete and incomplete
+variance-covariance matrix when computing \eqn{\hat{\varepsilon}_{gg}} and the
+total number of subjects regardless of missing values (i.e., complete and incomplete
 cases) are used for computing \eqn{\hat{\varepsilon}_{hf}}.
 }
 \item{\strong{Within-Subject Confidence Intervals}}{The function provides a
@@ -259,32 +215,76 @@ adjustment can be used by specifying \code{adjust = FALSE}.
 }
 }
 \examples{
+#————————————————————————————————————————————————————————————————————————————
+# Within-Subject Analysis of Variance
+
+# Data frame
 dat <- data.frame(time1 = c(3, 2, 1, 4, 5, 2, 3, 5, 6, 7),
                   time2 = c(4, 3, 6, 5, 8, 6, 7, 3, 4, 5),
                   time3 = c(1, 2, 2, 3, 6, 5, 1, 2, 4, 6))
 
-# Example 1: Repeated measures ANOVA
+# Example 1a: Within-Subject ANOVA
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat)
 
-# Example 2: Repeated measures ANOVA, print results of all sphericity corrections
-aov.w(cbind(time1, time2, time3) ~ 1, data = dat, print = "all")
+# Example 1b: Within-Subject ANOVA
+# Print descriptive statistics and Paired-samples t-tests
+aov.w(cbind(time1, time2, time3) ~ 1, data = dat, descript = TRUE, posthoc = TRUE)
 
-# Example 3: Repeated measures ANOVA, print post hoc test and effect size measures
-aov.w(cbind(time1, time2, time3) ~ 1, data = dat, posthoc = TRUE, effsize = TRUE)
+# Example 1c: Within-Subject ANOVA, print eta-squared and omega-squared
+aov.w(cbind(time1, time2, time3) ~ 1, data = dat, effsize = TRUE)
 
-# Example 4: Repeated measures ANOVA, do not print hypotheses and descriptive statistics,
-aov.w(cbind(time1, time2, time3) ~ 1, data = dat, descript = FALSE, hypo = FALSE)
+#————————————————————————————————————————————————————————————————————————————
+# Plot
 
-# Example 5: Repeated measures ANOVA, plot results
+# Example 2a: Plot results, default setting
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE)
 
+# Example 2b: Plot results
+# No bars, jittered data points without subject-specific lines
+aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE,
+      line = FALSE, jitter = TRUE)
+
+# Example 2c: Plot results using the plot() function, use additional arguments
+# see Details in the help page of the function plot.misty.object
+object <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat)
+plot(object, jitter = TRUE, jitter.alpha = 0.4, title = "Within-Subject ANOVA")
+
+#————————————————————————————————————————————————————————————————————————————
+# Create Plot Manually
+
+# Load ggplot2 package
+library(ggplot2)
+
+# Create misty object
+object <- aov.w(cbind(time1, time2, time3) ~ 1, data = dat)
+
+# Compute Means and difference-adjusted confidence intervals
+ci.table <- ci.mean.w(object$data$wide, adjust = TRUE, output = FALSE)$result
+
+# Example 3: Plot
+ggplot(object$data$long, aes(time, y, group = 1)) +
+  geom_errorbar(data = ci.table, aes(variable, m, ymin = low, ymax = upp),
+                width = 0.1) +
+  geom_point(data = ci.table, aes(variable, m), stat = "identity", size = 3) +
+  geom_line(data = ci.table, aes(variable, m), stat = "identity") +
+  geom_jitter(alpha = 0.2, width = 0.05, height = 0, size = 1.25) +
+  theme_bw()
+
+#————————————————————————————————————————————————————————————————————————————
+# Write Results and Save Plot
+
 \dontrun{
-# Example 6: Write Results into a text file
+
+# Example 4a: Write results into a text file
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.txt")
 
-# Example 7: Save plot
+# Example 4b: Write results into an Excel file
+aov.w(cbind(time1, time2, time3) ~ 1, data = dat, write = "RM-ANOVA.xlsx")
+
+# Example 4c: Save plot as PNG fine
 aov.w(cbind(time1, time2, time3) ~ 1, data = dat, plot = TRUE,
-      filename = "Repeated_measures_ANOVA.png", width = 7, height = 6)}
+            filename = "RM-ANOVA.png", width = 6, height = 5)
+}
 }
 \references{
 Abdi, H. (2010). The Greenhouse-Geisser correction. In N. J. Salkind (Ed.)
@@ -313,16 +313,16 @@ of Correlation between Errors in the Two-way Classification.
 \emph{Annals of Mathematical Statistics, 25}, 484–98.
 
 Greenhouse, S. W., and Geisser, S. (1959). On methods in the analysis of profile
-data.\emph{Psychometrika, 24}, 95-112. https://doi.org/10.1007/BF02289823
+data.\emph{Psychometrika, 24}, 95–112. https://doi.org/10.1007/BF02289823
 
 Huynh, H., and Feldt, L. S. (1976). Estimation of the box correction for degrees
 of freedom from sample data in randomized block and splitplot designs.
-\emph{Journal of Educational Statistics, 1}, 69-82.
+\emph{Journal of Educational Statistics, 1}, 69–82.
 https://doi.org/10.2307/1164736
 
 Olejnik, S., & Algina, J. (2000). Measures of effect size for comparative studies:
 Applications, interpretations, and limitations. \emph{Contemporary Educational
-Psychology, 25}, 241-286. https://doi.org/10.1006/ceps.2000.1040
+Psychology, 25}, 241–286. https://doi.org/10.1006/ceps.2000.1040
 
 Rasch, D., Kubinger, K. D., & Yanagida, T. (2011). \emph{Statistics in psychology
 - Using R and SPSS}. John Wiley & Sons.

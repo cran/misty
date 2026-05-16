@@ -82,7 +82,7 @@ The function \code{uniq} is a wrapper function in the form of \code{sort(unique(
 while the function \code{uniq.n} is a wrapper function in the form of \code{length(unique(na.omit(x)))}.
 }
 \examples{
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Extract Unique Elements, uniq() function
 
 # Example 1a: Extract unique elements in a vector
@@ -103,7 +103,7 @@ uniq(airquality)
 # Example 2a: Extract unique elements in list
 uniq(airquality, table = FALSE)
 
-#----------------------------------------------------------------------------
+#————————————————————————————————————————————————————————————————————————————
 # Count Number of Unique Elements, uniq.n() function
 
 # Example 3a: Count number of unique elements in a vector
